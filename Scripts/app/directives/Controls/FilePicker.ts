@@ -20,22 +20,19 @@ module dockyard.directives.filePicker {
 
             $scope.selectedFile = null;
 
-            var OnFileUploadSuccess = function(fileDTO: interfaces.IFileDescriptionDTO) {
+            var OnFileUploadSuccess = function (fileDTO: interfaces.IFileDescriptionDTO) {
                 $scope.selectedFile = fileDTO;
                 $scope.$root.$broadcast("fp-success", fileDTO);
                 $scope.field.value = (<dockyard.model.FileDTO>fileDTO).cloudStorageUrl;
                 $scope.$root.$broadcast("onChange", new pca.ChangeEventArgs($scope.field));
-            }
-
+            };
             var OnFileUploadFail = function(status: any) {
                 alert('sorry file upload failed with status: ' + status);
-            }
-
-            $scope.OnFileSelect = function($file) {
+            };
+            $scope.OnFileSelect = $file => {
                 FileService.uploadFile($file).then(OnFileUploadSuccess, OnFileUploadFail);
-            }
-
-            $scope.Save = function() {
+            };
+            $scope.Save = () => {
                 if ($scope.selectedFile === null) {
                     //raise some kind of error to prevent continuing
                     alert('No file was selected!!!!!!');
@@ -46,12 +43,10 @@ module dockyard.directives.filePicker {
                 //this._$scope.field.value = this._fileDTO.id.toString();
                 alert('Selected FileDO ID -> ' + $scope.selectedFile.id.toString());
                 //TODO add this file's id to CrateDO
-            }
-
+            };
             var OnExistingFileSelected = function(fileDTO: interfaces.IFileDescriptionDTO) {
                 $scope.selectedFile = fileDTO;
-            }
-
+            };
             var OnFilesLoaded = function(filesDTO: Array<interfaces.IFileDescriptionDTO>) {
 
                 var modalInstance = $modal.open({
@@ -65,12 +60,10 @@ module dockyard.directives.filePicker {
                 });
 
                 modalInstance.result.then(OnExistingFileSelected);
-            }
-
-            $scope.ListExistingFiles = function() {
+            };
+            $scope.ListExistingFiles = () => {
                 FileService.listFiles().then(OnFilesLoaded);
-            }
-
+            };
         }];
 
         return {
@@ -85,20 +78,19 @@ module dockyard.directives.filePicker {
 
     app.directive('filePicker', FilePicker);
 
-    app.filter('formatInput', function () {
-        return input => {
-            if (input) {
-                return 'Selected File : ' + input.substring(input.lastIndexOf('/') + 1, input.length)
-            }
-            return input;
-        };
+    app.filter('formatInput', () => input => {
+        if (input) {
+            var decode = decodeURIComponent(input);
+            return 'Selected File : ' + decode.substring(decode.lastIndexOf('/') + 1, decode.length);
+        }
+        return decodeURIComponent(input);
     });
 
     //TODO talk to alex and move this class to services folder? !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     interface IFileService {
         uploadFile(file: any): any;
-        listFiles(): ng.IPromise<Array<interfaces.IFileDescriptionDTO>>
+        listFiles(): ng.IPromise<Array<interfaces.IFileDescriptionDTO>>;
     }
 
 
@@ -122,8 +114,8 @@ module dockyard.directives.filePicker {
             }).progress((event: any) => {
                 console.log('Loaded: ' + event.loaded + ' / ' + event.total);
             })
-            .success((fileDTO: interfaces.IFileDescriptionDTO) => {
-                 deferred.resolve(fileDTO);
+                .success((fileDTO: interfaces.IFileDescriptionDTO) => {
+                    deferred.resolve(fileDTO);
             })
             .error((data: any, status: any) => {
                 deferred.reject(status);

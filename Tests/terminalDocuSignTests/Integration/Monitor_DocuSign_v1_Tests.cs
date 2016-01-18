@@ -272,7 +272,7 @@ namespace terminalDocuSignTests.Integration
                 .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "DocuSign Event Fields")
                 .Single();
 
-            Assert.AreEqual(10, docuSignEventFields.Fields.Count);
+            Assert.AreEqual(11, docuSignEventFields.Fields.Count);
         }
 
         /// <summary>
@@ -301,7 +301,7 @@ namespace terminalDocuSignTests.Integration
                 .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "DocuSign Event Fields")
                 .Single();
 
-            Assert.AreEqual(10, docuSignEventFields.Fields.Count());
+            Assert.AreEqual(11, docuSignEventFields.Fields.Count());
         }
 
         /// <summary>
@@ -416,7 +416,6 @@ namespace terminalDocuSignTests.Integration
             Assert.AreEqual(1, crateStorage.CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "DocuSign Envelope Payload Data").Count());
 
             var docuSignPayload = crateStorage.CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "DocuSign Envelope Payload Data").Single();
-            Assert.AreEqual(10, docuSignPayload.AllValues().Count());
         }
 
         /// <summary>

@@ -284,7 +284,7 @@ namespace HubWeb.Controllers
                 {
                     if (routeDO != null)
                     {
-                        _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, 
+                        _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS,
                             string.Format("Launching a new Container for Route \"{0}\"", routeDO.Name));
 
                         var containerDO = await _route.Run(routeDO, curCrate);
@@ -298,12 +298,20 @@ namespace HubWeb.Controllers
 
                     return BadRequest();
                 }
-                catch
+                catch (ErrorResponseException exception)
+                {
+                    string message = String.Format("Route \"{0}\" failed. {1}", routeDO.Name, exception.Message);
+
+                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, message);
+                }
+                catch(Exception)
                 {
                     string message = String.Format("Route \"{0}\" failed", routeDO.Name);
 
                     _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, message);
                 }
+
+
 
                 return Ok();
             }

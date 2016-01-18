@@ -62,6 +62,18 @@ namespace terminalFr8Core.Actions
                     uow.SaveChanges();
                 }
 
+                var docusignRecipientCrate = Crate.FromDto(curProcessPayload.CrateStorage).CratesOfType<DocuSignRecipientCM>().Single(x => x.Label == "DocuSign Recipient Manifest");
+                if (docusignRecipientCrate != null)
+                {
+                    var docusignRecipient = docusignRecipientCrate.Content;
+
+                    curFr8AccountId = uow.AuthorizationTokenRepository.GetPublicDataQuery().First(x => x.ExternalAccountId == docusignRecipient.DocuSignAccountId).UserDO.Id;
+
+                    //store event in MT database
+                    uow.MultiTenantObjectRepository.AddOrUpdate(uow, curFr8AccountId, docusignRecipient, e => e.EnvelopeId);
+                    uow.SaveChanges();
+                }
+
                 return Success(curProcessPayload);
             }
         }

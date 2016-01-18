@@ -24,7 +24,7 @@ using TerminalBase.BaseClasses;
 
 namespace terminalDocuSign.Actions
 {
-    public class Send_DocuSign_Envelope_v1 : BaseTerminalAction
+    public class Send_DocuSign_Envelope_v1 : BaseDocuSignAction
     {
         private DocuSignManager _docuSignManager = new DocuSignManager();
         public Send_DocuSign_Envelope_v1()
@@ -194,12 +194,12 @@ namespace terminalDocuSign.Actions
                 // when we're in design mode, there are no values
                 // we just want the names of the fields
                 var userDefinedFields = new List<FieldDTO>();
-                envelopeDataDTO.ForEach(x => userDefinedFields.Add(new FieldDTO() { Key = x.Name, Value = x.Name }));
+                envelopeDataDTO.ForEach(x => userDefinedFields.Add(new FieldDTO() { Key = x.Name, Value = x.Name, Availability = AvailabilityType.RunTime }));
 
                 // we're in design mode, there are no values 
                 var standartFields = new List<FieldDTO>()
                 {
-                    new FieldDTO() {Key = "recipient", Value = "recipient"}
+                    new FieldDTO() {Key = "recipient", Value = "recipient", Availability = AvailabilityType.RunTime }
                 };
 
                 var crateUserDefinedDTO = Crate.CreateDesignTimeFieldsCrate(
@@ -221,8 +221,6 @@ namespace terminalDocuSign.Actions
 
             return await Task.FromResult(curActionDO);
         }
-
-
 
         private Crate CreateDocusignTemplateConfigurationControls(ActionDO curActionDO)
         {
@@ -267,9 +265,12 @@ namespace terminalDocuSign.Actions
                 updater.CrateStorage.Remove(curUpstreamFieldsCrate);
             }
 
-            var curUpstreamFields = (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
+            var curUpstreamFields = (await GetDesignTimeFields(curActionDO.Id, CrateDirection.Upstream))
                 .Fields.Where(a => a.Availability == AvailabilityType.RunTime)
                 .ToArray();
+
+            //make fields inaccessible to up/downstanding actions
+            curUpstreamFields.ToList().ForEach(a => a.Availability = AvailabilityType.Configuration);
 
             curUpstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided Fields", curUpstreamFields);
             updater.CrateStorage.Add(curUpstreamFieldsCrate);

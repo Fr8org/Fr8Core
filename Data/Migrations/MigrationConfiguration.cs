@@ -60,6 +60,9 @@ namespace Data.Migrations
             }
 
             var uow = new UnitOfWork(context);
+
+            UpdateRootRouteNodeId(uow);
+
             SeedIntoMockDb(uow);
 
             AddRoles(uow);
@@ -74,7 +77,6 @@ namespace Data.Migrations
             AddContainerDOForTestingApi(uow);
 
             AddWebServices(uow);
-
         }
 
         //Method to let us seed into memory as well
@@ -573,6 +575,61 @@ namespace Data.Migrations
             return newDate;
         }
 
+        private void UpdateRootRouteNodeId(IUnitOfWork uow)
+        {
+            var anyRootIdFlag = uow.RouteNodeRepository
+                .GetAll()
+                .Any(x => x.RootRouteNodeId != null);
+
+            if (anyRootIdFlag)
+            {
+                return;
+            }
+
+            var fullTree = uow.RouteNodeRepository.GetAll().ToList();
+
+            var parentChildMap = new Dictionary<Guid, List<RouteNodeDO>>();
+            foreach (var routeNode in fullTree.Where(x => x.ParentRouteNodeId.HasValue))
+            {
+                List<RouteNodeDO> routeNodes;
+                if (!parentChildMap.TryGetValue(routeNode.ParentRouteNodeId.Value, out routeNodes))
+                {
+                    routeNodes = new List<RouteNodeDO>();
+                    parentChildMap.Add(routeNode.ParentRouteNodeId.Value, routeNodes);
+                }
+
+                routeNodes.Add(routeNode);
+            }
+
+            var roots = fullTree
+                .Where(x => parentChildMap.ContainsKey(x.Id) && !x.ParentRouteNodeId.HasValue);
+
+            var queue = new Queue<RouteNodeDO>();
+            foreach (var root in roots)
+            {
+                root.RootRouteNodeId = root.Id;
+                queue.Enqueue(root);
+            }
+
+            while (queue.Count > 0)
+            {
+                var node = queue.Dequeue();
+
+                if (!parentChildMap.ContainsKey(node.Id))
+                {
+                    continue;
+                }
+
+                var childNodes = parentChildMap[node.Id];
+                foreach (var childNode in childNodes)
+                {
+                    childNode.RootRouteNodeId = node.RootRouteNodeId;
+                    queue.Enqueue(childNode);
+                }
+            }
+
+            uow.SaveChanges();
+        }
     }
 }
 

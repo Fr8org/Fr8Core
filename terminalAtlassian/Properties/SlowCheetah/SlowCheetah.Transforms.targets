@@ -159,12 +159,12 @@ Copyright (C) Sayed Ibrahim Hashimi, Chuck England 2011-2013. All rights reserve
 
     <SlowCheetah.Xdt.TransformXml Source="$(__SC_IntermediateAppConfig)"
                   Transform="@(_AppConfigToTransform->'%(RelativeDir)%(Filename).$(Configuration)%(Extension)')"
-                  Destination="$(__SC_IntermediateAppConfig)"
+                  Destination="$(MSBuildProjectDirectory)\bin\$(Configuration)\$(MSBuildProjectName).dll.config"
                   Condition=" '$(_Sc_HasAppConfigConfigurationTransform)'=='true' " />
 
     <SlowCheetah.Xdt.TransformXml Source="$(__SC_IntermediateAppConfig)"
                   Transform="@(_AppConfigToTransform->'%(RelativeDir)%(Filename).$(PublishProfile)%(Extension)')"
-                  Destination="$(__SC_IntermediateAppConfig)"
+                  Destination="$(MSBuildProjectDirectory)\bin\$(Configuration)\$(MSBuildProjectName).dll.config"
                   Condition=" '$(_Sc_HasAppConfigPublishProfileTransform)'=='true' " />
 
     <PropertyGroup Condition=" '$(_Sc_HasAppConfigTransform)'=='true' " >

@@ -93,7 +93,7 @@ namespace TerminalBase.Infrastructure
 
         public async Task CreateAlarm(AlarmDTO alarmDTO)
         {
-            
+
         }
 
         public Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActionDO actionDO)
@@ -142,6 +142,21 @@ namespace TerminalBase.Infrastructure
         public Task<List<FieldValidationResult>> ValidateFields(List<FieldValidationDTO> fields)
         {
             return Task.FromResult(new List<FieldValidationResult>());
+        }
+
+        public async Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(ActionDO actionDO, CrateDirection direction, AvailabilityType availability)
+        {
+            //This code only supports integration testing scenarios
+
+            StandardDesignTimeFieldsCM mergedFields = new StandardDesignTimeFieldsCM();
+            var curCrates = await GetCratesByDirection<StandardDesignTimeFieldsCM>(actionDO, direction);
+            mergedFields.Fields.AddRange(Crate.MergeContentFields(curCrates).Fields);
+            return mergedFields;
+        }
+
+        public Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(Guid actionId, CrateDirection direction, AvailabilityType availability)
+        {
+            throw new NotImplementedException();
         }
     }
 }

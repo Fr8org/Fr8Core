@@ -175,6 +175,7 @@ namespace Hub.Services
                     {
                         actionDTO.AuthToken = new AuthorizationTokenDTO()
                         {
+                            Id = authToken.Id.ToString(),
                             UserId = authToken.UserDO != null ? authToken.UserDO.Id : authToken.UserID,
                             Token = authToken.Token,
                             AdditionalAttributes = authToken.AdditionalAttributes

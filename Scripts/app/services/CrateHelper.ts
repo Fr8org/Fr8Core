@@ -2,7 +2,7 @@
 
     export class CrateHelper {
         private filterByTag: (list: model.DropDownListItem[], filterByTag: string) => model.DropDownListItem[]
-
+      
         constructor($filter) {
             this.filterByTag = $filter('FilterByTag');
         }

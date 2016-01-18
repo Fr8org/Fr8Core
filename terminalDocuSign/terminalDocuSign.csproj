@@ -225,6 +225,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actions\BaseDocuSignAction.cs" />
     <Compile Include="Actions\Extract_Data_From_Envelopes_v1.cs" />
     <Compile Include="Actions\Generate_DocuSign_Report_v1.cs">
       <SubType>Code</SubType>
