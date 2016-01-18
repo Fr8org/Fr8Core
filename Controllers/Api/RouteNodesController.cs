@@ -13,6 +13,10 @@ using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Hub.Interfaces;
 using Hub.Managers;
+using Data.Crates;
+using Data.Interfaces.Manifests;
+using Data.States;
+using Data.Constants;
 
 namespace HubWeb.Controllers
 {
@@ -22,11 +26,13 @@ namespace HubWeb.Controllers
     {
         private readonly IRouteNode _activity;
         private readonly ISecurityServices _security;
+        private readonly ICrateManager _crate;
 
         public RouteNodesController()
         {
             _activity = ObjectFactory.GetInstance<IRouteNode>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
+            _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
         [HttpGet]
@@ -104,6 +110,18 @@ namespace HubWeb.Controllers
 
                 return Ok(downstreamActions);
             }
+        }
+
+        [ActionName("designtime_fields_dir")]
+        [ResponseType(typeof(StandardDesignTimeFieldsCM))]
+        [AllowAnonymous]
+        public IHttpActionResult GetDesignTimeFieldsByDirection(
+            Guid id, 
+            CrateDirection direction, 
+            AvailabilityType availability = AvailabilityType.NotSet)
+        {
+            var downstreamActions = _activity.GetDesignTimeFieldsByDirection(id, direction, availability);
+            return Ok(downstreamActions);
         }
 
         [ActionName("available")]

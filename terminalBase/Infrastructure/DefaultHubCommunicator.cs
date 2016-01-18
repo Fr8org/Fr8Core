@@ -18,6 +18,7 @@ using Hub.Interfaces;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Utilities.Configuration.Azure;
 using Data.Constants;
+using Data.Interfaces.Manifests;
 
 namespace TerminalBase.Infrastructure
 {
@@ -103,11 +104,11 @@ namespace TerminalBase.Infrastructure
             var curCrates = new List<Crate<TManifest>>();
 
             foreach (var curAction in curActions)
-            {
+        {
                 var storage = _crate.FromDto(curAction.CrateStorage);
 
                 curCrates.AddRange(storage.CratesOfType<TManifest>());
-            }
+        }
 
             return curCrates;
         }
@@ -136,7 +137,17 @@ namespace TerminalBase.Infrastructure
             return curCrates;
         }
 
-        public async Task CreateAlarm(AlarmDTO alarmDTO, string userId)
+        public async Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability)
+        {
+            return await _routeNode.GetDesignTimeFieldsByDirectionTerminal(activityId, direction, availability);
+        }
+
+        public async Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(ActionDO actionDO, CrateDirection direction, AvailabilityType availability)
+        {
+            return await _routeNode.GetDesignTimeFieldsByDirectionTerminal(actionDO.Id, direction, availability);
+        }
+
+        public async Task CreateAlarm(AlarmDTO alarmDTO)
         {
             var hubAlarmsUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                 + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/alarms";

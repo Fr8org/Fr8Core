@@ -112,9 +112,24 @@ namespace Hub.Managers
             return Crate<StandardDesignTimeFieldsCM>.FromContent(label, new StandardDesignTimeFieldsCM() { Fields = fields.ToList() });
         }
 
+        public Crate<StandardDesignTimeFieldsCM> CreateDesignTimeFieldsCrate(string label, AvailabilityType availability, params FieldDTO[] fields)
+        {
+            return Crate<StandardDesignTimeFieldsCM>.FromContent(label, new StandardDesignTimeFieldsCM() { Fields = fields.ToList() }, availability);
+        }
+
+        public Crate<StandardDesignTimeFieldsCM> CreateDesignTimeFieldsCrate(string label, List<FieldDTO> fields, AvailabilityType availability)
+        {
+            return Crate<StandardDesignTimeFieldsCM>.FromContent(label, new StandardDesignTimeFieldsCM() { Fields = fields }, availability);
+        }
+
+        public Crate<StandardDesignTimeFieldsCM> CreateDesignTimeFieldsCrate(string label, List<FieldDTO> fields)
+        {
+            return Crate<StandardDesignTimeFieldsCM>.FromContent(label, new StandardDesignTimeFieldsCM() { Fields = fields }, AvailabilityType.NotSet);
+        }
+
         public Crate<StandardConfigurationControlsCM> CreateStandardConfigurationControlsCrate(string label, params ControlDefinitionDTO[] controls)
         {
-            return Crate<StandardConfigurationControlsCM>.FromContent(label, new StandardConfigurationControlsCM() { Controls = controls.ToList() });
+            return Crate<StandardConfigurationControlsCM>.FromContent(label,  new StandardConfigurationControlsCM() { Controls = controls.ToList() }, AvailabilityType.Configuration);
         }
 
         public Crate CreateStandardEventSubscriptionsCrate(string label, params string[] subscriptions)
@@ -131,6 +146,8 @@ namespace Hub.Managers
         {
             return Crate.FromContent(label, new StandardTableDataCM() { Table = table.ToList(), FirstRowHeaders = firstRowHeaders });
         }
+
+
 
         public Crate CreateOperationalStatusCrate(string label, OperationalStateCM operationalStatus)
         {
@@ -241,6 +258,27 @@ namespace Hub.Managers
             }
 
             return fields;
+        }
+
+        public StandardDesignTimeFieldsCM MergeContentFields(List<Crate<StandardDesignTimeFieldsCM>> curCrates)
+        {
+            StandardDesignTimeFieldsCM tempMS = new StandardDesignTimeFieldsCM();
+            foreach (var curCrate in curCrates)
+            {
+                //extract the fields
+                StandardDesignTimeFieldsCM curStandardDesignTimeFieldsCrate = curCrate.Content;
+
+                foreach (var field in curStandardDesignTimeFieldsCrate.Fields)
+                {
+                    field.SourceCrateLabel = curCrate.Label;
+                    field.SourceCrateManifest = curCrate.ManifestType;
+                }
+
+                //add them to the pile
+                tempMS.Fields.AddRange(curStandardDesignTimeFieldsCrate.Fields);
+            }
+
+            return tempMS;
         }
 
         private static IEnumerable<FieldDTO> FindFieldsRecursive(Object obj)

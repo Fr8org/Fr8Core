@@ -342,16 +342,15 @@ namespace TerminalBase.BaseClasses
             return await HubCommunicator.GetCratesByDirection(actionDO, direction, CurrentFr8UserId);
         }
 
-        public async virtual Task<StandardDesignTimeFieldsCM> GetDesignTimeFields(ActionDO actionDO, CrateDirection direction)
+        public async virtual Task<StandardDesignTimeFieldsCM> GetDesignTimeFields(Guid actionId, CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet)
         {
-            //1) Build a merged list of the upstream design fields to go into our drop down list boxes
-            StandardDesignTimeFieldsCM mergedFields = new StandardDesignTimeFieldsCM();
+            var mergedFields = await HubCommunicator.GetDesignTimeFieldsByDirection(actionId, direction, availability);
+            return mergedFields;
+        }
 
-            var curCrates = await HubCommunicator.GetCratesByDirection<StandardDesignTimeFieldsCM>(actionDO, direction, CurrentFr8UserId);
-
-
-            mergedFields.Fields.AddRange(MergeContentFields(curCrates).Fields);
-
+        public async virtual Task<StandardDesignTimeFieldsCM> GetDesignTimeFields(ActionDO actionDO, CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet)
+        { 
+            var mergedFields = await HubCommunicator.GetDesignTimeFieldsByDirection(actionDO, direction, availability);
             return mergedFields;
         }
 
@@ -383,27 +382,6 @@ namespace TerminalBase.BaseClasses
             return Crate.CreateDesignTimeFieldsCrate("Upstream Crate Label List", fields);
         }
 
-        public StandardDesignTimeFieldsCM MergeContentFields(List<Crate<StandardDesignTimeFieldsCM>> curCrates)
-        {
-            StandardDesignTimeFieldsCM tempMS = new StandardDesignTimeFieldsCM();
-            foreach (var curCrate in curCrates)
-            {
-                //extract the fields
-                StandardDesignTimeFieldsCM curStandardDesignTimeFieldsCrate = curCrate.Content;
-
-                foreach (var field in curStandardDesignTimeFieldsCrate.Fields)
-                {
-                    field.SourceCrateLabel = curCrate.Label;
-                    field.SourceCrateManifest = curCrate.ManifestType;
-                }
-
-                //add them to the pile
-                tempMS.Fields.AddRange(curStandardDesignTimeFieldsCrate.Fields);
-            }
-
-            return tempMS;
-        }
-
         protected CrateStorage AssembleCrateStorage(params Crate[] curCrates)
         {
             return new CrateStorage(curCrates);
@@ -416,7 +394,7 @@ namespace TerminalBase.BaseClasses
 
         protected Crate<StandardConfigurationControlsCM> PackControlsCrate(params ControlDefinitionDTO[] controlsList)
         {
-            return Crate<StandardConfigurationControlsCM>.FromContent(ConfigurationControlsLabel, new StandardConfigurationControlsCM(controlsList));
+            return Crate<StandardConfigurationControlsCM>.FromContent(ConfigurationControlsLabel, new StandardConfigurationControlsCM(controlsList), AvailabilityType.Configuration);
         }
 
         protected string ExtractControlFieldValue(ActionDO curActionDO, string fieldName)
@@ -458,7 +436,7 @@ namespace TerminalBase.BaseClasses
 
         protected async Task<Crate<StandardDesignTimeFieldsCM>> MergeUpstreamFields(ActionDO actionDO, string label)
         {
-            var curUpstreamFields = (await GetDesignTimeFields(actionDO, CrateDirection.Upstream)).Fields.ToArray();
+            var curUpstreamFields = (await GetDesignTimeFields(actionDO.Id, CrateDirection.Upstream)).Fields.ToArray();
             var upstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate(label, curUpstreamFields);
 
             return upstreamFieldsCrate;
@@ -497,30 +475,25 @@ namespace TerminalBase.BaseClasses
         }*/
 
         /// <summary>
-        /// Creates a crate with avalable design-time fields.
+        /// Creates a crate with available design-time fields.
         /// </summary>
         /// <param name="actionDO">ActionDO.</param>
-        /// <param name="exclude">Labels of crates where fields should not be searched.</param>
         /// <returns></returns>
         protected async Task<Crate> CreateAvailableFieldsCrate(
             ActionDO actionDO,
-            List<string> exclude = null,
             string crateLabel = "Upstream Terminal-Provided Fields")
         {
-            if (exclude == null)
-            {
-                exclude = new List<string>();
-            }
+            var curUpstreamFields = await HubCommunicator.GetDesignTimeFieldsByDirection(actionDO, CrateDirection.Upstream, AvailabilityType.RunTime);
 
-            var curUpstreamFields =
-                (await GetCratesByDirection<StandardDesignTimeFieldsCM>(actionDO, CrateDirection.Upstream))
-                .Where(x => !exclude.Contains(x.Label))
-                .SelectMany(x => x.Content.Fields)
-                .ToArray();
+            if (curUpstreamFields == null)
+            {
+                curUpstreamFields = new StandardDesignTimeFieldsCM();
+            }
 
             var availableFieldsCrate = Crate.CreateDesignTimeFieldsCrate(
                     crateLabel,
-                    curUpstreamFields
+                    curUpstreamFields.Fields,
+                    AvailabilityType.Configuration
                 );
 
             return availableFieldsCrate;
@@ -639,6 +612,7 @@ namespace TerminalBase.BaseClasses
 
             return returnValue;
         }
+
 
         /// <summary>
         /// Extracts crate with specified label and ManifestType = Standard Design Time,

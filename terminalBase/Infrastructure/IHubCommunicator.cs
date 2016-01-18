@@ -6,6 +6,7 @@ using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Data.Constants;
+using Data.Interfaces.Manifests;
 
 namespace TerminalBase.Infrastructure
 {
@@ -13,6 +14,9 @@ namespace TerminalBase.Infrastructure
     {
         Task<PayloadDTO> GetPayload(ActionDO actionDO, Guid containerId, string userId);
 
+        Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActionDO actionDO, CrateDirection direction);
+        Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability);
+        Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(ActionDO actionDO, CrateDirection direction, AvailabilityType availability);
         Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActionDO actionDO, CrateDirection direction, string userId);
 
         Task<List<Crate>> GetCratesByDirection(ActionDO actionDO, CrateDirection direction, string userId);
