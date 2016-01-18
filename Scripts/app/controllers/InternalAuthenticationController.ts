@@ -22,12 +22,20 @@
             $scope.formData = {
                 username: 'docusign_developer@dockyard.company',
                 password: 'grolier34',
-                domain: "dockyard.company"
+                domain: "dockyard.company",
+                isDemoAccount: false
             };
 
             $scope.isLoading = function () {
                 return _loading;
             };
+
+            $scope.hasDemoService = function () {
+                // temporary solution for checking terminals which services support demo account
+                // terminal == terminalDocuSign
+                return $scope.terminalId == 3;
+            }
+
 
             $scope.submitForm = function () {
                 if (!$scope.form.$valid) {
@@ -38,7 +46,8 @@
                     TerminalId: $scope.terminalId,
                     Username: $scope.formData.username,
                     Password: $scope.formData.password,
-                    Domain: $scope.formData.domain
+                    Domain: $scope.formData.domain,
+                    IsDemoAccount: $scope.formData.isDemoAccount
                 };
 
                 _loading = true;
