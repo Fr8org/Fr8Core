@@ -43,12 +43,13 @@ namespace HubWeb.Controllers.Api
                     Id = x.Id,
                     Name = x.Name,
                     AuthTokens = authTokens
-                        .Where(y => y.TerminalID == x.Id)
+                        .Where(y => y.TerminalID == x.Id && !string.IsNullOrEmpty(y.ExternalAccountId))
                         .OrderBy(y => y.ExternalAccountId)
                         .Select(y => new ManageAuthToken_AuthToken()
                         {
                             Id = y.Id,
-                            ExternalAccountName = y.ExternalAccountId
+                            ExternalAccountName = y.ExternalAccountId,
+                            IsMain = y.IsMain
                         })
                         .ToList()
                 })
