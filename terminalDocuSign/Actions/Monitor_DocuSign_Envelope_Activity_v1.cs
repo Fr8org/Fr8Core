@@ -312,38 +312,13 @@ namespace terminalDocuSign.Actions
             return Success(payloadCrates);
         }
 
-        private string GetValueForKey(PayloadDTO curPayloadDTO, string curKey)
-        {
-            var eventReportMS = Crate.GetStorage(curPayloadDTO).CrateContentsOfType<EventReportCM>().FirstOrDefault();
-
-            if (eventReportMS == null)
-            {
-                return null;
-            }
-
-            var crate = eventReportMS.EventPayload.CratesOfType<StandardPayloadDataCM>().First();
-
-            if (crate == null)
-            {
-                return null;
-            }
-
-            var fields = crate.Content.AllValues().ToArray();
-            if (fields == null || fields.Length == 0) return null;
-
-            var envelopeIdField = fields.SingleOrDefault(f => f.Key == curKey);
-            if (envelopeIdField == null) return null;
-
-            return envelopeIdField.Value;
-        }
-
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 
             var crateControls = PackCrate_ConfigurationControls();
             var crateDesignTimeFields = _docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
-            var eventFields = Crate.CreateDesignTimeFieldsCrate("DocuSign Event Fields", CreateDocuSignEventFields().ToArray());
+            var eventFields = Crate.CreateDesignTimeFieldsCrate("DocuSign Event Fields", AvailabilityType.RunTime, CreateDocuSignEventFields().ToArray());
 
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
@@ -530,21 +505,6 @@ namespace terminalDocuSign.Actions
             return templateRecipientPicker;
         }
         
-        private List<FieldDTO> CreateDocuSignEventFields()
-        {
-            return new List<FieldDTO>(){
-                new FieldDTO("RecipientEmail") {Tags = "EmailAddress" },
-                new FieldDTO("DocumentName"),
-                new FieldDTO("TemplateName"),
-                new FieldDTO("Status"),
-                new FieldDTO("CreateDate") {Tags = "Date" },
-                new FieldDTO("SentDate") {Tags = "Date" },
-                new FieldDTO("DeliveredDate") {Tags = "Date" },
-                new FieldDTO("CompletedDate") {Tags = "Date" },
-                new FieldDTO("HolderEmail") {Tags = "EmailAddress" },
-                new FieldDTO("Subject"),
-                new FieldDTO("EnvelopeId"),
-            };
-        }
+        
     }
 }

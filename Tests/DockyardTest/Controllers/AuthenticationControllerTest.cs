@@ -42,7 +42,8 @@ namespace DockyardTest.Controllers
                     Name = "terminalTest",
                     Version = "1",
                     TerminalStatus = 1,
-                    Endpoint = "localhost:39504"
+                    Endpoint = "localhost:39504",
+                    Secret = Guid.NewGuid().ToString()
                 };
 
                 uow.TerminalRepository.Add(terminalDO);

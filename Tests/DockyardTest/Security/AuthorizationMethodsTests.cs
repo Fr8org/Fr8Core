@@ -48,7 +48,8 @@ namespace DockyardTest.Security
                     Version = "1",
                     TerminalStatus = 1,
                     Endpoint = "localhost:39504",
-                    AuthenticationType = authType
+                    AuthenticationType = authType,
+                    Secret = Guid.NewGuid().ToString()
                 };
 
                 uow.TerminalRepository.Add(terminalDO);

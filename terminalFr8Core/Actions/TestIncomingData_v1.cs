@@ -18,14 +18,13 @@ using Data.States;
 using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using Hub.Managers;
 
 namespace terminalFr8Core.Actions
 {
-    public class FilterUsingRunTimeData_v1 : BaseTerminalAction
+    public class TestIncomingData_v1 : BaseTerminalAction
     {
 
-        public FilterUsingRunTimeData_v1()
+        public TestIncomingData_v1()
         {
         }
 
@@ -236,7 +235,7 @@ namespace terminalFr8Core.Actions
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             var curUpstreamFields =
-                (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
+                (await GetDesignTimeFields(curActionDO.Id, CrateDirection.Upstream))
                 .Fields
                 .ToArray();
 
@@ -257,7 +256,7 @@ namespace terminalFr8Core.Actions
         protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             var curUpstreamFields =
-                (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
+                (await GetDesignTimeFields(curActionDO.Id, CrateDirection.Upstream))
                 .Fields
                 .ToArray();
 

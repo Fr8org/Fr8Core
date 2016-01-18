@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Data.Entities;
 using System.Threading.Tasks;
+using System;
 
 namespace Hub.Interfaces
 {
@@ -19,5 +20,8 @@ namespace Hub.Interfaces
 
         Task<IList<string>> RegisterTerminals(string uri);
         Task<IList<ActivityTemplateDO>> GetAvailableActions(string uri);
+
+        Task<TerminalDO> GetTerminalByPublicIdentifier(string terminalId);
+        Task<bool> IsUserSubscribedToTerminal(string terminalId, string userId);
     }
 }

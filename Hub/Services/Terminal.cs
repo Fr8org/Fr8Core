@@ -12,6 +12,8 @@ using Hub.Interfaces;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Data.Interfaces.Manifests;
 using Hub.Managers;
+using System.Linq;
+using System.Data.Entity;
 
 namespace Hub.Services
 {
@@ -90,6 +92,24 @@ namespace Hub.Services
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
             var standardFr8TerminalCM = await restClient.GetAsync<StandardFr8TerminalCM>(new Uri(uri, UriKind.Absolute));
             return Mapper.Map<IList<ActivityTemplateDO>>(standardFr8TerminalCM.Actions);
+        }
+
+        public async Task<TerminalDO> GetTerminalByPublicIdentifier(string terminalId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                return uow.TerminalRepository.GetQuery().FirstOrDefault(t => t.PublicIdentifier == terminalId);
+            }
+        }
+
+        public async Task<bool> IsUserSubscribedToTerminal(string terminalId, string userId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var subscription = await uow.TerminalSubscriptionRepository.GetQuery().FirstOrDefaultAsync(s => s.Terminal.PublicIdentifier == terminalId && s.UserDO.Id == userId);
+                return subscription != null;
+            }
+            
         }
     }
 }

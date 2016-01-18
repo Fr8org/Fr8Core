@@ -61,7 +61,8 @@ module dockyard.controllers {
             'UIHelperService',
             'LayoutService',
             '$modal',
-            'AuthService'
+            'AuthService',
+            'ConfigureTrackerService'
         ];
 
         private _longRunningActionsCounter: number;
@@ -80,7 +81,8 @@ module dockyard.controllers {
             private uiHelperService: services.IUIHelperService,
             private LayoutService: services.ILayoutService,
             private $modal: any,
-            private AuthService: services.AuthService
+            private AuthService: services.AuthService,
+            private ConfigureTrackerService: services.ConfigureTrackerService
             ) {
 
             this.$scope.current = new model.RouteBuilderState();
@@ -486,7 +488,6 @@ module dockyard.controllers {
             if (this.$scope.current.action) {
                 originalId = this.$scope.current.action.id;
             }
-
             // Save previously selected action (and associated entities)
             // If a new action has just been added, it will be saved. 
             var promise = this.RouteBuilderService.saveCurrent(this.$scope.current);
@@ -539,7 +540,6 @@ module dockyard.controllers {
         */
         private PaneWorkflowDesigner_TemplateSelected(eventArgs: pwd.TemplateSelectedEventArgs) {
             console.log("RouteBuilderController: template selected");
-
             this.RouteBuilderService.saveCurrent(this.$scope.current)
                 .then((result: model.RouteBuilderState) => {
                 // Notity interested parties of action update and update $scope
@@ -611,21 +611,28 @@ module dockyard.controllers {
 
         // This should handle everything that should be done when a configure call response arrives from server.
         private PaneConfigureAction_ConfigureCallResponse(callConfigureResponseEventArgs: pca.CallConfigureResponseEventArgs) {
+            
+            //let's wait for last configure call before starting on aggresive actions
+            if (this.ConfigureTrackerService.hasPendingConfigureCalls()) {
+                return;
+            }
+
+
             // scann all actions to find actions with tag AgressiveReload in ActivityTemplate
             this.reConfigure(this.getReloadAgressiveActions(this.$scope.actionGroups, callConfigureResponseEventArgs.action));
         }
 
         private getReloadAgressiveActions(actionGroups: Array<model.ActionGroup>, currentAction: interfaces.IActionDTO) {
             var results: Array<model.ActionDTO> = [];
-            actionGroups.forEach(function (group) {
-                group.actions.filter(function (action) {
-                    return action.activityTemplate.tags !== null && action.activityTemplate.tags.indexOf('AggressiveReload') !== -1
-                }).forEach(function (action) {
+            actionGroups.forEach(group => {
+                group.actions.filter(action => {
+                    return action.activityTemplate.tags !== null && action.activityTemplate.tags.indexOf('AggressiveReload') !== -1;
+                }).forEach(action => {
                     if (action !== currentAction) {
                         results.push(action);
                     }
-                })
-            })
+                });
+            });
             return results;
         }
     }

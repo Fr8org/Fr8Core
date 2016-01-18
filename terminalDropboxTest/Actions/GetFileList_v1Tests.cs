@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Hub.Interfaces;
 using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;

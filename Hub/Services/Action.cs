@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Globalization;
+using AutoMapper;
 using Data.Constants;
 using Data.Entities;
 using Data.Infrastructure;
@@ -613,13 +614,13 @@ namespace Hub.Services
                 {
                     var containerDO = uow.ContainerRepository.GetByKey(containerId);
                     EventManager.ContainerSent(containerDO, curActionDO);
-                    var reponse = ObjectFactory.GetInstance<ITerminalTransmitter>().CallActionAsync<TResult>(actionName, dto);
+                    var reponse = ObjectFactory.GetInstance<ITerminalTransmitter>().CallActionAsync<TResult>(actionName, dto, containerId.ToString());
                     EventManager.ContainerReceived(containerDO, curActionDO);
                     return reponse;
                 }
             }
 
-            return ObjectFactory.GetInstance<ITerminalTransmitter>().CallActionAsync<TResult>(actionName, dto);
+            return ObjectFactory.GetInstance<ITerminalTransmitter>().CallActionAsync<TResult>(actionName, dto, containerId.ToString());
         }
 
 
