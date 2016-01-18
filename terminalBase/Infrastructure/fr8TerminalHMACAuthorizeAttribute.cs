@@ -28,7 +28,7 @@ namespace TerminalBase.Infrastructure
             return null;
         }
 
-        protected override Task<bool> CheckAuthentication(string terminalId, string userId)
+        protected override Task<bool> CheckPermission(string terminalId, string userId)
         {
             return Task.FromResult(true);
         }

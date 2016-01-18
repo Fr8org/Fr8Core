@@ -43,7 +43,7 @@ namespace HubWeb.Infrastructure
             return terminal.Secret;
         }
 
-        protected override async Task<bool> CheckAuthentication(string terminalId, string userId)
+        protected override async Task<bool> CheckPermission(string terminalId, string userId)
         {
             var terminal = await _terminalService.GetTerminalByPublicIdentifier(terminalId);
             if (terminal == null)
@@ -55,7 +55,7 @@ namespace HubWeb.Infrastructure
             {
                 //hmm think about this
                 //TODO with a empty userId a terminal can only call single Controller
-                //which is OpsController
+                //which is OpsController?
                 //until we figure out exceptions, we won't allow this
                 return false;
             }

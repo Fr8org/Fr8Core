@@ -43,7 +43,7 @@ namespace Hub.Infrastructure
         /// <returns></returns>
         protected abstract Task<string> GetTerminalSecret(string terminalId);
 
-        protected abstract Task<bool> CheckAuthentication(string terminalId, string userId);
+        protected abstract Task<bool> CheckPermission(string terminalId, string userId);
 
         protected virtual void Success(string terminalId, string userId)
         {
@@ -71,7 +71,7 @@ namespace Hub.Infrastructure
                 return false;
             }
 
-            isValid = await CheckAuthentication(terminalId, userId);
+            isValid = await CheckPermission(terminalId, userId);
             if (!isValid)
             {
                 return false;
