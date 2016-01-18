@@ -284,8 +284,8 @@
     <Compile Include="Services\EventTests.cs" />
     <Compile Include="Services\ITerminalClient.cs" />
     <Compile Include="Services\FileTests.cs" />
-    <Compile Include="Services\ProcessNodeTests.cs" />
     <Compile Include="Services\ContainerServiceTests.cs" />
+    <Compile Include="Services\RouteNodeTests.cs" />
     <Compile Include="Services\SubrouteTests.cs" />
     <Compile Include="Services\RouteTests.cs" />
     <Compile Include="Services\SMSMessageTests.cs" />
