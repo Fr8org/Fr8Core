@@ -13,7 +13,7 @@ namespace terminalAtlassian.Controllers
         private const string curTerminal = "terminalAtlassian";
 
         [HttpPost]
-        [fr8TerminalHMACAuthorize]
+        [fr8TerminalHMACAuthorize(curTerminal)]
         public Task<object> Execute([FromUri] String actionType, [FromBody] ActionDTO curActionDTO)
         {
             return HandleFr8Request(curTerminal, actionType, curActionDTO);

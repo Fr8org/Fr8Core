@@ -14,7 +14,6 @@ using System.Linq;
 using NUnit.Framework;
 using Data.Constants;
 using StructureMap;
-using Utilities.Configuration.Azure;
 
 namespace HealthMonitor.Utility
 {

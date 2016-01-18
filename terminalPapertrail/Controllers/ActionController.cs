@@ -13,7 +13,7 @@ namespace terminalPapertrail.Controllers
         private const string curTerminal = "terminalPapertrail";
 
         [HttpPost]
-        [fr8TerminalHMACAuthorize]
+        [fr8TerminalHMACAuthorize(curTerminal)]
         public Task<object> Execute([FromUri] String actionType, [FromBody] ActionDTO curActionDTO)
         {
             return HandleFr8Request(curTerminal, actionType, curActionDTO);

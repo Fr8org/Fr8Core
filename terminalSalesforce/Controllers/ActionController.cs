@@ -20,7 +20,7 @@ namespace terminalSalesforce.Controllers
         private const string curTerminal = "terminalSalesforce";
 
         [HttpPost]
-        [fr8TerminalHMACAuthorize]
+        [fr8TerminalHMACAuthorize(curTerminal)]
         public Task<object> Execute([FromUri] String actionType, [FromBody] ActionDTO curActionDTO)
         {
             return HandleFr8Request(curTerminal, actionType, curActionDTO);
