@@ -150,6 +150,21 @@ namespace terminalSlack.Actions
             return crate;
         }
 
+        private async Task<Crate> CreateAvailableFieldsCrate(ActionDO actionDO)
+        {
+            var curUpstreamFields = (await GetCratesByDirection<StandardDesignTimeFieldsCM>(actionDO, CrateDirection.Upstream))
+                .Where(x => x.Label != "Available Channels")
+                .SelectMany(x => x.Content.Fields)
+                .ToArray();
+
+            var availableFieldsCrate = Crate.CreateDesignTimeFieldsCrate(
+                    "Available Fields",
+                    curUpstreamFields
+                );
+
+            return availableFieldsCrate;
+        }
+
         // TODO: finish that later.
         /*
         public object Execute(SlackPayloadDTO curSlackPayload)

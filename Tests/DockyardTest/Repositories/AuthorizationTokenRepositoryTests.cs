@@ -88,7 +88,8 @@ namespace DockyardTest.Repositories
                     TerminalStatus = TerminalStatus.Active,
                     Id = 1,
                     Version = "v1",
-                    Name = "Test terminal"
+                    Name = "Test terminal",
+                    Secret = Guid.NewGuid().ToString()
                 });
 
                 uow.SaveChanges();

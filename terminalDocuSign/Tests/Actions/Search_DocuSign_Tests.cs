@@ -50,8 +50,8 @@ namespace terminalDocuSign.Tests.Actions
 
 
             var hubCommunicator = new Mock<IHubCommunicator>();
-            hubCommunicator.Setup(r => r.GetPayload(It.IsAny<ActionDO>(), It.IsAny<Guid>())).Returns(Task.FromResult(new PayloadDTO(Guid.Empty) { CrateStorage = new CrateStorageDTO() }));
-            hubCommunicator.Setup(r => r.GetActivityTemplates(It.IsAny<ActionDO>())).Returns(Task.FromResult(new List<ActivityTemplateDTO>()
+            hubCommunicator.Setup(r => r.GetPayload(It.IsAny<ActionDO>(), It.IsAny<Guid>(), It.IsAny<string>())).Returns(Task.FromResult(new PayloadDTO(Guid.Empty) { CrateStorage = new CrateStorageDTO() }));
+            hubCommunicator.Setup(r => r.GetActivityTemplates(It.IsAny<ActionDO>(), It.IsAny<string>())).Returns(Task.FromResult(new List<ActivityTemplateDTO>()
             {
                 new ActivityTemplateDTO()
                 {
