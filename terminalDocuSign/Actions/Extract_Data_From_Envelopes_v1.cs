@@ -158,7 +158,7 @@ namespace terminalDocuSign.Actions
             sources.Add(
                 Crate.CreateDesignTimeFieldsCrate(
                     "AvailableActions",
-                    templates.Select(x => new FieldDTO(x.Label, x.Id.ToString())).ToArray()
+                    templates.Select(x => new FieldDTO(x.Label, x.Id.ToString(), AvailabilityType.Configuration)).ToArray()
                 )
             );
 

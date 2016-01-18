@@ -57,7 +57,7 @@ namespace terminalSendGrid.Actions
             {
                 updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(CreateControlsCrate());
-                updater.CrateStorage.Add(await CreateAvailableFieldsCrate(curActionDO, _excludedCrates));
+                updater.CrateStorage.Add(await CreateAvailableFieldsCrate(curActionDO));
             }
 
             return await Task.FromResult(curActionDO);
@@ -67,7 +67,7 @@ namespace terminalSendGrid.Actions
         {
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
-                updater.CrateStorage.ReplaceByLabel(await CreateAvailableFieldsCrate(curActionDO, _excludedCrates));
+                updater.CrateStorage.ReplaceByLabel(await CreateAvailableFieldsCrate(curActionDO));
             }
 
             return await Task.FromResult(curActionDO);

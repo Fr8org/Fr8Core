@@ -108,7 +108,7 @@ namespace Data.Crates
 
         /**********************************************************************************/
         /// <summary>
-        /// Convert CrateStorage ot DTO
+        /// Convert CrateStorage to DTO
         /// </summary>
         /// <param name="storage"></param>
         /// <returns></returns>
@@ -161,7 +161,7 @@ namespace Data.Crates
             }
 
             crate.Label = proxy.Label;
-
+            crate.Availability = proxy.Availability;
             return crate;
         }
 
@@ -180,6 +180,7 @@ namespace Data.Crates
                 Label = crate.Label,
                 ManifestId = crate.ManifestType.Id,
                 ManifestType = crate.ManifestType.Type,
+                Availability = crate.Availability
             };
 
             if (serializer != null)

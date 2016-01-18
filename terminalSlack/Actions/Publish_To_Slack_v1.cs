@@ -99,7 +99,7 @@ namespace terminalSlack.Actions
                 updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(PackCrate_ConfigurationControls());
                 updater.CrateStorage.Add(CreateAvailableChannelsCrate(channels));
-                updater.CrateStorage.Add(await CreateAvailableFieldsCrate(curActionDO, _excludedCrates, "Available Fields"));
+                updater.CrateStorage.Add(await CreateAvailableFieldsCrate(curActionDO, "Available Fields"));
             }
 
             return curActionDO;
@@ -109,7 +109,7 @@ namespace terminalSlack.Actions
         {
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
-                updater.CrateStorage.ReplaceByLabel(await CreateAvailableFieldsCrate(curActionDO, _excludedCrates, "Available Fields"));
+                updater.CrateStorage.ReplaceByLabel(await CreateAvailableFieldsCrate(curActionDO, "Available Fields"));
             }
 
             return curActionDO;
@@ -145,6 +145,7 @@ namespace terminalSlack.Actions
             var crate =
                 Crate.CreateDesignTimeFieldsCrate(
                     "Available Channels",
+                    AvailabilityType.Configuration,
                     channels.ToArray()
                 );
 

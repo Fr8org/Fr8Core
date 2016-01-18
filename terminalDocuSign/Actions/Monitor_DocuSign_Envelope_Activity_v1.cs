@@ -303,7 +303,7 @@ namespace terminalDocuSign.Actions
 
             var crateControls = PackCrate_ConfigurationControls();
             var crateDesignTimeFields = _docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
-            var eventFields = Crate.CreateDesignTimeFieldsCrate("DocuSign Event Fields", CreateDocuSignEventFields().ToArray());
+            var eventFields = Crate.CreateDesignTimeFieldsCrate("DocuSign Event Fields", AvailabilityType.RunTime, CreateDocuSignEventFields().ToArray());
 
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
@@ -495,17 +495,17 @@ namespace terminalDocuSign.Actions
         private List<FieldDTO> CreateDocuSignEventFields()
         {
             return new List<FieldDTO>(){
-                new FieldDTO("RecipientEmail") {Tags = "EmailAddress" },
-                new FieldDTO("DocumentName"),
-                new FieldDTO("TemplateName"),
-                new FieldDTO("Status"),
-                new FieldDTO("CreateDate") {Tags = "Date" },
-                new FieldDTO("SentDate") {Tags = "Date" },
-                new FieldDTO("DeliveredDate") {Tags = "Date" },
-                new FieldDTO("CompletedDate") {Tags = "Date" },
-                new FieldDTO("HolderEmail") {Tags = "EmailAddress" },
-                new FieldDTO("Subject"),
-                new FieldDTO("EnvelopeId"),
+                new FieldDTO("RecipientEmail", AvailabilityType.RunTime) {Tags = "EmailAddress" },
+                new FieldDTO("DocumentName", AvailabilityType.RunTime),
+                new FieldDTO("TemplateName", AvailabilityType.RunTime),
+                new FieldDTO("Status", AvailabilityType.RunTime),
+                new FieldDTO("CreateDate", AvailabilityType.RunTime) {Tags = "Date" },
+                new FieldDTO("SentDate", AvailabilityType.RunTime) {Tags = "Date" },
+                new FieldDTO("DeliveredDate", AvailabilityType.RunTime) {Tags = "Date" },
+                new FieldDTO("CompletedDate", AvailabilityType.RunTime) {Tags = "Date" },
+                new FieldDTO("HolderEmail", AvailabilityType.RunTime) {Tags = "EmailAddress" },
+                new FieldDTO("Subject", AvailabilityType.RunTime),
+                new FieldDTO("EnvelopeId", AvailabilityType.RunTime),
             };
         }
     }
