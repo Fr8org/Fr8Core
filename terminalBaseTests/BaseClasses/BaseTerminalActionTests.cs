@@ -106,17 +106,6 @@ namespace terminalBaseTests.BaseClasses
             Assert.IsTrue(result.Get<StandardConfigurationControlsCM>() != null);
         }
 
-
-        [Test]
-        public void MergeContentFields_ReturnsStandardDesignTimeFieldsMS()
-        {
-            var result = _baseTerminalAction.MergeContentFields(FixtureData.TestCrateDTO1());
-            Assert.IsNotNull(result);
-            Assert.AreEqual(2, result.Fields.Count);
-        }
-
-
-
         //TestActionTree
         [Test]
         public async void GetDesignTimeFields_CrateDirectionIsUpstream_ReturnsMergeDesignTimeFields()
@@ -129,7 +118,7 @@ namespace terminalBaseTests.BaseClasses
                 ActionDO curAction = FixtureData.TestAction57();
 
                 var result = await _baseTerminalAction.GetDesignTimeFields(
-                    curAction, CrateDirection.Upstream);
+                    curAction.Id, CrateDirection.Upstream);
                 Assert.NotNull(result);
                 Assert.AreEqual(48, result.Fields.Count);
             }
@@ -146,7 +135,7 @@ namespace terminalBaseTests.BaseClasses
                 ActionDO curAction = FixtureData.TestAction57();
 
                 var result = await _baseTerminalAction.GetDesignTimeFields(
-                    curAction, CrateDirection.Downstream);
+                    curAction.Id, CrateDirection.Downstream);
                 Assert.NotNull(result);
                 Assert.AreEqual(54, result.Fields.Count);
             }

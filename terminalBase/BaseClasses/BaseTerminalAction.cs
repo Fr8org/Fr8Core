@@ -337,17 +337,15 @@ namespace TerminalBase.BaseClasses
             return await HubCommunicator.GetCratesByDirection(actionDO, direction);
         }
 
-        public async virtual Task<StandardDesignTimeFieldsCM> GetDesignTimeFields(ActionDO actionDO, CrateDirection direction)
-        {
-            //1) Build a merged list of the upstream design fields to go into our drop down list boxes
-            StandardDesignTimeFieldsCM mergedFields = new StandardDesignTimeFieldsCM();
+        public async virtual Task<StandardDesignTimeFieldsCM> GetDesignTimeFields(Guid actionId, CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet)
+        { 
+            var mergedFields = await HubCommunicator.GetDesignTimeFieldsByDirection(actionId, direction, availability);
+            return mergedFields;
+        }
 
-            var curCrates = await HubCommunicator
-                .GetCratesByDirection<StandardDesignTimeFieldsCM>(actionDO, direction);
-
-
-            mergedFields.Fields.AddRange(MergeContentFields(curCrates).Fields);
-
+        public async virtual Task<StandardDesignTimeFieldsCM> GetDesignTimeFields(ActionDO actionDO, CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet)
+        { 
+            var mergedFields = await HubCommunicator.GetDesignTimeFieldsByDirection(actionDO, direction, availability);
             return mergedFields;
         }
 
@@ -377,27 +375,6 @@ namespace TerminalBase.BaseClasses
             var fields = labelList.Select(f => new FieldDTO(null, f)).ToArray();
 
             return Crate.CreateDesignTimeFieldsCrate("Upstream Crate Label List", fields);
-        }
-
-        public StandardDesignTimeFieldsCM MergeContentFields(List<Crate<StandardDesignTimeFieldsCM>> curCrates)
-        {
-            StandardDesignTimeFieldsCM tempMS = new StandardDesignTimeFieldsCM();
-            foreach (var curCrate in curCrates)
-            {
-                //extract the fields
-                StandardDesignTimeFieldsCM curStandardDesignTimeFieldsCrate = curCrate.Content;
-
-                foreach (var field in curStandardDesignTimeFieldsCrate.Fields)
-                {
-                    field.SourceCrateLabel = curCrate.Label;
-                    field.SourceCrateManifest = curCrate.ManifestType;
-                }
-
-                //add them to the pile
-                tempMS.Fields.AddRange(curStandardDesignTimeFieldsCrate.Fields);
-            }
-
-            return tempMS;
         }
 
         protected CrateStorage AssembleCrateStorage(params Crate[] curCrates)
@@ -459,7 +436,7 @@ namespace TerminalBase.BaseClasses
         protected async Task<Crate<StandardDesignTimeFieldsCM>>
             MergeUpstreamFields(ActionDO actionDO, string label)
         {
-            var curUpstreamFields = (await GetDesignTimeFields(actionDO, CrateDirection.Upstream)).Fields.ToArray();
+            var curUpstreamFields = (await GetDesignTimeFields(actionDO.Id, CrateDirection.Upstream)).Fields.ToArray();
             var upstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate(label, curUpstreamFields);
 
             return upstreamFieldsCrate;
@@ -513,15 +490,11 @@ namespace TerminalBase.BaseClasses
                 exclude = new List<string>();
             }
 
-            var curUpstreamFields =
-                (await GetCratesByDirection<StandardDesignTimeFieldsCM>(actionDO, CrateDirection.Upstream))
-                .Where(x => !exclude.Contains(x.Label))
-                .SelectMany(x => x.Content.Fields)
-                .ToArray();
+            var curUpstreamFields = await HubCommunicator.GetDesignTimeFieldsByDirection(actionDO, CrateDirection.Upstream, AvailabilityType.Configuration);
 
             var availableFieldsCrate = Crate.CreateDesignTimeFieldsCrate(
                     crateLabel,
-                    curUpstreamFields
+                    curUpstreamFields.Fields
                 );
 
             return availableFieldsCrate;
@@ -640,6 +613,7 @@ namespace TerminalBase.BaseClasses
 
             return returnValue;
         }
+
 
         /// <summary>
         /// Extracts crate with specified label and ManifestType = Standard Design Time,

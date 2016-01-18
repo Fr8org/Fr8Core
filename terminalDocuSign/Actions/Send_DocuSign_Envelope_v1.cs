@@ -265,7 +265,7 @@ namespace terminalDocuSign.Actions
                 updater.CrateStorage.Remove(curUpstreamFieldsCrate);
             }
 
-            var curUpstreamFields = (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
+            var curUpstreamFields = (await GetDesignTimeFields(curActionDO.Id, CrateDirection.Upstream))
                 .Fields.Where(a => a.Availability == AvailabilityType.RunTime)
                 .ToArray();
 
