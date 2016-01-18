@@ -266,7 +266,8 @@ div.action-header {
 
 .action-header-icon img {
     border-radius: 8px!important;
-    width: 48px;
+   /*width: 48px;*/
+    max-width: 72px;
     height: 48px;
     vertical-align: middle;
     }
