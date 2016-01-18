@@ -25,7 +25,7 @@ namespace terminalDocuSign.Services
 {
     public class DocusignQuery
     {
-        public static readonly FieldDTO[] Statuses = 
+        public static readonly FieldDTO[] Statuses =
         {
             new FieldDTO("Any status", "<any>"),
             new FieldDTO("Sent", "sent"),
@@ -105,9 +105,10 @@ namespace terminalDocuSign.Services
         {
             var template = new DocuSignTemplate();
             var templates = template.GetTemplates(authToken.Email, authToken.ApiPassword);
-            var fields = templates.Select(x => new FieldDTO() {Key = x.Name, Value = x.Id, Availability = AvailabilityType.Configuration}).ToArray();
+            var fields = templates.Select(x => new FieldDTO() { Key = x.Name, Value = x.Id, Availability = AvailabilityType.Configuration }).ToArray();
             var createDesignTimeFields = Crate.CreateDesignTimeFieldsCrate(
                 "Available Templates",
+                AvailabilityType.Configuration,
                 fields);
             return createDesignTimeFields;
         }
@@ -151,8 +152,8 @@ namespace terminalDocuSign.Services
             if (!String.IsNullOrEmpty(envelopeId))
             {
                 var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
-                var userDefinedFields = this.ExtractFieldsAndAddToCrate(envelopeId, docuSignAuthDTO, curActionDO);
-                updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("DocuSignTemplateUserDefinedFields", userDefinedFields.ToArray()));
+                var userDefinedFields = ExtractFieldsAndAddToCrate(envelopeId, docuSignAuthDTO, curActionDO);
+                updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("DocuSignTemplateUserDefinedFields", AvailabilityType.RunTime, userDefinedFields.ToArray()));
                 fieldCount = userDefinedFields.Count();
             }
             return fieldCount;
@@ -180,7 +181,7 @@ namespace terminalDocuSign.Services
                     {
                         Key = f.Name,
                         Value = f.Value,
-                        Availability = AvailabilityType.Configuration
+                        Availability = AvailabilityType.RunTime
                     });
                 return fieldCollection;
             }
@@ -209,7 +210,7 @@ namespace terminalDocuSign.Services
             }
             return null;
         }
-        
+
         public List<FolderItem> SearchDocusign(DocuSignAuthTokenDTO authToken, DocusignQuery query)
         {
             var envelopes = new List<FolderItem>();
@@ -223,7 +224,7 @@ namespace terminalDocuSign.Services
             }
             else
             {
-                SearchFolder(authToken, query,  query.Folder, envelopes);
+                SearchFolder(authToken, query, query.Folder, envelopes);
             }
 
             return envelopes;

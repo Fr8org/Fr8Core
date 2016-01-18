@@ -11,7 +11,8 @@ module dockyard.directives.paneConfigureAction {
         PaneConfigureAction_ChildActionsReconfiguration,
         PaneConfigureAction_ReloadAction,
         PaneConfigureAction_SetSolutionMode,
-        PaneConfigureAction_ConfigureCallResponse
+        PaneConfigureAction_ConfigureCallResponse,
+        PaneConfigureAction_AuthFailure
     }
 
     export class ActionReconfigureEventArgs {
@@ -65,6 +66,14 @@ module dockyard.directives.paneConfigureAction {
         constructor(id: number, isTempId: boolean) {
             this.id = id;
             this.isTempId = isTempId;
+        }
+    }
+
+    export class ActionAuthFailureEventArgs {
+        public id: string;
+
+        constructor(id: string) {
+            this.id = id;
         }
     }
 
@@ -180,6 +189,26 @@ module dockyard.directives.paneConfigureAction {
                     () => $timeout(() => processConfiguration(), 300)
                 );
 
+                $scope.$on(
+                    MessageType[MessageType.PaneConfigureAction_AuthFailure],
+                    (event: ng.IAngularEvent, authFailureArgs: ActionAuthFailureEventArgs) => {
+                        if (authFailureArgs.id != $scope.currentAction.id) {
+                            return;
+                        }
+
+                        var onClickEvent = new model.ControlEvent();
+                        onClickEvent.name = 'onClick';
+                        onClickEvent.handler = 'requestConfig';
+
+                        var button = new model.Button('Authentication unsuccessful, try again');
+                        button.name = 'AuthUnsuccessfulLabel';
+                        button.events = [ onClickEvent ];
+
+                        $scope.currentAction.configurationControls = new model.ControlsList();
+                        $scope.currentAction.configurationControls.fields = [ button ];
+                    }
+                );
+
                 // Get configuration settings template from the server if the current action does not contain those             
                 if ($scope.currentAction.activityTemplateId > 0) {
                     if ($scope.currentAction.crateStorage == null || !$scope.currentAction.crateStorage.crates.length) {
@@ -288,7 +317,10 @@ module dockyard.directives.paneConfigureAction {
                         $scope.configurationWatchUnregisterer();
                     }
 
-                    ConfigureTrackerService.configureCallStarted($scope.currentAction.id);
+                    ConfigureTrackerService.configureCallStarted(
+                        $scope.currentAction.id,
+                        $scope.currentAction.activityTemplate.needsAuthentication
+                    );
 
                     ActionService.configure($scope.currentAction).$promise
                         .then((res: interfaces.IActionVM) => {
