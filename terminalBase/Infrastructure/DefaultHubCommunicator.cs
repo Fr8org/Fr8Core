@@ -32,8 +32,6 @@ namespace TerminalBase.Infrastructure
         private readonly IHMACService _hmacService;
         private readonly ICrateManager _crate;
 
-        private static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
         public DefaultHubCommunicator()
         {
             _routeNode = ObjectFactory.GetInstance<IRouteNode>();
@@ -45,34 +43,15 @@ namespace TerminalBase.Infrastructure
         }
 
         #region HMAC
-        private async Task<Dictionary<string, string>> GetHMACHeader(string hash, string userId, string timeStamp, string nonce)
-        {
-            var mergedData = string.Format("{0}:{1}:{2}:{3}:{4}", TerminalId, hash, nonce, timeStamp, userId);
-            return new Dictionary<string, string>()
-            {
-                {System.Net.HttpRequestHeader.Authorization.ToString(), string.Format("hmac {0}", mergedData)}
-            };   
-        }
-
-        public static long GetCurrentUnixTimestampSeconds()
-        {
-            return (long)(DateTime.UtcNow - UnixEpoch).TotalSeconds;
-        }
 
         private async Task<Dictionary<string, string>> GetHMACHeader(Uri requestUri, string userId)
         {
-            var timeStamp = GetCurrentUnixTimestampSeconds().ToString(CultureInfo.InvariantCulture);
-            var nonce = Guid.NewGuid().ToString();
-            var hash = await _hmacService.CalculateHMACHash(requestUri, userId, TerminalId, TerminalSecret, timeStamp, nonce);
-            return await GetHMACHeader(hash, userId, timeStamp, nonce);
+            return await _hmacService.GenerateHMACHeader(requestUri, TerminalId, TerminalSecret, userId);
         }
 
         private async Task<Dictionary<string, string>> GetHMACHeader<T>(Uri requestUri, string userId, T content)
         {
-            var timeStamp = GetCurrentUnixTimestampSeconds().ToString(CultureInfo.InvariantCulture);
-            var nonce = Guid.NewGuid().ToString();
-            var hash = await _hmacService.CalculateHMACHash(requestUri, userId, TerminalId, TerminalSecret, timeStamp, nonce, content);
-            return await GetHMACHeader(hash, userId, timeStamp, nonce);
+            return await _hmacService.GenerateHMACHeader(requestUri, TerminalId, TerminalSecret, userId, content);
         }
 
         #endregion

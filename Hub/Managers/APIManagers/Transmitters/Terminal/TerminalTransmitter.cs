@@ -21,28 +21,10 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
     public class TerminalTransmitter : RestfulServiceClient, ITerminalTransmitter
     {
         private readonly IHMACService _hmacService;
-        private static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         public TerminalTransmitter()
         {
             _hmacService = ObjectFactory.GetInstance<IHMACService>();
-        }
-
-        public static long GetCurrentUnixTimestampSeconds()
-        {
-            return (long)(DateTime.UtcNow - UnixEpoch).TotalSeconds;
-        }
-
-        private async Task<Dictionary<string, string>> GetHMACHeader(Uri requestUri, string userId, string terminalId, string terminalSecret, ActionDTO content)
-        {
-            var timeStamp = GetCurrentUnixTimestampSeconds().ToString(CultureInfo.InvariantCulture);
-            var nonce = Guid.NewGuid().ToString();
-            var hash = await _hmacService.CalculateHMACHash(requestUri, userId, terminalId, terminalSecret, timeStamp, nonce, content);
-            var mergedData = string.Format("{0}:{1}:{2}:{3}:{4}", terminalId, hash, nonce, timeStamp, userId);
-            return new Dictionary<string, string>()
-            {
-                {System.Net.HttpRequestHeader.Authorization.ToString(), string.Format("hmac {0}", mergedData)}
-            };   
         }
 
         /// <summary>
@@ -88,7 +70,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
             }
             //let's calculate absolute url, since our hmac mechanism needs it
             requestUri = new Uri(new Uri(terminal.Endpoint.StartsWith("http") ? terminal.Endpoint : "http://" + terminal.Endpoint), requestUri);
-            var hmacHeader = await GetHMACHeader(requestUri, actionDTO.AuthToken.UserId, terminal.PublicIdentifier, terminal.Secret, actionDTO);
+            var hmacHeader = await _hmacService.GenerateHMACHeader(requestUri, terminal.PublicIdentifier, terminal.Secret, actionDTO.AuthToken.UserId, actionDTO);
             return await PostAsync<ActionDTO, TResponse>(requestUri, actionDTO, correlationId, hmacHeader);
         }
     }

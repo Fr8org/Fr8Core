@@ -16,6 +16,7 @@ namespace Hub.Security
     public class Fr8HMACService : IHMACService
     {
         private readonly MediaTypeFormatter _formatter;
+        private static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         public Fr8HMACService()
         {
@@ -58,6 +59,36 @@ namespace Hub.Security
         private async Task<string> CalculateHMACHash(Uri requestUri, string userId, string terminalId, string terminalSecret, string timeStamp, string nonce, string contentBase64String)
         {
             return await GetHMACHash(requestUri, userId, terminalId, terminalSecret, timeStamp, nonce, contentBase64String);
+        }
+
+        public static long GetCurrentUnixTimestampSeconds()
+        {
+            return (long)(DateTime.UtcNow - UnixEpoch).TotalSeconds;
+        }
+
+        private async Task<Dictionary<string, string>> GetHMACHeader(string hash, string userId, string terminalId, string timeStamp, string nonce)
+        {
+            var mergedData = string.Format("{0}:{1}:{2}:{3}:{4}", terminalId, hash, nonce, timeStamp, userId);
+            return new Dictionary<string, string>()
+            {
+                {System.Net.HttpRequestHeader.Authorization.ToString(), string.Format("hmac {0}", mergedData)}
+            };
+        }
+
+        public async Task<Dictionary<string, string>> GenerateHMACHeader<T>(Uri requestUri, string terminalId, string terminalSecret, string userId, T content)
+        {
+            var timeStamp = GetCurrentUnixTimestampSeconds().ToString(CultureInfo.InvariantCulture);
+            var nonce = Guid.NewGuid().ToString();
+            var hash = await CalculateHMACHash(requestUri, userId, terminalId, terminalSecret, timeStamp, nonce, content);
+            return await GetHMACHeader(hash, userId, terminalId, timeStamp, nonce);
+        }
+
+        public async Task<Dictionary<string, string>> GenerateHMACHeader(Uri requestUri, string terminalId, string terminalSecret, string userId)
+        {
+            var timeStamp = GetCurrentUnixTimestampSeconds().ToString(CultureInfo.InvariantCulture);
+            var nonce = Guid.NewGuid().ToString();
+            var hash = await CalculateHMACHash(requestUri, userId, terminalId, terminalSecret, timeStamp, nonce);
+            return await GetHMACHeader(hash, userId, terminalId, timeStamp, nonce);
         }
 
         private async Task<string> GetContentBase64String(HttpContent httpContent)
