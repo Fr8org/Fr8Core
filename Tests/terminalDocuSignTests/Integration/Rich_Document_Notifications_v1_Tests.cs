@@ -80,11 +80,11 @@ namespace terminalDocuSignTests.Integration
                 MinPaneWidth = 330
             };
 
-            var filterUsingRuntimeDataTemplate = new ActivityTemplateDTO()
+            var testIncomingDataTemplate = new ActivityTemplateDTO()
             {
                 Version = "1",
-                Name = "FilterUsingRunTimeData",
-                Label = "FilterUsingRunTimeData",
+                Name = "TestIncomingData",
+                Label = "TestIncomingData",
                 Category = ActivityCategory.Processors,
                 Terminal = terminalCoreDO,
                 NeedsAuthentication = false
@@ -92,7 +92,7 @@ namespace terminalDocuSignTests.Integration
 
             AddActivityTemplate(
                actionDTO,
-              filterUsingRuntimeDataTemplate
+              testIncomingDataTemplate
             );
 
             AddActivityTemplate(
