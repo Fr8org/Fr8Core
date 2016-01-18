@@ -24,7 +24,7 @@ namespace terminalDocuSign.Controllers
         private const string curTerminal = "terminalDocuSign";
 
         [HttpPost]
-        [fr8TerminalHMACAuthorize(curTerminal)]
+        //[fr8TerminalHMACAuthorize(curTerminal)]
         public Task<object> Execute([FromUri] String actionType, [FromBody] ActionDTO curActionDTO)
         {
             return HandleFr8Request(curTerminal, actionType, curActionDTO);
