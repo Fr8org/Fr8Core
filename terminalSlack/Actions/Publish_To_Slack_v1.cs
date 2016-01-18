@@ -21,12 +21,10 @@ namespace terminalSlack.Actions
     public class Publish_To_Slack_v1 : BaseTerminalAction
     {
         private readonly ISlackIntegration _slackIntegration;
-        private readonly List<string> _excludedCrates;
 
         public Publish_To_Slack_v1()
         {
             _slackIntegration = new SlackIntegration();
-            _excludedCrates = new List<string>() { "Available Channels", "AvailableActions", "Available Templates" };
         }
 
         public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
