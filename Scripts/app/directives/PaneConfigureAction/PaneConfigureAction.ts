@@ -112,7 +112,7 @@ module dockyard.directives.paneConfigureAction {
 
     export class CallConfigureResponseEventArgs {
         public action: interfaces.IActionDTO;
-        constructor(action:interfaces.IActionDTO) {
+        constructor(action: interfaces.IActionDTO) {
             this.action = action;
         }
     }
@@ -324,10 +324,6 @@ module dockyard.directives.paneConfigureAction {
 
                     ActionService.configure($scope.currentAction).$promise
                         .then((res: interfaces.IActionVM) => {
-
-                            // emit ConfigureCallResponse for RouteBuilderController be able to reload actions with AgressiveReloadTag
-                            $scope.$emit(MessageType[MessageType.PaneConfigureAction_ConfigureCallResponse], new CallConfigureResponseEventArgs($scope.currentAction));
-
                             var childActionsDetected = false;
 
                             if (res.childrenActions && res.childrenActions.length > 0) {
@@ -378,6 +374,8 @@ module dockyard.directives.paneConfigureAction {
                         })
                         .finally(() => {
                             ConfigureTrackerService.configureCallFinished($scope.currentAction.id);
+                            // emit ConfigureCallResponse for RouteBuilderController be able to reload actions with AgressiveReloadTag
+                            $scope.$emit(MessageType[MessageType.PaneConfigureAction_ConfigureCallResponse], new CallConfigureResponseEventArgs($scope.currentAction));
                         });
                 };
 
