@@ -28,7 +28,7 @@ namespace terminalSendGrid.Actions
         {
             _configRepository = ObjectFactory.GetInstance<IConfigRepository>();
             _emailPackager = ObjectFactory.GetInstance<IEmailPackager>();
-            _excludedCrates = new List<string>() { "AvailableActions", "Available Templates" };
+            _excludedCrates = new List<string>() { "AvailableActions" };
         }
 
         public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
