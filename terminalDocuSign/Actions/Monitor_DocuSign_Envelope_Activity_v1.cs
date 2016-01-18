@@ -100,6 +100,7 @@ namespace terminalDocuSign.Actions
 
         public override Task<ActionDO> Activate(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
+            ValidateEnvelopeSelectableEvents(curActionDO);
             //create DocuSign account, publish URL and other user selected options
             bool youSent, someoneReceived, recipientSigned;
             GetUserSelectedEnvelopeEvents(curActionDO, out youSent, out someoneReceived, out recipientSigned);
@@ -134,6 +135,7 @@ namespace terminalDocuSign.Actions
         /// Validate that at least one radiobutton has been selected for 
         /// </summary>
         /// <param name="curActionDO"></param>
+        /// <returns>True when validation is on/false on problem</returns>
         private void ValidateEnvelopeSelectableEvents(ActionDO curActionDO)
         {
             using (var updater = Crate.UpdateStorage(curActionDO))
@@ -147,7 +149,9 @@ namespace terminalDocuSign.Actions
                     //show the error under the third checkbox because checkboxes are rendered like separate controls
                     var checkBoxControl = eventCheckBoxes.FirstOrDefault(x => x.Label == "Event_Recipient_Signed");
                     if (checkBoxControl != null)
+                    {
                         checkBoxControl.ErrorMessage = "At least one notification checkbox must be checked.";
+                    }
 
                     string curSelectedOption, curSelectedValue;
                     GetTemplateRecipientPickerValue(updater.CrateStorage, out curSelectedOption, out curSelectedValue);
