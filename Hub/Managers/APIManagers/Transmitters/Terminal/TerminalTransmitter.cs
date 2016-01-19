@@ -21,12 +21,10 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
     public class TerminalTransmitter : RestfulServiceClient, ITerminalTransmitter
     {
         private readonly IHMACService _hmacService;
-        private readonly IActivityTemplate _activityTemplate;
 
         public TerminalTransmitter()
         {
             _hmacService = ObjectFactory.GetInstance<IHMACService>();
-            _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
         }
 
         /// <summary>
@@ -43,13 +41,27 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
                 throw new ArgumentNullException("actionDTO");
             }
 
-            if (actionDTO.ActivityTemplateId == null )
+            if ((actionDTO.ActivityTemplateId == null || actionDTO.ActivityTemplateId == 0) && actionDTO.ActivityTemplate == null)
             {
-                throw new ArgumentOutOfRangeException("actionDTO", actionDTO.ActivityTemplateId, "ActivityTemplate must be specified by using ActivityTemplateId");
+                throw new ArgumentOutOfRangeException("actionDTO", actionDTO.ActivityTemplateId, "ActivityTemplate must be specified either explicitly or by using ActivityTemplateId");
             }
 
-            var terminal = _activityTemplate.GetByKey(actionDTO.ActivityTemplateId.Value).Terminal;
-           
+            int terminalId;
+
+            if (actionDTO.ActivityTemplate == null)
+            {
+                var activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>().GetByKey(actionDTO.ActivityTemplateId.Value);
+                actionDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDO, ActivityTemplateDTO>(activityTemplate);
+                terminalId = activityTemplate.TerminalId;
+            }
+            else
+            {
+                terminalId = actionDTO.ActivityTemplate.TerminalId;
+            }
+
+            var terminal = ObjectFactory.GetInstance<ITerminal>().GetAll().FirstOrDefault(x => x.Id == terminalId);
+
+            
             var actionName = Regex.Replace(curActionType, @"[^-_\w\d]", "_");
             var requestUri = new Uri(string.Format("actions/{0}", actionName), UriKind.Relative);
             if (terminal == null || string.IsNullOrEmpty(terminal.Endpoint))

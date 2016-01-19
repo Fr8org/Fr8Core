@@ -15,8 +15,6 @@ namespace HubWeb.Controllers.Api
     [Fr8ApiAuthorize]
     public class ManageAuthTokenController : ApiController
     {
-        private readonly IActivityTemplate _activityTemplate;
-
         public IAction Action { get; set; }
         public IAuthorization Authorization { get; set; }
         public ITerminal Terminal { get; set; }
@@ -27,7 +25,6 @@ namespace HubWeb.Controllers.Api
             Action = ObjectFactory.GetInstance<IAction>();
             Authorization = ObjectFactory.GetInstance<IAuthorization>();
             Terminal = ObjectFactory.GetInstance<ITerminal>();
-            _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
         }
 
         /// <summary>
@@ -87,19 +84,17 @@ namespace HubWeb.Controllers.Api
                 {
                     var action = Action.GetById(uow, actionId);
 
-                    var template = _activityTemplate.GetByKey(action.ActivityTemplateId.Value);
-
                     result.Add(
                         new ManageAuthToken_Terminal_Action()
                         {
                             ActionId = actionId,
                             Terminal = new ManageAuthToken_Terminal()
                             {
-                                Id = template.Terminal.Id,
-                                Name = template.Terminal.Name,
-                                AuthenticationType = template.Terminal.AuthenticationType,
+                                Id = action.ActivityTemplate.Terminal.Id,
+                                Name = action.ActivityTemplate.Terminal.Name,
+                                AuthenticationType = action.ActivityTemplate.Terminal.AuthenticationType,
                                 AuthTokens = authTokens
-                                    .Where(x => x.TerminalID == template.Terminal.Id)
+                                    .Where(x => x.TerminalID == action.ActivityTemplate.Terminal.Id)
                                     .Where(x => !string.IsNullOrEmpty(x.ExternalAccountId))
                                     .Select(x => new ManageAuthToken_AuthToken()
                                     {
