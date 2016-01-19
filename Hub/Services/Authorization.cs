@@ -25,12 +25,13 @@ namespace Hub.Services
     {
         private readonly ICrateManager _crate;
 	    private readonly ITime _time;
-
+        private readonly IActivityTemplate _activityTemplate;
 
         public Authorization()
         {
 			_crate = ObjectFactory.GetInstance<ICrateManager>();
 	        _time = ObjectFactory.GetInstance<ITime>();
+            _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
         }
 
         public string GetToken(string userId)
@@ -120,13 +121,8 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 // Fetch ActivityTemplate.
-                var activityTemplate = uow.ActivityTemplateRepository
-                    .GetByKey(actionDTO.ActivityTemplateId);
-                if (activityTemplate == null)
-                {
-                    throw new ApplicationException("Could not find ActivityTemplate.");
-                }
-
+                var activityTemplate = _activityTemplate.GetByKey(actionDTO.ActivityTemplateId.Value);
+                    
                 // Fetch Action.
                 var action = uow.ActionRepository.GetByKey(actionDTO.Id);
                 if (action == null)
@@ -156,18 +152,12 @@ namespace Hub.Services
                     // var authToken = uow.AuthorizationTokenRepository
                     //     .FindOne(x => x.Terminal.Id == activityTemplate.Terminal.Id
                     //         && x.UserDO.Id == accountId);
-
-                    var actionDO = uow.ActionRepository.GetByKey(actionDTO.Id);
-                    if (actionDO == null)
-                    {
-                        throw new ApplicationException("Could not find ActionDO for Action's RouteNode.");
-                    }
-
+                    
                     AuthorizationTokenDO authToken = null;
-                    if (actionDO.AuthorizationTokenId.HasValue)
+                    if (action.AuthorizationTokenId.HasValue)
                     {
                         authToken = uow.AuthorizationTokenRepository
-                            .FindTokenById(actionDO.AuthorizationTokenId.ToString());
+                            .FindTokenById(action.AuthorizationTokenId.ToString());
                     }
 
                     // If AuthToken is not empty, fill AuthToken property for ActionDTO.
@@ -298,16 +288,11 @@ namespace Hub.Services
             TerminalDO terminal,
             ExternalAuthenticationDTO externalAuthDTO)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var hasAuthentication = uow.ActivityTemplateRepository
-                    .GetQuery()
-                    .Any(x => x.Terminal.Id == terminal.Id);
+            var hasAuthentication = _activityTemplate.GetQuery().Any(x => x.Terminal.Id == terminal.Id);
 
-                if (!hasAuthentication)
-                {
-                    throw new ApplicationException("Terminal does not require authentication.");
-                }
+            if (!hasAuthentication)
+            {
+                throw new ApplicationException("Terminal does not require authentication.");
             }
 
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
@@ -315,7 +300,7 @@ namespace Hub.Services
             var response = await restClient.PostAsync<ExternalAuthenticationDTO>(
                 new Uri("http://" + terminal.Endpoint + "/authentication/token"),
                 externalAuthDTO
-            );
+                );
 
             var authTokenDTO = JsonConvert.DeserializeObject<AuthorizationTokenDTO>(response);
             if (!string.IsNullOrEmpty(authTokenDTO.Error))
@@ -339,8 +324,8 @@ namespace Hub.Services
                 var authTokenByExternalAccountId = uow.AuthorizationTokenRepository
                     .GetPublicDataQuery()
                     .FirstOrDefault(x => x.TerminalID == terminal.Id
-                        && x.UserID == authTokenByExternalState.UserID
-                        && x.ExternalAccountId == authTokenDTO.ExternalAccountId
+                                         && x.UserID == authTokenByExternalState.UserID
+                                         && x.ExternalAccountId == authTokenDTO.ExternalAccountId
                     );
 
                 if (authTokenByExternalAccountId != null)
@@ -359,7 +344,7 @@ namespace Hub.Services
                     authTokenByExternalState.ExternalStateToken = null;
                     authTokenByExternalState.AdditionalAttributes = authTokenDTO.AdditionalAttributes;
                 }
-                
+
                 uow.SaveChanges();
 
                 return new AuthenticateResponse()
@@ -511,8 +496,7 @@ namespace Hub.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var activityTemplate = uow.ActivityTemplateRepository
-                    .GetByKey(curActionDTO.ActivityTemplateId);
+                var activityTemplate = _activityTemplate.GetByKey(curActionDTO.ActivityTemplateId.Value);
 
                 if (activityTemplate == null)
                 {
@@ -596,7 +580,7 @@ namespace Hub.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var activityTemplate = uow.ActivityTemplateRepository.GetByKey(curActionDto.ActivityTemplateId);
+                var activityTemplate = _activityTemplate.GetByKey(curActionDto.ActivityTemplateId.Value);
 
                 if (activityTemplate == null)
                 {
