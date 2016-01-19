@@ -126,7 +126,7 @@ namespace HubWeb.Controllers
 
         [ActionName("available")]
         [ResponseType(typeof (IEnumerable<ActivityTemplateCategoryDTO>))]
-        [fr8HubWebHMACAuthorize]
+        [AllowAnonymous]
         [HttpGet]
         public IHttpActionResult GetAvailableActivities()
         {
@@ -137,7 +137,7 @@ namespace HubWeb.Controllers
 
         [ActionName("available")]
         [ResponseType(typeof (IEnumerable<ActivityTemplateDTO>))]
-        [fr8HubWebHMACAuthorize]
+        [AllowAnonymous]
         [HttpGet]
         public IHttpActionResult GetAvailableActivities(string tag)
         {
