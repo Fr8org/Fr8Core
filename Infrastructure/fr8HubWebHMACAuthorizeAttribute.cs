@@ -74,9 +74,9 @@ namespace HubWeb.Infrastructure
 
         protected override void Success(string terminalId, string userId)
         {
-            if (HttpContext.Current != null) 
-            { 
-                HttpContext.Current.User = new TerminalPrinciple(terminalId, userId, new GenericIdentity(terminalId));
+            if (HttpContext.Current != null)
+            {
+                HttpContext.Current.User = new TerminalPrinciple(terminalId, userId, new GenericIdentity(userId));
             }
         }
     }
