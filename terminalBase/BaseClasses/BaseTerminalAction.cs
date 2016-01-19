@@ -628,7 +628,7 @@ namespace TerminalBase.BaseClasses
             IncidentReporter reporter = new IncidentReporter();
             reporter.IncidentMissingFieldInPayload(fieldKey, curAction, "");
 
-            throw new ApplicationException("No field found with specified key.");
+            throw new ApplicationException(string.Format("No field found with specified key: {0}.", fieldKey));
         }
 
         protected void AddLabelControl(CrateStorage storage, string name, string label, string text)
