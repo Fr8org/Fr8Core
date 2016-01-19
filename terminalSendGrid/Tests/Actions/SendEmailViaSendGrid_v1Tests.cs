@@ -40,22 +40,23 @@ namespace terminalSendGrid.Tests.Actions
         {
             base.SetUp();
 
-            const StructureMapBootStrapper.DependencyType dependencyType = StructureMapBootStrapper.DependencyType.TEST;
-
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
-            StructureMapBootStrapper.ConfigureDependencies(dependencyType).SendGridConfigureDependencies(dependencyType);
+            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
+            TerminalSendGridStructureMapBootstrapper.ConfigureDependencies(TerminalSendGridStructureMapBootstrapper.DependencyType.LIVE);
             ObjectFactory.Configure(cfg => cfg.For<ITransport>().Use(c => TransportFactory.CreateWeb(c.GetInstance<IConfigRepository>())));
             ObjectFactory.Configure(cfg => cfg.For<IEmailPackager>().Use(new SendGridPackager()));
             TerminalBootstrapper.ConfigureTest();
 
             _crate = ObjectFactory.GetInstance<ICrateManager>();
-
+            /*
             var routeNode = new Mock<IRouteNode>();
+            
             routeNode.Setup(c => c.GetCratesByDirection<StandardDesignTimeFieldsCM>(It.IsAny<Guid>(), It.IsAny<CrateDirection>()))
                     .Returns(Task.FromResult(new List<Crate<StandardDesignTimeFieldsCM>>()));
-
+            routeNode.Setup(c => c.GetDesignTimeFieldsByDirectionTerminal(It.IsAny<Guid>(), It.IsAny<CrateDirection>(), It.IsAny<AvailabilityType>()))
+                    .Returns(Task.FromResult(new StandardDesignTimeFieldsCM()));
             ObjectFactory.Configure(cfg => cfg.For<IRouteNode>().Use(routeNode.Object));
-
+            */
             actionDto = GetActionResult();
             var payLoadDto = FixtureData.CratePayloadDTOForSendEmailViaSendGridConfiguration;
             payLoadDto.CrateStorage = actionDto.CrateStorage;
@@ -68,7 +69,7 @@ namespace terminalSendGrid.Tests.Actions
             }
 
             var restfulServiceClient = new Mock<IRestfulServiceClient>();
-            restfulServiceClient.Setup(r => r.GetAsync<PayloadDTO>(It.IsAny<Uri>()))
+            restfulServiceClient.Setup(r => r.GetAsync<PayloadDTO>(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
                 .Returns(Task.FromResult(payLoadDto));
             ObjectFactory.Configure(cfg => cfg.For<IRestfulServiceClient>().Use(restfulServiceClient.Object));
         }

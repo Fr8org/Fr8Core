@@ -18,6 +18,9 @@ using TerminalBase.BaseClasses;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using System.Collections.Generic;
+using Hub.Managers.APIManagers.Transmitters.Restful;
+using Moq;
+using System.Net.Http;
 
 namespace terminalBaseTests.BaseClasses
 {
@@ -35,7 +38,7 @@ namespace terminalBaseTests.BaseClasses
         {
             base.SetUp();
             TerminalBootstrapper.ConfigureTest();
-
+            ObjectFactory.Configure(x => x.For<IRestfulServiceClient>().Use<RestfulServiceClient>());
             _baseTerminalAction = new BaseTerminalAction();
             _coreServer = terminalBaseTests.Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
@@ -104,17 +107,6 @@ namespace terminalBaseTests.BaseClasses
             Assert.IsTrue(result.Get<StandardConfigurationControlsCM>() != null);
         }
 
-
-        [Test]
-        public void MergeContentFields_ReturnsStandardDesignTimeFieldsMS()
-        {
-            var result = _baseTerminalAction.MergeContentFields(FixtureData.TestCrateDTO1());
-            Assert.IsNotNull(result);
-            Assert.AreEqual(2, result.Fields.Count);
-        }
-
-
-
         //TestActionTree
         [Test]
         public async void GetDesignTimeFields_CrateDirectionIsUpstream_ReturnsMergeDesignTimeFields()
@@ -126,8 +118,7 @@ namespace terminalBaseTests.BaseClasses
 
                 ActionDO curAction = FixtureData.TestAction57();
 
-                var result = await _baseTerminalAction.GetDesignTimeFields(
-                    curAction, CrateDirection.Upstream);
+                var result = await _baseTerminalAction.GetDesignTimeFields(curAction.Id, CrateDirection.Upstream);
                 Assert.NotNull(result);
                 Assert.AreEqual(48, result.Fields.Count);
             }
@@ -143,8 +134,7 @@ namespace terminalBaseTests.BaseClasses
 
                 ActionDO curAction = FixtureData.TestAction57();
 
-                var result = await _baseTerminalAction.GetDesignTimeFields(
-                    curAction, CrateDirection.Downstream);
+                var result = await _baseTerminalAction.GetDesignTimeFields(curAction.Id, CrateDirection.Downstream);
                 Assert.NotNull(result);
                 Assert.AreEqual(54, result.Fields.Count);
             }
@@ -182,6 +172,9 @@ namespace terminalBaseTests.BaseClasses
         [Test]
         public async void BuildUpstreamCrateLabelList_ReturnsListOfUpstreamCrateLabels()
         {
+            ObjectFactory.Configure(x => x.Forward<IRestfulServiceClient, RestfulServiceClient>());
+            ObjectFactory.Configure(x => x.For<IRestfulServiceClient>().Use<RestfulServiceClient>());
+            var test = ObjectFactory.GetInstance<IRestfulServiceClient>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 uow.RouteNodeRepository.Add(FixtureData.TestActionTree());

@@ -139,8 +139,9 @@ namespace terminalSalesforceTests.Intergration
             Assert.IsTrue(configurationControls.Content.Controls.Any(ctrl => ctrl.Name.Equals("email")),
                 "Create Contact does not have Email control");
 
-            Assert.IsFalse(configurationControls.Content.Controls.Any(ctrl => ctrl.Events.Count != 1),
-                "Create Contact controls are not subscribed to on Change events");
+            //@AlexAvrutin: Commented this since the textbox here do not require requestConfig event. 
+            //Assert.IsFalse(configurationControls.Content.Controls.Any(ctrl => ctrl.Events.Count != 1),
+            //    "Create Contact controls are not subscribed to on Change events");
         }
 
         private ActionDTO SetLastName(ActionDTO curActionDto)

@@ -1,5 +1,5 @@
 $RootDir = Split-Path -parent $PSCommandPath
-$HealthMonitorCmd = "$RootDir\..\Tests\HealthMonitor\bin\Debug\HealthMonitor.exe --email-report --app-name VSO-MASTER"
+$HealthMonitorCmd = "$RootDir\..\Tests\HealthMonitor\bin\Debug\HealthMonitor.exe --email-report --app-name VSO-MASTER --ensure-startup"
 $SrcConfigFile = "$RootDir\MASTER-HealthMonitor.exe.config"
 $DstConfigFile = "$RootDir\..\Tests\HealthMonitor\bin\Debug\HealthMonitor.exe.config"
 

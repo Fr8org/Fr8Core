@@ -9,6 +9,7 @@ using StructureMap;
 using Data.Interfaces.DataTransferObjects;
 using Data.Entities;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 using terminalYammer.Actions;
 using terminalYammer.Interfaces;
 using terminalYammer.Services;
@@ -16,20 +17,15 @@ using terminalYammer.Services;
 namespace terminalYammer.Controllers
 {
     [RoutePrefix("actions")]
-    public class ActionController : ApiController
+    public class ActionController : BaseTerminalController
     {
         private const string curTerminal = "terminalYammer";
-        private readonly BaseTerminalController _baseTerminalController;
-
-        public ActionController()
-        {
-            _baseTerminalController = new BaseTerminalController();
-        }
 
         [HttpPost]
+        [fr8TerminalHMACAuthorize(curTerminal)]
         public Task<object> Execute([FromUri] String actionType, [FromBody] ActionDTO curActionDTO)
         {
-            return _baseTerminalController.HandleFr8Request(curTerminal, actionType, curActionDTO);
+            return HandleFr8Request(curTerminal, actionType, curActionDTO);
         }
     }
 }

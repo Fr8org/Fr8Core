@@ -108,7 +108,7 @@ module dockyard.controllers {
             this.$state.go('routeDetails', { id: routeId });
         }
 
-        private deleteRoute(routeId: string, isActive: boolean) {
+        private deleteRoute(routeId: string, isActive: number) {
             //to save closure of our controller
             var self = this;
             this.$modal.open({
@@ -119,7 +119,7 @@ module dockyard.controllers {
             }).result.then(() => {
                 //Deletion confirmed
                 this.RouteService.delete({ id: routeId }).$promise.then(() => {
-                    var procTemplates = isActive ? self.$scope.activeRoutes : self.$scope.inActiveRoutes;
+                    var procTemplates = isActive === 2 ? self.$scope.activeRoutes : self.$scope.inActiveRoutes;
                     //now loop through our existing templates and remove from local memory
                     for (var i = 0; i < procTemplates.length; i++) {
                         if (procTemplates[i].id === routeId) {

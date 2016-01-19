@@ -10,10 +10,15 @@ using Data.Interfaces.DataTransferObjects;
 
 namespace Data.Entities
 {
-    public class RouteNodeDO : BaseDO
+    public class RouteNodeDO : BaseObject
     {
         [Key]
         public Guid Id { get; set; }
+
+        [ForeignKey("RootRouteNode")]
+        public Guid? RootRouteNodeId { get; set; }
+
+        public virtual RouteNodeDO RootRouteNode { get; set; }
 
         [ForeignKey("ParentRouteNode")]
         public Guid? ParentRouteNodeId { get; set; }

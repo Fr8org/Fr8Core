@@ -12,8 +12,9 @@
 			</div>
 
             <div class="portlet-body">
-                <div ng-if="activeRoutes.length == 0">No active routes found. To make a route active, click on the Activate button after your route is fully configured.</div>
-                <div ng-if="activeRoutes.length > 0">
+                <div ng-if="activeRoutes.$resolved != true">Loading routes...</div>
+                <div ng-if="activeRoutes.$resolved == true && activeRoutes.length == 0">No active routes found. To make a route active, click on the Activate button after your route is fully configured.</div>
+                <div ng-if="activeRoutes.$resolved == true && activeRoutes.length > 0">
                     <div class="table-scrollable table-scrollable-borderless">
                         <table class="row-border hover table table-hover table-light table-linkrows table-routes">
                             <thead>
@@ -34,7 +35,7 @@
                                     <td>
                                         <div>
                                             <button type="button" class="btn btn-sm red" ng-click="deactivateRoute(route);">Deactivate</button>
-                                            <button type="button" class="btn btn-sm red" ng-click="deleteRoute(route.id);">Delete</button>
+                                            <button type="button" class="btn btn-sm red" ng-click="deleteRoute(route.id,route.routeState);">Delete</button>
                                             <button type="button" class="btn btn-sm green" ng-click="goToRoutePage(route.id);">Edit</button>
                                             <button type="button" class="btn btn-sm btn-primary" ng-click="executeRoute(route.id,$event);">Run Now</button>
                                         </div>
@@ -58,8 +59,9 @@
 			</div>
 
                 <div class="portlet-body">
-                    <div ng-if="inActiveRoutes.length == 0">No inactive routes are found. To make a route inactive, click on the Deactivate button for an Active route you wish to disable.</div>
-                    <div ng-if="inActiveRoutes.length > 0">
+                    <div ng-if="inActiveRoutes.$resolved != true">Loading routes...</div>
+                    <div ng-if="inActiveRoutes.$resolved == true && inActiveRoutes.length == 0">No inactive routes are found. To make a route inactive, click on the Deactivate button for an Active route you wish to disable.</div>
+                    <div ng-if="inActiveRoutes.$resolved == true && inActiveRoutes.length > 0">
                         <div class="table-scrollable table-scrollable-borderless">
                             <table class="row-border hover table table-hover table-light table-linkrows table-routes">
                                 <thead>
@@ -78,7 +80,7 @@
                                             <span class="bold font-green-haze">{{route.routeState == 2 ? 'Active' : 'Inactive' }}</span>
 <td>
                                             <div>
-                                                <button type="button" class="btn btn-sm red" ng-click="deleteRoute(route.id);">Delete</button>
+                                                <button type="button" class="btn btn-sm red" ng-click="deleteRoute(route.id,route.routeState);">Delete</button>
                                                 <button type="button" class="btn btn-sm green" ng-click="goToRoutePage(route.id);">Edit</button>
                                                 <button type="button" class="btn btn-sm btn-primary" ng-click="executeRoute(route.id,$event);">Run Now</button>
                                                 <button type="button" class="btn btn-sm green" ng-click="activateRoute(route);">Activate</button>

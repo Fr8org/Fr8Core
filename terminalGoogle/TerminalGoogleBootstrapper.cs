@@ -34,7 +34,7 @@ namespace terminalGoogle
 
         /**********************************************************************************/
 
-        private static void ConfigureLive(ConfigurationExpression configurationExpression)
+        public static void ConfigureLive(ConfigurationExpression configurationExpression)
         {
             configurationExpression.For<IGoogleIntegration>().Use<GoogleIntegration>();
             configurationExpression.For<ICrateManager>().Use<CrateManager>();

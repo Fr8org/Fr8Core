@@ -34,13 +34,14 @@ namespace terminalTwilio.Actions
 
         public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            return await ProcessConfigurationRequest(curActionDO, actionDO => ConfigurationRequestType.Initial, authTokenDO);
+            return await ProcessConfigurationRequest(curActionDO, EvaluateReceivedRequest, authTokenDO);
         }
-        
-        /*
-        //this entire function gets passed as a delegate to the main processing code in the base class
-        //currently many actions have two stages of configuration, and this method determines which stage should be applied
-        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+
+        /// <summary>
+        /// this entire function gets passed as a delegate to the main processing code in the base class
+        /// currently many actions have two stages of configuration, and this method determines which stage should be applied
+        /// </summary>
+        private ConfigurationRequestType EvaluateReceivedRequest(ActionDO curActionDO)
         {
             if (Crate.IsStorageEmpty(curActionDO))
             {
@@ -48,36 +49,24 @@ namespace terminalTwilio.Actions
             }
 
             return ConfigurationRequestType.Followup;
-        }*/
-        
+        }
+
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
-                if (updater.CrateStorage.All(c => c.ManifestType.Id != (int)MT.StandardDesignTimeFields))
-                {
-                    var crateControlsDTO = PackCrate_ConfigurationControls();
-                    updater.CrateStorage = new CrateStorage(crateControlsDTO);
-                }
-                var curUpstreamFieldsCrate = updater.CrateStorage.SingleOrDefault(c =>
-                                                                                    c.ManifestType.Id == (int)MT.StandardDesignTimeFields
-                && c.Label == "Upstream Terminal-Provided Fields");
-                if (curUpstreamFieldsCrate != null)
-                {
-                    updater.CrateStorage.Remove(curUpstreamFieldsCrate);
-                }
-
-                var upstreamFields = await MergeUpstreamFields<StandardDesignTimeFieldsCM>(curActionDO, "Upstream Terminal-Provided Fields");
-                if(upstreamFields != null)
-                    updater.CrateStorage.Add(upstreamFields);
+                updater.CrateStorage.Clear();
+                updater.CrateStorage.Add(PackCrate_ConfigurationControls());
+                updater.CrateStorage.Add(await CreateAvailableFieldsCrate(curActionDO));
             }
             return await Task.FromResult(curActionDO);
         }
+
         private Crate PackCrate_ConfigurationControls()
         {
             var fieldsDTO = new List<ControlDefinitionDTO>()
             {
-                new TextSource("SMS Number", "Upstream Terminal-Provided Fields", "SMS_Number"),
+                CreateSpecificOrUpstreamValueChooser("SMS Number", "SMS_Number", "Upstream Terminal-Provided Fields"),
                 new TextBox()
                 {
                     Label = "SMS Body",
@@ -208,6 +197,7 @@ namespace terminalTwilio.Actions
 
         private string GetSMSNumber(TextSource control, PayloadDTO payloadCrates)
         {
+            string smsNumber = "";
             if (control == null)
             {
                 throw new ApplicationException("TextSource control was expected but not found.");
@@ -215,13 +205,20 @@ namespace terminalTwilio.Actions
             switch (control.ValueSource)
             {
                 case "specific":
-                    return control.TextValue;
+                    smsNumber = control.TextValue;
+                    break;
                 case "upstream":
                     //get the payload data 'Key' based on the selected control.Value and get its 'Value' from payload data
-                    return Crate.GetFieldByKey<StandardPayloadDataCM>(payloadCrates.CrateStorage, control.Value);
+                    smsNumber = Crate.GetFieldByKey<StandardPayloadDataCM>(payloadCrates.CrateStorage, control.Value);
+                    break;
                 default:
                     throw new ApplicationException("Could not extract number, unknown mode.");
             }
+
+            if (smsNumber.Trim().Length == 10 && !smsNumber.Contains("+"))
+                smsNumber = "+1" + smsNumber;
+
+            return smsNumber;
         }
         private List<FieldDTO> CreateKeyValuePairList(Message curMessage)
         {

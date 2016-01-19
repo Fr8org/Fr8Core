@@ -42,7 +42,8 @@ namespace DockyardTest.Controllers
                     Name = "terminalTest",
                     Version = "1",
                     TerminalStatus = 1,
-                    Endpoint = "localhost:39504"
+                    Endpoint = "localhost:39504",
+                    Secret = Guid.NewGuid().ToString()
                 };
 
                 uow.TerminalRepository.Add(terminalDO);
@@ -134,7 +135,7 @@ namespace DockyardTest.Controllers
                     new Uri("http://" + activityTemplateDO.Terminal.Endpoint + "/authentication/internal"),
                     It.Is<CredentialsDTO>(it => it.Username == credentialsDTO.Username
                         && it.Password == credentialsDTO.Password
-                        && it.Domain == credentialsDTO.Domain)
+                        && it.Domain == credentialsDTO.Domain), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()
                 ),
                 Times.Exactly(1)
             );

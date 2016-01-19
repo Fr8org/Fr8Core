@@ -35,7 +35,7 @@ namespace terminalTwilio.Controllers
             {
                 Name = "Send_Via_Twilio",
                 Label = "Send Via Twilio",
-                Tags = "Twillio",
+                Tags = "Twillio,Notifier",
                 Category = ActivityCategory.Forwarders,
                 Version = "1",
                 Description = "Send Via Twilio: Description",

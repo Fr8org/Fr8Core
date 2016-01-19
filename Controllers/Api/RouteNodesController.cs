@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
+using HubWeb.Infrastructure;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 using Data.Infrastructure.StructureMap;
@@ -12,24 +13,30 @@ using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Hub.Interfaces;
 using Hub.Managers;
+using Data.Crates;
+using Data.Interfaces.Manifests;
+using Data.States;
+using Data.Constants;
 
 namespace HubWeb.Controllers
 {
     //[RoutePrefix("route_nodes")]
-    [Fr8ApiAuthorize]
     public class RouteNodesController : ApiController
     {
         private readonly IRouteNode _activity;
         private readonly ISecurityServices _security;
+        private readonly ICrateManager _crate;
 
         public RouteNodesController()
         {
             _activity = ObjectFactory.GetInstance<IRouteNode>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
+            _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
         [HttpGet]
         [ResponseType(typeof (ActivityTemplateDTO))]
+        [Fr8ApiAuthorize]
         public IHttpActionResult Get(int id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -45,6 +52,7 @@ namespace HubWeb.Controllers
 
         [ActionName("upstream")]
         [ResponseType(typeof (List<RouteNodeDO>))]
+        [Fr8ApiAuthorize]
         public IHttpActionResult GetUpstreamActivities(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -57,6 +65,7 @@ namespace HubWeb.Controllers
 
         [ActionName("downstream")]
         [ResponseType(typeof (List<RouteNodeDO>))]
+        [Fr8ApiAuthorize]
         public IHttpActionResult GetDownstreamActivities(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -70,7 +79,7 @@ namespace HubWeb.Controllers
         // TODO: after DO-1214 is completed, this method must be removed.
         [ActionName("upstream_actions")]
         [ResponseType(typeof (List<ActionDTO>))]
-        [AllowAnonymous]
+        [fr8HubWebHMACAuthorize]
         public IHttpActionResult GetUpstreamActions(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -89,7 +98,7 @@ namespace HubWeb.Controllers
         // TODO: after DO-1214 is completed, this method must be removed.
         [ActionName("downstream_actions")]
         [ResponseType(typeof (List<ActionDTO>))]
-        [AllowAnonymous]
+        [fr8HubWebHMACAuthorize]
         public IHttpActionResult GetDownstreamActions(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -103,6 +112,18 @@ namespace HubWeb.Controllers
 
                 return Ok(downstreamActions);
             }
+        }
+
+        [ActionName("designtime_fields_dir")]
+        [ResponseType(typeof(StandardDesignTimeFieldsCM))]
+        [fr8HubWebHMACAuthorize]
+        public IHttpActionResult GetDesignTimeFieldsByDirection(
+            Guid id, 
+            CrateDirection direction, 
+            AvailabilityType availability = AvailabilityType.NotSet)
+        {
+            var downstreamActions = _activity.GetDesignTimeFieldsByDirection(id, direction, availability);
+            return Ok(downstreamActions);
         }
 
         [ActionName("available")]

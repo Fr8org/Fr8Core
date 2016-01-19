@@ -2,7 +2,7 @@
 
     export class CrateHelper {
         private filterByTag: (list: model.DropDownListItem[], filterByTag: string) => model.DropDownListItem[]
-
+      
         constructor($filter) {
             this.filterByTag = $filter('FilterByTag');
         }
@@ -125,12 +125,21 @@
                 return;
             }
 
+            // remove AuthUnsuccessfulLabel from fields before sending data to server
+            var fieldsToSyncWithCrate = controlList.fields.slice();
+            for (var i = 0; i < fieldsToSyncWithCrate.length; ++i) {
+                if (fieldsToSyncWithCrate[i].name === 'AuthUnsuccessfulLabel') {
+                    fieldsToSyncWithCrate.splice(i, 1);
+                    break;
+                }
+            }
+
             // Find single crate with manifestType == 'Standard UI Controls'.
             var controlListCrate = this.findByManifestType(
                 crateStorage, 'Standard UI Controls');
 
             // Overwrite contents of that crate with actual data in controlList.fields.
-            controlListCrate.contents = { Controls: controlList.fields };
+            controlListCrate.contents = { Controls: fieldsToSyncWithCrate };
         }
 
         private populateListItemsFromDataSource(fields: Array<model.ControlDefinitionDTO>, crateStorage: model.CrateStorage) {

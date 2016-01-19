@@ -1,7 +1,9 @@
 ﻿
+﻿using System;
 ﻿using System.Collections.Generic;
 using Data.Entities;
-using Data.States;
+﻿using Data.Interfaces.DataTransferObjects;
+﻿using Data.States;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -12,6 +14,8 @@ namespace UtilitiesTesting.Fixtures
         public static string TestTerminal_AzureSqlServer_EndPoint = "localhost:60003";
         public static string TestTerminal_ExtractData_EndPoint = "localhost:60004";
         public static string TestTerminal_FileServer_EndPoint = "localhost:60005";
+
+        public static string TestTerminal_Core_EndPoint2 = "localhost:50705";
 
         public static AuthorizationTokenDO AuthToken_TerminalIntegration()
         {
@@ -59,7 +63,20 @@ namespace UtilitiesTesting.Fixtures
                 TerminalStatus = TerminalStatus.Active,
                 Endpoint = TestTerminal_DocuSign_EndPoint,
                 Version = "1",
-                AuthenticationType = AuthenticationType.Internal
+                AuthenticationType = AuthenticationType.Internal,
+                Secret = Guid.NewGuid().ToString()
+            };
+        }
+
+        public static TerminalDTO TestTerminal_Core_DTO()
+        {
+            return new TerminalDTO
+            {
+                Name = "terminalDockyardCore",
+                Endpoint = TestTerminal_Core_EndPoint2,
+                TerminalStatus = TerminalStatus.Active,
+                Version = "1",
+                AuthenticationType = AuthenticationType.None
             };
         }
 
@@ -71,7 +88,8 @@ namespace UtilitiesTesting.Fixtures
                 Endpoint = TestTerminal_Core_EndPoint,
                 TerminalStatus = TerminalStatus.Active,
                 Version = "1",
-                AuthenticationType = AuthenticationType.None
+                AuthenticationType = AuthenticationType.None,
+                Secret = Guid.NewGuid().ToString()
             };
         }
 
@@ -83,7 +101,8 @@ namespace UtilitiesTesting.Fixtures
                 Endpoint = TestTerminal_AzureSqlServer_EndPoint,
                 TerminalStatus = TerminalStatus.Active,
                 Version = "1",
-                AuthenticationType = AuthenticationType.None
+                AuthenticationType = AuthenticationType.None,
+                Secret = Guid.NewGuid().ToString()
             };
         }
 
@@ -102,7 +121,8 @@ namespace UtilitiesTesting.Fixtures
                 Name = "terminalExcel",
                 TerminalStatus = TerminalStatus.Active,
                 Version = "1",
-                AuthenticationType = AuthenticationType.None
+                AuthenticationType = AuthenticationType.None,
+                Secret = Guid.NewGuid().ToString()
             };
         }
 
@@ -144,11 +164,11 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static ActivityTemplateDO TestActivityTemplateDO_FilterUsingRunTimeData()
+        public static ActivityTemplateDO TestActivityTemplateDO_TestIncomingData()
         {
             return new ActivityTemplateDO()
             {
-                Name = "FilterUsingRunTimeData",
+                Name = "TestIncomingData",
                 Version = "1",
                 Terminal = TestTerminal_Core()
             };

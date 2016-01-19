@@ -12,6 +12,8 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using Data.Entities;
 using Data.Interfaces;
 using Utilities;
+using Data.Utility;
+using Data.Utility.JoinClasses;
 
 namespace Data.Infrastructure
 {
@@ -45,6 +47,10 @@ namespace Data.Infrastructure
             : base("name=DockyardDB")
         {
             Database.SetInitializer(new MigrateDatabaseToLatestVersion<DockyardDbContext, Data.Migrations.MigrationConfiguration>());
+    
+            //Logging to ApplicationInsights
+            //var telemetry = new Microsoft.ApplicationInsights.TelemetryClient();
+            //this.Database.Log = (trace) => telemetry.TrackEvent("Database Access", new Dictionary<string, string> { { "SQL trace", trace }});
         }
 
 
@@ -275,6 +281,8 @@ namespace Data.Infrastructure
 	        modelBuilder.Entity<WebServiceDO>().ToTable("WebServices");
 	        modelBuilder.Entity<TerminalSubscriptionDO>().ToTable("TerminalSubscription");
             modelBuilder.Entity<EncryptedAuthorizationData>().ToTable("EncryptedAuthorizationData");
+            modelBuilder.Entity<TagDO>().ToTable("Tags");
+            modelBuilder.Entity<FileTags>().ToTable("FileTags");
 
             modelBuilder.Entity<EmailDO>()
                 .HasRequired(a => a.From)

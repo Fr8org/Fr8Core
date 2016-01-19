@@ -15,10 +15,11 @@ using Newtonsoft.Json;
 using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
+using terminalDocuSign.Infrastructure;
 
 namespace terminalDocuSign.Actions
 {
-    public class Extract_Data_From_Envelopes_v1 : BaseTerminalAction
+    public class Extract_Data_From_Envelopes_v1 : BaseDocuSignAction
     {
         private class ActionUi : StandardConfigurationControlsCM
         {
@@ -83,9 +84,15 @@ namespace terminalDocuSign.Actions
 
         protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            var controls = new ActionUi();
+            var actionUi = new ActionUi();
 
-            controls.ClonePropertiesFrom(Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().First());
+            actionUi.ClonePropertiesFrom(Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().First());
+            
+            //don't add child actions until a selection is made
+            if (string.IsNullOrEmpty(actionUi.FinalActionsList.Value)) 
+            {
+                return curActionDO;
+            }
 
             curActionDO.ChildNodes = new List<RouteNodeDO>();
 
@@ -113,7 +120,7 @@ namespace terminalDocuSign.Actions
 
             int finalActionTemplateId;
 
-            if (int.TryParse(controls.FinalActionsList.Value, out finalActionTemplateId))
+            if (int.TryParse(actionUi.FinalActionsList.Value, out finalActionTemplateId))
             {
                 var finalAction = new ActionDO
                 {
@@ -123,7 +130,7 @@ namespace terminalDocuSign.Actions
                     CreateDate = DateTime.UtcNow,
                     Ordering = 2,
                     Name = "Final action",
-                    Label = controls.FinalActionsList.selectedKey
+                    Label = actionUi.FinalActionsList.selectedKey
                 };
 
                 curActionDO.ChildNodes.Add(finalAction);
@@ -139,7 +146,7 @@ namespace terminalDocuSign.Actions
         
         private async Task<IEnumerable<ActivityTemplateDO>> FindTemplates(ActionDO actionDO, Predicate<ActivityTemplateDO> query)
         {
-            var templates = await HubCommunicator.GetActivityTemplates(actionDO);
+            var templates = await HubCommunicator.GetActivityTemplates(actionDO,CurrentFr8UserId);
             return templates.Select(x => Mapper.Map<ActivityTemplateDO>(x)).Where(x => query(x));
         }
         
@@ -147,11 +154,11 @@ namespace terminalDocuSign.Actions
         {
             var sources = new List<Crate>();
 
-            var templates = await HubCommunicator.GetActivityTemplates(actionDO, ActivityCategory.Forwarders);
+            var templates = await HubCommunicator.GetActivityTemplates(actionDO, ActivityCategory.Forwarders, CurrentFr8UserId);
             sources.Add(
                 Crate.CreateDesignTimeFieldsCrate(
                     "AvailableActions",
-                    templates.Select(x => new FieldDTO(x.Label, x.Id.ToString())).ToArray()
+                    templates.Select(x => new FieldDTO(x.Label, x.Id.ToString(), AvailabilityType.Configuration)).ToArray()
                 )
             );
 

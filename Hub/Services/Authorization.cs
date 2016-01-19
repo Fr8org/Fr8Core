@@ -175,15 +175,31 @@ namespace Hub.Services
                     {
                         actionDTO.AuthToken = new AuthorizationTokenDTO()
                         {
+                            Id = authToken.Id.ToString(),
+                            UserId = authToken.UserDO != null ? authToken.UserDO.Id : authToken.UserID,
                             Token = authToken.Token,
                             AdditionalAttributes = authToken.AdditionalAttributes
+                        };
+                    }
+                }
+
+                if (actionDTO.AuthToken == null)
+                {
+                    var route = ObjectFactory.GetInstance<IRoute>().GetRoute(action);
+                    var dockyardAccount = route != null ? route.Fr8Account : null;
+
+                    if (dockyardAccount != null)
+                    {
+                        actionDTO.AuthToken = new AuthorizationTokenDTO
+                        {
+                            UserId = dockyardAccount.Id,
                         };
                     }
                 }
             }
         }
 
-        public async Task<string> AuthenticateInternal(
+        public async Task<AuthenticateResponse> AuthenticateInternal(
             Fr8AccountDO account,
             TerminalDO terminal,
             string domain,
@@ -212,61 +228,73 @@ namespace Hub.Services
             var terminalResponseAuthTokenDTO = JsonConvert.DeserializeObject<AuthorizationTokenDTO>(terminalResponse);
             if (!string.IsNullOrEmpty(terminalResponseAuthTokenDTO.Error))
             {
-                return terminalResponseAuthTokenDTO.Error;
+                return new AuthenticateResponse()
+                {
+                    Error = terminalResponseAuthTokenDTO.Error
+                };
+            }
+
+            if (terminalResponseAuthTokenDTO == null)
+            {
+                return new AuthenticateResponse()
+                {
+                    Error = "An error occured while authenticating, please try again."
+                };
             }
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                if (terminalResponseAuthTokenDTO != null)
+                var curTerminal = uow.TerminalRepository.GetByKey(terminal.Id);
+                var curAccount = uow.UserRepository.GetByKey(account.Id);
+
+                AuthorizationTokenDO authToken = null;
+                if (!string.IsNullOrEmpty(terminalResponseAuthTokenDTO.ExternalAccountId))
                 {
-                    var curTerminal = uow.TerminalRepository.GetByKey(terminal.Id);
-                    var curAccount = uow.UserRepository.GetByKey(account.Id);
-
-                    AuthorizationTokenDO authToken = null;
-                    if (!string.IsNullOrEmpty(terminalResponseAuthTokenDTO.ExternalAccountId))
-                    {
-                        authToken = uow.AuthorizationTokenRepository
-                            .GetPublicDataQuery()
-                            .FirstOrDefault(x => x.TerminalID == curTerminal.Id
-                                && x.UserID == curAccount.Id
-                                && x.ExternalAccountId == terminalResponseAuthTokenDTO.ExternalAccountId
-                            );
-                    }
-
-                    if (authToken == null)
-                    {
-                        authToken = new AuthorizationTokenDO()
-                        {
-                            Token = terminalResponseAuthTokenDTO.Token,
-                            ExternalAccountId = terminalResponseAuthTokenDTO.ExternalAccountId,
-                            Terminal = curTerminal,
-                            UserDO = curAccount,
-                            ExpiresAt = DateTime.Today.AddMonths(1)
-                        };
-
-                        uow.AuthorizationTokenRepository.Add(authToken);
-                    }
-                    else
-                    {
-                        authToken.Token = terminalResponseAuthTokenDTO.Token;
-                        authToken.ExternalAccountId = terminalResponseAuthTokenDTO.ExternalAccountId;
-                    }
-
-                    uow.SaveChanges();
-
-                    //if terminal requires Authentication Completed Notification, follow the existing terminal event notification protocol 
-                    //to notify the terminal about authentication completed event
-                    if (terminalResponseAuthTokenDTO.AuthCompletedNotificationRequired)
-                    {
-                        EventManager.TerminalAuthenticationCompleted(curAccount.Id, curTerminal);
-                    }
+                    authToken = uow.AuthorizationTokenRepository
+                        .GetPublicDataQuery()
+                        .FirstOrDefault(x => x.TerminalID == curTerminal.Id
+                            && x.UserID == curAccount.Id
+                            && x.ExternalAccountId == terminalResponseAuthTokenDTO.ExternalAccountId
+                        );
                 }
-            }
 
-            return null;
+                if (authToken == null)
+                {
+                    authToken = new AuthorizationTokenDO()
+                    {
+                        Token = terminalResponseAuthTokenDTO.Token,
+                        ExternalAccountId = terminalResponseAuthTokenDTO.ExternalAccountId,
+                        Terminal = curTerminal,
+                        UserDO = curAccount,
+                        ExpiresAt = DateTime.Today.AddMonths(1)
+                    };
+
+                    uow.AuthorizationTokenRepository.Add(authToken);
+                }
+                else
+                {
+                    authToken.Token = terminalResponseAuthTokenDTO.Token;
+                    authToken.ExternalAccountId = terminalResponseAuthTokenDTO.ExternalAccountId;
+                }
+
+                uow.SaveChanges();
+
+                //if terminal requires Authentication Completed Notification, follow the existing terminal event notification protocol 
+                //to notify the terminal about authentication completed event
+                if (terminalResponseAuthTokenDTO.AuthCompletedNotificationRequired)
+                {
+                    EventManager.TerminalAuthenticationCompleted(curAccount.Id, curTerminal);
+                }
+
+                return new AuthenticateResponse()
+                {
+                    AuthorizationToken = authToken,
+                    Error = null
+                };
+            }
         }
 
-        public async Task<string> GetOAuthToken(
+        public async Task<AuthenticateResponse> GetOAuthToken(
             TerminalDO terminal,
             ExternalAuthenticationDTO externalAuthDTO)
         {
@@ -292,26 +320,54 @@ namespace Hub.Services
             var authTokenDTO = JsonConvert.DeserializeObject<AuthorizationTokenDTO>(response);
             if (!string.IsNullOrEmpty(authTokenDTO.Error))
             {
-                return authTokenDTO.Error;
+                return new AuthenticateResponse()
+                {
+                    Error = authTokenDTO.Error
+                };
             }
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var authToken = uow.AuthorizationTokenRepository.FindTokenByExternalState(authTokenDTO.ExternalStateToken);
+                var authTokenByExternalState = uow.AuthorizationTokenRepository
+                    .FindTokenByExternalState(authTokenDTO.ExternalStateToken);
 
-                if (authToken == null)
+                if (authTokenByExternalState == null)
                 {
                     throw new ApplicationException("No AuthToken found with specified ExternalStateToken.");
                 }
 
-                authToken.Token = authTokenDTO.Token;
-                authToken.ExternalAccountId = authTokenDTO.ExternalAccountId;
-                authToken.ExternalStateToken = null;
-                authToken.AdditionalAttributes = authTokenDTO.AdditionalAttributes;
-                uow.SaveChanges();
-            }
+                var authTokenByExternalAccountId = uow.AuthorizationTokenRepository
+                    .GetPublicDataQuery()
+                    .FirstOrDefault(x => x.TerminalID == terminal.Id
+                        && x.UserID == authTokenByExternalState.UserID
+                        && x.ExternalAccountId == authTokenDTO.ExternalAccountId
+                    );
 
-            return null;
+                if (authTokenByExternalAccountId != null)
+                {
+                    authTokenByExternalAccountId.Token = authTokenDTO.Token;
+                    authTokenByExternalState.ExternalAccountId = authTokenDTO.ExternalAccountId;
+                    authTokenByExternalAccountId.ExternalStateToken = null;
+                    authTokenByExternalState.AdditionalAttributes = authTokenDTO.AdditionalAttributes;
+
+                    uow.AuthorizationTokenRepository.Remove(authTokenByExternalState);
+                }
+                else
+                {
+                    authTokenByExternalState.Token = authTokenDTO.Token;
+                    authTokenByExternalState.ExternalAccountId = authTokenDTO.ExternalAccountId;
+                    authTokenByExternalState.ExternalStateToken = null;
+                    authTokenByExternalState.AdditionalAttributes = authTokenDTO.AdditionalAttributes;
+                }
+                
+                uow.SaveChanges();
+
+                return new AuthenticateResponse()
+                {
+                    AuthorizationToken = authTokenByExternalAccountId ?? authTokenByExternalState,
+                    Error = null
+                };
+            }
         }
 
 
@@ -425,7 +481,7 @@ namespace Hub.Services
                     new TextBlock()
                     {
                         Name = "AuthAwaitLabel",
-                        Value = "Waiting for authentication window..."
+                        Value = "Please provide credentials to access your desired account"
                     });
             }
         }
@@ -516,7 +572,14 @@ namespace Hub.Services
                         }
                     }
 
-                    if (authToken == null || string.IsNullOrEmpty(authToken.Token))
+                    // FR-1958: remove token if could not extract secure data.
+                    if (authToken != null && string.IsNullOrEmpty(authToken.Token))
+                    {
+                        RemoveToken(uow, authToken);
+                        authToken = null;
+                    }
+
+                    if (authToken == null)
                     {
                         AddAuthenticationCrate(curActionDTO, activityTemplate.Terminal.AuthenticationType);
                         AddAuthenticationLabel(curActionDTO);
@@ -626,6 +689,13 @@ namespace Hub.Services
 
                 if (authToken != null)
                 {
+                    RemoveToken(uow, authToken);
+                }
+            }
+        }
+
+        private void RemoveToken(IUnitOfWork uow, AuthorizationTokenDO authToken)
+        {
                     var actions = uow.ActionRepository
                         .GetQuery()
                         .Where(x => x.AuthorizationToken.Id == authToken.Id)
@@ -641,8 +711,6 @@ namespace Hub.Services
                     uow.AuthorizationTokenRepository.Remove(authToken);
                     uow.SaveChanges();
                 }
-            }
-        }
 
         public void SetMainToken(string userId, Guid authTokenId)
         {

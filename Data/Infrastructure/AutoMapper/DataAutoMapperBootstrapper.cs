@@ -24,6 +24,7 @@ namespace Data.Infrastructure.AutoMapper
 
 
             Mapper.CreateMap<ActionDO, ActionDTO>();
+            Mapper.CreateMap<FactDO, FactDTO>();
 
             Mapper.CreateMap<Fr8AccountDO, UserDTO>()
                 .ForMember(dto => dto.EmailAddress, opts => opts.ResolveUsing(e => e.EmailAddress.Address))
@@ -36,17 +37,20 @@ namespace Data.Infrastructure.AutoMapper
 
             Mapper.CreateMap<ActionDO, ActionDTO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
                 .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
+                .ForMember(a => a.RootRouteNodeId, opts => opts.ResolveUsing(ad => ad.RootRouteNodeId))
                 .ForMember(a => a.ParentRouteNodeId, opts => opts.ResolveUsing(ad => ad.ParentRouteNodeId))
                 //.ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => ad.CrateStorage == null ? null : JsonConvert.DeserializeObject(ad.CrateStorage)))
                 .ForMember(a => a.ActivityTemplateId, opts => opts.ResolveUsing(ad => ad.ActivityTemplateId))
                 .ForMember(a => a.CurrentView, opts => opts.ResolveUsing(ad => ad.currentView))
                 .ForMember(a => a.ChildrenActions, opts => opts.ResolveUsing(ad => ad.ChildNodes.OfType<ActionDO>().OrderBy(da => da.Ordering)))
                 .ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(ad => ad.ActivityTemplate))
-                .ForMember(a => a.ExplicitData, opts => opts.ResolveUsing(ad => ad.ExplicitData));
+                .ForMember(a => a.ExplicitData, opts => opts.ResolveUsing(ad => ad.ExplicitData))
+                .ForMember(a => a.AuthToken, opts => opts.ResolveUsing(ad => ad.AuthorizationToken));
 
 
             Mapper.CreateMap<ActionDTO, ActionDO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
                 .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
+                .ForMember(a => a.RootRouteNodeId, opts => opts.ResolveUsing(ad => ad.RootRouteNodeId))
                 .ForMember(a => a.ParentRouteNodeId, opts => opts.ResolveUsing(ad => ad.ParentRouteNodeId))
                 .ForMember(a => a.ActivityTemplateId, opts => opts.ResolveUsing(ad => ad.ActivityTemplateId))
                 .ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(ad => ad.ActivityTemplate))
@@ -54,7 +58,8 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(a => a.currentView, opts => opts.ResolveUsing(ad => ad.CurrentView))
                 .ForMember(a => a.ChildNodes, opts => opts.ResolveUsing(ad => MapActions(ad.ChildrenActions)))
                 .ForMember(a => a.IsTempId, opts => opts.ResolveUsing(ad => ad.IsTempId))
-                .ForMember(a => a.ExplicitData, opts => opts.ResolveUsing(ad => ad.ExplicitData));
+                .ForMember(a => a.ExplicitData, opts => opts.ResolveUsing(ad => ad.ExplicitData))
+                .ForMember(a => a.AuthorizationTokenId, opts => opts.ResolveUsing(ad => ad.AuthToken != null && ad.AuthToken.Id != null ? new Guid(ad.AuthToken.Id) : (Guid?)null));
 
 
             Mapper.CreateMap<ActivityTemplateDO, ActivityTemplateDTO>()
@@ -91,9 +96,11 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<RouteEmptyDTO, RouteDO>();
             Mapper.CreateMap<RouteDO, RouteEmptyDTO>();
             Mapper.CreateMap<SubrouteDTO, SubrouteDO>()
-                .ForMember(x => x.ParentRouteNodeId, opts => opts.ResolveUsing(x => x.RouteId));
+                .ForMember(x => x.ParentRouteNodeId, opts => opts.ResolveUsing(x => x.RouteId))
+                .ForMember(x => x.RootRouteNodeId, opts => opts.ResolveUsing(x => x.RouteId));
             Mapper.CreateMap<SubrouteDO, SubrouteDTO>()
-                .ForMember(x => x.RouteId, opts => opts.ResolveUsing(x => x.ParentRouteNodeId));
+                .ForMember(x => x.RouteId, opts => opts.ResolveUsing(x => x.ParentRouteNodeId))
+                .ForMember(x => x.RouteId, opts => opts.ResolveUsing(x => x.RootRouteNodeId));
 
             Mapper.CreateMap<CriteriaDO, CriteriaDTO>()
                 .ForMember(x => x.Conditions, opts => opts.ResolveUsing(y => y.ConditionsJSON));
@@ -117,7 +124,13 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<FileDO, FileDTO>();
 
             Mapper.CreateMap<ContainerDO, ContainerDTO>();
-            Mapper.CreateMap<AuthorizationTokenDTO, AuthorizationTokenDO>();
+            Mapper.CreateMap<AuthorizationTokenDTO, AuthorizationTokenDO>()
+                .ForMember(x => x.UserID, x => x.ResolveUsing(y => y.UserId))
+                .ForMember(x => x.Id, x => x.ResolveUsing(y => y.Id != null ? new Guid(y.Id) : (Guid?) null));
+            Mapper.CreateMap<AuthorizationTokenDO, AuthorizationTokenDTO>()
+                .ForMember(x => x.UserId, x => x.ResolveUsing(y => y.UserID))
+                .ForMember(x => x.Id, x => x.ResolveUsing(y => y.Id.ToString()));
+
             Mapper.CreateMap<TerminalDO, TerminalDTO>();
             Mapper.CreateMap<TerminalDTO, TerminalDO>();
         }

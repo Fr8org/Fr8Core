@@ -22,10 +22,11 @@ using Data.Entities;
 using Data.Crates;
 using Data.States;
 using Utilities;
+using terminalDocuSign.Infrastructure;
 
 namespace terminalDocuSign.Actions
 {
-    public class Get_DocuSign_Template_v1 : BaseTerminalAction
+    public class Get_DocuSign_Template_v1 : BaseDocuSignAction
     {
         private readonly DocuSignManager _docuSignManager;
 
@@ -61,7 +62,7 @@ namespace terminalDocuSign.Actions
                 return Error(payloadCrates, "No Template was selected at design time", ActionErrorCode.DESIGN_TIME_DATA_MISSING);
             }
 
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
             //lets download specified template from user's docusign account
             var downloadedTemplate = _docuSignManager.DownloadDocuSignTemplate(docuSignAuthDTO, selectedDocusignTemplateId);
             //and add it to payload
@@ -98,7 +99,7 @@ namespace terminalDocuSign.Actions
 
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
             var docuSignTemplatesCrate = _docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
             var controls = CreateControlsCrate();
 

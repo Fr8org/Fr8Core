@@ -19,6 +19,58 @@ namespace DockyardTest.Infrastructure
     {
 
         [Test]
+        public void CanUpdateUsingPrimaryKey()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var userDO = uow.UserRepository.GetOrCreateUser("testemail@gmail.com");
+                uow.UserRepository.Add(userDO);
+                ObjectFactory.GetInstance<ISecurityServices>().Login(uow, userDO);
+
+                //adding object to repo
+                var manifest = FixtureData___MultiTenantObjectSubClass.TestData1();
+                uow.MultiTenantObjectRepository.Add(uow, manifest, userDO.Id);
+                uow.SaveChanges();
+
+                //test "Update()"
+                manifest.Status = "newstatus";
+                uow.MultiTenantObjectRepository.Update(uow, userDO.Id, manifest);
+                var manifest_from_MTO = uow.MultiTenantObjectRepository.Get<DocuSignEnvelopeCM>(uow, userDO.Id, a => a.EnvelopeId == manifest.EnvelopeId);
+                XmlSerializer xmlSerializer = new XmlSerializer();
+                var str_obj1 = xmlSerializer.Serialize(manifest);
+                var str_obj2 = xmlSerializer.Serialize(manifest_from_MTO);
+                Assert.AreEqual(str_obj1, str_obj2);
+            }
+        }
+
+
+        [Test]
+        public void CanAddOrUpdateUsingPrimaryKey()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var userDO = uow.UserRepository.GetOrCreateUser("testemail@gmail.com");
+                uow.UserRepository.Add(userDO);
+                ObjectFactory.GetInstance<ISecurityServices>().Login(uow, userDO);
+
+                //adding object to repo
+                var manifest = FixtureData___MultiTenantObjectSubClass.TestData1();
+                uow.MultiTenantObjectRepository.Add(uow, manifest, userDO.Id);
+                uow.SaveChanges();
+                
+                
+                //test "AddOrUPDATE"
+                manifest.Status = "foo";
+                uow.MultiTenantObjectRepository.AddOrUpdate(uow, userDO.Id, manifest);
+                var manifest_from_MTO = uow.MultiTenantObjectRepository.Get<DocuSignEnvelopeCM>(uow, userDO.Id, a => a.EnvelopeId == manifest.EnvelopeId);
+                var xmlSerializer = new XmlSerializer();
+                var str_obj1 = xmlSerializer.Serialize(manifest);
+                var str_obj2 = xmlSerializer.Serialize(manifest_from_MTO);
+                Assert.AreEqual(str_obj1, str_obj2);
+            }
+        }
+
+        [Test]
         public void MTO_Test_CRUD()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

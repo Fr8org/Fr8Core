@@ -11,5 +11,6 @@ namespace Data.Interfaces.DataTransferObjects
         public int Id { get; set; }
         public string OriginalFileName { get; set; }
         public string CloudStorageUrl { get; set; }
+        public string Tags { get; set; }
     }
 }

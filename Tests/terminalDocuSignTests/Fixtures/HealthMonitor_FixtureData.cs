@@ -9,6 +9,7 @@ namespace terminalDocuSignTests.Fixtures
         {
             return new AuthorizationTokenDTO()
             {
+                UserId = "testUser",
                 Token = @"{ ""Email"": ""freight.testing@gmail.com"", ""ApiPassword"": ""SnByDvZJ/fp9Oesd/a9Z84VucjU="" }"
             };
         }
@@ -60,8 +61,8 @@ namespace terminalDocuSignTests.Fixtures
             return new ActionDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Monitor_DocuSign",
-                Label = "Monitor DocuSign",
+                Name = "Monitor_DocuSign_Envelope_Activity",
+                Label = "Monitor DocuSign Envelope Activity",
                 AuthToken = DocuSign_AuthToken(),
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id

@@ -1,4 +1,8 @@
+using System;
+using System.IO;
 using System.Net.Http.Formatting;
+using System.Security.Principal;
+using System.Web;
 using AutoMapper;
 // This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
 using Hub.Managers.APIManagers.Packagers.SendGrid;
@@ -32,7 +36,7 @@ using StructureMap.Configuration.DSL;
 using System.Threading.Tasks;
 using Utilities;
 using Utilities.Interfaces;
-
+using System.Net.Http;
 
 namespace Hub.StructureMap
 {
@@ -103,12 +107,12 @@ namespace Hub.StructureMap
                 For<IImapClient>().Use<ImapClientWrapper>();
                 
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
-                For<IRestfulServiceClient>().Use<RestfulServiceClient>();
+                For<IRestfulServiceClient>().Singleton().Use<RestfulServiceClient>();
                 For<ITerminalTransmitter>().Use<TerminalTransmitter>();
                 For<IRoute>().Use<Route>();
                 For<InternalInterfaces.IContainer>().Use<InternalClass.Container>();
                 For<ICriteria>().Use<Criteria>();
-                For<IAction>().Use<Action>();
+                For<IAction>().Use<InternalClass.Action>();
 				For<IRouteNode>().Use<RouteNode>();
                 For<ISubscription>().Use<Subscription>();
                 For<IProcessNode>().Use<ProcessNode>();
@@ -117,16 +121,19 @@ namespace Hub.StructureMap
                 //For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 For<IEvent>().Use<Event>();
                 For<IActivityTemplate>().Use<ActivityTemplate>();
-                For<IFile>().Use<File>();
+                For<IFile>().Use<InternalClass.File>();
                 For<ITerminal>().Use<Terminal>();
                 For<ICrateManager>().Use<CrateManager>();
-                For<IFr8Event>().Use<Fr8Event>();
                 For<IReport>().Use<Report>();
                 For<IManifest>().Use<Manifest>();
                 For<IFindObjectsRoute>().Use<FindObjectsRoute>();
 	            For<ITime>().Use<Time>();
 	            For<IPusherNotifier>().Use<PusherNotifier>();
                 For<IAuthorization>().Use<Authorization>();
+                For<ITag>().Use<Tag>();
+
+                For<IHMACAuthenticator>().Use<HMACAuthenticator>();
+                For<IHMACService>().Use<Fr8HMACService>();
             }
         }
 
@@ -152,7 +159,7 @@ namespace Hub.StructureMap
 
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
 
-                Mock<RestfulServiceClient> restfulServiceClientMock = new Mock<RestfulServiceClient>(MockBehavior.Default);
+                var restfulServiceClientMock = new Mock<RestfulServiceClient>(MockBehavior.Default);
                 For<IRestfulServiceClient>().Use(restfulServiceClientMock.Object).Singleton();
 
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchyWithoutCTE>();
@@ -163,7 +170,7 @@ namespace Hub.StructureMap
                 For<InternalInterfaces.IContainer>().Use<InternalClass.Container>();
                 For<ICriteria>().Use<Criteria>();
                 For<ISubscription>().Use<Subscription>();
-                For<IAction>().Use<Action>();
+                For<IAction>().Use<InternalClass.Action>();
 					 For<IRouteNode>().Use<RouteNode>();
 
                 For<IProcessNode>().Use<ProcessNode>();
@@ -180,10 +187,9 @@ namespace Hub.StructureMap
                 For<IActivityTemplate>().Use<ActivityTemplate>();
                 For<IEvent>().Use<Event>();
                 //For<ITemplate>().Use<Services.Template>();
-                For<IFile>().Use<File>();
-                For<ITerminal>().Use<Terminal>();
+                For<IFile>().Use<InternalClass.File>();
+                
                 For<ICrateManager>().Use<CrateManager>();
-                For<IFr8Event>().Use<Fr8Event>();
                 For<IManifest>().Use<Manifest>();
                 For<IFindObjectsRoute>().Use<FindObjectsRoute>();
                 For<IAuthorization>().Use<Authorization>();
@@ -193,6 +199,22 @@ namespace Hub.StructureMap
 
 				var pusherNotifierMock = new Mock<IPusherNotifier>();
 	            For<IPusherNotifier>().Use(pusherNotifierMock.Object).Singleton();
+
+                For<ITag>().Use<Tag>();
+
+                var fr8HMACAuthenticator = new Mock<IHMACAuthenticator>();
+                fr8HMACAuthenticator.Setup(x => x.IsValidRequest(It.IsAny<HttpRequestMessage>(), It.IsAny<string>())).ReturnsAsync(true);
+                var outTerminalId = "testTerminal";
+                var outUserId = "testUser";
+                fr8HMACAuthenticator.Setup(s => s.ExtractTokenParts(It.IsAny<HttpRequestMessage>(), out outTerminalId, out outUserId));
+                For<IHMACAuthenticator>().Use(fr8HMACAuthenticator.Object);
+
+                var fr8HMACService = new Mock<IHMACService>();
+                For<IHMACService>().Use(fr8HMACService.Object);
+
+                var mockTerminalService = new Mock<ITerminal>();
+                mockTerminalService.Setup(x => x.GetTerminalByPublicIdentifier(It.Is<string>(s => s == outTerminalId))).ReturnsAsync(new TerminalDO());
+                For<ITerminal>().Use(mockTerminalService.Object);
             }
         }
 

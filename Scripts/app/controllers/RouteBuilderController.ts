@@ -27,6 +27,7 @@ module dockyard.controllers {
 
         addAction(group: model.ActionGroup): void;
         deleteAction: (action: model.ActionDTO) => void;
+        chooseAuthToken: (action: model.ActionDTO) => void;
         selectAction(action): void;
         isBusy: () => boolean;
         onActionDrop: (group: model.ActionGroup, actionId: string, index: number) => void;
@@ -59,7 +60,9 @@ module dockyard.controllers {
             '$filter',
             'UIHelperService',
             'LayoutService',
-            '$state'
+            '$modal',
+            'AuthService',
+            'ConfigureTrackerService'
         ];
 
         private _longRunningActionsCounter: number;
@@ -76,7 +79,10 @@ module dockyard.controllers {
             private CrateHelper: services.CrateHelper,
             private $filter: ng.IFilterService,
             private uiHelperService: services.IUIHelperService,
-            private LayoutService: services.ILayoutService
+            private LayoutService: services.ILayoutService,
+            private $modal: any,
+            private AuthService: services.AuthService,
+            private ConfigureTrackerService: services.ConfigureTrackerService
             ) {
 
             this.$scope.current = new model.RouteBuilderState();
@@ -95,6 +101,9 @@ module dockyard.controllers {
             this._longRunningActionsCounter = 0;
 
             $scope.deleteAction = <() => void> angular.bind(this, this.deleteAction);
+            this.$scope.chooseAuthToken = (action: model.ActionDTO) => {
+                this.chooseAuthToken(action);
+            };
 
             this.$scope.selectAction = (action: model.ActionDTO) => {
                 if (!this.$scope.current.action || this.$scope.current.action.id !== action.id)
@@ -163,7 +172,6 @@ module dockyard.controllers {
 
         private reConfigure(actions: model.ActionDTO[]) {
             for (var i = 0; i < actions.length; i++) {
-                
                 this.$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Reconfigure], new pca.ActionReconfigureEventArgs(actions[i]));
                 if (actions[i].childrenActions.length > 0) {
                     this.reConfigure(<model.ActionDTO[]>actions[i].childrenActions);
@@ -292,6 +300,8 @@ module dockyard.controllers {
         }
 
         private onRouteLoad(mode: string, curRoute: interfaces.IRouteVM) {
+            this.AuthService.clear();
+
             this.$scope.mode = mode;
             this.$scope.current.route = curRoute;
             this.$scope.currentSubroute = curRoute.subroutes[0];
@@ -329,6 +339,10 @@ module dockyard.controllers {
 
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_SetSolutionMode], () => this.PaneConfigureAction_SetSolutionMode());
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ChildActionsDetected], () => this.PaneConfigureAction_ChildActionsDetected());
+
+            // Handles Response from Configure call from PaneConfiguration
+            this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ConfigureCallResponse],
+                (event: ng.IAngularEvent, callConfigureResponseEventArgs: pca.CallConfigureResponseEventArgs) => this.PaneConfigureAction_ConfigureCallResponse(callConfigureResponseEventArgs));
         }
 
         private renderRoute(curRoute: interfaces.IRouteVM) {
@@ -386,6 +400,28 @@ module dockyard.controllers {
             this.loadRoute();
         }
 
+        private chooseAuthToken(action: model.ActionDTO) {
+
+            var self = this;
+
+            var modalScope = <any>self.$scope.$new(true);
+            modalScope.actionIds = [action.id];
+
+            self.$modal.open({
+                animation: true,
+                templateUrl: '/AngularTemplate/AuthenticationDialog',
+                controller: 'AuthenticationDialogController',
+                scope: modalScope
+            })
+            .result
+            .then(() => {
+                self.$scope.$broadcast(
+                    pca.MessageType[pca.MessageType.PaneConfigureAction_Reconfigure],
+                    new pca.ActionReconfigureEventArgs(action)
+                );
+            });
+        }
+
         private deleteAction(action: model.ActionDTO) {
             var self = this;
             self.ActionService.deleteById({ id: action.id, confirmed: false }).$promise.then((response) => {
@@ -402,7 +438,6 @@ module dockyard.controllers {
             }); 
         }
 
-
         private PaneSelectAction_ActivityTypeSelected(eventArgs: psa.ActivityTypeSelectedEventArgs) {
 
             var activityTemplate = eventArgs.activityTemplate;
@@ -413,7 +448,7 @@ module dockyard.controllers {
                 parentId = eventArgs.group.parentAction.id;
             }
             // Create new action object.
-            var action = new model.ActionDTO(parentId, id, true);
+            var action = new model.ActionDTO(this.$scope.routeId, parentId, id, true);
             action.name = activityTemplate.name;
             action.label = activityTemplate.label;
             // Add action to Workflow Designer.
@@ -453,7 +488,6 @@ module dockyard.controllers {
             if (this.$scope.current.action) {
                 originalId = this.$scope.current.action.id;
             }
-
             // Save previously selected action (and associated entities)
             // If a new action has just been added, it will be saved. 
             var promise = this.RouteBuilderService.saveCurrent(this.$scope.current);
@@ -506,7 +540,6 @@ module dockyard.controllers {
         */
         private PaneWorkflowDesigner_TemplateSelected(eventArgs: pwd.TemplateSelectedEventArgs) {
             console.log("RouteBuilderController: template selected");
-
             this.RouteBuilderService.saveCurrent(this.$scope.current)
                 .then((result: model.RouteBuilderState) => {
                 // Notity interested parties of action update and update $scope
@@ -548,8 +581,8 @@ module dockyard.controllers {
         }
 
         private updateChildActionsRecursive(curAction: interfaces.IActionVM) {
-            this.$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Reconfigure]);
-            
+            this.AuthService.clear();
+            this.$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Reconfigure]);           
         }
 
         
@@ -574,6 +607,33 @@ module dockyard.controllers {
 
         private PaneConfigureAction_ChildActionsDetected() {
             this.loadRoute();
+        }
+
+        // This should handle everything that should be done when a configure call response arrives from server.
+        private PaneConfigureAction_ConfigureCallResponse(callConfigureResponseEventArgs: pca.CallConfigureResponseEventArgs) {
+            
+            //let's wait for last configure call before starting on aggresive actions
+            if (this.ConfigureTrackerService.hasPendingConfigureCalls()) {
+                return;
+            }
+
+
+            // scann all actions to find actions with tag AgressiveReload in ActivityTemplate
+            this.reConfigure(this.getReloadAgressiveActions(this.$scope.actionGroups, callConfigureResponseEventArgs.action));
+        }
+
+        private getReloadAgressiveActions(actionGroups: Array<model.ActionGroup>, currentAction: interfaces.IActionDTO) {
+            var results: Array<model.ActionDTO> = [];
+            actionGroups.forEach(group => {
+                group.actions.filter(action => {
+                    return action.activityTemplate.tags !== null && action.activityTemplate.tags.indexOf('AggressiveReload') !== -1;
+                }).forEach(action => {
+                    if (action !== currentAction) {
+                        results.push(action);
+                    }
+                });
+            });
+            return results;
         }
     }
     app.controller('RouteBuilderController', RouteBuilderController);

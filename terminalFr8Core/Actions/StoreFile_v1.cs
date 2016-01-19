@@ -97,7 +97,7 @@ namespace terminalFr8Core.Actions
             using (var stream = GenerateStreamFromString(fileContents))
             {
                 //TODO what to do with this fileDO??
-                var fileDO = await HubCommunicator.SaveFile(fileNameField.Value, stream);
+                var fileDO = await HubCommunicator.SaveFile(fileNameField.Value, stream, CurrentFr8UserId);
             }
 
             

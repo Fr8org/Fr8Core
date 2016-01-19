@@ -12,9 +12,9 @@ namespace terminalFr8CoreTests.Integration
     [Explicit]
     public class Terminal_Discover_v1Tests : BaseHealthMonitorTest
     {
-        private const int Fr8CoreActionCount = 14;
+        private const int Fr8CoreActionCount = 16;
 
-        private const string FilterUsingRunTimeDataName = "FilterUsingRunTimeData";
+        private const string TestIncomingDataName = "TestIncomingData";
         private const string MapFieldsName = "MapFields";
         private const string AddPayloadManuallyName = "AddPayloadManually";
         private const string StoreMTDataName = "StoreMTData";
@@ -28,6 +28,8 @@ namespace terminalFr8CoreTests.Integration
         private const string SetDelayName = "SetDelay";
         private const string ConvertCratesName = "ConvertCrates";
         private const string ConvertRelatedFieldsIntoTableName = "ConvertRelatedFieldsIntoTable";
+        private const string QueryMTDatabaseName = "QueryMTDatabase";
+        private const string ShowReportName = "Show_Report_Onscreen";
 
         public override string TerminalName
         {
@@ -43,7 +45,7 @@ namespace terminalFr8CoreTests.Integration
 
             Assert.NotNull(terminalDiscoverResponse);
             Assert.AreEqual(Fr8CoreActionCount, terminalDiscoverResponse.Actions.Count);
-            Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == FilterUsingRunTimeDataName));
+            Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == TestIncomingDataName));
             Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == MapFieldsName));
             Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == AddPayloadManuallyName));
             Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == StoreMTDataName));
@@ -57,6 +59,8 @@ namespace terminalFr8CoreTests.Integration
             Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == SetDelayName));
             Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == ConvertCratesName));
             Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == ConvertRelatedFieldsIntoTableName));
+            Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == QueryMTDatabaseName));
+            Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == ShowReportName));
         }
     }
 }

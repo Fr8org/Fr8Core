@@ -1,4 +1,5 @@
 ﻿using Data.Interfaces.Manifests;
+using Data.States;
 using Newtonsoft.Json;
 
 namespace Data.Crates
@@ -12,7 +13,7 @@ namespace Data.Crates
         }
 
         public Crate(Crate crate)
-            : base(crate.ManifestType, crate.Id)
+            : base(crate.ManifestType, crate.Id, crate.Availability)
         {
             Label = crate.Label;
             KnownContent = crate.Get<T>();
@@ -20,9 +21,13 @@ namespace Data.Crates
 
         public static Crate<T> FromContent(string label, T content)
         {
-            return new Crate<T>(FromContentUnsafe(label, content));
+            return FromContent(label, content, AvailabilityType.NotSet);
         }
-     
+
+        public static Crate<T> FromContent(string label, T content, AvailabilityType availability)
+        {
+            return new Crate<T>(FromContentUnsafe(label, content, availability));
+        }     
     }
 
 }

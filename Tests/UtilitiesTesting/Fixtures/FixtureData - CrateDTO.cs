@@ -50,6 +50,16 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
+        public static CrateDTO TestEmptyCrateDTO()
+        {
+            return new CrateDTO
+            {
+                Label = "Test",
+                CreateTime = DateTime.Now,
+                Id = "123"
+            };
+        }
+
 
         public static Crate CreateStandardConfigurationControls()
         {

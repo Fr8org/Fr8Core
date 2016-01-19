@@ -46,8 +46,6 @@ namespace HubWeb
             settings.Formatting = Formatting.Indented;
             settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
 
-
-
             //Register global Exception Filter for WebAPI 
             GlobalConfiguration.Configuration.Filters.Add(new WebApiExceptionFilterAttribute());
 
@@ -93,7 +91,7 @@ namespace HubWeb
             Logger.GetLogger().Warn("Dockyard  starting...");
 
             ConfigureValidationEngine();
-
+            StartupMigration.CreateSystemUser();
         }
 
         private void ConfigureValidationEngine()
