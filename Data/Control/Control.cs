@@ -69,7 +69,7 @@ namespace Data.Control
         [JsonProperty("selectedKey")]
         public string selectedKey { get; set; }
 
-        public DropDownList()
+        public DropDownList() : base()
         {
             ListItems = new List<ListItem>();
             Type = "DropDownList";
@@ -216,12 +216,12 @@ namespace Data.Control
         [JsonProperty("valueSource")]
         public string ValueSource;
 
-        public TextSource() 
+        public TextSource() : base()
         {
             Type = ControlTypes.TextSource;
         }
 
-        public TextSource(string initialLabel, string upstreamSourceLabel, string name)
+        public TextSource(string initialLabel, string upstreamSourceLabel, string name) : base()
         {
             Type = ControlTypes.TextSource;
             this.InitialLabel = initialLabel;
@@ -310,8 +310,8 @@ namespace Data.Control
 
     }
 
-    
- 
+
+
 
     public class FieldSourceDTO
     {
@@ -402,7 +402,7 @@ namespace Data.Control
         public string Value { get; set; }
     }
 
-    public class UpstreamDataChooser: ControlDefinitionDTO
+    public class UpstreamDataChooser : ControlDefinitionDTO
     {
         public UpstreamDataChooser()
         {
@@ -419,7 +419,7 @@ namespace Data.Control
         public string SelectedFieldType { get; set; }
     }
 
-    public class UpstreamFieldChooser: ControlDefinitionDTO
+    public class UpstreamFieldChooser : ControlDefinitionDTO
     {
         public UpstreamFieldChooser()
         {

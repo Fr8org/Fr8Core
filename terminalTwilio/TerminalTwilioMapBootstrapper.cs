@@ -15,18 +15,18 @@ namespace terminalTwilio
             switch (type)
             {
                 case StructureMapBootStrapper.DependencyType.TEST:
-                    container.Configure(ConfigureLive); // no test mode yet
+                    container.Configure(LiveConfiguration); // no test mode yet
                     break;
 
                 case StructureMapBootStrapper.DependencyType.LIVE:
-                    container.Configure(ConfigureLive);
+                    container.Configure(LiveConfiguration);
                     break;
             }
         }
 
         /**********************************************************************************/
 
-        private static void ConfigureLive(ConfigurationExpression configurationExpression)
+        public static void LiveConfiguration(ConfigurationExpression configurationExpression)
         {
             configurationExpression.For<ITwilioService>().Singleton().Use<TwilioService>();
         }

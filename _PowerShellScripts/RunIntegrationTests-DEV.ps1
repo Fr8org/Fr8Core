@@ -1,5 +1,5 @@
 $RootDir = Split-Path -parent $PSCommandPath
-$HealthMonitorCmd = "$RootDir\..\Tests\HealthMonitor\bin\Debug\HealthMonitor.exe --email-report --app-name VSO-DEV"
+$HealthMonitorCmd = "$RootDir\..\Tests\HealthMonitor\bin\Debug\HealthMonitor.exe --email-report --app-name VSO-DEV --ensure-startup"
 $SrcConfigFile = "$RootDir\DEV-HealthMonitor.exe.config"
 $DstConfigFile = "$RootDir\..\Tests\HealthMonitor\bin\Debug\HealthMonitor.exe.config"
 
@@ -8,5 +8,5 @@ Copy-Item $SrcConfigFile -Destination $DstConfigFile -Force
 
 Write-Host $HealthMonitorCmd
 
-Start-Sleep -s 120
+Start-Sleep -s 60
 Invoke-Expression $HealthMonitorCmd

@@ -14,7 +14,7 @@ namespace terminalSalesforce.Actions
 {
     public class Create_Contact_v1 : BaseTerminalAction
     {
-        ISalesforceIntegration _salesforce = new SalesforceIntegration();
+        ISalesforceManager _salesforce = new SalesforceManager();
 
         public override async Task<ActionDO> Configure(ActionDO curActionDO,AuthorizationTokenDO authTokenDO)
         {
@@ -23,32 +23,12 @@ namespace terminalSalesforce.Actions
             return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
         }
 
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
-        {
-            var payloadCrates = await GetPayload(curActionDO, containerId);
-
-            if (NeedsAuthentication(authTokenDO))
-            {
-                return NeedsAuthenticationError(payloadCrates);
-            }
-            
-            var lastName = ExtractControlFieldValue(curActionDO, "lastName");
-            if (string.IsNullOrEmpty(lastName))
-            {
-                return Error(payloadCrates, "No last name found in action.");
-            }
-
-            bool result = _salesforce.CreateContact(curActionDO, authTokenDO);
-
-            return Success(payloadCrates);
-        }
-
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
             return ConfigurationRequestType.Initial;
         }
 
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO= null)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO = null)
         {
             var firstNameCrate = new TextBox()
             {
@@ -85,6 +65,42 @@ namespace terminalSalesforce.Actions
             }
 
             return await Task.FromResult(curActionDO);
+        }
+
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        {
+            var payloadCrates = await GetPayload(curActionDO, containerId);
+
+            if (NeedsAuthentication(authTokenDO))
+            {
+                return NeedsAuthenticationError(payloadCrates);
+            }
+
+            var firstName = ExtractControlFieldValue(curActionDO, "firstName");
+            var lastName = ExtractControlFieldValue(curActionDO, "lastName");
+            var mobilePhone = ExtractControlFieldValue(curActionDO, "mobilePhone");
+            var email = ExtractControlFieldValue(curActionDO, "email");
+            if (string.IsNullOrEmpty(lastName))
+            {
+                return Error(payloadCrates, "No last name found in action.");
+            }
+
+            var contact = new ContactDTO
+            {
+                FirstName = firstName,
+                LastName = lastName,
+                MobilePhone = mobilePhone,
+                Email = email
+            };
+
+            bool result = await _salesforce.CreateObject(contact, "Contact", _salesforce.CreateForceClient(authTokenDO));
+
+            if (result)
+            {
+                return Success(payloadCrates);
+            }
+
+            return Error(payloadCrates, "Contact creation is failed");
         }
     }
 }

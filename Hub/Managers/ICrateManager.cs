@@ -10,12 +10,13 @@ using Newtonsoft.Json.Linq;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using Data.States;
 
 namespace Hub.Managers
 {
     public interface ICrateStorageUpdater : IDisposable
     {
-        CrateStorage  CrateStorage { get; set; }
+        CrateStorage CrateStorage { get; set; }
         void DiscardChanges();
     }
 
@@ -33,10 +34,12 @@ namespace Hub.Managers
         bool IsEmptyStorage(CrateStorageDTO storageDto);
         string EmptyStorageAsStr();
         string CrateStorageAsStr(CrateStorage storage);
-
         void AddLogMessage(string label, List<LogItemDTO> logItemList, ContainerDO containerDO);
         Crate CreateAuthenticationCrate(string label, AuthenticationMode mode);
         Crate<StandardDesignTimeFieldsCM> CreateDesignTimeFieldsCrate(string label, params FieldDTO[] fields);
+        Crate<StandardDesignTimeFieldsCM> CreateDesignTimeFieldsCrate(string label, List<FieldDTO> fields);
+        Crate<StandardDesignTimeFieldsCM> CreateDesignTimeFieldsCrate(string label, List<FieldDTO> fields, AvailabilityType availability);
+        Crate<StandardDesignTimeFieldsCM> CreateDesignTimeFieldsCrate(string label, AvailabilityType availability, params FieldDTO[] fields);
         Crate<StandardConfigurationControlsCM> CreateStandardConfigurationControlsCrate(string label, params ControlDefinitionDTO[] controls);
         Crate CreateStandardEventReportCrate(string label, EventReportCM eventReport);
         Crate CreateStandardEventSubscriptionsCrate(string label, params string[] subscriptions);
@@ -49,5 +52,7 @@ namespace Hub.Managers
         OperationalStateCM GetOperationalState(PayloadDTO payloadDTO);
         IEnumerable<FieldDTO> GetFields(IEnumerable<Crate> crates);
         IEnumerable<string> GetLabelsByManifestType(IEnumerable<Crate> crates, string manifestType);
+        StandardDesignTimeFieldsCM MergeContentFields(List<Crate<StandardDesignTimeFieldsCM>> curCrates);
+
     }
 }

@@ -50,8 +50,8 @@ namespace terminalDocuSign.Tests.Actions
 
 
             var hubCommunicator = new Mock<IHubCommunicator>();
-            hubCommunicator.Setup(r => r.GetPayload(It.IsAny<ActionDO>(), It.IsAny<Guid>())).Returns(Task.FromResult(new PayloadDTO(Guid.Empty) { CrateStorage = new CrateStorageDTO() }));
-            hubCommunicator.Setup(r => r.GetActivityTemplates(It.IsAny<ActionDO>())).Returns(Task.FromResult(new List<ActivityTemplateDTO>()
+            hubCommunicator.Setup(r => r.GetPayload(It.IsAny<ActionDO>(), It.IsAny<Guid>(), It.IsAny<string>())).Returns(Task.FromResult(new PayloadDTO(Guid.Empty) { CrateStorage = new CrateStorageDTO() }));
+            hubCommunicator.Setup(r => r.GetActivityTemplates(It.IsAny<ActionDO>(), It.IsAny<string>())).Returns(Task.FromResult(new List<ActivityTemplateDTO>()
             {
                 new ActivityTemplateDTO()
                 {
@@ -113,14 +113,14 @@ namespace terminalDocuSign.Tests.Actions
 
 
             var storage = _crateManager.GetStorage(((ActionDO) result.ChildNodes[0]).CrateStorage);
-            var config = storage.CrateContentsOfType<StandardConfigurationControlsCM>().First();
-            var ui = new Query_DocuSign_v1.ActionUi();
+            var configurationControls = storage.CrateContentsOfType<StandardConfigurationControlsCM>().First();
+            var actionUi = new Query_DocuSign_v1.ActionUi();
             
-            ui.ClonePropertiesFrom(config);
+            actionUi.ClonePropertiesFrom(configurationControls);
 
-            Assert.AreEqual("A", ui.Folder.Value);
-            Assert.AreEqual("B", ui.SearchText.Value);
-            Assert.AreEqual("C", ui.Status.Value);
+            Assert.AreEqual("A", actionUi.Folder.Value);
+            Assert.AreEqual("B", actionUi.SearchText.Value);
+            Assert.AreEqual("C", actionUi.Status.Value);
         }
     }
 }

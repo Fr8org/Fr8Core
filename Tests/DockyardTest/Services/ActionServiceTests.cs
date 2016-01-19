@@ -306,6 +306,7 @@ namespace DockyardTest.Services
                     Endpoint = "ep",
                     Version = "1",
                     Name = "Terminal",
+                    Secret = Guid.NewGuid().ToString()
                 };
 
                 uow.TerminalRepository.Add(terminal);
@@ -467,7 +468,7 @@ namespace DockyardTest.Services
             }
 
             ActionDTO actionDto = Mapper.Map<ActionDTO>(actionDo);
-            TerminalTransmitterMock.Setup(rc => rc.PostAsync(It.IsAny<Uri>(), It.IsAny<object>()))
+            TerminalTransmitterMock.Setup(rc => rc.PostAsync(It.IsAny<Uri>(), It.IsAny<object>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
                 .Returns(() => Task.FromResult<string>(JsonConvert.SerializeObject(actionDto)));
 
             ContainerDO containerDO = FixtureData.TestContainer1();
@@ -589,7 +590,7 @@ namespace DockyardTest.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var terminalClientMock = new Mock<ITerminalTransmitter>();
-                terminalClientMock.Setup(s => s.CallActionAsync<PayloadDTO>(It.IsAny<string>(), It.IsAny<ActionDTO>()))
+                terminalClientMock.Setup(s => s.CallActionAsync<PayloadDTO>(It.IsAny<string>(), It.IsAny<ActionDTO>(), It.IsAny<string>()))
                                 .Returns(Task.FromResult(new PayloadDTO(containerDO.Id)
                                 {
                                     CrateStorage = JsonConvert.DeserializeObject<CrateStorageDTO>(actionDo.CrateStorage)

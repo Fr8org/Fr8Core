@@ -14,7 +14,7 @@ namespace terminalAzure
     {
         public static void Register(HttpConfiguration config)
         {
-          BaseTerminalWebApiConfig.Register("Azure",config);
+            BaseTerminalWebApiConfig.Register("Azure", config);
         }
     }
 }

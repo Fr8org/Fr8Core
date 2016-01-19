@@ -76,6 +76,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.ApplicationInsights, Version=1.2.3.490, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.1.2.3\lib\net45\Microsoft.ApplicationInsights.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.0.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
       <Private>True</Private>
@@ -173,13 +177,13 @@
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="StructureMap, Version=3.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\structuremap.3.0.3.116\lib\net40\StructureMap.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="StructureMap, Version=3.1.6.186, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\structuremap.3.1.6.186\lib\net40\StructureMap.dll</HintPath>
     </Reference>
-    <Reference Include="StructureMap.Net4, Version=3.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\structuremap.3.0.3.116\lib\net40\StructureMap.Net4.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="StructureMap.Net4, Version=3.1.6.186, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\structuremap.3.1.6.186\lib\net40\StructureMap.Net4.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -257,6 +261,10 @@
     <Compile Include="Entities\MT_Object.cs" />
     <Compile Include="Entities\TerminalSubscriptionDO.cs" />
     <Compile Include="Entities\WebServiceDO.cs" />
+    <Compile Include="Expressions\ConversionMethods.cs" />
+    <Compile Include="Expressions\ExpressionTransformation.cs" />
+    <Compile Include="Expressions\ExpressionTransformation.PropertyInfo.cs" />
+    <Compile Include="Expressions\ExpressionTransformation.TransformationVisitor.cs" />
     <Compile Include="Infrastructure\AutoMapper\JSONToStringConverter.cs" />
     <Compile Include="Infrastructure\AutoMapper\DataAutoMapperBootstrapper.cs" />
     <Compile Include="Infrastructure\AutoMapper\RouteDOFullConverter.cs" />
@@ -273,6 +281,7 @@
     <Compile Include="Infrastructure\MultiTenant\MT_Object.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDataPackageDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\AlarmDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\AuthenticateResponse.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FactDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldValidationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDTO.cs" />
@@ -289,6 +298,7 @@
     <Compile Include="Interfaces\DataTransferObjects\ExternalAuthUrlDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FileDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FilterConditionDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\FilterDataDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FinancialLineDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\LogItemDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ManageAuthTokenDTO.cs" />
@@ -333,6 +343,7 @@
     <Compile Include="Interfaces\Manifests\CrateManifestTypes.cs" />
     <Compile Include="Interfaces\Manifests\DocuSignTemplateCM.cs" />
     <Compile Include="Interfaces\Manifests\DocuSignRecipientCM.cs" />
+    <Compile Include="Interfaces\Manifests\MtPrimaryKeyAttribute.cs" />
     <Compile Include="Interfaces\Manifests\StandardAccountingTransactionCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFileListCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFr8RoutesCM .cs" />
@@ -525,6 +536,22 @@
     <Compile Include="Migrations\201512251516487_Authorization_V2_Migration.Designer.cs">
       <DependentUpon>201512251516487_Authorization_V2_Migration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201512311353389_Removed_From_FileDO.cs" />
+    <Compile Include="Migrations\201512311353389_Removed_From_FileDO.Designer.cs">
+      <DependentUpon>201512311353389_Removed_From_FileDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201601031440042_Added_Tag_And_FileTags.cs" />
+    <Compile Include="Migrations\201601031440042_Added_Tag_And_FileTags.Designer.cs">
+      <DependentUpon>201601031440042_Added_Tag_And_FileTags.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201601150502349_RouteNodeDO_RootId.cs" />
+    <Compile Include="Migrations\201601150502349_RouteNodeDO_RootId.Designer.cs">
+      <DependentUpon>201601150502349_RouteNodeDO_RootId.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201601151838550_AddedPublicIdentifierAndSecretoToTerminalDO.cs" />
+    <Compile Include="Migrations\201601151838550_AddedPublicIdentifierAndSecretoToTerminalDO.Designer.cs">
+      <DependentUpon>201601151838550_AddedPublicIdentifierAndSecretoToTerminalDO.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryBase.cs" />
@@ -533,13 +560,24 @@
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryStub.cs" />
     <Compile Include="Repositories\Authorization\IAuthorizationTokenRepository.cs" />
     <Compile Include="Repositories\Authorization\KeyVaultAuthorizationTokenRepository.cs" />
+    <Compile Include="Repositories\FileTagsRepository.cs" />
+    <Compile Include="Interfaces\IMultiTenantObjectRepository.cs" />
+    <Compile Include="Repositories\MultiTenant\Queryable\IMtQueryable.cs" />
+    <Compile Include="Repositories\MultiTenant\Queryable\IMtQueryExecutor.cs" />
+    <Compile Include="Repositories\MultiTenant\Queryable\MtQueryable.cs" />
+    <Compile Include="Repositories\MultiTenant\Queryable\MtQueryableExtensions.cs" />
+    <Compile Include="Repositories\MultiTenant\Queryable\MtQueryAll.cs" />
+    <Compile Include="Repositories\MultiTenant\Queryable\MtQueryExecutor.cs" />
+    <Compile Include="Expressions\ReplaceParameterVisitor.cs" />
+    <Compile Include="Repositories\MultiTenant\Queryable\MtWhere.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
-    <Compile Include="Repositories\MTDataRepository.cs" />
-    <Compile Include="Repositories\MTFieldRepository.cs" />
-    <Compile Include="Repositories\MTFieldTypeRepository.cs" />
-    <Compile Include="Repositories\MTObjectRepository.cs" />
-    <Compile Include="Repositories\MultiTenantObjectRepository.cs" />
+    <Compile Include="Repositories\MultiTenant\MTDataRepository.cs" />
+    <Compile Include="Repositories\MultiTenant\MTFieldRepository.cs" />
+    <Compile Include="Repositories\MultiTenant\MTFieldTypeRepository.cs" />
+    <Compile Include="Repositories\MultiTenant\MTObjectRepository.cs" />
+    <Compile Include="Repositories\MultiTenant\MultiTenantObjectRepository.cs" />
+    <Compile Include="Repositories\TagRepository.cs" />
     <Compile Include="Repositories\TerminalRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
     <Compile Include="Repositories\TerminalSubscriptionRepository.cs" />
@@ -715,6 +753,8 @@
     <Compile Include="Repositories\UserRepository.cs" />
     <Compile Include="States\UserState.cs" />
     <Compile Include="Crates\Helpers\LoggingDataCrateFactory.cs" />
+    <Compile Include="Utility\JoinClasses\FileTags.cs" />
+    <Compile Include="Utility\TagDO.cs" />
     <Compile Include="Validations\ActionValidator.cs" />
     <Compile Include="Validations\ContainerValidator.cs" />
     <Compile Include="Validations\SubrouteValidator.cs" />
@@ -872,6 +912,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201512251516487_Authorization_V2_Migration.resx">
       <DependentUpon>201512251516487_Authorization_V2_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201512311353389_Removed_From_FileDO.resx">
+      <DependentUpon>201512311353389_Removed_From_FileDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201601031440042_Added_Tag_And_FileTags.resx">
+      <DependentUpon>201601031440042_Added_Tag_And_FileTags.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201601150502349_RouteNodeDO_RootId.resx">
+      <DependentUpon>201601150502349_RouteNodeDO_RootId.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201601151838550_AddedPublicIdentifierAndSecretoToTerminalDO.resx">
+      <DependentUpon>201601151838550_AddedPublicIdentifierAndSecretoToTerminalDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

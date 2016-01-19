@@ -11,6 +11,7 @@
         type: string;
         fieldLabel: string;
         name: string;
+        errorMessage : string;
         events: Array<ControlEvent>;
         value: string;
     }
@@ -26,6 +27,12 @@
 
     export class Button extends ControlDefinitionDTO {
         checked: boolean;
+
+        constructor(label: string) {
+            super();
+            this.type = 'Button';
+            (<any>this).label = label;
+        }
     }
 
     export class TextBox extends ControlDefinitionDTO {
@@ -66,7 +73,7 @@
         public sourceCrateManifest: {
             Id: string;
             Type: string;
-        }
+        };
     }
 
     export enum AvailabilityType {
@@ -110,7 +117,7 @@
 
     export class RoutingControlGroup extends ControlDefinitionDTO {
         sourceField: string;
-        routes: Array<Route>
+        routes: Array<Route>;
     }
 
     export class Route extends ControlDefinitionDTO {

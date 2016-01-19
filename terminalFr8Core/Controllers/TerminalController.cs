@@ -41,8 +41,8 @@ namespace terminalFr8Core.Controllers
 
             result.Add(new ActivityTemplateDTO
             {
-                Name = "FilterUsingRunTimeData",
-                Label = "Filter Using Runtime Data",
+                Name = "TestIncomingData",
+                Label = "Test Incoming Data",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 Version = "1",
@@ -187,6 +187,27 @@ namespace terminalFr8Core.Controllers
                 WebService = webService,
                 Version = "1",
                 MinPaneWidth = 400
+            });
+
+            result.Add(new ActivityTemplateDTO()
+            {
+                Name = "QueryMTDatabase",
+                Label = "Query MT Database",
+                Category = ActivityCategory.Processors,
+                Terminal = terminal,
+                WebService = webService,
+                Version = "1"
+            });
+
+            result.Add(new ActivityTemplateDTO
+            {
+                Name = "Show_Report_Onscreen",
+                Label = "Show Report Onscreen",
+                Version = "1",
+                Category = ActivityCategory.Processors,
+                NeedsAuthentication = false,
+                Terminal = terminal,
+                MinPaneWidth = 380
             });
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()

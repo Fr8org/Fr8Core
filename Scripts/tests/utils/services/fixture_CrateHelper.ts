@@ -265,6 +265,7 @@
                                 "value": null,
                                 "label": null,
                                 "type": "TextBox",
+                                "errorMessage":null,
                                 "selected": false,
                                 "events": null,
                                 "source": null
@@ -282,6 +283,7 @@
                                 "required": false,
                                 "value": null,
                                 "label": null,
+                                "errorMessage": null,
                                 "type": "DropDownList",
                                 "selected": false,
                                 "events": [
@@ -302,6 +304,7 @@
                                 "value": null,
                                 "label": null,
                                 "type": "TextSource",
+                                "errorMessage": null,
                                 "selected": false,
                                 "events": [],
                                 "source": {
@@ -317,6 +320,7 @@
                 ],
                 "name": null,
                 "required": false,
+                "errorMessage": null,
                 "value": null,
                 "label": "For the SMS Number use:",
                 "type": "RadioButtonGroup",
@@ -332,6 +336,7 @@
                 "label": "SMS Body",
                 "type": "TextBox",
                 "selected": false,
+                "errorMessage": null,
                 "events": null,
                 "source": null,
                 fieldLabel: null
@@ -344,6 +349,7 @@
                 "label": null,
                 "type": "DropDownList",
                 "selected": false,
+                "errorMessage": null,
                 "events": [],
                 "source": {
                     "manifestType": "Standard Design-Time Fields1",
@@ -362,6 +368,7 @@
                 "value": "",
                 "label": null,
                 "type": "DropDownList",
+                "errorMessage": null,
                 "selected": false,
                 "events": null,
                 "source": {
@@ -381,6 +388,7 @@
                 "value": "",
                 "label": null,
                 "type": "TextSource",
+                "errorMessage": null,
                 "selected": false,
                 "events": null,
                 "source": {
@@ -389,7 +397,7 @@
                     "filterByTag": "NoAddress"
                 }
             }
-        ]
+        ];
 
     }
 

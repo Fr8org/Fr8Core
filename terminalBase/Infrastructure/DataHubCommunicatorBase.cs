@@ -10,6 +10,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Managers;
+using Data.Constants;
 
 namespace TerminalBase.Infrastructure
 {
@@ -35,7 +36,7 @@ namespace TerminalBase.Infrastructure
             }
         }
 
-        public Task<PayloadDTO> GetPayload(ActionDO actionDO, Guid containerId)
+        public Task<PayloadDTO> GetPayload(ActionDO actionDO, Guid containerId, string userId)
         {
             var payload = new PayloadDTO(containerId)
             {
@@ -57,8 +58,7 @@ namespace TerminalBase.Infrastructure
             return Task.FromResult(payload);
         }
 
-        public Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(
-            ActionDO actionDO, CrateDirection direction)
+        public Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActionDO actionDO, CrateDirection direction, string userId)
         {
             var searchLabel = direction == CrateDirection.Upstream
                 ? LabelPrefix + "_UpstreamCrate"
@@ -74,7 +74,7 @@ namespace TerminalBase.Infrastructure
             return Task.FromResult(crates);
         }
 
-        public Task<List<Crate>> GetCratesByDirection(ActionDO actionDO, CrateDirection direction)
+        public Task<List<Crate>> GetCratesByDirection(ActionDO actionDO, CrateDirection direction, string userId)
         {
             var searchLabel = direction == CrateDirection.Upstream
                 ? LabelPrefix + "_UpstreamCrate"
@@ -90,12 +90,12 @@ namespace TerminalBase.Infrastructure
             return Task.FromResult(crates);
         }
 
-        public async Task CreateAlarm(AlarmDTO alarmDTO)
+        public async Task CreateAlarm(AlarmDTO alarmDTO, string userId)
         {
-            
+
         }
 
-        public Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActionDO actionDO)
+        public Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActionDO actionDO, string userId)
         {
             var searchLabel = LabelPrefix + "_ActivityTemplate";
 
@@ -111,10 +111,9 @@ namespace TerminalBase.Infrastructure
             return Task.FromResult(activityTemplates);
         }
 
-        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(
-            ActionDO actionDO, ActivityCategory category)
+        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActionDO actionDO, ActivityCategory category, string userId)
         {
-            var allTemplates = await GetActivityTemplates(actionDO);
+            var allTemplates = await GetActivityTemplates(actionDO, userId);
             var activityTemplates = allTemplates
                 .Where(x => x.Category == category)
                 .ToList();
@@ -122,10 +121,9 @@ namespace TerminalBase.Infrastructure
             return activityTemplates;
         }
 
-        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(
-            ActionDO actionDO, string tag)
+        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActionDO actionDO, string tag, string userId)
         {
-            var allTemplates = await GetActivityTemplates(actionDO);
+            var allTemplates = await GetActivityTemplates(actionDO, userId);
             if (string.IsNullOrEmpty(tag))
             {
                 return allTemplates;
@@ -136,6 +134,26 @@ namespace TerminalBase.Infrastructure
                 .ToList();
 
             return activityTemplates;
+        }
+
+        public Task<List<FieldValidationResult>> ValidateFields(List<FieldValidationDTO> fields, string userId)
+        {
+            return Task.FromResult(new List<FieldValidationResult>());
+        }
+
+        public async Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(ActionDO actionDO, CrateDirection direction, AvailabilityType availability, string userId)
+        {
+            //This code only supports integration testing scenarios
+
+            var mergedFields = new StandardDesignTimeFieldsCM();
+            var curCrates = await GetCratesByDirection<StandardDesignTimeFieldsCM>(actionDO, direction, userId);
+            mergedFields.Fields.AddRange(Crate.MergeContentFields(curCrates).Fields);
+            return mergedFields;
+        }
+
+        public Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(Guid actionId, CrateDirection direction, AvailabilityType availability, string userId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

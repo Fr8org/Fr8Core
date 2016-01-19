@@ -1,6 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Data.States;
 
 namespace Data.Interfaces.DataTransferObjects
 {
@@ -29,5 +30,8 @@ namespace Data.Interfaces.DataTransferObjects
 
         [JsonProperty("createTime")]
         public DateTime CreateTime { get; set; }
+
+        [JsonProperty("availability")]
+        public AvailabilityType Availability { get; set; }
     }
 }

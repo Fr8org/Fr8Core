@@ -6,6 +6,7 @@ using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
+using StructureMap;
 
 namespace TerminalBase.Infrastructure
 {
@@ -16,7 +17,7 @@ namespace TerminalBase.Infrastructure
 
         public ExplicitConfigurationHelper()
         {
-            RestfulServiceClient = new RestfulServiceClient();
+            RestfulServiceClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
             Crate = new CrateManager();
         }
 
@@ -64,10 +65,7 @@ namespace TerminalBase.Infrastructure
             AddHubCrate(actionDTO, crateManifest, "ExplicitData_DownstreamCrate", crateLabel);
         }
 
-        public async Task<ActionDO> Configure(
-            ActionDO actionDO,
-            ActivityTemplateDTO activityTemplate,
-            AuthorizationTokenDO authTokenDO = null)
+        public async Task<ActionDO> Configure(ActionDO actionDO,ActivityTemplateDTO activityTemplate,AuthorizationTokenDO authTokenDO = null)
         {
             var actionDTO = Mapper.Map<ActionDTO>(actionDO);
             actionDTO.IsExplicitData = true;
@@ -82,8 +80,7 @@ namespace TerminalBase.Infrastructure
                 };
             }
 
-            var responseActionDTO = await RestfulServiceClient.PostAsync<ActionDTO, ActionDTO>(
-                new Uri(GetTerminalConfigureUrl(activityTemplate.Terminal.Endpoint)),
+            var responseActionDTO = await RestfulServiceClient.PostAsync<ActionDTO, ActionDTO>(new Uri(GetTerminalConfigureUrl(activityTemplate.Terminal.Endpoint)),
                 actionDTO
             );
 

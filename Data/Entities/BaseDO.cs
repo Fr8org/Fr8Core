@@ -5,7 +5,7 @@ using Data.Interfaces;
 
 namespace Data.Entities
 {
-    public class BaseDO : IBaseDO, ICreateHook, ISaveHook, IModifyHook
+    public class BaseObject : IBaseDO, ICreateHook, ISaveHook, IModifyHook
     {
         public DateTimeOffset LastUpdated { get; set; }
         public DateTimeOffset CreateDate { get; set; }

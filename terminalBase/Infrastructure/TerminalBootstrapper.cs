@@ -1,5 +1,7 @@
-﻿using StructureMap;
+﻿using Hub.Managers.APIManagers.Transmitters.Restful;
+using StructureMap;
 using StructureMap.Configuration.DSL;
+using TerminalBase.BaseClasses;
 
 namespace TerminalBase.Infrastructure
 {

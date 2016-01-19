@@ -17,6 +17,7 @@ using terminalTwilio.Services;
 using terminalTwilio.Tests.Fixtures;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
+using System;
 
 namespace terminalTwilio.Tests.Actions
 {
@@ -53,7 +54,7 @@ namespace terminalTwilio.Tests.Actions
             var action = FixtureData.ConfigureTwilioAction();
             var baseTerminalAction = new Mock<BaseTerminalAction>();
             baseTerminalAction
-                .Setup(c => c.GetDesignTimeFields(It.IsAny<ActionDO>(), CrateDirection.Upstream))
+                .Setup(c => c.GetDesignTimeFields(It.IsAny<Guid>(), CrateDirection.Upstream, AvailabilityType.NotSet))
                 .Returns(Task.FromResult(FixtureData.TestFields()));
             ObjectFactory.Configure(cfg => cfg.For<BaseTerminalAction>().Use(baseTerminalAction.Object));
 
@@ -112,8 +113,8 @@ namespace terminalTwilio.Tests.Actions
 
             var smsINfo = _twilioAction.ParseSMSNumberAndMsg(crateDTO, null);
 
-            Assert.AreEqual(smsINfo.Key, "+15005550006");
-            Assert.AreEqual(smsINfo.Value, "DO-1437 test");
+            Assert.AreEqual("+15005550006", smsINfo.Key);
+            Assert.AreEqual("DO-1437 test", smsINfo.Value);
         }
     }
 }

@@ -246,13 +246,17 @@
       <HintPath>packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="StructureMap, Version=3.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\structuremap.3.0.3.116\lib\net40\StructureMap.dll</HintPath>
+    <Reference Include="RestSharp, Version=105.2.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\RestSharp.105.2.2\lib\net45\RestSharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="StructureMap.Net4, Version=3.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\structuremap.3.0.3.116\lib\net40\StructureMap.Net4.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="StructureMap, Version=3.1.6.186, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\structuremap.3.1.6.186\lib\net40\StructureMap.dll</HintPath>
+    </Reference>
+    <Reference Include="StructureMap.Net4, Version=3.1.6.186, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\structuremap.3.1.6.186\lib\net40\StructureMap.Net4.dll</HintPath>
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -347,6 +351,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Start\StartupMigration.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\Api\ActionsController.cs" />
     <Compile Include="Controllers\Api\AlarmsController.cs" />
@@ -360,7 +365,6 @@
     <Compile Include="Controllers\Api\FieldController.cs" />
     <Compile Include="Controllers\Api\ActionListController.cs" />
     <Compile Include="Controllers\Api\CriteriaController.cs" />
-    <Compile Include="Controllers\Api\Fr8EventController.cs" />
     <Compile Include="Controllers\DocuSignTemplateController.cs" />
     <Compile Include="Controllers\Helpers\RouteMappingHelper.cs" />
     <Compile Include="Controllers\Api\RouteNodesController.cs" />
@@ -374,7 +378,6 @@
     <Compile Include="Controllers\Api\ContainerController.cs" />
     <Compile Include="Controllers\StatusController.cs" />
     <Compile Include="Controllers\AngularTemplateController.cs" />
-    <Compile Include="Controllers\Api\ManageFileController.cs" />
     <Compile Include="Controllers\Api\UserController.cs" />
     <Compile Include="Controllers\Api\WebServicesController.cs" />
     <Compile Include="DependencyResolution\IoC.cs" />
@@ -419,6 +422,8 @@
     <Compile Include="Controllers\Api\ReportController.cs" />
     <Compile Include="Controllers\TokenAuthController.cs" />
     <Compile Include="ExceptionHandling\MvcHandleErrorAttribute.cs" />
+    <Compile Include="Infrastructure\fr8HubWebHMACAuthorizeAttribute.cs" />
+    <Compile Include="Infrastructure\TerminalPrinciple.cs" />
     <Compile Include="ViewModels\AuthenticationErrorVM.cs" />
     <Compile Include="ViewModels\DocusignLoginVM.cs" />
     <Compile Include="ViewModels\ForgotPasswordVM.cs" />
@@ -513,6 +518,7 @@
     <Content Include="Content\img\Cross.png" />
     <Content Include="Content\img\dockyard_logo.png" />
     <Content Include="Content\img\EmailLogo.png" />
+    <Content Include="Content\img\exclamation-small.png" />
     <Content Include="Content\img\favicon.ico" />
     <Content Include="Content\img\googleCalendar.png" />
     <Content Include="Content\img\icloud-logo.png" />
@@ -562,9 +568,9 @@
     <Content Include="Content\img\welcome\logo.png" />
     <Content Include="Content\img\welcome\right-side-bg.jpg" />
     <Content Include="Content\img\welcome\routeBuilder.png" />
-<Content Include="Content\img\welcome\DocuSign_Logo_Purple_Yellow.png" />
-<Content Include="Content\img\welcome\header_green.png" />
-<Content Include="Content\img\welcome\welcome_header.png" />
+    <Content Include="Content\img\welcome\DocuSign_Logo_Purple_Yellow.png" />
+    <Content Include="Content\img\welcome\header_green.png" />
+    <Content Include="Content\img\welcome\welcome_header.png" />
     <Content Include="fr8terminals.txt" />
     <Content Include="Documentation\AccountCustomFields.html" />
     <Content Include="Documentation\AddaNewGroup.html" />
@@ -753,10 +759,16 @@
     <Content Include="_PowerShellScripts\MASTER-job-run.cmd" />
     <Content Include="_PowerShellScripts\MASTER-settings.job" />
     <Content Include="_PowerShellScripts\DeployAzureWebJob-HealthMonitor-MASTER.ps1" />
+    <Content Include="_PowerShellScripts\KillProcess.ps1" />
+    <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamFieldChooser.ts" />
+    <TypeScriptCompile Include="Scripts\app\filters\DateTimeFormatter.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\FilterByTag.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\AuthenticationDialogController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManageAuthTokenController.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\AuthService.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\ConfigureTrackerService.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\FileDetailsService.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\UpstreamFieldChooser.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\filters\FilterByTagTests.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\TerminalFormController.ts" />
@@ -852,6 +864,7 @@
     <Content Include="Views\AngularTemplate\UpstreamDataChooser.cshtml" />
     <Content Include="Views\AngularTemplate\UpstreamFieldChooser.cshtml" />
     <Content Include="Views\AngularTemplate\UsersEmailList.cshtml" />
+    <Content Include="Views\AngularTemplate\FileDetails.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -25,17 +25,28 @@ namespace Data.Interfaces.DataTransferObjects
 
         public FieldDTO()
         {
+            //Availability = AvailabilityType.Configuration;
         }
 
-        public FieldDTO(string key)
+        public FieldDTO(string key) : this()
         {
             Key = key;
         }
-
-        public FieldDTO(string key, string value)
+        public FieldDTO(string key, AvailabilityType availability) : this()
+        {
+            Key = key;
+            Availability = availability;
+        }
+        public FieldDTO(string key, string value) : this()
         {
             Key = key;
             Value = value;
+        }
+        public FieldDTO(string key, string value, AvailabilityType availability) : this()
+        {
+            Key = key;
+            Value = value;
+            Availability = availability;
         }
     }
 }

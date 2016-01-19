@@ -9,8 +9,10 @@
         componentActivities: string;
         category: string;
         type: string;
+        tags: string;
         minPaneWidth: number;
         terminal: TerminalDTO;
+        needsAuthentication: boolean;
 
         constructor(
             id: number,

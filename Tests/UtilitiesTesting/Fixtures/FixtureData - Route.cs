@@ -73,6 +73,7 @@ namespace UtilitiesTesting.Fixtures
                     Id = GetTestGuidById(i),
                     Name = string.Format("curSubrouteDO-{0}", i),
                     ParentRouteNode = curRouteDO,
+                    RootRouteNode = curRouteDO
                 };
                 curRouteDO.ChildNodes.Add(curSubrouteDO);
             }
@@ -119,6 +120,7 @@ namespace UtilitiesTesting.Fixtures
                 SubrouteDO subrouteDO = new SubrouteDO()
                 {
                     ParentRouteNode = routeDO,
+                    RootRouteNode = routeDO,
                     StartingSubroute = true
                 };
                 uow.SubrouteRepository.Add(subrouteDO);
@@ -160,6 +162,86 @@ namespace UtilitiesTesting.Fixtures
             return routeDO;
         }
 
+        public static RouteDO TestRouteWithSubscribeEvent(Fr8AccountDO user)
+        {
+            RouteDO routeDO;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.UserRepository.Add(user);
+
+                routeDO = new RouteDO()
+                {
+                    Id = GetTestGuidById(23),
+                    Description = "HealthDemo Integration Test",
+                    Name = "StandardEventTesting",
+                    RouteState = RouteState.Active,
+                    Fr8Account = user
+                };
+                uow.RouteNodeRepository.Add(routeDO);
+
+                var actionTemplate = ActionTemplate();
+
+                var containerDO = new ContainerDO()
+                {
+                    Id = TestContainer_Id_1(),
+                    RouteId = routeDO.Id,
+                    ContainerState = 1
+                };
+
+                using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => containerDO.CrateStorage))
+                {
+                    updater.CrateStorage.Add(GetEnvelopeIdCrate());
+                }
+
+                uow.ContainerRepository.Add(containerDO);
+
+
+
+                SubrouteDO subrouteDO = new SubrouteDO()
+                {
+                    ParentRouteNode = routeDO,
+                    RootRouteNode = routeDO,
+                    StartingSubroute = true
+                };
+                uow.SubrouteRepository.Add(subrouteDO);
+                routeDO.ChildNodes = new List<RouteNodeDO> { subrouteDO };
+                routeDO.StartingSubroute = subrouteDO;
+
+
+                var actionDo = new ActionDO()
+                {
+                    ParentRouteNode = routeDO,
+                    ParentRouteNodeId = routeDO.Id,
+                    Name = "testaction",
+
+                    Id = GetTestGuidById(1),
+                    ActivityTemplateId = actionTemplate.Id,
+                    ActivityTemplate = actionTemplate,
+                    Ordering = 1
+                };
+
+                ICrateManager crate = ObjectFactory.GetInstance<ICrateManager>();
+
+                var serializer = new JsonSerializer();
+                EventSubscriptionCM eventSubscriptionMS = new EventSubscriptionCM();
+                eventSubscriptionMS.Subscriptions = new List<string>();
+                eventSubscriptionMS.Subscriptions.Add("DocuSign Envelope Sent");
+                eventSubscriptionMS.Subscriptions.Add("Write to SQL AZure");
+
+                using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(actionDo))
+                {
+                    updater.CrateStorage.Add(Crate.FromContent("Standard Event Subscriptions", eventSubscriptionMS));
+                }
+
+                uow.ActionRepository.Add(actionDo);
+                subrouteDO.ChildNodes.Add(actionDo);
+
+                uow.SaveChanges();
+            }
+            return routeDO;
+        }
+
+
         public static RouteDO TestRoute3()
         {
             var curRouteDO = new RouteDO
@@ -177,6 +259,7 @@ namespace UtilitiesTesting.Fixtures
                     Id = GetTestGuidById(i),
                     Name = string.Format("curSubrouteDO-{0}", i),
                     ParentRouteNode = curRouteDO,
+                    RootRouteNode = curRouteDO,
                     ChildNodes = FixtureData.TestActionList1(),
                 };
                 curRouteDO.ChildNodes.Add(curSubrouteDO);
@@ -202,6 +285,7 @@ namespace UtilitiesTesting.Fixtures
                     Id = GetTestGuidById(i),
                     Name = string.Format("curSubrouteDO-{0}", i),
                     ParentRouteNode = curRouteDO,
+                    RootRouteNode = curRouteDO,
                     ChildNodes = FixtureData.TestActionListParentActivityID12()
                 };
                 curRouteDO.ChildNodes.Add(curSubrouteDO);
@@ -225,6 +309,7 @@ namespace UtilitiesTesting.Fixtures
                 Id = GetTestGuidById(1),
                 Name = string.Format("curSubrouteDO-{0}", 1),
                 ParentRouteNode = curRouteDO,
+                RootRouteNode = curRouteDO,
                 StartingSubroute = true
             };
             curRouteDO.ChildNodes.Add(curSubrouteDO);
@@ -250,6 +335,7 @@ namespace UtilitiesTesting.Fixtures
                 Id = GetTestGuidById(1),
                 Name = string.Format("curSubrouteDO-{0}", 1),
                 ParentRouteNode = curRouteDO,
+                RootRouteNode = curRouteDO,
                 StartingSubroute = true
             };
             curRouteDO.ChildNodes.Add(curSubrouteDO);
@@ -275,6 +361,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Name = string.Format("curSubrouteDO-{0}", 1),
                 ParentRouteNode = curRouteDO,
+                RootRouteNode = curRouteDO,
                 StartingSubroute = true
             };
             curRouteDO.ChildNodes.Add(curSubrouteDO);

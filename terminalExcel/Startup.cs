@@ -16,11 +16,11 @@ using TerminalBase;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 
-[assembly: OwinStartup("TerminalExcelConfiguration", typeof(terminalExcel.StartupTerminalExcel))]
+[assembly: OwinStartup("TerminalExcelConfiguration", typeof(terminalExcel.Startup))]
 
 namespace terminalExcel
 {
-    public class StartupTerminalExcel : BaseConfiguration
+    public class Startup : BaseConfiguration
     {
         public void Configuration(IAppBuilder app)
         {
@@ -30,46 +30,23 @@ namespace terminalExcel
         public void Configuration(IAppBuilder app, bool selfHost)
         {
             ConfigureProject(selfHost, TerminalExcelStructureMapRegistries.LiveConfiguration);
-
             RoutesConfig.Register(_configuration);
 
-            //if (selfHost)
-            //{
-            // Web API routes
-            _configuration.Services.Replace(typeof(IHttpControllerTypeResolver), new TerminalControllerTypeResolver());
-            //}
-
-            //DataAutoMapperBootStrapper.ConfigureAutoMapper();
-
-            ConfigureFormatters();
-
             app.UseWebApi(_configuration);
-            TerminalBootstrapper.ConfigureLive();
+
             if (!selfHost)
             {
-                StartHosting("terminal_Excel");
+                StartHosting("terminalExcel");
             }
         }
 
-        //public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
-        //{
-        //    return new Type[] {
-        //            typeof(Controllers.ActionController),
-        //            typeof(Controllers.EventController),
-        //            typeof(Controllers.PluginController)
-        //        };
-        //}
-
-        public class TerminalControllerTypeResolver : IHttpControllerTypeResolver
-        {
-            public ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
+        public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
         {
             return new Type[] {
                     typeof(Controllers.ActionController),
                     typeof(Controllers.EventController),
                     typeof(Controllers.TerminalController)
                 };
-        }
         }
     }
 }

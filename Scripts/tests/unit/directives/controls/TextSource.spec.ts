@@ -22,6 +22,17 @@ module dockyard.tests.unit.directives.controls {
         scope.$apply();
     };
 
+    var getButton = (curElement, selector) => {
+        return angular.element(curElement.find(selector));
+    };
+
+    //emulate the click 
+    var triggerRadioHandler = (scope, curElement, selector) => {
+        getButton(curElement, selector).prop("checked", true);
+        getButton(curElement, selector).click();
+        scope.$apply();
+    };
+
     describe('Testing TextSource control', () => {
         var $rootScope,
             $compile,
@@ -66,7 +77,15 @@ module dockyard.tests.unit.directives.controls {
             expect(element.find("[value='upstream']").length).toBe(1);
         });
 
-        it('Should contain the a dropdown list for selecting value from upstream crate', () => {
+        it('Shouldn\'t contain a dropdown list initially', () => {
+            expect(element.find("drop-down-list-box").length).toBe(0);
+        });
+
+        it('Should contain a dropdown list when upstream radio is selected', () => {
+            var curScope = element.isolateScope();
+            curScope.field = angular.copy(fx.FieldDTO.textSource);
+            curScope.onChange = function() {}
+            triggerRadioHandler(curScope, element, 'input[value="upstream"]');
             expect(element.find("drop-down-list-box").length).toBe(1);
         });
 
@@ -119,6 +138,16 @@ module dockyard.tests.unit.directives.controls {
         });
 
         it('Should contain the drop-down for upstream crate in it\'s own scope', () => {
+            var scope1 = element1.isolateScope();
+            var scope2 = element2.isolateScope();
+
+            scope1.field = angular.copy(fx.FieldDTO.textSource);
+            scope1.onChange = function () { }
+            scope2.field = angular.copy(fx.FieldDTO.textSource);
+            scope2.onChange = function () { }
+
+            triggerRadioHandler(scope1, element1, 'input[value="upstream"]');
+            triggerRadioHandler(scope2, element2, 'input[value="upstream"]');
             expect(element1.find("drop-down-list-box").length).toBe(1);
             expect(element2.find("drop-down-list-box").length).toBe(1);
         });

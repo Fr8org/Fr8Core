@@ -13,10 +13,11 @@ using TerminalBase.Infrastructure;
 using Data.Entities;
 using Data.States;
 using Utilities;
+using terminalDocuSign.Infrastructure;
 
 namespace terminalDocuSign.Actions
 {
-    public class Get_DocuSign_Envelope_v1 : BaseTerminalAction
+    public class Get_DocuSign_Envelope_v1 : BaseDocuSignAction
     {
         private readonly DocuSignManager _docuSignManager;
 
@@ -47,7 +48,7 @@ namespace terminalDocuSign.Actions
 
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
             var control = CreateSpecificOrUpstreamValueChooser(
                "EnvelopeId",
                "EnvelopeIdSelector",
@@ -70,12 +71,12 @@ namespace terminalDocuSign.Actions
         {
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
-                var curUpstreamFields = (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream)).Fields.ToArray();
+                var curUpstreamFields = (await GetDesignTimeFields(curActionDO.Id, CrateDirection.Upstream)).Fields.ToArray();
                 var upstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Design-Time Fields", curUpstreamFields);
                 updater.CrateStorage.ReplaceByLabel(upstreamFieldsCrate);
 
                 var control = FindControl(Crate.GetStorage(curActionDO), "EnvelopeIdSelector");
-                string envelopeId = GetEnvelopeID(control as TextSource, authTokenDO);
+                string envelopeId = GetEnvelopeId(control as TextSource, authTokenDO);
                 int fieldsCount = _docuSignManager.UpdateUserDefinedFields(curActionDO, authTokenDO, updater, envelopeId);
             }
             return await Task.FromResult(curActionDO);
@@ -92,7 +93,7 @@ namespace terminalDocuSign.Actions
 
             //Get envlopeId from configuration
             var control = (TextSource)FindControl(Crate.GetStorage(actionDO), "EnvelopeIdSelector");
-            string envelopeId = GetEnvelopeID(control, authTokenDO);
+            string envelopeId = GetEnvelopeId(control, authTokenDO);
             // if it's not valid, try to search upstream runtime values
             if (!envelopeId.IsGuid())
                 envelopeId = control.GetValue(payloadCrateStorage);
@@ -110,7 +111,7 @@ namespace terminalDocuSign.Actions
             return Success(payloadCrates);
         }
 
-        private string GetEnvelopeID(ControlDefinitionDTO control, AuthorizationTokenDO authTokenDo)
+        private string GetEnvelopeId(ControlDefinitionDTO control, AuthorizationTokenDO authTokenDo)
         {
             string envelopeId = null;
             var textSource = (TextSource)control;

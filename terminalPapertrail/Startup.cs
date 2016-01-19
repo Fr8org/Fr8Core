@@ -8,6 +8,8 @@ using Newtonsoft.Json;
 using Owin;
 using TerminalBase;
 using TerminalBase.BaseClasses;
+using System.Web.Http.Dispatcher;
+using terminalPapertrail.Tests.Infrastructure;
 
 [assembly: OwinStartup(typeof(terminalPapertrail.Startup))]
 
@@ -15,9 +17,25 @@ namespace terminalPapertrail
 {
     public class Startup : BaseConfiguration
     {
+        public void Configuration(IAppBuilder app, bool selfHost)
+        {
+            ConfigureProject(selfHost, TerminalPapertrailMapBootstrapper.LiveConfiguration);
+            WebApiConfig.Register(_configuration);
+            app.UseWebApi(_configuration);
+            StartHosting("terminalPapertrail");
+        }
+
         public void Configuration(IAppBuilder app)
         {
-            StartHosting("terminal_Papertrail");
+            Configuration(app, false);
+        }
+
+        public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
+        {
+            return new Type[] {
+                    typeof(Controllers.ActionController),
+                    typeof(Controllers.TerminalController)
+                };
         }
     }
 }

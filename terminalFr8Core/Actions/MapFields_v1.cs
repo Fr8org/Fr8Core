@@ -165,8 +165,8 @@ namespace terminalFr8Core.Actions
             else
             {
                 // true if current up/downstream fields don't match saved up/downstream fields
-                bool upstreamMatch = upStreamFields.Fields.Where(a => curUpstreamFields.Any(b => b.Key == a.Key)).Count() == upStreamFields.Fields.Count;
-                bool downstreamMatch = downStreamFields.Fields.Where(a => curDownstreamFields.Any(b => b.Key == a.Key)).Count() == downStreamFields.Fields.Count;
+                bool upstreamMatch = curUpstreamFields.Where(a => upStreamFields.Fields.Any(b => b.Key == a.Key)).Count() == curUpstreamFields.Count();
+                bool downstreamMatch = curDownstreamFields.Where(a => downStreamFields.Fields.Any(b => b.Key == a.Key)).Count() == curDownstreamFields.Count();
 
                 return !(upstreamMatch & downstreamMatch);
             }
