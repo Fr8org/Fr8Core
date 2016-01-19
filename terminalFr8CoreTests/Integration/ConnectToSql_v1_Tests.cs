@@ -16,7 +16,7 @@ using Hub.Managers.APIManagers.Transmitters.Restful;
 namespace terminalFr8CoreTests.Integration
 {
     [Explicit]
-    public class ConnectToSql_v1_Tests : BaseHealthMonitorTest
+    public class ConnectToSql_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {

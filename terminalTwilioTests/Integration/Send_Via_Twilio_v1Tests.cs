@@ -17,7 +17,7 @@ namespace terminalTwilioTests.Integration
     /// but allows to trigger that class from HealthMonitor.
     /// </summary>
     [Explicit]
-    class Send_Via_Twilio_v1Tests : BaseHealthMonitorTest
+    class Send_Via_Twilio_v1Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {

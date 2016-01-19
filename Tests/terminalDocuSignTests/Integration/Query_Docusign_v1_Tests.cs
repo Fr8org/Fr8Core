@@ -9,7 +9,7 @@ using terminalDocuSignTests.Fixtures;
 namespace terminalDocuSignTests.Integration
 {
     [Explicit]
-    public class Query_DocuSign_v1_Tests : BaseHealthMonitorTest
+    public class Query_DocuSign_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {

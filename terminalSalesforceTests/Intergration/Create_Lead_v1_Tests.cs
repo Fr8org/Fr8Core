@@ -13,7 +13,7 @@ using terminalSalesforceTests.Fixtures;
 namespace terminalSalesforceTests.Intergration
 {
     [Explicit]
-    public class Create_Lead_v1_Tests : BaseHealthMonitorTest
+    public class Create_Lead_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {

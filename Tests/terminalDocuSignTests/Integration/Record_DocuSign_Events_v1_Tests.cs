@@ -17,7 +17,7 @@ using terminalDocuSignTests.Fixtures;
 namespace terminalDocuSignTests.Integration
 {
     [Explicit]
-    public class Record_DocuSign_Events_v1_Tests : BaseHealthMonitorTest
+    public class Record_DocuSign_Events_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {

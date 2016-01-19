@@ -15,7 +15,7 @@ using StructureMap.Util;
 namespace terminalFr8CoreTests.Integration
 {
     [Explicit]
-    public class ExecuteSql_v1_Tests : BaseHealthMonitorTest
+    public class ExecuteSql_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {

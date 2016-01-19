@@ -21,7 +21,7 @@ namespace terminalDocuSignTests.Integration
     /// but allows to trigger that class from HealthMonitor.
     /// </summary>
     [Explicit]
-    public class Monitor_DocuSign_v1_Tests : BaseHealthMonitorTest
+    public class Monitor_DocuSign_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {

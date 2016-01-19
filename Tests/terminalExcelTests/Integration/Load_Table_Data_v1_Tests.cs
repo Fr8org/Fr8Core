@@ -24,7 +24,7 @@ namespace terminalExcelTests.Integration
     /// </summary>
     [Explicit]
     [Category("terminalExcel.Integration")]
-    public class Load_Excel_File_v1_Tests : BaseHealthMonitorTest
+    public class Load_Excel_File_v1_Tests : BaseTerminalIntegrationTest
     {
         public ICrateManager _crateManager;
 

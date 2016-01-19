@@ -17,7 +17,7 @@ using Hub.Managers;
 namespace terminalDocuSignTests.Integration
 {
     [Explicit]
-    public class Receive_DocuSign_Envelope_v1_Tests : BaseHealthMonitorTest
+    public class Receive_DocuSign_Envelope_v1_Tests : BaseTerminalIntegrationTest
     {
         ActionDTO actionDTODesignFields;
 

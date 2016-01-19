@@ -14,7 +14,7 @@ namespace terminalQuickBooksTests.Integration
     /// but allows to trigger that class from HealthMonitor.
     /// </summary>
     [Explicit]
-    internal class Create_Journal_Entry_v1Tests : BaseHealthMonitorTest
+    internal class Create_Journal_Entry_v1Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {

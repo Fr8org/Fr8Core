@@ -13,7 +13,7 @@ using Newtonsoft.Json.Linq;
 namespace terminalGoogleTests.Unit
 {
     [Explicit]
-    public class Receive_Google_Form_v1_Tests : BaseHealthMonitorTest
+    public class Receive_Google_Form_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {

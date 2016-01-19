@@ -17,7 +17,7 @@ using StructureMap;
 
 namespace HealthMonitor.Utility
 {
-    public abstract class BaseHealthMonitorTest
+    public abstract class BaseTerminalIntegrationTest
     {
         public ICrateManager Crate { get; set; }
         public IRestfulServiceClient RestfulServiceClient { get; set; }
@@ -37,7 +37,7 @@ namespace HealthMonitor.Utility
             }
         }
 
-        public BaseHealthMonitorTest()
+        public BaseTerminalIntegrationTest()
         {
             ObjectFactory.Initialize();
             ObjectFactory.Configure(Hub.StructureMap.StructureMapBootStrapper.LiveConfiguration);

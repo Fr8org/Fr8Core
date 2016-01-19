@@ -14,7 +14,7 @@ using terminalTests.Fixtures;
 namespace terminalFr8CoreTests.Integration
 {
     [Explicit]
-    public class MapFields_v1_Tests : BaseHealthMonitorTest
+    public class MapFields_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {

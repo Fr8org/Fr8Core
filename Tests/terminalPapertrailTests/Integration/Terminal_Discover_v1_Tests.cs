@@ -12,7 +12,7 @@ namespace terminalPapertrailTests.Integration
     /// but allows to trigger that class from HealthMonitor.
     /// </summary>
     [Explicit]
-    public class Terminal_Discover_v1_Tests : BaseHealthMonitorTest
+    public class Terminal_Discover_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {

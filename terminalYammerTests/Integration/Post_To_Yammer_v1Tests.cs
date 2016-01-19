@@ -19,7 +19,7 @@ namespace terminalYammerTests.Integration
     /// </summary>
     [Explicit]
     [Category("Integration.terminalYammer")]
-    public class Post_To_Yammer_v1_Tests : BaseHealthMonitorTest
+    public class Post_To_Yammer_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {
