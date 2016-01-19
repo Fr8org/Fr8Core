@@ -26,12 +26,14 @@ namespace HubWeb.Controllers
         private readonly IRouteNode _activity;
         private readonly ISecurityServices _security;
         private readonly ICrateManager _crate;
+        private readonly IActivityTemplate _activityTemplate;
 
         public RouteNodesController()
         {
             _activity = ObjectFactory.GetInstance<IRouteNode>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
+            _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
         }
 
         [HttpGet]
@@ -39,15 +41,11 @@ namespace HubWeb.Controllers
         [Fr8ApiAuthorize]
         public IHttpActionResult Get(int id)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curActivityTemplateDO = uow.ActivityTemplateRepository.GetByKey(id);
+            var curActivityTemplateDO = _activityTemplate.GetByKey(id);
+            var curActivityTemplateDTO = Mapper.Map<ActivityTemplateDTO>(curActivityTemplateDO);
 
-                var curActivityTemplateDTO =
-                    Mapper.Map<ActivityTemplateDTO>(curActivityTemplateDO);
+            return Ok(curActivityTemplateDTO);
 
-                return Ok(curActivityTemplateDTO);
-            }
         }
 
         [ActionName("upstream")]

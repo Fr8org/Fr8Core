@@ -58,7 +58,7 @@ namespace HubWeb
                 { new TerminalIdSecretMatch("terminalQuickBooks", "1","75ec4967-6113-43b5-bb4c-6b3468696e57","749f5c59-1bf1-4cb6-9275-eb1d489d9a05")},
                 { new TerminalIdSecretMatch("terminalYammer", "1","f2b999be-be3f-42b5-b0d5-611d0606723b","d14aaa44-22a1-4d2c-b14b-be559c8941b5")},
                 { new TerminalIdSecretMatch("terminalAtlassian", "1","d770ec3c-975b-4ca8-910e-a55ac43af383","f747e49c-63a8-4a1b-8347-dd2e436c3b36")}
-
+                
             };
 
         public async void Configuration(IAppBuilder app)
@@ -149,12 +149,15 @@ namespace HubWeb
 
         public async Task RegisterTerminalActions()
         {
-            var listRegisteredActivityTemplates = new List<ActivityTemplateDO>();
             var alertReporter = ObjectFactory.GetInstance<EventReporter>();
 
             var activityTemplateHosts = Utilities.FileUtils.LoadFileHostList();
             int count = 0;
             var uri = string.Empty;
+
+            var activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
+            var terminalService = ObjectFactory.GetInstance<ITerminal>();
+
             foreach (string url in activityTemplateHosts)
             {
                 try
@@ -162,14 +165,14 @@ namespace HubWeb
                     uri = url.StartsWith("http") ? url : "http://" + url;
                     uri += "/terminals/discover";
 
-                    var terminalService = ObjectFactory.GetInstance<ITerminal>(); ;
                     var activityTemplateList = await terminalService.GetAvailableActions(uri);
+                    
                     foreach (var curItem in activityTemplateList)
                     {
                         try
                         {
-                            new ActivityTemplate().Register(curItem);
-                            listRegisteredActivityTemplates.Add(curItem);
+                            terminalService.RegisterOrUpdate(curItem.Terminal);
+                            activityTemplate.RegisterOrUpdate(curItem);
                             count++;
                         }
                         catch (Exception ex)
@@ -192,7 +195,6 @@ namespace HubWeb
                 }
             }
 
-            UpdateActivityTemplates(listRegisteredActivityTemplates);
             alertReporter.ActivityTemplatesSuccessfullyRegistered(count);
             SetStaticTerminalSecrets();
         }
@@ -215,127 +217,9 @@ namespace HubWeb
             }
         }
 
-        public bool CheckForActivityTemplate(string templateName)
-        {
-            bool found = true;
-            try
-            {
-                using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    ActivityTemplateRepository activityTemplateRepositary = uow.ActivityTemplateRepository;
-                    List<ActivityTemplateDO> activityTemplateRepositaryItems = activityTemplateRepositary.GetAll().ToList();
-
-                    if (!activityTemplateRepositaryItems.Any(item => item.Name == templateName))
-                    {
-                        found = false;
-                    }
-
-                }
-            }
-            catch (Exception e)
-            {
-                Logger.GetLogger().Error(String.Format("Error checking for activity template \"{0}\"", templateName), e);
-            }
-            return found;
-        }
-
         public static IDisposable CreateServer(string url)
         {
             return WebApp.Start<Startup>(url: url);
         }
-
-        private void UpdateActivityTemplates(List<ActivityTemplateDO> listRegisteredItems)
-        {
-            using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var needSave = false;
-                var repository = uow.ActivityTemplateRepository;
-                var listRepositaryItems = repository.GetAll().ToList();
-                foreach (var repositaryItem in listRepositaryItems)
-                {
-                    var registeredItem = listRegisteredItems.FirstOrDefault(x => x.Name.ToLower().Equals(repositaryItem.Name.ToLower()));
-                    if (!object.Equals(registeredItem, default(ActivityTemplateDO)))
-                    {
-                        if (repositaryItem.Label != repositaryItem.Label)
-                        {
-                            repositaryItem.Label = registeredItem.Label;
-                            needSave = true;
-                        }
-
-                        if (repositaryItem.MinPaneWidth != registeredItem.MinPaneWidth)
-                        {
-                            repositaryItem.MinPaneWidth = registeredItem.MinPaneWidth;
-                            needSave = true;
-                        }
-
-                        if (registeredItem.WebServiceId != null &&
-                            repositaryItem.WebServiceId != registeredItem.WebServiceId)
-                        {
-                            repositaryItem.WebServiceId = registeredItem.WebServiceId;
-                            needSave = true;
-                        }
-
-                        if (registeredItem.TerminalId > 0 &&
-                            repositaryItem.TerminalId != registeredItem.TerminalId)
-                        {
-                            repositaryItem.TerminalId = registeredItem.TerminalId;
-                            needSave = true;
-                        }
-
-                        if (repositaryItem.Version != registeredItem.Version)
-                        {
-                            repositaryItem.Version = registeredItem.Version;
-                            needSave = true;
-                        }
-
-                        if (repositaryItem.Category != registeredItem.Category)
-                        {
-                            repositaryItem.Category = registeredItem.Category;
-                            needSave = true;
-                        }
-
-                        // if (repositaryItem.AuthenticationType != registeredItem.AuthenticationType)
-                        // {
-                        //     repositaryItem.AuthenticationType = registeredItem.AuthenticationType;
-                        //     needSave = true;
-                        // }
-
-                        if (repositaryItem.ComponentActivities != registeredItem.ComponentActivities)
-                        {
-                            repositaryItem.ComponentActivities = registeredItem.ComponentActivities;
-                            needSave = true;
-                        }
-
-                        if (repositaryItem.Tags != registeredItem.Tags)
-                        {
-                            repositaryItem.Tags = registeredItem.Tags;
-                            needSave = true;
-                        }
-
-                        if (repositaryItem.Description != registeredItem.Description)
-                        {
-                            repositaryItem.Description = registeredItem.Description;
-                            needSave = true;
-                        }
-                    }
-                    else
-                    {
-                        repositaryItem.ActivityTemplateState = Data.States.ActivityTemplateState.Inactive;
-                        needSave = true;
-
-
-                        var alertReporter = ObjectFactory.GetInstance<EventReporter>();
-                        alertReporter.ActivityTemplateTerminalRegistrationError(
-                            string.Format("Failed to Find Terminal For ActivityTemplate {0}.", repositaryItem.Name), "Disabling");
-                    }
-                }
-
-                if (needSave)
-                {
-                    uow.SaveChanges();
-                }
-            }
-        }
-
     }
 }

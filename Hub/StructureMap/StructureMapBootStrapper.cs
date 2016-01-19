@@ -120,9 +120,9 @@ namespace Hub.StructureMap
                 For<IField>().Use<Field>();
                 //For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 For<IEvent>().Use<Event>();
-                For<IActivityTemplate>().Use<ActivityTemplate>();
+                For<IActivityTemplate>().Use<ActivityTemplate>().Singleton();
                 For<IFile>().Use<InternalClass.File>();
-                For<ITerminal>().Use<Terminal>();
+                For<ITerminal>().Use<Terminal>().Singleton();
                 For<ICrateManager>().Use<CrateManager>();
                 For<IReport>().Use<Report>();
                 For<IManifest>().Use<Manifest>();

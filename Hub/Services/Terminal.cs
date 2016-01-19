@@ -1,19 +1,15 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
+using System.Data.Entity;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.Manifests;
 using Hub.Interfaces;
 using Hub.Managers.APIManagers.Transmitters.Restful;
-using Data.Interfaces.Manifests;
-using Hub.Managers;
-using System.Linq;
-using System.Data.Entity;
+using StructureMap;
 
 namespace Hub.Services
 {
@@ -22,88 +18,143 @@ namespace Hub.Services
     /// </summary>
     public class Terminal : ITerminal
     {
-        public IEnumerable<TerminalDO> GetAll()
+        private readonly Dictionary<int, TerminalDO>  _terminals = new Dictionary<int, TerminalDO>();
+        private bool _isInitialized;
+
+        private void Initialize()
+        {
+            if (_isInitialized)
+            {
+                return;
+            }
+
+            lock (_terminals)
+            {
+                if (_isInitialized)
+                {
+                    return;
+                }
+
+                LoadFromDb();
+
+                _isInitialized = true;
+            }
+        }
+
+        private void LoadFromDb()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return uow.TerminalRepository.GetAll();
+                foreach (var existingTerminal in uow.TerminalRepository.GetAll())
+                {
+                    _terminals[existingTerminal.Id] = Clone(existingTerminal);
+                }
             }
         }
 
-        public async Task<IList<string>> RegisterTerminals(string uri)
+        public TerminalDO GetByKey(int terminalId)
         {
-            var eventReporter = ObjectFactory.GetInstance<EventReporter>();
+            Initialize();
 
-            var activityTemplateList = await GetAvailableActions(uri);
-
-            List<string> activityTemplateNames = new List<string>(); 
-            foreach (var activityTemplate in activityTemplateList)
+            lock (_terminals)
             {
-                try
-                {
-                    new ActivityTemplate().Register(activityTemplate);
-                    activityTemplateNames.Add(activityTemplate.Name);
-                }
-                catch (Exception ex)
-                {
-                    eventReporter = ObjectFactory.GetInstance<EventReporter>();
-                    eventReporter.ActivityTemplateTerminalRegistrationError(
-                        string.Format("Failed to register {0} terminal. Error Message: {1}", activityTemplate.Terminal.Name, ex.Message),
-                        ex.GetType().Name);
-                }
-            }
+                TerminalDO terminal;
 
-            return activityTemplateNames;
+                if (!_terminals.TryGetValue(terminalId, out terminal))
+                {
+                    throw new KeyNotFoundException(string.Format("Unable to find terminal with id {0}", terminalId));
+                }
+
+                return terminal;
+            }
         }
         
-
-        /// <summary>
-        /// Parses the required terminal service URL for the given action by Terminal Name and its version
-        /// </summary>
-        /// <param name="curTerminalName">Name of the required terminal</param>
-        /// <param name="curTerminalVersion">Version of the required terminal</param>
-        /// <param name="curActionName">Required action</param>
-        /// <returns>Parsed URl to the terminal for its action</returns>
-        public string ParseTerminalUrlFor(string curTerminalName, string curTerminalVersion, string curActionName)
+        public void RegisterOrUpdate(TerminalDO terminalDo)
         {
-            using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            Initialize();
+
+            lock (_terminals)
             {
-                //get the terminal by name and version
-                ITerminalDO curTerminal =
-                    uow.TerminalRepository.FindOne(
-                        terminal => terminal.Name.Equals(curTerminalName) && terminal.Version.Equals(curTerminalVersion));
-
-
-                string curTerminalUrl = string.Empty;
-
-                //if there is a valid terminal, prepare the URL with its endpoint and add the given action name
-                if (curTerminal != null)
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    curTerminalUrl += @"http://" + curTerminal.Endpoint + "/" + curActionName;
-                }
+                    var existingTerminal = uow.TerminalRepository.FindOne(x => x.Name == terminalDo.Name);
 
-                //return the pugin URL
-                return curTerminalUrl;
+                    if (existingTerminal == null)
+                    {
+                        uow.TerminalRepository.Add(existingTerminal = terminalDo);
+                        uow.SaveChanges();
+                    }
+                    else
+                    {
+                        existingTerminal.AuthenticationType = terminalDo.AuthenticationType;
+                        existingTerminal.Description = terminalDo.Description;
+                        existingTerminal.Endpoint = terminalDo.Endpoint;
+                        existingTerminal.Name = terminalDo.Name;
+                        existingTerminal.PublicIdentifier = terminalDo.PublicIdentifier;
+                        existingTerminal.Secret = terminalDo.Secret;
+                        existingTerminal.SubscriptionRequired = terminalDo.SubscriptionRequired;
+                        existingTerminal.TerminalStatus = terminalDo.TerminalStatus;
+                        existingTerminal.Version = terminalDo.Version;
+                       
+                        uow.SaveChanges();
+                    }
+
+                    _terminals[existingTerminal.Id] = Clone(existingTerminal); 
+                }
             }
         }
 
+        private TerminalDO Clone(TerminalDO source)
+        {
+            return new TerminalDO
+            {
+                AuthenticationType = source.AuthenticationType,
+                Description = source.Description,
+                Endpoint = source.Endpoint,
+                Id = source.Id,
+                Name = source.Name,
+                PublicIdentifier = source.PublicIdentifier,
+                Secret = source.Secret,
+                SubscriptionRequired = source.SubscriptionRequired,
+                TerminalStatus = source.TerminalStatus,
+                Version = source.Version
+            };
+        }
+
+        public IEnumerable<TerminalDO> GetAll()
+        {
+            Initialize();
+
+            lock (_terminals)
+            {
+                return _terminals.Values.ToArray();
+            }
+        }
+        
+        
         public async Task<IList<ActivityTemplateDO>> GetAvailableActions(string uri)
         {
+            Initialize();
+
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
             var standardFr8TerminalCM = await restClient.GetAsync<StandardFr8TerminalCM>(new Uri(uri, UriKind.Absolute));
             return Mapper.Map<IList<ActivityTemplateDO>>(standardFr8TerminalCM.Actions);
         }
-
+        
         public async Task<TerminalDO> GetTerminalByPublicIdentifier(string terminalId)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            Initialize();
+
+            lock (_terminals)
             {
-                return uow.TerminalRepository.GetQuery().FirstOrDefault(t => t.PublicIdentifier == terminalId);
+                return _terminals.Values.FirstOrDefault(t => t.PublicIdentifier == terminalId);
             }
         }
 
         public async Task<bool> IsUserSubscribedToTerminal(string terminalId, string userId)
         {
+            Initialize();
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var subscription = await uow.TerminalSubscriptionRepository.GetQuery().FirstOrDefaultAsync(s => s.Terminal.PublicIdentifier == terminalId && s.UserDO.Id == userId);

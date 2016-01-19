@@ -17,6 +17,7 @@ using Moq;
 using Hub.Managers;
 using Data.Interfaces.Manifests;
 using Data.Crates;
+using Hub.Interfaces;
 
 namespace DockyardTest.Security
 {
@@ -25,6 +26,8 @@ namespace DockyardTest.Security
     public class AuthorizationMethodsTests : BaseTest
     {
         private Authorization _authorization;
+        private ITerminal _terminal;
+        private IActivityTemplate _activityTemplate;
 
         private ICrateManager _crate;
 
@@ -34,6 +37,12 @@ namespace DockyardTest.Security
         public override void SetUp()
         {
             base.SetUp();
+
+            ObjectFactory.Container.Configure(x =>
+            {
+                x.For<ITerminal>().Use<Terminal>().Singleton();
+            });
+
             _authorization = new Authorization();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
         }   
