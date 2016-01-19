@@ -9,11 +9,18 @@ namespace Hub.Interfaces
     {
         IEnumerable<TerminalDO> GetAll();
 
+        /// <summary>
+        /// Parses the required terminal service URL for the given action by Terminal Name and its version
+        /// </summary>
+        /// <param name="curTerminalName">Name of the required terminal</param>
+        /// <param name="curTerminalVersion">Version of the required terminal</param>
+        /// <param name="curActionName">Required action</param>
+        /// <returns>Parsed URl to the terminal for its action</returns>
+        string ParseTerminalUrlFor(string curTerminalName, string curTerminalVersion, string curActionName);
+
+        Task<IList<string>> RegisterTerminals(string uri);
         Task<IList<ActivityTemplateDO>> GetAvailableActions(string uri);
 
-        TerminalDO GetByKey(int terminalId);
-        void RegisterOrUpdate(TerminalDO terminalDo);
-        
         Task<TerminalDO> GetTerminalByPublicIdentifier(string terminalId);
         Task<bool> IsUserSubscribedToTerminal(string terminalId, string userId);
     }
