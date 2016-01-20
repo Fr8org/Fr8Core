@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Newtonsoft.Json;
 using Data.Expressions;
 using Data.Infrastructure.MultiTenant;
 using Data.Interfaces;
@@ -13,6 +14,15 @@ namespace Data.Repositories
 {
     public class MultiTenantObjectRepository : IMultiTenantObjectRepository
     {
+        private readonly static HashSet<Type> PrimitiveTypes = new HashSet<Type>()
+        {
+            typeof(string), typeof(bool), typeof(bool?), typeof(byte), typeof(byte?),
+            typeof(char), typeof(char?), typeof(short), typeof(short?), typeof(int),
+            typeof(int?), typeof(long), typeof(long?), typeof(float), typeof(float?), 
+            typeof(double), typeof(double?), typeof(DateTime), typeof(DateTime?)
+        };
+
+
         private MT_Field _mtField;
         private MT_Data _mtData;
         private MT_Object _mtObject;
@@ -303,20 +313,61 @@ namespace Data.Repositories
         }
 
         //maps BaseMTO to MTData
-        private void MapManifestToMTData(string curFr8AccountId, Manifest curManifest, List<PropertyInfo> curDataProperties, Entities.MT_Data data, Entities.MT_Object correspondingDTObject)
+        private void MapManifestToMTData(
+            string curFr8AccountId,
+            Manifest curManifest,
+            List<PropertyInfo> curDataProperties,
+            Entities.MT_Data data,
+            Entities.MT_Object correspondingDTObject)
         {
             var correspondingDTFields = correspondingDTObject.Fields;
             data.fr8AccountId = curFr8AccountId;
             data.GUID = Guid.Empty;
             data.MT_ObjectId = correspondingDTObject.Id;
-            var dataValueCells = data.GetType().GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public).ToList();
+
+            var dataValueCells = data.GetType()
+                .GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public)
+                .ToList();
+
             foreach (var field in correspondingDTFields)
             {
-                var property = curDataProperties.FirstOrDefault(a => a.Name == field.Name);
-                var corrDataCell = dataValueCells.FirstOrDefault(a => a.Name == "Value" + field.FieldColumnOffset);
+                var property = curDataProperties
+                    .FirstOrDefault(a => a.Name == field.Name);
+
+                var corrDataCell = dataValueCells
+                    .FirstOrDefault(a => a.Name == "Value" + field.FieldColumnOffset);
+
                 var val = property.GetValue(curManifest);
-                corrDataCell.SetValue(data, val);
+
+                if (IsOfPrimitiveType(val))
+                {
+                    corrDataCell.SetValue(data, val);
+                }
+                else
+                {
+                    corrDataCell.SetValue(data, ConvertValueToJson(val));
+                }
             }
+        }
+
+        private string ConvertValueToJson(object val)
+        {
+            return JsonConvert.SerializeObject(val);
+        }
+
+        private bool IsOfPrimitiveType(object val)
+        {
+            if (val == null)
+            {
+                return true;
+            }
+
+            return IsOfPrimitiveType(val.GetType());
+        }
+
+        private bool IsOfPrimitiveType(Type type)
+        {
+            return PrimitiveTypes.Contains(type);
         }
 
         //instantiate object from MTData
@@ -344,11 +395,31 @@ namespace Data.Repositories
                         object boxedObject = RuntimeHelpers.GetObjectValue(correspondingProperty);
                     }
 
-                    correspondingProperty.SetValue(obj, val);
+                    if (IsOfPrimitiveType(correspondingProperty.PropertyType))
+                    {
+                        correspondingProperty.SetValue(obj, val);
+                    }
+                    else
+                    {
+                        correspondingProperty.SetValue(
+                            obj,
+                            ConvertValueFromJson(correspondingProperty.PropertyType, val)
+                        );
+                    }
                 }
             }
 
             return (T)obj;
+        }
+
+        private object ConvertValueFromJson(Type type, object sourceValue)
+        {
+            if (sourceValue.GetType() != typeof(string))
+            {
+                throw new ApplicationException("SourceValue is not a string");
+            }
+
+            return JsonConvert.DeserializeObject((string)sourceValue, type);
         }
 
         private PropertyInfo GetPropertyInfo<TSource, TProperty>(Expression<Func<TSource, TProperty>> propertyLambda)
