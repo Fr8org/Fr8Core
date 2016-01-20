@@ -145,7 +145,7 @@ namespace TerminalBase.Infrastructure
         {
             //This code only supports integration testing scenarios
 
-            StandardDesignTimeFieldsCM mergedFields = new StandardDesignTimeFieldsCM();
+            var mergedFields = new StandardDesignTimeFieldsCM();
             var curCrates = await GetCratesByDirection<StandardDesignTimeFieldsCM>(actionDO, direction, userId);
             mergedFields.Fields.AddRange(Crate.MergeContentFields(curCrates).Fields);
             return mergedFields;
