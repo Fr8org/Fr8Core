@@ -26,6 +26,7 @@ using HubWeb.Infrastructure;
 
 namespace HubWeb.Controllers
 {
+    
     [Fr8HubWebHMACAuthorize]
     [Fr8ApiAuthorize]
     public class ActionsController : ApiController
@@ -59,15 +60,14 @@ namespace HubWeb.Controllers
         }
 
 
-
         [HttpPost]
-        public async Task<IHttpActionResult> Create(int actionTemplateId, string name, string label = null, Guid? parentNodeId = null, bool createRoute = false)
+        public async Task<IHttpActionResult> Create(int actionTemplateId, string name, string label = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var userId = User.Identity.GetUserId();
 
-                var result = await _action.CreateAndConfigure(uow, userId, actionTemplateId, name, label, parentNodeId, createRoute);
+                var result = await _action.CreateAndConfigure(uow, userId, actionTemplateId, name, label, parentNodeId, createRoute, authorizationTokenId);
 
                 if (result is ActionDO)
                 {

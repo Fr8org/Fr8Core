@@ -156,7 +156,17 @@ namespace TerminalBase.Infrastructure
             throw new NotImplementedException();
         }
 
-        public Task<ActionDTO> Configure(ActionDTO actionDTO, string userId)
+        public Task<ActionDTO> ConfigureAction(ActionDTO actionDTO, string userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ActionDTO> CreateAndConfigureAction(int templateId, string name, string userId, string label = null, Guid? parentNodeId = default(Guid?), bool createRoute = false, Guid? authorizationTokenId = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ActionDO> ConfigureAction(ActionDO actionDO, string userId)
         {
             throw new NotImplementedException();
         }

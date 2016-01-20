@@ -7,6 +7,7 @@ using Hub.Infrastructure;
 using StructureMap;
 using Hub.Interfaces;
 using Utilities.Configuration.Azure;
+using System.Threading;
 
 namespace TerminalBase.Infrastructure
 {
@@ -24,6 +25,17 @@ namespace TerminalBase.Infrastructure
             {
                 TerminalSecret = ConfigurationManager.AppSettings[terminalName + "TerminalSecret"];
                 TerminalId = ConfigurationManager.AppSettings[terminalName + "TerminalId"];
+            }
+        }
+
+        protected override void Success(string terminalId, string userId)
+        {
+            var identity = new GenericIdentity("terminal-" + terminalId, userId);
+            var principle = new GenericPrincipal(identity, new string[] { });
+            Thread.CurrentPrincipal = principle;
+            if (HttpContext.Current != null)
+            {
+                HttpContext.Current.User = principle;
             }
         }
 
