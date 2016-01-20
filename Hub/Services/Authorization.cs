@@ -27,27 +27,14 @@ namespace Hub.Services
 	    private readonly ITime _time;
         private readonly IActivityTemplate _activityTemplate;
         private readonly ITerminal _terminal;
-            
+
+
         public Authorization()
         {
             _terminal = ObjectFactory.GetInstance<ITerminal>();
 			_crate = ObjectFactory.GetInstance<ICrateManager>();
 	        _time = ObjectFactory.GetInstance<ITime>();
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
-        }
-
-        public string GetToken(string userId)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var tokenDO = uow.AuthorizationTokenRepository.FindTokenByUserId(userId);
-                if (tokenDO != null)
-                {
-                    return tokenDO.Token;
-                }
-            }
-
-            return null;
         }
 
         public string GetToken(string userId, int terminalId)
@@ -75,45 +62,6 @@ namespace Hub.Services
 //            }
 //            return null;
 //        }
-
-
-        public void AddOrUpdateToken(string userId, string token)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var tokenDO = uow.AuthorizationTokenRepository.FindTokenByUserId(userId);
-                if (tokenDO == null)
-                {
-                    tokenDO = new AuthorizationTokenDO()
-                    {
-                        UserID = userId
-                    };
-                    uow.AuthorizationTokenRepository.Add(tokenDO);
-                }
-
-	            DateTime currentTime = _time.CurrentDateTime();
-
-				tokenDO.ExpiresAt = currentTime.AddYears(100);
-                tokenDO.Token = token;
-
-                uow.SaveChanges();
-            }
-        }
-
-        public void RemoveToken(string userId)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var tokenDO = uow.AuthorizationTokenRepository.FindTokenByUserId(userId);
-                
-                if (tokenDO != null)
-                {
-                    uow.AuthorizationTokenRepository.Remove(tokenDO);
-                    uow.SaveChanges();
-                }
-            }
-        }
-
 
         /// <summary>
         /// Prepare AuthToken for ActionDTO request message.
@@ -155,11 +103,17 @@ namespace Hub.Services
                     //     .FindOne(x => x.Terminal.Id == activityTemplate.Terminal.Id
                     //         && x.UserDO.Id == accountId);
                     
+                    var actionDO = uow.ActionRepository.GetByKey(actionDTO.Id);
+                    if (actionDO == null)
+                    {
+                        throw new ApplicationException("Could not find ActionDO for Action's RouteNode.");
+                    }
+
                     AuthorizationTokenDO authToken = null;
-                    if (action.AuthorizationTokenId.HasValue)
+                    if (actionDO.AuthorizationTokenId.HasValue)
                     {
                         authToken = uow.AuthorizationTokenRepository
-                            .FindTokenById(action.AuthorizationTokenId.ToString());
+                            .FindTokenById(actionDO.AuthorizationTokenId.ToString());
                     }
 
                     // If AuthToken is not empty, fill AuthToken property for ActionDTO.
@@ -317,7 +271,7 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var authTokenByExternalState = uow.AuthorizationTokenRepository
-                    .FindTokenByExternalState(authTokenDTO.ExternalStateToken);
+                    .FindTokenByExternalState(authTokenDTO.ExternalStateToken, terminal.Id);
 
                 if (authTokenByExternalState == null)
                 {
@@ -325,10 +279,10 @@ namespace Hub.Services
                 }
 
                 var authTokenByExternalAccountId = uow.AuthorizationTokenRepository
-                    .GetPublicDataQuery()
-                    .FirstOrDefault(x => x.TerminalID == terminal.Id
-                                         && x.UserID == authTokenByExternalState.UserID
-                                         && x.ExternalAccountId == authTokenDTO.ExternalAccountId
+                    .FindTokenByExternalAccount(
+                        authTokenDTO.ExternalAccountId,
+                        terminal.Id,
+                        authTokenByExternalState.UserID
                     );
 
                 if (authTokenByExternalAccountId != null)
@@ -530,7 +484,8 @@ namespace Hub.Services
                     // Check if action has assigned auth-token.
                     if (actionDO.AuthorizationTokenId != null)
                     {
-                        authToken = uow.AuthorizationTokenRepository.FindTokenById(actionDO.AuthorizationTokenId.Value.ToString());
+                        authToken = uow.AuthorizationTokenRepository
+                            .FindTokenById(actionDO.AuthorizationTokenId.Value.ToString());
                     }
 
                     // If action does not have assigned auth-token,

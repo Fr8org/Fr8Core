@@ -2,60 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
+using Newtonsoft.Json.Linq;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
-using Hub.Interfaces;
 using HubWeb.ViewModels;
+using HubWeb.ViewModels.JsonConverters;
+using Utilities.AutoMapper;
 
 namespace HubWeb.App_Start
 {
     public class AutoMapperBootStrapper
     {
-        private readonly IActivityTemplate _activityTemplate;
-        private readonly ITerminal _terminals;
 
-        public AutoMapperBootStrapper(IActivityTemplate activityTemplate, ITerminal terminals)
+        public static void ConfigureAutoMapper()
         {
-            _activityTemplate = activityTemplate;
-            _terminals = terminals;
-        }
-
-        public void ConfigureAutoMapper()
-        {
-
-            Mapper.CreateMap<ActionDO, ActionDTO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
-                .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
-                .ForMember(a => a.RootRouteNodeId, opts => opts.ResolveUsing(ad => ad.RootRouteNodeId))
-                .ForMember(a => a.ParentRouteNodeId, opts => opts.ResolveUsing(ad => ad.ParentRouteNodeId))
-                .ForMember(a => a.ActivityTemplateId, opts => opts.ResolveUsing(ad => ad.ActivityTemplateId))
-                .ForMember(a => a.CurrentView, opts => opts.ResolveUsing(ad => ad.currentView))
-                .ForMember(a => a.ChildrenActions, opts => opts.ResolveUsing(ad => ad.ChildNodes.OfType<ActionDO>().OrderBy(da => da.Ordering)))
-                .ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(GetActivityTemplate))
-                .ForMember(a => a.ExplicitData, opts => opts.ResolveUsing(ad => ad.ExplicitData))
-                .ForMember(a => a.AuthToken, opts => opts.ResolveUsing(ad => ad.AuthorizationToken));
-
-            Mapper.CreateMap<ActionDTO, ActionDO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
-                .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
-                .ForMember(a => a.RootRouteNodeId, opts => opts.ResolveUsing(ad => ad.RootRouteNodeId))
-                .ForMember(a => a.ParentRouteNodeId, opts => opts.ResolveUsing(ad => ad.ParentRouteNodeId))
-                .ForMember(a => a.ActivityTemplateId, opts => opts.ResolveUsing(ad => ad.ActivityTemplateId))
-                .ForMember(a => a.ActivityTemplate, opts => opts.Ignore())
-                //.ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.SerializeObject(ad.CrateStorage)))
-                .ForMember(a => a.currentView, opts => opts.ResolveUsing(ad => ad.CurrentView))
-                .ForMember(a => a.ChildNodes, opts => opts.ResolveUsing(ad => MapActions(ad.ChildrenActions)))
-                .ForMember(a => a.IsTempId, opts => opts.ResolveUsing(ad => ad.IsTempId))
-                .ForMember(a => a.ExplicitData, opts => opts.ResolveUsing(ad => ad.ExplicitData))
-                .ForMember(a => a.AuthorizationTokenId, opts => opts.ResolveUsing(ad => ad.AuthToken != null && ad.AuthToken.Id != null ? new Guid(ad.AuthToken.Id) : (Guid?)null));
-
-
-            Mapper.CreateMap<ActivityTemplateDO, ActivityTemplateDTO>()
-               .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
-               .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name))
-               .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version))
-               .ForMember(x => x.Description, opts => opts.ResolveUsing(x => x.Description))
-               .ForMember(x => x.TerminalId, opts => opts.ResolveUsing(x => x.TerminalId))
-               .ForMember(x => x.Terminal, opts => opts.ResolveUsing(GetTerminal))
-               .ForMember(x => x.NeedsAuthentication, opts => opts.ResolveUsing(x => x.NeedsAuthentication));
 
             Mapper.CreateMap<Fr8AccountDO, ManageUserVM>()
                 .ForMember(mu => mu.HasLocalPassword, opts => opts.ResolveUsing(account => !string.IsNullOrEmpty(account.PasswordHash)))
@@ -76,36 +36,6 @@ namespace HubWeb.App_Start
                 .ForMember(userDO => userDO.Roles, opts => opts.Ignore());
 
           
-        }
-
-        private static List<RouteNodeDO> MapActions(IEnumerable<ActionDTO> actions)
-        {
-            var list = new List<RouteNodeDO>();
-
-            if (actions != null)
-            {
-                foreach (var actionDto in actions)
-                {
-                    list.Add(Mapper.Map<ActionDO>(actionDto));
-                }
-            }
-
-            return list;
-        }
-
-        private TerminalDTO GetTerminal(ActivityTemplateDO t)
-        {
-            return Mapper.Map<TerminalDTO>(_terminals.GetByKey(t.TerminalId));
-        }
-
-        private ActivityTemplateDTO GetActivityTemplate(ActionDO ad)
-        {
-            if (ad.ActivityTemplateId == null)
-            {
-                return null;
-            }
-
-            return Mapper.Map<ActivityTemplateDTO>(_activityTemplate.GetByKey(ad.ActivityTemplateId.Value));
         }
     }
 }

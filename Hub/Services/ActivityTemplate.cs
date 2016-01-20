@@ -136,57 +136,64 @@ namespace Hub.Services
             return newTemplate;
         }
 
-        public void RegisterOrUpdate(ActivityTemplateDO activityTemplateDO)
+        public void RegisterOrUpdate(ActivityTemplateDO activityTemplateDo)
         {
+            if (activityTemplateDo == null)
+            {
+                return;
+            }
+
+            _terminal.RegisterOrUpdate(activityTemplateDo.Terminal);
+
             Initialize();
 
             lock (_activityTemplates)
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    if (activityTemplateDO.WebService != null)
+                    if (activityTemplateDo.WebService != null)
                     {
-                        var existingWebService = uow.WebServiceRepository.FindOne(x => x.Name == activityTemplateDO.WebService.Name);
+                        var existingWebService = uow.WebServiceRepository.FindOne(x => x.Name == activityTemplateDo.WebService.Name);
 
                         if (existingWebService != null)
                         {
-                            activityTemplateDO.WebService = existingWebService;
+                            activityTemplateDo.WebService = existingWebService;
                         }
                         else
                         {
                             //Add a new Web service
-                            if (activityTemplateDO.WebService != null)
+                            if (activityTemplateDo.WebService != null)
                             {
-                                uow.Db.Entry(activityTemplateDO.WebService).State = EntityState.Added;
+                                uow.Db.Entry(activityTemplateDo.WebService).State = EntityState.Added;
                             }
                         }
                     }
                     
-                    var activity = uow.ActivityTemplateRepository.GetQuery().FirstOrDefault(t => t.Name == activityTemplateDO.Name);
+                    var activity = uow.ActivityTemplateRepository.GetQuery().FirstOrDefault(t => t.Name == activityTemplateDo.Name);
 
                     if (activity == null)
                     {
-                        uow.ActivityTemplateRepository.Add(activity = activityTemplateDO);
+                        uow.ActivityTemplateRepository.Add(activity = activityTemplateDo);
                         uow.SaveChanges();
                     }
                     else
                     {
                         activity.ActivityTemplateState = ActivityTemplateState.Active;
-                        activity.Category = activityTemplateDO.Category;
-                        activity.ComponentActivities = activityTemplateDO.ComponentActivities;
-                        activity.Description = activityTemplateDO.Description;
-                        activity.Label = activityTemplateDO.Label;
-                        activity.MinPaneWidth = activityTemplateDO.MinPaneWidth;
-                        activity.Name = activityTemplateDO.Name;
-                        activity.NeedsAuthentication = activityTemplateDO.NeedsAuthentication;
-                        activity.Tags = activityTemplateDO.Tags;
-                        activity.TerminalId = activityTemplateDO.TerminalId;
-                        activity.Type = activityTemplateDO.Type;
-                        activity.Version = activityTemplateDO.Version;
+                        activity.Category = activityTemplateDo.Category;
+                        activity.ComponentActivities = activityTemplateDo.ComponentActivities;
+                        activity.Description = activityTemplateDo.Description;
+                        activity.Label = activityTemplateDo.Label;
+                        activity.MinPaneWidth = activityTemplateDo.MinPaneWidth;
+                        activity.Name = activityTemplateDo.Name;
+                        activity.NeedsAuthentication = activityTemplateDo.NeedsAuthentication;
+                        activity.Tags = activityTemplateDo.Tags;
+                        activity.TerminalId = activityTemplateDo.TerminalId;
+                        activity.Type = activityTemplateDo.Type;
+                        activity.Version = activityTemplateDo.Version;
                         uow.SaveChanges();
                     }
                     
-                    _activityTemplates[activityTemplateDO.Id] = Clone(activity);
+                    _activityTemplates[activityTemplateDo.Id] = Clone(activity);
                 }
             }
         }

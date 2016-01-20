@@ -10,7 +10,7 @@ namespace Hub.Interfaces
         ActivityTemplateDO[] GetAll();
         ActivityTemplateDO GetByKey(int curActivityTemplateDOId);
         string GetTerminalUrl(int? curActivityTemplateDOId);
-        void RegisterOrUpdate(ActivityTemplateDO activityTemplateDO);
+        void RegisterOrUpdate(ActivityTemplateDO activityTemplateDo);
         ActivityTemplateDO GetByName(IUnitOfWork uow, string name);
         ActivityTemplateDO GetByNameAndVersion(IUnitOfWork uow, string name, string version);
        // string AssemblePluginRegistrationName(ActivityTemplateDO curActivityTemplateDO);

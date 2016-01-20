@@ -59,8 +59,7 @@ namespace HubWeb
             Utilities.Server.ServerPhysicalPath = Server.MapPath("~");
 
             //AutoMapper create map configuration
-
-            ObjectFactory.GetInstance<AutoMapperBootStrapper>().ConfigureAutoMapper();
+            AutoMapperBootStrapper.ConfigureAutoMapper();
 
             Utilities.Server.IsProduction = ObjectFactory.GetInstance<IConfigRepository>().Get<bool>("IsProduction");
             Utilities.Server.IsDevMode = ObjectFactory.GetInstance<IConfigRepository>().Get<bool>("IsDev", true);

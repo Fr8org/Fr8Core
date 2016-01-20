@@ -117,33 +117,26 @@ namespace HubWeb
         {
             var alertReporter = ObjectFactory.GetInstance<EventReporter>();
 
-            var activityTemplateHosts = Utilities.FileUtils.LoadFileHostList();
+            var terminalUrls = FileUtils.LoadFileHostList();
             int count = 0;
-            var uri = string.Empty;
-
             var activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
             var terminalService = ObjectFactory.GetInstance<ITerminal>();
 
-            foreach (string url in activityTemplateHosts)
+            foreach (string url in terminalUrls)
             {
                 try
                 {
-                    uri = url.StartsWith("http") ? url : "http://" + url;
-                    uri += "/terminals/discover";
+                    var activityTemplateList = await terminalService.GetAvailableActions(url);
 
-                    var activityTemplateList = await terminalService.GetAvailableActions(uri);
-                    
                     foreach (var curItem in activityTemplateList)
                     {
                         try
                         {
-                            terminalService.RegisterOrUpdate(curItem.Terminal);
                             activityTemplate.RegisterOrUpdate(curItem);
                             count++;
                         }
                         catch (Exception ex)
                         {
-                            alertReporter = ObjectFactory.GetInstance<EventReporter>();
                             alertReporter.ActivityTemplateTerminalRegistrationError(
                                 string.Format("Failed to register {0} terminal. Error Message: {1}", curItem.Terminal.Name, ex.Message),
                                 ex.GetType().Name);
@@ -153,18 +146,15 @@ namespace HubWeb
                 }
                 catch (Exception ex)
                 {
-                    alertReporter = ObjectFactory.GetInstance<EventReporter>();
                     alertReporter.ActivityTemplateTerminalRegistrationError(
-                        string.Format("Failed terminal service: {0}. Error Message: {1} ", uri, ex.Message),
+                        string.Format("Failed terminal service: {0}. Error Message: {1} ", url, ex.Message),
                         ex.GetType().Name);
-
                 }
             }
 
             alertReporter.ActivityTemplatesSuccessfullyRegistered(count);
       
         }
-
       
         public static IDisposable CreateServer(string url)
         {

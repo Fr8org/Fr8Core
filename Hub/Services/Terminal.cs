@@ -8,6 +8,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.Manifests;
 using Hub.Interfaces;
+using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using StructureMap;
 
@@ -101,7 +102,7 @@ namespace Hub.Services
                 _isInitialized = true;
             }
         }
-
+        
         private bool UpdateTerminalSecret(TerminalDO terminal)
         {
             TerminalIdSecretMatch secret;
@@ -154,9 +155,14 @@ namespace Hub.Services
                 return terminal;
             }
         }
-        
+       
         public void RegisterOrUpdate(TerminalDO terminalDo)
         {
+            if (terminalDo == null)
+            {
+                return;
+            }
+
             Initialize();
 
             lock (_terminals)

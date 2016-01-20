@@ -17,7 +17,6 @@ using Moq;
 using Hub.Managers;
 using Data.Interfaces.Manifests;
 using Data.Crates;
-using Hub.Interfaces;
 
 namespace DockyardTest.Security
 {
@@ -26,8 +25,6 @@ namespace DockyardTest.Security
     public class AuthorizationMethodsTests : BaseTest
     {
         private Authorization _authorization;
-        private ITerminal _terminal;
-        private IActivityTemplate _activityTemplate;
 
         private ICrateManager _crate;
 
@@ -37,7 +34,6 @@ namespace DockyardTest.Security
         public override void SetUp()
         {
             base.SetUp();
-
             _authorization = new Authorization();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
         }   
@@ -105,22 +101,6 @@ namespace DockyardTest.Security
         }
 
         [Test]
-        public void CanGetTokenByUserId()
-        {    
-            var tokenDO = CreateAndAddTokenDO();
-            var testToken = _authorization.GetToken(tokenDO.UserDO.Id);
-
-            Assert.AreEqual(Token, testToken);
-        }
-
-        [Test]
-        public void GetTokenByUserIdIsNull()
-        {
-            var token = _authorization.GetToken("null");
-            Assert.IsNull(token);
-        }
-
-        [Test]
         public void CanGetTokenByUserIdAndTerminalId()
         {
             var tokenDO = CreateAndAddTokenDO();
@@ -145,30 +125,6 @@ namespace DockyardTest.Security
 //
 //            Assert.AreEqual(Token, testToken);            
 //        }
-
-        [Test]
-        public void CanUpdateToken()
-        {
-            var tokenDO = CreateAndAddTokenDO();
-            var newToken = Token + "new";
-            _authorization.AddOrUpdateToken(tokenDO.UserID, newToken);
-
-            Assert.AreEqual(newToken, tokenDO.Token);
-        }
-
-
-        [Test]
-        public void CanRemoveToken()
-        {
-            var tokenDO = CreateAndAddTokenDO();
-            var userId = tokenDO.UserID;
-
-            _authorization.RemoveToken(userId);
-
-            var testToken = _authorization.GetToken(userId);
-
-            Assert.IsNullOrEmpty(testToken);
-        }
 
         [Test]
         public void CanPrepareAuthToken()

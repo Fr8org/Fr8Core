@@ -26,13 +26,6 @@ namespace Hub.Managers
 {
     public class EventReporter
     {
-        private readonly IActivityTemplate _activityTemplate;
-
-        public EventReporter()
-        {
-            _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
-        }
-
         //Register for interesting events
         public void SubscribeToAlerts()
         {
@@ -867,9 +860,9 @@ namespace Hub.Managers
                     SecondaryCategory = "Operations",
                     Activity = activity
                 };
-                if (actionDO != null && actionDO.ActivityTemplateId != null)
+                if (actionDO != null)
                 {
-                    var terminalName = _activityTemplate.GetByKey(actionDO.ActivityTemplateId.Value).Terminal.Name;
+                    var terminalName = actionDO.ActivityTemplate.Terminal.Name;
                     curFact.Data = string.Format("Terminal: {0} - Action: {1}.", terminalName, actionDO.Name);
                 }
             
