@@ -101,22 +101,6 @@ namespace DockyardTest.Security
         }
 
         [Test]
-        public void CanGetTokenByUserId()
-        {    
-            var tokenDO = CreateAndAddTokenDO();
-            var testToken = _authorization.GetToken(tokenDO.UserDO.Id);
-
-            Assert.AreEqual(Token, testToken);
-        }
-
-        [Test]
-        public void GetTokenByUserIdIsNull()
-        {
-            var token = _authorization.GetToken("null");
-            Assert.IsNull(token);
-        }
-
-        [Test]
         public void CanGetTokenByUserIdAndTerminalId()
         {
             var tokenDO = CreateAndAddTokenDO();
@@ -141,30 +125,6 @@ namespace DockyardTest.Security
 //
 //            Assert.AreEqual(Token, testToken);            
 //        }
-
-        [Test]
-        public void CanUpdateToken()
-        {
-            var tokenDO = CreateAndAddTokenDO();
-            var newToken = Token + "new";
-            _authorization.AddOrUpdateToken(tokenDO.UserID, newToken);
-
-            Assert.AreEqual(newToken, tokenDO.Token);
-        }
-
-
-        [Test]
-        public void CanRemoveToken()
-        {
-            var tokenDO = CreateAndAddTokenDO();
-            var userId = tokenDO.UserID;
-
-            _authorization.RemoveToken(userId);
-
-            var testToken = _authorization.GetToken(userId);
-
-            Assert.IsNullOrEmpty(testToken);
-        }
 
         [Test]
         public void CanPrepareAuthToken()

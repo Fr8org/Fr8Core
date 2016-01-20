@@ -10,7 +10,6 @@ using InternalInterfaces = Hub.Interfaces;
 using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Authorizers;
-using Hub.Managers.APIManagers.Authorizers.Docusign;
 using Hub.Managers.APIManagers.Authorizers.Google;
 using Hub.Managers.APIManagers.Packagers;
 using Hub.Managers.APIManagers.Packagers.SegmentIO;
@@ -101,7 +100,6 @@ namespace Hub.StructureMap
                 For<IIntakeManager>().Use<IntakeManager>();
 
                 For<IOAuthAuthorizer>().Use<GoogleAuthorizer>().Named("Google");
-                For<IOAuthAuthorizer>().Use<DocusignAuthorizer>().Named("Docusign");
 
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchy>();
                 For<IImapClient>().Use<ImapClientWrapper>();
@@ -155,7 +153,6 @@ namespace Hub.StructureMap
                 For<ISecurityServices>().Use(new MockedSecurityServices());
 
                 For<IOAuthAuthorizer>().Use<GoogleAuthorizer>().Named("Google");
-                For<IOAuthAuthorizer>().Use<DocusignAuthorizer>().Named("Docusign");
 
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
 
