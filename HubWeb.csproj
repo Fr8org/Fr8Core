@@ -358,6 +358,7 @@
     <Compile Include="Controllers\Api\AuthenticationController.cs" />
     <Compile Include="Controllers\Api\ManageAuthTokenController.cs" />
     <Compile Include="Controllers\Api\ConfigurationController.cs" />
+    <Compile Include="Controllers\Api\ManifestRegistryController.cs" />
     <Compile Include="Controllers\Api\ManifestsController.cs" />
     <Compile Include="Controllers\Api\RoutesController.cs" />
     <Compile Include="Controllers\Api\TerminalsController.cs" />
@@ -761,14 +762,19 @@
     <Content Include="_PowerShellScripts\DeployAzureWebJob-HealthMonitor-MASTER.ps1" />
     <Content Include="_PowerShellScripts\KillProcess.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryFormController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryListController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamFieldChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\DateTimeFormatter.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\FilterByTag.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\AuthenticationDialogController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManageAuthTokenController.ts" />
+    <TypeScriptCompile Include="Scripts\app\interfaces\IManifestRegistry.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\ManifestDescriptionDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\services\AuthService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ConfigureTrackerService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\FileDetailsService.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\ManifestRegistryService.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\UpstreamFieldChooser.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\filters\FilterByTagTests.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\TerminalFormController.ts" />
@@ -865,6 +871,7 @@
     <Content Include="Views\AngularTemplate\UpstreamFieldChooser.cshtml" />
     <Content Include="Views\AngularTemplate\UsersEmailList.cshtml" />
     <Content Include="Views\AngularTemplate\FileDetails.cshtml" />
+    <Content Include="Views\AngularTemplate\ManifestRegistryList.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -57,6 +57,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/services/WebServiceService.js',
         'Scripts/app/services/TerminalService.js',
         'Scripts/app/services/ManageAuthTokenService.js',
+        'Scripts/app/services/ManifestRegistryService.js',
         'Scripts/app/filters/RouteState.js',
         'Scripts/app/filters/ContainerState.js',
         'Scripts/app/filters/FilterByTag.js',
@@ -120,7 +121,9 @@ gulp.task('compile_js', function () {
         'Scripts/app/controllers/PayloadFormController.js',
         'Scripts/app/controllers/TerminalListController.js',
         'Scripts/app/controllers/TerminalFormController.js',
-        'Scripts/app/controllers/ManageAuthTokenController.js'
+        'Scripts/app/controllers/ManageAuthTokenController.js',
+        'Scripts/app/controllers/ManifestRegistryListController.js',
+        'Scripts/app/controllers/ManifestRegistryFormController.js'
     ])
         .pipe(sourcemaps.init())
         .pipe(concat('_compiled.js'))
