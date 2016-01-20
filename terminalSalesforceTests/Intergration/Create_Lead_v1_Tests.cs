@@ -137,7 +137,15 @@ namespace terminalSalesforceTests.Intergration
             var requestActionDTO = HealthMonitor_FixtureData.Create_Lead_v1_InitialConfiguration_ActionDTO();
 
             //perform post request to terminal and return the result
-            return await HttpPostAsync<ActionDTO, ActionDTO>(terminalConfigureUrl, requestActionDTO);
+            var resultActionDto = await HttpPostAsync<ActionDTO, ActionDTO>(terminalConfigureUrl, requestActionDTO);
+
+            using (var updater = Crate.UpdateStorage(resultActionDto))
+            {
+                var controls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
+                controls.Controls.OfType<TextSource>().ToList().ForEach(ctl => ctl.ValueSource = "specific");
+            }
+
+            return resultActionDto;
         }
 
         private void AssertConfigurationControls(CrateStorage curActionCrateStorage)
