@@ -30,32 +30,16 @@ namespace terminalSalesforce.Actions
 
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            var accountName = new TextBox()
-            {
-                Label = "Account Name",
-                Name = "accountName"
-
-            };
-            var accountNumber = new TextBox()
-            {
-                Label = "Account Number",
-                Name = "accountNumber",
-                Required = true
-            };
-
-            var phone = new TextBox()
-            {
-                Label = "Phone",
-                Name = "phone",
-                Required = true
-            };
-
-            var controls = PackControlsCrate(accountName, accountNumber, phone);
-
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.Clear();
-                updater.CrateStorage.Add(controls);
+
+                AddTextSourceControl(updater.CrateStorage, "Account Name", "accountName",
+                    "Upstream Terminal-Provided Fields", addRequestConfigEvent: false);
+                AddTextSourceControl(updater.CrateStorage, "Account Number", "accountNumber",
+                    "Upstream Terminal-Provided Fields", addRequestConfigEvent: false, required:true);
+                AddTextSourceControl(updater.CrateStorage, "Phone", "phone",
+                    "Upstream Terminal-Provided Fields", addRequestConfigEvent: false, required:true);
             }
 
             return await Task.FromResult(curActionDO);
@@ -71,9 +55,9 @@ namespace terminalSalesforce.Actions
                 return NeedsAuthenticationError(payloadCrates);
             }
 
-            var accountName = ExtractControlFieldValue(curActionDO, "accountName");
-            var accountNumber = ExtractControlFieldValue(curActionDO, "accountNumber");
-            var phone = ExtractControlFieldValue(curActionDO, "phone");
+            var accountName = ExtractSpecificOrUpstreamValue(curActionDO, payloadCrates, "accountName");
+            var accountNumber = ExtractSpecificOrUpstreamValue(curActionDO, payloadCrates, "accountNumber");
+            var phone = ExtractSpecificOrUpstreamValue(curActionDO, payloadCrates, "phone");
             if (string.IsNullOrEmpty(accountName))
             {
                 return Error(payloadCrates, "No account name found in action.");
