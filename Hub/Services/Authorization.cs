@@ -26,9 +26,11 @@ namespace Hub.Services
         private readonly ICrateManager _crate;
 	    private readonly ITime _time;
         private readonly IActivityTemplate _activityTemplate;
-
+        private readonly ITerminal _terminal;
+            
         public Authorization()
         {
+            _terminal = ObjectFactory.GetInstance<ITerminal>();
 			_crate = ObjectFactory.GetInstance<ICrateManager>();
 	        _time = ObjectFactory.GetInstance<ITime>();
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
@@ -232,9 +234,10 @@ namespace Hub.Services
                 };
             }
 
+            var curTerminal = _terminal.GetByKey(terminal.Id);
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curTerminal = uow.TerminalRepository.GetByKey(terminal.Id);
                 var curAccount = uow.UserRepository.GetByKey(account.Id);
 
                 AuthorizationTokenDO authToken = null;
@@ -385,7 +388,7 @@ namespace Hub.Services
 
                 if (authToken == null)
                 {
-                    var curTerminal = uow.TerminalRepository.GetByKey(terminal.Id);
+                    var curTerminal = _terminal.GetByKey(terminal.Id);
                     var curAccount = uow.UserRepository.GetByKey(user.Id);
 
                     authToken = new AuthorizationTokenDO()

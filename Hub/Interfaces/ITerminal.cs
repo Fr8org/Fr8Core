@@ -13,7 +13,7 @@ namespace Hub.Interfaces
 
         TerminalDO GetByKey(int terminalId);
         void RegisterOrUpdate(TerminalDO terminalDo);
-        
+
         Task<TerminalDO> GetTerminalByPublicIdentifier(string terminalId);
         Task<bool> IsUserSubscribedToTerminal(string terminalId, string userId);
     }

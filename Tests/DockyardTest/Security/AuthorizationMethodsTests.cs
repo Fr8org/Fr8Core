@@ -38,11 +38,6 @@ namespace DockyardTest.Security
         {
             base.SetUp();
 
-            ObjectFactory.Container.Configure(x =>
-            {
-                x.For<ITerminal>().Use<Terminal>().Singleton();
-            });
-
             _authorization = new Authorization();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
         }   
