@@ -422,8 +422,9 @@
     <Compile Include="Controllers\Api\ReportController.cs" />
     <Compile Include="Controllers\TokenAuthController.cs" />
     <Compile Include="ExceptionHandling\MvcHandleErrorAttribute.cs" />
-    <Compile Include="Infrastructure\fr8HubWebHMACAuthorizeAttribute.cs" />
-    <Compile Include="Infrastructure\TerminalPrinciple.cs" />
+    <Compile Include="Infrastructure\Fr8HubWebHMACAuthorizeAttribute.cs" />
+    <Compile Include="Infrastructure\Fr8Identity.cs" />
+    <Compile Include="Infrastructure\Fr8Principle.cs" />
     <Compile Include="ViewModels\AuthenticationErrorVM.cs" />
     <Compile Include="ViewModels\DocusignLoginVM.cs" />
     <Compile Include="ViewModels\ForgotPasswordVM.cs" />
@@ -4345,7 +4346,7 @@
   <Target Name="AfterBuild">
   </Target> -->
   <Target Name="EnsureNmpPackageBuildAndGulpBuild" BeforeTargets="BeforeBuild">
-    <Exec Command="PreBuild.bat" WorkingDirectory="$(ProjectDir)" />
+    <!-- <Exec Command="PreBuild.bat" WorkingDirectory="$(ProjectDir)" /> -->
     <!-- <Exec Command="PreBuild.bat" WorkingDirectory="$(ProjectDir)" ContinueOnError="WarnAndContinue" /> -->
   </Target>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
@@ -4388,7 +4389,7 @@
     </CompileDependsOn>
   </PropertyGroup>
   <Target Name="GulpBuild" DependsOnTargets="CompileTypeScript">
-    <Exec Command=".\node_modules\.bin\gulp compile_js" />
+    <!-- <Exec Command=".\node_modules\.bin\gulp compile_js" /> -->
   </Target>
   <PropertyGroup>
     <CopyAllFilesToSingleFolderForPackageDependsOn>

@@ -53,15 +53,33 @@ namespace Hub.Infrastructure
         public async Task AuthenticateAsync(HttpAuthenticationContext context, CancellationToken cancellationToken)
         {
             var request = context.Request;
-            if (!(await IsValidRequest(request)))
-            {
-                context.ErrorResult = new UnauthorizedResult(new AuthenticationHeaderValue[0], context.Request);
-            }
-        }
 
-        private async Task<bool> IsValidRequest(HttpRequestMessage request)
+            string terminalId,userId = null;
+
+            _hmacAuthenticator.ExtractTokenParts(request, out terminalId, out userId);
+            var terminalSecret = await GetTerminalSecret(terminalId);
+            var isValid = await _hmacAuthenticator.IsValidRequest(request, terminalSecret);
+
+            if (!isValid)
+            {
+                return;
+            }
+
+            isValid = await CheckPermission(terminalId, userId);
+            if (!isValid)
+            {
+                return;
+            }
+
+            Success(terminalId, userId);
+            //context.ErrorResult = new UnauthorizedResult(new AuthenticationHeaderValue[0], context.Request);
+        }
+        /*
+        private async Task<bool> IsValidRequest(HttpRequestMessage request, out string terminalId, out string userId)
         {
-            string terminalId, userId;
+            terminalId = null;
+            userId = null;
+
             _hmacAuthenticator.ExtractTokenParts(request, out terminalId, out userId);
             var terminalSecret = await GetTerminalSecret(terminalId);
             var isValid = await _hmacAuthenticator.IsValidRequest(request, terminalSecret);
@@ -77,11 +95,9 @@ namespace Hub.Infrastructure
                 return false;
                 
             }
-
-            Success(terminalId, userId);
             return true;
         }
-
+        */
         public Task ChallengeAsync(HttpAuthenticationChallengeContext context, CancellationToken cancellationToken)
         {
             context.Result = new ResultWithChallenge(context.Result);

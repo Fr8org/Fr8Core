@@ -25,6 +25,7 @@ namespace TerminalBase.Infrastructure
         Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActionDO actionDO, ActivityCategory category, string userId);
 
         Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActionDO actionDO, string tag, string userId);
+        Task<ActionDTO> Configure(ActionDTO actionDTO, string userId);
         Task<List<FieldValidationResult>> ValidateFields(List<FieldValidationDTO> fields, string userId);
     }
 }

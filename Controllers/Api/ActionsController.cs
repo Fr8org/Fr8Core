@@ -22,9 +22,11 @@ using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
+using HubWeb.Infrastructure;
 
 namespace HubWeb.Controllers
 {
+    [Fr8HubWebHMACAuthorize]
     [Fr8ApiAuthorize]
     public class ActionsController : ApiController
     {

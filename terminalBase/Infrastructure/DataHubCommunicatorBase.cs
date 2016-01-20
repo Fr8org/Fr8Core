@@ -155,5 +155,10 @@ namespace TerminalBase.Infrastructure
         {
             throw new NotImplementedException();
         }
+
+        public Task<ActionDTO> Configure(ActionDTO actionDTO, string userId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

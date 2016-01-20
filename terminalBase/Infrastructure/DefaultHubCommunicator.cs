@@ -188,5 +188,13 @@ namespace TerminalBase.Infrastructure
             var uri = new Uri(url);
             return await _restfulServiceClient.PostAsync<List<FieldValidationDTO>, List<FieldValidationResult>>(uri, fields, null, await GetHMACHeader(uri, userId, fields));
         }
+
+        public async Task<ActionDTO> Configure(ActionDTO actionDTO, string userId)
+        {
+            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                      + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/actions/configure";
+            var uri = new Uri(url);
+            return await _restfulServiceClient.PostAsync<ActionDTO, ActionDTO>(uri, actionDTO, null, await GetHMACHeader(uri, userId, actionDTO));
+        }
     }
 }
