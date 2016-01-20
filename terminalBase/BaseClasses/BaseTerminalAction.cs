@@ -625,10 +625,10 @@ namespace TerminalBase.BaseClasses
             if (fieldValues.Length > 0)
                 return fieldValues[0];
 
-            IncidentReporter reporter = new IncidentReporter();
+            IncidentReporter reporter = ObjectFactory.GetInstance<IncidentReporter>();
             reporter.IncidentMissingFieldInPayload(fieldKey, curAction, "");
 
-            throw new ApplicationException("No field found with specified key.");
+            throw new ApplicationException(string.Format("No field found with specified key: {0}.", fieldKey));
         }
 
         protected void AddLabelControl(CrateStorage storage, string name, string label, string text)
