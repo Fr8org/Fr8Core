@@ -261,7 +261,7 @@ namespace Data.Control
             if (fieldValues.Length > 0)
                 return fieldValues[0];
 
-            throw new ApplicationException("No field found with specified key.");
+            throw new ApplicationException(string.Format("No field found with specified key: {0}.", selectedKey));
         }
     }
 

@@ -129,11 +129,9 @@ namespace terminalDocuSign.Actions
                         //build a controls crate to render the pane
                         var configurationControlsCrate = await CreateConfigurationControlsCrate(curActionDO);
                         var templatesFieldCrate = _docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
-                        var eventFields = Crate.CreateDesignTimeFieldsCrate("DocuSign Event Fields", CreateDocuSignEventFields().ToArray());
 
                         updater.CrateStorage.Add(configurationControlsCrate);
                         updater.CrateStorage.Add(templatesFieldCrate);
-                        updater.CrateStorage.Add(eventFields);
                     }
                 }
             }
