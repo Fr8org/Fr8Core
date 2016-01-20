@@ -147,8 +147,9 @@ namespace terminalSalesforceTests.Intergration
             {
                 var controls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
 
-                var targetUrlTextBox = (TextBox)controls.Controls[0];
-                targetUrlTextBox.Value = "IntegrationTestAccount";
+                var targetUrlTextBox = (TextSource)controls.Controls[0];
+                targetUrlTextBox.ValueSource = "specific";
+                targetUrlTextBox.TextValue = "IntegrationTestAccount";
             }
 
             return curActionDto;

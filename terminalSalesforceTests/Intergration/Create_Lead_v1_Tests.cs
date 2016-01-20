@@ -167,8 +167,9 @@ namespace terminalSalesforceTests.Intergration
             {
                 var controls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
 
-                var targetUrlTextBox = (TextBox)controls.Controls[1];
-                targetUrlTextBox.Value = "IntegrationTestLastName";
+                var targetUrlTextBox = (TextSource)controls.Controls[1];
+                targetUrlTextBox.ValueSource = "specific";
+                targetUrlTextBox.TextValue = "IntegrationTestLastName";
             }
 
             return curActionDto;
@@ -180,8 +181,9 @@ namespace terminalSalesforceTests.Intergration
             {
                 var controls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
 
-                var targetUrlTextBox = (TextBox)controls.Controls[2];
-                targetUrlTextBox.Value = "IntegrationTestCompanyName";
+                var targetUrlTextBox = (TextSource)controls.Controls[2];
+                targetUrlTextBox.ValueSource = "specific";
+                targetUrlTextBox.TextValue = "IntegrationTestCompanyName";
             }
 
             return curActionDto;

@@ -150,8 +150,9 @@ namespace terminalSalesforceTests.Intergration
             {
                 var controls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
 
-                var targetUrlTextBox = (TextBox)controls.Controls[1];
-                targetUrlTextBox.Value = "IntegrationTestContact";
+                var targetUrlTextBox = (TextSource)controls.Controls[1];
+                targetUrlTextBox.ValueSource = "specific";
+                targetUrlTextBox.TextValue = "IntegrationTestContact";
             }
 
             return curActionDto;
