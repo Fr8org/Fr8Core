@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http.Formatting;
 using System.Security.Principal;
@@ -10,7 +11,6 @@ using InternalInterfaces = Hub.Interfaces;
 using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Authorizers;
-using Hub.Managers.APIManagers.Authorizers.Docusign;
 using Hub.Managers.APIManagers.Authorizers.Google;
 using Hub.Managers.APIManagers.Packagers;
 using Hub.Managers.APIManagers.Packagers.SegmentIO;
@@ -101,7 +101,6 @@ namespace Hub.StructureMap
                 For<IIntakeManager>().Use<IntakeManager>();
 
                 For<IOAuthAuthorizer>().Use<GoogleAuthorizer>().Named("Google");
-                For<IOAuthAuthorizer>().Use<DocusignAuthorizer>().Named("Docusign");
 
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchy>();
                 For<IImapClient>().Use<ImapClientWrapper>();
@@ -120,9 +119,9 @@ namespace Hub.StructureMap
                 For<IField>().Use<Field>();
                 //For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 For<IEvent>().Use<Event>();
-                For<IActivityTemplate>().Use<ActivityTemplate>();
+                For<IActivityTemplate>().Use<ActivityTemplate>().Singleton();
                 For<IFile>().Use<InternalClass.File>();
-                For<ITerminal>().Use<Terminal>();
+                For<ITerminal>().Use<Terminal>().Singleton();
                 For<ICrateManager>().Use<CrateManager>();
                 For<IReport>().Use<Report>();
                 For<IManifest>().Use<Manifest>();
@@ -155,7 +154,6 @@ namespace Hub.StructureMap
                 For<ISecurityServices>().Use(new MockedSecurityServices());
 
                 For<IOAuthAuthorizer>().Use<GoogleAuthorizer>().Named("Google");
-                For<IOAuthAuthorizer>().Use<DocusignAuthorizer>().Named("Docusign");
 
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
 
@@ -164,8 +162,6 @@ namespace Hub.StructureMap
 
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchyWithoutCTE>();
                 var mockSegment = new Mock<ITracker>();
-                For<IActivityTemplate>().Use<ActivityTemplate>();
-                
                 For<ITracker>().Use(mockSegment.Object);
                 For<InternalInterfaces.IContainer>().Use<InternalClass.Container>();
                 For<ICriteria>().Use<Criteria>();
@@ -184,7 +180,7 @@ namespace Hub.StructureMap
 
                 var terminalTransmitterMock = new Mock<ITerminalTransmitter>();
                 For<ITerminalTransmitter>().Use(terminalTransmitterMock.Object).Singleton();
-                For<IActivityTemplate>().Use<ActivityTemplate>();
+                For<IActivityTemplate>().Use<ActivityTemplate>().Singleton();
                 For<IEvent>().Use<Event>();
                 //For<ITemplate>().Use<Services.Template>();
                 For<IFile>().Use<InternalClass.File>();
@@ -212,12 +208,53 @@ namespace Hub.StructureMap
                 var fr8HMACService = new Mock<IHMACService>();
                 For<IHMACService>().Use(fr8HMACService.Object);
 
-                var mockTerminalService = new Mock<ITerminal>();
-                mockTerminalService.Setup(x => x.GetTerminalByPublicIdentifier(It.Is<string>(s => s == outTerminalId))).ReturnsAsync(new TerminalDO());
-                For<ITerminal>().Use(mockTerminalService.Object);
+                For<ITerminal>().Use(new TerminalServiceForTests()).Singleton();
+            }
+        }
+
+        public class TerminalServiceForTests : ITerminal
+        {
+            private readonly ITerminal _terminal;
+
+            public TerminalServiceForTests()
+            {
+                _terminal = new Terminal();
+            }
+
+            public Task<TerminalDO> GetTerminalByPublicIdentifier(string terminalId)
+            {
+                return Task.FromResult(new TerminalDO());
+            }
+
+            public IEnumerable<TerminalDO> GetAll()
+            {
+                return _terminal.GetAll();
+            }
+
+            public Task<IList<ActivityTemplateDO>> GetAvailableActions(string uri)
+            {
+                return _terminal.GetAvailableActions(uri);
+            }
+
+            public void RegisterOrUpdate(TerminalDO terminalDo)
+            {
+                _terminal.RegisterOrUpdate(terminalDo);
+            }
+
+            public TerminalDO GetByKey(int terminalId)
+            {
+                return _terminal.GetByKey(terminalId);
+            }
+
+            public Task<bool> IsUserSubscribedToTerminal(string terminalId, string userId)
+            {
+                return _terminal.IsUserSubscribedToTerminal(terminalId, userId);
             }
         }
 
         #endregion
     }
+
+
+    
 }
