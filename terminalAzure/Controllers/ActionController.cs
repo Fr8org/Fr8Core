@@ -18,6 +18,7 @@ namespace terminalAzure.Controllers
 
         [HttpPost]
         [fr8TerminalHMACAuthorize(curTerminal)]
+        [Authorize]
         public Task<object> Execute([FromUri] String actionType, [FromBody] ActionDTO curActionDTO)
         {
             return HandleFr8Request(curTerminal, actionType, curActionDTO);
