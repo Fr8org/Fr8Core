@@ -100,7 +100,7 @@ namespace terminalDocuSign.Actions
 
         public override Task<ActionDO> Activate(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-           // ValidateEnvelopeSelectableEvents(curActionDO);
+            ValidateEnvelopeSelectableEvents(curActionDO);
             //create DocuSign account, publish URL and other user selected options
             bool youSent, someoneReceived, recipientSigned;
             GetUserSelectedEnvelopeEvents(curActionDO, out youSent, out someoneReceived, out recipientSigned);
