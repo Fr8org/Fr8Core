@@ -119,9 +119,9 @@ namespace Hub.StructureMap
                 For<IField>().Use<Field>();
                 //For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 For<IEvent>().Use<Event>();
-                For<IActivityTemplate>().Use<ActivityTemplate>();
+                For<IActivityTemplate>().Use<ActivityTemplate>().Singleton();
                 For<IFile>().Use<InternalClass.File>();
-                For<ITerminal>().Use<Terminal>();
+                For<ITerminal>().Use<Terminal>().Singleton();
                 For<ICrateManager>().Use<CrateManager>();
                 For<IReport>().Use<Report>();
                 For<IManifest>().Use<Manifest>();
@@ -162,8 +162,6 @@ namespace Hub.StructureMap
 
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchyWithoutCTE>();
                 var mockSegment = new Mock<ITracker>();
-                For<IActivityTemplate>().Use<ActivityTemplate>();
-                
                 For<ITracker>().Use(mockSegment.Object);
                 For<InternalInterfaces.IContainer>().Use<InternalClass.Container>();
                 For<ICriteria>().Use<Criteria>();
@@ -182,7 +180,7 @@ namespace Hub.StructureMap
 
                 var terminalTransmitterMock = new Mock<ITerminalTransmitter>();
                 For<ITerminalTransmitter>().Use(terminalTransmitterMock.Object).Singleton();
-                For<IActivityTemplate>().Use<ActivityTemplate>();
+                For<IActivityTemplate>().Use<ActivityTemplate>().Singleton();
                 For<IEvent>().Use<Event>();
                 //For<ITemplate>().Use<Services.Template>();
                 For<IFile>().Use<InternalClass.File>();
