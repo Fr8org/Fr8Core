@@ -235,7 +235,7 @@ namespace terminalFr8Core.Actions
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             var curUpstreamFields =
-                (await GetDesignTimeFields(curActionDO.Id, CrateDirection.Upstream))
+                (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
                 .Fields
                 .ToArray();
 

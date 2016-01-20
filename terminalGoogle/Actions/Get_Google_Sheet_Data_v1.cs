@@ -73,8 +73,8 @@ namespace terminalGoogle.Actions
                 updater.CrateStorage.Add(payloadDataCrate);
             }
 
-            
-            return Success(payloadCrates);            
+
+            return Success(payloadCrates);
         }
 
         private async Task<StandardTableDataCM> GetTargetTableData(ActionDO curActionDO)
@@ -243,8 +243,12 @@ namespace terminalGoogle.Actions
 
         private void CreatePayloadCrate_SpreadsheetRows(ActionDO curActionDO, string spreadsheetUri, GoogleAuthDTO authDTO, IDictionary<string, string> headers)
         {
-            // Fetch rows in Excel file and assign them to the action's crate storage as Standard Table Data crate
-            var rows = _google.EnumerateDataRows(spreadsheetUri, authDTO);
+            // To fetch rows in Excel file and assign them to the action's crate storage as Standard Table Data crate. 
+            // This functionality is commented due to performance issue. 
+            // To fetch rows in excel file, please uncomment below line of code.
+            // var rows = _google.EnumerateDataRows(spreadsheetUri, authDTO);
+
+            List<TableRowDTO> rows = new List<TableRowDTO>();
             var headerTableRowDTO = new TableRowDTO() { Row = new List<TableCellDTO>(), };
             foreach (var header in headers)
             {
@@ -253,7 +257,7 @@ namespace terminalGoogle.Actions
             }
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
-                const string label = "Spreadsheeet Payload Rows";
+                const string label = "Spreadsheet Payload Rows";
                 updater.CrateStorage.RemoveByLabel(label);
                 updater.CrateStorage.Add(Crate.CreateStandardTableDataCrate(label, false, rows.ToArray()));
             }

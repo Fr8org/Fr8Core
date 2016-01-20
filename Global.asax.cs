@@ -59,7 +59,7 @@ namespace HubWeb
             Utilities.Server.ServerPhysicalPath = Server.MapPath("~");
 
             //AutoMapper create map configuration
-            AutoMapperBootStrapper.ConfigureAutoMapper();
+            ObjectFactory.GetInstance<AutoMapperBootStrapper>().ConfigureAutoMapper();
 
             Utilities.Server.IsProduction = ObjectFactory.GetInstance<IConfigRepository>().Get<bool>("IsProduction");
             Utilities.Server.IsDevMode = ObjectFactory.GetInstance<IConfigRepository>().Get<bool>("IsDev", true);
@@ -70,10 +70,11 @@ namespace HubWeb
             var segmentWriteKey = new ConfigRepository().Get("SegmentWriteKey");
             Analytics.Initialize(segmentWriteKey);
 
-            EventReporter curReporter = new EventReporter();
+            EventReporter curReporter = ObjectFactory.GetInstance<EventReporter>()
+                ;
             curReporter.SubscribeToAlerts();
 
-            IncidentReporter incidentReporter = new IncidentReporter();
+            IncidentReporter incidentReporter = ObjectFactory.GetInstance <IncidentReporter>();
             incidentReporter.SubscribeToAlerts();
 
             ModelBinders.Binders.Add(typeof(DateTimeOffset), new KwasantDateBinder());
