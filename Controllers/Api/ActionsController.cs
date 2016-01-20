@@ -27,7 +27,7 @@ using HubWeb.Infrastructure;
 namespace HubWeb.Controllers
 {
     
-    [Fr8HubWebHMACAuthorize]
+    
     [Fr8ApiAuthorize]
     public class ActionsController : ApiController
     {
@@ -61,6 +61,7 @@ namespace HubWeb.Controllers
 
 
         [HttpPost]
+        [Fr8HubWebHMACAuthenticate]
         public async Task<IHttpActionResult> Create(int actionTemplateId, string name, string label = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -108,6 +109,7 @@ namespace HubWeb.Controllers
         //WARNING. there's lots of potential for confusion between this POST method and the GET method following it.
 
         [HttpPost]
+        [Fr8HubWebHMACAuthenticate]
         public async Task<IHttpActionResult> Configure(ActionDTO curActionDesignDTO)
         {
             // WebMonitor.Tracer.Monitor.StartMonitoring("Configuring action " + curActionDesignDTO.Name);

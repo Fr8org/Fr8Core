@@ -16,12 +16,12 @@ using StructureMap;
 
 namespace Hub.Infrastructure
 {
-    public abstract class fr8HMACAuthorizeAttribute : Attribute, IAuthenticationFilter
+    public abstract class fr8HMACAuthenticateAttribute : Attribute, IAuthenticationFilter
     {
         
         private readonly IHMACAuthenticator _hmacAuthenticator;
 
-        protected fr8HMACAuthorizeAttribute()
+        protected fr8HMACAuthenticateAttribute()
         {
             _hmacAuthenticator = ObjectFactory.GetInstance<IHMACAuthenticator>();
         }

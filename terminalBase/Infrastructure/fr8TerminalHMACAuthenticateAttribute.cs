@@ -11,11 +11,11 @@ using System.Threading;
 
 namespace TerminalBase.Infrastructure
 {
-    public class fr8TerminalHMACAuthorizeAttribute : fr8HMACAuthorizeAttribute
+    public class fr8TerminalHMACAuthenticateAttribute : fr8HMACAuthenticateAttribute
     {
         protected string TerminalSecret { get; set; }
         protected string TerminalId { get; set; }
-        public fr8TerminalHMACAuthorizeAttribute(string terminalName)
+        public fr8TerminalHMACAuthenticateAttribute(string terminalName)
         {
             TerminalSecret = CloudConfigurationManager.GetSetting("TerminalSecret");
             TerminalId = CloudConfigurationManager.GetSetting("TerminalId");

@@ -23,9 +23,9 @@ using HubWeb.Infrastructure;
 
 namespace HubWeb.Infrastructure
 {
-    public class Fr8HubWebHMACAuthorizeAttribute : fr8HMACAuthorizeAttribute
+    public class Fr8HubWebHMACAuthenticateAttribute : fr8HMACAuthenticateAttribute
     {
-        public Fr8HubWebHMACAuthorizeAttribute()
+        public Fr8HubWebHMACAuthenticateAttribute()
         {
             _terminalService = ObjectFactory.GetInstance<ITerminal>();
         }

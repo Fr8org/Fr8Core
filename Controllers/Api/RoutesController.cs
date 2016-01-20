@@ -20,6 +20,7 @@ using Newtonsoft.Json;
 using Hub.Managers;
 using Data.Crates;
 using Utilities.Interfaces;
+using HubWeb.Infrastructure;
 
 namespace HubWeb.Controllers
 {
@@ -155,6 +156,7 @@ namespace HubWeb.Controllers
 
         //[Route("~/routes")]
         [Fr8ApiAuthorize]
+        [Fr8HubWebHMACAuthenticate]
         public IHttpActionResult Post(RouteEmptyDTO routeDto, bool updateRegistrations = false)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
