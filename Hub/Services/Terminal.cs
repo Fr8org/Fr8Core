@@ -8,7 +8,6 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.Manifests;
 using Hub.Interfaces;
-using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using StructureMap;
 

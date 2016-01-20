@@ -30,11 +30,12 @@ namespace Hub.Services
     {
         private readonly ICrateManager _crate;
         private readonly IAuthorization _authorizationToken;
-
+        private readonly IActivityTemplate _activityTemplate;
         private readonly IRouteNode _routeNode;
 
         public Action()
         {
+            _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
             _authorizationToken = ObjectFactory.GetInstance<IAuthorization>();
             _routeNode = ObjectFactory.GetInstance<IRouteNode>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
@@ -145,7 +146,7 @@ namespace Hub.Services
 
                 if (submittedAction.ActivityTemplateId != null)
                 {
-                    submittedAction.ActivityTemplate = uow.ActivityTemplateRepository.GetByKey(submittedAction.ActivityTemplateId.Value);
+                    submittedAction.ActivityTemplate = _activityTemplate.GetByKey(submittedAction.ActivityTemplateId.Value);
                 }
 
                 RouteNodeDO subroute = null;
@@ -247,7 +248,7 @@ namespace Hub.Services
 
         public ActionDO Create(IUnitOfWork uow, int actionTemplateId, string name, string label, RouteNodeDO parentNode)
         {
-            var template = uow.ActivityTemplateRepository.GetByKey(actionTemplateId);
+            var template = _activityTemplate.GetByKey(actionTemplateId);
 
             if (template == null)
             {

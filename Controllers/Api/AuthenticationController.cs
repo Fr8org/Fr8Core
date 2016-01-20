@@ -75,9 +75,7 @@ namespace HubWeb.Controllers
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                terminal = uow.TerminalRepository
-                    .GetQuery()
-                    .SingleOrDefault(x => x.Id == terminalId);
+                terminal = _terminal.GetByKey(terminalId);
 
                 if (terminal == null)
                 {
