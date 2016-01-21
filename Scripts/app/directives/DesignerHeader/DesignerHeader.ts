@@ -45,22 +45,6 @@ module dockyard.directives.designerHeader {
                     var result = RouteService.update({ id: $scope.route.id, name: $scope.route.name });
                     result.$promise.then(() => { });
                 };
-
-                var currentState: number;
-                $scope.$watch('route.routeState', () => {
-                    if ($scope.route) {
-                        if (currentState === undefined) currentState = $scope.route.routeState;
-
-                        if (currentState !== $scope.route.routeState) {
-                            if ($scope.route.routeState === model.RouteState.Inactive) {
-                                RouteService.deactivate($scope.route);
-                            } else if ($scope.route.routeState === model.RouteState.Active) {
-                                RouteService.activate($scope.route);
-                            }
-                        }
-                    }
-                });
-
             };
         }
 

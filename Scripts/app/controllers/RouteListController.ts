@@ -72,12 +72,11 @@ module dockyard.controllers {
         }
 
         private activateRoute(route) {
-            this.RouteService.activate(route).$promise.then((result) => {
+            this.RouteService.activate({ routeId: route.id, routeBuilderActivate: false }).$promise.then((result) => {
                 location.reload();
             }, () => {
                 //activation failed
-            });
-            
+                });
         }
         private deactivateRoute(route) {
             this.RouteService.deactivate(route).$promise.then((result) => {

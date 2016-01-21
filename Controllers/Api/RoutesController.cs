@@ -221,10 +221,10 @@ namespace HubWeb.Controllers
         [HttpPost]
         //[Route("activate")]
         [Fr8ApiAuthorize]
-        public async Task<IHttpActionResult> Activate(RouteDO curRoute)
+        public async Task<IHttpActionResult> Activate(Guid routeId, bool routeBuilderActivate = false)
         {
-            string actionDTO = await _route.Activate(curRoute);
-            return Ok(actionDTO);
+            var activateDTO = await _route.Activate(routeId, routeBuilderActivate);
+            return Ok(activateDTO);
         }
 
         [HttpPost]
@@ -310,9 +310,7 @@ namespace HubWeb.Controllers
 
                     _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, message);
                 }
-
-
-
+                
                 return Ok();
             }
         }

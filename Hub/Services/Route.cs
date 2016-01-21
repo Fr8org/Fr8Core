@@ -212,17 +212,23 @@ namespace Hub.Services
 
 
 
-        public async Task<string> Activate(RouteDO curRoute)
+        public async Task<ActivateActionsDTO> Activate(Guid curRouteId, bool routeBuilderActivate)
         {
-            if (curRoute.Subroutes == null)
+            var result = new ActivateActionsDTO
             {
-                throw new ArgumentNullException("Parameter Subroutes is null.");
-            }
+                Status = "no action",
+                ActionsCollections = new List<ActionDTO>()
+            };
 
-            string result = "no action";
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var route = uow.RouteRepository.GetByKey(curRoute.Id);
+                var route = uow.RouteRepository.GetByKey(curRouteId);
+
+                if (route.Subroutes == null)
+                {
+                    throw new ArgumentNullException("Parameter Subroutes is null.");
+                }
+
                 foreach (SubrouteDO template in route.Subroutes)
                 {
                     var activities = EnumerateActivityTree<ActionDO>(template);
@@ -232,7 +238,8 @@ namespace Hub.Services
                         {
                             var resultActivate = await _action.Activate(curActionDO);
 
-                            result = "success";
+                            result.Status = "validation_error";
+                            if (routeBuilderActivate) result.ActionsCollections.Add(resultActivate);
                         }
                         catch (Exception ex)
                         {
@@ -240,17 +247,14 @@ namespace Hub.Services
                         }
                     }
                 }
-                
 
-                uow.RouteRepository.GetByKey(curRoute.Id).RouteState = RouteState.Active;
+                uow.RouteRepository.GetByKey(route.Id).RouteState = RouteState.Active;
                 uow.SaveChanges();
             }
 
             return result;
         }
-
-
-
+        
         public async Task<string> Deactivate(RouteDO curRoute)
         {
             string result = "no action";

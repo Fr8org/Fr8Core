@@ -111,7 +111,12 @@ namespace terminalDocuSign.Actions
             return Task.FromResult<ActionDO>(curActionDO);
         }
 
-      
+        protected override async Task<CrateStorage> ValidateAction(ActionDO curActionDO)
+        {
+            ValidateEnvelopeSelectableEvents(curActionDO);
+            return await Task.FromResult<CrateStorage>(null);
+        }
+
         /// <summary>
         /// Tries to get existing Docusign connect configuration named "DocuSignConnectName" for current user
         /// </summary>
@@ -144,27 +149,19 @@ namespace terminalDocuSign.Actions
                 var eventCheckBoxes = configControls.Controls.Where(c => c.Type == ControlTypes.CheckBox).ToList();
                 var anySelectedControl = eventCheckBoxes.Any(c => c.Selected);
 
-                if (!anySelectedControl)
+                var checkBoxControl = eventCheckBoxes.FirstOrDefault(x => x.Name == "Event_Recipient_Signed");
+                if(checkBoxControl != null) checkBoxControl.ErrorMessage = string.Empty; 
+                if (!anySelectedControl && checkBoxControl != null)
                 {
                     //show the error under the third checkbox because checkboxes are rendered like separate controls
-                    var checkBoxControl = eventCheckBoxes.FirstOrDefault(x => x.Name == "Event_Recipient_Signed");
-                    if (checkBoxControl != null)
-                    {
-                        checkBoxControl.ErrorMessage = "At least one notification checkbox must be checked.";
-                    }
-
-                    string curSelectedOption, curSelectedValue;
-                    GetTemplateRecipientPickerValue(updater.CrateStorage, out curSelectedOption, out curSelectedValue);
-                    if (!string.IsNullOrEmpty(curSelectedValue) || !string.IsNullOrEmpty(curSelectedOption)) return;
-
-                    var groupControl = configControls.Controls.OfType<RadioButtonGroup>().FirstOrDefault();
-                    if (groupControl == null) return;
-
-                    if (!groupControl.Radios.Any(x => x.Selected))
-                    {
-                        groupControl.ErrorMessage = "One option from the radio buttons must be selected.";
-                    }
+                    checkBoxControl.ErrorMessage = "At least one notification checkbox must be checked.";
                 }
+
+                var groupControl = configControls.Controls.OfType<RadioButtonGroup>().FirstOrDefault();
+                if (groupControl == null) return;
+
+                groupControl.ErrorMessage = !groupControl.Radios.Any(x => x.Selected) ?
+                    "One option from the radio buttons must be selected." : string.Empty;
             }
         }
 

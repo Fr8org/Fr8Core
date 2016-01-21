@@ -20,7 +20,7 @@ namespace Hub.Interfaces
         IList<SubrouteDO> GetSubroutes(RouteDO curRouteDO);
         IList<RouteDO> GetMatchingRoutes(string userId, EventReportCM curEventReport);
         RouteNodeDO GetFirstActivity(Guid curRouteId);
-        Task<string> Activate(RouteDO curRoute);
+        Task<ActivateActionsDTO> Activate(Guid routeId, bool routeBuilderActivate);
         Task<string> Deactivate(RouteDO curRoute);
         IEnumerable<ActionDO> GetActions(int id);
         RouteDO GetRoute(ActionDO action);
