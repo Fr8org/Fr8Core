@@ -35,13 +35,27 @@ namespace terminalDocuSign.Services
         /// </summary>
         public async Task CreateRoute_MonitorAllDocuSignEvents(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
         {
+            var existingRoutes = (await _hubCommunicator.GetRoutesByName("MonitorAllDocuSignEvents", curFr8UserId)).ToList();
+            existingRoutes = existingRoutes.Where(r => r.Tag == "docusign-auto-monitor-route-"+authTokenDTO.ExternalAccountId).ToList();
+            if (existingRoutes.Any())
+            {
+                //hmmmm which one belongs to us?
+                //lets assume there will be only single route
+                var existingRoute = existingRoutes.Single();
+                if (existingRoute.RouteState != RouteState.Active)
+                {
+                    var existingRouteDO = Mapper.Map<RouteDO>(existingRoute);
+                    await _hubCommunicator.ActivateRoute(existingRouteDO, curFr8UserId);
+                }
+                return;
+            }
             //first check if this exists
             var emptyMonitorRoute = new RouteEmptyDTO
             {
                 Name = "MonitorAllDocuSignEvents",
                 Description = "MonitorAllDocuSignEvents",
                 RouteState = RouteState.Active,
-                Tag = "monitor"
+                Tag = "docusign-auto-monitor-route-"+authTokenDTO.ExternalAccountId
             };
             var monitorDocusignRoute = await _hubCommunicator.CreateRoute(emptyMonitorRoute, curFr8UserId);
             var activityTemplates = await _hubCommunicator.GetActivityTemplates(null, curFr8UserId);

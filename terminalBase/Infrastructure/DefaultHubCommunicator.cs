@@ -249,5 +249,14 @@ namespace TerminalBase.Infrastructure
 
             return await _restfulServiceClient.PostAsync<RouteDO, RouteDO>(uri, routeDO, null, await GetHMACHeader(uri, userId, routeDO));
         }
+
+        public async Task<IEnumerable<RouteFullDTO>> GetRoutesByName(string name, string userId)
+        {
+            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                      + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routes/getbyname?name="+name;
+            var uri = new Uri(url);
+
+            return await _restfulServiceClient.GetAsync<IEnumerable<RouteFullDTO>>(uri, null, await GetHMACHeader(uri, userId));
+        }
     }
 }

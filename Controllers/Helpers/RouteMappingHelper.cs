@@ -28,7 +28,7 @@ namespace HubWeb.Controllers.Helpers
                     return pntDTO;
                 }).ToList();
 
-            RouteFullDTO result = new RouteFullDTO()
+            var result = new RouteFullDTO()
             {
                 Description = curRouteDO.Description,
                 Id = curRouteDO.Id,
@@ -36,7 +36,8 @@ namespace HubWeb.Controllers.Helpers
                 RouteState = curRouteDO.RouteState,
                 StartingSubrouteId = curRouteDO.StartingSubrouteId,
                 Subroutes = subrouteDTOList,
-                Fr8UserId = curRouteDO.Fr8Account.Id
+                Fr8UserId = curRouteDO.Fr8Account.Id,
+                Tag = curRouteDO.Tag
             };
 
             return result;

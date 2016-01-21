@@ -180,5 +180,10 @@ namespace TerminalBase.Infrastructure
         {
             throw new NotImplementedException();
         }
+
+        public Task<IEnumerable<RouteFullDTO>> GetRoutesByName(string name, string userId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

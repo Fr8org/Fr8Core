@@ -130,6 +130,22 @@ namespace HubWeb.Controllers
        }
 
         [Fr8ApiAuthorize]
+        [Fr8HubWebHMACAuthenticate]
+        [HttpGet]
+        [ResponseType(typeof(IEnumerable<RouteFullDTO>))]
+        public IHttpActionResult GetByName(string name)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curRoutes = _route.GetByName(uow, _security.GetCurrentAccount(uow), name);
+                var fullRoutes = curRoutes.Select(curRoute => RouteMappingHelper.MapRouteToDto(uow, curRoute)).ToList();
+                return Ok(fullRoutes);
+                
+            }
+            
+        }
+
+        [Fr8ApiAuthorize]
         //[Route("copy")]
         [HttpPost]
         public IHttpActionResult Copy(Guid id, string name)
@@ -247,12 +263,11 @@ namespace HubWeb.Controllers
         }
 
         [HttpPost]
-        //[Route("activate")]
         [Fr8ApiAuthorize]
         [Fr8HubWebHMACAuthenticate]
         public async Task<IHttpActionResult> Activate(RouteDO curRoute)
         {
-            string actionDTO = await _route.Activate(curRoute);
+            string actionDTO = await _route.Activate(curRoute.Id);
             return Ok(actionDTO);
         }
 
@@ -261,7 +276,7 @@ namespace HubWeb.Controllers
         [Fr8ApiAuthorize]
         public async Task<IHttpActionResult> Deactivate(RouteDO curRoute)
         {
-            string actionDTO = await _route.Deactivate(curRoute);
+            string actionDTO = await _route.Deactivate(curRoute.Id);
             return Ok(actionDTO);
         }
 
