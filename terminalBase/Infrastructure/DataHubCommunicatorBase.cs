@@ -170,5 +170,10 @@ namespace TerminalBase.Infrastructure
         {
             throw new NotImplementedException();
         }
+
+        public Task<RouteEmptyDTO> CreateRoute(RouteEmptyDTO routeDTO, string userId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

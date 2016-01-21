@@ -10,6 +10,7 @@ using Data.States;
 using Hub.Interfaces;
 using StructureMap;
 using terminalDocuSign.Interfaces;
+using TerminalBase.Infrastructure;
 
 namespace terminalDocuSign.Services
 {
@@ -20,11 +21,13 @@ namespace terminalDocuSign.Services
     {
         private readonly IActivityTemplate _activityTemplate;
         private readonly IAction _action;
+        private readonly IHubCommunicator _hubCommunicator;
 
         public DocuSignRoute()
         {
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
             _action = ObjectFactory.GetInstance<IAction>();
+            _hubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
         }
 
         /// <summary>
@@ -32,6 +35,17 @@ namespace terminalDocuSign.Services
         /// </summary>
         public async Task CreateRoute_MonitorAllDocuSignEvents(string curFr8UserId)
         {
+            var newRoute = new RouteEmptyDTO
+            {
+                Name = "MonitorAllDocuSignEvents",
+                Description = "MonitorAllDocuSignEvents",
+                RouteState = RouteState.Active,
+                Tag = "monitor"
+            };
+            newRoute = await _hubCommunicator.CreateRoute(newRoute, curFr8UserId);
+
+
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
 

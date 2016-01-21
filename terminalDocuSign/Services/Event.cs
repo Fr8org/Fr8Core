@@ -42,7 +42,15 @@ namespace terminalDocuSign.Services
             //The Monitor All DocuSign Events route should be creaed in this case.
             if (curExternalEventPayload.Contains("fr8_user_id"))
             {
-                var curFr8UserId = JObject.Parse(curExternalEventPayload)["fr8_user_id"].Value<string>();
+                JObject jo = (JObject)JsonConvert.DeserializeObject(curExternalEventPayload);
+
+                var curFr8UserId = jo["fr8_user_id"].Value<string>();
+                AuthorizationTokenDTO authToken = JsonConvert.DeserializeObject<AuthorizationTokenDTO>(jo["auth_token"].ToString());
+
+                if (authToken == null)
+                {
+                    throw new ArgumentException("Authorization Token required");
+                }
 
                 if (string.IsNullOrEmpty(curFr8UserId))
                 {

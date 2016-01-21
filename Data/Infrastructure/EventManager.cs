@@ -150,7 +150,7 @@ namespace Data.Infrastructure
         public delegate void IncidentTwilioSMSSendFailureHandler(string number, string message, string errorMsg);
         public static event IncidentTwilioSMSSendFailureHandler IncidentTwilioSMSSendFailure;
 
-        public delegate object AuthenticationCompletedEventHandler(string userId, TerminalDO authenticatedTerminal);
+        public delegate object AuthenticationCompletedEventHandler(string userId, TerminalDO authenticatedTerminal, AuthorizationTokenDTO authToken);
         public static event AuthenticationCompletedEventHandler EventAuthenticationCompleted;
 
 
@@ -508,10 +508,10 @@ namespace Data.Infrastructure
             if (handler != null) handler(currentValues);
         }
 
-        public static void TerminalAuthenticationCompleted(string userId, TerminalDO authenticatedTerminal)
+        public static void TerminalAuthenticationCompleted(string userId, TerminalDO authenticatedTerminal, AuthorizationTokenDTO authToken)
         {
             var handler = EventAuthenticationCompleted;
-            if (handler != null) handler(userId, authenticatedTerminal);
+            if (handler != null) handler(userId, authenticatedTerminal, authToken);
         }
 
 
