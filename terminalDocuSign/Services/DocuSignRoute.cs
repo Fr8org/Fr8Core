@@ -36,7 +36,6 @@ namespace terminalDocuSign.Services
         public async Task CreateRoute_MonitorAllDocuSignEvents(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
         {
             //first check if this exists
-
             var emptyMonitorRoute = new RouteEmptyDTO
             {
                 Name = "MonitorAllDocuSignEvents",
@@ -44,84 +43,16 @@ namespace terminalDocuSign.Services
                 RouteState = RouteState.Active,
                 Tag = "monitor"
             };
-            RouteFullDTO monitorDocusignRoute = null;
-
-            try
-            {
-                monitorDocusignRoute = await _hubCommunicator.CreateRoute(emptyMonitorRoute, curFr8UserId);
-            }
-            catch (Exception e)
-            {
-                new List<Exception>().Add(e);
-                int a = 12;
-                throw;
-
-            }
-
+            var monitorDocusignRoute = await _hubCommunicator.CreateRoute(emptyMonitorRoute, curFr8UserId);
             var activityTemplates = await _hubCommunicator.GetActivityTemplates(null, curFr8UserId);
-
             var recordDocusignEventsTemplate = GetActivityTemplate(activityTemplates, "Record_DocuSign_Events");
             var storeMTDataTemplate = GetActivityTemplate(activityTemplates, "StoreMTData");
-
             await _hubCommunicator.CreateAndConfigureAction(recordDocusignEventsTemplate.Id, "Record_DocuSign_Events",
-                curFr8UserId, null, monitorDocusignRoute.StartingSubrouteId, false, new Guid(authTokenDTO.Id));
-
+                curFr8UserId, "Record DocuSign Events", monitorDocusignRoute.StartingSubrouteId, false, new Guid(authTokenDTO.Id));
             await _hubCommunicator.CreateAndConfigureAction(storeMTDataTemplate.Id, "StoreMTData",
-                curFr8UserId, null, monitorDocusignRoute.StartingSubrouteId);
-            
-            /*
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-
-                var curFr8Account = uow.UserRepository.GetByKey(curFr8UserId);
-
-                //check if the route already created
-                var existingRoute = GetExistingRoute(uow, "MonitorAllDocuSignEvents", curFr8Account.Email);
-                if (existingRoute != null)
-                {
-                    //if route is already created, just make it active and return
-                    existingRoute.RouteState = RouteState.Active;
-                    uow.SaveChanges();
-                    return;
-                }
-
-                //Create a route
-                RouteDO route = new RouteDO
-                {
-                    Name = "MonitorAllDocuSignEvents",
-                    Description = "Monitor All DocuSign Events",
-                    Fr8Account = curFr8Account,
-                    RouteState = RouteState.Active,
-                    Tag = "Monitor",
-                    Id = Guid.NewGuid()
-                };
-
-                //create a subroute
-                var subroute = new SubrouteDO(true)
-                {
-                    Id = Guid.NewGuid(),
-                    RootRouteNode = route,
-                    ParentRouteNode = route
-                };
-
-                //update Route and Subroute into database
-                route.ChildNodes = new List<RouteNodeDO> { subroute };
-                uow.RouteNodeRepository.Add(route);
-                uow.RouteNodeRepository.Add(subroute);
-                uow.SaveChanges();
-
-                //get activity templates of required actions
-                var activity1 = Mapper.Map<ActivityTemplateDTO>(_activityTemplate.GetByName(uow, "Record_DocuSign_Events_v1"));
-                var activity2 = Mapper.Map<ActivityTemplateDTO>(_activityTemplate.GetByName(uow, "StoreMTData_v1"));
-
-                //create and configure required actions
-                await _action.CreateAndConfigure(uow, curFr8UserId, activity1.Id, activity1.Name, activity1.Label, subroute.Id);
-                await _action.CreateAndConfigure(uow, curFr8UserId, activity2.Id, activity2.Name, activity2.Label, subroute.Id);
-                
-                //update database
-                uow.SaveChanges();
-            }
-             * */
+                curFr8UserId, "Store MT Data", monitorDocusignRoute.StartingSubrouteId);
+            var routeDO = Mapper.Map<RouteDO>(monitorDocusignRoute);
+            await _hubCommunicator.ActivateRoute(routeDO, curFr8UserId);
         }
 
         private ActivityTemplateDTO GetActivityTemplate(IEnumerable<ActivityTemplateDTO> activityList, string activityTemplateName)

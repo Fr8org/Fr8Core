@@ -175,5 +175,10 @@ namespace TerminalBase.Infrastructure
         {
             throw new NotImplementedException();
         }
+
+        public Task<RouteDO> ActivateRoute(RouteDO routeDO, string userId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

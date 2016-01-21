@@ -240,5 +240,14 @@ namespace TerminalBase.Infrastructure
 
             return await _restfulServiceClient.PostAsync<RouteEmptyDTO, RouteFullDTO>(uri, routeDTO, null, await GetHMACHeader(uri, userId, routeDTO));
         }
+
+        public async Task<RouteDO> ActivateRoute(RouteDO routeDO, string userId)
+        {
+            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                      + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routes/activate";
+            var uri = new Uri(url);
+
+            return await _restfulServiceClient.PostAsync<RouteDO, RouteDO>(uri, routeDO, null, await GetHMACHeader(uri, userId, routeDO));
+        }
     }
 }

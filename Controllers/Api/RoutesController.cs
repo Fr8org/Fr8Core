@@ -249,6 +249,7 @@ namespace HubWeb.Controllers
         [HttpPost]
         //[Route("activate")]
         [Fr8ApiAuthorize]
+        [Fr8HubWebHMACAuthenticate]
         public async Task<IHttpActionResult> Activate(RouteDO curRoute)
         {
             string actionDTO = await _route.Activate(curRoute);
