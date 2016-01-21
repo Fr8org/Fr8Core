@@ -15,16 +15,19 @@ using Data.Interfaces.DataTransferObjects;
 using Hub.Interfaces;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Hub.Services;
+using Utilities.Logging;
 
 namespace Hub.Managers.APIManagers.Transmitters.Terminal
 {
     public class TerminalTransmitter : RestfulServiceClient, ITerminalTransmitter
     {
         private readonly IHMACService _hmacService;
+        log4net.ILog _logger;
 
         public TerminalTransmitter()
         {
             _hmacService = ObjectFactory.GetInstance<IHMACService>();
+            _logger = Logger.GetLogger();
         }
 
         /// <summary>
@@ -53,6 +56,8 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
                 var activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>().GetByKey(actionDTO.ActivityTemplateId.Value);
                 actionDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDO, ActivityTemplateDTO>(activityTemplate);
                 terminalId = activityTemplate.TerminalId;
+                _logger.DebugFormat("ActivityTemplate found: {0}", activityTemplate != null);
+                _logger.DebugFormat("Terminal id: {0}", terminalId);
             }
             else
             {
@@ -66,6 +71,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
             var requestUri = new Uri(string.Format("actions/{0}", actionName), UriKind.Relative);
             if (terminal == null || string.IsNullOrEmpty(terminal.Endpoint))
             {
+                _logger.ErrorFormat("Terminal record not found for activityTemplateId: {0}. Throwing exception.", actionDTO.ActivityTemplateId);
                 throw new Exception("Unknown terminal or terminal endpoint");
             }
             //let's calculate absolute url, since our hmac mechanism needs it

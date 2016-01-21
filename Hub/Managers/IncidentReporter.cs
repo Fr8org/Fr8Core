@@ -41,6 +41,22 @@ namespace Hub.Managers
             EventManager.IncidentOAuthAuthenticationFailed += OAuthAuthenticationFailed;
             EventManager.IncidentMissingFieldInPayload += IncidentMissingFieldInPayload;
             EventManager.ExternalEventReceived += LogExternalEventReceivedIncident;
+            EventManager.KeyVaultFailure += KeyVaultFailure;
+        }
+
+        private void KeyVaultFailure(string keyVaultMethod, Exception ex)
+        {
+            var incident = new IncidentDO
+            {
+                CustomerId = "unknown",
+                Data = string.Join(Environment.NewLine, "KeyVault method: " + keyVaultMethod, ex.Message, ex.StackTrace ?? ""),
+                PrimaryCategory = "KeyVault",
+                SecondaryCategory = "QuerySecurePartAsync",
+                Component = "Hub",
+                Activity = "KeyVault Failed"
+            };
+
+            SaveAndLogIncident(incident);
         }
 
         private void ProcessIncidentTerminalActionActivationFailed(string terminalUrl, string curActionDTO, string objectId)
