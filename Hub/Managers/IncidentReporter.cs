@@ -14,11 +14,11 @@ namespace Hub.Managers
 {
     public class IncidentReporter
     {
-        private readonly EventReporter _eventReporter;
+        private EventReporter _eventReporter;
 
-        public IncidentReporter(EventReporter eventReporter)
+        public IncidentReporter()
         {
-            _eventReporter = eventReporter;
+            _eventReporter = new EventReporter();
         }
         public void SubscribeToAlerts()
         {
