@@ -33,6 +33,7 @@ module dockyard.controllers {
         onActionDrop: (group: model.ActionGroup, actionId: string, index: number) => void;
         mode: string;
         solutionName: string;
+        curAggReloadingActions: Array<string>;
     }
 
     //Setup aliases
@@ -87,6 +88,8 @@ module dockyard.controllers {
 
             this.$scope.current = new model.RouteBuilderState();
             this.$scope.actionGroups = [];
+
+            this.$scope.curAggReloadingActions = []; 
 
             this.setupMessageProcessing();
 
@@ -617,12 +620,24 @@ module dockyard.controllers {
                 return;
             }
 
+            var results: Array<model.ActionDTO> = [];
+            results = this.getAgressiveReloadingActions(this.$scope.actionGroups, callConfigureResponseEventArgs.action);
+
+            for (var index = 0; index < results.length; index++) {
+                if (this.$scope.curAggReloadingActions.indexOf(results[index].id) === -1) {
+                    this.$scope.curAggReloadingActions.push(results[index].id);
+                } else {
+                    var positionToRemove = this.$scope.curAggReloadingActions.indexOf(results[index].id);
+                    this.$scope.curAggReloadingActions.splice(positionToRemove, 1);
+                    return;
+                }
+            }
 
             // scann all actions to find actions with tag AgressiveReload in ActivityTemplate
-            this.reConfigure(this.getReloadAgressiveActions(this.$scope.actionGroups, callConfigureResponseEventArgs.action));
+            this.reConfigure(results);
         }
 
-        private getReloadAgressiveActions(actionGroups: Array<model.ActionGroup>, currentAction: interfaces.IActionDTO) {
+        private getAgressiveReloadingActions (actionGroups: Array<model.ActionGroup>, currentAction: interfaces.IActionDTO) {
             var results: Array<model.ActionDTO> = [];
             actionGroups.forEach(group => {
                 group.actions.filter(action => {
