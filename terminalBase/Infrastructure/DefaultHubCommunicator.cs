@@ -19,6 +19,9 @@ using Hub.Managers.APIManagers.Transmitters.Restful;
 using Utilities.Configuration.Azure;
 using Data.Constants;
 using Data.Interfaces.Manifests;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using AutoMapper;
 
 namespace TerminalBase.Infrastructure
 {
@@ -187,6 +190,73 @@ namespace TerminalBase.Infrastructure
                       + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/field/exists";
             var uri = new Uri(url);
             return await _restfulServiceClient.PostAsync<List<FieldValidationDTO>, List<FieldValidationResult>>(uri, fields, null, await GetHMACHeader(uri, userId, fields));
+        }
+
+        public async Task<ActionDTO> ConfigureAction(ActionDTO actionDTO, string userId)
+        {
+            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                      + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/actions/configure";
+            var uri = new Uri(url);
+            return await _restfulServiceClient.PostAsync<ActionDTO, ActionDTO>(uri, actionDTO, null, await GetHMACHeader(uri, userId, actionDTO));
+        }
+
+        public async Task<ActionDTO> CreateAndConfigureAction(int templateId, string name, string userId, string label = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null)
+        {
+            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                      + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/actions/create";
+            
+            
+            var postUrl = "?actionTemplateId={0}&name={1}&createRoute={2}";
+            var formattedPostUrl = string.Format(postUrl, templateId, name, createRoute ? "true" : "false");
+            
+            if (label != null)
+            {
+                formattedPostUrl += "&label=" + label;
+            }
+            if (parentNodeId != null)
+            {
+                formattedPostUrl += "&parentNodeId=" + parentNodeId;
+            }
+            if (authorizationTokenId != null)
+            {
+                formattedPostUrl += "&authorizationTokenId=" + authorizationTokenId.ToString();
+            }
+            
+            var uri = new Uri(url + formattedPostUrl);
+            return await _restfulServiceClient.PostAsync<ActionDTO>(uri, null, await GetHMACHeader(uri, userId));
+        }
+
+        public async Task<ActionDO> ConfigureAction(ActionDO actionDO, string userId)
+        {
+            var actionDTO = Mapper.Map<ActionDTO>(actionDO);
+            return Mapper.Map<ActionDO>(await ConfigureAction(actionDTO, userId));
+        }
+
+        public async Task<RouteFullDTO> CreateRoute(RouteEmptyDTO routeDTO, string userId)
+        {
+            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                      + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routes/create";
+            var uri = new Uri(url);
+
+            return await _restfulServiceClient.PostAsync<RouteEmptyDTO, RouteFullDTO>(uri, routeDTO, null, await GetHMACHeader(uri, userId, routeDTO));
+        }
+
+        public async Task<RouteDO> ActivateRoute(RouteDO routeDO, string userId)
+        {
+            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                      + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routes/activate";
+            var uri = new Uri(url);
+
+            return await _restfulServiceClient.PostAsync<RouteDO, RouteDO>(uri, routeDO, null, await GetHMACHeader(uri, userId, routeDO));
+        }
+
+        public async Task<IEnumerable<RouteFullDTO>> GetRoutesByName(string name, string userId)
+        {
+            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                      + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routes/getbyname?name="+name;
+            var uri = new Uri(url);
+
+            return await _restfulServiceClient.GetAsync<IEnumerable<RouteFullDTO>>(uri, null, await GetHMACHeader(uri, userId));
         }
     }
 }

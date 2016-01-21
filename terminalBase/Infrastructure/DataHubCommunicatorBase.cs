@@ -155,5 +155,35 @@ namespace TerminalBase.Infrastructure
         {
             throw new NotImplementedException();
         }
+
+        public Task<ActionDTO> ConfigureAction(ActionDTO actionDTO, string userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ActionDTO> CreateAndConfigureAction(int templateId, string name, string userId, string label = null, Guid? parentNodeId = default(Guid?), bool createRoute = false, Guid? authorizationTokenId = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ActionDO> ConfigureAction(ActionDO actionDO, string userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<RouteFullDTO> CreateRoute(RouteEmptyDTO routeDTO, string userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<RouteDO> ActivateRoute(RouteDO routeDO, string userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<RouteFullDTO>> GetRoutesByName(string name, string userId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

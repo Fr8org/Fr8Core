@@ -22,7 +22,7 @@ namespace TerminalBase.Infrastructure
         private readonly LoggingDataCrateFactory _loggingDataCrateFactory;
         private readonly ICrateManager _crateManager;
         
-        public delegate Crate EventParser(string externalEventPayload);
+        public delegate Task<Crate> EventParser(string externalEventPayload);
         
         private string eventWebServerUrl = string.Empty;
         private bool eventsDisabled = false;
@@ -149,7 +149,7 @@ namespace TerminalBase.Infrastructure
             var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
 
             var fr8EventUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl") + "api/v1/event/processevents";
-            var eventReportCrateDTO = _crateManager.ToDto(parser.Invoke(curExternalEventPayload));
+            var eventReportCrateDTO = _crateManager.ToDto(await parser.Invoke(curExternalEventPayload));
             
             if (eventReportCrateDTO != null)
             {
