@@ -236,22 +236,27 @@ module dockyard.directives.paneConfigureAction {
                     }
                 }
 
+                // The function compares two instances of a configuration control and 
+                // determines if user's selection or entered value has changed 
                 function controlValuesChanged(control1: model.ControlDefinitionDTO, control2: model.ControlDefinitionDTO) {
-
                     if (control1.name != control2.name) {
                         throw Error("Control1 and control2 represent different controls.");
                     }
 
-                    if (control1.value != control2.value)
+                    if (control1.value != undefined 
+                        && control1.value != control2.value)
                         return true;
 
-                    if ((<model.CheckBox>control1).checked != undefined && (<model.CheckBox>control1).checked != (<model.CheckBox>control2).checked)
+                    if ((<model.CheckBox>control1).selected != undefined
+                        && (<model.CheckBox>control1).selected != (<model.CheckBox>control2).selected)
                         return true;
 
-                    if ((<model.DropDownList>control1).selectedKey != undefined && (<model.DropDownList>control1).selectedKey != (<model.DropDownList>control2).selectedKey)
+                    if ((<model.DropDownList>control1).selectedKey != undefined
+                        && (<model.DropDownList>control1).selectedKey != (<model.DropDownList>control2).selectedKey)
                         return true;
 
-                    if ((<model.TextSource>control1).valueSource != undefined && (<model.TextSource>control1).valueSource != (<model.TextSource>control2).valueSource)
+                    if ((<model.TextSource>control1).valueSource != undefined
+                        && (<model.TextSource>control1).valueSource != (<model.TextSource>control2).valueSource)
                         return true;
 
                     return false;
@@ -267,7 +272,6 @@ module dockyard.directives.paneConfigureAction {
                         return;
                     }
 
-                    debugger;
                     for (var i = 0; i < newValue.fields.length; i++) {
                         if (!controlValuesChanged(newValue.fields[i], oldValue.fields[i]))
                         {
