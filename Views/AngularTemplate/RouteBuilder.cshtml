@@ -54,11 +54,11 @@
                         <div class="action-arrow-right"></div>
                     </div>
                 </div>
-                <div class="action-add" ng-click="addAction(group)">
+                <div ng-class="{'action-add': true, 'action-add--active': activeCategory >= 0}" ng-click="addAction(group)">
                     <div style="display:flex">
                         <div class="action-categories">
                             <div data-ng-repeat="actionCategory in actionCategories" 
-                                 ng-class="{'action-category': true,'action-category action-category--active': actionCategory.id === activeCategory}">
+                                 ng-class="{'action-category': true,'action-category--active': actionCategory.id === activeCategory}">
                                 <i class="fa fa-{{actionCategory.icon}} action-category-icon"
                                    data-ng-click="setActive(actionCategory.id)"></i>
                                 <div class="action-category-name">{{actionCategory.name}}</div>
@@ -75,6 +75,7 @@
                                 </div>
                             </div>
                             <div>
+                                <div data-ng-click="deactivateTerminal()"><i class="fa fa-arrow-left"></i>Back</div>
                                 <div style="padding:8px 16px"
                                      data-ng-repeat="action in webServiceActionList[activeTerminal].actions"
                                      data-ng-click="setActiveAction(action, group)">
