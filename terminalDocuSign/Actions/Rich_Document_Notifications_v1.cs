@@ -204,7 +204,9 @@ namespace terminalDocuSign.Actions
             var activityList = await HubCommunicator.GetActivityTemplates(actionDO, CurrentFr8UserId);
 
             var monitorDocuSignTemplate = GetActivityTemplate(activityList, "Monitor_DocuSign_Envelope_Activity");
-            var monitorDocuSignAction = await CreateMonitorDocuSignAction(monitorDocuSignTemplate, authTokenDO, ++ordering);
+            var monitorDocuSignAction = await CreateMonitorDocuSignAction(monitorDocuSignTemplate, authTokenDO, actionDO);
+
+            
 
             string recipientEmail = null;
             if (specificRecipientOption.Selected)
@@ -220,7 +222,7 @@ namespace terminalDocuSign.Actions
 
             //let's make followup configuration for monitorDocuSignEventAction
             //followup call places EventSubscription crate in storage
-            monitorDocuSignAction = await ConfigureAction(monitorDocuSignTemplate, monitorDocuSignAction, authTokenDO);
+            monitorDocuSignAction = await HubCommunicator.ConfigureAction(monitorDocuSignAction, CurrentFr8UserId);
             monitorDocuSignAction.AuthorizationToken = authTokenDO;
             monitorDocuSignAction.AuthorizationTokenId = authTokenDO.Id;
             actionDO.ChildNodes.Add(monitorDocuSignAction);
@@ -229,60 +231,35 @@ namespace terminalDocuSign.Actions
             {
                 var setDelayTemplate = GetActivityTemplate(activityList, "SetDelay");
                 var durationControl = (Duration)notifyWhenEventDoesntHappenRadio.Controls.First(c => c.Name == "TimePeriod");
-                var setDelayAction = await CreateSetDelayAction(setDelayTemplate, ++ordering);
+                var setDelayAction = await CreateSetDelayAction(setDelayTemplate, actionDO);
                 SetDelayActionFields(setDelayAction, durationControl);
                 actionDO.ChildNodes.Add(setDelayAction);
 
                 var queryMTDatabaseTemplate = GetActivityTemplate(activityList, "QueryMTDatabase");
-                var queryMTDatabaseAction = await CreateQueryMTDatabaseAction(queryMTDatabaseTemplate, ++ordering);
+                var queryMTDatabaseAction = await CreateQueryMTDatabaseAction(queryMTDatabaseTemplate, actionDO);
                 await SetQueryMTDatabaseActionFields(queryMTDatabaseAction, recipientEmail);
                 //let's make a followup configuration to fill criteria fields
-                queryMTDatabaseAction = await ConfigureAction(queryMTDatabaseTemplate, queryMTDatabaseAction, null);
+                
+                queryMTDatabaseAction = await HubCommunicator.ConfigureAction(queryMTDatabaseAction, CurrentFr8UserId);
                 actionDO.ChildNodes.Add(queryMTDatabaseAction);
 
                 var recipientEventStatus = (DropDownList)notifyWhenEventDoesntHappenRadio.Controls.First(c => c.Name == "RecipientEvent");
 
 
                 var filterUsingRuntimeTemplate = GetActivityTemplate(activityList, "TestIncomingData");
-                var filterAction = await CreateFilterUsingRunTimeAction(filterUsingRuntimeTemplate, ++ordering);
+                var filterAction = await CreateFilterUsingRunTimeAction(filterUsingRuntimeTemplate, actionDO);
                 SetFilterUsingRunTimeActionFields(filterAction, recipientEventStatus.Value);
                 actionDO.ChildNodes.Add(filterAction);
             }
 
 
-            var notifierAction = await CreateNotifierAction(activityList, actionDO, howToBeNotifiedDdl, ++ordering);
+            var notifierAction = CreateNotifierAction(activityList, actionDO, howToBeNotifiedDdl, ++ordering);
             if (notifierAction != null)
             {
                 actionDO.ChildNodes.Add(notifierAction);
             }
 
             return actionDO;
-        }
-
-        //TODO next 3 functions could be widely used in project
-        private async Task<ActionDO> ConfigureAction(ActivityTemplateDTO template, ActionDO action, AuthorizationTokenDO authToken)
-            {
-            return await ExplicitConfigurationHelper.Configure(
-                action,
-                template,
-                authToken
-            );
-            }
-
-        private async Task<ActionDO> CreateAction(ActivityTemplateDTO template, string actionName, string actionLabel, int ordering, AuthorizationTokenDO authToken = null)
-            {
-            var action = new ActionDO
-            {
-                IsTempId = true,
-                ActivityTemplateId = template.Id,
-                CrateStorage = Crate.EmptyStorageAsStr(),
-                CreateDate = DateTime.Now,
-                Ordering = ordering,
-                Name = actionName,
-                Label = actionLabel
-            };
-
-            return await ConfigureAction(template, action, authToken);
         }
 
         private ActivityTemplateDTO GetActivityTemplate(IEnumerable<ActivityTemplateDTO> activityList, string activityTemplateName)
@@ -393,23 +370,27 @@ namespace terminalDocuSign.Actions
 
         #region Action_Creation
 
-        private async Task<ActionDO> CreateFilterUsingRunTimeAction(ActivityTemplateDTO template, int ordering)
+        private async Task<ActionDO> CreateFilterUsingRunTimeAction(ActivityTemplateDTO template, ActionDO parentAction)
         {
-            return await CreateAction(template, "Filter Using Run Time", "Filter Using Run Time", ordering);
+            var action = await HubCommunicator.CreateAndConfigureAction(template.Id, "Filter Using Run Time", CurrentFr8UserId, "Filter Using Run Time", parentAction.Id, false);
+            return Mapper.Map<ActionDO>(action);
         }
-        private async Task<ActionDO> CreateQueryMTDatabaseAction(ActivityTemplateDTO template, int ordering)
+        private async Task<ActionDO> CreateQueryMTDatabaseAction(ActivityTemplateDTO template, ActionDO parentAction)
         {
-            return await CreateAction(template, "Query MT Database", "Query MT Database", ordering);
-        }
-
-        private async Task<ActionDO> CreateSetDelayAction(ActivityTemplateDTO template, int ordering)
-        {
-            return await CreateAction(template, "Set Delay", "Set Delay", ordering);
+            var action = await HubCommunicator.CreateAndConfigureAction(template.Id, "Query MT Database", CurrentFr8UserId, "Query MT Database", parentAction.Id, false);
+            return Mapper.Map<ActionDO>(action);
         }
 
-        private async Task<ActionDO> CreateMonitorDocuSignAction(ActivityTemplateDTO activity, AuthorizationTokenDO authTokenDO, int ordering)
+        private async Task<ActionDO> CreateSetDelayAction(ActivityTemplateDTO template, ActionDO parentAction)
         {
-            return await CreateAction(activity, "Monitor DocuSign", "Monitor DocuSign", ordering, authTokenDO);
+            var action = await HubCommunicator.CreateAndConfigureAction(template.Id, "Set Delay", CurrentFr8UserId, "Set Delay", parentAction.Id, false);
+            return Mapper.Map<ActionDO>(action);
+        }
+
+        private async Task<ActionDO> CreateMonitorDocuSignAction(ActivityTemplateDTO template, AuthorizationTokenDO authTokenDO, ActionDO parentAction)
+        {
+            var action = await HubCommunicator.CreateAndConfigureAction(template.Id, "Monitor Docusign", CurrentFr8UserId, "Monitor DocuSign", parentAction.Id, false, authTokenDO.Id);
+            return Mapper.Map<ActionDO>(action);
         }
 
         #endregion
@@ -502,7 +483,7 @@ namespace terminalDocuSign.Actions
             }
         }*/
 
-        private async Task<ActionDO> CreateNotifierAction(IEnumerable<ActivityTemplateDTO> activityList, ActionDO solutionAction, DropDownList ddl, int ordering)
+        private ActionDO CreateNotifierAction(IEnumerable<ActivityTemplateDTO> activityList, ActionDO solutionAction, DropDownList ddl, int ordering)
         {
             
             var notifierAction = (ActionDO)solutionAction.ChildNodes.FirstOrDefault(c => ((ActionDO)c).ActivityTemplate.Tags != null && ((ActionDO)c).ActivityTemplate.Tags.Contains("Notifier"));
@@ -542,7 +523,7 @@ namespace terminalDocuSign.Actions
             }
 
             return null;
-                }
+        }
 
         private async Task<MT_Object> GetMTObject(MT manifestType)
         {
