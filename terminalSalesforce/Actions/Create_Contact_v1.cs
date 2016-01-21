@@ -30,38 +30,18 @@ namespace terminalSalesforce.Actions
 
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO = null)
         {
-            var firstNameCrate = new TextBox()
-            {
-                Label = "First Name",
-                Name = "firstName"
-
-            };
-            var lastName = new TextBox()
-            {
-                Label = "Last Name",
-                Name = "lastName",
-                Required = true
-            };
-
-            var mobileNumber = new TextBox()
-            {
-                Label = "Mobile Phone",
-                Name = "mobilePhone",
-                Required = true
-            };
-
-            var email = new TextBox()
-            {
-                Label = "Email",
-                Name = "email",
-                Required = true
-            };
-
-            var controls = PackControlsCrate(firstNameCrate, lastName, mobileNumber, email);
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.Clear();
-                updater.CrateStorage.Add(controls);
+
+                AddTextSourceControl(updater.CrateStorage, "First Name", "firstName",
+                    "Upstream Terminal-Provided Fields", addRequestConfigEvent: false);
+                AddTextSourceControl(updater.CrateStorage, "Last Name", "lastName",
+                    "Upstream Terminal-Provided Fields", addRequestConfigEvent: false, required:true);
+                AddTextSourceControl(updater.CrateStorage, "Mobile Phone", "mobilePhone",
+                    "Upstream Terminal-Provided Fields", addRequestConfigEvent: false, required:true);
+                AddTextSourceControl(updater.CrateStorage, "Email", "email",
+                    "Upstream Terminal-Provided Fields", addRequestConfigEvent: false, required:true);
             }
 
             return await Task.FromResult(curActionDO);
@@ -76,10 +56,10 @@ namespace terminalSalesforce.Actions
                 return NeedsAuthenticationError(payloadCrates);
             }
 
-            var firstName = ExtractControlFieldValue(curActionDO, "firstName");
-            var lastName = ExtractControlFieldValue(curActionDO, "lastName");
-            var mobilePhone = ExtractControlFieldValue(curActionDO, "mobilePhone");
-            var email = ExtractControlFieldValue(curActionDO, "email");
+            var firstName = ExtractSpecificOrUpstreamValue(curActionDO, payloadCrates, "firstName");
+            var lastName = ExtractSpecificOrUpstreamValue(curActionDO, payloadCrates, "lastName");
+            var mobilePhone = ExtractSpecificOrUpstreamValue(curActionDO, payloadCrates, "mobilePhone");
+            var email = ExtractSpecificOrUpstreamValue(curActionDO, payloadCrates, "email");
             if (string.IsNullOrEmpty(lastName))
             {
                 return Error(payloadCrates, "No last name found in action.");
