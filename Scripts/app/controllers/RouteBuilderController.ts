@@ -33,7 +33,17 @@ module dockyard.controllers {
         onActionDrop: (group: model.ActionGroup, actionId: string, index: number) => void;
         mode: string;
         solutionName: string;
+
+        //ActionPicker exports
+        webServiceActionList: Array<model.WebServiceActionSetDTO>;
+        actionCategories: any;
+        activeCategory: any;
+        activeTerminal: any;
+        setActive: () => void;
+        setActiveTerminal: () => void; 
+        setActiveAction: () => void;
     }
+
 
     //Setup aliases
     import pwd = dockyard.directives.paneWorkflowDesigner;
@@ -62,7 +72,8 @@ module dockyard.controllers {
             'LayoutService',
             '$modal',
             'AuthService',
-            'ConfigureTrackerService'
+            'ConfigureTrackerService',
+            'WebServiceService'
         ];
 
         private _longRunningActionsCounter: number;
@@ -82,7 +93,8 @@ module dockyard.controllers {
             private LayoutService: services.ILayoutService,
             private $modal: any,
             private AuthService: services.AuthService,
-            private ConfigureTrackerService: services.ConfigureTrackerService
+            private ConfigureTrackerService: services.ConfigureTrackerService,
+            private WebServiceService: services.IWebServiceService
             ) {
 
             this.$scope.current = new model.RouteBuilderState();
@@ -108,6 +120,7 @@ module dockyard.controllers {
             this.$scope.selectAction = (action: model.ActionDTO) => {
                 if (!this.$scope.current.action || this.$scope.current.action.id !== action.id)
                     this.selectAction(action, null);
+
             }
 
             //Group: which group action is dropped to
@@ -161,6 +174,31 @@ module dockyard.controllers {
             };
 
             this.processState($state);
+
+            //ActionPicker constructs
+            $scope.setActive = <() => void>angular.bind(this, this.setActive);
+            $scope.setActiveTerminal = <() => void>angular.bind(this, this.setActiveTerminal);
+            $scope.setActiveAction = <() => void>angular.bind(this, this.setActiveAction);
+            $scope.actionCategories = [
+                { id: 1, name: "Monitor", description: "Learn when something happen", icon: "eye" },
+                { id: 2, name: "Get", description: "In-process Crates from a web service", icon: "download" },
+                { id: 3, name: "Process", description: "Carry out work on a Container", icon: "recycle" },
+                { id: 4, name: "Forward", description: "Send Crates to a web service", icon: "share" }];
+            $scope.activeCategory = 0
+            $scope.activeTerminal = 1
+        }
+        //ActionPicker
+        private setActive(actionCategoryId) {
+            this.$scope.activeCategory = actionCategoryId;
+            this.$scope.activeCategory == actionCategoryId ? this.$scope.activeCategory = 0 : this.$scope.webServiceActionList = this.WebServiceService.getActions([actionCategoryId]);
+        }
+        private setActiveTerminal(index) {
+            this.$scope.activeTerminal = index
+        }
+        private setActiveAction(action, group) {
+            //TODO remove PaneSelectAction and consequently psa reference
+            var eventArgs = new psa.ActivityTypeSelectedEventArgs(action, group);
+            this.PaneSelectAction_ActivityTypeSelected(eventArgs)
         }
 
         //re-orders actions according to their position on array
