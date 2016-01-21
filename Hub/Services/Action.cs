@@ -269,7 +269,7 @@ namespace Hub.Services
                 CrateStorage = _crate.EmptyStorageAsStr(),
                 Ordering = parentNode.ChildNodes.Count > 0 ? parentNode.ChildNodes.Max(x => x.Ordering) + 1 : 1,
                 RootRouteNode = parentNode.RootRouteNode,
-                Fr8Account = parentNode.RootRouteNode.Fr8Account
+                Fr8Account = (parentNode.RootRouteNode != null) ? parentNode.RootRouteNode.Fr8Account : null
             };
 
             uow.ActionRepository.Add(action);
