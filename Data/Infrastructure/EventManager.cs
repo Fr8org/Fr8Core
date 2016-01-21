@@ -153,18 +153,18 @@ namespace Data.Infrastructure
         public delegate object AuthenticationCompletedEventHandler(string userId, TerminalDO authenticatedTerminal);
         public static event AuthenticationCompletedEventHandler EventAuthenticationCompleted;
 
-        public delegate void KeyVaultFailureHandler(Exception ex);
+        public delegate void KeyVaultFailureHandler(string keyVaultMethod, Exception ex);
         public static event KeyVaultFailureHandler KeyVaultFailure;
 
         #region Method
 
-        public static void KeyVaultFailed(Exception ex)
+        public static void KeyVaultFailed(string keyVaultMethod, Exception ex)
         {
             var handler = KeyVaultFailure;
 
             if (handler != null)
             {
-                handler.Invoke(ex);
+                handler.Invoke(keyVaultMethod, ex);
             }
         }
 
