@@ -13,7 +13,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Hub.Interfaces;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 

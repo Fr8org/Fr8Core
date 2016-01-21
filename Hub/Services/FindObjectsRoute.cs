@@ -41,7 +41,7 @@ namespace Hub.Services
                 Id = Guid.NewGuid(),
                 ParentRouteNode = subroute,
                 Ordering = 1,
-                ActivityTemplateId = connectToSqlActivityTemplate.Id,
+                ActivityTemplate = connectToSqlActivityTemplate,
                 Name = connectToSqlActivityTemplate.Name,
                 Label = connectToSqlActivityTemplate.Name
             };
@@ -52,7 +52,7 @@ namespace Hub.Services
                 Id = Guid.NewGuid(),
                 ParentRouteNode = subroute,
                 Ordering = 2,
-                ActivityTemplateId = buildQueryActivityTemplate.Id,
+                ActivityTemplate = buildQueryActivityTemplate,
                 Name = buildQueryActivityTemplate.Name,
                 Label = buildQueryActivityTemplate.Name
             };
@@ -63,7 +63,7 @@ namespace Hub.Services
                 Id = Guid.NewGuid(),
                 ParentRouteNode = subroute,
                 Ordering = 3,
-                ActivityTemplateId = executeSqlActivityTemplate.Id,
+                ActivityTemplate = executeSqlActivityTemplate,
                 Name = executeSqlActivityTemplate.Name,
                 Label = executeSqlActivityTemplate.Name
             };
@@ -74,7 +74,7 @@ namespace Hub.Services
                 Id = Guid.NewGuid(),
                 ParentRouteNode = subroute,
                 Ordering = 4,
-                ActivityTemplateId = manageRouteActivityTemplate.Id,
+                ActivityTemplate = manageRouteActivityTemplate,
                 Name = manageRouteActivityTemplate.Name,
                 Label = manageRouteActivityTemplate.Name
             };
