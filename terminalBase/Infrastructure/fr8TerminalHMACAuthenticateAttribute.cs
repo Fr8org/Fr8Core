@@ -34,6 +34,7 @@ namespace TerminalBase.Infrastructure
             var identity = new GenericIdentity("terminal-" + terminalId, userId);
             var principle = new GenericPrincipal(identity, new string[] { });
             Thread.CurrentPrincipal = principle;
+            context.Principal = principle;
             if (HttpContext.Current != null)
             {
                 HttpContext.Current.User = principle;
