@@ -37,11 +37,15 @@ namespace Data.Repositories
         {
         }
         
-        protected override void ProcessChanges(IEnumerable<AuthorizationTokenDO> adds, IEnumerable<AuthorizationTokenDO> updates, IEnumerable<AuthorizationTokenDO> deletes)
+        protected override void ProcessChanges(
+            IEnumerable<AuthorizationTokenDO> adds,
+            IEnumerable<AuthorizationTokenDO> updates,
+            IEnumerable<AuthorizationTokenDO> deletes)
         {
            // using (WebMonitor.Tracer.Monitor.StartFrame("Processing changes"))
             {
                 var tasks = new List<Task>();
+                var taskInfo = new List<string>();
 
                 foreach (var token in adds)
                 {
@@ -50,7 +54,17 @@ namespace Data.Repositories
                         continue;
                     }
 
-                    tasks.Add(UpdateSecretAsync(FormatSecretName(token.Id), token.Token));
+                    var secretId = FormatSecretName(token.Id);
+
+                    tasks.Add(UpdateSecretAsync(secretId, token.Token));
+                    taskInfo.Add(
+                        string.Format(
+                            "Add new token: Id = {0}, ExternalAccountName = {1}, SecretId = {2}",
+                            token.Id.ToString(),
+                            token.ExternalAccountId,
+                            secretId
+                        )
+                    );
                 }
 
                 foreach (var token in updates)
@@ -60,16 +74,42 @@ namespace Data.Repositories
                     if (string.IsNullOrWhiteSpace(token.Token))
                     {
                         tasks.Add(DeleteSecretAsync(secretId));
+                        taskInfo.Add(
+                            string.Format(
+                                "Delete existing token: Id = {0}, ExternalAccountName = {1}, SecretId = {2}",
+                                token.Id.ToString(),
+                                token.ExternalAccountId,
+                                secretId
+                            )
+                        );
                     }
                     else
                     {
                         tasks.Add(UpdateSecretAsync(secretId, token.Token));
+                        taskInfo.Add(
+                            string.Format(
+                                "Update existing token: Id = {0}, ExternalAccountName = {1}, SecretId = {2}",
+                                token.Id.ToString(),
+                                token.ExternalAccountId,
+                                secretId
+                            )
+                        );
                     }
                 }
 
                 foreach (var token in deletes)
                 {
-                    tasks.Add(DeleteSecretAsync(FormatSecretName(token.Id)));
+                    var secretId = FormatSecretName(token.Id);
+
+                    tasks.Add(DeleteSecretAsync(secretId));
+                    taskInfo.Add(
+                        string.Format(
+                            "Delete existing token: Id = {0}, ExternalAccountName = {1}, SecretId = {2}",
+                            token.Id.ToString(),
+                            token.ExternalAccountId,
+                            secretId
+                        )
+                    );
                 }
 
                 if (tasks.Count == 0)
@@ -79,7 +119,17 @@ namespace Data.Repositories
 
                // using (WebMonitor.Tracer.Monitor.StartFrame("Commiting"))
                 {
-                    Task.WaitAll(tasks.ToArray(), MaxWaitTimeout);
+                    var allCompleted = Task.WaitAll(tasks.ToArray(), MaxWaitTimeout);
+                    if (!allCompleted)
+                    {
+                        for (var i = 0; i < tasks.Count; ++i)
+                        {
+                            if (!tasks[i].IsCompleted)
+                            {
+                                EventManager.KeyVaultFailed("ProcessChanges", new Exception(taskInfo[i]));
+                            }
+                        }
+                    }
                 }
             }
         }
