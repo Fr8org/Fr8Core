@@ -41,8 +41,8 @@ namespace terminalFr8Core.Controllers
 
             result.Add(new ActivityTemplateDTO
             {
-                Name = "FilterUsingRunTimeData",
-                Label = "Filter Using Runtime Data",
+                Name = "TestIncomingData",
+                Label = "Test Incoming Data",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 Version = "1",

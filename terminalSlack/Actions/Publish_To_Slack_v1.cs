@@ -92,16 +92,12 @@ namespace terminalSlack.Actions
             var oauthToken = authTokenDO.Token;
             var channels = await _slackIntegration.GetAllChannelList(oauthToken);
 
-            var crateControls = PackCrate_ConfigurationControls();
-            var crateAvailableChannels = CreateAvailableChannelsCrate(channels);
-            var crateAvailableFields = await CreateAvailableFieldsCrate(curActionDO);
-
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.Clear();
-                updater.CrateStorage.Add(crateControls);
-                updater.CrateStorage.Add(crateAvailableChannels);
-                updater.CrateStorage.Add(crateAvailableFields);
+                updater.CrateStorage.Add(PackCrate_ConfigurationControls());
+                updater.CrateStorage.Add(CreateAvailableChannelsCrate(channels));
+                updater.CrateStorage.Add(await CreateAvailableFieldsCrate(curActionDO, "Available Fields"));
             }
 
             return curActionDO;
@@ -111,7 +107,7 @@ namespace terminalSlack.Actions
         {
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
-                updater.CrateStorage.ReplaceByLabel(await CreateAvailableFieldsCrate(curActionDO));
+                updater.CrateStorage.ReplaceByLabel(await CreateAvailableFieldsCrate(curActionDO, "Available Fields"));
             }
 
             return curActionDO;
@@ -131,10 +127,12 @@ namespace terminalSlack.Actions
                 }
             };
 
+            var fieldSelect = new TextSource("Select Message Field", "Available Fields", "Select_Message_Field");
+            fieldSelect.Events.Add(new ControlEvent("onChange", "requestConfig"));
             var fieldsDTO = new List<ControlDefinitionDTO>()
             {
                 fieldSelectChannel,
-                new TextSource("Select Message Field", "Available Fields", "Select_Message_Field")
+                fieldSelect
             };
 
             return Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
@@ -145,6 +143,7 @@ namespace terminalSlack.Actions
             var crate =
                 Crate.CreateDesignTimeFieldsCrate(
                     "Available Channels",
+                    AvailabilityType.Configuration,
                     channels.ToArray()
                 );
 
@@ -153,8 +152,7 @@ namespace terminalSlack.Actions
 
         private async Task<Crate> CreateAvailableFieldsCrate(ActionDO actionDO)
         {
-            var curUpstreamFields =
-                (await GetCratesByDirection<StandardDesignTimeFieldsCM>(actionDO, CrateDirection.Upstream))
+            var curUpstreamFields = (await GetCratesByDirection<StandardDesignTimeFieldsCM>(actionDO, CrateDirection.Upstream))
                 .Where(x => x.Label != "Available Channels")
                 .SelectMany(x => x.Content.Fields)
                 .ToArray();

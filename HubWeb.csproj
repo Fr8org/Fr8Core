@@ -158,6 +158,10 @@
       <HintPath>packages\Microsoft.ApplicationInsights.1.2.3\lib\net45\Microsoft.ApplicationInsights.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.ApplicationInsights.Log4NetAppender, Version=1.2.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.ApplicationInsights.Log4NetAppender.1.2.6\lib\net45\Microsoft.ApplicationInsights.Log4NetAppender.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.AspNet.Identity.Core.2.0.0\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
       <Private>True</Private>
@@ -373,7 +377,6 @@
     <Compile Include="Controllers\JsTestsController.cs" />
     <Compile Include="Controllers\Api\SubrouteController.cs" />
     <Compile Include="Controllers\Api\EventController.cs" />
-    <Compile Include="Controllers\External\DocuSign\DocusignAuthCallbackController.cs" />
     <Compile Include="Controllers\EnvelopeController.cs" />
     <Compile Include="Controllers\Api\ContainerController.cs" />
     <Compile Include="Controllers\StatusController.cs" />
@@ -422,6 +425,8 @@
     <Compile Include="Controllers\Api\ReportController.cs" />
     <Compile Include="Controllers\TokenAuthController.cs" />
     <Compile Include="ExceptionHandling\MvcHandleErrorAttribute.cs" />
+    <Compile Include="Infrastructure\fr8HubWebHMACAuthorizeAttribute.cs" />
+    <Compile Include="Infrastructure\TerminalPrinciple.cs" />
     <Compile Include="ViewModels\AuthenticationErrorVM.cs" />
     <Compile Include="ViewModels\DocusignLoginVM.cs" />
     <Compile Include="ViewModels\ForgotPasswordVM.cs" />
@@ -516,6 +521,7 @@
     <Content Include="Content\img\Cross.png" />
     <Content Include="Content\img\dockyard_logo.png" />
     <Content Include="Content\img\EmailLogo.png" />
+    <Content Include="Content\img\exclamation-small.png" />
     <Content Include="Content\img\favicon.ico" />
     <Content Include="Content\img\googleCalendar.png" />
     <Content Include="Content\img\icloud-logo.png" />
@@ -756,6 +762,7 @@
     <Content Include="_PowerShellScripts\MASTER-job-run.cmd" />
     <Content Include="_PowerShellScripts\MASTER-settings.job" />
     <Content Include="_PowerShellScripts\DeployAzureWebJob-HealthMonitor-MASTER.ps1" />
+    <Content Include="_PowerShellScripts\KillProcess.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamFieldChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\DateTimeFormatter.ts" />

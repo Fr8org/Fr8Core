@@ -32,6 +32,7 @@ namespace TerminalBase.BaseClasses
         protected ICrateManager Crate;
         private readonly ITerminal _terminal;
         protected static readonly string ConfigurationControlsLabel = "Configuration_Controls";
+        protected string CurrentFr8UserId { get; set; }
 
         public IHubCommunicator HubCommunicator { get; set; }
         #endregion
@@ -48,6 +49,11 @@ namespace TerminalBase.BaseClasses
             Action = ObjectFactory.GetInstance<IAction>();
             _terminal = ObjectFactory.GetInstance<ITerminal>();
             HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
+        }
+
+        public void SetCurrentUser(string userId)
+        {
+            CurrentFr8UserId = userId;
         }
 
         /// <summary>
@@ -212,12 +218,12 @@ namespace TerminalBase.BaseClasses
 
         protected async Task<PayloadDTO> GetPayload(ActionDO actionDO, Guid containerId)
         {
-            return await HubCommunicator.GetPayload(actionDO, containerId);
+            return await HubCommunicator.GetPayload(actionDO, containerId, CurrentFr8UserId);
         }
 
         protected async Task<Crate> ValidateFields(List<FieldValidationDTO> requiredFieldList)
         {
-            var result = await HubCommunicator.ValidateFields(requiredFieldList);
+            var result = await HubCommunicator.ValidateFields(requiredFieldList, CurrentFr8UserId);
 
             var validationErrorList = new List<FieldDTO>();
             //lets create necessary validationError crates
@@ -235,7 +241,6 @@ namespace TerminalBase.BaseClasses
                 return Crate.CreateDesignTimeFieldsCrate("Validation Errors", validationErrorList.ToArray());
             }
             
-
             return null;
         }
 
@@ -249,7 +254,7 @@ namespace TerminalBase.BaseClasses
         //if the Action doesn't provide a specific method to override this, we just return null = no validation errors
         protected virtual async Task<CrateStorage> ValidateAction(ActionDO curActionDO)
         {
-            return null;
+            return await Task.FromResult<CrateStorage>(null);
         }
 
         protected async Task<ActionDO> ProcessConfigurationRequest(ActionDO curActionDO, ConfigurationEvaluator configurationEvaluationResult, AuthorizationTokenDO authToken)
@@ -302,6 +307,12 @@ namespace TerminalBase.BaseClasses
         public virtual async Task<ActionDO> Activate(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             //Returns Task<ActivityDTO> using FromResult as the return type is known
+            var validationErrors = await ValidateAction(curActionDO);
+            if (validationErrors != null)
+            {
+                Crate.UpdateStorage(curActionDO).CrateStorage.AddRange(validationErrors);
+                return curActionDO;
+            }
             return await Task.FromResult<ActionDO>(curActionDO);
         }
 
@@ -319,30 +330,27 @@ namespace TerminalBase.BaseClasses
         }
 
         //wrapper for support test method
-        public async virtual Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(
-            ActionDO actionDO, CrateDirection direction)
+        public async virtual Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActionDO actionDO, CrateDirection direction)
         {
-            return await HubCommunicator.GetCratesByDirection<TManifest>(actionDO, direction);
+            return await HubCommunicator.GetCratesByDirection<TManifest>(actionDO, direction, CurrentFr8UserId);
             // return await Activity.GetCratesByDirection<TManifest>(activityId, direction);
         }
 
         //wrapper for support test method
         public async virtual Task<List<Crate>> GetCratesByDirection(ActionDO actionDO, CrateDirection direction)
         {
-            return await HubCommunicator.GetCratesByDirection(actionDO, direction);
+            return await HubCommunicator.GetCratesByDirection(actionDO, direction, CurrentFr8UserId);
         }
 
-        public async virtual Task<StandardDesignTimeFieldsCM> GetDesignTimeFields(ActionDO actionDO, CrateDirection direction)
+        public async virtual Task<StandardDesignTimeFieldsCM> GetDesignTimeFields(Guid actionId, CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet)
         {
-            //1) Build a merged list of the upstream design fields to go into our drop down list boxes
-            StandardDesignTimeFieldsCM mergedFields = new StandardDesignTimeFieldsCM();
+            var mergedFields = await HubCommunicator.GetDesignTimeFieldsByDirection(actionId, direction, availability, CurrentFr8UserId);
+            return mergedFields;
+        }
 
-            var curCrates = await HubCommunicator
-                .GetCratesByDirection<StandardDesignTimeFieldsCM>(actionDO, direction);
-
-
-            mergedFields.Fields.AddRange(MergeContentFields(curCrates).Fields);
-
+        public async virtual Task<StandardDesignTimeFieldsCM> GetDesignTimeFields(ActionDO actionDO, CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet)
+        {
+            var mergedFields = await HubCommunicator.GetDesignTimeFieldsByDirection(actionDO, direction, availability, CurrentFr8UserId);
             return mergedFields;
         }
 
@@ -374,27 +382,6 @@ namespace TerminalBase.BaseClasses
             return Crate.CreateDesignTimeFieldsCrate("Upstream Crate Label List", fields);
         }
 
-        public StandardDesignTimeFieldsCM MergeContentFields(List<Crate<StandardDesignTimeFieldsCM>> curCrates)
-        {
-            StandardDesignTimeFieldsCM tempMS = new StandardDesignTimeFieldsCM();
-            foreach (var curCrate in curCrates)
-            {
-                //extract the fields
-                StandardDesignTimeFieldsCM curStandardDesignTimeFieldsCrate = curCrate.Content;
-
-                foreach (var field in curStandardDesignTimeFieldsCrate.Fields)
-                {
-                    field.SourceCrateLabel = curCrate.Label;
-                    field.SourceCrateManifest = curCrate.ManifestType;
-                }
-
-                //add them to the pile
-                tempMS.Fields.AddRange(curStandardDesignTimeFieldsCrate.Fields);
-            }
-
-            return tempMS;
-        }
-
         protected CrateStorage AssembleCrateStorage(params Crate[] curCrates)
         {
             return new CrateStorage(curCrates);
@@ -407,7 +394,7 @@ namespace TerminalBase.BaseClasses
 
         protected Crate<StandardConfigurationControlsCM> PackControlsCrate(params ControlDefinitionDTO[] controlsList)
         {
-            return Crate<StandardConfigurationControlsCM>.FromContent(ConfigurationControlsLabel, new StandardConfigurationControlsCM(controlsList));
+            return Crate<StandardConfigurationControlsCM>.FromContent(ConfigurationControlsLabel, new StandardConfigurationControlsCM(controlsList), AvailabilityType.Configuration);
         }
 
         protected string ExtractControlFieldValue(ActionDO curActionDO, string fieldName)
@@ -442,19 +429,14 @@ namespace TerminalBase.BaseClasses
             return field.Value;
         }
 
-        protected async virtual Task<List<Crate<StandardFileDescriptionCM>>>
-            GetUpstreamFileHandleCrates(ActionDO actionDO)
+        protected async virtual Task<List<Crate<StandardFileDescriptionCM>>> GetUpstreamFileHandleCrates(ActionDO actionDO)
         {
-            return await HubCommunicator
-                .GetCratesByDirection<StandardFileDescriptionCM>(
-                    actionDO, CrateDirection.Upstream
-                );
+            return await HubCommunicator.GetCratesByDirection<StandardFileDescriptionCM>(actionDO, CrateDirection.Upstream, CurrentFr8UserId);
         }
 
-        protected async Task<Crate<StandardDesignTimeFieldsCM>>
-            MergeUpstreamFields(ActionDO actionDO, string label)
+        protected async Task<Crate<StandardDesignTimeFieldsCM>> MergeUpstreamFields(ActionDO actionDO, string label)
         {
-            var curUpstreamFields = (await GetDesignTimeFields(actionDO, CrateDirection.Upstream)).Fields.ToArray();
+            var curUpstreamFields = (await GetDesignTimeFields(actionDO.Id, CrateDirection.Upstream)).Fields.ToArray();
             var upstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate(label, curUpstreamFields);
 
             return upstreamFieldsCrate;
@@ -492,6 +474,29 @@ namespace TerminalBase.BaseClasses
 
         }*/
 
+        /// <summary>
+        /// Creates a crate with available design-time fields.
+        /// </summary>
+        /// <param name="actionDO">ActionDO.</param>
+        /// <returns></returns>
+        protected async Task<Crate> CreateAvailableFieldsCrate(ActionDO actionDO,string crateLabel = "Upstream Terminal-Provided Fields")
+        {
+            var curUpstreamFields = await HubCommunicator.GetDesignTimeFieldsByDirection(actionDO, CrateDirection.Upstream, AvailabilityType.RunTime, CurrentFr8UserId);
+
+            if (curUpstreamFields == null)
+            {
+                curUpstreamFields = new StandardDesignTimeFieldsCM();
+            }
+
+            var availableFieldsCrate = Crate.CreateDesignTimeFieldsCrate(
+                    crateLabel,
+                    curUpstreamFields.Fields,
+                    AvailabilityType.Configuration
+                );
+
+            return availableFieldsCrate;
+        }
+
         protected Crate PackCrate_ErrorTextBox(string fieldLabel, string errorMessage)
         {
             ControlDefinitionDTO[] controls =
@@ -507,10 +512,31 @@ namespace TerminalBase.BaseClasses
         }
 
         /// <summary>
+        /// Creates StandardConfigurationControlsCM with TextSource control
+        /// </summary>
+        /// <param name="storage">Crate Storage</param>
+        /// <param name="label">Initial Label for the text source control</param>
+        /// <param name="controlName">Name of the text source control</param>
+        /// <param name="upstreamSourceLabel">Label for the upstream source</param>
+        /// <param name="filterByTag">Filter for upstream source, Empty by default</param>
+        /// <param name="addRequestConfigEvent">True if onChange event needs to be configured, False otherwise. True by default</param>
+        /// <param name="required">True if the control is required, False otherwise. False by default</param>
+        protected void AddTextSourceControl(CrateStorage storage, string label, string controlName,
+                                            string upstreamSourceLabel, string filterByTag = "",
+                                            bool addRequestConfigEvent = true, bool required = false)
+        {
+            var textSourceControl = CreateSpecificOrUpstreamValueChooser(label, controlName, upstreamSourceLabel,
+                filterByTag, addRequestConfigEvent);
+            textSourceControl.Required = required;
+
+            AddControl(storage, textSourceControl);
+        }
+
+        /// <summary>
         /// Creates RadioButtonGroup to enter specific value or choose value from upstream crate.
         /// </summary>
         protected ControlDefinitionDTO CreateSpecificOrUpstreamValueChooser(
-            string label, string controlName, string upstreamSourceLabel, string filterByTag = "")
+            string label, string controlName, string upstreamSourceLabel, string filterByTag = "", bool addRequestConfigEvent = true)
         {
             var control = new TextSource(label, upstreamSourceLabel, controlName)
             {
@@ -521,6 +547,10 @@ namespace TerminalBase.BaseClasses
                     FilterByTag = filterByTag
                 }
             };
+            if (addRequestConfigEvent)
+            {
+                control.Events.Add(new ControlEvent("onChange", "requestConfig"));
+            }
 
             return control;
         }
@@ -529,7 +559,7 @@ namespace TerminalBase.BaseClasses
         /// <summary>
         /// Extract value from RadioButtonGroup or TextSource where specific value or upstream field was specified.
         /// </summary>
-        protected string ExtractSpecificOrUpstreamValue(ActionDO actionDO,PayloadDTO payloadCrates,string controlName)
+        protected string ExtractSpecificOrUpstreamValue(ActionDO actionDO, PayloadDTO payloadCrates, string controlName)
         {
             var designTimeCrateStorage = Crate.GetStorage(actionDO.CrateStorage);
             var runTimeCrateStorage = Crate.FromDto(payloadCrates.CrateStorage);
@@ -602,6 +632,7 @@ namespace TerminalBase.BaseClasses
             return returnValue;
         }
 
+
         /// <summary>
         /// Extracts crate with specified label and ManifestType = Standard Design Time,
         /// then extracts field with specified fieldKey.
@@ -615,10 +646,10 @@ namespace TerminalBase.BaseClasses
             if (fieldValues.Length > 0)
                 return fieldValues[0];
 
-            IncidentReporter reporter = new IncidentReporter();
+            IncidentReporter reporter = ObjectFactory.GetInstance<IncidentReporter>();
             reporter.IncidentMissingFieldInPayload(fieldKey, curAction, "");
 
-            throw new ApplicationException("No field found with specified key.");
+            throw new ApplicationException(string.Format("No field found with specified key: {0}.", fieldKey));
         }
 
         protected void AddLabelControl(CrateStorage storage, string name, string label, string text)

@@ -11,7 +11,8 @@ module dockyard.directives.paneConfigureAction {
         PaneConfigureAction_ChildActionsReconfiguration,
         PaneConfigureAction_ReloadAction,
         PaneConfigureAction_SetSolutionMode,
-        PaneConfigureAction_ConfigureCallResponse
+        PaneConfigureAction_ConfigureCallResponse,
+        PaneConfigureAction_AuthFailure
     }
 
     export class ActionReconfigureEventArgs {
@@ -68,6 +69,14 @@ module dockyard.directives.paneConfigureAction {
         }
     }
 
+    export class ActionAuthFailureEventArgs {
+        public id: string;
+
+        constructor(id: string) {
+            this.id = id;
+        }
+    }
+
     export interface IPaneConfigureActionScope extends ng.IScope {
         onConfigurationChanged: (newValue: model.ControlsList, oldValue: model.ControlsList) => void;
         onControlChange: (event: ng.IAngularEvent, eventArgs: ChangeEventArgs) => void;
@@ -103,7 +112,7 @@ module dockyard.directives.paneConfigureAction {
 
     export class CallConfigureResponseEventArgs {
         public action: interfaces.IActionDTO;
-        constructor(action:interfaces.IActionDTO) {
+        constructor(action: interfaces.IActionDTO) {
             this.action = action;
         }
     }
@@ -178,6 +187,26 @@ module dockyard.directives.paneConfigureAction {
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_RenderConfiguration],
                     //Allow some time for parent and current action instance to sync
                     () => $timeout(() => processConfiguration(), 300)
+                );
+
+                $scope.$on(
+                    MessageType[MessageType.PaneConfigureAction_AuthFailure],
+                    (event: ng.IAngularEvent, authFailureArgs: ActionAuthFailureEventArgs) => {
+                        if (authFailureArgs.id != $scope.currentAction.id) {
+                            return;
+                        }
+
+                        var onClickEvent = new model.ControlEvent();
+                        onClickEvent.name = 'onClick';
+                        onClickEvent.handler = 'requestConfig';
+
+                        var button = new model.Button('Authentication unsuccessful, try again');
+                        button.name = 'AuthUnsuccessfulLabel';
+                        button.events = [ onClickEvent ];
+
+                        $scope.currentAction.configurationControls = new model.ControlsList();
+                        $scope.currentAction.configurationControls.fields = [ button ];
+                    }
                 );
 
                 // Get configuration settings template from the server if the current action does not contain those             
@@ -283,21 +312,18 @@ module dockyard.directives.paneConfigureAction {
                 function loadConfiguration() {
                     // Block pane and show pane-level 'loading' spinner
                     $scope.processing = true;
-
-
-
+                    
                     if ($scope.configurationWatchUnregisterer) {
                         $scope.configurationWatchUnregisterer();
                     }
 
-                    ConfigureTrackerService.configureCallStarted($scope.currentAction.id);
+                    ConfigureTrackerService.configureCallStarted(
+                        $scope.currentAction.id,
+                        $scope.currentAction.activityTemplate.needsAuthentication
+                    );
 
                     ActionService.configure($scope.currentAction).$promise
                         .then((res: interfaces.IActionVM) => {
-
-                            // emit ConfigureCallResponse for RouteBuilderController be able to reload actions with AgressiveReloadTag
-                            $scope.$emit(MessageType[MessageType.PaneConfigureAction_ConfigureCallResponse], new CallConfigureResponseEventArgs($scope.currentAction));
-
                             var childActionsDetected = false;
 
                             if (res.childrenActions && res.childrenActions.length > 0) {
@@ -348,6 +374,8 @@ module dockyard.directives.paneConfigureAction {
                         })
                         .finally(() => {
                             ConfigureTrackerService.configureCallFinished($scope.currentAction.id);
+                            // emit ConfigureCallResponse for RouteBuilderController be able to reload actions with AgressiveReloadTag
+                            $scope.$emit(MessageType[MessageType.PaneConfigureAction_ConfigureCallResponse], new CallConfigureResponseEventArgs($scope.currentAction));
                         });
                 };
 
@@ -410,7 +438,9 @@ module dockyard.directives.paneConfigureAction {
                 $timeout: ng.ITimeoutService,
                 $modal,
                 $window: ng.IWindowService,
-                $http: ng.IHttpService
+                $http: ng.IHttpService,
+                ngToast: any
+
             ) => {
 
                 return new PaneConfigureAction(

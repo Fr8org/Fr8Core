@@ -1,4 +1,9 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Net.Http.Formatting;
+using System.Security.Principal;
+using System.Web;
 using AutoMapper;
 // This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
 using Hub.Managers.APIManagers.Packagers.SendGrid;
@@ -6,7 +11,6 @@ using InternalInterfaces = Hub.Interfaces;
 using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Authorizers;
-using Hub.Managers.APIManagers.Authorizers.Docusign;
 using Hub.Managers.APIManagers.Authorizers.Google;
 using Hub.Managers.APIManagers.Packagers;
 using Hub.Managers.APIManagers.Packagers.SegmentIO;
@@ -32,7 +36,7 @@ using StructureMap.Configuration.DSL;
 using System.Threading.Tasks;
 using Utilities;
 using Utilities.Interfaces;
-
+using System.Net.Http;
 
 namespace Hub.StructureMap
 {
@@ -97,7 +101,6 @@ namespace Hub.StructureMap
                 For<IIntakeManager>().Use<IntakeManager>();
 
                 For<IOAuthAuthorizer>().Use<GoogleAuthorizer>().Named("Google");
-                For<IOAuthAuthorizer>().Use<DocusignAuthorizer>().Named("Docusign");
 
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchy>();
                 For<IImapClient>().Use<ImapClientWrapper>();
@@ -108,7 +111,7 @@ namespace Hub.StructureMap
                 For<IRoute>().Use<Route>();
                 For<InternalInterfaces.IContainer>().Use<InternalClass.Container>();
                 For<ICriteria>().Use<Criteria>();
-                For<IAction>().Use<Action>();
+                For<IAction>().Use<InternalClass.Action>();
 				For<IRouteNode>().Use<RouteNode>();
                 For<ISubscription>().Use<Subscription>();
                 For<IProcessNode>().Use<ProcessNode>();
@@ -116,9 +119,9 @@ namespace Hub.StructureMap
                 For<IField>().Use<Field>();
                 //For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 For<IEvent>().Use<Event>();
-                For<IActivityTemplate>().Use<ActivityTemplate>();
-                For<IFile>().Use<File>();
-                For<ITerminal>().Use<Terminal>();
+                For<IActivityTemplate>().Use<ActivityTemplate>().Singleton();
+                For<IFile>().Use<InternalClass.File>();
+                For<ITerminal>().Use<Terminal>().Singleton();
                 For<ICrateManager>().Use<CrateManager>();
                 For<IReport>().Use<Report>();
                 For<IManifest>().Use<Manifest>();
@@ -127,6 +130,9 @@ namespace Hub.StructureMap
 	            For<IPusherNotifier>().Use<PusherNotifier>();
                 For<IAuthorization>().Use<Authorization>();
                 For<ITag>().Use<Tag>();
+
+                For<IHMACAuthenticator>().Use<HMACAuthenticator>();
+                For<IHMACService>().Use<Fr8HMACService>();
             }
         }
 
@@ -148,22 +154,19 @@ namespace Hub.StructureMap
                 For<ISecurityServices>().Use(new MockedSecurityServices());
 
                 For<IOAuthAuthorizer>().Use<GoogleAuthorizer>().Named("Google");
-                For<IOAuthAuthorizer>().Use<DocusignAuthorizer>().Named("Docusign");
 
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
 
-                Mock<RestfulServiceClient> restfulServiceClientMock = new Mock<RestfulServiceClient>(MockBehavior.Default);
+                var restfulServiceClientMock = new Mock<RestfulServiceClient>(MockBehavior.Default);
                 For<IRestfulServiceClient>().Use(restfulServiceClientMock.Object).Singleton();
 
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchyWithoutCTE>();
                 var mockSegment = new Mock<ITracker>();
-                For<IActivityTemplate>().Use<ActivityTemplate>();
-                
                 For<ITracker>().Use(mockSegment.Object);
                 For<InternalInterfaces.IContainer>().Use<InternalClass.Container>();
                 For<ICriteria>().Use<Criteria>();
                 For<ISubscription>().Use<Subscription>();
-                For<IAction>().Use<Action>();
+                For<IAction>().Use<InternalClass.Action>();
 					 For<IRouteNode>().Use<RouteNode>();
 
                 For<IProcessNode>().Use<ProcessNode>();
@@ -177,11 +180,11 @@ namespace Hub.StructureMap
 
                 var terminalTransmitterMock = new Mock<ITerminalTransmitter>();
                 For<ITerminalTransmitter>().Use(terminalTransmitterMock.Object).Singleton();
-                For<IActivityTemplate>().Use<ActivityTemplate>();
+                For<IActivityTemplate>().Use<ActivityTemplate>().Singleton();
                 For<IEvent>().Use<Event>();
                 //For<ITemplate>().Use<Services.Template>();
-                For<IFile>().Use<File>();
-                For<ITerminal>().Use<Terminal>();
+                For<IFile>().Use<InternalClass.File>();
+                
                 For<ICrateManager>().Use<CrateManager>();
                 For<IManifest>().Use<Manifest>();
                 For<IFindObjectsRoute>().Use<FindObjectsRoute>();
@@ -194,9 +197,64 @@ namespace Hub.StructureMap
 	            For<IPusherNotifier>().Use(pusherNotifierMock.Object).Singleton();
 
                 For<ITag>().Use<Tag>();
+
+                var fr8HMACAuthenticator = new Mock<IHMACAuthenticator>();
+                fr8HMACAuthenticator.Setup(x => x.IsValidRequest(It.IsAny<HttpRequestMessage>(), It.IsAny<string>())).ReturnsAsync(true);
+                var outTerminalId = "testTerminal";
+                var outUserId = "testUser";
+                fr8HMACAuthenticator.Setup(s => s.ExtractTokenParts(It.IsAny<HttpRequestMessage>(), out outTerminalId, out outUserId));
+                For<IHMACAuthenticator>().Use(fr8HMACAuthenticator.Object);
+
+                var fr8HMACService = new Mock<IHMACService>();
+                For<IHMACService>().Use(fr8HMACService.Object);
+
+                For<ITerminal>().Use(new TerminalServiceForTests()).Singleton();
+            }
+        }
+
+        public class TerminalServiceForTests : ITerminal
+        {
+            private readonly ITerminal _terminal;
+
+            public TerminalServiceForTests()
+            {
+                _terminal = new Terminal();
+            }
+
+            public Task<TerminalDO> GetTerminalByPublicIdentifier(string terminalId)
+            {
+                return Task.FromResult(new TerminalDO());
+            }
+
+            public IEnumerable<TerminalDO> GetAll()
+            {
+                return _terminal.GetAll();
+            }
+
+            public Task<IList<ActivityTemplateDO>> GetAvailableActions(string uri)
+            {
+                return _terminal.GetAvailableActions(uri);
+            }
+
+            public void RegisterOrUpdate(TerminalDO terminalDo)
+            {
+                _terminal.RegisterOrUpdate(terminalDo);
+            }
+
+            public TerminalDO GetByKey(int terminalId)
+            {
+                return _terminal.GetByKey(terminalId);
+            }
+
+            public Task<bool> IsUserSubscribedToTerminal(string terminalId, string userId)
+            {
+                return _terminal.IsUserSubscribedToTerminal(terminalId, userId);
             }
         }
 
         #endregion
     }
+
+
+    
 }

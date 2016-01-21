@@ -266,7 +266,8 @@ div.action-header {
 
 .action-header-icon img {
     border-radius: 8px!important;
-    width: 48px;
+   /*width: 48px;*/
+    max-width: 72px;
     height: 48px;
     vertical-align: middle;
     }
@@ -648,4 +649,22 @@ div[dnd-list].dndDragover {
 
 .glyphicon-remove-tag {
     color:#cb5a5e;
+}
+
+/* validation error message*/
+.validation-Icon {
+    background-image: url(/Content/img/exclamation-small.png);
+    background-repeat: no-repeat;
+    background-size: contain;
+    display: inline-block;
+    height: 15px;
+    margin: -3px 0;
+    position: relative;
+    width: 15px;
+}
+
+.validation-message {
+    padding: 2px 5px 2px 4px;
+    color: #d12b41;
+    display: inline;
 }

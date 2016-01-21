@@ -146,7 +146,7 @@ namespace terminalDocuSign.Actions
         
         private async Task<IEnumerable<ActivityTemplateDO>> FindTemplates(ActionDO actionDO, Predicate<ActivityTemplateDO> query)
         {
-            var templates = await HubCommunicator.GetActivityTemplates(actionDO);
+            var templates = await HubCommunicator.GetActivityTemplates(actionDO,CurrentFr8UserId);
             return templates.Select(x => Mapper.Map<ActivityTemplateDO>(x)).Where(x => query(x));
         }
         
@@ -154,11 +154,11 @@ namespace terminalDocuSign.Actions
         {
             var sources = new List<Crate>();
 
-            var templates = await HubCommunicator.GetActivityTemplates(actionDO, ActivityCategory.Forwarders);
+            var templates = await HubCommunicator.GetActivityTemplates(actionDO, ActivityCategory.Forwarders, CurrentFr8UserId);
             sources.Add(
                 Crate.CreateDesignTimeFieldsCrate(
                     "AvailableActions",
-                    templates.Select(x => new FieldDTO(x.Label, x.Id.ToString())).ToArray()
+                    templates.Select(x => new FieldDTO(x.Label, x.Id.ToString(), AvailabilityType.Configuration)).ToArray()
                 )
             );
 

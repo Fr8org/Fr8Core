@@ -98,6 +98,14 @@ namespace HubTests.Managers
         }
 
         [Test]
+        public void MergeContentFields_ReturnsStandardDesignTimeFieldsMS()
+        {
+            var result = _crateManager.MergeContentFields(FixtureData.TestCrateDTO1());
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Fields.Count);
+        }
+
+        [Test]
         public void CrateWithNonRegisteredManifest_GetContentReturnsNull()
         {
             var crate = Crate.FromJson(new CrateManifestType("Unknown type", 66666666), "unknown value");

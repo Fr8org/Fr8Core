@@ -298,6 +298,7 @@
     <Compile Include="Interfaces\DataTransferObjects\ExternalAuthUrlDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FileDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FilterConditionDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\FilterDataDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FinancialLineDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\LogItemDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ManageAuthTokenDTO.cs" />
@@ -546,6 +547,10 @@
     <Compile Include="Migrations\201601150502349_RouteNodeDO_RootId.cs" />
     <Compile Include="Migrations\201601150502349_RouteNodeDO_RootId.Designer.cs">
       <DependentUpon>201601150502349_RouteNodeDO_RootId.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201601151838550_AddedPublicIdentifierAndSecretoToTerminalDO.cs" />
+    <Compile Include="Migrations\201601151838550_AddedPublicIdentifierAndSecretoToTerminalDO.Designer.cs">
+      <DependentUpon>201601151838550_AddedPublicIdentifierAndSecretoToTerminalDO.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -916,6 +921,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201601150502349_RouteNodeDO_RootId.resx">
       <DependentUpon>201601150502349_RouteNodeDO_RootId.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201601151838550_AddedPublicIdentifierAndSecretoToTerminalDO.resx">
+      <DependentUpon>201601151838550_AddedPublicIdentifierAndSecretoToTerminalDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -55,7 +55,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             _innerClient.Timeout = new TimeSpan(0, 1, 0); //1 minute
         }
 
-        private async Task<HttpResponseMessage> SendInternalAsync(HttpRequestMessage request, string CorrelationId)
+        protected virtual async Task<HttpResponseMessage> SendInternalAsync(HttpRequestMessage request, string CorrelationId)
         {
             HttpResponseMessage response;
             string responseContent = "";

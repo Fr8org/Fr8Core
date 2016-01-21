@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Hub.Interfaces;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 
@@ -42,7 +43,8 @@ namespace DockyardTest.Controllers
                     Name = "terminalTest",
                     Version = "1",
                     TerminalStatus = 1,
-                    Endpoint = "localhost:39504"
+                    Endpoint = "localhost:39504",
+                    Secret = Guid.NewGuid().ToString()
                 };
 
                 uow.TerminalRepository.Add(terminalDO);
