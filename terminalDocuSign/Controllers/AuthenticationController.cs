@@ -85,6 +85,7 @@ namespace terminalDocuSign.Controllers
             catch (Exception ex)
             {
                 ReportTerminalError("terminalDocuSign", ex);
+                return null;
             }
         }
     }
