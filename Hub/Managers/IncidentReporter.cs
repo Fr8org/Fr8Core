@@ -44,12 +44,12 @@ namespace Hub.Managers
             EventManager.KeyVaultFailure += KeyVaultFailure;
         }
 
-        private void KeyVaultFailure(Exception ex)
+        private void KeyVaultFailure(string keyVaultMethod, Exception ex)
         {
             var incident = new IncidentDO
             {
                 CustomerId = "unknown",
-                Data = ex.Message + Environment.NewLine + ex.StackTrace,
+                Data = string.Join(Environment.NewLine, "KeyVault method: " + keyVaultMethod, ex.Message, ex.StackTrace),
                 PrimaryCategory = "KeyVault",
                 SecondaryCategory = "QuerySecurePartAsync",
                 Component = "Hub",
