@@ -29,6 +29,6 @@ namespace TerminalBase.Infrastructure
         Task<ActionDTO> ConfigureAction(ActionDTO actionDTO, string userId);
         Task<ActionDO> ConfigureAction(ActionDO actionDO, string userId);
         Task<ActionDTO> CreateAndConfigureAction(int templateId, string name, string userId, string label = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null);
-        Task<RouteEmptyDTO> CreateRoute(RouteEmptyDTO routeDTO, string userId);
+        Task<RouteFullDTO> CreateRoute(RouteEmptyDTO routeDTO, string userId);
     }
 }

@@ -45,7 +45,7 @@ namespace Hub.Infrastructure
 
         protected abstract Task<bool> CheckPermission(string terminalId, string userId);
 
-        protected virtual void Success(string terminalId, string userId)
+        protected virtual void Success(HttpAuthenticationContext context, string terminalId, string userId)
         {
             return;
         }
@@ -71,7 +71,7 @@ namespace Hub.Infrastructure
                 return;
             }
 
-            Success(terminalId, userId);
+            Success(context, terminalId, userId);
             //context.ErrorResult = new UnauthorizedResult(new AuthenticationHeaderValue[0], context.Request);
         }
         /*

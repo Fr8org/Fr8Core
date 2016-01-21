@@ -232,13 +232,13 @@ namespace TerminalBase.Infrastructure
             return Mapper.Map<ActionDO>(await ConfigureAction(actionDTO, userId));
         }
 
-        public async Task<RouteEmptyDTO> CreateRoute(RouteEmptyDTO routeDTO, string userId)
+        public async Task<RouteFullDTO> CreateRoute(RouteEmptyDTO routeDTO, string userId)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                      + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routes";
+                      + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routes/create";
             var uri = new Uri(url);
 
-            return await _restfulServiceClient.PostAsync<RouteEmptyDTO, RouteEmptyDTO>(uri, routeDTO, null, await GetHMACHeader(uri, userId, routeDTO));
+            return await _restfulServiceClient.PostAsync<RouteEmptyDTO, RouteFullDTO>(uri, routeDTO, null, await GetHMACHeader(uri, userId, routeDTO));
         }
     }
 }

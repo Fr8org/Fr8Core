@@ -33,19 +33,43 @@ namespace terminalDocuSign.Services
         /// <summary>
         /// Creates Monitor All DocuSign Events route with Record DocuSign Events and Store MT Data actions.
         /// </summary>
-        public async Task CreateRoute_MonitorAllDocuSignEvents(string curFr8UserId)
+        public async Task CreateRoute_MonitorAllDocuSignEvents(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
         {
-            var newRoute = new RouteEmptyDTO
+            //first check if this exists
+
+            var emptyMonitorRoute = new RouteEmptyDTO
             {
                 Name = "MonitorAllDocuSignEvents",
                 Description = "MonitorAllDocuSignEvents",
                 RouteState = RouteState.Active,
                 Tag = "monitor"
             };
-            newRoute = await _hubCommunicator.CreateRoute(newRoute, curFr8UserId);
+            RouteFullDTO monitorDocusignRoute = null;
 
+            try
+            {
+                monitorDocusignRoute = await _hubCommunicator.CreateRoute(emptyMonitorRoute, curFr8UserId);
+            }
+            catch (Exception e)
+            {
+                new List<Exception>().Add(e);
+                int a = 12;
+                throw;
 
+            }
 
+            var activityTemplates = await _hubCommunicator.GetActivityTemplates(null, curFr8UserId);
+
+            var recordDocusignEventsTemplate = GetActivityTemplate(activityTemplates, "Record_DocuSign_Events");
+            var storeMTDataTemplate = GetActivityTemplate(activityTemplates, "StoreMTData");
+
+            await _hubCommunicator.CreateAndConfigureAction(recordDocusignEventsTemplate.Id, "Record_DocuSign_Events",
+                curFr8UserId, null, monitorDocusignRoute.StartingSubrouteId, false, new Guid(authTokenDTO.Id));
+
+            await _hubCommunicator.CreateAndConfigureAction(storeMTDataTemplate.Id, "StoreMTData",
+                curFr8UserId, null, monitorDocusignRoute.StartingSubrouteId);
+            
+            /*
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
 
@@ -97,6 +121,18 @@ namespace terminalDocuSign.Services
                 //update database
                 uow.SaveChanges();
             }
+             * */
+        }
+
+        private ActivityTemplateDTO GetActivityTemplate(IEnumerable<ActivityTemplateDTO> activityList, string activityTemplateName)
+        {
+            var template = activityList.FirstOrDefault(x => x.Name == activityTemplateName);
+            if (template == null)
+            {
+                throw new Exception(string.Format("ActivityTemplate {0} was not found", activityTemplateName));
+            }
+
+            return template;
         }
 
         private RouteDO GetExistingRoute(IUnitOfWork uow, string routeName, string fr8AccountEmail)

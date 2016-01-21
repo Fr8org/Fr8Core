@@ -8,7 +8,7 @@ using System.Web;
 
 namespace HubWeb.Infrastructure
 {
-    public class Fr8Identity : ClaimsIdentity
+    public sealed class Fr8Identity : ClaimsIdentity
     {
         public Fr8Identity(string name, string userId) : base ("hmac")
         {

@@ -35,17 +35,16 @@ namespace terminalDocuSign.Services
             _docuSignRoute = ObjectFactory.GetInstance<IDocuSignRoute>();
         }
 
-        public Crate Process(string curExternalEventPayload)
+        public async Task<Crate> Process(string curExternalEventPayload)
         {
             //DO - 1449
             //if the event payload is Fr8 User ID, it is DocuSign Authentication Completed event
             //The Monitor All DocuSign Events route should be creaed in this case.
             if (curExternalEventPayload.Contains("fr8_user_id"))
             {
-                JObject jo = (JObject)JsonConvert.DeserializeObject(curExternalEventPayload);
-
+                var jo = (JObject)JsonConvert.DeserializeObject(curExternalEventPayload);
                 var curFr8UserId = jo["fr8_user_id"].Value<string>();
-                AuthorizationTokenDTO authToken = JsonConvert.DeserializeObject<AuthorizationTokenDTO>(jo["auth_token"].ToString());
+                var authToken = JsonConvert.DeserializeObject<AuthorizationTokenDTO>(jo["auth_token"].ToString());
 
                 if (authToken == null)
                 {
@@ -58,8 +57,7 @@ namespace terminalDocuSign.Services
                 }
 
                 //create MonitorAllDocuSignEvents route
-                _docuSignRoute.CreateRoute_MonitorAllDocuSignEvents(curFr8UserId);
-
+                await _docuSignRoute.CreateRoute_MonitorAllDocuSignEvents(curFr8UserId, authToken);
                 return null;
             } 
 

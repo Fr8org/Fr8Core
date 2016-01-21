@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Http.Filters;
 using Hub.Infrastructure;
 using StructureMap;
 using Hub.Interfaces;
@@ -28,7 +29,7 @@ namespace TerminalBase.Infrastructure
             }
         }
 
-        protected override void Success(string terminalId, string userId)
+        protected override void Success(HttpAuthenticationContext context, string terminalId, string userId)
         {
             var identity = new GenericIdentity("terminal-" + terminalId, userId);
             var principle = new GenericPrincipal(identity, new string[] { });

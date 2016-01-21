@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
@@ -88,7 +89,6 @@ namespace HubWeb.Controllers
         public async Task<IHttpActionResult> Create(string solutionName)
         {
             var userId = User.Identity.GetUserId();
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var activityTemplate = uow.ActivityTemplateRepository

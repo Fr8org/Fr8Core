@@ -32,7 +32,7 @@ namespace terminalDocuSign.Tests.Services
         public async Task CreateRoute_InitialAuthenticationSuccessful_MonitorAllDocuSignEvents_RouteCreatedWithTwoActions()
         {
             //Act
-            await _curDocuSignRoute.CreateRoute_MonitorAllDocuSignEvents(FixtureData.TestDeveloperAccount().Id);
+            await _curDocuSignRoute.CreateRoute_MonitorAllDocuSignEvents(FixtureData.TestDeveloperAccount().Id, null);
 
             //Assert
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -51,11 +51,11 @@ namespace terminalDocuSign.Tests.Services
         public async Task CreateRoute_SameUserAuthentication_MonitorAllDocuSignEvents_RouteCreatedOnlyOnce()
         {
             //call for first time auth successfull
-            await _curDocuSignRoute.CreateRoute_MonitorAllDocuSignEvents(FixtureData.TestDeveloperAccount().Id);
+            await _curDocuSignRoute.CreateRoute_MonitorAllDocuSignEvents(FixtureData.TestDeveloperAccount().Id, null);
 
             //Act
             //if we call second time, the route should not be created again.
-            await _curDocuSignRoute.CreateRoute_MonitorAllDocuSignEvents(FixtureData.TestDeveloperAccount().Id);
+            await _curDocuSignRoute.CreateRoute_MonitorAllDocuSignEvents(FixtureData.TestDeveloperAccount().Id, null);
 
             //Assert
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

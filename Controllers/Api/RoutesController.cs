@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
@@ -44,6 +45,31 @@ namespace HubWeb.Controllers
             _findObjectsRoute = ObjectFactory.GetInstance<IFindObjectsRoute>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
 	        _pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
+        }
+
+
+        [Fr8HubWebHMACAuthenticate]
+        [ResponseType(typeof(RouteFullDTO))]
+        public IHttpActionResult Create(RouteEmptyDTO routeDto, bool updateRegistrations = false)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                if (string.IsNullOrEmpty(routeDto.Name))
+                {
+                    ModelState.AddModelError("Name", "Name cannot be null");
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Some of the request data is invalid");
+                }
+                var curRouteDO = Mapper.Map<RouteEmptyDTO, RouteDO>(routeDto, opts => opts.Items.Add("ptid", routeDto.Id));
+                curRouteDO.Fr8Account = _security.GetCurrentAccount(uow);
+                _route.CreateOrUpdate(uow, curRouteDO, updateRegistrations);
+                uow.SaveChanges();
+                var result = RouteMappingHelper.MapRouteToDto(uow, curRouteDO);
+                return Ok(result);
+            }
         }
 
         [Fr8ApiAuthorize]
