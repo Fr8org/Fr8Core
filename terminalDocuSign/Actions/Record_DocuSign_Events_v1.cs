@@ -169,11 +169,11 @@ namespace terminalDocuSign.Actions
 
                 using (var updater = Crate.UpdateStorage(curProcessPayload))
                 {
-                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Manifest", envelope));
-                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Event Manifest", events));
+                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope", envelope));
+                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Event", events));
                     if (recipientCM != null)
                     {
-                        updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Recipient Manifest", recipientCM));
+                        updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Recipient", recipientCM));
                     }
                 }
             }
