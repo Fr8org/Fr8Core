@@ -28,12 +28,11 @@ namespace Hub.Services
         private readonly ICrateManager _crate;
         private readonly IRestfulServiceClient _restfulServiceClient;
         private readonly IRouteNode _activity;
-        private readonly IActivityTemplate _activityTemplate;
+
         #endregion
 
         public RouteNode()
         {
-            _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
             _restfulServiceClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
         }
@@ -398,7 +397,7 @@ namespace Hub.Services
         {
             IEnumerable<ActivityTemplateDTO> curActivityTemplates;
 
-            curActivityTemplates = _activityTemplate
+            curActivityTemplates = uow.ActivityTemplateRepository
                 .GetAll()
                 .OrderBy(t => t.Category)
                 .Select(Mapper.Map<ActivityTemplateDTO>)
@@ -422,7 +421,7 @@ namespace Hub.Services
         /// </summary>
         public IEnumerable<ActivityTemplateDTO> GetAvailableActivities(IUnitOfWork uow, Func<ActivityTemplateDO, bool> predicate)
         {
-            return _activityTemplate
+            return uow.ActivityTemplateRepository
                 .GetAll()
                 .Where(predicate)
                 .Where(at => at.ActivityTemplateState == Data.States.ActivityTemplateState.Active)
@@ -434,7 +433,7 @@ namespace Hub.Services
         public IEnumerable<ActivityTemplateDTO> GetSolutions(IUnitOfWork uow, IFr8AccountDO curAccount)
         {
             IEnumerable<ActivityTemplateDTO> curActivityTemplates;
-            curActivityTemplates = _activityTemplate
+            curActivityTemplates = uow.ActivityTemplateRepository
                 .GetAll()
                 .Where(at => at.Category == Data.States.ActivityCategory.Solution 
                     && at.ActivityTemplateState == Data.States.ActivityTemplateState.Active)
@@ -454,20 +453,24 @@ namespace Hub.Services
             return curActivityTemplates;
         }
 
-        public IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivitiyGroups()
+	    public IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivitiyGroups()
         {
-            var curActivityTemplates = _activityTemplate
-                .GetQuery()
-                .Where(at => at.ActivityTemplateState == ActivityTemplateState.Active).AsEnumerable().ToArray()
-                .GroupBy(t => t.Category)
-                .OrderBy(c => c.Key)
-                .Select(c => new ActivityTemplateCategoryDTO
-                {
-                    Activities = c.Select(Mapper.Map<ActivityTemplateDTO>).ToList(),
-                    Name = c.Key.ToString()
-                })
-                .ToList();
+            List<ActivityTemplateCategoryDTO> curActivityTemplates;
 
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                curActivityTemplates = uow.ActivityTemplateRepository
+                    .GetQuery()
+                    .Where(at => at.ActivityTemplateState == Data.States.ActivityTemplateState.Active).AsEnumerable().ToArray()
+                    .GroupBy(t => t.Category)
+                    .OrderBy(c => c.Key)
+                    .Select(c => new ActivityTemplateCategoryDTO
+                    {
+                        Activities = c.Select(Mapper.Map<ActivityTemplateDTO>).ToList(),
+                        Name = c.Key.ToString()
+                    })
+                    .ToList();
+            }
 
             return curActivityTemplates;
         }

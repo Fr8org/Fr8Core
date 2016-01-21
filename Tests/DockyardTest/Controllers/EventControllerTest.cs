@@ -35,8 +35,8 @@ namespace DockyardTest.Controllers
         {
             base.SetUp();
             _eventController = new EventController();
-            _eventReporter = ObjectFactory.GetInstance <EventReporter>();
-            _incidentReporter = ObjectFactory.GetInstance <IncidentReporter>();
+            _eventReporter = new EventReporter();
+            _incidentReporter = new IncidentReporter();
             _eventReportCrateFactoryHelper = new EventReportCrateFactory();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
 

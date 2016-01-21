@@ -20,7 +20,7 @@ namespace HubTests.Managers
         {
             base.SetUp();
 
-            _incidentReporter = ObjectFactory.GetInstance <IncidentReporter>();
+            _incidentReporter = new IncidentReporter();
         } 
 
         [Test]
