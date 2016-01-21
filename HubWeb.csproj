@@ -868,6 +868,7 @@
     <Content Include="Views\AngularTemplate\UpstreamFieldChooser.cshtml" />
     <Content Include="Views\AngularTemplate\UsersEmailList.cshtml" />
     <Content Include="Views\AngularTemplate\FileDetails.cshtml" />
+    <Content Include="Views\AngularTemplate\_Debug.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
