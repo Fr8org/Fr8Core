@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Microsoft.Azure.KeyVault;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
@@ -108,8 +109,9 @@ namespace Data.Repositories
                 {
                     return (await Client.GetSecretAsync(KeyVaultUrl, secretId)).Value;
                 }
-                catch
+                catch (Exception ex)
                 {
+                    EventManager.KeyVaultFailed(ex);
                     return null;
                 }
             });
