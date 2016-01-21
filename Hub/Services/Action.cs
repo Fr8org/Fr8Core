@@ -122,6 +122,7 @@ namespace Hub.Services
             existingAction.Label = submittedAction.Label;
             existingAction.CrateStorage = submittedAction.CrateStorage;
             existingAction.Ordering = submittedAction.Ordering;
+            existingAction.Fr8Account = submittedAction.Fr8Account;
         }
 
         private ActionDO SaveAndUpdateRecursive(IUnitOfWork uow, ActionDO submittedAction, ActionDO parent, List<ActionDO> pendingConfiguration)
@@ -169,6 +170,9 @@ namespace Hub.Services
 
                 submittedAction.Ordering = subroute.ChildNodes.Count > 0 ? subroute.ChildNodes.Max(x => x.Ordering) + 1 : 1;
 
+                //assign Fr8Account from Route -> Action -> ...
+                submittedAction.Fr8Account = (subroute.RootRouteNode != null) ? subroute.Fr8Account : null;
+
                 // Add Action to repo.
                 uow.ActionRepository.Add(submittedAction);
 
@@ -180,6 +184,8 @@ namespace Hub.Services
                     newAction.ParentRouteNodeId = null;
                     newAction.ParentRouteNode = null;
                     newAction.RootRouteNodeId = submittedAction.RootRouteNodeId;
+
+
 
                     var newChild = SaveAndUpdateRecursive(uow, newAction, existingAction, pendingConfiguration);
                     existingAction.ChildNodes.Add(newChild);
@@ -262,7 +268,8 @@ namespace Hub.Services
                 Label = label,
                 CrateStorage = _crate.EmptyStorageAsStr(),
                 Ordering = parentNode.ChildNodes.Count > 0 ? parentNode.ChildNodes.Max(x => x.Ordering) + 1 : 1,
-                RootRouteNode = parentNode.RootRouteNode
+                RootRouteNode = parentNode.RootRouteNode,
+                Fr8Account = parentNode.RootRouteNode.Fr8Account
             };
 
             uow.ActionRepository.Add(action);

@@ -78,6 +78,7 @@ namespace Hub.Services
                 subroute.Id = Guid.NewGuid();
                 subroute.RootRouteNode = ptdo;
                 subroute.ParentRouteNode = ptdo;
+                subroute.Fr8Account = ptdo.Fr8Account;
                 ptdo.ChildNodes.Add(subroute);
 
                 uow.RouteRepository.Add(ptdo);
@@ -240,7 +241,7 @@ namespace Hub.Services
                         }
                     }
                 }
-                
+
 
                 uow.RouteRepository.GetByKey(curRoute.Id).RouteState = RouteState.Active;
                 uow.SaveChanges();
@@ -276,7 +277,7 @@ namespace Hub.Services
                         }
                     }
                 }
-                
+
                 uow.RouteRepository.GetByKey(curRoute.Id).RouteState = RouteState.Inactive;
                 uow.SaveChanges();
             }
@@ -392,7 +393,7 @@ namespace Hub.Services
             {
                 var root = uow.RouteNodeRepository.GetByKey(id);
 
-                
+
                 var queue = new Queue<RouteNodeDO>();
                 queue.Enqueue(root);
 
@@ -504,7 +505,7 @@ namespace Hub.Services
         /// <returns></returns>
         public ContainerDO Create(IUnitOfWork uow, Guid routeId, Crate curEvent)
         {
-            var containerDO = new ContainerDO {Id = Guid.NewGuid()};
+            var containerDO = new ContainerDO { Id = Guid.NewGuid() };
 
             var curRoute = uow.RouteRepository.GetByKey(routeId);
             if (curRoute == null)
