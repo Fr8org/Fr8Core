@@ -111,7 +111,7 @@ namespace Data.Repositories
                 }
                 catch (Exception ex)
                 {
-                    EventManager.KeyVaultFailed(ex);
+                    EventManager.KeyVaultFailed("GetSecretAsync", ex);
                     return null;
                 }
             });
@@ -125,8 +125,9 @@ namespace Data.Repositories
                 {
                     await Client.SetSecretAsync(KeyVaultUrl, secret, value);
                 }
-                catch
+                catch (Exception ex)
                 {
+                    EventManager.KeyVaultFailed("SetSecretAsync", ex);
                 }
             });
         }
@@ -139,8 +140,9 @@ namespace Data.Repositories
                 {
                     await Client.DeleteSecretAsync(KeyVaultUrl, secret);
                 }
-                catch
+                catch (Exception ex)
                 {
+                    EventManager.KeyVaultFailed("DeleteSecretAsync", ex);
                 }
             });
         }
