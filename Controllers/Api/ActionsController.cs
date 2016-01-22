@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
@@ -22,9 +23,12 @@ using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
+using HubWeb.Infrastructure;
 
 namespace HubWeb.Controllers
 {
+    
+    
     [Fr8ApiAuthorize]
     public class ActionsController : ApiController
     {
@@ -57,15 +61,15 @@ namespace HubWeb.Controllers
         }
 
 
-
         [HttpPost]
-        public async Task<IHttpActionResult> Create(int actionTemplateId, string name, string label = null, Guid? parentNodeId = null, bool createRoute = false)
+        [Fr8HubWebHMACAuthenticate]
+        public async Task<IHttpActionResult> Create(int actionTemplateId, string name, string label = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var userId = User.Identity.GetUserId();
 
-                var result = await _action.CreateAndConfigure(uow, userId, actionTemplateId, name, label, parentNodeId, createRoute);
+                var result = await _action.CreateAndConfigure(uow, userId, actionTemplateId, name, label, parentNodeId, createRoute, authorizationTokenId);
 
                 if (result is ActionDO)
                 {
@@ -85,11 +89,11 @@ namespace HubWeb.Controllers
         public async Task<IHttpActionResult> Create(string solutionName)
         {
             var userId = User.Identity.GetUserId();
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var activityTemplate = _activityTemplate.GetQuery().FirstOrDefault(at => at.Name == solutionName);
-                
+                var activityTemplate = uow.ActivityTemplateRepository
+                    .GetAll()
+                    .FirstOrDefault(at => at.Name == solutionName);
                 if (activityTemplate == null)
                 {
                     throw new ArgumentException(String.Format("actionTemplate (solution) name {0} is not found in the database.", solutionName));
@@ -105,6 +109,7 @@ namespace HubWeb.Controllers
         //WARNING. there's lots of potential for confusion between this POST method and the GET method following it.
 
         [HttpPost]
+        [Fr8HubWebHMACAuthenticate]
         public async Task<IHttpActionResult> Configure(ActionDTO curActionDesignDTO)
         {
             // WebMonitor.Tracer.Monitor.StartMonitoring("Configuring action " + curActionDesignDTO.Name);

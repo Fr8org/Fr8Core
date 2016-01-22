@@ -250,7 +250,7 @@ namespace terminalDocuSignTests.Integration
 
             return responseActionDTO;
         }
-
+        /*
         // check for Follow-up configuration
         [Test]
         public async void Rich_Document_FollowUp_Configuration_Check_Crate_Structure()
@@ -275,7 +275,8 @@ namespace terminalDocuSignTests.Integration
             AssertCrateTypes(crateStorage);
             AssertControls(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single());
         }
-
+        */
+        /*
         // check for child actions.
         [Test]
         public async void Rich_Document_Notifications_FollowUp_Configuration_Check_ChildAction_WithoutDelay()
@@ -296,7 +297,7 @@ namespace terminalDocuSignTests.Integration
              Assert.AreEqual(2, responseActionDTO.ChildrenActions.Length);
              Assert.AreEqual(1, responseActionDTO.ChildrenActions.Count(x => x.Label == "Monitor DocuSign"));
         }
-
+        */
         //This test causes timeout exception on build server. disabled for now
         /*
         [Test]

@@ -17,13 +17,11 @@ namespace HubWeb.Controllers
     {
         private readonly ISecurityServices _security;
         private readonly IAuthorization _authorization;
-        private readonly ITerminal _terminal;
 
 
         public AuthenticationController()
         {
             _security = ObjectFactory.GetInstance<ISecurityServices>();
-            _terminal = ObjectFactory.GetInstance<ITerminal>();
             _authorization = ObjectFactory.GetInstance<IAuthorization>();
         }
 
@@ -37,7 +35,15 @@ namespace HubWeb.Controllers
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                terminalDO = _terminal.GetByKey(credentials.TerminalId);
+                terminalDO = uow.TerminalRepository
+                    .GetQuery()
+                    .SingleOrDefault(x => x.Id == credentials.TerminalId);
+
+                if (terminalDO == null)
+                {
+                    throw new ApplicationException("Terminal was not found.");
+                }
+
                 account = _security.GetCurrentAccount(uow);
             }
 
@@ -75,7 +81,9 @@ namespace HubWeb.Controllers
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                terminal = _terminal.GetByKey(terminalId);
+                terminal = uow.TerminalRepository
+                    .GetQuery()
+                    .SingleOrDefault(x => x.Id == terminalId);
 
                 if (terminal == null)
                 {

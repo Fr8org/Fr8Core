@@ -32,7 +32,7 @@ namespace terminalDropbox
             public LiveMode()
             {
                 For<IAction>().Use<Hub.Services.Action>();
-                For<ITerminal>().Use<Terminal>().Singleton();
+                For<ITerminal>().Use<Terminal>();
                 For<ICrateManager>().Use<CrateManager>();
                 For<IRouteNode>().Use<RouteNode>();
                 For<IDropboxService>().Use<DropboxService>();

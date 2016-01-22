@@ -55,6 +55,11 @@ module dockyard.directives.duration {
                         $scope.field.days += Math.floor($scope.field.hours / 24);
                         $scope.field.hours %= 24;
                     }
+
+                    $scope.field.value = 'd:h:m'
+                        .replace('d', $scope.field.days.toString())
+                        .replace('h', $scope.field.hours.toString())
+                        .replace('m', $scope.field.minutes.toString());
                 });
 
             }

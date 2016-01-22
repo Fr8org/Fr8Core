@@ -26,13 +26,6 @@ namespace Hub.Managers
 {
     public class EventReporter
     {
-        private readonly IActivityTemplate _activityTemplate;
-
-        public EventReporter(IActivityTemplate activityTemplate)
-        {
-            _activityTemplate = activityTemplate;
-        }
-        
         //Register for interesting events
         public void SubscribeToAlerts()
         {
@@ -869,7 +862,7 @@ namespace Hub.Managers
                 };
                 if (actionDO != null)
                 {
-                    var terminalName = _activityTemplate.GetByKey(actionDO.ActivityTemplateId.Value).Terminal.Name;
+                    var terminalName = actionDO.ActivityTemplate.Terminal.Name;
                     curFact.Data = string.Format("Terminal: {0} - Action: {1}.", terminalName, actionDO.Name);
                 }
             
@@ -879,12 +872,12 @@ namespace Hub.Managers
             }
         }
 
-        private static async Task PostToTerminalEventsEndPoint(string userId, TerminalDO authenticatedTerminal)
+        private static async Task PostToTerminalEventsEndPoint(string userId, TerminalDO authenticatedTerminal, AuthorizationTokenDTO authToken)
         {
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
             await
                 restClient.PostAsync<object>(
-                    new Uri("http://" + authenticatedTerminal.Endpoint + "/terminals/" + authenticatedTerminal.Name + "/events"), new {fr8_user_id = userId});
+                    new Uri("http://" + authenticatedTerminal.Endpoint + "/terminals/" + authenticatedTerminal.Name + "/events"), new {fr8_user_id = userId, auth_token = authToken});
         }
 
     }

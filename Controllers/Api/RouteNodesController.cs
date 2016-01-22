@@ -26,14 +26,12 @@ namespace HubWeb.Controllers
         private readonly IRouteNode _activity;
         private readonly ISecurityServices _security;
         private readonly ICrateManager _crate;
-        private readonly IActivityTemplate _activityTemplate;
 
         public RouteNodesController()
         {
             _activity = ObjectFactory.GetInstance<IRouteNode>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
-            _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
         }
 
         [HttpGet]
@@ -41,10 +39,15 @@ namespace HubWeb.Controllers
         [Fr8ApiAuthorize]
         public IHttpActionResult Get(int id)
         {
-            var curActivityTemplateDO = _activityTemplate.GetByKey(id);
-            var curActivityTemplateDTO = Mapper.Map<ActivityTemplateDTO>(curActivityTemplateDO);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curActivityTemplateDO = uow.ActivityTemplateRepository.GetByKey(id);
 
-            return Ok(curActivityTemplateDTO);
+                var curActivityTemplateDTO =
+                    Mapper.Map<ActivityTemplateDTO>(curActivityTemplateDO);
+
+                return Ok(curActivityTemplateDTO);
+            }
         }
 
         [ActionName("upstream")]
@@ -76,7 +79,7 @@ namespace HubWeb.Controllers
         // TODO: after DO-1214 is completed, this method must be removed.
         [ActionName("upstream_actions")]
         [ResponseType(typeof (List<ActionDTO>))]
-        [fr8HubWebHMACAuthorize]
+        [Fr8HubWebHMACAuthenticate]
         public IHttpActionResult GetUpstreamActions(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -95,7 +98,7 @@ namespace HubWeb.Controllers
         // TODO: after DO-1214 is completed, this method must be removed.
         [ActionName("downstream_actions")]
         [ResponseType(typeof (List<ActionDTO>))]
-        [fr8HubWebHMACAuthorize]
+        [Fr8HubWebHMACAuthenticate]
         public IHttpActionResult GetDownstreamActions(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -113,7 +116,7 @@ namespace HubWeb.Controllers
 
         [ActionName("designtime_fields_dir")]
         [ResponseType(typeof(StandardDesignTimeFieldsCM))]
-        [fr8HubWebHMACAuthorize]
+        [Fr8HubWebHMACAuthenticate]
         public IHttpActionResult GetDesignTimeFieldsByDirection(
             Guid id, 
             CrateDirection direction, 

@@ -117,7 +117,15 @@ namespace terminalSalesforceTests.Intergration
             var requestActionDTO = HealthMonitor_FixtureData.Create_Account_v1_InitialConfiguration_ActionDTO();
 
             //perform post request to terminal and return the result
-            return await HttpPostAsync<ActionDTO, ActionDTO>(terminalConfigureUrl, requestActionDTO);
+            var resultActionDto = await HttpPostAsync<ActionDTO, ActionDTO>(terminalConfigureUrl, requestActionDTO);
+
+            using (var updater = Crate.UpdateStorage(resultActionDto))
+            {
+                var controls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
+                controls.Controls.OfType<TextSource>().ToList().ForEach(ctl => ctl.ValueSource = "specific");
+            }
+
+            return resultActionDto;
         }
 
         private void AssertConfigurationControls(CrateStorage curActionCrateStorage)
@@ -147,8 +155,9 @@ namespace terminalSalesforceTests.Intergration
             {
                 var controls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
 
-                var targetUrlTextBox = (TextBox)controls.Controls[0];
-                targetUrlTextBox.Value = "IntegrationTestAccount";
+                var targetUrlTextBox = (TextSource)controls.Controls[0];
+                targetUrlTextBox.ValueSource = "specific";
+                targetUrlTextBox.TextValue = "IntegrationTestAccount";
             }
 
             return curActionDto;

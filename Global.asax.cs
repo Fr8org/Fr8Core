@@ -23,6 +23,7 @@ using Segment;
 using StructureMap;
 using Utilities;
 using Logger = Utilities.Logging.Logger;
+using HubWeb.Infrastructure;
 
 namespace HubWeb
 {
@@ -59,7 +60,7 @@ namespace HubWeb
             Utilities.Server.ServerPhysicalPath = Server.MapPath("~");
 
             //AutoMapper create map configuration
-            ObjectFactory.GetInstance<AutoMapperBootStrapper>().ConfigureAutoMapper();
+            AutoMapperBootStrapper.ConfigureAutoMapper();
 
             Utilities.Server.IsProduction = ObjectFactory.GetInstance<IConfigRepository>().Get<bool>("IsProduction");
             Utilities.Server.IsDevMode = ObjectFactory.GetInstance<IConfigRepository>().Get<bool>("IsDev", true);
@@ -70,11 +71,10 @@ namespace HubWeb
             var segmentWriteKey = new ConfigRepository().Get("SegmentWriteKey");
             Analytics.Initialize(segmentWriteKey);
 
-            EventReporter curReporter = ObjectFactory.GetInstance<EventReporter>()
-                ;
+            EventReporter curReporter = new EventReporter();
             curReporter.SubscribeToAlerts();
 
-            IncidentReporter incidentReporter = ObjectFactory.GetInstance <IncidentReporter>();
+            IncidentReporter incidentReporter = new IncidentReporter();
             incidentReporter.SubscribeToAlerts();
 
             ModelBinders.Binders.Add(typeof(DateTimeOffset), new KwasantDateBinder());
@@ -238,9 +238,12 @@ namespace HubWeb
             if (principal != null)
             {
                 var claims = principal.Claims;
-                GenericPrincipal userPrincipal =
-                    new GenericPrincipal(principal.Identity,
+                var roles = claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToArray();
+                var userPrincipal = new Fr8Principle(null, principal.Identity, roles);
+                /*
+                GenericPrincipal userPrincipal = new GenericPrincipal(principal.Identity,
                                          claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToArray());
+                */
                 Context.User = userPrincipal;
             }
         }
