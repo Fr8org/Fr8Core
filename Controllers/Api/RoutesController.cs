@@ -220,7 +220,7 @@ namespace HubWeb.Controllers
 
         [HttpPost]
         //[Route("activate")]
-        [Fr8ApiAuthorize]
+        [Fr8ApiAuthorize("Admin","Customer")]
         public async Task<IHttpActionResult> Activate(RouteDO curRoute)
         {
             string actionDTO = await _route.Activate(curRoute);
@@ -252,7 +252,7 @@ namespace HubWeb.Controllers
             }
         }
 
-        [Fr8ApiAuthorize]
+        [Fr8ApiAuthorize("Admin", "Customer")]
         //[Route("run")]
         [HttpPost]
         public async Task<IHttpActionResult> Run(Guid routeId, [FromBody]PayloadVM model)

@@ -397,5 +397,71 @@ namespace Hub.Services
             }
             return activeRoutes;
         }
+
+        public Task<LoginStatus> CreateAuthenticateGuestUser()
+        {
+            Guid guid = Guid.NewGuid();
+            string guestUserEmail = guid + "@fr8.co";
+            string guestUserPassword = "fr8123";
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                // Register a guest user 
+               Fr8AccountDO fr8AccountDO = Register(uow, guestUserEmail, guestUserEmail, guestUserEmail, guestUserPassword, Roles.Guest);
+               uow.SaveChanges();
+
+               // By default #Register adds Customer role for the user so remove it 
+               uow.AspNetUserRolesRepository.RevokeRoleFromUser(Roles.Customer, fr8AccountDO.Id);
+               uow.SaveChanges();
+
+               return Task.FromResult(Login(uow, fr8AccountDO, guestUserPassword, false));
+            }
+        }
+
+        /// <summary>
+        /// Register Guest account
+        /// </summary>
+        /// <param name="email"></param>
+        /// <param name="password"></param>
+        /// <param name="tempEmail"></param>
+        /// <returns></returns>
+        public Task<RegistrationStatus> UpdateGuestUserRegistration(String email, String password, String tempEmail)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                RegistrationStatus curRegStatus = RegistrationStatus.Successful;
+                Fr8AccountDO newDockyardAccountDO = null;
+
+
+                EmailAddressDO existingEmailAddressDO =
+                   uow.EmailAddressRepository.GetQuery().FirstOrDefault(ea => ea.Address == email);
+                if (existingEmailAddressDO != null)
+                {
+                    curRegStatus = RegistrationStatus.UserMustLogIn;
+                    return Task.FromResult(curRegStatus);
+                }
+                
+
+                //check if we know this email address
+
+                EmailAddressDO guestUserexistingEmailAddressDO =
+                    uow.EmailAddressRepository.GetQuery().FirstOrDefault(ea => ea.Address == tempEmail);
+                if (guestUserexistingEmailAddressDO != null)
+                {
+                    var existingUserDO =
+                        uow.UserRepository.GetQuery().FirstOrDefault(u => u.EmailAddressID == guestUserexistingEmailAddressDO.Id);
+                    
+                    // Update Email
+                    uow.UserRepository.UpdateUserCredentials(existingUserDO, email, password);
+                    guestUserexistingEmailAddressDO.Address = email;
+
+                    uow.AspNetUserRolesRepository.RevokeRoleFromUser(Roles.Guest, existingUserDO.Id);
+                    // Add new role
+                    uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, existingUserDO.Id);
+                }
+
+                uow.SaveChanges();
+                return Task.FromResult(curRegStatus);
+            }
+        }
     }
 }

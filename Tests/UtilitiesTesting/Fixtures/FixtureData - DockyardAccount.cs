@@ -85,6 +85,24 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
+        public static Fr8AccountDO TestDockyardAccount6()
+        {
+            string guestUserEmail = "guestuser@test.com";
+            string password = "oldpassword";
+            string firstName = " Guest";
+            string lastName = " User";
+
+            Fr8Account _dockyardAccount = ObjectFactory.GetInstance<Fr8Account>();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var guestUserFr8Account = _dockyardAccount.Register(uow, guestUserEmail, firstName, lastName, password, Roles.Guest);
+                uow.AspNetUserRolesRepository.RevokeRoleFromUser(Roles.Customer,guestUserFr8Account.Id);
+                uow.SaveChanges();
+
+                return guestUserFr8Account;
+            }
+        }
+
         /* public DockyardAccountDO TestDockyardAccount2()
          {
              var curEmailAddressDO = TestEmailAddress5();
