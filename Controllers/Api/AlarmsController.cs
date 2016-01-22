@@ -20,6 +20,7 @@ namespace HubWeb.Controllers
     {
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
+        [Fr8ApiAuthorize]
         public async Task<IHttpActionResult> Post(AlarmDTO alarmDTO)
         {
             //TODO what happens to AlarmsController? does it stay in memory all this time?
