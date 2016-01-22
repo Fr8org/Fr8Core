@@ -18,7 +18,6 @@ namespace terminalDocuSign
                 startup.Configuration(app, selfHost: true);
             }
         }
-
         public static IDisposable CreateServer(string url)
         {
             return WebApp.Start<SelfHostFactory.SelfHostStartup>(url: url);
