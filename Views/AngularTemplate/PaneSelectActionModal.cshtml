@@ -1,5 +1,4 @@
-﻿<!--
-<div class="modal-header">
+﻿<div class="modal-header">
 	<h3 class="modal-title">Add an Action To Your Route</h3>
 </div>
 <div class="modal-body" style="border-bottom: 1px solid #e5e5e5;">
@@ -36,30 +35,4 @@
 </div>
 <div class="modal-footer">
 	<button class="btn btn-warning" type="button" data-ng-click="close()">Close</button>
-</div>
--->
-<div style="display:flex">
-    <div>
-        <div data-ng-repeat="actionCategory in actionCategories" style="display:flex; align-items:center; margin-right:16px;">
-            <i class="fa fa-{{actionCategory.icon}}"
-               data-ng-click="setActive(actionCategory.id)"
-               style="background:white; border-radius:50%; font-size:24px; padding:16px; line-height:24px; margin: 8px;"></i>
-            <div for="checkbox_{{actionCategory.id}}">{{actionCategory.name}}</div>
-        </div>
-    </div>
-    <div>
-        <div 
-         data-ng-repeat="webServiceAction in webServiceActionList"
-         data-ng-click="setActiveTerminal($index)">
-            <img src="{{webServiceAction.webServiceIconPath}}" style="max-width: 64px; max-width: 64px" />
-        </div>
-    </div>
-    <div>
-        <div 
-         style="padding:8px 16px"
-         data-ng-repeat="action in webServiceActionList[activeTerminal].actions" 
-         data-ng-click="selectAction(action)">
-            {{action.label}}
-        </div>
-    </div>
 </div>
