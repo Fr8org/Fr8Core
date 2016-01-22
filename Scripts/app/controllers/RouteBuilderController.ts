@@ -164,6 +164,27 @@ module dockyard.controllers {
 
             };
 
+            var currentState: number;
+            $scope.$watch('current.route.routeState', () => {
+                if ($scope.current.route) {
+                    if (currentState === undefined) currentState = $scope.current.route.routeState;
+
+                    if (currentState !== $scope.current.route.routeState) {
+                        if ($scope.current.route.routeState === model.RouteState.Inactive) {
+                            RouteService.deactivate($scope.current.route);
+                        } else if ($scope.current.route.routeState === model.RouteState.Active) {
+                                RouteService.activate(<any>{ routeId: $scope.current.route.id, routeBuilderActivate: true })
+                                    .$promise.then((result) => {
+                                    if (result != null && result.status === "validation_error") {
+                                        this.renderActions(result.actionsCollection);
+                                        $scope.current.route.routeState = model.RouteState.Inactive;
+                                    }
+                            });
+                        }
+                    }
+                }
+            });
+
             this.processState($state);
         }
 
@@ -370,6 +391,13 @@ module dockyard.controllers {
             this.$scope.actionGroups = this.LayoutService.placeActions(actions, curRoute.startingSubrouteId);
         }
 
+        private renderActions(actionsCollection: model.ActionDTO[]) {
+            if (actionsCollection != null && actionsCollection.length != 0) {
+                this.$scope.actionGroups = this.LayoutService.placeActions(actionsCollection,
+                    this.$scope.current.route.startingSubrouteId);  
+            }
+        }
+
         // If action updated, notify interested parties and update $scope.current.action
         private handleActionUpdate(action: model.ActionDTO) {
             if (!action) return;
@@ -568,6 +596,7 @@ module dockyard.controllers {
             Handles message 'ConfigureActionPane_ActionUpdated'
         */
         private PaneConfigureAction_ActionUpdated(eventArgs: pca.ActionUpdatedEventArgs) {
+
         }
 
         /*
@@ -600,8 +629,6 @@ module dockyard.controllers {
             this.AuthService.clear();
             this.$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Reconfigure]);
         }
-
-
 
         private PaneConfigureAction_ChildActionsReconfiguration(childActionReconfigEventArgs: pca.ChildActionReconfigurationEventArgs) {
             for (var i = 0; i < childActionReconfigEventArgs.actions.length; i++) {

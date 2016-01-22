@@ -100,9 +100,9 @@ namespace DockyardTest.Services
         {
             var curRouteDO = FixtureData.TestRouteNoMatchingParentActivity();
             
-            string result = _routeService.Activate(curRouteDO.Id).Result;
+            var result = _routeService.Activate(curRouteDO.Id, true).Result;
 
-            Assert.AreEqual(result, "no action");
+            Assert.AreEqual(result.Status, "no action");
         }
 
         [Test]
