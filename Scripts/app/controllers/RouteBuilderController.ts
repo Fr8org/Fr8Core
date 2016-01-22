@@ -170,14 +170,11 @@ module dockyard.controllers {
                         if ($scope.current.route.routeState === model.RouteState.Inactive) {
                             RouteService.deactivate($scope.current.route);
                         } else if ($scope.current.route.routeState === model.RouteState.Active) {
-                            var data = {
-                                routeId: $scope.current.route.id,
-                                routeBuilderActivate: true
-                            }
-                            RouteService.activate(<any>data).$promise.then((result) => {
-                                if (result != null && result.status === "validation_error") {
-                                    this.renderActions(result.actionsCollection);
-                                }
+                                RouteService.activate(<any>{ routeId: $scope.current.route.id, routeBuilderActivate: true })
+                                    .$promise.then((result) => {
+                                    if (result != null && result.status === "success") {
+                                        this.renderActions(result.actionsCollection);
+                                    }
                             });
                         }
                     }
