@@ -19,6 +19,7 @@ using Utilities.Logging;
 using Hub.Interfaces;
 using Hangfire;
 using Hub.Managers.APIManagers.Transmitters.Restful;
+using System.Web;
 
 [assembly: OwinStartup(typeof(HubWeb.Startup))]
 
@@ -65,21 +66,24 @@ namespace HubWeb
         {
             //ConfigureDaemons();
             ConfigureAuth(app);
-
-#if RELEASE
+#if DEV || RELEASE
             ConfigureHangfire(app, "DockyardDB");
 #endif 
+
             await RegisterTerminalActions();
         }
 
         public void ConfigureHangfire(IAppBuilder app, string connectionString)
         {
-            GlobalConfiguration.Configuration.UseSqlServerStorage(connectionString);
+            GlobalConfiguration.Configuration
+                .UseSqlServerStorage(connectionString)
+                .UseMsmqQueues(@".\Private$\hangfire-fr8-{0}", "default");
 
-#if RELEASE
             app.UseHangfireDashboard();
-            app.UseHangfireServer();
-#endif
+            app.UseHangfireServer(new BackgroundJobServerOptions
+            {
+                Queues = new[] { "default" }
+            });
         }
 
         //SeedDatabases
