@@ -171,7 +171,7 @@ namespace Hub.Services
                 submittedAction.Ordering = subroute.ChildNodes.Count > 0 ? subroute.ChildNodes.Max(x => x.Ordering) + 1 : 1;
 
                 //assign Fr8Account from Route -> Action -> ...
-                submittedAction.Fr8Account = (subroute.RootRouteNode != null) ? subroute.Fr8Account : null;
+                submittedAction.Fr8Account = (subroute.Fr8Account != null) ? subroute.Fr8Account : subroute.ParentRouteNode.Fr8Account;
 
                 // Add Action to repo.
                 uow.ActionRepository.Add(submittedAction);
