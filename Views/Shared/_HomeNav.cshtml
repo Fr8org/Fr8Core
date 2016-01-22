@@ -47,7 +47,9 @@ else
         <li data-scroll="scrolling"><a href="/#contacts" title="Contact">Contact</a></li>
         @*<li data-scroll="scrolling" class="visible-phone"><a href="/DockyardAccount" title="SignUp/Login">SignUp/Login</a></li>*@
     </ul>
-    <ul class="nav navbar-nav navbar-right">
-        <li style="background-color: crimson;">@Html.ActionLink("Try It Now", "Index", "Welcome")</li>
-    </ul>
+    if (String.IsNullOrWhiteSpace((String)ViewBag.GuestUserEmail)) { 
+        <ul class="nav navbar-nav navbar-right">
+            <li style="background-color: crimson;">@Html.ActionLink("Try It Now", "Index", "Welcome")</li>
+        </ul>
+    }
 }
