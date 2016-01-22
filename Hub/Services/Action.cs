@@ -217,7 +217,7 @@ namespace Hub.Services
                 submittedAction.Ordering = subroute.ChildNodes.Count > 0 ? subroute.ChildNodes.Max(x => x.Ordering) + 1 : 1;
 
                 //assign Fr8Account from Route -> Action -> ...
-                submittedAction.Fr8Account = (subroute.Fr8Account != null) ? subroute.Fr8Account : subroute.ParentRouteNode.Fr8Account;
+                submittedAction.Fr8Account = (subroute.Fr8Account != null) ? subroute.Fr8Account : null;
 
                 // Add Action to repo.
                 uow.ActionRepository.Add(submittedAction);
@@ -315,7 +315,7 @@ namespace Hub.Services
                 CrateStorage = _crate.EmptyStorageAsStr(),
                 Ordering = parentNode.ChildNodes.Count > 0 ? parentNode.ChildNodes.Max(x => x.Ordering) + 1 : 1,
                 RootRouteNode = parentNode.RootRouteNode,
-                Fr8Account = (parentNode.RootRouteNode != null) ? parentNode.RootRouteNode.Fr8Account : null
+                Fr8Account = (parentNode.RootRouteNode != null) ? parentNode.RootRouteNode.Fr8Account : null,
                 AuthorizationTokenId = AuthorizationTokenId
             };
 
