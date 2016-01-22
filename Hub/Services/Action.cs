@@ -23,6 +23,7 @@ using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
+using Microsoft.ApplicationInsights;
 
 namespace Hub.Services
 {
@@ -30,6 +31,7 @@ namespace Hub.Services
     {
         private readonly ICrateManager _crate;
         private readonly IAuthorization _authorizationToken;
+        private readonly TelemetryClient _telemetryClient;
 
         private readonly IRouteNode _routeNode;
 
@@ -38,6 +40,7 @@ namespace Hub.Services
             _authorizationToken = ObjectFactory.GetInstance<IAuthorization>();
             _routeNode = ObjectFactory.GetInstance<IRouteNode>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
+            _telemetryClient = ObjectFactory.GetInstance<TelemetryClient>();
         }
 
         public IEnumerable<TViewModel> GetAllActions<TViewModel>()
@@ -50,14 +53,57 @@ namespace Hub.Services
 
         public ActionDO SaveOrUpdateAction(IUnitOfWork uow, ActionDO submittedActionData)
         {
-            var action = SaveAndUpdateRecursive(uow, submittedActionData, null, new List<ActionDO>());
+            System.Diagnostics.Stopwatch stopwatch = null;
+            DateTime startTime = DateTime.UtcNow;
+            bool success = false;
 
-            action.ParentRouteNode = submittedActionData.ParentRouteNode;
-            action.ParentRouteNodeId = submittedActionData.ParentRouteNodeId;
+            _telemetryClient.Context.Operation.Name = "Action#SaveOrUpdateAction";
 
-            uow.SaveChanges();
+            try
+            {
+                stopwatch = System.Diagnostics.Stopwatch.StartNew();
+                var action = SaveAndUpdateRecursive(uow, submittedActionData, null, new List<ActionDO>());
 
-            return uow.ActionRepository.GetByKey(submittedActionData.Id);
+                action.ParentRouteNode = submittedActionData.ParentRouteNode;
+                action.ParentRouteNodeId = submittedActionData.ParentRouteNodeId;
+
+                uow.SaveChanges();
+                success = true;
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                stopwatch.Stop();
+                _telemetryClient.TrackDependency("Database", "Saving Action with subactions",
+                   startTime,
+                   stopwatch.Elapsed,
+                   success);
+            }
+
+            success = false;
+            stopwatch = System.Diagnostics.Stopwatch.StartNew();
+
+            try
+            {
+                var result = uow.ActionRepository.GetByKey(submittedActionData.Id);
+                success = true;
+                return result;
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                stopwatch.Stop();
+                _telemetryClient.TrackDependency("Database", "Getting Action by id after saving",
+                   startTime,
+                   stopwatch.Elapsed,
+                   success);
+            }
         }
 
         public ActionDO SaveOrUpdateAction(ActionDO submittedActionData)

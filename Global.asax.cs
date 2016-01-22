@@ -125,6 +125,7 @@ namespace HubWeb
         //But on production, there is no need for this call
         protected void Application_BeginRequest(object sender, EventArgs e)
         {
+
 #if DEBUG
             SetServerUrl(HttpContext.Current);
 #endif
