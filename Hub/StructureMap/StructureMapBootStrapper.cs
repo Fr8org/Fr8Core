@@ -37,6 +37,7 @@ using System.Threading.Tasks;
 using Utilities;
 using Utilities.Interfaces;
 using System.Net.Http;
+using Microsoft.ApplicationInsights;
 
 namespace Hub.StructureMap
 {
@@ -133,6 +134,8 @@ namespace Hub.StructureMap
 
                 For<IHMACAuthenticator>().Use<HMACAuthenticator>();
                 For<IHMACService>().Use<Fr8HMACService>();
+
+                For<TelemetryClient>().Use<TelemetryClient>();
             }
         }
 
@@ -207,7 +210,7 @@ namespace Hub.StructureMap
 
                 var fr8HMACService = new Mock<IHMACService>();
                 For<IHMACService>().Use(fr8HMACService.Object);
-
+                For<TelemetryClient>().Use<TelemetryClient>();
                 For<ITerminal>().Use(new TerminalServiceForTests()).Singleton();
             }
         }
@@ -249,6 +252,7 @@ namespace Hub.StructureMap
             public Task<bool> IsUserSubscribedToTerminal(string terminalId, string userId)
             {
                 return _terminal.IsUserSubscribedToTerminal(terminalId, userId);
+                
             }
         }
 

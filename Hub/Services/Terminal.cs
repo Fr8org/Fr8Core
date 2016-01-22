@@ -185,6 +185,14 @@ namespace Hub.Services
                 Initialize();
             }
 
+            // we are going to change activityTemplateDo. It is not good to corrupt method's input parameters.
+            // make a copy
+            var clone = new TerminalDO();
+
+            CopyPropertiesHelper.CopyProperties(terminalDo, clone, true);
+
+            terminalDo = clone;
+
             lock (_terminals)
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

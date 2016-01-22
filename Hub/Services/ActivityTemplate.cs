@@ -142,6 +142,23 @@ namespace Hub.Services
                 return;
             }
 
+            // we are going to change activityTemplateDo. It is not good to corrupt method's input parameters.
+            // make a copy
+            var clone = new ActivityTemplateDO();
+            
+            CopyPropertiesHelper.CopyProperties(activityTemplateDo, clone, true);
+            
+            clone.Terminal = activityTemplateDo.Terminal;
+
+            if (activityTemplateDo.WebService != null)
+            {
+                var wsClone = new WebServiceDO();
+                CopyPropertiesHelper.CopyProperties(activityTemplateDo.WebService, wsClone, true);
+                clone.WebService = wsClone;
+            }
+
+            activityTemplateDo = clone;
+
             var registeredTerminal = _terminal.RegisterOrUpdate(activityTemplateDo.Terminal);
             
             activityTemplateDo.Terminal = null; // otherwise we can add dupliacte terminals into the DB

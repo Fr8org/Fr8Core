@@ -284,20 +284,19 @@ namespace DockyardTest.Services
         [Test]
         public void CanUpdate()
         {
-            ActivityTemplateDO[] templates;
-
             GenerateSeedData();
 
             var template = CreateActivityTemplate(1, CreateTerminal(-234), CreateWebService(234234));
             template.TerminalId = 23444234;
             template.WebServiceId = -2344;
 
-            
             var service = ObjectFactory.GetInstance<ActivityTemplate>();
 
             service.RegisterOrUpdate(template);
 
             var storedTemplate = service.GetQuery().First(x => x.Name == template.Name);
+
+            CheckIntegrity(storedTemplate);
 
             AreEqual(template, storedTemplate, true);
 
@@ -313,7 +312,7 @@ namespace DockyardTest.Services
                 templates = uow.ActivityTemplateRepository.GetAll().ToArray();
             }
 
-            var templatesFromServices = ObjectFactory.GetInstance<ActivityTemplate>().GetAll();
+            var templatesFromServices = activityTemplateService.GetAll();
 
             foreach (var templatesFromService in templatesFromServices)
             {

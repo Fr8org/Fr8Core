@@ -145,11 +145,7 @@ namespace Hub.Services
             }
         }
 
-        public async Task<AuthenticateResponse> AuthenticateInternal(
-            Fr8AccountDO account,
-            TerminalDO terminal,
-            string domain,
-            string username,
+        public async Task<AuthenticateResponse> AuthenticateInternal(Fr8AccountDO account, TerminalDO terminal, string domain,  string username,
             string password)
         {
             if (terminal.AuthenticationType == AuthenticationType.None)
@@ -226,11 +222,14 @@ namespace Hub.Services
 
                 uow.SaveChanges();
 
+                
                 //if terminal requires Authentication Completed Notification, follow the existing terminal event notification protocol 
                 //to notify the terminal about authentication completed event
                 if (terminalResponseAuthTokenDTO.AuthCompletedNotificationRequired)
                 {
-                    EventManager.TerminalAuthenticationCompleted(curAccount.Id, curTerminal);
+                    //let's save id of DTO before informing related terminal
+                    terminalResponseAuthTokenDTO.Id = authToken.Id.ToString();
+                    EventManager.TerminalAuthenticationCompleted(curAccount.Id, curTerminal, terminalResponseAuthTokenDTO);
                 }
 
                 return new AuthenticateResponse()
