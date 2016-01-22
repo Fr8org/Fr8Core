@@ -250,6 +250,7 @@ namespace Hub.Services
                             if (validationErrorChecker)
                             {
                                 result.Status = "validation_error";
+                                result.ErrorMessage = errorMessage;
                             }
 
                             //if the activate call is comming from the Route Builder just render again the action group with the errors
@@ -262,7 +263,6 @@ namespace Hub.Services
                                 //if the activate call is comming from the Routes List then show the first error message and redirect to route builder 
                                 //so the user could fix the configuration
                                 result.RedirectToRouteBuilder = true;
-                                result.ErrorMessage = errorMessage;
 
                                 return result;
                             }                    
