@@ -75,20 +75,15 @@ namespace HubWeb
 
         public void ConfigureHangfire(IAppBuilder app, string connectionString)
         {
-            //GlobalConfiguration.Configuration
-            //    .UseSqlServerStorage(connectionString)
-            //    .UseMsmqQueues(@".\Private$\hangfire-fr8-{0}", "default");
-
-            //app.UseHangfireDashboard();
-            //app.UseHangfireServer(new BackgroundJobServerOptions {
-            //    Queues = new[] { "default" }
-            //});
-
             GlobalConfiguration.Configuration
-                .UseSqlServerStorage(connectionString);
+                .UseSqlServerStorage(connectionString)
+                .UseMsmqQueues(@".\Private$\hangfire-fr8-{0}", "default");
 
             app.UseHangfireDashboard();
-            app.UseHangfireServer();
+            app.UseHangfireServer(new BackgroundJobServerOptions
+            {
+                Queues = new[] { "default" }
+            });
         }
 
         //SeedDatabases
