@@ -81,22 +81,30 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Looks for upstream and downstream Creates.
         /// </summary>
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(
+            ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             //Filter the upstream fields by Availability flag as this action takes the run time data (left DDLBs) to the fidles (right DDLBs)
-            var curUpstreamFields =
-                (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
-                .Fields.Where(field => field.Availability != AvailabilityType.Configuration)
-                .ToArray();
+            var curUpstreamFieldsTask = GetDesignTimeFields(curActionDO, CrateDirection.Upstream);
 
             //Get all the downstream fields to be mapped (right DDLBs)
-            var curDownstreamFields =
-                (await GetDesignTimeFields(curActionDO, CrateDirection.Downstream))
-                .Fields.Where(field => field.Availability != AvailabilityType.Configuration)
+            var curDownstreamFieldsTask = GetDesignTimeFields(curActionDO, CrateDirection.Downstream);
+
+            var curUpstreamFields = (await curUpstreamFieldsTask)
+                .Fields
+                .Where(field => field.Availability != AvailabilityType.Configuration)
                 .ToArray();
 
+            var curDownstreamFields = (await curDownstreamFieldsTask)
+                .Fields
+                .Where(field => field.Availability != AvailabilityType.Configuration)
+                .ToArray();
+
+
             if (!(NeedsConfiguration(curActionDO, curUpstreamFields, curDownstreamFields)))
+            {
                 return curActionDO;
+            }
 
             //Pack the merged fields into 2 new crates that can be used to populate the dropdowns in the MapFields UI
             var downstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Downstream Terminal-Provided Fields", curDownstreamFields.ToList().Select(a => { a.Availability = AvailabilityType.Configuration; return a; }).ToArray());
