@@ -33,19 +33,7 @@ module dockyard.controllers {
         onActionDrop: (group: model.ActionGroup, actionId: string, index: number) => void;
         mode: string;
         solutionName: string;
-
-        //ActionPicker exports
-        webServiceActionList: Array<model.WebServiceActionSetDTO>;
-        actionCategories: any;
-        activeCategory: any;
-        activeTerminal: any;
-        setActive: () => void;
-        setActiveTerminal: () => void; 
-        setActiveAction: () => void;
-
-        curAggReloadingActions: Array<string>;
     }
-
 
     //Setup aliases
     import pwd = dockyard.directives.paneWorkflowDesigner;
@@ -74,12 +62,10 @@ module dockyard.controllers {
             'LayoutService',
             '$modal',
             'AuthService',
-            'ConfigureTrackerService',
-            'WebServiceService'
+            'ConfigureTrackerService'
         ];
 
         private _longRunningActionsCounter: number;
-        private _loading = false;
 
         constructor(
             private $scope: IRouteBuilderScope,
@@ -96,14 +82,11 @@ module dockyard.controllers {
             private LayoutService: services.ILayoutService,
             private $modal: any,
             private AuthService: services.AuthService,
-            private ConfigureTrackerService: services.ConfigureTrackerService,
-            private WebServiceService: services.IWebServiceService
-            ) {
+            private ConfigureTrackerService: services.ConfigureTrackerService
+        ) {
 
             this.$scope.current = new model.RouteBuilderState();
             this.$scope.actionGroups = [];
-
-            this.$scope.curAggReloadingActions = []; 
 
             this.setupMessageProcessing();
 
@@ -112,7 +95,7 @@ module dockyard.controllers {
             }
 
             this.$scope.isBusy = () => {
-                return this._longRunningActionsCounter > 0 || this._loading;
+                return this._longRunningActionsCounter > 0;
             };
 
             this._longRunningActionsCounter = 0;
@@ -125,7 +108,6 @@ module dockyard.controllers {
             this.$scope.selectAction = (action: model.ActionDTO) => {
                 if (!this.$scope.current.action || this.$scope.current.action.id !== action.id)
                     this.selectAction(action, null);
-
             }
 
             //Group: which group action is dropped to
@@ -178,61 +160,7 @@ module dockyard.controllers {
 
             };
 
-            var currentState: number;
-            $scope.$watch('current.route.routeState', () => {
-                if ($scope.current.route) {
-                    if (currentState === undefined) currentState = $scope.current.route.routeState;
-
-                    if (currentState !== $scope.current.route.routeState) {
-                        if ($scope.current.route.routeState === model.RouteState.Inactive) {
-                            RouteService.deactivate($scope.current.route);
-                        } else if ($scope.current.route.routeState === model.RouteState.Active) {
-                                RouteService.activate(<any>{ routeId: $scope.current.route.id, routeBuilderActivate: true })
-                                    .$promise.then((result) => {
-                                    if (result != null && result.status === "validation_error") {
-                                        this.renderActions(result.actionsCollection);
-                                        $scope.current.route.routeState = model.RouteState.Inactive;
-                                    }
-                            });
-                        }
-                    }
-                }
-            });
-
             this.processState($state);
-
-            //ActionPicker constructs
-            $scope.setActive = <() => void>angular.bind(this, this.setActive);
-            $scope.setActiveTerminal = <() => void>angular.bind(this, this.setActiveTerminal);
-            $scope.setActiveAction = <() => void>angular.bind(this, this.setActiveAction);
-            $scope.actionCategories = [
-                { id: 1, name: "Monitor", description: "Learn when something happen", icon: "eye" },
-                { id: 2, name: "Get", description: "In-process Crates from a web service", icon: "download" },
-                { id: 3, name: "Process", description: "Carry out work on a Container", icon: "recycle" },
-                { id: 4, name: "Forward", description: "Send Crates to a web service", icon: "share" }];
-            $scope.activeCategory = 0
-            $scope.activeTerminal = 1
-        }
-        //ActionPicker
-        private setActive(actionCategoryId) {
-            this.$scope.activeCategory = actionCategoryId;
-            this.$scope.activeCategory == actionCategoryId ? this.$scope.activeCategory = 0 : this.$scope.webServiceActionList = this.WebServiceService.getActions([actionCategoryId]);
-        }
-        private setActiveTerminal(index) {
-            this.$scope.activeTerminal = index
-        }
-        private setActiveAction(action, group) {
-            //TODO remove PaneSelectAction and consequently psa reference
-            var eventArgs = new psa.ActivityTypeSelectedEventArgs(action, group);
-            this.PaneSelectAction_ActivityTypeSelected(eventArgs)
-        }
-
-        private startLoader() {
-            this._loading = true;
-        }
-
-        private stopLoader() {
-            this._loading = false;
         }
 
         //re-orders actions according to their position on array
@@ -430,13 +358,6 @@ module dockyard.controllers {
             this.$scope.actionGroups = this.LayoutService.placeActions(actions, curRoute.startingSubrouteId);
         }
 
-        private renderActions(actionsCollection: model.ActionDTO[]) {
-            if (actionsCollection != null && actionsCollection.length != 0) {
-                this.$scope.actionGroups = this.LayoutService.placeActions(actionsCollection,
-                    this.$scope.current.route.startingSubrouteId);  
-            }
-        }
-
         // If action updated, notify interested parties and update $scope.current.action
         private handleActionUpdate(action: model.ActionDTO) {
             if (!action) return;
@@ -503,19 +424,15 @@ module dockyard.controllers {
 
         private deleteAction(action: model.ActionDTO) {
             var self = this;
-            self.startLoader();
             self.ActionService.deleteById({ id: action.id, confirmed: false }).$promise.then((response) => {
                 self.reloadRoute();
-                self.stopLoader();
             }, (error) => {
                 //TODO check error status while completing DO-1335
                 this.uiHelperService
                     .openConfirmationModal('Are you sure you want to delete this Action? You will have to reconfigure all downstream Actions.')
                     .then(() => {
-                        self.startLoader();
                         self.ActionService.deleteById({ id: action.id, confirmed: true }).$promise.then(() => {
                             self.reloadRoute();
-                            self.stopLoader();
                         });
                     });
             });
@@ -635,7 +552,6 @@ module dockyard.controllers {
             Handles message 'ConfigureActionPane_ActionUpdated'
         */
         private PaneConfigureAction_ActionUpdated(eventArgs: pca.ActionUpdatedEventArgs) {
-
         }
 
         /*
@@ -669,6 +585,8 @@ module dockyard.controllers {
             this.$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Reconfigure]);
         }
 
+
+
         private PaneConfigureAction_ChildActionsReconfiguration(childActionReconfigEventArgs: pca.ChildActionReconfigurationEventArgs) {
             for (var i = 0; i < childActionReconfigEventArgs.actions.length; i++) {
                 this.$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_ReloadAction], new pca.ReloadActionEventArgs(childActionReconfigEventArgs.actions[i]));
@@ -699,24 +617,12 @@ module dockyard.controllers {
                 return;
             }
 
-            var results: Array<model.ActionDTO> = [];
-            results = this.getAgressiveReloadingActions(this.$scope.actionGroups, callConfigureResponseEventArgs.action);
-
-            for (var index = 0; index < results.length; index++) {
-                if (this.$scope.curAggReloadingActions.indexOf(results[index].id) === -1) {
-                    this.$scope.curAggReloadingActions.push(results[index].id);
-                } else {
-                    var positionToRemove = this.$scope.curAggReloadingActions.indexOf(results[index].id);
-                    this.$scope.curAggReloadingActions.splice(positionToRemove, 1);
-                    return;
-                }
-            }
 
             // scann all actions to find actions with tag AgressiveReload in ActivityTemplate
-            this.reConfigure(results);
+            this.reConfigure(this.getReloadAgressiveActions(this.$scope.actionGroups, callConfigureResponseEventArgs.action));
         }
 
-        private getAgressiveReloadingActions (actionGroups: Array<model.ActionGroup>, currentAction: interfaces.IActionDTO) {
+        private getReloadAgressiveActions(actionGroups: Array<model.ActionGroup>, currentAction: interfaces.IActionDTO) {
             var results: Array<model.ActionDTO> = [];
             actionGroups.forEach(group => {
                 group.actions.filter(action => {
