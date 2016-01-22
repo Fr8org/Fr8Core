@@ -179,6 +179,7 @@ module dockyard.controllers {
             //ActionPicker constructs
             $scope.setActive = <() => void>angular.bind(this, this.setActive);
             $scope.setActiveTerminal = <() => void>angular.bind(this, this.setActiveTerminal);
+            $scope.deactivateTerminal = <() => void>angular.bind(this, this.deactivateTerminal);
             $scope.setActiveAction = <() => void>angular.bind(this, this.setActiveAction);
             $scope.actionCategories = [
                 { id: 1, name: "Monitor", description: "Learn when something happen", icon: "eye" },
@@ -192,6 +193,7 @@ module dockyard.controllers {
         private setActive(actionCategoryId) {
             this.$scope.activeCategory == actionCategoryId ? this.$scope.activeCategory = NaN : this.$scope.activeCategory = actionCategoryId;
             this.$scope.webServiceActionList = this.WebServiceService.getActions([actionCategoryId]);
+            this.$scope.activeTerminal = NaN
         }
         private setActiveTerminal(index) {
             this.$scope.activeTerminal = index
