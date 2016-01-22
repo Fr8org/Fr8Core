@@ -194,6 +194,7 @@ module dockyard.controllers {
             this.$scope.activeCategory == actionCategoryId ? this.$scope.activeCategory = NaN : this.$scope.activeCategory = actionCategoryId;
             this.$scope.webServiceActionList = this.WebServiceService.getActions([actionCategoryId]);
             this.$scope.activeTerminal = NaN
+            console.log(this.$scope.webServiceActionList)
         }
         private setActiveTerminal(index) {
             this.$scope.activeTerminal = index
@@ -203,6 +204,7 @@ module dockyard.controllers {
         }
         private setActiveAction(action, group) {
             //TODO remove PaneSelectAction and consequently psa reference
+            this.$scope.activeCategory = NaN
             var eventArgs = new psa.ActivityTypeSelectedEventArgs(action, group);
             this.PaneSelectAction_ActivityTypeSelected(eventArgs)
         }
