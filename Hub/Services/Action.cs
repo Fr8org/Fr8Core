@@ -245,7 +245,7 @@ namespace Hub.Services
             return uow.ActionRepository.GetQuery().Include(i => i.ActivityTemplate).FirstOrDefault(i => i.Id == id);
         }
 
-        public ActionDO Create(IUnitOfWork uow, int actionTemplateId, string name, string label, RouteNodeDO parentNode)
+        public ActionDO Create(IUnitOfWork uow, int actionTemplateId, string name, string label, RouteNodeDO parentNode, Guid? AuthorizationTokenId = null)
         {
             var template = uow.ActivityTemplateRepository.GetByKey(actionTemplateId);
 
@@ -262,7 +262,8 @@ namespace Hub.Services
                 Label = label,
                 CrateStorage = _crate.EmptyStorageAsStr(),
                 Ordering = parentNode.ChildNodes.Count > 0 ? parentNode.ChildNodes.Max(x => x.Ordering) + 1 : 1,
-                RootRouteNode = parentNode.RootRouteNode
+                RootRouteNode = parentNode.RootRouteNode,
+                AuthorizationTokenId = AuthorizationTokenId
             };
 
             uow.ActionRepository.Add(action);
@@ -272,7 +273,7 @@ namespace Hub.Services
             return action;
         }
 
-        public async Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, string name, string label = null, Guid? parentNodeId = null, bool createRoute = false)
+        public async Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, string name, string label = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null)
         {
             if (parentNodeId != null && createRoute)
             {
@@ -297,7 +298,7 @@ namespace Hub.Services
                 parentNode = uow.RouteNodeRepository.GetByKey(parentNodeId);
             }
 
-            var action = Create(uow, actionTemplateId, name, label, parentNode);
+            var action = Create(uow, actionTemplateId, name, label, parentNode, authorizationTokenId);
 
             uow.SaveChanges();
 
