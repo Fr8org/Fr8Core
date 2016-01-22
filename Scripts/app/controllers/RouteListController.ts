@@ -73,7 +73,12 @@ module dockyard.controllers {
 
         private activateRoute(route) {
             this.RouteService.activate({ routeId: route.id, routeBuilderActivate: false }).$promise.then((result) => {
-                location.reload();
+                if (result != null && result.status === "validation_error" && result.redirectToRoute) {
+                    this.goToRoutePage(route.Id);
+                }
+                else {
+                    location.reload();
+                }
             }, () => {
                 //activation failed
                 });

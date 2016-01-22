@@ -243,9 +243,29 @@ namespace Hub.Services
                         {
                             var resultActivate = await _action.Activate(curActionDO);
 
+                            string errorMessage;
                             result.Status = "success";
-                            if (routeBuilderActivate) result.ActionsCollections.Add(resultActivate);
-                                
+
+                            var validationErrorChecker = CheckForExistingValidationErrors(resultActivate, out errorMessage);
+                            if (validationErrorChecker)
+                            {
+                                result.Status = "validation_error";
+                            }
+
+                            //if the activate call is comming from the Route Builder just render again the action group with the errors
+                            if (routeBuilderActivate)
+                            {
+                                result.ActionsCollections.Add(resultActivate);
+                            }
+                            else if(validationErrorChecker)
+                            {
+                                //if the activate call is comming from the Routes List then show the first error message and redirect to route builder 
+                                //so the user could fix the configuration
+                                result.RedirectToRouteBuilder = true;
+                                result.ErrorMessage = errorMessage;
+
+                                return result;
+                            }                    
                         }
                         catch (Exception ex)
                         {
@@ -254,11 +274,43 @@ namespace Hub.Services
                     }
                 }
 
-                uow.RouteRepository.GetByKey(curRouteId).RouteState = RouteState.Active;
-                uow.SaveChanges();
+                if (result.Status != "validation_error")
+                {
+                    uow.RouteRepository.GetByKey(curRouteId).RouteState = RouteState.Active;
+                    uow.SaveChanges();
+                }
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// After receiving response from terminals for activate action call, checks for existing validation errors on some controls
+        /// </summary>
+        /// <param name="curActionDTO"></param>
+        /// <param name="errorMessage"></param>
+        /// <returns></returns>
+        private bool CheckForExistingValidationErrors(ActionDTO curActionDTO, out string errorMessage)
+        {
+            errorMessage = string.Empty;
+            
+            var crateStorage = _crate.GetStorage(curActionDTO);
+
+            var configControls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().ToList();
+            //search for an error inside the config controls and return back if exists
+            foreach (var controlGroup in configControls)
+            {
+                var control = controlGroup.Controls.FirstOrDefault(x => !string.IsNullOrEmpty(x.ErrorMessage));
+                if (control != null)
+                {
+                    //here show only the first error as an issue to redirect back the user to the route builder
+                    errorMessage = string.Format("There was a problem with the configuration of the action '{0}': {1}",
+                        curActionDTO.Name, control.ErrorMessage);
+                    return true;
+                }
+            }
+
+            return false;
         }
         
         public async Task<string> Deactivate(Guid curRouteId)

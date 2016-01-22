@@ -271,6 +271,11 @@ namespace HubWeb.Controllers
             try
             {
                 var activateDTO = await _route.Activate(routeId, routeBuilderActivate);
+
+                //check if the response contains any error message and show it to the user 
+                if(activateDTO != null && activateDTO.ErrorMessage != string.Empty)
+                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, activateDTO.ErrorMessage);
+
                 return Ok(activateDTO);
             }
             catch (ApplicationException ex)

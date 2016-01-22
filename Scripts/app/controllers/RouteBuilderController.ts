@@ -172,8 +172,9 @@ module dockyard.controllers {
                         } else if ($scope.current.route.routeState === model.RouteState.Active) {
                                 RouteService.activate(<any>{ routeId: $scope.current.route.id, routeBuilderActivate: true })
                                     .$promise.then((result) => {
-                                    if (result != null && result.status === "success") {
+                                    if (result != null && result.status === "validation_error") {
                                         this.renderActions(result.actionsCollection);
+                                        $scope.current.route.routeState = model.RouteState.Inactive;
                                     }
                             });
                         }

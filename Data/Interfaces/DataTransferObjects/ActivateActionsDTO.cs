@@ -11,6 +11,9 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("errorMessage")]
         public string ErrorMessage { get; set; }
 
+        [JsonProperty("redirectToRoute")]
+        public bool RedirectToRouteBuilder { get; set; }
+    
         [JsonProperty("actionsCollection")]
         public List<ActionDTO> ActionsCollections { get; set; } 
     }
