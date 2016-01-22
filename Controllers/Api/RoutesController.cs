@@ -46,11 +46,42 @@ namespace HubWeb.Controllers
             _crate = ObjectFactory.GetInstance<ICrateManager>();
 	        _pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
         }
+        /*
+        //[Route("~/routes")]
+        [Fr8ApiAuthorize]
+        [Fr8HubWebHMACAuthenticate]
+        public IHttpActionResult Post(RouteEmptyDTO routeDto, bool updateRegistrations = false)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                if (string.IsNullOrEmpty(routeDto.Name))
+                {
+                    ModelState.AddModelError("Name", "Name cannot be null");
+                }
 
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Some of the request data is invalid");
+                }
 
+                var curRouteDO = Mapper.Map<RouteEmptyDTO, RouteDO>(routeDto, opts => opts.Items.Add("ptid", routeDto.Id));
+                curRouteDO.Fr8Account = _security.GetCurrentAccount(uow);
+
+                //this will return 0 on create operation because of not saved changes
+                _route.CreateOrUpdate(uow, curRouteDO, updateRegistrations);
+                uow.SaveChanges();
+                routeDto.Id = curRouteDO.Id;
+                //what a mess lets try this
+                /*curRouteDO.StartingSubroute.Route = curRouteDO;
+                uow.SaveChanges();
+                processTemplateDto.Id = curRouteDO.Id;
+                return Ok(routeDto);
+            }
+        }
+        */
         [Fr8HubWebHMACAuthenticate]
         [ResponseType(typeof(RouteFullDTO))]
-        public IHttpActionResult Create(RouteEmptyDTO routeDto, bool updateRegistrations = false)
+        public IHttpActionResult Post(RouteEmptyDTO routeDto, bool updateRegistrations = false)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -195,39 +226,6 @@ namespace HubWeb.Controllers
             //DO-840 Return empty view as having empty process templates are valid use case.
             return Ok();
         }
-
-        //[Route("~/routes")]
-        [Fr8ApiAuthorize]
-        [Fr8HubWebHMACAuthenticate]
-        public IHttpActionResult Post(RouteEmptyDTO routeDto, bool updateRegistrations = false)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                if (string.IsNullOrEmpty(routeDto.Name))
-                {
-                    ModelState.AddModelError("Name", "Name cannot be null");
-                }
-
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest("Some of the request data is invalid");
-                }
-
-                var curRouteDO = Mapper.Map<RouteEmptyDTO, RouteDO>(routeDto, opts => opts.Items.Add("ptid", routeDto.Id));
-                curRouteDO.Fr8Account = _security.GetCurrentAccount(uow);
-
-                //this will return 0 on create operation because of not saved changes
-                _route.CreateOrUpdate(uow, curRouteDO, updateRegistrations);
-                uow.SaveChanges();
-                routeDto.Id = curRouteDO.Id;
-                //what a mess lets try this
-                /*curRouteDO.StartingSubroute.Route = curRouteDO;
-                uow.SaveChanges();
-                processTemplateDto.Id = curRouteDO.Id;*/
-                return Ok(routeDto);
-            }
-        }
-
         
         [HttpPost]
         [ActionName("action")]
