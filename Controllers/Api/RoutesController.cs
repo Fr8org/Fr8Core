@@ -20,6 +20,7 @@ using Newtonsoft.Json;
 using Hub.Managers;
 using Data.Crates;
 using Utilities.Interfaces;
+using Data.Interfaces.Manifests;
 
 namespace HubWeb.Controllers
 {
@@ -257,6 +258,18 @@ namespace HubWeb.Controllers
         [HttpPost]
         public async Task<IHttpActionResult> Run(Guid routeId, [FromBody]PayloadVM model)
         {
+            //ACTIVATE - activate route if its inactive
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var routeDO = uow.RouteRepository.GetByKey(routeId);
+
+                string actionDTO;
+                if (routeDO.RouteState == RouteState.Inactive)
+                    actionDTO = await _route.Activate(routeDO);
+            }
+
+
+            //RUN
 			CrateDTO curCrateDto;
             Crate curCrate = null;
 
@@ -289,7 +302,13 @@ namespace HubWeb.Controllers
 
                         var containerDO = await _route.Run(routeDO, curCrate);
 
-                        string message = String.Format("Complete processing for Route \"{0}\"", routeDO.Name);
+                        var response = _crate.GetStorage(containerDO.CrateStorage).CrateContentsOfType<OperationalStateCM>().SingleOrDefault();
+                        string responseMsg = "";
+
+                        if (response.ResponseMessageDTO != null && !String.IsNullOrEmpty(response.ResponseMessageDTO.Message))
+                            responseMsg = "\n" + response.ResponseMessageDTO.Message;
+
+                        string message = String.Format("Complete processing for Route \"{0}\".{1}", routeDO.Name, responseMsg);
 
                         _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, message);
 

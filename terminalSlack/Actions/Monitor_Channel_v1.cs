@@ -48,7 +48,7 @@ namespace terminalSlack.Actions
             var payloadChannelIdField = payloadFields.FirstOrDefault(x => x.Key == "channel_id");
             if (payloadChannelIdField == null)
             {
-                return Error(payloadCrates, "No channel_id field found in payload.");
+                return Success(payloadCrates, "Route successfully activated. It will wait and respond to specified Slack postings");
             }
 
             var payloadChannelId = payloadChannelIdField.Value;
