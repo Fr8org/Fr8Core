@@ -236,9 +236,9 @@ namespace Hub.StructureMap
                 return _terminal.GetAvailableActions(uri);
             }
 
-            public void RegisterOrUpdate(TerminalDO terminalDo)
+            public TerminalDO RegisterOrUpdate(TerminalDO terminalDo)
             {
-                _terminal.RegisterOrUpdate(terminalDo);
+                return _terminal.RegisterOrUpdate(terminalDo);
             }
 
             public TerminalDO GetByKey(int terminalId)

@@ -49,8 +49,8 @@ namespace HubWeb.Controllers
 
                 terminal.Version = "1";
                 terminal.UserDO = _security.GetCurrentAccount(uow);
-                
-                _terminal.RegisterOrUpdate(terminal);
+
+                terminal = _terminal.RegisterOrUpdate(terminal);
                 
 
                 var subscriptionDO = new TerminalSubscriptionDO

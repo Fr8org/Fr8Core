@@ -211,7 +211,7 @@ namespace Hub.Services
                     {
                         Token = terminalResponseAuthTokenDTO.Token,
                         ExternalAccountId = terminalResponseAuthTokenDTO.ExternalAccountId,
-                        Terminal = curTerminal,
+                        TerminalID = curTerminal.Id,
                         UserDO = curAccount,
                         ExpiresAt = DateTime.Today.AddMonths(1)
                     };
@@ -348,7 +348,7 @@ namespace Hub.Services
                     authToken = new AuthorizationTokenDO()
                     {
                         UserDO = curAccount,
-                        Terminal = curTerminal,
+                        TerminalID = curTerminal.Id,
                         ExpiresAt = DateTime.Today.AddMonths(1),
                         ExternalStateToken = externalAuthUrlDTO.ExternalStateToken
                     };

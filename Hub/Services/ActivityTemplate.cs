@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using AutoMapper.Internal;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
+using Data.Utility;
 using Hub.Interfaces;
 using StructureMap;
+using Utilities.Configuration.Azure;
 
 namespace Hub.Services
 {
@@ -16,24 +17,36 @@ namespace Hub.Services
         private readonly ITerminal _terminal;
         private readonly Dictionary<int, ActivityTemplateDO> _activityTemplates = new Dictionary<int, ActivityTemplateDO>();
         private bool _isInitialized;
+
+        public bool IsATandTCacheDisabled
+        {
+            get;
+            private set;
+        }
         
         public ActivityTemplate(ITerminal terminal)
         {
+            IsATandTCacheDisabled = string.Equals(CloudConfigurationManager.GetSetting("DisableATandTCache"), "true", StringComparison.InvariantCultureIgnoreCase);
             _terminal = terminal;
         }
 
         private void Initialize()
         {
-            if (_isInitialized)
+            if (_isInitialized && !IsATandTCacheDisabled)
             {
                 return;
             }
 
             lock (_activityTemplates)
             {
-                if (_isInitialized)
+                if (_isInitialized && !IsATandTCacheDisabled)
                 {
                     return;
+                }
+
+                if (IsATandTCacheDisabled)
+                {
+                    _activityTemplates.Clear();
                 }
 
                 LoadFromDb();
@@ -106,32 +119,18 @@ namespace Hub.Services
         {
             var newTemplate = new ActivityTemplateDO();
 
-            newTemplate.ActivityTemplateState = source.ActivityTemplateState;
-            newTemplate.Category = source.Category;
-            newTemplate.ComponentActivities = source.ComponentActivities;
-            newTemplate.Description = source.Description;
-            newTemplate.Id = source.Id;
-            newTemplate.Label = source.Label;
-            newTemplate.MinPaneWidth = source.MinPaneWidth;
-            newTemplate.Name = source.Name;
-            newTemplate.NeedsAuthentication = source.NeedsAuthentication;
-            newTemplate.Tags = source.Tags;
-            newTemplate.TerminalId = source.TerminalId;
-            newTemplate.Type = source.Type;
-            newTemplate.Version = source.Version;
+            CopyPropertiesHelper.CopyProperties(source, newTemplate, false);
+
             newTemplate.Terminal = _terminal.GetByKey(source.TerminalId);
           
             if (source.WebService != null)
             {
-                newTemplate.WebService = new WebServiceDO
-                {
-                    IconPath = source.WebService.IconPath,
-                    Name = source.WebService.Name,
-                    Id = source.WebService.Id
-                };
+                var webService = new WebServiceDO();
+                
+                CopyPropertiesHelper.CopyProperties(source.WebService, webService, false);
+                
+                newTemplate.WebService = webService;
             }
-
-            newTemplate.WebServiceId = source.WebServiceId;
 
             return newTemplate;
         }
@@ -143,9 +142,19 @@ namespace Hub.Services
                 return;
             }
 
-            _terminal.RegisterOrUpdate(activityTemplateDo.Terminal);
+            var registeredTerminal = _terminal.RegisterOrUpdate(activityTemplateDo.Terminal);
+            
+            activityTemplateDo.Terminal = null; // otherwise we can add dupliacte terminals into the DB
 
-            Initialize();
+            if (registeredTerminal != null)
+            {
+                activityTemplateDo.TerminalId = registeredTerminal.Id;
+            }
+
+            if (!IsATandTCacheDisabled)
+            {
+                Initialize();
+            }
 
             lock (_activityTemplates)
             {
@@ -157,39 +166,30 @@ namespace Hub.Services
 
                         if (existingWebService != null)
                         {
+                            activityTemplateDo.WebServiceId = existingWebService.Id;
                             activityTemplateDo.WebService = existingWebService;
                         }
                         else
                         {
-                            //Add a new Web service
-                            if (activityTemplateDo.WebService != null)
-                            {
-                                uow.Db.Entry(activityTemplateDo.WebService).State = EntityState.Added;
-                            }
+                            activityTemplateDo.WebService.Id = 0;
+                            activityTemplateDo.WebServiceId = 0;
                         }
                     }
                     
-                    var activity = uow.ActivityTemplateRepository.GetQuery().FirstOrDefault(t => t.Name == activityTemplateDo.Name);
+                    var activity = uow.ActivityTemplateRepository.GetQuery().Include(x => x.WebService).FirstOrDefault(t => t.Name == activityTemplateDo.Name);
 
                     if (activity == null)
                     {
+                        activityTemplateDo.Id = 0;
                         uow.ActivityTemplateRepository.Add(activity = activityTemplateDo);
                         uow.SaveChanges();
                     }
                     else
                     {
+                        // This is for updating activity template
+                        CopyPropertiesHelper.CopyProperties(activityTemplateDo, activity, false, x => x.Name != "Id");
                         activity.ActivityTemplateState = ActivityTemplateState.Active;
-                        activity.Category = activityTemplateDo.Category;
-                        activity.ComponentActivities = activityTemplateDo.ComponentActivities;
-                        activity.Description = activityTemplateDo.Description;
-                        activity.Label = activityTemplateDo.Label;
-                        activity.MinPaneWidth = activityTemplateDo.MinPaneWidth;
-                        activity.Name = activityTemplateDo.Name;
-                        activity.NeedsAuthentication = activityTemplateDo.NeedsAuthentication;
-                        activity.Tags = activityTemplateDo.Tags;
-                        activity.TerminalId = activityTemplateDo.TerminalId;
-                        activity.Type = activityTemplateDo.Type;
-                        activity.Version = activityTemplateDo.Version;
+                        activity.WebService = activityTemplateDo.WebService;
                         uow.SaveChanges();
                     }
                     
