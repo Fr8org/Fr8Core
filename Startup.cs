@@ -20,12 +20,16 @@ using Hub.Interfaces;
 using Hangfire;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using System.Web;
+using System.Web.Http.Dispatcher;
+using HubWeb.Controllers;
+using HubWeb.Controllers.Api;
+using TerminalBase.BaseClasses;
 
 [assembly: OwinStartup(typeof(HubWeb.Startup))]
 
 namespace HubWeb
 {
-    public partial class Startup
+    public partial class Startup 
     {
         private class TerminalIdSecretMatch
         {
@@ -68,7 +72,7 @@ namespace HubWeb
             ConfigureAuth(app);
 #if DEV || RELEASE
             ConfigureHangfire(app, "DockyardDB");
-#endif 
+#endif
 
             await RegisterTerminalActions();
         }
@@ -340,6 +344,6 @@ namespace HubWeb
                 }
             }
         }
-
+       
     }
 }

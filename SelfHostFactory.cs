@@ -21,11 +21,13 @@ namespace WebHub
                 startup.Configuration(app);
             }
         }
-        public class HubControllerTypeResolver : IHttpControllerTypeResolver
+        public static IDisposable CreateServer(string url)
         {
-            public ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
-            {
-                return new Type[] {
+            return WebApp.Start<SelfHostStartup>(url: url);
+        }
+        public ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
+        {
+            return new Type[] {
                     typeof(ActionListController),
                     typeof(ActionsController),
                     typeof(AlarmsController),
@@ -46,11 +48,6 @@ namespace WebHub
                     typeof(UserController),
                     typeof(WebServicesController)
                 };
-            }
-        }
-        public static IDisposable CreateServer(string url)
-        {
-            return WebApp.Start<SelfHostStartup>(url: url);
         }
     }
 }
