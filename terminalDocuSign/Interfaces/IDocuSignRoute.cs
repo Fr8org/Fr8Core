@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Data.Interfaces.DataTransferObjects;
 
 namespace terminalDocuSign.Interfaces
 {
@@ -10,6 +11,6 @@ namespace terminalDocuSign.Interfaces
         /// <summary>
         /// Creates Monitor All DocuSign Events route with Record DocuSign Events and Store MT Data actions.
         /// </summary>
-        Task CreateRoute_MonitorAllDocuSignEvents(string curFr8UserId);
+        Task CreateRoute_MonitorAllDocuSignEvents(string curFr8UserId, AuthorizationTokenDTO authTokenDTO);
     }
 }

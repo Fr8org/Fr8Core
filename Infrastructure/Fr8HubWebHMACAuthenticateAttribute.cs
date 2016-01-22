@@ -23,9 +23,9 @@ using HubWeb.Infrastructure;
 
 namespace HubWeb.Infrastructure
 {
-    public class fr8HubWebHMACAuthorizeAttribute : fr8HMACAuthorizeAttribute
+    public class Fr8HubWebHMACAuthenticateAttribute : fr8HMACAuthenticateAttribute
     {
-        public fr8HubWebHMACAuthorizeAttribute()
+        public Fr8HubWebHMACAuthenticateAttribute()
         {
             _terminalService = ObjectFactory.GetInstance<ITerminal>();
         }
@@ -72,12 +72,18 @@ namespace HubWeb.Infrastructure
             return true;
         }
 
-        protected override void Success(string terminalId, string userId)
+        protected override void Success(HttpAuthenticationContext context, string terminalId, string userId)
         {
-            if (HttpContext.Current != null) 
-            { 
-                HttpContext.Current.User = new TerminalPrinciple(terminalId, userId, new GenericIdentity(terminalId));
+            var identity = new Fr8Identity("terminal-" + terminalId, userId);
+            var principle = new Fr8Principle(terminalId, identity, new string[] { });
+            Thread.CurrentPrincipal = principle;
+            context.Principal = principle;
+            if (HttpContext.Current != null)
+            {
+                HttpContext.Current.User = principle;
+                
             }
+
         }
     }
 }
