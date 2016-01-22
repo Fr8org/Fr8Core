@@ -52,7 +52,6 @@ namespace HubWeb.Controllers
 			return Ok(model);
 		}
 
-        [HttpPost]
 		[ActionName("actions")]
 		public IHttpActionResult GetActions(ActivityCategory[] categories)
 		{
