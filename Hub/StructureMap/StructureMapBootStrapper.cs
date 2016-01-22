@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http.Formatting;
 using System.Security.Principal;
@@ -36,6 +37,7 @@ using System.Threading.Tasks;
 using Utilities;
 using Utilities.Interfaces;
 using System.Net.Http;
+using Microsoft.ApplicationInsights;
 
 namespace Hub.StructureMap
 {
@@ -118,9 +120,9 @@ namespace Hub.StructureMap
                 For<IField>().Use<Field>();
                 //For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 For<IEvent>().Use<Event>();
-                For<IActivityTemplate>().Use<ActivityTemplate>();
+                For<IActivityTemplate>().Use<ActivityTemplate>().Singleton();
                 For<IFile>().Use<InternalClass.File>();
-                For<ITerminal>().Use<Terminal>();
+                For<ITerminal>().Use<Terminal>().Singleton();
                 For<ICrateManager>().Use<CrateManager>();
                 For<IReport>().Use<Report>();
                 For<IManifest>().Use<Manifest>();
@@ -132,6 +134,8 @@ namespace Hub.StructureMap
 
                 For<IHMACAuthenticator>().Use<HMACAuthenticator>();
                 For<IHMACService>().Use<Fr8HMACService>();
+
+                For<TelemetryClient>().Use<TelemetryClient>();
             }
         }
 
@@ -161,8 +165,6 @@ namespace Hub.StructureMap
 
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchyWithoutCTE>();
                 var mockSegment = new Mock<ITracker>();
-                For<IActivityTemplate>().Use<ActivityTemplate>();
-                
                 For<ITracker>().Use(mockSegment.Object);
                 For<InternalInterfaces.IContainer>().Use<InternalClass.Container>();
                 For<ICriteria>().Use<Criteria>();
@@ -181,7 +183,7 @@ namespace Hub.StructureMap
 
                 var terminalTransmitterMock = new Mock<ITerminalTransmitter>();
                 For<ITerminalTransmitter>().Use(terminalTransmitterMock.Object).Singleton();
-                For<IActivityTemplate>().Use<ActivityTemplate>();
+                For<IActivityTemplate>().Use<ActivityTemplate>().Singleton();
                 For<IEvent>().Use<Event>();
                 //For<ITemplate>().Use<Services.Template>();
                 For<IFile>().Use<InternalClass.File>();
@@ -208,13 +210,55 @@ namespace Hub.StructureMap
 
                 var fr8HMACService = new Mock<IHMACService>();
                 For<IHMACService>().Use(fr8HMACService.Object);
+                For<TelemetryClient>().Use<TelemetryClient>();
+                For<ITerminal>().Use(new TerminalServiceForTests()).Singleton();
+            }
+        }
 
-                var mockTerminalService = new Mock<ITerminal>();
-                mockTerminalService.Setup(x => x.GetTerminalByPublicIdentifier(It.Is<string>(s => s == outTerminalId))).ReturnsAsync(new TerminalDO());
-                For<ITerminal>().Use(mockTerminalService.Object);
+        public class TerminalServiceForTests : ITerminal
+        {
+            private readonly ITerminal _terminal;
+
+            public TerminalServiceForTests()
+            {
+                _terminal = new Terminal();
+            }
+
+            public Task<TerminalDO> GetTerminalByPublicIdentifier(string terminalId)
+            {
+                return Task.FromResult(new TerminalDO());
+            }
+
+            public IEnumerable<TerminalDO> GetAll()
+            {
+                return _terminal.GetAll();
+            }
+
+            public Task<IList<ActivityTemplateDO>> GetAvailableActions(string uri)
+            {
+                return _terminal.GetAvailableActions(uri);
+            }
+
+            public TerminalDO RegisterOrUpdate(TerminalDO terminalDo)
+            {
+                return _terminal.RegisterOrUpdate(terminalDo);
+            }
+
+            public TerminalDO GetByKey(int terminalId)
+            {
+                return _terminal.GetByKey(terminalId);
+            }
+
+            public Task<bool> IsUserSubscribedToTerminal(string terminalId, string userId)
+            {
+                return _terminal.IsUserSubscribedToTerminal(terminalId, userId);
+                
             }
         }
 
         #endregion
     }
+
+
+    
 }

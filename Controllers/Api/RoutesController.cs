@@ -46,11 +46,42 @@ namespace HubWeb.Controllers
             _crate = ObjectFactory.GetInstance<ICrateManager>();
 	        _pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
         }
+        /*
+        //[Route("~/routes")]
+        [Fr8ApiAuthorize]
+        [Fr8HubWebHMACAuthenticate]
+        public IHttpActionResult Post(RouteEmptyDTO routeDto, bool updateRegistrations = false)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                if (string.IsNullOrEmpty(routeDto.Name))
+                {
+                    ModelState.AddModelError("Name", "Name cannot be null");
+                }
 
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Some of the request data is invalid");
+                }
 
+                var curRouteDO = Mapper.Map<RouteEmptyDTO, RouteDO>(routeDto, opts => opts.Items.Add("ptid", routeDto.Id));
+                curRouteDO.Fr8Account = _security.GetCurrentAccount(uow);
+
+                //this will return 0 on create operation because of not saved changes
+                _route.CreateOrUpdate(uow, curRouteDO, updateRegistrations);
+                uow.SaveChanges();
+                routeDto.Id = curRouteDO.Id;
+                //what a mess lets try this
+                /*curRouteDO.StartingSubroute.Route = curRouteDO;
+                uow.SaveChanges();
+                processTemplateDto.Id = curRouteDO.Id;
+                return Ok(routeDto);
+            }
+        }
+        */
         [Fr8HubWebHMACAuthenticate]
         [ResponseType(typeof(RouteFullDTO))]
-        public IHttpActionResult Create(RouteEmptyDTO routeDto, bool updateRegistrations = false)
+        public IHttpActionResult Post(RouteEmptyDTO routeDto, bool updateRegistrations = false)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -195,39 +226,6 @@ namespace HubWeb.Controllers
             //DO-840 Return empty view as having empty process templates are valid use case.
             return Ok();
         }
-
-        //[Route("~/routes")]
-        [Fr8ApiAuthorize]
-        [Fr8HubWebHMACAuthenticate]
-        public IHttpActionResult Post(RouteEmptyDTO routeDto, bool updateRegistrations = false)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                if (string.IsNullOrEmpty(routeDto.Name))
-                {
-                    ModelState.AddModelError("Name", "Name cannot be null");
-                }
-
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest("Some of the request data is invalid");
-                }
-
-                var curRouteDO = Mapper.Map<RouteEmptyDTO, RouteDO>(routeDto, opts => opts.Items.Add("ptid", routeDto.Id));
-                curRouteDO.Fr8Account = _security.GetCurrentAccount(uow);
-
-                //this will return 0 on create operation because of not saved changes
-                _route.CreateOrUpdate(uow, curRouteDO, updateRegistrations);
-                uow.SaveChanges();
-                routeDto.Id = curRouteDO.Id;
-                //what a mess lets try this
-                /*curRouteDO.StartingSubroute.Route = curRouteDO;
-                uow.SaveChanges();
-                processTemplateDto.Id = curRouteDO.Id;*/
-                return Ok(routeDto);
-            }
-        }
-
         
         [HttpPost]
         [ActionName("action")]
@@ -264,11 +262,30 @@ namespace HubWeb.Controllers
 
         [HttpPost]
         [Fr8ApiAuthorize]
-        [Fr8HubWebHMACAuthenticate]
-        public async Task<IHttpActionResult> Activate(RouteDO curRoute)
+        public async Task<IHttpActionResult> Activate(Guid routeId, bool routeBuilderActivate = false)
         {
-            string actionDTO = await _route.Activate(curRoute.Id);
-            return Ok(actionDTO);
+            string pusherChannel = String.Format("fr8pusher_{0}", User.Identity.Name);
+
+            try
+            {
+                var activateDTO = await _route.Activate(routeId, routeBuilderActivate);
+
+                //check if the response contains any error message and show it to the user 
+                if(activateDTO != null && activateDTO.ErrorMessage != string.Empty)
+                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, activateDTO.ErrorMessage);
+
+                return Ok(activateDTO);
+            }
+            catch (ApplicationException ex)
+            {
+                _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, ex.Message);
+                return BadRequest();
+            }
+            catch (Exception)
+            {
+                _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, "There is a problem with activating this route. Please try again later.");
+                return BadRequest();
+            }
         }
 
         [HttpPost]
@@ -354,9 +371,7 @@ namespace HubWeb.Controllers
 
                     _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, message);
                 }
-
-
-
+                
                 return Ok();
             }
         }
