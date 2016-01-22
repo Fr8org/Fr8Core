@@ -24,13 +24,13 @@ namespace Hub.Services
     public class Authorization : IAuthorization
     {
         private readonly ICrateManager _crate;
-	    private readonly ITime _time;
+        private readonly ITime _time;
 
 
         public Authorization()
         {
-			_crate = ObjectFactory.GetInstance<ICrateManager>();
-	        _time = ObjectFactory.GetInstance<ITime>();
+            _crate = ObjectFactory.GetInstance<ICrateManager>();
+            _time = ObjectFactory.GetInstance<ITime>();
         }
 
         public string GetToken(string userId, int terminalId)
@@ -45,19 +45,19 @@ namespace Hub.Services
             return null;
         }
 
-//        public string GetTerminalToken(int terminalId)
-//        {
-//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-//            {
-//                var curAuthToken = uow.AuthorizationTokenRepository.FindOne(at =>
-//                    at.TerminalID == terminalId
-//                    && at.AuthorizationTokenState == AuthorizationTokenState.Active);
-//
-//                if (curAuthToken != null)
-//                    return curAuthToken.Token;
-//            }
-//            return null;
-//        }
+        //        public string GetTerminalToken(int terminalId)
+        //        {
+        //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //            {
+        //                var curAuthToken = uow.AuthorizationTokenRepository.FindOne(at =>
+        //                    at.TerminalID == terminalId
+        //                    && at.AuthorizationTokenState == AuthorizationTokenState.Active);
+        //
+        //                if (curAuthToken != null)
+        //                    return curAuthToken.Token;
+        //            }
+        //            return null;
+        //        }
 
         /// <summary>
         /// Prepare AuthToken for ActionDTO request message.
@@ -75,8 +75,8 @@ namespace Hub.Services
                 }
 
                 // Fetch Action.
-                var action = uow.ActionRepository.GetByKey(actionDTO.Id);
-                if (action == null)
+                var actionDO = uow.ActionRepository.GetByKey(actionDTO.Id);
+                if (actionDO == null)
                 {
                     throw new ApplicationException("Could not find Action.");
                 }
@@ -85,31 +85,6 @@ namespace Hub.Services
                 if (activityTemplate.NeedsAuthentication &&
                     activityTemplate.Terminal.AuthenticationType != AuthenticationType.None)
                 {
-                    // Try to get owner's account for Action -> Route.
-                    // Can't follow guideline to init services inside constructor. 
-                    // Current implementation of Route and Action services are not good and are depedant on each other.
-                    // Initialization of services in constructor will cause stack overflow
-                    var route = ObjectFactory.GetInstance<IRoute>().GetRoute(action);
-                    var dockyardAccount = route != null ? route.Fr8Account : null;
-
-                    if (dockyardAccount == null)
-                    {
-                        throw new ApplicationException("Could not find DockyardAccount for Action's Route.");
-                    }
-
-                    var accountId = dockyardAccount.Id;
-
-                    // Try to find AuthToken for specified terminal and account.
-                    // var authToken = uow.AuthorizationTokenRepository
-                    //     .FindOne(x => x.Terminal.Id == activityTemplate.Terminal.Id
-                    //         && x.UserDO.Id == accountId);
-
-                    var actionDO = uow.ActionRepository.GetByKey(actionDTO.Id);
-                    if (actionDO == null)
-                    {
-                        throw new ApplicationException("Could not find ActionDO for Action's RouteNode.");
-                    }
-
                     AuthorizationTokenDO authToken = null;
                     if (actionDO.AuthorizationTokenId.HasValue)
                     {
@@ -132,14 +107,11 @@ namespace Hub.Services
 
                 if (actionDTO.AuthToken == null)
                 {
-                    var route = ObjectFactory.GetInstance<IRoute>().GetRoute(action);
-                    var dockyardAccount = route != null ? route.Fr8Account : null;
-
-                    if (dockyardAccount != null)
+                    if (actionDO.Fr8Account != null)
                     {
                         actionDTO.AuthToken = new AuthorizationTokenDTO
                         {
-                            UserId = dockyardAccount.Id,
+                            UserId = actionDO.Fr8Account.Id,
                         };
                     }
                 }
@@ -306,7 +278,7 @@ namespace Hub.Services
                     authTokenByExternalState.ExternalStateToken = null;
                     authTokenByExternalState.AdditionalAttributes = authTokenDTO.AdditionalAttributes;
                 }
-                
+
                 uow.SaveChanges();
 
                 return new AuthenticateResponse()
@@ -404,7 +376,7 @@ namespace Hub.Services
         {
             using (var updater = _crate.UpdateStorage(() => actionDTO.CrateStorage))
             {
-                updater.CrateStorage.RemoveByManifestId((int) MT.StandardAuthentication);
+                updater.CrateStorage.RemoveByManifestId((int)MT.StandardAuthentication);
             }
         }
 
@@ -571,7 +543,7 @@ namespace Hub.Services
 
                     // var token = uow.AuthorizationTokenRepository
                     //     .FindOne(x => x.Terminal.Id == activityTemplate.Terminal.Id && x.UserDO.Id == account.Id);
-                    
+
                     if (token != null)
                     {
                         actionDO.AuthorizationToken = null;
@@ -644,21 +616,21 @@ namespace Hub.Services
 
         private void RemoveToken(IUnitOfWork uow, AuthorizationTokenDO authToken)
         {
-                    var actions = uow.ActionRepository
-                        .GetQuery()
-                        .Where(x => x.AuthorizationToken.Id == authToken.Id)
-                        .ToList();
+            var actions = uow.ActionRepository
+                .GetQuery()
+                .Where(x => x.AuthorizationToken.Id == authToken.Id)
+                .ToList();
 
-                    foreach (var action in actions)
-                    {
-                        action.AuthorizationToken = null;
-                    }
+            foreach (var action in actions)
+            {
+                action.AuthorizationToken = null;
+            }
 
-                    uow.SaveChanges();
+            uow.SaveChanges();
 
-                    uow.AuthorizationTokenRepository.Remove(authToken);
-                    uow.SaveChanges();
-                }
+            uow.AuthorizationTokenRepository.Remove(authToken);
+            uow.SaveChanges();
+        }
 
         public void SetMainToken(string userId, Guid authTokenId)
         {
