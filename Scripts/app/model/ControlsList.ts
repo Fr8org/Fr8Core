@@ -22,7 +22,7 @@
     }
 
     export class CheckBox extends ControlDefinitionDTO {
-        checked: boolean;
+        selected: boolean;
     }
 
     export class Button extends ControlDefinitionDTO {

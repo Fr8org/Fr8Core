@@ -66,6 +66,11 @@ namespace Hub.Services
 
         }
 
+        public IList<RouteDO> GetByName(IUnitOfWork uow, Fr8AccountDO account, string name)
+        {
+            return uow.RouteRepository.GetQuery().Where(r => r.Fr8Account.Id == account.Id && r.Name == name).ToList();
+        }
+
         public void CreateOrUpdate(IUnitOfWork uow, RouteDO ptdo, bool updateChildEntities)
         {
             var creating = ptdo.Id == Guid.Empty;
@@ -213,17 +218,19 @@ namespace Hub.Services
 
 
 
-        public async Task<string> Activate(RouteDO curRoute)
+        public async Task<string> Activate(Guid curRouteId)
         {
+            /*
             if (curRoute.Subroutes == null)
             {
                 throw new ArgumentNullException("Parameter Subroutes is null.");
             }
+             * */
 
             string result = "no action";
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var route = uow.RouteRepository.GetByKey(curRoute.Id);
+                var route = uow.RouteRepository.GetByKey(curRouteId);
                 foreach (SubrouteDO template in route.Subroutes)
                 {
                     var activities = EnumerateActivityTree<ActionDO>(template);
@@ -241,9 +248,9 @@ namespace Hub.Services
                         }
                     }
                 }
+                
 
-
-                uow.RouteRepository.GetByKey(curRoute.Id).RouteState = RouteState.Active;
+                uow.RouteRepository.GetByKey(curRouteId).RouteState = RouteState.Active;
                 uow.SaveChanges();
             }
 
@@ -252,13 +259,13 @@ namespace Hub.Services
 
 
 
-        public async Task<string> Deactivate(RouteDO curRoute)
+        public async Task<string> Deactivate(Guid curRouteId)
         {
             string result = "no action";
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var route = uow.RouteRepository.GetByKey(curRoute.Id);
+                var route = uow.RouteRepository.GetByKey(curRouteId);
 
                 foreach (SubrouteDO template in route.Subroutes)
                 {
@@ -277,8 +284,8 @@ namespace Hub.Services
                         }
                     }
                 }
-
-                uow.RouteRepository.GetByKey(curRoute.Id).RouteState = RouteState.Inactive;
+                
+                uow.RouteRepository.GetByKey(curRouteId).RouteState = RouteState.Inactive;
                 uow.SaveChanges();
             }
 
@@ -393,7 +400,7 @@ namespace Hub.Services
             {
                 var root = uow.RouteNodeRepository.GetByKey(id);
 
-
+                
                 var queue = new Queue<RouteNodeDO>();
                 queue.Enqueue(root);
 

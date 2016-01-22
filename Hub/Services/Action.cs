@@ -23,6 +23,7 @@ using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
+using Microsoft.ApplicationInsights;
 
 namespace Hub.Services
 {
@@ -30,6 +31,7 @@ namespace Hub.Services
     {
         private readonly ICrateManager _crate;
         private readonly IAuthorization _authorizationToken;
+        private readonly TelemetryClient _telemetryClient;
 
         private readonly IRouteNode _routeNode;
 
@@ -38,6 +40,7 @@ namespace Hub.Services
             _authorizationToken = ObjectFactory.GetInstance<IAuthorization>();
             _routeNode = ObjectFactory.GetInstance<IRouteNode>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
+            _telemetryClient = ObjectFactory.GetInstance<TelemetryClient>();
         }
 
         public IEnumerable<TViewModel> GetAllActions<TViewModel>()
@@ -50,14 +53,57 @@ namespace Hub.Services
 
         public ActionDO SaveOrUpdateAction(IUnitOfWork uow, ActionDO submittedActionData)
         {
+            System.Diagnostics.Stopwatch stopwatch = null;
+            DateTime startTime = DateTime.UtcNow;
+            bool success = false;
+
+            _telemetryClient.Context.Operation.Name = "Action#SaveOrUpdateAction";
+
+            try
+            {
+                stopwatch = System.Diagnostics.Stopwatch.StartNew();
             var action = SaveAndUpdateRecursive(uow, submittedActionData, null, new List<ActionDO>());
 
             action.ParentRouteNode = submittedActionData.ParentRouteNode;
             action.ParentRouteNodeId = submittedActionData.ParentRouteNodeId;
 
             uow.SaveChanges();
+                success = true;
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                stopwatch.Stop();
+                _telemetryClient.TrackDependency("Database", "Saving Action with subactions",
+                   startTime,
+                   stopwatch.Elapsed,
+                   success);
+            }
 
-            return uow.ActionRepository.GetByKey(submittedActionData.Id);
+            success = false;
+            stopwatch = System.Diagnostics.Stopwatch.StartNew();
+
+            try
+            {
+                var result = uow.ActionRepository.GetByKey(submittedActionData.Id);
+                success = true;
+                return result;
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                stopwatch.Stop();
+                _telemetryClient.TrackDependency("Database", "Getting Action by id after saving",
+                   startTime,
+                   stopwatch.Elapsed,
+                   success);
+            }
         }
 
         public ActionDO SaveOrUpdateAction(ActionDO submittedActionData)
@@ -251,7 +297,7 @@ namespace Hub.Services
             return uow.ActionRepository.GetQuery().Include(i => i.ActivityTemplate).FirstOrDefault(i => i.Id == id);
         }
 
-        public ActionDO Create(IUnitOfWork uow, int actionTemplateId, string name, string label, RouteNodeDO parentNode)
+        public ActionDO Create(IUnitOfWork uow, int actionTemplateId, string name, string label, RouteNodeDO parentNode, Guid? AuthorizationTokenId = null)
         {
             var template = uow.ActivityTemplateRepository.GetByKey(actionTemplateId);
 
@@ -270,6 +316,7 @@ namespace Hub.Services
                 Ordering = parentNode.ChildNodes.Count > 0 ? parentNode.ChildNodes.Max(x => x.Ordering) + 1 : 1,
                 RootRouteNode = parentNode.RootRouteNode,
                 Fr8Account = (parentNode.RootRouteNode != null) ? parentNode.RootRouteNode.Fr8Account : null
+                AuthorizationTokenId = AuthorizationTokenId
             };
 
             uow.ActionRepository.Add(action);
@@ -279,7 +326,7 @@ namespace Hub.Services
             return action;
         }
 
-        public async Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, string name, string label = null, Guid? parentNodeId = null, bool createRoute = false)
+        public async Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, string name, string label = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null)
         {
             if (parentNodeId != null && createRoute)
             {
@@ -304,7 +351,7 @@ namespace Hub.Services
                 parentNode = uow.RouteNodeRepository.GetByKey(parentNodeId);
             }
 
-            var action = Create(uow, actionTemplateId, name, label, parentNode);
+            var action = Create(uow, actionTemplateId, name, label, parentNode, authorizationTokenId);
 
             uow.SaveChanges();
 
