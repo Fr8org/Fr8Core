@@ -285,8 +285,7 @@ div.action-header {
 .action-add {
 	display: inline-block;
     vertical-align:top;
-    position:fixed;
-    z-index:1000 !important;
+
 }
 .action-add-button, .action-category-icon{
     background: #fCfCfC; 
@@ -361,6 +360,8 @@ div.action-header {
 }
 .action-slider--active{
     max-width:240px;
+    overflow-y:scroll;
+    max-height:100%;
 }
 .action-slider--active:before{
     height:2px;

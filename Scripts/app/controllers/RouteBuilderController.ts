@@ -193,7 +193,7 @@ module dockyard.controllers {
         //ActionPicker
         private setActive(actionCategoryId) {
             this.$scope.activeCategory == actionCategoryId ? this.$scope.activeCategory = NaN : this.$scope.activeCategory = actionCategoryId;
-            this.$scope.webServiceActionList = this.WebServiceService.getActions([actionCategoryId]);
+            this.$scope.webServiceActionList = this.WebServiceService.getActions([this.$scope.activeCategory]);
             this.$scope.activeTerminal = NaN
             console.log(this.$scope.webServiceActionList)
         }
