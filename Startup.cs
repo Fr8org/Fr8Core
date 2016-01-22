@@ -66,26 +66,29 @@ namespace HubWeb
         {
             //ConfigureDaemons();
             ConfigureAuth(app);
-
-            ConfigureHangfire(app, "DockyardDB");
-/*
-#if RELEASE
+#if DEV || RELEASE
             ConfigureHangfire(app, "DockyardDB");
 #endif 
-*/
+
             await RegisterTerminalActions();
         }
 
         public void ConfigureHangfire(IAppBuilder app, string connectionString)
         {
+            //GlobalConfiguration.Configuration
+            //    .UseSqlServerStorage(connectionString)
+            //    .UseMsmqQueues(@".\Private$\hangfire-fr8-{0}", "default");
+
+            //app.UseHangfireDashboard();
+            //app.UseHangfireServer(new BackgroundJobServerOptions {
+            //    Queues = new[] { "default" }
+            //});
+
             GlobalConfiguration.Configuration
-                .UseSqlServerStorage(connectionString)
-                .UseMsmqQueues(@".\Private$\hangfire-fr8-{0}", "default");
+                .UseSqlServerStorage(connectionString);
 
             app.UseHangfireDashboard();
-            app.UseHangfireServer(new BackgroundJobServerOptions {
-                Queues = new[] { "default" }
-            });
+            app.UseHangfireServer();
         }
 
         //SeedDatabases
