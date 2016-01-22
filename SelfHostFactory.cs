@@ -9,7 +9,7 @@ using HubWeb.Controllers.Api;
 using Microsoft.Owin.Hosting;
 using Owin;
 
-namespace WebHub
+namespace HubWeb
 {
     public class SelfHostFactory
     {
