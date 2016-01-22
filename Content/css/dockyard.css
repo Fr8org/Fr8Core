@@ -285,10 +285,11 @@ div.action-header {
 .action-add {
 	display: inline-block;
     vertical-align:top;
-    position:relative;
+    position:fixed;
+    z-index:1000 !important;
 }
 .action-add-button, .action-category-icon{
-    background:white; 
+    background: #fCfCfC; 
     border-radius:50%; 
     font-size:24px !important;
     line-height:24px !important; 
@@ -298,7 +299,8 @@ div.action-header {
     box-sizing:content-box;
     text-align:center;
     height:24px;
-    color:#444d58
+        transition: all 0.2s ease-out;
+    color: rgba(0,25,0,0.6)
 }
 .action-add-button{
     margin-top:80px;
@@ -324,7 +326,12 @@ div.action-header {
 }
 .action-category-icon:hover, .action-category--active .action-category-icon{
     cursor:pointer;
+    background:white;
+}
+.action-category--active .action-category-icon{
     box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    background:white;
+    color:#444d58
 }
 .action-add:hover .action-add-button, .action-add--active .action-add-button{
     opacity:0;
@@ -375,8 +382,10 @@ div.action-header {
     cursor:pointer;
     background:rgba(0,0,0,0.05)
 }
-.action-slider img{
-    height:48px;
+.action-slider .web-service-action img{
+    max-height:48px;
+    max-width:48px;
+    margin-right:8px;
 }
 .action-terminal-active > div:first-child{
     margin-left:-240px;
