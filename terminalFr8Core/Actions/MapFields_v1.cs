@@ -81,7 +81,7 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Looks for upstream and downstream Creates.
         /// </summary>
-        protected override Task<ActionDO> InitialConfigurationResponse(
+        protected override async Task<ActionDO> InitialConfigurationResponse(
             ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             //Filter the upstream fields by Availability flag as this action takes the run time data (left DDLBs) to the fidles (right DDLBs)
@@ -90,16 +90,12 @@ namespace terminalFr8Core.Actions
             //Get all the downstream fields to be mapped (right DDLBs)
             var curDownstreamFieldsTask = GetDesignTimeFields(curActionDO, CrateDirection.Downstream);
 
-            Task.WaitAll(curUpstreamFieldsTask, curDownstreamFieldsTask);
-
-            var curUpstreamFields = curUpstreamFieldsTask
-                .Result
+            var curUpstreamFields = (await curUpstreamFieldsTask)
                 .Fields
                 .Where(field => field.Availability != AvailabilityType.Configuration)
                 .ToArray();
 
-            var curDownstreamFields = curDownstreamFieldsTask
-                .Result
+            var curDownstreamFields = (await curDownstreamFieldsTask)
                 .Fields
                 .Where(field => field.Availability != AvailabilityType.Configuration)
                 .ToArray();
@@ -107,7 +103,7 @@ namespace terminalFr8Core.Actions
 
             if (!(NeedsConfiguration(curActionDO, curUpstreamFields, curDownstreamFields)))
             {
-                return Task.FromResult(curActionDO);
+                return curActionDO;
             }
 
             //Pack the merged fields into 2 new crates that can be used to populate the dropdowns in the MapFields UI
@@ -131,7 +127,7 @@ namespace terminalFr8Core.Actions
                 updater.CrateStorage.Add(upstreamFieldsCrate);
             }
 
-            return Task.FromResult(curActionDO);
+            return curActionDO;
         }
 
         private void AddInitialTextBlock(CrateStorage storage)
