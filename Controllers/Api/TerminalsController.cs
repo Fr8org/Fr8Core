@@ -7,6 +7,7 @@ using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Validations;
+using Hub.Interfaces;
 using StructureMap;
 
 namespace HubWeb.Controllers
@@ -15,14 +16,15 @@ namespace HubWeb.Controllers
 	public class TerminalsController : ApiController
 	{
         private readonly ISecurityServices _security = ObjectFactory.GetInstance<ISecurityServices>();
-
+        private readonly ITerminal _terminal = ObjectFactory.GetInstance<ITerminal>();
+        
         [HttpGet]
 		public IHttpActionResult Get()
 		{
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var currentUser = _security.GetCurrentAccount(uow);
-                var models = uow.TerminalRepository.GetAll()
+                var models = _terminal.GetAll()
                     .Where(u => u.UserDO != null && u.UserDO.Id == currentUser.Id)
                     .Select(Mapper.Map<TerminalDTO>)
                     .ToList();
@@ -32,36 +34,36 @@ namespace HubWeb.Controllers
 		}
 
 		[HttpPost]
-		public IHttpActionResult Post(TerminalDTO terminal)
+		public IHttpActionResult Post(TerminalDTO terminalDto)
 		{
-            TerminalDO entity = Mapper.Map<TerminalDO>(terminal);
+            TerminalDO terminal = Mapper.Map<TerminalDO>(terminalDto);
 
             var validator = new TerminalValidator();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                if (terminal == null || !validator.Validate(terminal).IsValid)
+                if (terminalDto == null || !validator.Validate(terminalDto).IsValid)
                 {
                     return BadRequest("Some of the request data is invalid");
                 }
 
-                entity.Version = "1";
-                entity.UserDO = _security.GetCurrentAccount(uow);
-                uow.TerminalRepository.Add(entity);
+                terminal.Version = "1";
+                terminal.UserDO = _security.GetCurrentAccount(uow);
 
-				uow.SaveChanges();
+                terminal = _terminal.RegisterOrUpdate(terminal);
+                
 
                 var subscriptionDO = new TerminalSubscriptionDO
                 {
-                    TerminalId = entity.Id,
-                    UserDO = entity.UserDO
+                    TerminalId = terminal.Id,
+                    UserDO = terminal.UserDO
                 };
                 uow.TerminalSubscriptionRepository.Add(subscriptionDO);
                 uow.SaveChanges();
             }
-            EventManager.Fr8AccountTerminalRegistration(entity);
+            EventManager.Fr8AccountTerminalRegistration(terminal);
 
-            var model = Mapper.Map<TerminalDTO>(entity);
+            var model = Mapper.Map<TerminalDTO>(terminal);
 
 			return Ok(model);
 		}
