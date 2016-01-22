@@ -286,7 +286,7 @@ div.action-header {
 	display: inline-block;
     vertical-align:top;
     position:fixed;
-    z-index:100000 !important;
+    z-index:1000 !important;
 }
 .action-add-button, .action-category-icon{
     background: #fCfCfC; 
@@ -382,9 +382,10 @@ div.action-header {
     cursor:pointer;
     background:rgba(0,0,0,0.05)
 }
-.action-slider img{
+.action-slider .web-service-action img{
     max-height:48px;
     max-width:48px;
+    margin-right:8px;
 }
 .action-terminal-active > div:first-child{
     margin-left:-240px;

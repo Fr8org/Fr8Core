@@ -23,6 +23,7 @@ using Segment;
 using StructureMap;
 using Utilities;
 using Logger = Utilities.Logging.Logger;
+using HubWeb.Infrastructure;
 
 namespace HubWeb
 {
@@ -125,6 +126,7 @@ namespace HubWeb
         //But on production, there is no need for this call
         protected void Application_BeginRequest(object sender, EventArgs e)
         {
+
 #if DEBUG
             SetServerUrl(HttpContext.Current);
 #endif
@@ -238,9 +240,12 @@ namespace HubWeb
             if (principal != null)
             {
                 var claims = principal.Claims;
-                GenericPrincipal userPrincipal =
-                    new GenericPrincipal(principal.Identity,
+                var roles = claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToArray();
+                var userPrincipal = new Fr8Principle(null, principal.Identity, roles);
+                /*
+                GenericPrincipal userPrincipal = new GenericPrincipal(principal.Identity,
                                          claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToArray());
+                */
                 Context.User = userPrincipal;
             }
         }

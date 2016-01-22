@@ -12,7 +12,7 @@ namespace Hub.Interfaces
         Task<IList<ActivityTemplateDO>> GetAvailableActions(string uri);
 
         TerminalDO GetByKey(int terminalId);
-        void RegisterOrUpdate(TerminalDO terminalDo);
+        TerminalDO RegisterOrUpdate(TerminalDO terminalDo);
 
         Task<TerminalDO> GetTerminalByPublicIdentifier(string terminalId);
         Task<bool> IsUserSubscribedToTerminal(string terminalId, string userId);

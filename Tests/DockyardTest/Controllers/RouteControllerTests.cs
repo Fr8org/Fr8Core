@@ -61,8 +61,9 @@ namespace DockyardTest.Controllers
             var ptc = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
             var response = ptc.Post(routeDto);
 
+            
             //Assert
-            var okResult = response as OkNegotiatedContentResult<RouteEmptyDTO>;
+            var okResult = response as OkNegotiatedContentResult<RouteFullDTO>;
             Assert.NotNull(okResult);
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -142,15 +143,15 @@ namespace DockyardTest.Controllers
             //Arrange
             var routeController = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
             var routeDto = FixtureData.CreateTestRouteDTO();
-            routeController.Post(routeDto);
+            var resultRoute = (routeController.Post(routeDto) as OkNegotiatedContentResult<RouteFullDTO>).Content;
 
             //Act
-            var actionResult = routeController.Get(routeDto.Id) as OkNegotiatedContentResult<RouteEmptyDTO>;
+            var actionResult = routeController.Get(resultRoute.Id) as OkNegotiatedContentResult<RouteEmptyDTO>;
 
             //Assert
             Assert.NotNull(actionResult);
             Assert.NotNull(actionResult.Content);
-            Assert.AreEqual(routeDto.Id, actionResult.Content.Id);
+            Assert.AreEqual(resultRoute.Id, actionResult.Content.Id);
 
         }
 
@@ -212,7 +213,7 @@ namespace DockyardTest.Controllers
             }
 
             //Save First
-            var postResult = routeController.Post(routeDto) as OkNegotiatedContentResult<RouteEmptyDTO>;
+            var postResult = routeController.Post(routeDto) as OkNegotiatedContentResult<RouteFullDTO>;
             Assert.NotNull(postResult);
 
             //Then Get
@@ -222,7 +223,7 @@ namespace DockyardTest.Controllers
             //Then Edit
             var postEditNameValue = "EditedName";
             getResult.Content.Name = postEditNameValue;
-            var editResult = routeController.Post(getResult.Content) as OkNegotiatedContentResult<RouteEmptyDTO>;
+            var editResult = routeController.Post(getResult.Content) as OkNegotiatedContentResult<RouteFullDTO>;
             Assert.NotNull(editResult);
 
             //Then Get

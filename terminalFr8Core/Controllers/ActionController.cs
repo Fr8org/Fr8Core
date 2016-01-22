@@ -25,7 +25,8 @@ namespace terminalFr8Core.Controllers
         private const string curTerminal = "terminalFr8Core";
 
         [HttpPost]
-        //[fr8TerminalHMACAuthorize(curTerminal)]
+        [fr8TerminalHMACAuthenticate(curTerminal)]
+        [Authorize]
         public Task<object> Execute([FromUri] String actionType, [FromBody] ActionDTO curActionDTO)
         {
             return HandleFr8Request(curTerminal, actionType, curActionDTO);

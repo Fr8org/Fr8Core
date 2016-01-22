@@ -7,9 +7,11 @@ using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.Manifests;
+using Data.Utility;
 using Hub.Interfaces;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using StructureMap;
+using Utilities.Configuration.Azure;
 
 namespace Hub.Services
 {
@@ -81,19 +83,35 @@ namespace Hub.Services
         
         private readonly Dictionary<int, TerminalDO>  _terminals = new Dictionary<int, TerminalDO>();
         private bool _isInitialized;
+
+        public bool IsATandTCacheDisabled
+        {
+            get; 
+            private set;
+        }
         
+        public Terminal()
+        {
+            IsATandTCacheDisabled = string.Equals(CloudConfigurationManager.GetSetting("DisableATandTCache"),  "true", StringComparison.InvariantCultureIgnoreCase);
+        }
+
         private void Initialize()
         {
-            if (_isInitialized)
+            if (_isInitialized && !IsATandTCacheDisabled)
             {
                 return;
             }
 
             lock (_terminals)
             {
-                if (_isInitialized)
+                if (_isInitialized && !IsATandTCacheDisabled)
                 {
                     return;
+                }
+
+                if (IsATandTCacheDisabled)
+                {
+                    _terminals.Clear();
                 }
 
                 LoadFromDb();
@@ -154,15 +172,26 @@ namespace Hub.Services
                 return terminal;
             }
         }
-       
-        public void RegisterOrUpdate(TerminalDO terminalDo)
+
+        public TerminalDO RegisterOrUpdate(TerminalDO terminalDo)
         {
             if (terminalDo == null)
             {
-                return;
+                return null;
             }
 
-            Initialize();
+            if (!IsATandTCacheDisabled)
+            {
+                Initialize();
+            }
+
+            // we are going to change activityTemplateDo. It is not good to corrupt method's input parameters.
+            // make a copy
+            var clone = new TerminalDO();
+
+            CopyPropertiesHelper.CopyProperties(terminalDo, clone, true);
+
+            terminalDo = clone;
 
             lock (_terminals)
             {
@@ -172,44 +201,33 @@ namespace Hub.Services
 
                     if (existingTerminal == null)
                     {
+                        terminalDo.Id = 0;
                         uow.TerminalRepository.Add(existingTerminal = terminalDo);
                     }
                     else
                     {
-                        existingTerminal.AuthenticationType = terminalDo.AuthenticationType;
-                        existingTerminal.Description = terminalDo.Description;
-                        existingTerminal.Endpoint = terminalDo.Endpoint;
-                        existingTerminal.Name = terminalDo.Name;
-                        existingTerminal.PublicIdentifier = terminalDo.PublicIdentifier;
-                        existingTerminal.Secret = terminalDo.Secret;
-                        existingTerminal.SubscriptionRequired = terminalDo.SubscriptionRequired;
-                        existingTerminal.TerminalStatus = terminalDo.TerminalStatus;
-                        existingTerminal.Version = terminalDo.Version;
+                        // this is for updating terminal
+                        CopyPropertiesHelper.CopyProperties(terminalDo, existingTerminal, false, x => x.Name != "Id");
                     }
 
                     UpdateTerminalSecret(existingTerminal);
                     uow.SaveChanges();
 
-                    _terminals[existingTerminal.Id] = Clone(existingTerminal); 
+                    var terminal = Clone(existingTerminal);
+                    _terminals[existingTerminal.Id] = terminal;
+
+                    return terminal;
                 }
             }
         }
 
         private TerminalDO Clone(TerminalDO source)
         {
-            return new TerminalDO
-            {
-                AuthenticationType = source.AuthenticationType,
-                Description = source.Description,
-                Endpoint = source.Endpoint,
-                Id = source.Id,
-                Name = source.Name,
-                PublicIdentifier = source.PublicIdentifier,
-                Secret = source.Secret,
-                SubscriptionRequired = source.SubscriptionRequired,
-                TerminalStatus = source.TerminalStatus,
-                Version = source.Version
-            };
+            var newTerminal = new TerminalDO();
+            
+            CopyPropertiesHelper.CopyProperties(source, newTerminal, false);
+
+            return newTerminal;
         }
 
         public IEnumerable<TerminalDO> GetAll()
@@ -221,7 +239,6 @@ namespace Hub.Services
                 return _terminals.Values.ToArray();
             }
         }
-        
         
         public async Task<IList<ActivityTemplateDO>> GetAvailableActions(string uri)
         {

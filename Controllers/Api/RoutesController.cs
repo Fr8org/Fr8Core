@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
@@ -20,6 +21,7 @@ using Newtonsoft.Json;
 using Hub.Managers;
 using Data.Crates;
 using Utilities.Interfaces;
+using HubWeb.Infrastructure;
 
 namespace HubWeb.Controllers
 {
@@ -43,6 +45,62 @@ namespace HubWeb.Controllers
             _findObjectsRoute = ObjectFactory.GetInstance<IFindObjectsRoute>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
 	        _pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
+        }
+        /*
+        //[Route("~/routes")]
+        [Fr8ApiAuthorize]
+        [Fr8HubWebHMACAuthenticate]
+        public IHttpActionResult Post(RouteEmptyDTO routeDto, bool updateRegistrations = false)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                if (string.IsNullOrEmpty(routeDto.Name))
+                {
+                    ModelState.AddModelError("Name", "Name cannot be null");
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Some of the request data is invalid");
+                }
+
+                var curRouteDO = Mapper.Map<RouteEmptyDTO, RouteDO>(routeDto, opts => opts.Items.Add("ptid", routeDto.Id));
+                curRouteDO.Fr8Account = _security.GetCurrentAccount(uow);
+
+                //this will return 0 on create operation because of not saved changes
+                _route.CreateOrUpdate(uow, curRouteDO, updateRegistrations);
+                uow.SaveChanges();
+                routeDto.Id = curRouteDO.Id;
+                //what a mess lets try this
+                /*curRouteDO.StartingSubroute.Route = curRouteDO;
+                uow.SaveChanges();
+                processTemplateDto.Id = curRouteDO.Id;
+                return Ok(routeDto);
+            }
+        }
+        */
+        [Fr8HubWebHMACAuthenticate]
+        [ResponseType(typeof(RouteFullDTO))]
+        public IHttpActionResult Post(RouteEmptyDTO routeDto, bool updateRegistrations = false)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                if (string.IsNullOrEmpty(routeDto.Name))
+                {
+                    ModelState.AddModelError("Name", "Name cannot be null");
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Some of the request data is invalid");
+                }
+                var curRouteDO = Mapper.Map<RouteEmptyDTO, RouteDO>(routeDto, opts => opts.Items.Add("ptid", routeDto.Id));
+                curRouteDO.Fr8Account = _security.GetCurrentAccount(uow);
+                _route.CreateOrUpdate(uow, curRouteDO, updateRegistrations);
+                uow.SaveChanges();
+                var result = RouteMappingHelper.MapRouteToDto(uow, curRouteDO);
+                return Ok(result);
+            }
         }
 
         [Fr8ApiAuthorize]
@@ -103,6 +161,22 @@ namespace HubWeb.Controllers
        }
 
         [Fr8ApiAuthorize]
+        [Fr8HubWebHMACAuthenticate]
+        [HttpGet]
+        [ResponseType(typeof(IEnumerable<RouteFullDTO>))]
+        public IHttpActionResult GetByName(string name)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curRoutes = _route.GetByName(uow, _security.GetCurrentAccount(uow), name);
+                var fullRoutes = curRoutes.Select(curRoute => RouteMappingHelper.MapRouteToDto(uow, curRoute)).ToList();
+                return Ok(fullRoutes);
+                
+            }
+            
+        }
+
+        [Fr8ApiAuthorize]
         //[Route("copy")]
         [HttpPost]
         public IHttpActionResult Copy(Guid id, string name)
@@ -152,38 +226,6 @@ namespace HubWeb.Controllers
             //DO-840 Return empty view as having empty process templates are valid use case.
             return Ok();
         }
-
-        //[Route("~/routes")]
-        [Fr8ApiAuthorize]
-        public IHttpActionResult Post(RouteEmptyDTO routeDto, bool updateRegistrations = false)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                if (string.IsNullOrEmpty(routeDto.Name))
-                {
-                    ModelState.AddModelError("Name", "Name cannot be null");
-                }
-
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest("Some of the request data is invalid");
-                }
-
-                var curRouteDO = Mapper.Map<RouteEmptyDTO, RouteDO>(routeDto, opts => opts.Items.Add("ptid", routeDto.Id));
-                curRouteDO.Fr8Account = _security.GetCurrentAccount(uow);
-
-                //this will return 0 on create operation because of not saved changes
-                _route.CreateOrUpdate(uow, curRouteDO, updateRegistrations);
-                uow.SaveChanges();
-                routeDto.Id = curRouteDO.Id;
-                //what a mess lets try this
-                /*curRouteDO.StartingSubroute.Route = curRouteDO;
-                uow.SaveChanges();
-                processTemplateDto.Id = curRouteDO.Id;*/
-                return Ok(routeDto);
-            }
-        }
-
         
         [HttpPost]
         [ActionName("action")]
@@ -219,11 +261,11 @@ namespace HubWeb.Controllers
         }
 
         [HttpPost]
-        //[Route("activate")]
         [Fr8ApiAuthorize]
+        [Fr8HubWebHMACAuthenticate]
         public async Task<IHttpActionResult> Activate(RouteDO curRoute)
         {
-            string actionDTO = await _route.Activate(curRoute);
+            string actionDTO = await _route.Activate(curRoute.Id);
             return Ok(actionDTO);
         }
 
@@ -232,7 +274,7 @@ namespace HubWeb.Controllers
         [Fr8ApiAuthorize]
         public async Task<IHttpActionResult> Deactivate(RouteDO curRoute)
         {
-            string actionDTO = await _route.Deactivate(curRoute);
+            string actionDTO = await _route.Deactivate(curRoute.Id);
             return Ok(actionDTO);
         }
 

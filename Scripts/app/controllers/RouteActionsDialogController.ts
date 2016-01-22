@@ -18,13 +18,13 @@ module dockyard.controllers {
 		public static $inject = [
 			'$scope',
 			'WebServiceService',
-			'$modalInstance'
+			//'$modalInstance'
 		];
 
 		constructor(
 			private $scope: IRouteActionsDialogScope,
-			private WebServiceService: services.IWebServiceService,
-            private $modalInstance: any
+            private WebServiceService: services.IWebServiceService
+            //private $modalInstance: any
         ) {
 
             $scope.setActive = <() => void>angular.bind(this, this.setActive);
@@ -51,11 +51,11 @@ module dockyard.controllers {
         }
 
 		private selectAction(activityType: interfaces.IActivityTemplateVM) {
-			this.$modalInstance.close(activityType);
+			//this.$modalInstance.close(activityType);
 		}
 
 		private close() {
-			this.$modalInstance.dismiss('cancel');
+			//this.$modalInstance.dismiss('cancel');
 		}
 	}
 

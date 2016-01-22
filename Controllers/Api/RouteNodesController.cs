@@ -76,7 +76,7 @@ namespace HubWeb.Controllers
         // TODO: after DO-1214 is completed, this method must be removed.
         [ActionName("upstream_actions")]
         [ResponseType(typeof (List<ActionDTO>))]
-        [fr8HubWebHMACAuthorize]
+        [Fr8HubWebHMACAuthenticate]
         public IHttpActionResult GetUpstreamActions(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -95,7 +95,7 @@ namespace HubWeb.Controllers
         // TODO: after DO-1214 is completed, this method must be removed.
         [ActionName("downstream_actions")]
         [ResponseType(typeof (List<ActionDTO>))]
-        [fr8HubWebHMACAuthorize]
+        [Fr8HubWebHMACAuthenticate]
         public IHttpActionResult GetDownstreamActions(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -113,7 +113,7 @@ namespace HubWeb.Controllers
 
         [ActionName("designtime_fields_dir")]
         [ResponseType(typeof(StandardDesignTimeFieldsCM))]
-        [fr8HubWebHMACAuthorize]
+        [Fr8HubWebHMACAuthenticate]
         public IHttpActionResult GetDesignTimeFieldsByDirection(
             Guid id, 
             CrateDirection direction, 

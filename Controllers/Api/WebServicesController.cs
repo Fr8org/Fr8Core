@@ -52,7 +52,6 @@ namespace HubWeb.Controllers
 			return Ok(model);
 		}
 
-		[HttpPost]
 		[ActionName("actions")]
 		public IHttpActionResult GetActions(ActivityCategory[] categories)
 		{
@@ -78,6 +77,7 @@ namespace HubWeb.Controllers
 			        .Select(x => new WebServiceActionSetDTO
 			        {
 			            WebServiceIconPath = x.WebService != null ? x.WebService.IconPath : (unknwonService != null ? unknwonService.IconPath : null),
+                        WebServiceName = x.WebService != null ? x.WebService.Name : string.Empty,
 			            Actions = x.Actions.Select(p => new ActivityTemplateDTO
 			            {
 			                Id = p.Id,

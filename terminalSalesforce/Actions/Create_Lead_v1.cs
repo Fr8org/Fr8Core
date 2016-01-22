@@ -47,29 +47,16 @@ namespace terminalSalesforce.Actions
 
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            var firstNameCrate = new TextBox()
-            {
-                Label = "First Name",
-                Name = "firstName"
-
-            };
-            var lastNAme = new TextBox()
-            {
-                Label = "Last Name",
-                Name = "lastName",
-                Required = true
-            };
-            var company = new TextBox()
-            {
-                Label = "Company ",
-                Name = "companyName",
-                Required = true
-            };
-
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.Clear();
-                updater.CrateStorage.Add(PackControlsCrate(firstNameCrate, lastNAme, company));
+
+                AddTextSourceControl(updater.CrateStorage, "First Name", "firstName",
+                    "Upstream Terminal-Provided Fields", addRequestConfigEvent: false);
+                AddTextSourceControl(updater.CrateStorage, "Last Name", "lastName",
+                    "Upstream Terminal-Provided Fields", addRequestConfigEvent: false, required:true);
+                AddTextSourceControl(updater.CrateStorage, "Company", "companyName",
+                    "Upstream Terminal-Provided Fields", addRequestConfigEvent: false, required:true);
             }
 
             return await Task.FromResult(curActionDO);
@@ -84,9 +71,10 @@ namespace terminalSalesforce.Actions
                 return NeedsAuthenticationError(payloadCrates);
             }
 
-            var firstName = ExtractControlFieldValue(curActionDO, "firstName");
-            var lastName = ExtractControlFieldValue(curActionDO, "lastName");
-            var company = ExtractControlFieldValue(curActionDO, "companyName");
+            var firstName = ExtractSpecificOrUpstreamValue(curActionDO, payloadCrates,"firstName");
+            var lastName = ExtractSpecificOrUpstreamValue(curActionDO, payloadCrates, "lastName");
+            var company = ExtractSpecificOrUpstreamValue(curActionDO, payloadCrates, "companyName");
+
             if (string.IsNullOrEmpty(lastName))
             {
                 return Error(payloadCrates, "No last name found in action.");

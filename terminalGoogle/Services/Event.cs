@@ -25,7 +25,7 @@ namespace terminalGoogle.Services
             _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
-        public Crate Process(string externalEventPayload)
+        public async Task<Crate> Process(string externalEventPayload)
         {
             if (string.IsNullOrEmpty(externalEventPayload))
             {
