@@ -216,9 +216,7 @@ namespace Hub.StructureMap
                 mockTerminalService.Setup(x => x.GetTerminalByPublicIdentifier(It.Is<string>(s => s == outTerminalId))).ReturnsAsync(new TerminalDO());
                 For<ITerminal>().Use(mockTerminalService.Object);
 
-                var mockTelemetryClient = new Mock<TelemetryClient>();
-                mockTelemetryClient.Setup(x => x.TrackDependency(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTimeOffset>(), It.IsAny<TimeSpan>(), It.IsAny<bool>()));
-                For<TelemetryClient>().Use(mockTelemetryClient.Object);
+                For<TelemetryClient>().Use<TelemetryClient>();
             }
         }
 
