@@ -51,7 +51,7 @@ namespace HubWeb
                 { new TerminalIdSecretMatch("terminalSlack", "1","8783174f-7fb7-4947-98af-4f1cdd8b394f","aa43d09e-a0dd-4433-8b05-4485e57738c6")},
                 { new TerminalIdSecretMatch("terminalTwilio", "1","2dd73dda-411d-4e18-8e0a-54bbe1aa015b","3a772e7d-1368-4173-b081-91a7318910c7")},
                 { new TerminalIdSecretMatch("terminalExcel", "1","551acd9b-d91d-4de7-a0ba-8c61be413635","36392f9d-c3c0-4b6a-a54a-142ba1ce312f")},
-                { new TerminalIdSecretMatch("terminalSendGrid", "1","7eab0e8    1-288c-492b-88e5-c49e9aae38da","a3a65c3c-6d75-4fd6-bd76-e66047affe09")},
+                { new TerminalIdSecretMatch("terminalSendGrid", "1","7eab0e81-288c-492b-88e5-c49e9aae38da","a3a65c3c-6d75-4fd6-bd76-e66047affe09")},
                 { new TerminalIdSecretMatch("terminalGoogle", "1","1a170d44-841f-4fa2-aae4-b17ad6c469ec","ee7a622b-4a12-4dd6-ac09-03caf0da0f25")},
                 { new TerminalIdSecretMatch("terminalDropbox", "1","c471e51e-1b2d-4751-b155-4af03ef51c3a","f6e4a687-fc0b-462a-87de-9cb2729d2bc1")},
                 { new TerminalIdSecretMatch("terminalPapertrail", "1","9b21279b-efb4-493a-a02b-fe8694262cc8","42783cd2-d5e1-4d5a-9ea8-b63922ce2e20")},
