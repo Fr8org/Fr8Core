@@ -1,86 +1,217 @@
-﻿using Data.Entities;
+﻿using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
+using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-using StructureMap;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Data.Interfaces.DataTransferObjects;
+using Data.Utility;
 using Hub.Interfaces;
-using Hub.Managers.APIManagers;
+using StructureMap;
+using Utilities.Configuration.Azure;
 
 namespace Hub.Services
 {
     public class ActivityTemplate : IActivityTemplate
     {
-        public IEnumerable<ActivityTemplateDO> GetAll()
+        private readonly ITerminal _terminal;
+        private readonly Dictionary<int, ActivityTemplateDO> _activityTemplates = new Dictionary<int, ActivityTemplateDO>();
+        private bool _isInitialized;
+
+        public bool IsATandTCacheDisabled
+        {
+            get;
+            private set;
+        }
+        
+        public ActivityTemplate(ITerminal terminal)
+        {
+            IsATandTCacheDisabled = string.Equals(CloudConfigurationManager.GetSetting("DisableATandTCache"), "true", StringComparison.InvariantCultureIgnoreCase);
+            _terminal = terminal;
+        }
+
+        private void Initialize()
+        {
+            if (_isInitialized && !IsATandTCacheDisabled)
+            {
+                return;
+            }
+
+            lock (_activityTemplates)
+            {
+                if (_isInitialized && !IsATandTCacheDisabled)
+                {
+                    return;
+                }
+
+                if (IsATandTCacheDisabled)
+                {
+                    _activityTemplates.Clear();
+                }
+
+                LoadFromDb();
+
+                _isInitialized = true;
+            }
+        }
+
+        private void LoadFromDb()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return uow.ActivityTemplateRepository.GetAll();
+                foreach (var activityTemplate in uow.ActivityTemplateRepository.GetQuery().Include(x=>x.WebService))
+                {
+                    _activityTemplates[activityTemplate.Id] = Clone(activityTemplate);
+                }
             }
+        }
+
+        public ActivityTemplateDO[] GetAll()
+        {
+            Initialize();
+
+            lock (_activityTemplates)
+            {
+                return _activityTemplates.Values.ToArray();
+            }
+        }
+
+        public string GetTerminalUrl(int? curActivityTemplateId)
+        {
+            if (curActivityTemplateId == null)
+            {
+                return null;
+            }
+
+            Initialize();
+
+            return GetByKey(curActivityTemplateId.Value).Terminal.Endpoint;
         }
 
         public ActivityTemplateDO GetByKey(int curActivityTemplateId)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            Initialize();
+
+            lock (_activityTemplates)
             {
-                var curActivityTemplateDO = uow.ActivityTemplateRepository.GetByKey(curActivityTemplateId);
-                if (curActivityTemplateDO == null)
-                    throw new ArgumentNullException("ActionTemplateId");
+                ActivityTemplateDO template;
 
-                return curActivityTemplateDO;
+                if (!_activityTemplates.TryGetValue(curActivityTemplateId, out template))
+                {
+                    throw new KeyNotFoundException(string.Format("Can't find activity template with id {0}", curActivityTemplateId));
+                }
+
+                return template;
             }
-
         }
 
-        public void Register(ActivityTemplateDO activityTemplateDO)
+        public IEnumerable<ActivityTemplateDO> GetQuery()
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            Initialize();
+
+            lock (_activityTemplates)
             {
-                var existingTerminal = uow.TerminalRepository
-                    .FindOne(x => x.Name == activityTemplateDO.Terminal.Name);
+                return _activityTemplates.Values.ToArray();
+            }
+        }
 
-                if (existingTerminal != null)
-                {
-                    activityTemplateDO.Terminal = existingTerminal;
-                }
-                else
-                {
-                    uow.TerminalRepository.Add(activityTemplateDO.Terminal);
-                    uow.SaveChanges();
-                }
+        private ActivityTemplateDO Clone(ActivityTemplateDO source)
+        {
+            var newTemplate = new ActivityTemplateDO();
 
-                if (activityTemplateDO.WebService != null)
-                {
-                    var existingWebService = uow.WebServiceRepository.FindOne(x => x.Name == activityTemplateDO.WebService.Name);
+            CopyPropertiesHelper.CopyProperties(source, newTemplate, false);
 
-                    if (existingWebService != null)
+            newTemplate.Terminal = _terminal.GetByKey(source.TerminalId);
+          
+            if (source.WebService != null)
+            {
+                var webService = new WebServiceDO();
+                
+                CopyPropertiesHelper.CopyProperties(source.WebService, webService, false);
+                
+                newTemplate.WebService = webService;
+            }
+
+            return newTemplate;
+        }
+
+        public void RegisterOrUpdate(ActivityTemplateDO activityTemplateDo)
+        {
+            if (activityTemplateDo == null)
+            {
+                return;
+            }
+
+            // we are going to change activityTemplateDo. It is not good to corrupt method's input parameters.
+            // make a copy
+            var clone = new ActivityTemplateDO();
+            
+            CopyPropertiesHelper.CopyProperties(activityTemplateDo, clone, true);
+            
+            clone.Terminal = activityTemplateDo.Terminal;
+
+            if (activityTemplateDo.WebService != null)
+            {
+                var wsClone = new WebServiceDO();
+                CopyPropertiesHelper.CopyProperties(activityTemplateDo.WebService, wsClone, true);
+                clone.WebService = wsClone;
+            }
+
+            activityTemplateDo = clone;
+
+            var registeredTerminal = _terminal.RegisterOrUpdate(activityTemplateDo.Terminal);
+            
+            activityTemplateDo.Terminal = null; // otherwise we can add dupliacte terminals into the DB
+
+            if (registeredTerminal != null)
+            {
+                activityTemplateDo.TerminalId = registeredTerminal.Id;
+            }
+
+            if (!IsATandTCacheDisabled)
+            {
+                Initialize();
+            }
+
+            lock (_activityTemplates)
+            {
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    if (activityTemplateDo.WebService != null)
                     {
-                        activityTemplateDO.WebService = existingWebService;
+                        var existingWebService = uow.WebServiceRepository.FindOne(x => x.Name == activityTemplateDo.WebService.Name);
+
+                        if (existingWebService != null)
+                        {
+                            activityTemplateDo.WebServiceId = existingWebService.Id;
+                            activityTemplateDo.WebService = existingWebService;
+                        }
+                        else
+                        {
+                            activityTemplateDo.WebService.Id = 0;
+                            activityTemplateDo.WebServiceId = 0;
+                        }
+                    }
+                    
+                    var activity = uow.ActivityTemplateRepository.GetQuery().Include(x => x.WebService).FirstOrDefault(t => t.Name == activityTemplateDo.Name);
+
+                    if (activity == null)
+                    {
+                        activityTemplateDo.Id = 0;
+                        uow.ActivityTemplateRepository.Add(activity = activityTemplateDo);
+                        uow.SaveChanges();
                     }
                     else
                     {
-                        //Add a new Web service
-                        if (activityTemplateDO.WebService != null)
-                        {
-                            uow.Db.Entry(activityTemplateDO.WebService).State = System.Data.Entity.EntityState.Added;
-                        }
+                        // This is for updating activity template
+                        CopyPropertiesHelper.CopyProperties(activityTemplateDo, activity, false, x => x.Name != "Id");
+                        activity.ActivityTemplateState = ActivityTemplateState.Active;
+                        activity.WebService = activityTemplateDo.WebService;
+                        uow.SaveChanges();
                     }
+                    
+                    _activityTemplates[activityTemplateDo.Id] = Clone(activity);
                 }
-
-                var activity = uow.ActivityTemplateRepository.GetQuery().FirstOrDefault(t => t.Name == activityTemplateDO.Name);
-
-                if (activity == null)
-                {
-                    uow.ActivityTemplateRepository.Add(activityTemplateDO);
-                }
-                else
-                {
-                    activity.ActivityTemplateState = ActivityTemplateState.Active;
-                }
-                uow.SaveChanges();
             }
         }
 
@@ -120,10 +251,12 @@ namespace Hub.Services
         /// </summary>
         public ActivityTemplateDO GetByNameAndVersion(IUnitOfWork uow, string name, string version)
         {
-            var activityTemplate = uow.ActivityTemplateRepository
-                .FindOne(x => x.Name == name && x.Version == version);
+            Initialize();
 
-            return activityTemplate;
+            lock (_activityTemplates)
+            {
+                return _activityTemplates.Values.Single(x => x.Name == name && x.Version == version);
+            }
         }
     }
 }
