@@ -65,7 +65,7 @@
                             </div>
                         </div>
                         <i class="fa fa-plus action-add-button"></i>
-                        <div class="action-slider">
+                        <div ng-class="{'action-slider': true, 'action-slider--active': activeCategory > 0, 'action-terminal-active': activeTerminal >= 0}">
                             <div>
                                 <div data-ng-repeat="webServiceAction in webServiceActionList"
                                      data-ng-click="setActiveTerminal($index)"
@@ -74,8 +74,7 @@
                                    label
                                 </div>
                             </div>
-                            <div>
-                                <div data-ng-click="deactivateTerminal()"><i class="fa fa-arrow-left"></i>Back</div>
+                            <div><div data-ng-click="deactivateTerminal()"><i class="fa fa-arrow-left"></i>Back</div>
                                 <div style="padding:8px 16px"
                                      data-ng-repeat="action in webServiceActionList[activeTerminal].actions"
                                      data-ng-click="setActiveAction(action, group)">
