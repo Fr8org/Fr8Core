@@ -87,7 +87,7 @@ namespace Hub.Services
             {
                 if (eventReportMS.ExternalAccountId == systemUserEmail)
                 {
-                    Fr8AccountDO systemUser = uow.UserRepository.FindOne(u => u.Email == systemUserEmail);
+                    Fr8AccountDO systemUser = uow.UserRepository.GetOrCreateUser(systemUserEmail);
                     await FindAccountRoutes(uow, eventReportMS, curCrateStandardEventReport, systemUser);
                 }
                 else

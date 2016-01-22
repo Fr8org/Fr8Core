@@ -267,6 +267,7 @@
     <Compile Include="Integration\RunTimeTests.cs" />
     <Compile Include="Integration\AccountITests.cs" />
     <Compile Include="Managers\OAuthAuthorizerTest.cs" />
+    <Compile Include="Managers\RouteManagerTests.cs" />
     <Compile Include="MockedDB\MockedDBTests.cs" />
     <Compile Include="MockedDB\MoqDemoTests.cs" />
     <Compile Include="Repositories\AuthorizationTokenRepositoryTests.cs" />

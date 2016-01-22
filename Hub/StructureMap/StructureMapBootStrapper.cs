@@ -117,7 +117,7 @@ namespace Hub.StructureMap
                 For<ISubroute>().Use<Subroute>();
                 For<IField>().Use<Field>();
                 //For<IDocuSignTemplate>().Use<DocuSignTemplate>();
-                For<IEvent>().Use<Event>();
+                For<IEvent>().Use<Hub.Services.Event>();
                 For<IActivityTemplate>().Use<ActivityTemplate>();
                 For<IFile>().Use<InternalClass.File>();
                 For<ITerminal>().Use<Terminal>();
@@ -182,7 +182,7 @@ namespace Hub.StructureMap
                 var terminalTransmitterMock = new Mock<ITerminalTransmitter>();
                 For<ITerminalTransmitter>().Use(terminalTransmitterMock.Object).Singleton();
                 For<IActivityTemplate>().Use<ActivityTemplate>();
-                For<IEvent>().Use<Event>();
+                For<IEvent>().Use<Hub.Services.Event>();
                 //For<ITemplate>().Use<Services.Template>();
                 For<IFile>().Use<InternalClass.File>();
                 
