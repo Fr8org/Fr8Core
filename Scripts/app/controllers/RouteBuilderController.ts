@@ -41,6 +41,7 @@ module dockyard.controllers {
         activeTerminal: any;
         setActive: () => void;
         setActiveTerminal: () => void; 
+        deactivateTerminal: () => void;
         setActiveAction: () => void;
 
         curAggReloadingActions: Array<string>;
@@ -210,16 +211,19 @@ module dockyard.controllers {
                 { id: 2, name: "Get", description: "In-process Crates from a web service", icon: "download" },
                 { id: 3, name: "Process", description: "Carry out work on a Container", icon: "recycle" },
                 { id: 4, name: "Forward", description: "Send Crates to a web service", icon: "share" }];
-            $scope.activeCategory = 0
-            $scope.activeTerminal = 1
+            $scope.activeCategory = NaN
+            $scope.activeTerminal = NaN
         }
         //ActionPicker
         private setActive(actionCategoryId) {
-            this.$scope.activeCategory = actionCategoryId;
-            this.$scope.activeCategory == actionCategoryId ? this.$scope.activeCategory = 0 : this.$scope.webServiceActionList = this.WebServiceService.getActions([actionCategoryId]);
+            this.$scope.activeCategory == actionCategoryId ? this.$scope.activeCategory = NaN : this.$scope.activeCategory = actionCategoryId;
+            this.$scope.webServiceActionList = this.WebServiceService.getActions([actionCategoryId]);
         }
         private setActiveTerminal(index) {
             this.$scope.activeTerminal = index
+        }
+        private deactivateTerminal() {
+            this.$scope.activeTerminal = NaN
         }
         private setActiveAction(action, group) {
             //TODO remove PaneSelectAction and consequently psa reference
