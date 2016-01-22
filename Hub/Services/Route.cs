@@ -66,6 +66,11 @@ namespace Hub.Services
 
         }
 
+        public IList<RouteDO> GetByName(IUnitOfWork uow, Fr8AccountDO account, string name)
+        {
+            return uow.RouteRepository.GetQuery().Where(r => r.Fr8Account.Id == account.Id && r.Name == name).ToList();
+        }
+
         public void CreateOrUpdate(IUnitOfWork uow, RouteDO ptdo, bool updateChildEntities)
         {
             var creating = ptdo.Id == Guid.Empty;
@@ -238,30 +243,31 @@ namespace Hub.Services
                         {
                             var resultActivate = await _action.Activate(curActionDO);
 
-                            result.Status = "validation_error";
+                            result.Status = "success";
                             if (routeBuilderActivate) result.ActionsCollections.Add(resultActivate);
+                                
                         }
                         catch (Exception ex)
                         {
-                            throw new ApplicationException("Process template activation failed.", ex);
+                            throw new ApplicationException(string.Format("Process template activation failed for action {0}.", curActionDO.Name), ex);
                         }
                     }
                 }
 
-                uow.RouteRepository.GetByKey(route.Id).RouteState = RouteState.Active;
+                uow.RouteRepository.GetByKey(curRouteId).RouteState = RouteState.Active;
                 uow.SaveChanges();
             }
 
             return result;
         }
         
-        public async Task<string> Deactivate(RouteDO curRoute)
+        public async Task<string> Deactivate(Guid curRouteId)
         {
             string result = "no action";
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var route = uow.RouteRepository.GetByKey(curRoute.Id);
+                var route = uow.RouteRepository.GetByKey(curRouteId);
 
                 foreach (SubrouteDO template in route.Subroutes)
                 {
@@ -280,8 +286,8 @@ namespace Hub.Services
                         }
                     }
                 }
-                
-                uow.RouteRepository.GetByKey(curRoute.Id).RouteState = RouteState.Inactive;
+
+                uow.RouteRepository.GetByKey(curRouteId).RouteState = RouteState.Inactive;
                 uow.SaveChanges();
             }
 

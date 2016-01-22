@@ -66,6 +66,7 @@ module dockyard.controllers {
         ];
 
         private _longRunningActionsCounter: number;
+        private _loading = false;
 
         constructor(
             private $scope: IRouteBuilderScope,
@@ -83,7 +84,7 @@ module dockyard.controllers {
             private $modal: any,
             private AuthService: services.AuthService,
             private ConfigureTrackerService: services.ConfigureTrackerService
-            ) {
+        ) {
 
             this.$scope.current = new model.RouteBuilderState();
             this.$scope.actionGroups = [];
@@ -94,13 +95,13 @@ module dockyard.controllers {
                 this.addAction(group);
             }
 
-            this.$scope.isBusy =  () => {
-                return this._longRunningActionsCounter > 0;
+            this.$scope.isBusy = () => {
+                return this._longRunningActionsCounter > 0 || this._loading;
             };
 
             this._longRunningActionsCounter = 0;
 
-            $scope.deleteAction = <() => void> angular.bind(this, this.deleteAction);
+            $scope.deleteAction = <() => void>angular.bind(this, this.deleteAction);
             this.$scope.chooseAuthToken = (action: model.ActionDTO) => {
                 this.chooseAuthToken(action);
             };
@@ -155,9 +156,9 @@ module dockyard.controllers {
                 //let's wait for UI to finish it's rendering
                 this.$timeout(() => {
                     //reconfigure those actions
-                    this.reConfigure(uniqueDownstreamActions);    
+                    this.reConfigure(uniqueDownstreamActions);
                 });
-                
+
             };
 
             var currentState: number;
@@ -184,6 +185,14 @@ module dockyard.controllers {
             });
 
             this.processState($state);
+        }
+
+        private startLoader() {
+            this._loading = true;
+        }
+
+        private stopLoader() {
+            this._loading = false;
         }
 
         //re-orders actions according to their position on array
@@ -378,7 +387,7 @@ module dockyard.controllers {
                 }
             }
 
-            this.$scope.actionGroups = this.LayoutService.placeActions(actions, curRoute.startingSubrouteId);  
+            this.$scope.actionGroups = this.LayoutService.placeActions(actions, curRoute.startingSubrouteId);
         }
 
         private renderActions(actionsCollection: model.ActionDTO[]) {
@@ -396,24 +405,24 @@ module dockyard.controllers {
                 this.$scope.$broadcast(
                     pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionTempIdReplaced],
                     new pwd.ActionTempIdReplacedEventArgs(this.$scope.current.action.id, action.id)
-                    );
+                );
             }
 
             this.$scope.current.action = action;
             //self.$scope.current.action.id = result.action.id;
             //self.$scope.current.action.isTempId = false;
 
-                //Notify workflow designer of action update
+            //Notify workflow designer of action update
             this.$scope.$broadcast(
-                    pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionNameUpdated],
-                    new pwd.ActionNameUpdatedEventArgs(action.id, action.name)
-                    );
+                pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionNameUpdated],
+                new pwd.ActionNameUpdatedEventArgs(action.id, action.name)
+            );
 
-                if (this.CrateHelper.hasControlListCrate(action.crateStorage)) {
-                    action.configurationControls = this.CrateHelper
-                        .createControlListFromCrateStorage(action.crateStorage);
-                }
+            if (this.CrateHelper.hasControlListCrate(action.crateStorage)) {
+                action.configurationControls = this.CrateHelper
+                    .createControlListFromCrateStorage(action.crateStorage);
             }
+        }
 
         private addAction(group: model.ActionGroup) {
             var self = this;
@@ -443,36 +452,40 @@ module dockyard.controllers {
                 controller: 'AuthenticationDialogController',
                 scope: modalScope
             })
-            .result
-            .then(() => {
-                self.$scope.$broadcast(
-                    pca.MessageType[pca.MessageType.PaneConfigureAction_Reconfigure],
-                    new pca.ActionReconfigureEventArgs(action)
-                );
-            });
+                .result
+                .then(() => {
+                    self.$scope.$broadcast(
+                        pca.MessageType[pca.MessageType.PaneConfigureAction_Reconfigure],
+                        new pca.ActionReconfigureEventArgs(action)
+                    );
+                });
         }
 
         private deleteAction(action: model.ActionDTO) {
             var self = this;
+            self.startLoader();
             self.ActionService.deleteById({ id: action.id, confirmed: false }).$promise.then((response) => {
                 self.reloadRoute();
+                self.stopLoader();
             }, (error) => {
                 //TODO check error status while completing DO-1335
                 this.uiHelperService
                     .openConfirmationModal('Are you sure you want to delete this Action? You will have to reconfigure all downstream Actions.')
                     .then(() => {
-                    self.ActionService.deleteById({ id: action.id, confirmed: true }).$promise.then(() => {
-                        self.reloadRoute();
+                        self.startLoader();
+                        self.ActionService.deleteById({ id: action.id, confirmed: true }).$promise.then(() => {
+                            self.reloadRoute();
+                            self.stopLoader();
+                        });
                     });
-                });
-            }); 
+            });
         }
 
         private PaneSelectAction_ActivityTypeSelected(eventArgs: psa.ActivityTypeSelectedEventArgs) {
 
             var activityTemplate = eventArgs.activityTemplate;
             // Generate next Id.
-            var id = this.LocalIdentityGenerator.getNextId();                
+            var id = this.LocalIdentityGenerator.getNextId();
             var parentId = this.$scope.currentSubroute.id;
             if (eventArgs.group !== null && eventArgs.group.parentAction !== null) {
                 parentId = eventArgs.group.parentAction.id;
@@ -509,7 +522,7 @@ module dockyard.controllers {
             This message is sent when user is selecting an existing action or after addng a new action. 
         */
         private selectAction(action: model.ActionDTO, group: model.ActionGroup) {
-            
+
             console.log("Action selected: " + action.id);
             var originalId,
                 actionId = action.id,
@@ -549,7 +562,7 @@ module dockyard.controllers {
                     // the one returned from the above saveCurrent operation.
                     canBypassActionLoading = idChangedFromTempToPermanent || !actionChanged;
                 }
-                
+
                 if (actionId == '00000000-0000-0000-0000-000000000000') {
                     throw Error('Action has not been persisted. Process Builder cannot proceed ' +
                         'to action type selection for an unpersisted action.');
@@ -572,10 +585,10 @@ module dockyard.controllers {
             console.log("RouteBuilderController: template selected");
             this.RouteBuilderService.saveCurrent(this.$scope.current)
                 .then((result: model.RouteBuilderState) => {
-                // Notity interested parties of action update and update $scope
-                this.handleActionUpdate(result.action);
+                    // Notity interested parties of action update and update $scope
+                    this.handleActionUpdate(result.action);
 
-            });
+                });
         }
 
         /*
@@ -608,14 +621,14 @@ module dockyard.controllers {
             this.$scope.$broadcast(
                 pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionRemoved],
                 new pwd.ActionRemovedEventArgs(eventArgs.id, eventArgs.isTempId)
-                );
+            );
         }
 
         private updateChildActionsRecursive(curAction: interfaces.IActionVM) {
             this.AuthService.clear();
-            this.$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Reconfigure]);           
+            this.$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Reconfigure]);
         }
-        
+
         private PaneConfigureAction_ChildActionsReconfiguration(childActionReconfigEventArgs: pca.ChildActionReconfigurationEventArgs) {
             for (var i = 0; i < childActionReconfigEventArgs.actions.length; i++) {
                 this.$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_ReloadAction], new pca.ReloadActionEventArgs(childActionReconfigEventArgs.actions[i]));

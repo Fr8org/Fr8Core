@@ -163,8 +163,8 @@ namespace terminalDocuSignTests.Integration
                 await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
             
             var crateStorage = Crate.GetStorage(responsePayloadDTO);
-            Assert.AreEqual(1, crateStorage.CrateContentsOfType<DocuSignEnvelopeCM>(x => x.Label == "DocuSign Envelope Manifest").Count());
-            Assert.AreEqual(1, crateStorage.CrateContentsOfType<DocuSignEventCM>(x => x.Label == "DocuSign Event Manifest").Count());
+            Assert.AreEqual(1, crateStorage.CrateContentsOfType<DocuSignEnvelopeCM>(x => x.Label == "DocuSign Envelope").Count());
+            Assert.AreEqual(1, crateStorage.CrateContentsOfType<DocuSignEventCM>(x => x.Label == "DocuSign Event").Count());
         }
 
         [Test]

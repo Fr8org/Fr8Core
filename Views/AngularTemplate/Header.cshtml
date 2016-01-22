@@ -66,7 +66,7 @@
                     <a href="#" data-toggle="dropdown" class="dropdown-toggle">Solutions <i class="fa fa-angle-down"></i></a>
                     <ul class="dropdown-menu pull-left" ng-controller="SolutionListController">
                         <li class="dropdown-submenu">
-                            <a href="javascript:;" class="dropdown-toggle">DocuSign</a>
+                            <a href="/Services/DocuSign" class="dropdown-toggle">DocuSign</a>
                             <ul class="dropdown-menu">
                                 <li ng-repeat="activity in (activityCategories | filter: {name: 'Solution'})[0].activities | filter: { terminal: { name: 'terminalDocuSign' } }">
                                     <a ui-sref="configureSolution({solutionName: activity.name})" ui-sref-opts="{reload: true}">{{activity.label}}</a>
@@ -129,7 +129,7 @@
                     <a data-toggle="dropdown" href="javascript:;" class="dropdown-toggle">Developer <i class="fa fa-angle-down"></i></a>
                     <ul class="dropdown-menu">
 
-                        <li><a href="#/terminals">Developer Home</a></li>
+                        <li><a href="http://documentation.fr8.co">Developer Home</a></li>
                     </ul>
                 </li>
 

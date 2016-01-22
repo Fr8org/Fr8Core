@@ -8,6 +8,6 @@ namespace terminalDocuSign.Interfaces
         /// <summary>
         /// Processes external event payload from the Terminal
         /// </summary>
-        Crate Process(string curExternalEventPayload);
+        Task<Crate> Process(string curExternalEventPayload);
     }
 }

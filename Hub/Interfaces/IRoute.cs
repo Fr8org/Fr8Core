@@ -12,6 +12,7 @@ namespace Hub.Interfaces
     public interface IRoute
     {
         IList<RouteDO> GetForUser(IUnitOfWork uow, Fr8AccountDO account, bool isAdmin, Guid? id = null, int? status = null);
+        IList<RouteDO> GetByName(IUnitOfWork uow, Fr8AccountDO account, string name);
         void CreateOrUpdate(IUnitOfWork uow, RouteDO ptdo, bool withTemplate);
         RouteDO Create(IUnitOfWork uow, string name);
         void Delete(IUnitOfWork uow, Guid id);
@@ -21,7 +22,7 @@ namespace Hub.Interfaces
         IList<RouteDO> GetMatchingRoutes(string userId, EventReportCM curEventReport);
         RouteNodeDO GetFirstActivity(Guid curRouteId);
         Task<ActivateActionsDTO> Activate(Guid routeId, bool routeBuilderActivate);
-        Task<string> Deactivate(RouteDO curRoute);
+        Task<string> Deactivate(Guid curRouteId);
         IEnumerable<ActionDO> GetActions(int id);
         RouteDO GetRoute(ActionDO action);
         //  ActionListDO GetActionList(IUnitOfWork uow, int id);
