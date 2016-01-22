@@ -73,8 +73,8 @@
                                     <img src="{{webServiceAction.webServiceIconPath}}" />
                                    {{webServiceAction.webServiceName}}
                                 </div>
-                            </div><div>
-                                <div data-ng-click="deactivateTerminal()"><i class="fa fa-arrow-left"></i> Back</div>
+                            </div>
+                            <div><div data-ng-click="deactivateTerminal()"><i class="fa fa-arrow-left"></i>Back</div>
                                 <div style="padding:8px 16px"
                                      data-ng-repeat="action in webServiceActionList[activeTerminal].actions"
                                      data-ng-click="setActiveAction(action, group)">
