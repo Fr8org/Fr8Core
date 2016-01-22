@@ -47,39 +47,45 @@
     </div>
 
     <script type="text/ng-template" id="manifestDescriptionFormModal" >
-        <form role="form" ng-submit="submit()" name="form" novalidate>
+        <form role="form" ng-submit="submit(form.$pending == undefined && form.$valid)" name="form" novalidate>
 
             <div class="modal-header">
                 <h3 class="modal-title">Add ManifestDescription</h3>
             </div>
 
             <div class="modal-body">
-
+                <div class="alert alert-danger" ng-show="form.$submitted && !form.$valid">
+                    Some fields do not contain correct data. Please check below.
+                </div>
+                <div class="alert alert-danger" ng-show="errorMessage != null">
+                    {{errorMessage}}
+                </div>
                 <div class="form-group">
                     <label class="control-label">Name</label>
-                    <input type="text" placeholder="" maxlength="100" class="form-control" ng-model="manifestDescription.name" />
+                    <input type="text" name="name" placeholder="" maxlength="100" class="form-control" ng-model="manifestDescription.name" required ng-change="onChangeNameVersion()"/>
                 </div>
                 <div class="form-group">
                     <label class="control-label">Version</label>
-                    <input type="text" placeholder="" maxlength="100" class="form-control" ng-model="manifestDescription.version" />
+                    <input type="text" name="version" placeholder="" maxlength="100" class="form-control" ng-model="manifestDescription.version" required ng-change="onChangeNameVersion()"/>
+                    <input type="text" name="validator" ng-model="validationModel" class="display-hide" unique-version-name />
                 </div>
                 <div class="form-group">
                     <label class="control-label">SampleJSON</label>
-                    <input type="text" placeholder="" class="form-control" ng-model="manifestDescription.sampleJSON" />
+                    <input type="text" placeholder="" name="sampleJSON" class="form-control" ng-model="manifestDescription.sampleJSON" required/>
                 </div>
                 <div class="form-group">
                     <label class="control-label">Description</label>
-                    <input type="text" placeholder="" maxlength="100" class="form-control" ng-model="manifestDescription.description" />
+                    <input type="text" placeholder="" name="description" maxlength="100" class="form-control" ng-model="manifestDescription.description" required/>
                 </div>
                 <div class="form-group">
                     <label class="control-label">RegisteredBy</label>
-                    <input type="text" placeholder="" maxlength="100" class="form-control" ng-model="manifestDescription.registeredBy" />
+                    <input type="text" placeholder="" name="registeredBy" maxlength="100" class="form-control" ng-model="manifestDescription.registeredBy" required/>
                 </div>
 
             </div>
 
             <div class="modal-footer">
-                <button class="btn btn-primary" type="submit">Ok</button>
+                <button class="btn btn-primary" type="submit" ng-disabled="!(form.$pending == undefined && form.$valid)">Ok</button>
                 <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
             </div>
 

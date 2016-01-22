@@ -1,7 +1,7 @@
 ﻿
 module dockyard.services {
     export interface IManifestRegistryService extends ng.resource.IResourceClass<interfaces.IManifestRegistryVM> {
-       addManifestDescription: (param: model.ManifestDescriptionDTO) => Array<model.ManifestDescriptionDTO>
+        checkVersionAndName: (versionAndName: string, userAccountId: string) => boolean
     }
 
     app.factory("ManifestRegistryService", ["$resource", ($resource: ng.resource.IResourceService): IManifestRegistryService =>
@@ -14,8 +14,7 @@ module dockyard.services {
             checkVersionAndName: {
                 method: 'GET',
                 params: {
-                    version: "",
-                    name: "",
+                    versionAndName: "",
                     userAccountId: ""
                 },
                 isArray: false,

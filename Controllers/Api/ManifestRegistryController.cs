@@ -48,8 +48,11 @@ namespace HubWeb.Controllers.Api
 
         [HttpGet]
         [ActionName("checkVersionAndName")]
-        public IHttpActionResult CheckVersionAndName(string version, string name, string userAccountId)
+        public IHttpActionResult CheckVersionAndName(string versionAndName, string userAccountId)
         {
+            string version = versionAndName.Split(':')[0];
+            string name = versionAndName.Split(':')[1];
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
 
