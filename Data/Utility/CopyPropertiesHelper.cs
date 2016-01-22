@@ -33,9 +33,16 @@ namespace Data.Utility
                     {
                         foreach (var propertyInfo in props)
                         {
-                            if ((includeVirtual || !propertyInfo.IsVirtual) && (filter == null || filter(propertyInfo.Property)))
+                            if ((virt || !propertyInfo.IsVirtual) && (filter == null || filter(propertyInfo.Property)))
                             {
-                                propertyInfo.Property.SetValue(tgt, propertyInfo.Property.GetValue(src));
+                                try
+                                {
+                                    propertyInfo.Property.SetValue(tgt, propertyInfo.Property.GetValue(src));
+                                }
+                                catch (Exception ex)
+                                {
+                                    throw new InvalidOperationException(string.Format("Unable to copy property: {0}", propertyInfo.Property.Name), ex);
+                                }
                             }
                         }
                     };
