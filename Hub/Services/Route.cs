@@ -30,8 +30,8 @@ namespace Hub.Services
         private readonly InternalInterface.IContainer _container;
         private readonly ISubroute _subroute;
         private readonly Fr8Account _dockyardAccount;
-        private readonly IAction _action;
-        private readonly IRouteNode _activity;
+        private readonly IActivity _activity;
+        private readonly IRouteNode _routeNode;
         private readonly ICrateManager _crate;
         private readonly ISecurityServices _security;
         private readonly IProcessNode _processNode;
@@ -41,8 +41,8 @@ namespace Hub.Services
             _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
             _subroute = ObjectFactory.GetInstance<ISubroute>();
             _dockyardAccount = ObjectFactory.GetInstance<Fr8Account>();
-            _action = ObjectFactory.GetInstance<IAction>();
-            _activity = ObjectFactory.GetInstance<IRouteNode>();
+            _activity = ObjectFactory.GetInstance<IActivity>();
+            _routeNode = ObjectFactory.GetInstance<IRouteNode>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
             _processNode = ObjectFactory.GetInstance<IProcessNode>();
@@ -176,7 +176,7 @@ namespace Hub.Services
             {
                 if (allowOnlyOneNoteTemplate && !firstNodeTemplate)
                 {
-                    throw new Exception("More than one process node template with non empty list of action exsists in the process");
+                    throw new Exception("More than one process node template with non empty list of activity exsists in the process");
                 }
 
                 firstNodeTemplate = false;
@@ -221,8 +221,8 @@ namespace Hub.Services
         {
             var result = new ActivateActionsDTO
             {
-                Status = "no action",
-                ActionsCollections = new List<ActionDTO>()
+                Status = "no activity",
+                ActionsCollections = new List<ActivityDTO>()
             };
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -236,12 +236,12 @@ namespace Hub.Services
 
                 foreach (SubrouteDO template in route.Subroutes)
                 {
-                    var activities = EnumerateActivityTree<ActionDO>(template);
-                    foreach (var curActionDO in activities)
+                    var activities = EnumerateActivityTree<ActivityDO>(template);
+                    foreach (var curActivityDO in activities)
                     {
                         try
                         {
-                            var resultActivate = await _action.Activate(curActionDO);
+                            var resultActivate = await _activity.Activate(curActivityDO);
 
                             string errorMessage;
                             result.Status = "success";
@@ -269,7 +269,7 @@ namespace Hub.Services
                         }
                         catch (Exception ex)
                         {
-                            throw new ApplicationException(string.Format("Process template activation failed for action {0}.", curActionDO.Name), ex);
+                            throw new ApplicationException(string.Format("Process template activation failed for activity {0}.", curActivityDO.Name), ex);
                         }
                     }
                 }
@@ -290,7 +290,7 @@ namespace Hub.Services
         /// <param name="curActionDTO"></param>
         /// <param name="errorMessage"></param>
         /// <returns></returns>
-        private bool CheckForExistingValidationErrors(ActionDTO curActionDTO, out string errorMessage)
+        private bool CheckForExistingValidationErrors(ActivityDTO curActionDTO, out string errorMessage)
         {
             errorMessage = string.Empty;
             
@@ -304,7 +304,7 @@ namespace Hub.Services
                 if (control != null)
                 {
                     //here show only the first error as an issue to redirect back the user to the route builder
-                    errorMessage = string.Format("There was a problem with the configuration of the action '{0}': {1}",
+                    errorMessage = string.Format("There was a problem with the configuration of the activity '{0}': {1}",
                         curActionDTO.Name, control.ErrorMessage);
                     return true;
                 }
@@ -315,7 +315,7 @@ namespace Hub.Services
         
         public async Task<string> Deactivate(Guid curRouteId)
         {
-            string result = "no action";
+            string result = "no activity";
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -323,12 +323,12 @@ namespace Hub.Services
 
                 foreach (SubrouteDO template in route.Subroutes)
                 {
-                    var activities = EnumerateActivityTree<ActionDO>(template);
-                    foreach (var curActionDO in activities)
+                    var activities = EnumerateActivityTree<ActivityDO>(template);
+                    foreach (var curActivityDO in activities)
                     {
                         try
                         {
-                            var resultD = await _action.Deactivate(curActionDO);
+                            var resultD = await _activity.Deactivate(curActivityDO);
 
                             result = "success";
                         }
@@ -383,7 +383,7 @@ namespace Hub.Services
         /// </summary>
         /// <param name="id">Process Template id.</param>
         /// <returns></returns>
-        public IEnumerable<ActionDO> GetActions(int id)
+        public IEnumerable<ActivityDO> GetActivities(int id)
         {
             if (id <= 0)
             {
@@ -392,7 +392,7 @@ namespace Hub.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return EnumerateActivities<ActionDO>(uow.RouteRepository.GetByKey(id), false).ToArray();
+                return EnumerateActivities<ActivityDO>(uow.RouteRepository.GetByKey(id), false).ToArray();
             }
         }
 
@@ -425,11 +425,11 @@ namespace Hub.Services
             foreach (var curRoute in curRoutes)
             {
                 //get the 1st activity
-                var actionDO = GetFirstActionWithEventSubscriptions(curRoute.Id);
+                var activityDO = GetFirstActivityWithEventSubscriptions(curRoute.Id);
 
-                if (actionDO != null)
+                if (activityDO != null)
                 {
-                    var storage = _crate.GetStorage(actionDO.CrateStorage);
+                    var storage = _crate.GetStorage(activityDO.CrateStorage);
 
                     foreach (var subscriptionsList in storage.CrateContentsOfType<EventSubscriptionCM>())
                     {
@@ -448,7 +448,7 @@ namespace Hub.Services
             return subscribingRoutes;
         }
 
-        private ActionDO GetFirstActionWithEventSubscriptions(Guid id)
+        private ActivityDO GetFirstActivityWithEventSubscriptions(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -461,14 +461,14 @@ namespace Hub.Services
                 while (queue.Count > 0)
                 {
                     var routeNode = queue.Dequeue();
-                    var action = routeNode as ActionDO;
+                    var activity = routeNode as ActivityDO;
 
-                    if (action != null)
+                    if (activity != null)
                     {
-                        var storage = _crate.GetStorage(action.CrateStorage);
+                        var storage = _crate.GetStorage(activity.CrateStorage);
                         if (storage.CratesOfType<EventSubscriptionCM>().Count() > 0)
                         {
-                            return action;
+                            return activity;
                         }
                     }
 
@@ -504,9 +504,9 @@ namespace Hub.Services
             //return EnumerateActivities<RouteNodeDO>(curRoute, false).OrderBy(a => a.Ordering).FirstOrDefault();
         }
 
-        public RouteDO GetRoute(ActionDO action)
+        public RouteDO GetRoute(ActivityDO activity)
         {
-            var root = action.ParentRouteNode;
+            var root = activity.ParentRouteNode;
 
             while (root != null)
             {

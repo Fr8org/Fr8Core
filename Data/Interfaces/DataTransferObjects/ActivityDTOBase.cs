@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
 {
-	public class ActionDTOBase
+	public class ActivityDTOBase
 	{
         [JsonProperty("id")]
 		public Guid Id { get; set; }

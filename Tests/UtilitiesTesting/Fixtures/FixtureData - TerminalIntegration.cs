@@ -204,9 +204,9 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static ActionDO TestAction_Blank()
+        public static ActivityDO TestAction_Blank()
         {
-            return new ActionDO()
+            return new ActivityDO()
             {
                 Name = "New Action #1",
                 CrateStorage = ""

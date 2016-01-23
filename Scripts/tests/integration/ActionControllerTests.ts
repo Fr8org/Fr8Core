@@ -4,7 +4,7 @@
 module dockyard.tests.controller {
     import fx = utils.fixtures; // just an alias
 
-    describe("Action Controller ", function () {
+    describe("Activity Controller ", function () {
         var testData = {};
 
         var errorHandler = function (response, done) {

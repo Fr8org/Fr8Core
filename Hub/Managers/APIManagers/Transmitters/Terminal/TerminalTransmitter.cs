@@ -34,34 +34,34 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
         /// Posts ActionDTO to "/actions/&lt;actionType&gt;"
         /// </summary>
         /// <param name="curActionType">Action Type</param>
-        /// <param name="actionDTO">DTO</param>
+        /// <param name="activityDTO">DTO</param>
         /// <remarks>Uses <paramref name="curActionType"/> argument for constructing request uri replacing all space characters with "_"</remarks>
         /// <returns></returns>
-        public async Task<TResponse> CallActionAsync<TResponse>(string curActionType, ActionDTO actionDTO, string correlationId)
+        public async Task<TResponse> CallActionAsync<TResponse>(string curActionType, ActivityDTO activityDTO, string correlationId)
         {
-            if (actionDTO == null)
+            if (activityDTO == null)
             {
-                throw new ArgumentNullException("actionDTO");
+                throw new ArgumentNullException("activityDTO");
             }
 
-            if ((actionDTO.ActivityTemplateId == null || actionDTO.ActivityTemplateId == 0) && actionDTO.ActivityTemplate == null)
+            if ((activityDTO.ActivityTemplateId == null || activityDTO.ActivityTemplateId == 0) && activityDTO.ActivityTemplate == null)
             {
-                throw new ArgumentOutOfRangeException("actionDTO", actionDTO.ActivityTemplateId, "ActivityTemplate must be specified either explicitly or by using ActivityTemplateId");
+                throw new ArgumentOutOfRangeException("activityDTO", activityDTO.ActivityTemplateId, "ActivityTemplate must be specified either explicitly or by using ActivityTemplateId");
             }
 
             int terminalId;
 
-            if (actionDTO.ActivityTemplate == null)
+            if (activityDTO.ActivityTemplate == null)
             {
-                var activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>().GetByKey(actionDTO.ActivityTemplateId.Value);
-                actionDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDO, ActivityTemplateDTO>(activityTemplate);
+                var activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>().GetByKey(activityDTO.ActivityTemplateId.Value);
+                activityDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDO, ActivityTemplateDTO>(activityTemplate);
                 terminalId = activityTemplate.TerminalId;
                 _logger.DebugFormat("ActivityTemplate found: {0}", activityTemplate != null);
                 _logger.DebugFormat("Terminal id: {0}", terminalId);
             }
             else
             {
-                terminalId = actionDTO.ActivityTemplate.TerminalId;
+                terminalId = activityDTO.ActivityTemplate.TerminalId;
             }
 
             var terminal = ObjectFactory.GetInstance<ITerminal>().GetAll().FirstOrDefault(x => x.Id == terminalId);
@@ -71,13 +71,13 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
             var requestUri = new Uri(string.Format("actions/{0}", actionName), UriKind.Relative);
             if (terminal == null || string.IsNullOrEmpty(terminal.Endpoint))
             {
-                _logger.ErrorFormat("Terminal record not found for activityTemplateId: {0}. Throwing exception.", actionDTO.ActivityTemplateId);
+                _logger.ErrorFormat("Terminal record not found for activityTemplateId: {0}. Throwing exception.", activityDTO.ActivityTemplateId);
                 throw new Exception("Unknown terminal or terminal endpoint");
             }
             //let's calculate absolute url, since our hmac mechanism needs it
             requestUri = new Uri(new Uri(terminal.Endpoint.StartsWith("http") ? terminal.Endpoint : "http://" + terminal.Endpoint), requestUri);
-            var hmacHeader = await _hmacService.GenerateHMACHeader(requestUri, terminal.PublicIdentifier, terminal.Secret, actionDTO.AuthToken.UserId, actionDTO);
-            return await PostAsync<ActionDTO, TResponse>(requestUri, actionDTO, correlationId, hmacHeader);
+            var hmacHeader = await _hmacService.GenerateHMACHeader(requestUri, terminal.PublicIdentifier, terminal.Secret, activityDTO.AuthToken.UserId, activityDTO);
+            return await PostAsync<ActivityDTO, TResponse>(requestUri, activityDTO, correlationId, hmacHeader);
         }
     }
 }

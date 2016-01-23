@@ -103,9 +103,9 @@ namespace terminalDocuSign.Tests.Actions
         }
 
 
-        private void ConfigureAction(ActionDO action, params KeyValuePair<string, string>[] settings)
+        private void ConfigureActivity(ActivityDO activity, params KeyValuePair<string, string>[] settings)
         {
-            using (var updater = _crateManager.UpdateStorage(action))
+            using (var updater = _crateManager.UpdateStorage(activity))
             {
                 var filterConditions = new List<FilterConditionDTO>();
 
@@ -150,13 +150,13 @@ namespace terminalDocuSign.Tests.Actions
 
             var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(new AuthorizationTokenDTO { Token = JsonConvert.SerializeObject(TerminalFixtureData.TestDocuSignAuthDTO1()) });
 
-            var actionDo = new ActionDO();
+            var actionDo = new ActivityDO();
 
-            ConfigureAction(actionDo, new KeyValuePair<string, string>("Status", "Sent"),
+            ConfigureActivity(actionDo, new KeyValuePair<string, string>("Status", "Sent"),
                                       new KeyValuePair<string, string>("Folder", "folder_1"));
 
-            var action = new Generate_DocuSign_Report_v1();
-            var result = await action.Run(actionDo, Guid.NewGuid(), curAuthTokenDO);
+            var activity = new Generate_DocuSign_Report_v1();
+            var result = await activity.Run(actionDo, Guid.NewGuid(), curAuthTokenDO);
             var storage = _crateManager.GetStorage(result);
 
             var payload = storage.CrateContentsOfType<StandardPayloadDataCM>().FirstOrDefault();
@@ -195,12 +195,12 @@ namespace terminalDocuSign.Tests.Actions
 
             var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(new AuthorizationTokenDTO { Token = JsonConvert.SerializeObject(TerminalFixtureData.TestDocuSignAuthDTO1()) });
 
-            var actionDo = new ActionDO();
+            var actionDo = new ActivityDO();
 
-            ConfigureAction(actionDo, new KeyValuePair<string, string>("Folder", "folder_1"));
+            ConfigureActivity(actionDo, new KeyValuePair<string, string>("Folder", "folder_1"));
 
-            var action = new Generate_DocuSign_Report_v1();
-            var result = await action.Run(actionDo, Guid.NewGuid(), curAuthTokenDO);
+            var activity = new Generate_DocuSign_Report_v1();
+            var result = await activity.Run(actionDo, Guid.NewGuid(), curAuthTokenDO);
             var storage = _crateManager.GetStorage(result);
 
             var payload = storage.CrateContentsOfType<StandardPayloadDataCM>().FirstOrDefault();

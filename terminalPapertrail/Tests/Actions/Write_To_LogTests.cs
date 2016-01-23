@@ -49,15 +49,15 @@ namespace terminalPapertrail.Tests.Actions
         public async Task Configure_InitialConfigurationResponse_ShourldReturn_OneConfigControlsCrate()
         {
             //Act
-            var result = await _action_under_test.Configure(new ActionDO());
-            ActionDTO resultActionDTO = Mapper.Map<ActionDTO>(result);
+            var result = await _action_under_test.Configure(new ActivityDO());
+            ActivityDTO resultActionDTO = Mapper.Map<ActivityDTO>(result);
 
             //Assert
             var crateStorage = new CrateManager().FromDto(resultActionDTO.CrateStorage);
-            Assert.AreEqual(1, crateStorage.Count, "Initial configuration is failed for Write To Log action in Papertrail");
+            Assert.AreEqual(1, crateStorage.Count, "Initial configuration is failed for Write To Log activity in Papertrail");
 
             var configControlCrates = crateStorage.CratesOfType<StandardConfigurationControlsCM>().ToList();
-            Assert.AreEqual(1, configControlCrates.Count, "More than one configuration controls are avaialbe for Write To Log action");
+            Assert.AreEqual(1, configControlCrates.Count, "More than one configuration controls are avaialbe for Write To Log activity");
 
             var targetUrlControl = configControlCrates.First().Content.Controls[0];
             Assert.IsNotNull(targetUrlControl, "Papertrail target URL control is not configured.");
@@ -68,19 +68,19 @@ namespace terminalPapertrail.Tests.Actions
         public async Task Configure_FollowUpConfigurationResponse_ShourldReturn_OneConfigControlsCrate()
         {
             //Arrange
-            ActionDO testAction = new ActionDO();
+            ActivityDO testAction = new ActivityDO();
             await _action_under_test.Configure(testAction);
 
             //Act
             var result = await _action_under_test.Configure(testAction);
-            ActionDTO resultActionDTO = Mapper.Map<ActionDTO>(result);
+            ActivityDTO resultActionDTO = Mapper.Map<ActivityDTO>(result);
 
             //Assert
             var crateStorage = new CrateManager().FromDto(resultActionDTO.CrateStorage);
-            Assert.AreEqual(1, crateStorage.Count, "Followup configuration is failed for Write To Log action in Papertrail");
+            Assert.AreEqual(1, crateStorage.Count, "Followup configuration is failed for Write To Log activity in Papertrail");
 
             var configControlCrates = crateStorage.CratesOfType<StandardConfigurationControlsCM>().ToList();
-            Assert.AreEqual(1, configControlCrates.Count, "More than one configuration controls are avaialbe for Write To Log action");
+            Assert.AreEqual(1, configControlCrates.Count, "More than one configuration controls are avaialbe for Write To Log activity");
 
             var targetUrlControl = configControlCrates.First().Content.Controls[0];
             Assert.IsNotNull(targetUrlControl, "Papertrail target URL control is not configured.");
@@ -94,7 +94,7 @@ namespace terminalPapertrail.Tests.Actions
             //Arrange
 
             //create initial and follow up configuration
-            ActionDO testAction = new ActionDO();
+            ActivityDO testAction = new ActivityDO();
             await _action_under_test.Configure(testAction);
             await _action_under_test.Configure(testAction);
             
@@ -119,7 +119,7 @@ namespace terminalPapertrail.Tests.Actions
             //Arrange
 
             //create initial and follow up configuration
-            ActionDO testAction = new ActionDO();
+            ActivityDO testAction = new ActivityDO();
             await _action_under_test.Configure(testAction);
             await _action_under_test.Configure(testAction);
 

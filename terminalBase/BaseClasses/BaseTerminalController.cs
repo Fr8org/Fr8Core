@@ -98,7 +98,7 @@ namespace TerminalBase.BaseClasses
 
         private void BindTestHubCommunicator(object curObject)
         {
-            var baseTerminalAction = curObject as BaseTerminalAction;
+            var baseTerminalAction = curObject as BaseTerminalActivity;
 
             if (baseTerminalAction == null)
             {
@@ -110,7 +110,7 @@ namespace TerminalBase.BaseClasses
 
         private void BindExplicitDataHubCommunicator(object curObject)
         {
-            var baseTerminalAction = curObject as BaseTerminalAction;
+            var baseTerminalAction = curObject as BaseTerminalActivity;
 
             if (baseTerminalAction == null)
             {
@@ -122,7 +122,7 @@ namespace TerminalBase.BaseClasses
 
         private void SetCurrentUser(object curObject, string userId)
         {
-            var baseTerminalAction = curObject as BaseTerminalAction;
+            var baseTerminalAction = curObject as BaseTerminalActivity;
 
             if (baseTerminalAction == null)
             {
@@ -145,7 +145,7 @@ namespace TerminalBase.BaseClasses
         }
 
         // For /Configure and /Activate actions that accept ActionDTO
-        public async Task<object> HandleFr8Request(string curTerminal, string curActionPath, ActionDTO curActionDTO)
+        public async Task<object> HandleFr8Request(string curTerminal, string curActionPath, ActivityDTO curActionDTO)
         {
             if (curActionDTO == null)
                 throw new ArgumentNullException("curActionDTO");
@@ -183,11 +183,11 @@ namespace TerminalBase.BaseClasses
                 BindExplicitDataHubCommunicator(curObject);
             }
 
-            var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+            var curActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
 
             var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
             var curContainerId = curActionDTO.ContainerId;
-            Task<ActionDO> response;
+            Task<ActivityDO> response;
 
             var currentUserId = curAuthTokenDO != null ? curAuthTokenDO.UserID : null;
             //Set Current user of action
@@ -199,57 +199,57 @@ namespace TerminalBase.BaseClasses
                 {
                     case "configure":
                         {
-                            Task<ActionDO> resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
-                            return await resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
+                            Task<ActivityDO> resutlActionDO = (Task<ActivityDO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDO, curAuthTokenDO });
+                            return await resutlActionDO.ContinueWith(x => Mapper.Map<ActivityDTO>(x.Result));
                         }
                     case "run":
                     case "childrenexecuted":
                         {
                             OnStartAction(curTerminal, activityTemplateName, IntegrationTestMode);
                             var resultPayloadDTO = await (Task<PayloadDTO>)curMethodInfo
-                                .Invoke(curObject, new Object[] { curActionDO, curContainerId, curAuthTokenDO });
+                                .Invoke(curObject, new Object[] { curActivityDO, curContainerId, curAuthTokenDO });
                             await OnCompletedAction(curTerminal, IntegrationTestMode);
 
                             return resultPayloadDTO;
                         }
                     case "initialconfigurationresponse":
                         {
-                            Task<ActionDO> resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
-                            return await resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
+                            Task<ActivityDO> resutlActionDO = (Task<ActivityDO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDO, curAuthTokenDO });
+                            return await resutlActionDO.ContinueWith(x => Mapper.Map<ActivityDTO>(x.Result));
                         }
                     case "followupconfigurationresponse":
                         {
-                            Task<ActionDO> resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
-                            return await resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
+                            Task<ActivityDO> resutlActionDO = (Task<ActivityDO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDO, curAuthTokenDO });
+                            return await resutlActionDO.ContinueWith(x => Mapper.Map<ActivityDTO>(x.Result));
                         }
                     case "activate":
                         {
                             //activate is an optional method so it may be missing
-                            if (curMethodInfo == null) return Mapper.Map<ActionDTO>(curActionDO);
+                            if (curMethodInfo == null) return Mapper.Map<ActivityDTO>(curActivityDO);
 
-                            Task<ActionDO>  resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
-                            return await resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
+                            Task<ActivityDO>  resutlActionDO = (Task<ActivityDO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDO, curAuthTokenDO });
+                            return await resutlActionDO.ContinueWith(x => Mapper.Map<ActivityDTO>(x.Result));
                         }
                     case "deactivate":
                         {
                             //deactivate is an optional method so it may be missing
-                            if (curMethodInfo == null) return Mapper.Map<ActionDTO>(curActionDO);
+                            if (curMethodInfo == null) return Mapper.Map<ActivityDTO>(curActivityDO);
 
-                            Task<ActionDO> resutlActionDO;
+                            Task<ActivityDO> resutlActionDO;
                             var param = curMethodInfo.GetParameters();
                             if (param.Length == 2)
-                                resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
+                                resutlActionDO = (Task<ActivityDO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDO, curAuthTokenDO });
                             else
                             {
-                                response = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
-                                return await response.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result)); ;
+                                response = (Task<ActivityDO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDO });
+                                return await response.ContinueWith(x => Mapper.Map<ActivityDTO>(x.Result)); ;
                             }
 
-                            return resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
+                            return resutlActionDO.ContinueWith(x => Mapper.Map<ActivityDTO>(x.Result));
                         }
                     default:
-                        response = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
-                        return await response.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result)); ;
+                        response = (Task<ActivityDO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDO });
+                        return await response.ContinueWith(x => Mapper.Map<ActivityDTO>(x.Result)); ;
                 }
             }
             catch (Exception e)
@@ -259,8 +259,8 @@ namespace TerminalBase.BaseClasses
                     PreserveReferencesHandling = PreserveReferencesHandling.Objects
                 };
 
-                var endpoint = (curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Terminal != null && curActionDO.ActivityTemplate.Terminal.Endpoint != null) ? curActionDO.ActivityTemplate.Terminal.Endpoint : "<no terminal url>";
-                EventManager.TerminalInternalFailureOccurred(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e, curActionDO.Id.ToString());
+                var endpoint = (curActivityDO.ActivityTemplate != null && curActivityDO.ActivityTemplate.Terminal != null && curActivityDO.ActivityTemplate.Terminal.Endpoint != null) ? curActivityDO.ActivityTemplate.Terminal.Endpoint : "<no terminal url>";
+                EventManager.TerminalInternalFailureOccurred(endpoint, JsonConvert.SerializeObject(curActivityDO, settings), e, curActivityDO.Id.ToString());
                 throw;
             }
         }

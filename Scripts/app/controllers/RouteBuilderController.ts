@@ -518,7 +518,7 @@ module dockyard.controllers {
             }, (error) => {
                 //TODO check error status while completing DO-1335
                 this.uiHelperService
-                    .openConfirmationModal('Are you sure you want to delete this Action? You will have to reconfigure all downstream Actions.')
+                    .openConfirmationModal('Are you sure you want to delete this Activity? You will have to reconfigure all downstream Actions.')
                     .then(() => {
                         self.startLoader();
                         self.ActionService.deleteById({ id: action.id, confirmed: true }).$promise.then(() => {
@@ -571,7 +571,7 @@ module dockyard.controllers {
         */
         private selectAction(action: model.ActionDTO, group: model.ActionGroup) {
 
-            console.log("Action selected: " + action.id);
+            console.log("Activity selected: " + action.id);
             var originalId,
                 actionId = action.id,
                 canBypassActionLoading = false; // Whether we can avoid reloading an action from the backend
@@ -612,7 +612,7 @@ module dockyard.controllers {
                 }
 
                 if (actionId == '00000000-0000-0000-0000-000000000000') {
-                    throw Error('Action has not been persisted. Process Builder cannot proceed ' +
+                    throw Error('Activity has not been persisted. Process Builder cannot proceed ' +
                         'to action type selection for an unpersisted action.');
                 }
                 if (canBypassActionLoading) {

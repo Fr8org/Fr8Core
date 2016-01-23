@@ -114,7 +114,7 @@ namespace terminalDocuSign.Services
         }
 
 
-        public StandardPayloadDataCM CreateActionPayload(ActionDO curActionDO, AuthorizationTokenDO authTokenDO, string curEnvelopeId)
+        public StandardPayloadDataCM CreateActionPayload(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO, string curEnvelopeId)
         {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 
@@ -123,7 +123,7 @@ namespace terminalDocuSign.Services
                 docuSignAuthDTO.ApiPassword);
 
             var curEnvelopeData = docusignEnvelope.GetEnvelopeData(curEnvelopeId);
-            var templateFields = ExtractFieldsAndAddToCrate(curEnvelopeId, docuSignAuthDTO, curActionDO);
+            var templateFields = ExtractFieldsAndAddToCrate(curEnvelopeId, docuSignAuthDTO, curActivityDO);
             var payload = docusignEnvelope.ExtractPayload(templateFields.ToList(), curEnvelopeId, curEnvelopeData);
 
             return new StandardPayloadDataCM(payload.ToArray());
@@ -145,14 +145,14 @@ namespace terminalDocuSign.Services
             return envelopeId;
         }
 
-        public int UpdateUserDefinedFields(ActionDO curActionDO, AuthorizationTokenDO authTokenDO, ICrateStorageUpdater updater, string envelopeId)
+        public int UpdateUserDefinedFields(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO, ICrateStorageUpdater updater, string envelopeId)
         {
             int fieldCount = 0;
             updater.CrateStorage.RemoveByLabel("DocuSignTemplateUserDefinedFields");
             if (!String.IsNullOrEmpty(envelopeId))
             {
                 var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
-                var userDefinedFields = ExtractFieldsAndAddToCrate(envelopeId, docuSignAuthDTO, curActionDO);
+                var userDefinedFields = ExtractFieldsAndAddToCrate(envelopeId, docuSignAuthDTO, curActivityDO);
                 updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("DocuSignTemplateUserDefinedFields", AvailabilityType.RunTime, userDefinedFields.ToArray()));
                 fieldCount = userDefinedFields.Count();
             }
@@ -164,9 +164,9 @@ namespace terminalDocuSign.Services
         /// </summary>
         /// <param name="docuSignTemplateId">DocuSign TemplateId.</param>
         /// <param name="docuSignAuthToken">DocuSign authentication token.</param>
-        /// <param name="curActionDO">ActionDO object representing the current action. The crate with extracted 
+        /// <param name="curActivityDO">ActionDO object representing the current action. The crate with extracted 
         /// fields will be added to this Action replacing any older instances of that crate.</param>
-        public IEnumerable<FieldDTO> ExtractFieldsAndAddToCrate(string docuSignTemplateId, DocuSignAuthTokenDTO docuSignAuthToken, ActionDO curActionDO)
+        public IEnumerable<FieldDTO> ExtractFieldsAndAddToCrate(string docuSignTemplateId, DocuSignAuthTokenDTO docuSignAuthToken, ActivityDO curActivityDO)
         {
             if (!string.IsNullOrEmpty(docuSignTemplateId))
             {

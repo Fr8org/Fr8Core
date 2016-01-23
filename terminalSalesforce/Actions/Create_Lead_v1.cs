@@ -14,25 +14,25 @@ using Data.Control;
 
 namespace terminalSalesforce.Actions
 {
-    public class Create_Lead_v1 : BaseTerminalAction
+    public class Create_Lead_v1 : BaseTerminalActivity
     {
         ISalesforceManager _salesforce = new SalesforceManager();
 
-        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             CheckAuthentication(authTokenDO);
 
-            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
+            return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActionDO))
+            if (Crate.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
 
-            var storage = Crate.GetStorage(curActionDO);
+            var storage = Crate.GetStorage(curActivityDO);
 
             var hasConfigurationControlsCrate = storage
                 .CratesOfType<StandardConfigurationControlsCM>(c => c.Label == "Configuration_Controls").FirstOrDefault() != null;
@@ -45,9 +45,9 @@ namespace terminalSalesforce.Actions
             return ConfigurationRequestType.Initial;
         }
 
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActionDO))
+            using (var updater = Crate.UpdateStorage(curActivityDO))
             {
                 updater.CrateStorage.Clear();
 
@@ -59,30 +59,30 @@ namespace terminalSalesforce.Actions
                     "Upstream Terminal-Provided Fields", addRequestConfigEvent: false, required:true);
             }
 
-            return await Task.FromResult(curActionDO);
+            return await Task.FromResult(curActivityDO);
         }
 
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var payloadCrates = await GetPayload(curActionDO, containerId);
+            var payloadCrates = await GetPayload(curActivityDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
             {
                 return NeedsAuthenticationError(payloadCrates);
             }
 
-            var firstName = ExtractSpecificOrUpstreamValue(curActionDO, payloadCrates,"firstName");
-            var lastName = ExtractSpecificOrUpstreamValue(curActionDO, payloadCrates, "lastName");
-            var company = ExtractSpecificOrUpstreamValue(curActionDO, payloadCrates, "companyName");
+            var firstName = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates,"firstName");
+            var lastName = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "lastName");
+            var company = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "companyName");
 
             if (string.IsNullOrEmpty(lastName))
             {
-                return Error(payloadCrates, "No last name found in action.");
+                return Error(payloadCrates, "No last name found in activity.");
             }
             
             if (string.IsNullOrEmpty(company))
             {
-                return Error(payloadCrates, "No company name found in action.");
+                return Error(payloadCrates, "No company name found in activity.");
             }
 
             var lead = new LeadDTO {FirstName = firstName, LastName = lastName, Company = company};
