@@ -320,14 +320,16 @@ namespace HubWeb.Controllers
         public async Task<IHttpActionResult> Run(Guid routeId, [FromBody]PayloadVM model)
         {
             //ACTIVATE - activate route if its inactive
+            bool inActive = false;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var routeDO = uow.RouteRepository.GetByKey(routeId);
 
-                string actionDTO;
                 if (routeDO.RouteState == RouteState.Inactive)
-                    actionDTO = await _route.Activate(routeDO);
+                    inActive = true;
             }
+            if(inActive)
+                await _route.Activate(routeId, false);
 
 
             //RUN

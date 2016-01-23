@@ -41,7 +41,7 @@ namespace terminalSlack.Actions
             }
             catch (ArgumentException)
             {
-                return payloadCrates;
+                return Success(payloadCrates, "Route successfully activated. It will wait and respond to specified Slack postings");
             }
             
 
