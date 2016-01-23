@@ -18,7 +18,7 @@ var app = angular.module("app", [
     "ApplicationInsightsModule",
     "dndLists",
     "ngTable",
-    "ngScrollbar"
+    "mb-scrollbar"
 ]);
 
 /* For compatibility with older versions of script files. Can be safely deleted later. */
