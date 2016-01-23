@@ -285,7 +285,7 @@ div.action-header {
 .action-add {
 	display: inline-block;
     vertical-align:top;
-
+    min-height:300px;
 }
 .action-add-button, .action-category-icon{
     background: #fCfCfC; 
