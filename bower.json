@@ -49,6 +49,7 @@
         "angular-bootstrap-switch": "~0.4.1",
         "angular-applicationinsights": "~0.2.6",
         "dndLists": "~1.3.0",
-        "ng-table": "~0.8.3"
+        "ng-table": "~0.8.3",
+        "ng-scrollbar": "~0.0.8" 
     }
 }
