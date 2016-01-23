@@ -360,7 +360,6 @@ div.action-header {
 }
 .action-slider--active{
     max-width:240px;
-    overflow-y:scroll;
     min-height: 296px;
     max-height:100%;
 }
@@ -370,17 +369,17 @@ div.action-header {
     width:16px;
     position:absolute
 }
-.action-slider > div{
+.action-slider .slide{
     width:240px;
     display:inline-block;
     vertical-align:top;
     padding:8px 0;
-   transition: all 0.2s ease-out;
+    transition: all 0.2s ease-out;
 }
-.action-slider > div > div{
+.action-slider .slide .web-service-action, .action-slider .slide .action-action{
     padding:8px 16px;
 }
-.action-slider > div > div:hover{
+.action-slider .slide .web-service-action:hover, .action-slider .slide .action-action:hover{
     cursor:pointer;
     background:rgba(0,0,0,0.05)
 }
@@ -389,7 +388,7 @@ div.action-header {
     max-width:48px;
     margin-right:8px;
 }
-.action-terminal-active > div:first-child{
+.action-terminal-active .slide:first-child{
     margin-left:-240px;
 }
 
