@@ -141,7 +141,7 @@ namespace TerminalBase.Infrastructure
             var hubAlarmsUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                 + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/alarms";
             var uri = new Uri(hubAlarmsUrl);
-            await _restfulServiceClient.PostAsync(uri, alarmDTO, null, await GetHMACHeader(uri, userId));
+            await _restfulServiceClient.PostAsync(uri, alarmDTO, null, await GetHMACHeader(uri, userId, alarmDTO));
         }
 
         public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActionDO actionDO, string userId)
@@ -235,7 +235,7 @@ namespace TerminalBase.Infrastructure
         public async Task<RouteFullDTO> CreateRoute(RouteEmptyDTO routeDTO, string userId)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                      + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routes/create";
+                      + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routes";
             var uri = new Uri(url);
 
             return await _restfulServiceClient.PostAsync<RouteEmptyDTO, RouteFullDTO>(uri, routeDTO, null, await GetHMACHeader(uri, userId, routeDTO));

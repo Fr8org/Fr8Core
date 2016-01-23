@@ -43,7 +43,7 @@ namespace DockyardTest.Services
             base.SetUp();
             _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
             _userService = ObjectFactory.GetInstance<Fr8Account>();
-            _eventReporter = new EventReporter();
+            _eventReporter = ObjectFactory.GetInstance <EventReporter>();
             //_docuSignNotificationService = ObjectFactory.GetInstance<IDocuSignNotification>();
 
             xmlPayloadFullPath = FixtureData.FindXmlPayloadFullPath(Environment.CurrentDirectory);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Results;
@@ -390,7 +391,7 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
-        [ExpectedException(ExpectedException = typeof(NullReferenceException))]
+        [ExpectedException(ExpectedException = typeof(KeyNotFoundException))]
         public async void ActionController_GetConfigurationSettings_ActionTemplateIdIsMissing()
         {
             var controller = new ActionsController();
