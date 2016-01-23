@@ -24,6 +24,7 @@ using StructureMap;
 using Utilities;
 using Logger = Utilities.Logging.Logger;
 using HubWeb.Infrastructure;
+using System.Threading.Tasks;
 
 namespace HubWeb
 {
@@ -94,6 +95,13 @@ namespace HubWeb
 
             ConfigureValidationEngine();
             StartupMigration.CreateSystemUser();
+
+            // At Startup Check If the Log Monitor Fr8 Event route exist in the database then active it. otherwise create the new route.
+            RouteManager routeManager = new RouteManager();
+            string sytemUserEmail = ObjectFactory.GetInstance<IConfigRepository>().Get<string>("SystemUserEmail");
+
+            Task.Factory.StartNew(async () => await routeManager.CreateRoute_LogFr8InternalEvents(sytemUserEmail).ConfigureAwait(true));
+
         }
 
         private void ConfigureValidationEngine()

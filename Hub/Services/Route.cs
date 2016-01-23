@@ -83,6 +83,7 @@ namespace Hub.Services
                 subroute.Id = Guid.NewGuid();
                 subroute.RootRouteNode = ptdo;
                 subroute.ParentRouteNode = ptdo;
+                subroute.Fr8Account = ptdo.Fr8Account;
                 ptdo.ChildNodes.Add(subroute);
 
                 uow.RouteRepository.Add(ptdo);
@@ -265,7 +266,7 @@ namespace Hub.Services
                                 result.RedirectToRouteBuilder = true;
 
                                 return result;
-                            }                    
+                        }
                         }
                         catch (Exception ex)
                         {
@@ -276,9 +277,9 @@ namespace Hub.Services
 
                 if (result.Status != "validation_error")
                 {
-                    uow.RouteRepository.GetByKey(curRouteId).RouteState = RouteState.Active;
-                    uow.SaveChanges();
-                }
+                uow.RouteRepository.GetByKey(curRouteId).RouteState = RouteState.Active;
+                uow.SaveChanges();
+            }
             }
 
             return result;
@@ -293,7 +294,7 @@ namespace Hub.Services
         private bool CheckForExistingValidationErrors(ActionDTO curActionDTO, out string errorMessage)
         {
             errorMessage = string.Empty;
-            
+
             var crateStorage = _crate.GetStorage(curActionDTO);
 
             var configControls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().ToList();
@@ -312,7 +313,7 @@ namespace Hub.Services
 
             return false;
         }
-        
+
         public async Task<string> Deactivate(Guid curRouteId)
         {
             string result = "no action";
@@ -566,7 +567,7 @@ namespace Hub.Services
         /// <returns></returns>
         public ContainerDO Create(IUnitOfWork uow, Guid routeId, Crate curEvent)
         {
-            var containerDO = new ContainerDO {Id = Guid.NewGuid()};
+            var containerDO = new ContainerDO { Id = Guid.NewGuid() };
 
             var curRoute = uow.RouteRepository.GetByKey(routeId);
             if (curRoute == null)
