@@ -513,6 +513,27 @@ namespace TerminalBase.BaseClasses
         }
 
         /// <summary>
+        /// Creates StandardConfigurationControlsCM with TextSource control
+        /// </summary>
+        /// <param name="storage">Crate Storage</param>
+        /// <param name="label">Initial Label for the text source control</param>
+        /// <param name="controlName">Name of the text source control</param>
+        /// <param name="upstreamSourceLabel">Label for the upstream source</param>
+        /// <param name="filterByTag">Filter for upstream source, Empty by default</param>
+        /// <param name="addRequestConfigEvent">True if onChange event needs to be configured, False otherwise. True by default</param>
+        /// <param name="required">True if the control is required, False otherwise. False by default</param>
+        protected void AddTextSourceControl(CrateStorage storage, string label, string controlName,
+                                            string upstreamSourceLabel, string filterByTag = "",
+                                            bool addRequestConfigEvent = true, bool required = false)
+        {
+            var textSourceControl = CreateSpecificOrUpstreamValueChooser(label, controlName, upstreamSourceLabel,
+                filterByTag, addRequestConfigEvent);
+            textSourceControl.Required = required;
+
+            AddControl(storage, textSourceControl);
+        }
+
+        /// <summary>
         /// Creates RadioButtonGroup to enter specific value or choose value from upstream crate.
         /// </summary>
         protected ControlDefinitionDTO CreateSpecificOrUpstreamValueChooser(
@@ -626,7 +647,7 @@ namespace TerminalBase.BaseClasses
             if (fieldValues.Length > 0)
                 return fieldValues[0];
 
-            IncidentReporter reporter = new IncidentReporter();
+            IncidentReporter reporter = ObjectFactory.GetInstance<IncidentReporter>();
             reporter.IncidentMissingFieldInPayload(fieldKey, curAction, "");
 
             throw new ApplicationException(string.Format("No field found with specified key: {0}.", fieldKey));

@@ -26,5 +26,11 @@ namespace TerminalBase.Infrastructure
 
         Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActionDO actionDO, string tag, string userId);
         Task<List<FieldValidationResult>> ValidateFields(List<FieldValidationDTO> fields, string userId);
+        Task<ActionDTO> ConfigureAction(ActionDTO actionDTO, string userId);
+        Task<ActionDO> ConfigureAction(ActionDO actionDO, string userId);
+        Task<ActionDTO> CreateAndConfigureAction(int templateId, string name, string userId, string label = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null);
+        Task<RouteFullDTO> CreateRoute(RouteEmptyDTO routeDTO, string userId);
+        Task<RouteDO> ActivateRoute(RouteDO routeDO, string userId);
+        Task<IEnumerable<RouteFullDTO>> GetRoutesByName(string name, string userId);
     }
 }

@@ -91,6 +91,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.ApplicationInsights, Version=1.2.3.490, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.1.2.3\lib\net45\Microsoft.ApplicationInsights.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core">
       <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.0.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
     </Reference>
@@ -230,7 +234,7 @@
     <Compile Include="Exceptions\ErrorResponseException.cs" />
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Helper\LZString.cs" />
-    <Compile Include="Infrastructure\fr8HMACAuthorizeAttribute.cs" />
+    <Compile Include="Infrastructure\fr8HMACAuthenticateAttribute.cs" />
     <Compile Include="Security\HMACAuthenticator.cs" />
     <Compile Include="Interfaces\IAuthorization.cs" />
     <Compile Include="Interfaces\IFindObjectsRoute.cs" />
@@ -278,9 +282,6 @@
     <Compile Include="Managers\APIManagers\Transmitters\Restful\RestfulServiceClient.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Restful\RestfulServiceException.cs" />
     <Compile Include="Managers\EventReporter.cs" />
-    <Compile Include="Managers\APIManagers\Authorizers\Docusign\DocusignAuthFlow.cs" />
-    <Compile Include="Managers\APIManagers\Authorizers\Docusign\DocusignAuthorizer.cs" />
-    <Compile Include="Managers\APIManagers\Authorizers\Docusign\IDocusignAuthorizer.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\Google\AppFlowMetadata.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\Google\AuthorizationCodeFlow.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\Google\GoogleAuthorizer.cs" />

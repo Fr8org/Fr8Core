@@ -66,8 +66,12 @@ namespace Data.Entities
                 else
                 {
                     Subroutes.ToList().ForEach(pnt => pnt.StartingSubroute = false);
-                    value.StartingSubroute = true;
-                    ChildNodes.Add(value);
+                    if (value != null) 
+                    { 
+                        value.StartingSubroute = true;
+                        ChildNodes.Add(value);
+                    }
+
                 }
             }
         }

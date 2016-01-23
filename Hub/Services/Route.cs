@@ -66,6 +66,11 @@ namespace Hub.Services
 
         }
 
+        public IList<RouteDO> GetByName(IUnitOfWork uow, Fr8AccountDO account, string name)
+        {
+            return uow.RouteRepository.GetQuery().Where(r => r.Fr8Account.Id == account.Id && r.Name == name).ToList();
+        }
+
         public void CreateOrUpdate(IUnitOfWork uow, RouteDO ptdo, bool updateChildEntities)
         {
             var creating = ptdo.Id == Guid.Empty;
@@ -212,17 +217,23 @@ namespace Hub.Services
 
 
 
-        public async Task<string> Activate(RouteDO curRoute)
+        public async Task<ActivateActionsDTO> Activate(Guid curRouteId, bool routeBuilderActivate)
         {
-            if (curRoute.Subroutes == null)
+            var result = new ActivateActionsDTO
             {
-                throw new ArgumentNullException("Parameter Subroutes is null.");
-            }
+                Status = "no action",
+                ActionsCollections = new List<ActionDTO>()
+            };
 
-            string result = "no action";
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var route = uow.RouteRepository.GetByKey(curRoute.Id);
+                var route = uow.RouteRepository.GetByKey(curRouteId);
+
+                if (route.Subroutes == null)
+                {
+                    throw new ArgumentNullException("Parameter Subroutes is null.");
+                }
+
                 foreach (SubrouteDO template in route.Subroutes)
                 {
                     var activities = EnumerateActivityTree<ActionDO>(template);
@@ -232,32 +243,83 @@ namespace Hub.Services
                         {
                             var resultActivate = await _action.Activate(curActionDO);
 
-                            result = "success";
+                            string errorMessage;
+                            result.Status = "success";
+
+                            var validationErrorChecker = CheckForExistingValidationErrors(resultActivate, out errorMessage);
+                            if (validationErrorChecker)
+                            {
+                                result.Status = "validation_error";
+                                result.ErrorMessage = errorMessage;
+                            }
+
+                            //if the activate call is comming from the Route Builder just render again the action group with the errors
+                            if (routeBuilderActivate)
+                            {
+                                result.ActionsCollections.Add(resultActivate);
+                            }
+                            else if(validationErrorChecker)
+                            {
+                                //if the activate call is comming from the Routes List then show the first error message and redirect to route builder 
+                                //so the user could fix the configuration
+                                result.RedirectToRouteBuilder = true;
+
+                                return result;
+                            }                    
                         }
                         catch (Exception ex)
                         {
-                            throw new ApplicationException("Process template activation failed.", ex);
+                            throw new ApplicationException(string.Format("Process template activation failed for action {0}.", curActionDO.Name), ex);
                         }
                     }
                 }
-                
 
-                uow.RouteRepository.GetByKey(curRoute.Id).RouteState = RouteState.Active;
-                uow.SaveChanges();
+                if (result.Status != "validation_error")
+                {
+                    uow.RouteRepository.GetByKey(curRouteId).RouteState = RouteState.Active;
+                    uow.SaveChanges();
+                }
             }
 
             return result;
         }
 
+        /// <summary>
+        /// After receiving response from terminals for activate action call, checks for existing validation errors on some controls
+        /// </summary>
+        /// <param name="curActionDTO"></param>
+        /// <param name="errorMessage"></param>
+        /// <returns></returns>
+        private bool CheckForExistingValidationErrors(ActionDTO curActionDTO, out string errorMessage)
+        {
+            errorMessage = string.Empty;
+            
+            var crateStorage = _crate.GetStorage(curActionDTO);
 
+            var configControls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().ToList();
+            //search for an error inside the config controls and return back if exists
+            foreach (var controlGroup in configControls)
+            {
+                var control = controlGroup.Controls.FirstOrDefault(x => !string.IsNullOrEmpty(x.ErrorMessage));
+                if (control != null)
+                {
+                    //here show only the first error as an issue to redirect back the user to the route builder
+                    errorMessage = string.Format("There was a problem with the configuration of the action '{0}': {1}",
+                        curActionDTO.Name, control.ErrorMessage);
+                    return true;
+                }
+            }
 
-        public async Task<string> Deactivate(RouteDO curRoute)
+            return false;
+        }
+        
+        public async Task<string> Deactivate(Guid curRouteId)
         {
             string result = "no action";
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var route = uow.RouteRepository.GetByKey(curRoute.Id);
+                var route = uow.RouteRepository.GetByKey(curRouteId);
 
                 foreach (SubrouteDO template in route.Subroutes)
                 {
@@ -276,8 +338,8 @@ namespace Hub.Services
                         }
                     }
                 }
-                
-                uow.RouteRepository.GetByKey(curRoute.Id).RouteState = RouteState.Inactive;
+
+                uow.RouteRepository.GetByKey(curRouteId).RouteState = RouteState.Inactive;
                 uow.SaveChanges();
             }
 

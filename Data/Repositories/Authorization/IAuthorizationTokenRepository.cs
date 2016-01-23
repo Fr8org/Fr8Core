@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
@@ -10,10 +11,9 @@ namespace Data.Repositories
         void Add(AuthorizationTokenDO newToken);
         void Remove(AuthorizationTokenDO token);
         AuthorizationTokenDO FindToken(string userId, int terminalId, int? state);
-        AuthorizationTokenDO FindTokenByExternalState(string externalStateToken);
-        AuthorizationTokenDO FindTokenByExternalAccount(string externalAccountId);
+        AuthorizationTokenDO FindTokenByExternalState(string externalStateToken, int terminalId);
+        AuthorizationTokenDO FindTokenByExternalAccount(string externalAccountId, int terminalId, string userId);
         AuthorizationTokenDO FindTokenById(string id);
-        AuthorizationTokenDO FindTokenByUserId(string userId);
         int Count();
     }
 }

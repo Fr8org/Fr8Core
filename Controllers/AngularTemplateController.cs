@@ -8,6 +8,9 @@ namespace HubWeb.Controllers
 {
     public class AngularTemplateController : Controller
     {
+#if RELEASE
+        [OutputCache(Duration = 3600, VaryByParam = "nocache,template")]
+#endif
         public ActionResult Markup(string template)
         {
             try
