@@ -33,10 +33,12 @@ namespace Hub.Services
         private readonly IAuthorization _authorizationToken;
         private readonly TelemetryClient _telemetryClient;
 
+        private readonly IActivityTemplate _activityTemplate;
         private readonly IRouteNode _routeNode;
 
         public Action()
         {
+            _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
             _authorizationToken = ObjectFactory.GetInstance<IAuthorization>();
             _routeNode = ObjectFactory.GetInstance<IRouteNode>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
@@ -190,11 +192,6 @@ namespace Hub.Services
                 existingAction = submittedAction;
                 submittedAction.IsTempId = false;
 
-                if (submittedAction.ActivityTemplateId != null)
-                {
-                    submittedAction.ActivityTemplate = uow.ActivityTemplateRepository.GetByKey(submittedAction.ActivityTemplateId.Value);
-                }
-
                 RouteNodeDO subroute = null;
 
                 if (parent == null)
@@ -294,22 +291,15 @@ namespace Hub.Services
 
         public ActionDO GetById(IUnitOfWork uow, Guid id)
         {
-            return uow.ActionRepository.GetQuery().Include(i => i.ActivityTemplate).FirstOrDefault(i => i.Id == id);
+            return uow.ActionRepository.GetQuery().FirstOrDefault(i => i.Id == id);
         }
 
         public ActionDO Create(IUnitOfWork uow, int actionTemplateId, string name, string label, RouteNodeDO parentNode, Guid? AuthorizationTokenId = null)
         {
-            var template = uow.ActivityTemplateRepository.GetByKey(actionTemplateId);
-
-            if (template == null)
-            {
-                throw new ApplicationException("Could not find ActivityTemplate.");
-            }
-
             var action = new ActionDO
             {
                 Id = Guid.NewGuid(),
-                ActivityTemplate = template,
+                ActivityTemplateId =  actionTemplateId,
                 Name = name,
                 Label = label,
                 CrateStorage = _crate.EmptyStorageAsStr(),
@@ -400,7 +390,7 @@ namespace Hub.Services
                         {
                             PreserveReferencesHandling = PreserveReferencesHandling.Objects
                         };
-                        var endpoint = (curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Terminal != null && curActionDO.ActivityTemplate.Terminal.Endpoint != null) ? curActionDO.ActivityTemplate.Terminal.Endpoint : "<no terminal url>";
+                        var endpoint = _activityTemplate.GetTerminalUrl(curActionDO.ActivityTemplateId) ?? "<no terminal url>";
                         EventManager.TerminalConfigureFailed(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e.Message, curActionDO.Id.ToString());
                         throw;
                     }
@@ -412,7 +402,7 @@ namespace Hub.Services
                         PreserveReferencesHandling = PreserveReferencesHandling.Objects
                     };
 
-                    var endpoint = (curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Terminal != null && curActionDO.ActivityTemplate.Terminal.Endpoint != null) ? curActionDO.ActivityTemplate.Terminal.Endpoint : "<no terminal url>";
+                    var endpoint = _activityTemplate.GetTerminalUrl(curActionDO.ActivityTemplateId) ?? "<no terminal url>";
                     EventManager.TerminalConfigureFailed(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e.Message, curActionDO.Id.ToString());
                     throw;
                 }
@@ -569,7 +559,7 @@ namespace Hub.Services
                     PreserveReferencesHandling = PreserveReferencesHandling.Objects
                 };
 
-                var endpoint = (curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Terminal != null && curActionDO.ActivityTemplate.Terminal.Endpoint != null) ? curActionDO.ActivityTemplate.Terminal.Endpoint : "<no terminal url>";
+                var endpoint = _activityTemplate.GetTerminalUrl(curActionDO.ActivityTemplateId) ?? "<no terminal url>";
                 EventManager.TerminalRunFailed(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e.Message, curActionDO.Id.ToString());
                 throw;
             }
@@ -615,7 +605,7 @@ namespace Hub.Services
             }
             catch
             {
-                EventManager.TerminalActionActivationFailed(curActionDO.ActivityTemplate.Terminal.Endpoint, JsonConvert.SerializeObject(curActionDO), curActionDO.Id.ToString());
+                EventManager.TerminalActionActivationFailed(_activityTemplate.GetTerminalUrl(curActionDO.ActivityTemplateId) ?? "<no terminal url>", JsonConvert.SerializeObject(curActionDO), curActionDO.Id.ToString());
                 throw;
             }
         }

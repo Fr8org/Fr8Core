@@ -262,11 +262,30 @@ namespace HubWeb.Controllers
 
         [HttpPost]
         [Fr8ApiAuthorize]
-        [Fr8HubWebHMACAuthenticate]
-        public async Task<IHttpActionResult> Activate(RouteDO curRoute)
+        public async Task<IHttpActionResult> Activate(Guid routeId, bool routeBuilderActivate = false)
         {
-            string actionDTO = await _route.Activate(curRoute.Id);
-            return Ok(actionDTO);
+            string pusherChannel = String.Format("fr8pusher_{0}", User.Identity.Name);
+
+            try
+            {
+                var activateDTO = await _route.Activate(routeId, routeBuilderActivate);
+
+                //check if the response contains any error message and show it to the user 
+                if(activateDTO != null && activateDTO.ErrorMessage != string.Empty)
+                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, activateDTO.ErrorMessage);
+
+                return Ok(activateDTO);
+            }
+            catch (ApplicationException ex)
+            {
+                _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, ex.Message);
+                return BadRequest();
+            }
+            catch (Exception)
+            {
+                _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, "There is a problem with activating this route. Please try again later.");
+                return BadRequest();
+            }
         }
 
         [HttpPost]
@@ -352,9 +371,7 @@ namespace HubWeb.Controllers
 
                     _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, message);
                 }
-
-
-
+                
                 return Ok();
             }
         }
