@@ -357,11 +357,12 @@ div.action-header {
     max-width:0;
     transition: all 0.2s ease-out;
     min-height:200px;
+    max-height:0px;
 }
 .action-slider--active{
     max-width:240px;
     min-height: 296px;
-    max-height:100%;
+    max-height:300px;
 }
 .action-slider--active:before{
     height:2px;
@@ -375,6 +376,7 @@ div.action-header {
     vertical-align:top;
     padding:8px 0;
     transition: all 0.2s ease-out;
+    height:300px;
 }
 .action-slider .slide .web-service-action, .action-slider .slide .action-action{
     padding:8px 16px;
