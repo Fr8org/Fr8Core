@@ -289,6 +289,7 @@ namespace DockyardTest.Services
             var template = CreateActivityTemplate(1, CreateTerminal(-234), CreateWebService(234234));
             template.TerminalId = 23444234;
             template.WebServiceId = -2344;
+            template.Id = 0;
 
             var service = ObjectFactory.GetInstance<ActivityTemplate>();
 

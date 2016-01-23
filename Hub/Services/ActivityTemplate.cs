@@ -209,8 +209,8 @@ namespace Hub.Services
                         activity.WebService = activityTemplateDo.WebService;
                         uow.SaveChanges();
                     }
-                    
-                    _activityTemplates[activityTemplateDo.Id] = Clone(activity);
+
+                    _activityTemplates[activity.Id] = Clone(activity);
                 }
             }
         }
