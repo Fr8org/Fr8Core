@@ -361,6 +361,7 @@ div.action-header {
 .action-slider--active{
     max-width:240px;
     overflow-y:scroll;
+    min-height: 296px;
     max-height:100%;
 }
 .action-slider--active:before{
