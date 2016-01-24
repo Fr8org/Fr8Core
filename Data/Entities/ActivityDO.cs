@@ -39,7 +39,8 @@ namespace Data.Entities
                 Name = this.Name,
                 CrateStorage = this.CrateStorage,
                 Label = this.Label,
-                ActivityTemplateId = this.ActivityTemplateId
+                ActivityTemplateId = this.ActivityTemplateId,
+                Fr8Account = this.Fr8Account
             };
         }
 

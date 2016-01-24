@@ -34,6 +34,8 @@ namespace Data.Interfaces.DataTransferObjects
 
         public AuthorizationTokenDTO AuthToken { get; set; }
 
+        public string Fr8AccountId { get; set; }
+
         public ActivityDTO[] ChildrenActions { get; set; }
         public int Ordering { get; set; }
 

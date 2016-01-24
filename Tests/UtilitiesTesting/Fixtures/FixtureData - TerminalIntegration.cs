@@ -212,5 +212,19 @@ namespace UtilitiesTesting.Fixtures
                 CrateStorage = ""
             };
         }
+
+        public static ActivityTemplateDO TestActivityTemplateDO_MonitorFr8Events()
+        {
+            return new ActivityTemplateDO()
+            {
+                Name = "Monitor_Fr8_Events",
+                Label = "Monitor Fr8 Events",
+                Version = "1",
+                Category = ActivityCategory.Monitors,
+                NeedsAuthentication = false,
+                Terminal = TestTerminal_Core(),
+                MinPaneWidth = 380
+            };
+        }
     }
 }

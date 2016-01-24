@@ -82,8 +82,6 @@ namespace Data.Entities
 
         public virtual _RouteStateTemplate RouteStateTemplate { get; set; }
 
-        public virtual Fr8AccountDO Fr8Account { get; set; }
-
         public string Tag { get; set; }
 
         [InverseProperty("Route")]

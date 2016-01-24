@@ -84,36 +84,11 @@ namespace Hub.Services
                 if (activityTemplate.NeedsAuthentication &&
                     activityTemplate.Terminal.AuthenticationType != AuthenticationType.None)
                 {
-                    // Try to get owner's account for Action -> Route.
-                    // Can't follow guideline to init services inside constructor. 
-                    // Current implementation of Route and Action services are not good and are depedant on each other.
-                    // Initialization of services in constructor will cause stack overflow
-                    var route = ObjectFactory.GetInstance<IRoute>().GetRoute(activity);
-                    var dockyardAccount = route != null ? route.Fr8Account : null;
-
-                    if (dockyardAccount == null)
-                    {
-                        throw new ApplicationException("Could not find DockyardAccount for Action's Route.");
-                    }
-
-                    var accountId = dockyardAccount.Id;
-
-                    // Try to find AuthToken for specified terminal and account.
-                    // var authToken = uow.AuthorizationTokenRepository
-                    //     .FindOne(x => x.Terminal.Id == activityTemplate.Terminal.Id
-                    //         && x.UserDO.Id == accountId);
-                    
-                    var activityDO = uow.ActivityRepository.GetByKey(activityDTO.Id);
-                    if (activityDO == null)
-                    {
-                        throw new ApplicationException("Could not find ActionDO for Action's RouteNode.");
-                    }
-
                     AuthorizationTokenDO authToken = null;
-                    if (activityDO.AuthorizationTokenId.HasValue)
+                    if (activity.AuthorizationTokenId.HasValue)
                     {
                         authToken = uow.AuthorizationTokenRepository
-                            .FindTokenById(activityDO.AuthorizationTokenId.ToString());
+                            .FindTokenById(activity.AuthorizationTokenId.ToString());
                     }
 
                     // If AuthToken is not empty, fill AuthToken property for ActionDTO.
@@ -131,14 +106,11 @@ namespace Hub.Services
 
                 if (activityDTO.AuthToken == null)
                 {
-                    var route = ObjectFactory.GetInstance<IRoute>().GetRoute(activity);
-                    var dockyardAccount = route != null ? route.Fr8Account : null;
-
-                    if (dockyardAccount != null)
+                    if (activity.Fr8Account != null)
                     {
                         activityDTO.AuthToken = new AuthorizationTokenDTO
                         {
-                            UserId = dockyardAccount.Id,
+                            UserId = activity.Fr8Account.Id,
                         };
                     }
                 }
@@ -398,7 +370,7 @@ namespace Hub.Services
         {
             using (var updater = _crate.UpdateStorage(() => activityDTO.CrateStorage))
             {
-                updater.CrateStorage.RemoveByManifestId((int) MT.StandardAuthentication);
+                updater.CrateStorage.RemoveByManifestId((int)MT.StandardAuthentication);
             }
         }
 

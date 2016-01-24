@@ -15,12 +15,14 @@ namespace Data.Migrations
         private class RouteBuilder
         {
             private readonly string _name;
+            private readonly Fr8AccountDO _fr8AccountDO;
             private readonly List<Crate> _crates = new List<Crate>();
             private Guid _ptId;
 
-            public RouteBuilder(string name)
+            public RouteBuilder(string name, Fr8AccountDO fr8AccountDO)
             {
                 _name = name;
+                _fr8AccountDO = fr8AccountDO;
             }
 
             public RouteBuilder AddCrate(Crate crateDto)
@@ -66,6 +68,7 @@ namespace Data.Migrations
                     route.Id = Guid.NewGuid();
                 }
 
+                route.Fr8Account = _fr8AccountDO;
                 route.Name = _name;
                 route.Description = "Template for testing";
 				route.CreateDate = DateTime.UtcNow;
