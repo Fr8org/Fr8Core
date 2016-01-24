@@ -262,13 +262,13 @@ namespace HubWeb.Controllers
 
         [HttpPost]
         [Fr8ApiAuthorize]
-        public async Task<IHttpActionResult> Activate(Guid planId, bool routeBuilderActivate = false)
+        public async Task<IHttpActionResult> Activate(Guid routeId, bool routeBuilderActivate = false)
         {
             string pusherChannel = String.Format("fr8pusher_{0}", User.Identity.Name);
 
             try
             {
-                var activateDTO = await _plan.Activate(planId, routeBuilderActivate);
+                var activateDTO = await _plan.Activate(routeId, routeBuilderActivate);
 
                 //check if the response contains any error message and show it to the user 
                 if(activateDTO != null && activateDTO.ErrorMessage != string.Empty)
@@ -316,7 +316,7 @@ namespace HubWeb.Controllers
         [Fr8ApiAuthorize]
         //[Route("run")]
         [HttpPost]
-        public async Task<IHttpActionResult> Run(Guid planId, [FromBody]PayloadVM model)
+        public async Task<IHttpActionResult> Run(Guid routeId, [FromBody]PayloadVM model)
         {
 			CrateDTO curCrateDto;
             Crate curCrate = null;
@@ -339,7 +339,7 @@ namespace HubWeb.Controllers
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var planDO = uow.RouteRepository.GetByKey(planId);
+                var planDO = uow.RouteRepository.GetByKey(routeId);
 
                 try
                 {

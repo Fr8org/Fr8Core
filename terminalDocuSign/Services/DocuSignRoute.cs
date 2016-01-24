@@ -55,7 +55,7 @@ namespace terminalDocuSign.Services
                 Name = "MonitorAllDocuSignEvents",
                 Description = "MonitorAllDocuSignEvents",
                 RouteState = RouteState.Active,
-                Tag = "docusign-auto-monitor-plan-"+authTokenDTO.ExternalAccountId
+                Tag = "docusign-auto-monitor-route-"+authTokenDTO.ExternalAccountId
             };
             var monitorDocusignRoute = await _hubCommunicator.CreatePlan(emptyMonitorRoute, curFr8UserId);
             var activityTemplates = await _hubCommunicator.GetActivityTemplates(null, curFr8UserId);
