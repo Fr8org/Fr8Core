@@ -139,11 +139,11 @@ namespace terminalFr8CoreTests.Fixtures
             };
         }
 
-        public static ActionDTO MonitorFr8Event_InitialConfiguration_ActionDTO()
+        public static ActivityDTO MonitorFr8Event_InitialConfiguration_ActionDTO()
         {
             var activityTemplate = MonitorFr8Event_ActivityTemplate();
 
-            return new ActionDTO()
+            return new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
                 Name = "Monitor_Fr8_Events",

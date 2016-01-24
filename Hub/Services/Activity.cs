@@ -170,7 +170,7 @@ namespace Hub.Services
             existingActivity.Label = submittedActivity.Label;
             existingActivity.CrateStorage = submittedActivity.CrateStorage;
             existingActivity.Ordering = submittedActivity.Ordering;
-            existingAction.Fr8Account = submittedAction.Fr8Account;
+            existingActivity.Fr8Account = submittedActivity.Fr8Account;
         }
 
         private ActivityDO SaveAndUpdateRecursive(IUnitOfWork uow, ActivityDO submittedActiviy, ActivityDO parent, List<ActivityDO> pendingConfiguration)
@@ -214,7 +214,7 @@ namespace Hub.Services
                 submittedActiviy.Ordering = subroute.ChildNodes.Count > 0 ? subroute.ChildNodes.Max(x => x.Ordering) + 1 : 1;
 
                 //assign Fr8Account from Route -> Action -> ...
-                submittedAction.Fr8Account = (subroute.Fr8Account != null) ? subroute.Fr8Account : null;
+                submittedActiviy.Fr8Account = (subroute.Fr8Account != null) ? subroute.Fr8Account : null;
 
                 // Add Action to repo.
                 uow.ActivityRepository.Add(submittedActiviy);

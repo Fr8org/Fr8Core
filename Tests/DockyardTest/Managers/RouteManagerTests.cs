@@ -65,11 +65,11 @@ namespace DockyardTest.Managers
                 uow.SaveChanges();
 
                 // used the previous action.
-                var monitorFr8Action = FixtureData.TestAction1();
-                var storeMtDataAction = FixtureData.TestAction2();
+                var monitorFr8Action = FixtureData.TestActivity1();
+                var storeMtDataAction = FixtureData.TestActivity2();
 
                 //setup Action Service
-                Mock<IAction> _setupMock = new Mock<IAction>(MockBehavior.Default);
+                Mock<IActivity> _setupMock = new Mock<IActivity>(MockBehavior.Default);
                 //setup Action Service
 
                 _setupMock.Setup(
@@ -78,7 +78,7 @@ namespace DockyardTest.Managers
                         {
                             using (var uow1 = ObjectFactory.GetInstance<IUnitOfWork>())
                             {
-                                uow1.ActionRepository.Add(monitorFr8Action);
+                                uow1.ActivityRepository.Add(monitorFr8Action);
 
                                 var subRoute = uow1.SubrouteRepository.GetQuery().Single();
                                 subRoute.ChildNodes.Add(monitorFr8Action);
@@ -93,7 +93,7 @@ namespace DockyardTest.Managers
                         {
                             using (var uow1 = ObjectFactory.GetInstance<IUnitOfWork>())
                             {
-                                uow1.ActionRepository.Add(storeMtDataAction);
+                                uow1.ActivityRepository.Add(storeMtDataAction);
 
                                 var subRoute = uow1.SubrouteRepository.GetQuery().Single();
                                 subRoute.ChildNodes.Add(storeMtDataAction);
@@ -102,7 +102,7 @@ namespace DockyardTest.Managers
                             }
                         }).Returns(Task.FromResult(storeMtDataAction as RouteNodeDO));
 
-                ObjectFactory.Container.Inject(typeof(IAction), _setupMock.Object);
+                ObjectFactory.Container.Inject(typeof(IActivity), _setupMock.Object);
             }
         }
     }
