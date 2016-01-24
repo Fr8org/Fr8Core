@@ -244,7 +244,7 @@ namespace terminalDocuSign.Actions
                         {
                             envelopeId = GetValueForKey(payloadCrates, "EnvelopeId");
                         }
-                        else
+                        else if(incommingTemplate != null)//possible Run is comming from unify activate/run
                         {
                             //this event isn't about us let's stop execution
                             return TerminateHubExecution(payloadCrates);
@@ -260,7 +260,7 @@ namespace terminalDocuSign.Actions
                         {
                             envelopeId = GetValueForKey(payloadCrates, "EnvelopeId");
                         }
-                        else
+                        else if(curSelectedValue != null)
                         {
                             //this event isn't about us let's stop execution
                             return TerminateHubExecution(payloadCrates);
@@ -272,7 +272,7 @@ namespace terminalDocuSign.Actions
             // Make sure that it exists
             if (string.IsNullOrEmpty(envelopeId))
             {
-                return Error(payloadCrates, "EnvelopeId", ActionErrorCode.PAYLOAD_DATA_MISSING);
+                return Success(payloadCrates, "Route successfully activated. It will wait and respond to specified DocuSign Event messages");
             }
 
 
