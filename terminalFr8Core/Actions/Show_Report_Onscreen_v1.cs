@@ -104,7 +104,7 @@ namespace terminalFr8Core.Actions
                 }
             }
 
-            return payload;
+            return ExecuteClientAction(payload, "ShowTableReport");
         }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)

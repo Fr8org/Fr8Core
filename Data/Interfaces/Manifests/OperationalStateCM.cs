@@ -20,6 +20,7 @@ namespace Data.Interfaces.Manifests
         public ActionResponse CurrentActionResponse { get; set; }
         public ActionErrorCode? CurrentActionErrorCode { get; set; }
         public string CurrentActionErrorMessage { get; set; }
+        public string CurrentClientActionName { get; set; }
 
         public OperationalStateCM()
             : base(MT.OperationalStatus)
