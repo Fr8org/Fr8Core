@@ -42,6 +42,8 @@ namespace terminalSalesforce.Actions
                     "Upstream Terminal-Provided Fields", addRequestConfigEvent: false, required:true);
                 AddTextSourceControl(updater.CrateStorage, "Email", "email",
                     "Upstream Terminal-Provided Fields", addRequestConfigEvent: false, required:true);
+
+                updater.CrateStorage.Add(await CreateAvailableFieldsCrate(curActionDO));
             }
 
             return await Task.FromResult(curActionDO);
