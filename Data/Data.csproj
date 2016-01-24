@@ -562,6 +562,10 @@
     <Compile Include="Migrations\201601201734569_Removed_Fr8Account_From_Route.Designer.cs">
       <DependentUpon>201601201734569_Removed_Fr8Account_From_Route.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201601240842409_EmptyMigration.cs" />
+    <Compile Include="Migrations\201601240842409_EmptyMigration.Designer.cs">
+      <DependentUpon>201601240842409_EmptyMigration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryBase.cs" />
@@ -941,6 +945,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201601201734569_Removed_Fr8Account_From_Route.resx">
       <DependentUpon>201601201734569_Removed_Fr8Account_From_Route.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201601240842409_EmptyMigration.resx">
+      <DependentUpon>201601240842409_EmptyMigration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
