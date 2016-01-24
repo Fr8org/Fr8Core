@@ -146,6 +146,7 @@ namespace terminalDocuSign.Actions
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 var configControls = GetConfigurationControls(updater.CrateStorage);
+                if (configControls == null) return;
                 var eventCheckBoxes = configControls.Controls.Where(c => c.Type == ControlTypes.CheckBox).ToList();
                 var anySelectedControl = eventCheckBoxes.Any(c => c.Selected);
 
