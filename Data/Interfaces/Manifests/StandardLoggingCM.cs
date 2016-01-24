@@ -11,6 +11,9 @@ namespace Data.Interfaces.Manifests
     {
         public List<LogItemDTO> Item { get; set; }
 
+        [MtPrimaryKey]
+        public string LoggingMTkey { get; set; }
+
         public StandardLoggingCM()
             : base(Constants.MT.StandardLoggingCrate)
         {

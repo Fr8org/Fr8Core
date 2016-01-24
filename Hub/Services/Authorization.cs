@@ -25,12 +25,16 @@ namespace Hub.Services
     {
         private readonly ICrateManager _crate;
 	    private readonly ITime _time;
+        private readonly IActivityTemplate _activityTemplate;
+        private readonly ITerminal _terminal;
 
 
         public Authorization()
         {
+            _terminal = ObjectFactory.GetInstance<ITerminal>();
 			_crate = ObjectFactory.GetInstance<ICrateManager>();
 	        _time = ObjectFactory.GetInstance<ITime>();
+            _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
         }
 
         public string GetToken(string userId, int terminalId)
@@ -67,16 +71,11 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 // Fetch ActivityTemplate.
-                var activityTemplate = uow.ActivityTemplateRepository
-                    .GetByKey(actionDTO.ActivityTemplateId);
-                if (activityTemplate == null)
-                {
-                    throw new ApplicationException("Could not find ActivityTemplate.");
-                }
+                var activityTemplate = _activityTemplate.GetByKey(actionDTO.ActivityTemplateId.Value);
 
                 // Fetch Action.
-                var action = uow.ActionRepository.GetByKey(actionDTO.Id);
-                if (action == null)
+                var actionDO = uow.ActionRepository.GetByKey(actionDTO.Id);
+                if (actionDO == null)
                 {
                     throw new ApplicationException("Could not find Action.");
                 }
@@ -85,31 +84,6 @@ namespace Hub.Services
                 if (activityTemplate.NeedsAuthentication &&
                     activityTemplate.Terminal.AuthenticationType != AuthenticationType.None)
                 {
-                    // Try to get owner's account for Action -> Route.
-                    // Can't follow guideline to init services inside constructor. 
-                    // Current implementation of Route and Action services are not good and are depedant on each other.
-                    // Initialization of services in constructor will cause stack overflow
-                    var route = ObjectFactory.GetInstance<IRoute>().GetRoute(action);
-                    var dockyardAccount = route != null ? route.Fr8Account : null;
-
-                    if (dockyardAccount == null)
-                    {
-                        throw new ApplicationException("Could not find DockyardAccount for Action's Route.");
-                    }
-
-                    var accountId = dockyardAccount.Id;
-
-                    // Try to find AuthToken for specified terminal and account.
-                    // var authToken = uow.AuthorizationTokenRepository
-                    //     .FindOne(x => x.Terminal.Id == activityTemplate.Terminal.Id
-                    //         && x.UserDO.Id == accountId);
-
-                    var actionDO = uow.ActionRepository.GetByKey(actionDTO.Id);
-                    if (actionDO == null)
-                    {
-                        throw new ApplicationException("Could not find ActionDO for Action's RouteNode.");
-                    }
-
                     AuthorizationTokenDO authToken = null;
                     if (actionDO.AuthorizationTokenId.HasValue)
                     {
@@ -132,14 +106,11 @@ namespace Hub.Services
 
                 if (actionDTO.AuthToken == null)
                 {
-                    var route = ObjectFactory.GetInstance<IRoute>().GetRoute(action);
-                    var dockyardAccount = route != null ? route.Fr8Account : null;
-
-                    if (dockyardAccount != null)
+                    if (actionDO.Fr8Account != null)
                     {
                         actionDTO.AuthToken = new AuthorizationTokenDTO
                         {
-                            UserId = dockyardAccount.Id,
+                            UserId = actionDO.Fr8Account.Id,
                         };
                     }
                 }
@@ -185,9 +156,10 @@ namespace Hub.Services
                 };
             }
 
+            var curTerminal = _terminal.GetByKey(terminal.Id);
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curTerminal = uow.TerminalRepository.GetByKey(terminal.Id);
                 var curAccount = uow.UserRepository.GetByKey(account.Id);
 
                 AuthorizationTokenDO authToken = null;
@@ -207,7 +179,7 @@ namespace Hub.Services
                     {
                         Token = terminalResponseAuthTokenDTO.Token,
                         ExternalAccountId = terminalResponseAuthTokenDTO.ExternalAccountId,
-                        Terminal = curTerminal,
+                        TerminalID = curTerminal.Id,
                         UserDO = curAccount,
                         ExpiresAt = DateTime.Today.AddMonths(1)
                     };
@@ -244,17 +216,12 @@ namespace Hub.Services
             TerminalDO terminal,
             ExternalAuthenticationDTO externalAuthDTO)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var hasAuthentication = uow.ActivityTemplateRepository
-                    .GetQuery()
-                    .Any(x => x.Terminal.Id == terminal.Id);
+            var hasAuthentication = _activityTemplate.GetQuery().Any(x => x.Terminal.Id == terminal.Id);
 
                 if (!hasAuthentication)
                 {
                     throw new ApplicationException("Terminal does not require authentication.");
                 }
-            }
 
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
 
@@ -346,13 +313,13 @@ namespace Hub.Services
 
                 if (authToken == null)
                 {
-                    var curTerminal = uow.TerminalRepository.GetByKey(terminal.Id);
+                    var curTerminal = _terminal.GetByKey(terminal.Id);
                     var curAccount = uow.UserRepository.GetByKey(user.Id);
 
                     authToken = new AuthorizationTokenDO()
                     {
                         UserDO = curAccount,
-                        Terminal = curTerminal,
+                        TerminalID = curTerminal.Id,
                         ExpiresAt = DateTime.Today.AddMonths(1),
                         ExternalStateToken = externalAuthUrlDTO.ExternalStateToken
                     };
@@ -403,7 +370,7 @@ namespace Hub.Services
         {
             using (var updater = _crate.UpdateStorage(() => actionDTO.CrateStorage))
             {
-                updater.CrateStorage.RemoveByManifestId((int) MT.StandardAuthentication);
+                updater.CrateStorage.RemoveByManifestId((int)MT.StandardAuthentication);
             }
         }
 
@@ -457,8 +424,7 @@ namespace Hub.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var activityTemplate = uow.ActivityTemplateRepository
-                    .GetByKey(curActionDTO.ActivityTemplateId);
+                var activityTemplate = _activityTemplate.GetByKey(curActionDTO.ActivityTemplateId.Value);
 
                 if (activityTemplate == null)
                 {
@@ -543,7 +509,7 @@ namespace Hub.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var activityTemplate = uow.ActivityTemplateRepository.GetByKey(curActionDto.ActivityTemplateId);
+                var activityTemplate = _activityTemplate.GetByKey(curActionDto.ActivityTemplateId.Value);
 
                 if (activityTemplate == null)
                 {

@@ -207,6 +207,18 @@ namespace terminalFr8Core.Controllers
                 Category = ActivityCategory.Processors,
                 NeedsAuthentication = false,
                 Terminal = terminal,
+                WebService = webService,
+                MinPaneWidth = 380
+            });
+
+            result.Add(new ActivityTemplateDTO
+            {
+                Name = "Monitor_Fr8_Events",
+                Label = "Monitor Fr8 Events",
+                Version = "1",
+                Category = ActivityCategory.Monitors,
+                NeedsAuthentication = false,
+                Terminal = terminal,
                 MinPaneWidth = 380
             });
 

@@ -10,6 +10,8 @@ using System.Web.Http.Routing;
 using Microsoft.Owin.Hosting;
 using Owin;
 using Data.Interfaces.DataTransferObjects;
+using Data.States;
+using Data.Entities;
 
 namespace terminalFr8CoreTests.Fixtures
 {
@@ -126,5 +128,30 @@ namespace terminalFr8CoreTests.Fixtures
                 Version = "1"
             };
         }
+
+        public static ActivityTemplateDTO MonitorFr8Event_ActivityTemplate()
+        {
+            return new ActivityTemplateDTO()
+            {
+                Id = 4,
+                Name = "Monitor_Fr8_Events_TEST",
+                Version = "1"
+            };
+        }
+
+        public static ActionDTO MonitorFr8Event_InitialConfiguration_ActionDTO()
+        {
+            var activityTemplate = MonitorFr8Event_ActivityTemplate();
+
+            return new ActionDTO()
+            {
+                Id = Guid.NewGuid(),
+                Name = "Monitor_Fr8_Events",
+                Label = "Monitor Fr8 Events",
+                ActivityTemplate = activityTemplate,
+                ActivityTemplateId = activityTemplate.Id
+            };
+        }
+
     }
 }

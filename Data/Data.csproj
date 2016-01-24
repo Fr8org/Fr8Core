@@ -280,8 +280,10 @@
     <Compile Include="Infrastructure\MultiTenant\MT_FieldType.cs" />
     <Compile Include="Infrastructure\MultiTenant\MT_Object.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDataPackageDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ActivateActionsDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\AlarmDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\AuthenticateResponse.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\EventLoggingDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FactDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldValidationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDTO.cs" />
@@ -552,6 +554,18 @@
     <Compile Include="Migrations\201601151838550_AddedPublicIdentifierAndSecretoToTerminalDO.Designer.cs">
       <DependentUpon>201601151838550_AddedPublicIdentifierAndSecretoToTerminalDO.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201601201708533_Added_Fr8Account_2RouteNode.cs" />
+    <Compile Include="Migrations\201601201708533_Added_Fr8Account_2RouteNode.Designer.cs">
+      <DependentUpon>201601201708533_Added_Fr8Account_2RouteNode.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201601201734569_Removed_Fr8Account_From_Route.cs" />
+    <Compile Include="Migrations\201601201734569_Removed_Fr8Account_From_Route.Designer.cs">
+      <DependentUpon>201601201734569_Removed_Fr8Account_From_Route.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201601240842409_EmptyMigration.cs" />
+    <Compile Include="Migrations\201601240842409_EmptyMigration.Designer.cs">
+      <DependentUpon>201601240842409_EmptyMigration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryBase.cs" />
@@ -754,6 +768,7 @@
     <Compile Include="States\UserState.cs" />
     <Compile Include="Crates\Helpers\LoggingDataCrateFactory.cs" />
     <Compile Include="Utility\JoinClasses\FileTags.cs" />
+    <Compile Include="Utility\CopyPropertiesHelper.cs" />
     <Compile Include="Utility\TagDO.cs" />
     <Compile Include="Validations\ActionValidator.cs" />
     <Compile Include="Validations\ContainerValidator.cs" />
@@ -924,6 +939,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201601151838550_AddedPublicIdentifierAndSecretoToTerminalDO.resx">
       <DependentUpon>201601151838550_AddedPublicIdentifierAndSecretoToTerminalDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201601201708533_Added_Fr8Account_2RouteNode.resx">
+      <DependentUpon>201601201708533_Added_Fr8Account_2RouteNode.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201601201734569_Removed_Fr8Account_From_Route.resx">
+      <DependentUpon>201601201734569_Removed_Fr8Account_From_Route.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201601240842409_EmptyMigration.resx">
+      <DependentUpon>201601240842409_EmptyMigration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

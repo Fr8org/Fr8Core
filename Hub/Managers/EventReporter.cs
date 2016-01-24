@@ -26,6 +26,13 @@ namespace Hub.Managers
 {
     public class EventReporter
     {
+        private readonly IActivityTemplate _activityTemplate;
+
+        public EventReporter(IActivityTemplate activityTemplate)
+        {
+            _activityTemplate = activityTemplate;
+        }
+        
         //Register for interesting events
         public void SubscribeToAlerts()
         {
@@ -213,7 +220,7 @@ namespace Hub.Managers
             var fact = new FactDO
             {
                 //CustomerId = containerDO.Fr8AccountId,
-                CustomerId = containerDO.Route.Fr8Account.Id,
+                CustomerId = containerDO.Route.Fr8AccountId,
                 Data = containerDO.Id.ToStr(),
                 ObjectId = containerDO.Id.ToStr(),
                 PrimaryCategory = "Process Access",
@@ -651,7 +658,7 @@ namespace Hub.Managers
         {
             var fact = new FactDO
             {
-                CustomerId = launchedContainer.Route.Fr8Account.Id,
+                CustomerId = launchedContainer.Route.Fr8AccountId,
                 Data = launchedContainer.Id.ToStr(),
                 ObjectId = launchedContainer.Id.ToStr(),
                 PrimaryCategory = "Container Execution",
@@ -673,7 +680,7 @@ namespace Hub.Managers
 
                 fact = new FactDO
                 {
-                    CustomerId = containerInExecution != null ? containerInExecution.Route.Fr8Account.Id : "unknown",
+                    CustomerId = containerInExecution != null ? containerInExecution.Route.Fr8AccountId : "unknown",
                     Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
                     ObjectId = processNode.Id.ToStr(),
                     PrimaryCategory = "Container Execution",
@@ -696,7 +703,7 @@ namespace Hub.Managers
 
                 fact = new FactDO
                 {
-                    CustomerId = containerInExecution != null ? containerInExecution.Route.Fr8Account.Id : "unknown",
+                    CustomerId = containerInExecution != null ? containerInExecution.Route.Fr8AccountId : "unknown",
                     Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
                     ObjectId = null,
                     PrimaryCategory = "Process Execution",
@@ -719,7 +726,7 @@ namespace Hub.Managers
 
                 fact = new FactDO
                 {
-                    CustomerId = containerInExecution != null ? containerInExecution.Route.Fr8Account.Id : "unknown",
+                    CustomerId = containerInExecution != null ? containerInExecution.Route.Fr8AccountId : "unknown",
                     Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
                     ObjectId = null,
                     PrimaryCategory = "Process Execution",
@@ -743,7 +750,7 @@ namespace Hub.Managers
 
                 fact = new FactDO
                 {
-                    CustomerId = (containerInExecution != null) ? containerInExecution.Route.Fr8Account.Id : "unknown",
+                    CustomerId = (containerInExecution != null) ? containerInExecution.Route.Fr8AccountId : "unknown",
                     Data = (containerInExecution != null) ? containerInExecution.Id.ToStr() : "unknown",
                     ObjectId = curAction.Id.ToStr(),
                     PrimaryCategory = "Process Execution",
@@ -767,7 +774,7 @@ namespace Hub.Managers
 
                 fact = new FactDO
                 {
-                    CustomerId = containerInExecution != null ? containerInExecution.Route.Fr8Account.Id : "unknown",
+                    CustomerId = containerInExecution != null ? containerInExecution.Route.Fr8AccountId : "unknown",
                     Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
                     ObjectId = curAction.Id.ToStr(),
                     PrimaryCategory = "Process Execution",
@@ -854,7 +861,7 @@ namespace Hub.Managers
             {
                 var curFact = new FactDO
                 {
-                    CustomerId = containerDO.Route.Fr8Account != null ? containerDO.Route.Fr8Account.Id : "",
+                    CustomerId = containerDO.Route.Fr8AccountId,
                     ObjectId = containerDO.Id.ToStr(),
                     PrimaryCategory = "Containers",
                     SecondaryCategory = "Operations",
@@ -862,7 +869,7 @@ namespace Hub.Managers
                 };
                 if (actionDO != null)
                 {
-                    var terminalName = actionDO.ActivityTemplate.Terminal.Name;
+                    var terminalName = _activityTemplate.GetByKey(actionDO.ActivityTemplateId.Value).Terminal.Name;
                     curFact.Data = string.Format("Terminal: {0} - Action: {1}.", terminalName, actionDO.Name);
                 }
             
