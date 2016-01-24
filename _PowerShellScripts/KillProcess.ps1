@@ -1,13 +1,19 @@
 $RootDir = Split-Path -parent (Split-Path -parent $MyInvocation.MyCommand.Path)
 $Path= $RootDir+"\*\obj\Release"
-
+$Handle = $RootDir+"\BuildUtils\handle.exe"
 $files = Get-ChildItem $Path -Recurse | where {$_.extension -eq ".resources" -OR $_.Extension -eq ".dll"}
+
 foreach($file in $files)
 {
-Get-Process | foreach{$processVar = $_;$_.Modules | foreach{if($_.FileName -eq $file)
-{
-    $processVar.Name + " PID:" + $processVar.id
-    Stop-Process -id $processVar.Id -passThru -Force -Verbose
-}
-}}
+	[regex]$matchPattern = "(?<Name>\w+\.\w+)\s+pid:\s+(?<PID>\d+)\s+type:\s+(?<Type>\w+)\s+(?<User>\S+)\s+\w+:\s+(?<Path>.*)"
+
+	$data = &$handle -u $file
+	$MyMatches = $matchPattern.Matches( $data )
+
+	if ($MyMatches.count) {
+
+		$MyMatches | foreach {
+			Stop-Process $_.groups["PID"].value -passThru -Force -Verbose
+		}
+	}
 }
