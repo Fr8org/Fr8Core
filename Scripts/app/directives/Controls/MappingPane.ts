@@ -5,7 +5,7 @@ module dockyard.directives {
 
     interface IMappingPaneScope extends ng.IScope {
         field: any;
-        currentAction: model.ActionDTO;
+        currentAction: model.ActivityDTO;
         dataItems: any;
     }
 

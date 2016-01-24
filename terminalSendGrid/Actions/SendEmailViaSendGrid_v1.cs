@@ -17,7 +17,7 @@ using Data.Interfaces.Manifests;
 using System.Linq;
 namespace terminalSendGrid.Actions
 {
-    public class SendEmailViaSendGrid_v1 : BaseTerminalAction
+    public class SendEmailViaSendGrid_v1 : BaseTerminalActivity
     {
         // moved the EmailPackager ObjectFactory here since the basepluginAction will be called by others and the dependency is defiend in pluginsendGrid
         private IConfigRepository _configRepository;
@@ -31,18 +31,18 @@ namespace terminalSendGrid.Actions
             _excludedCrates = new List<string>() { "AvailableActions" };
         }
 
-        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            return await ProcessConfigurationRequest(curActionDO, EvaluateReceivedRequest, authTokenDO);
+            return await ProcessConfigurationRequest(curActivityDO, EvaluateReceivedRequest, authTokenDO);
         }
 
         /// <summary>
         /// this entire function gets passed as a delegate to the main processing code in the base class
         /// currently many actions have two stages of configuration, and this method determines which stage should be applied
         /// </summary>
-        private ConfigurationRequestType EvaluateReceivedRequest(ActionDO curActionDO)
+        private ConfigurationRequestType EvaluateReceivedRequest(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActionDO))
+            if (Crate.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -50,55 +50,55 @@ namespace terminalSendGrid.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
 
-            using (var updater = Crate.UpdateStorage(curActionDO))
+            using (var updater = Crate.UpdateStorage(curActivityDO))
             {
                 updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(CreateControlsCrate());
-                updater.CrateStorage.Add(await CreateAvailableFieldsCrate(curActionDO));
+                updater.CrateStorage.Add(await CreateAvailableFieldsCrate(curActivityDO));
             }
 
-            return await Task.FromResult(curActionDO);
+            return await Task.FromResult(curActivityDO);
         }
 
-        protected async override Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected async override Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActionDO))
+            using (var updater = Crate.UpdateStorage(curActivityDO))
             {
-                updater.CrateStorage.ReplaceByLabel(await CreateAvailableFieldsCrate(curActionDO));
+                updater.CrateStorage.ReplaceByLabel(await CreateAvailableFieldsCrate(curActivityDO));
             }
 
-            return await Task.FromResult(curActionDO);
+            return await Task.FromResult(curActivityDO);
         }
 
         // @alexavrutin here: Do we really need a separate crate for each field? 
         // Refactored the action to use a single Upstream Terminal-Provided Fields crate.
-        private async Task<ActionDO> AddDesignTimeFieldsSource(ActionDO curActionDO)
+        private async Task<ActivityDO> AddDesignTimeFieldsSource(ActivityDO curActivityDO)
         {
-            using (var updater = Crate.UpdateStorage(curActionDO))
+            using (var updater = Crate.UpdateStorage(curActivityDO))
             {
                 updater.CrateStorage.RemoveByLabel("Upstream Terminal-Provided Fields Address");
                 updater.CrateStorage.RemoveByLabel("Upstream Terminal-Provided Fields Subject");
                 updater.CrateStorage.RemoveByLabel("Upstream Terminal-Provided Fields Body");
 
-                var fieldsDTO = await GetCratesFieldsDTO<StandardDesignTimeFieldsCM>(curActionDO, CrateDirection.Upstream);
+                var fieldsDTO = await GetCratesFieldsDTO<StandardDesignTimeFieldsCM>(curActivityDO, CrateDirection.Upstream);
 
-                var upstreamFieldsAddress = MergeUpstreamFields<StandardDesignTimeFieldsCM>(curActionDO, "Upstream Terminal-Provided Fields Address", fieldsDTO);
+                var upstreamFieldsAddress = MergeUpstreamFields<StandardDesignTimeFieldsCM>(curActivityDO, "Upstream Terminal-Provided Fields Address", fieldsDTO);
                 if (upstreamFieldsAddress != null)
                     updater.CrateStorage.Add(upstreamFieldsAddress);
 
-                var upstreamFieldsSubject = MergeUpstreamFields<StandardDesignTimeFieldsCM>(curActionDO, "Upstream Terminal-Provided Fields Subject", fieldsDTO);
+                var upstreamFieldsSubject = MergeUpstreamFields<StandardDesignTimeFieldsCM>(curActivityDO, "Upstream Terminal-Provided Fields Subject", fieldsDTO);
                 if (upstreamFieldsSubject != null)
                     updater.CrateStorage.Add(upstreamFieldsSubject);
 
-                var upstreamFieldsBody = MergeUpstreamFields<StandardDesignTimeFieldsCM>(curActionDO, "Upstream Terminal-Provided Fields Body", fieldsDTO);
+                var upstreamFieldsBody = MergeUpstreamFields<StandardDesignTimeFieldsCM>(curActivityDO, "Upstream Terminal-Provided Fields Body", fieldsDTO);
                 if (upstreamFieldsBody != null)
                     updater.CrateStorage.Add(upstreamFieldsBody);
             }
 
-            return curActionDO;
+            return curActivityDO;
         }
 
         /// <summary>
@@ -169,19 +169,19 @@ namespace terminalSendGrid.Actions
             return htmlText;
         }
 
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var fromAddress = _configRepository.Get("OutboundFromAddress");
 
-            var payloadCrates = await GetPayload(curActionDO, containerId);
+            var payloadCrates = await GetPayload(curActivityDO, containerId);
 
             var payloadCrateStorage = Crate.GetStorage(payloadCrates);
-            StandardConfigurationControlsCM configurationControls = GetConfigurationControls(curActionDO);
+            StandardConfigurationControlsCM configurationControls = GetConfigurationControls(curActivityDO);
 
             // A fix to support an old (wrong) crate label (FR-1972). The following block can be savely removed in Feb 2016
             if (configurationControls == null)
             {
-                var storage = Crate.GetStorage(curActionDO);
+                var storage = Crate.GetStorage(curActivityDO);
                 configurationControls = storage.CrateContentsOfType<StandardConfigurationControlsCM>(c => String.Equals(c.Label, "SendGrid", StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
             }
 

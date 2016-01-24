@@ -20,7 +20,7 @@ using System.Reflection;
 
 namespace terminalFr8Core.Actions
 {
-    public class StoreMTData_v1 : BaseTerminalAction
+    public class StoreMTData_v1 : BaseTerminalActivity
     {
         private class ActionUi : StandardConfigurationControlsCM
         {
@@ -45,14 +45,14 @@ namespace terminalFr8Core.Actions
 
             }
         }
-        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
+            return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
         }
 
-        public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var controls = Crate.GetStorage(actionDO)
+            var controls = Crate.GetStorage(activityDO)
                .CrateContentsOfType<StandardConfigurationControlsCM>()
                .SingleOrDefault();
 
@@ -63,7 +63,7 @@ namespace terminalFr8Core.Actions
             {
 
                 //get the process payload
-                var curProcessPayload = await GetPayload(actionDO, containerId);
+                var curProcessPayload = await GetPayload(activityDO, containerId);
                 var curCrates = Crate.FromDto(curProcessPayload.CrateStorage).CratesOfType<Manifest>().Where(d => d.Label == specificEvent.selectedKey);
 
                 foreach (var curCrate in curCrates)
@@ -80,13 +80,13 @@ namespace terminalFr8Core.Actions
             }
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActionDO))
+            if (Crate.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
-            var storage = Crate.GetStorage(curActionDO);
+            var storage = Crate.GetStorage(curActivityDO);
 
             var hasAvailableRunTimeObjectsCrate = storage
                 .CratesOfType<StandardDesignTimeFieldsCM>(c => c.Label == "Available Run-Time Objects").FirstOrDefault() != null;
@@ -106,10 +106,10 @@ namespace terminalFr8Core.Actions
             return ConfigurationRequestType.Initial;
         }
 
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
 
-            var curMergedUpstreamRunTimeObjects = await MergeUpstreamFields(curActionDO, "Available Run-Time Objects");
+            var curMergedUpstreamRunTimeObjects = await MergeUpstreamFields(curActivityDO, "Available Run-Time Objects");
 
             var curConfigurationControlsCrate = PackControls(
                 new ActionUi(curMergedUpstreamRunTimeObjects.Label, curMergedUpstreamRunTimeObjects.ManifestType.Type));
@@ -119,7 +119,7 @@ namespace terminalFr8Core.Actions
 
             var curSelectedObjectType = Crate.CreateDesignTimeFieldsCrate("SelectedObjectTypes", curSelectedFields);
 
-            using (var updater = Crate.UpdateStorage(() => curActionDO.CrateStorage))
+            using (var updater = Crate.UpdateStorage(() => curActivityDO.CrateStorage))
             {
                 updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(curMergedUpstreamRunTimeObjects);
@@ -127,7 +127,7 @@ namespace terminalFr8Core.Actions
                 updater.CrateStorage.Add(curSelectedObjectType);
             }
 
-            return curActionDO;
+            return curActivityDO;
         }
     }
 }

@@ -17,12 +17,12 @@ namespace Hub.Managers
     public class RouteManager
     {
         private readonly IActivityTemplate _activityTemplate;
-        private readonly IAction _action;
+        private readonly IActivity _activity;
 
         public RouteManager()
         {
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
-            _action = ObjectFactory.GetInstance<IAction>();
+            _activity = ObjectFactory.GetInstance<IActivity>();
         }
 
         public async Task CreateRoute_LogFr8InternalEvents(string curFr8UserId)
@@ -75,8 +75,8 @@ namespace Hub.Managers
                 var activity2 = Mapper.Map<ActivityTemplateDTO>(_activityTemplate.GetByName(uow, "StoreMTData_v1"));
 
                 //create and configure required actions
-                await _action.CreateAndConfigure(uow, curFr8Account.Id, activity1.Id, activity1.Name, activity1.Label, subroute.Id);
-                await _action.CreateAndConfigure(uow, curFr8Account.Id, activity2.Id, activity2.Name, activity2.Label, subroute.Id);
+                await _activity.CreateAndConfigure(uow, curFr8Account.Id, activity1.Id, activity1.Name, activity1.Label, subroute.Id);
+                await _activity.CreateAndConfigure(uow, curFr8Account.Id, activity2.Id, activity2.Name, activity2.Label, subroute.Id);
 
                 //update database
                 uow.SaveChanges();

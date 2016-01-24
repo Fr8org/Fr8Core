@@ -89,11 +89,11 @@ namespace terminalDocuSign.Tests.Services
                 uow.SaveChanges();
 
                 //create and mock required acitons
-                var recordDocuSignAction = FixtureData.TestAction1();
-                var storeMtDataAction = FixtureData.TestAction2();
+                var recordDocuSignAction = FixtureData.TestActivity1();
+                var storeMtDataAction = FixtureData.TestActivity2();
 
                 //setup Action Service
-                Mock<IAction> _actionMock = new Mock<IAction>(MockBehavior.Default);
+                Mock<IActivity> _actionMock = new Mock<IActivity>(MockBehavior.Default);
 
                 _actionMock.Setup(
                     a => a.CreateAndConfigure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<int>(),
@@ -101,7 +101,7 @@ namespace terminalDocuSign.Tests.Services
                         {
                             using (var uow1 = ObjectFactory.GetInstance<IUnitOfWork>())
                             {
-                                uow1.ActionRepository.Add(recordDocuSignAction);
+                                uow1.ActivityRepository.Add(recordDocuSignAction);
 
                                 var subRoute = uow1.SubrouteRepository.GetQuery().Single();
                                 subRoute.ChildNodes.Add(recordDocuSignAction);
@@ -116,7 +116,7 @@ namespace terminalDocuSign.Tests.Services
                         {
                             using (var uow1 = ObjectFactory.GetInstance<IUnitOfWork>())
                             {
-                                uow1.ActionRepository.Add(storeMtDataAction);
+                                uow1.ActivityRepository.Add(storeMtDataAction);
 
                                 var subRoute = uow1.SubrouteRepository.GetQuery().Single();
                                 subRoute.ChildNodes.Add(recordDocuSignAction);
@@ -125,7 +125,7 @@ namespace terminalDocuSign.Tests.Services
                             }
                         }).Returns(Task.FromResult(storeMtDataAction as RouteNodeDO));
 
-                ObjectFactory.Container.Inject(typeof (IAction), _actionMock.Object);
+                ObjectFactory.Container.Inject(typeof (IActivity), _actionMock.Object);
             }
         }
     }

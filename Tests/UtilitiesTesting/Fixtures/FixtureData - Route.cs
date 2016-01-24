@@ -128,7 +128,7 @@ namespace UtilitiesTesting.Fixtures
                 routeDO.StartingSubroute = subrouteDO;
 
 
-                var actionDo = new ActionDO()
+                var actionDo = new ActivityDO()
                 {
                     ParentRouteNode = routeDO,
                     ParentRouteNodeId = routeDO.Id,
@@ -153,7 +153,7 @@ namespace UtilitiesTesting.Fixtures
                     updater.CrateStorage.Add(Crate.FromContent("Standard Event Subscriptions", eventSubscriptionMS));
                 }
 
-                uow.ActionRepository.Add(actionDo);
+                uow.ActivityRepository.Add(actionDo);
                 subrouteDO.ChildNodes.Add(actionDo);
 
                 uow.SaveChanges();
@@ -208,7 +208,7 @@ namespace UtilitiesTesting.Fixtures
                 routeDO.StartingSubroute = subrouteDO;
 
 
-                var actionDo = new ActionDO()
+                var actionDo = new ActivityDO()
                 {
                     ParentRouteNode = routeDO,
                     ParentRouteNodeId = routeDO.Id,
@@ -233,7 +233,7 @@ namespace UtilitiesTesting.Fixtures
                     updater.CrateStorage.Add(Crate.FromContent("Standard Event Subscriptions", eventSubscriptionMS));
                 }
 
-                uow.ActionRepository.Add(actionDo);
+                uow.ActivityRepository.Add(actionDo);
                 subrouteDO.ChildNodes.Add(actionDo);
 
                 uow.SaveChanges();

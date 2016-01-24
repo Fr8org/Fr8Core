@@ -21,13 +21,13 @@ namespace Hub.Services
 
         private readonly ICrateManager _crate;
         private readonly IRouteNode _routeNode;
-        private readonly IAction _action;
+        private readonly IActivity _activity;
 
         public Subroute()
         {
             _routeNode = ObjectFactory.GetInstance<IRouteNode>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
-            _action = ObjectFactory.GetInstance<IAction>();
+            _activity = ObjectFactory.GetInstance<IActivity>();
         }
 
         /// <summary>
@@ -140,18 +140,18 @@ namespace Hub.Services
             uow.SaveChanges();
         }
 
-        public void AddAction(IUnitOfWork uow, ActionDO curActionDO)
+        public void AddActivity(IUnitOfWork uow, ActivityDO curActivityDO)
         {
-            var subroute = uow.SubrouteRepository.GetByKey(curActionDO.ParentRouteNodeId);
+            var subroute = uow.SubrouteRepository.GetByKey(curActivityDO.ParentRouteNodeId);
 
             if (subroute == null)
             {
-                throw new Exception(string.Format("Unable to find Subroute by id = {0}", curActionDO.ParentRouteNodeId));
+                throw new Exception(string.Format("Unable to find Subroute by id = {0}", curActivityDO.ParentRouteNodeId));
             }
 
-            curActionDO.Ordering = subroute.ChildNodes.Count > 0 ? subroute.ChildNodes.Max(x => x.Ordering) + 1 : 1;
+            curActivityDO.Ordering = subroute.ChildNodes.Count > 0 ? subroute.ChildNodes.Max(x => x.Ordering) + 1 : 1;
 
-            subroute.ChildNodes.Add(curActionDO);
+            subroute.ChildNodes.Add(curActivityDO);
 
             uow.SaveChanges();
         }
@@ -174,8 +174,8 @@ namespace Hub.Services
             var validationErrors = new List<Crate>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curAction = await uow.ActionRepository.GetQuery().SingleAsync(a => a.Id == actionId);
-                var downstreamActions = _routeNode.GetDownstreamActivities(uow, curAction).OfType<ActionDO>();
+                var curAction = await uow.ActivityRepository.GetQuery().SingleAsync(a => a.Id == actionId);
+                var downstreamActions = _routeNode.GetDownstreamActivities(uow, curAction).OfType<ActivityDO>();
 
                 //set ActivityTemplate and parentRouteNode of current action to null -> to simulate a delete
                 int? templateIdBackup = curAction.ActivityTemplateId;
@@ -186,10 +186,10 @@ namespace Hub.Services
 
 
                 //lets start multithreaded calls
-                var configureTaskList = new List<Task<ActionDTO>>();
+                var configureTaskList = new List<Task<ActivityDTO>>();
                 foreach (var downstreamAction in downstreamActions)
                 {
-                    configureTaskList.Add(_action.Configure(userId, downstreamAction, false));
+                    configureTaskList.Add(_activity.Configure(userId, downstreamAction, false));
                 }
 
                 await Task.WhenAll(configureTaskList);
@@ -217,7 +217,7 @@ namespace Hub.Services
                 }
                 else
                 {
-                    uow.ActionRepository.Remove(curAction);
+                    uow.ActivityRepository.Remove(curAction);
                     uow.SaveChanges();
                     //TODO update ordering of downstream actions
                 }
@@ -227,7 +227,7 @@ namespace Hub.Services
         }
 
         //TODO find a better response type for this function
-        public async Task<bool> DeleteAction(string userId, Guid actionId, bool confirmed)
+        public async Task<bool> DeleteActivity(string userId, Guid actionId, bool confirmed)
         {
             if (confirmed)
             {
@@ -257,7 +257,7 @@ namespace Hub.Services
                     throw new InvalidOperationException("Unknown RouteNode with id: " + id);
                 }
 
-                var downStreamActivities = _routeNode.GetDownstreamActivities(uow, curAction).OfType<ActionDO>();
+                var downStreamActivities = _routeNode.GetDownstreamActivities(uow, curAction).OfType<ActivityDO>();
                 //we should clear values of configuration controls
 
                 foreach (var downStreamActivity in downStreamActivities)

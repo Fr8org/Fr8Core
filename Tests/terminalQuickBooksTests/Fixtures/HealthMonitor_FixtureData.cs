@@ -35,11 +35,11 @@ namespace terminalQuickBooksTests.Fixtures
                 Version = "1"
             };
         }
-        public static ActionDTO Action_Create_Journal_Entry_v1_InitialConfiguration_ActionDTO()
+        public static ActivityDTO Action_Create_Journal_Entry_v1_InitialConfiguration_ActionDTO()
         {
             var activityTemplate = Action_Create_Journal_Entry_ActivityTemplate();
 
-            return new ActionDTO()
+            return new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
                 Name = "Create_Journal_Entry",
@@ -58,11 +58,11 @@ namespace terminalQuickBooksTests.Fixtures
                 Version = "1"
             };
         }
-        public static ActionDTO Convert_TableData_To_AccountingTransactions_v1_InitialConfiguration_ActionDTO()
+        public static ActivityDTO Convert_TableData_To_AccountingTransactions_v1_InitialConfiguration_ActionDTO()
         {
             var activityTemplate = Convert_TableData_To_AccountingTransactions_ActivityTemplate();
 
-            return new ActionDTO()
+            return new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
                 Name = "Convert_TableData_To_AccountingTransactions",

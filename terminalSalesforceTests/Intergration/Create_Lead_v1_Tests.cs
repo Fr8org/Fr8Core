@@ -28,7 +28,7 @@ namespace terminalSalesforceTests.Intergration
 
             //Assert
             Assert.IsNotNull(initialConfigActionDto.CrateStorage,
-                "Initial Configuration of Create Lead action contains no crate storage");
+                "Initial Configuration of Create Lead activity contains no crate storage");
 
             AssertConfigurationControls(Crate.FromDto(initialConfigActionDto.CrateStorage));
         }
@@ -48,7 +48,7 @@ namespace terminalSalesforceTests.Intergration
 
             //Act
             //perform post request to terminal and return the result
-            await HttpPostAsync<ActionDTO, ActionDTO>(terminalConfigureUrl, requestActionDTO);
+            await HttpPostAsync<ActivityDTO, ActivityDTO>(terminalConfigureUrl, requestActionDTO);
         }
 
         [Test, Category("intergration.terminalSalesforce")]
@@ -60,13 +60,13 @@ namespace terminalSalesforceTests.Intergration
             AddOperationalStateCrate(initialConfigActionDto, new OperationalStateCM());
 
             //Act
-            var responseOperationalState = await HttpPostAsync<ActionDTO, PayloadDTO>(GetTerminalRunUrl(), initialConfigActionDto);
+            var responseOperationalState = await HttpPostAsync<ActivityDTO, PayloadDTO>(GetTerminalRunUrl(), initialConfigActionDto);
 
             //Assert
             Assert.IsNotNull(responseOperationalState);
             var curOperationalState =
                 Crate.FromDto(responseOperationalState.CrateStorage).CratesOfType<OperationalStateCM>().Single().Content;
-            Assert.AreEqual("No AuthToken provided.", curOperationalState.CurrentActionErrorMessage, "Authentication is mishandled at action side.");
+            Assert.AreEqual("No AuthToken provided.", curOperationalState.CurrentActivityErrorMessage, "Authentication is mishandled at activity side.");
         }
 
         [Test, Category("intergration.terminalSalesforce")]
@@ -80,13 +80,13 @@ namespace terminalSalesforceTests.Intergration
             AddOperationalStateCrate(initialConfigActionDto, new OperationalStateCM());
 
             //Act
-            var responseOperationalState = await HttpPostAsync<ActionDTO, PayloadDTO>(GetTerminalRunUrl(), initialConfigActionDto);
+            var responseOperationalState = await HttpPostAsync<ActivityDTO, PayloadDTO>(GetTerminalRunUrl(), initialConfigActionDto);
 
             //Assert
             Assert.IsNotNull(responseOperationalState);
             var curOperationalState =
                 Crate.FromDto(responseOperationalState.CrateStorage).CratesOfType<OperationalStateCM>().Single().Content;
-            Assert.AreEqual("No last name found in action.", curOperationalState.CurrentActionErrorMessage, "Action works without last name");
+            Assert.AreEqual("No last name found in activity.", curOperationalState.CurrentActivityErrorMessage, "Action works without last name");
         }
 
         [Test, Category("intergration.terminalSalesforce")]
@@ -100,13 +100,13 @@ namespace terminalSalesforceTests.Intergration
             AddOperationalStateCrate(initialConfigActionDto, new OperationalStateCM());
 
             //Act
-            var responseOperationalState = await HttpPostAsync<ActionDTO, PayloadDTO>(GetTerminalRunUrl(), initialConfigActionDto);
+            var responseOperationalState = await HttpPostAsync<ActivityDTO, PayloadDTO>(GetTerminalRunUrl(), initialConfigActionDto);
 
             //Assert
             Assert.IsNotNull(responseOperationalState);
             var curOperationalState =
                 Crate.FromDto(responseOperationalState.CrateStorage).CratesOfType<OperationalStateCM>().Single().Content;
-            Assert.AreEqual("No company name found in action.", curOperationalState.CurrentActionErrorMessage, "Action works without company name");
+            Assert.AreEqual("No company name found in activity.", curOperationalState.CurrentActivityErrorMessage, "Action works without company name");
         }
 
         [Test, Category("intergration.terminalSalesforce")]
@@ -119,7 +119,7 @@ namespace terminalSalesforceTests.Intergration
             AddOperationalStateCrate(initialConfigActionDto, new OperationalStateCM());
 
             //Act
-            var responseOperationalState = await HttpPostAsync<ActionDTO, PayloadDTO>(GetTerminalRunUrl(), initialConfigActionDto);
+            var responseOperationalState = await HttpPostAsync<ActivityDTO, PayloadDTO>(GetTerminalRunUrl(), initialConfigActionDto);
 
             //Assert
             Assert.IsNotNull(responseOperationalState);
@@ -128,7 +128,7 @@ namespace terminalSalesforceTests.Intergration
         /// <summary>
         /// Performs Initial Configuration request of Create Contact action
         /// </summary>
-        private async Task<ActionDTO> PerformInitialConfiguration()
+        private async Task<ActivityDTO> PerformInitialConfiguration()
         {
             //get the terminal configure URL
             string terminalConfigureUrl = GetTerminalConfigureUrl();
@@ -137,7 +137,7 @@ namespace terminalSalesforceTests.Intergration
             var requestActionDTO = HealthMonitor_FixtureData.Create_Lead_v1_InitialConfiguration_ActionDTO();
 
             //perform post request to terminal and return the result
-            var resultActionDto = await HttpPostAsync<ActionDTO, ActionDTO>(terminalConfigureUrl, requestActionDTO);
+            var resultActionDto = await HttpPostAsync<ActivityDTO, ActivityDTO>(terminalConfigureUrl, requestActionDTO);
 
             using (var updater = Crate.UpdateStorage(resultActionDto))
             {
@@ -171,32 +171,32 @@ namespace terminalSalesforceTests.Intergration
 
         private ActionDTO SetSpecificValues(ActionDTO curActionDto)
         {
-            using (var updater = Crate.UpdateStorage(curActionDto))
+            using (var updater = Crate.UpdateStorage(curActivityDto))
             {
                 var controls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
 
                 controls.Controls.ForEach(control =>
                 {
                     var targetUrlTextBox = (TextSource)control;
-                    targetUrlTextBox.ValueSource = "specific";
+                targetUrlTextBox.ValueSource = "specific";
                     targetUrlTextBox.TextValue = "IntegrationTestValue";
                 });
                 
             }
 
-            return curActionDto;
+            return curActivityDto;
         }
 
         private ActionDTO ExcludeValue(ActionDTO curActionDto, string controlName)
         {
-            using (var updater = Crate.UpdateStorage(curActionDto))
+            using (var updater = Crate.UpdateStorage(curActivityDto))
             {
                 var controls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
                 controls.Controls.Single(c => c.Name.Equals(controlName)).Value = string.Empty;
 
             }
 
-            return curActionDto;
+            return curActivityDto;
         }
     }
 }

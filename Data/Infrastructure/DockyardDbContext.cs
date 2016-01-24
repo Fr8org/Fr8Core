@@ -270,7 +270,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<ProfileNodeDescendantsCTE>().ToTable("ProfileNodeDescendantsCTEView");
             modelBuilder.Entity<ExpectedResponseDO>().ToTable("ExpectedResponses");
             modelBuilder.Entity<RouteDO>().ToTable("Routes");
-            modelBuilder.Entity<ActionDO>().ToTable("Actions");
+            modelBuilder.Entity<ActivityDO>().ToTable("Actions");
             modelBuilder.Entity<ProcessNodeDO>().ToTable("ProcessNodes");
             modelBuilder.Entity<SubrouteDO>().ToTable("Subroutes");
             modelBuilder.Entity<EnvelopeDO>().ToTable("Envelopes");

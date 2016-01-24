@@ -36,7 +36,7 @@ namespace Hub.Services
             };
 
             var connectToSqlActivityTemplate = _activityTemplate.GetByName(uow, "ConnectToSql_v1");
-            var connectToSqlAction = new ActionDO()
+            var connectToSqlAction = new ActivityDO()
             {
                 Id = Guid.NewGuid(),
                 ParentRouteNode = subroute,
@@ -47,7 +47,7 @@ namespace Hub.Services
             };
 
             var buildQueryActivityTemplate = _activityTemplate.GetByName(uow, "BuildQuery_v1");
-            var buildQueryAction = new ActionDO()
+            var buildQueryAction = new ActivityDO()
             {
                 Id = Guid.NewGuid(),
                 ParentRouteNode = subroute,
@@ -58,7 +58,7 @@ namespace Hub.Services
             };
 
             var executeSqlActivityTemplate = _activityTemplate.GetByName(uow, "ExecuteSql_v1");
-            var executeSqlAction = new ActionDO()
+            var executeSqlAction = new ActivityDO()
             {
                 Id = Guid.NewGuid(),
                 ParentRouteNode = subroute,
@@ -69,7 +69,7 @@ namespace Hub.Services
             };
 
             var manageRouteActivityTemplate = _activityTemplate.GetByName(uow, "ManageRoute_v1");
-            var manageRouteAction = new ActionDO()
+            var manageRouteAction = new ActivityDO()
             {
                 Id = Guid.NewGuid(),
                 ParentRouteNode = subroute,

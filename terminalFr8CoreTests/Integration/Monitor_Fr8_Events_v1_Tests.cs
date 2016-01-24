@@ -33,15 +33,15 @@ namespace terminalTests.Integration
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = FixtureData.MonitorFr8Event_InitialConfiguration_ActionDTO();
+            var requestActivityDTO = FixtureData.MonitorFr8Event_InitialConfiguration_ActionDTO();
 
-            var responseActionDTO = HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, requestActionDTO).Result;
+            var responseActivityDTO = HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, requestActivityDTO).Result;
 
-            Assert.NotNull(responseActionDTO);
-            Assert.NotNull(responseActionDTO.CrateStorage);
-            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
+            Assert.NotNull(responseActivityDTO);
+            Assert.NotNull(responseActivityDTO.CrateStorage);
+            Assert.NotNull(responseActivityDTO.CrateStorage.Crates);
 
-            var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
+            var crateStorage = Crate.FromDto(responseActivityDTO.CrateStorage);
             Assert.AreEqual(3, crateStorage.Count);
         }
 
@@ -50,12 +50,12 @@ namespace terminalTests.Integration
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = FixtureData.MonitorFr8Event_InitialConfiguration_ActionDTO();
-            var responseActionDTO = HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, requestActionDTO).Result;
+            var requestActivityDTO = FixtureData.MonitorFr8Event_InitialConfiguration_ActionDTO();
+            var responseActivityDTO = HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, requestActivityDTO).Result;
 
-            Assert.NotNull(responseActionDTO);
-            Assert.NotNull(responseActionDTO.CrateStorage);
-            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
+            Assert.NotNull(responseActivityDTO);
+            Assert.NotNull(responseActivityDTO.CrateStorage);
+            Assert.NotNull(responseActivityDTO.CrateStorage.Crates);
 
         }
 
@@ -63,12 +63,12 @@ namespace terminalTests.Integration
         public void Run_With_Route_Payload()
         {
             var configureUrl = GetTerminalConfigureUrl();
-            var requestActionDTO = FixtureData.MonitorFr8Event_InitialConfiguration_ActionDTO();
-            var responseActionDTO = HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, requestActionDTO).Result;
+            var requestActivityDTO = FixtureData.MonitorFr8Event_InitialConfiguration_ActionDTO();
+            var responseActivityDTO = HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, requestActivityDTO).Result;
             var runUrl = GetTerminalRunUrl();
 
             AddPayloadCrate(
-               responseActionDTO,
+               responseActivityDTO,
                new EventReportCM()
                {
                    EventPayload = new CrateStorage()
@@ -82,7 +82,7 @@ namespace terminalTests.Integration
                }
            );
 
-            var runResponse = HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, responseActionDTO).Result;
+            var runResponse = HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, responseActivityDTO).Result;
 
             Assert.NotNull(runResponse);
         }
