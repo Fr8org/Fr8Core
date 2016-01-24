@@ -1,4 +1,5 @@
 ﻿using Data.Constants;
+using Data.Interfaces.DataTransferObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +21,7 @@ namespace Data.Interfaces.Manifests
         public ActivityResponse CurrentActivityResponse { get; set; }
         public ActionErrorCode? CurrentActivityErrorCode { get; set; }
         public string CurrentActivityErrorMessage { get; set; }
+        public ResponseMessageDTO ResponseMessageDTO { get; set; }
 
         public OperationalStateCM()
             : base(MT.OperationalStatus)
