@@ -30,7 +30,7 @@ namespace terminalDocuSign.Actions
     {
         // Here in this action we have query builder control to build queries against docusign API and out mt database.
         // Docusign and MT DB have different set of fileds and we want to provide ability to search by any field.
-        // Our action should "route" queries on the particular fields to the corresponding backend.
+        // Our action should "plan" queries on the particular fields to the corresponding backend.
         // For example, we want to search by Status = Sent and Recipient = chucknorris@gmail.com
         // Both MT DB and Docusign can search by Status, but only MT DB can search by Recipient
         // We have to make two queries with the following criterias and union the results:

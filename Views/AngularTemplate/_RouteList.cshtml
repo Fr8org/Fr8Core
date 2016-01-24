@@ -6,14 +6,14 @@
 			<div class="portlet-title">
 				<div class="caption caption-md">
 					<i class="icon-bar-chart font-green-haze hide"></i>
-					<span class="caption-subject font-green-haze bold uppercase">ACTIVE Routes</span>
+					<span class="caption-subject font-green-haze bold uppercase">ACTIVE Plans</span>
 					<span class="caption-helper hide">weekly stats...</span>
 				</div>
 			</div>
 
             <div class="portlet-body">
-                <div ng-if="activeRoutes.$resolved != true">Loading routes...</div>
-                <div ng-if="activeRoutes.$resolved == true && activeRoutes.length == 0">No active routes found. To make a route active, click on the Activate button after your route is fully configured.</div>
+                <div ng-if="activeRoutes.$resolved != true">Loading plans...</div>
+                <div ng-if="activeRoutes.$resolved == true && activeRoutes.length == 0">No active plans found. To make a plan active, click on the Activate button after your plan is fully configured.</div>
                 <div ng-if="activeRoutes.$resolved == true && activeRoutes.length > 0">
                     <div class="table-scrollable table-scrollable-borderless">
                         <table class="row-border hover table table-hover table-light table-linkrows table-routes">
@@ -51,7 +51,7 @@
 			<div class="portlet-title">
 				<div class="caption caption-md">
 					<i class="icon-bar-chart font-green-haze hide"></i>
-					<span class="caption-subject font-green-haze bold uppercase">INACTIVE Routes</span>
+					<span class="caption-subject font-green-haze bold uppercase">INACTIVE Plans</span>
 					<span class="caption-helper hide">weekly stats...</span>
 				</div>
 				<div class="actions">
@@ -59,8 +59,8 @@
 			</div>
 
                 <div class="portlet-body">
-                    <div ng-if="inActiveRoutes.$resolved != true">Loading routes...</div>
-                    <div ng-if="inActiveRoutes.$resolved == true && inActiveRoutes.length == 0">No inactive routes are found. To make a route inactive, click on the Deactivate button for an Active route you wish to disable.</div>
+                    <div ng-if="inActiveRoutes.$resolved != true">Loading plans...</div>
+                    <div ng-if="inActiveRoutes.$resolved == true && inActiveRoutes.length == 0">No inactive plans are found. To make a plan inactive, click on the Deactivate button for an Active plan you wish to disable.</div>
                     <div ng-if="inActiveRoutes.$resolved == true && inActiveRoutes.length > 0">
                         <div class="table-scrollable table-scrollable-borderless">
                             <table class="row-border hover table table-hover table-light table-linkrows table-routes">

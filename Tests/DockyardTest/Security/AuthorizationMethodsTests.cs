@@ -146,7 +146,7 @@ namespace DockyardTest.Security
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
                 uow.SaveChanges();
 
-                var routeDO = new RouteDO()
+                var planDO = new PlanDO()
                 {
                     Id = FixtureData.GetTestGuidById(23),
                     Description = "HealthDemo Integration Test",
@@ -154,13 +154,13 @@ namespace DockyardTest.Security
                     RouteState = RouteState.Active,
                     Fr8Account = tokenDO.UserDO
                 };
-                uow.RouteRepository.Add(routeDO);
+                uow.RouteRepository.Add(planDO);
                 uow.SaveChanges();
 
                 var actionDO = new ActionDO()
                 {
-                    ParentRouteNode = routeDO,
-                    ParentRouteNodeId = routeDO.Id,
+                    ParentRouteNode = planDO,
+                    ParentRouteNodeId = planDO.Id,
                     Name = "testaction",
 
                     Id = FixtureData.GetTestGuidById(1),

@@ -220,7 +220,7 @@ namespace Hub.Managers
             var fact = new FactDO
             {
                 //CustomerId = containerDO.Fr8AccountId,
-                CustomerId = containerDO.Route.Fr8AccountId,
+                CustomerId = containerDO.Plan.Fr8AccountId,
                 Data = containerDO.Id.ToStr(),
                 ObjectId = containerDO.Id.ToStr(),
                 PrimaryCategory = "Process Access",
@@ -404,7 +404,7 @@ namespace Hub.Managers
         /// The method logs the fact of Process Template creation.      
         /// </summary>
         /// <param name="userId">UserId received from DocuSign.</param>
-        /// <param name="routeId">EnvelopeId received from DocuSign.</param>
+        /// <param name="planId">EnvelopeId received from DocuSign.</param>
         public void RouteCreated(string userId, string routeName)
         {
             FactDO fact = new FactDO
@@ -658,7 +658,7 @@ namespace Hub.Managers
         {
             var fact = new FactDO
             {
-                CustomerId = launchedContainer.Route.Fr8AccountId,
+                CustomerId = launchedContainer.Plan.Fr8AccountId,
                 Data = launchedContainer.Id.ToStr(),
                 ObjectId = launchedContainer.Id.ToStr(),
                 PrimaryCategory = "Container Execution",
@@ -680,7 +680,7 @@ namespace Hub.Managers
 
                 fact = new FactDO
                 {
-                    CustomerId = containerInExecution != null ? containerInExecution.Route.Fr8AccountId : "unknown",
+                    CustomerId = containerInExecution != null ? containerInExecution.Plan.Fr8AccountId : "unknown",
                     Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
                     ObjectId = processNode.Id.ToStr(),
                     PrimaryCategory = "Container Execution",
@@ -703,7 +703,7 @@ namespace Hub.Managers
 
                 fact = new FactDO
                 {
-                    CustomerId = containerInExecution != null ? containerInExecution.Route.Fr8AccountId : "unknown",
+                    CustomerId = containerInExecution != null ? containerInExecution.Plan.Fr8AccountId : "unknown",
                     Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
                     ObjectId = null,
                     PrimaryCategory = "Process Execution",
@@ -726,7 +726,7 @@ namespace Hub.Managers
 
                 fact = new FactDO
                 {
-                    CustomerId = containerInExecution != null ? containerInExecution.Route.Fr8AccountId : "unknown",
+                    CustomerId = containerInExecution != null ? containerInExecution.Plan.Fr8AccountId : "unknown",
                     Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
                     ObjectId = null,
                     PrimaryCategory = "Process Execution",
@@ -750,7 +750,7 @@ namespace Hub.Managers
 
                 fact = new FactDO
                 {
-                    CustomerId = (containerInExecution != null) ? containerInExecution.Route.Fr8AccountId : "unknown",
+                    CustomerId = (containerInExecution != null) ? containerInExecution.Plan.Fr8AccountId : "unknown",
                     Data = (containerInExecution != null) ? containerInExecution.Id.ToStr() : "unknown",
                     ObjectId = curAction.Id.ToStr(),
                     PrimaryCategory = "Process Execution",
@@ -774,7 +774,7 @@ namespace Hub.Managers
 
                 fact = new FactDO
                 {
-                    CustomerId = containerInExecution != null ? containerInExecution.Route.Fr8AccountId : "unknown",
+                    CustomerId = containerInExecution != null ? containerInExecution.Plan.Fr8AccountId : "unknown",
                     Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
                     ObjectId = curAction.Id.ToStr(),
                     PrimaryCategory = "Process Execution",
@@ -861,7 +861,7 @@ namespace Hub.Managers
             {
                 var curFact = new FactDO
                 {
-                    CustomerId = containerDO.Route.Fr8AccountId,
+                    CustomerId = containerDO.Plan.Fr8AccountId,
                     ObjectId = containerDO.Id.ToStr(),
                     PrimaryCategory = "Containers",
                     SecondaryCategory = "Operations",

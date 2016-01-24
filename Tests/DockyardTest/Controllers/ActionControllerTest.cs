@@ -46,8 +46,8 @@ namespace DockyardTest.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var route = FixtureData.TestRoute1();
-                uow.RouteRepository.Add(route);
+                var plan = FixtureData.TestRoute1();
+                uow.RouteRepository.Add(plan);
 
                 var subroute = FixtureData.TestSubrouteDO1();
                 uow.RouteNodeRepository.Add(subroute);
@@ -79,8 +79,8 @@ namespace DockyardTest.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var route = FixtureData.TestRoute1();
-                uow.RouteRepository.Add(route);
+                var plan = FixtureData.TestRoute1();
+                uow.RouteRepository.Add(plan);
 
                 var subroute = FixtureData.TestSubrouteDO1();
                 uow.RouteNodeRepository.Add(subroute);
@@ -298,12 +298,12 @@ namespace DockyardTest.Controllers
 //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 //            {
 //                // 
-//                var curRoute = FixtureData.TestRoute1();
-//                uow.RouteRepository.Add(curRoute);
+//                var curPlan = FixtureData.TestRoute1();
+//                uow.RouteRepository.Add(curPlan);
 //                uow.SaveChanges();
 //                //Add a processnodetemplate to processtemplate 
 //                var curSubroute = FixtureData.TestSubrouteDO1();
-//                curSubroute.ParentTemplateId = curRoute.Id;
+//                curSubroute.ParentTemplateId = curPlan.Id;
 //
 //                uow.SubrouteRepository.Add(curSubroute);
 //                uow.SaveChanges();

@@ -29,13 +29,13 @@ namespace DockyardTest.Managers
         [Test, Category("LogFr8Events_CreateRoute")]
         public async Task CreateRoute_LogFr8EventRoute()
         {
-            // call the route
+            // call the plan
             await routeManager.CreateRoute_LogFr8InternalEvents(FixtureData.TestAdminAccount().Email);
 
             // assert
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                Assert.IsFalse(uow.RouteRepository.GetAll().Count() > 1, "Automatic route is created in following success");
+                Assert.IsFalse(uow.RouteRepository.GetAll().Count() > 1, "Automatic plan is created in following success");
             }
         }
 

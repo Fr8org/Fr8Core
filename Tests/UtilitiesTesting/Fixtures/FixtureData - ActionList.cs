@@ -89,7 +89,7 @@ namespace UtilitiesTesting.Fixtures
                 Id = TestContainer_Id_1(),
                 ContainerState = 1,
                 Name = "test name",
-                RouteId = TestRouteHealthDemo().Id
+                PlanId = TestRouteHealthDemo().Id
             };
 
             using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => containerDO.CrateStorage))

@@ -135,7 +135,7 @@ namespace terminalFr8Core.Actions
             var textBlock = new TextBlock()
             {
                 Name = "InfoBlock",
-                Value = "When this route is executed, the values found in the fields on the left will be used for the fields on the right",
+                Value = "When this plan is executed, the values found in the fields on the left will be used for the fields on the right",
                 CssClass = "well well-lg"
             };
 

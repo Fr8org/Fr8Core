@@ -32,20 +32,20 @@ namespace Hub.Managers
             {
                 var curFr8Account = uow.UserRepository.GetOrCreateUser(curFr8UserId);
 
-                //check if the route already created
+                //check if the plan already created
 
                 var existingRoute = GetExistingRoute(uow, "LogFr8InternalEvents", curFr8Account.Email);
 
                 if (existingRoute != null)
                 {
-                    //if route is already created, just make it active and return
+                    //if plan is already created, just make it active and return
                     existingRoute.RouteState = RouteState.Active;
                     uow.SaveChanges();
                     return;
                 }
 
-                //Create a route
-                RouteDO route = new RouteDO
+                //Create a plan
+                PlanDO plan = new PlanDO
                 {
                     Name = "LogFr8InternalEvents",
                     Description = "Log Fr8Internal Events",
@@ -56,17 +56,17 @@ namespace Hub.Managers
                    
                 };
 
-                //create a sub route
+                //create a sub plan
                 var subroute = new SubrouteDO(true)
                 {
-                    ParentRouteNode = route,
+                    ParentRouteNode = plan,
                     Id = Guid.NewGuid(),
-                    RootRouteNode = route
+                    RootRouteNode = plan
                 };
 
-                //update Route and Sub route into database
-                route.ChildNodes = new List<RouteNodeDO> { subroute };
-                uow.RouteNodeRepository.Add(route);
+                //update Route and Sub plan into database
+                plan.ChildNodes = new List<RouteNodeDO> { subroute };
+                uow.RouteNodeRepository.Add(plan);
                 uow.RouteNodeRepository.Add(subroute);
                 uow.SaveChanges();
 
@@ -83,7 +83,7 @@ namespace Hub.Managers
             }
         }
 
-        private RouteDO GetExistingRoute(IUnitOfWork uow, string routeName, string fr8AccountEmail)
+        private PlanDO GetExistingRoute(IUnitOfWork uow, string routeName, string fr8AccountEmail)
         {
             if (uow.RouteRepository.GetQuery().Any(existingRoute =>
                 existingRoute.Name.Equals(routeName) &&

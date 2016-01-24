@@ -37,13 +37,13 @@ namespace terminalDocuSign.Tests.Services
             //Assert
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                Assert.AreEqual(1, uow.RouteRepository.GetAll().Count(), "Automatic route is not created");
+                Assert.AreEqual(1, uow.RouteRepository.GetAll().Count(), "Automatic plan is not created");
 
                 var automaticRoute = uow.RouteRepository.GetQuery().First();
 
-                Assert.AreEqual("MonitorAllDocuSignEvents", automaticRoute.Name, "Automatic route name is wrong");
+                Assert.AreEqual("MonitorAllDocuSignEvents", automaticRoute.Name, "Automatic plan name is wrong");
                 Assert.AreEqual(1, automaticRoute.Subroutes.Count(), "Automatic subroute is not created");
-                Assert.AreEqual(2, automaticRoute.Subroutes.First().ChildNodes.Count, "Automatic route does not contain required actions");
+                Assert.AreEqual(2, automaticRoute.Subroutes.First().ChildNodes.Count, "Automatic plan does not contain required actions");
             }
         }
 
@@ -54,13 +54,13 @@ namespace terminalDocuSign.Tests.Services
             await _curDocuSignRoute.CreateRoute_MonitorAllDocuSignEvents(FixtureData.TestDeveloperAccount().Id, null);
 
             //Act
-            //if we call second time, the route should not be created again.
+            //if we call second time, the plan should not be created again.
             await _curDocuSignRoute.CreateRoute_MonitorAllDocuSignEvents(FixtureData.TestDeveloperAccount().Id, null);
 
             //Assert
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                Assert.IsFalse(uow.RouteRepository.GetAll().Count() > 1, "Automatic route is created in following authentication success");
+                Assert.IsFalse(uow.RouteRepository.GetAll().Count() > 1, "Automatic plan is created in following authentication success");
             }
         }
 

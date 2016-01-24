@@ -171,17 +171,17 @@ namespace TerminalBase.Infrastructure
             throw new NotImplementedException();
         }
 
-        public Task<RouteFullDTO> CreateRoute(RouteEmptyDTO routeDTO, string userId)
+        public Task<RouteFullDTO> CreatePlan(RouteEmptyDTO routeDTO, string userId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<RouteDO> ActivateRoute(RouteDO routeDO, string userId)
+        public Task<PlanDO> ActivatePlan(PlanDO planDO, string userId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<RouteFullDTO>> GetRoutesByName(string name, string userId)
+        public Task<IEnumerable<RouteFullDTO>> GetPlansByName(string name, string userId)
         {
             throw new NotImplementedException();
         }

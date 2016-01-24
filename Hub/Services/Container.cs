@@ -111,7 +111,7 @@ namespace Hub.Services
         * We traverse this tree in this order a-b-d-E-b-c-f-g-c-a-NULL 
         */
         /// <summary>
-        /// Moves to next Route and returns action state of this new route
+        /// Moves to next Route and returns action state of this new plan
         /// </summary>
         /// <param name="uow"></param>
         /// <param name="curContainerDO"></param>
@@ -248,8 +248,8 @@ namespace Hub.Services
             }
 
             return (id == null
-               ? containerRepository.Where(container => container.Route.Fr8Account.Id == account.Id)
-               : containerRepository.Where(container => container.Id == id && container.Route.Fr8Account.Id == account.Id)).ToList();
+               ? containerRepository.Where(container => container.Plan.Fr8Account.Id == account.Id)
+               : containerRepository.Where(container => container.Id == id && container.Plan.Fr8Account.Id == account.Id)).ToList();
 
         }
     }

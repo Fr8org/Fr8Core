@@ -36,7 +36,7 @@ namespace HubWeb.Controllers
         private readonly ISecurityServices _security;
         private readonly IActivityTemplate _activityTemplate;
         private readonly ISubroute _subRoute;
-        private readonly IRoute _route;
+        private readonly Hub.Interfaces.IPlan _plan;
 
         private readonly IAuthorization _authorization;
 
@@ -46,7 +46,7 @@ namespace HubWeb.Controllers
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
             _subRoute = ObjectFactory.GetInstance<ISubroute>();
-            _route = ObjectFactory.GetInstance<IRoute>();
+            _plan = ObjectFactory.GetInstance<IPlan>();
             _authorization = ObjectFactory.GetInstance<IAuthorization>();
         }
 
@@ -76,9 +76,9 @@ namespace HubWeb.Controllers
                     return Ok(Mapper.Map<ActionDTO>(result));
                 }
 
-                if (result is RouteDO)
+                if (result is PlanDO)
                 {
-                    return Ok(RouteMappingHelper.MapRouteToDto(uow, (RouteDO)result));
+                    return Ok(RouteMappingHelper.MapRouteToDto(uow, (PlanDO)result));
                 }
 
                 throw new Exception("Unsupported type " + result.GetType());
@@ -100,7 +100,7 @@ namespace HubWeb.Controllers
 
                 var result = await _action.CreateAndConfigure(uow, userId,
                     activityTemplate.Id, activityTemplate.Name, activityTemplate.Label, null, true);
-                return Ok(RouteMappingHelper.MapRouteToDto(uow, (RouteDO)result));
+                return Ok(RouteMappingHelper.MapRouteToDto(uow, (PlanDO)result));
             }
         }
 

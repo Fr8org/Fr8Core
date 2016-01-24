@@ -14,7 +14,7 @@ namespace Data.Validations
             // Commented out by yakov.gnusin. Breaks when process is saved for the first time.
             // RuleFor(containerDO => containerDO.Id).GreaterThan(0).WithMessage("Id must be a positive int");
 
-            RuleFor(containerDO => containerDO.RouteId).NotEmpty()
+            RuleFor(containerDO => containerDO.PlanId).NotEmpty()
                 .NotEqual(Guid.Empty)
                 .Must(id => {
                     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

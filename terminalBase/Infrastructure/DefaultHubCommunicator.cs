@@ -232,7 +232,7 @@ namespace TerminalBase.Infrastructure
             return Mapper.Map<ActionDO>(await ConfigureAction(actionDTO, userId));
         }
 
-        public async Task<RouteFullDTO> CreateRoute(RouteEmptyDTO routeDTO, string userId)
+        public async Task<RouteFullDTO> CreatePlan(RouteEmptyDTO routeDTO, string userId)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                       + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routes";
@@ -241,16 +241,16 @@ namespace TerminalBase.Infrastructure
             return await _restfulServiceClient.PostAsync<RouteEmptyDTO, RouteFullDTO>(uri, routeDTO, null, await GetHMACHeader(uri, userId, routeDTO));
         }
 
-        public async Task<RouteDO> ActivateRoute(RouteDO routeDO, string userId)
+        public async Task<PlanDO> ActivatePlan(PlanDO planDO, string userId)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                       + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routes/activate";
             var uri = new Uri(url);
 
-            return await _restfulServiceClient.PostAsync<RouteDO, RouteDO>(uri, routeDO, null, await GetHMACHeader(uri, userId, routeDO));
+            return await _restfulServiceClient.PostAsync<PlanDO, PlanDO>(uri, planDO, null, await GetHMACHeader(uri, userId, planDO));
         }
 
-        public async Task<IEnumerable<RouteFullDTO>> GetRoutesByName(string name, string userId)
+        public async Task<IEnumerable<RouteFullDTO>> GetPlansByName(string name, string userId)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                       + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routes/getbyname?name="+name;
