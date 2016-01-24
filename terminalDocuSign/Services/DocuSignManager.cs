@@ -217,9 +217,17 @@ namespace terminalDocuSign.Services
 
             if (string.IsNullOrWhiteSpace(query.Folder) || query.Folder == "<any>")
             {
-                foreach (var folder in _docuSignFolder.GetFolders(authToken.Email, authToken.ApiPassword))
+                foreach (var folder in _docuSignFolder.GetSearchFolders(authToken.Email, authToken.ApiPassword))
                 {
-                    SearchFolder(authToken, query, folder.FolderId, envelopes);
+                    try
+                    {
+                        SearchFolder(authToken, query, folder.FolderId, envelopes);
+                    }
+                    catch (Exception ex)
+                    {
+                        // some folders can't be searched
+                        // log error somehow
+                    }
                 }
             }
             else
