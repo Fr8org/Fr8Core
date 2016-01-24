@@ -52,14 +52,14 @@ namespace terminalFr8Core.Actions
                 new RunRouteButton()
                 {
                     Name = "RunRoute",
-                    Label = "Run Route",
+                    Label = "Run Plan",
                 });
 
             AddControl(crateStorage,
                 new ControlDefinitionDTO(ControlTypes.ManageRoute)
                 {
                     Name = "ManageRoute",
-                    Label = "Manage Route"
+                    Label = "Manage Plan"
                 });
         }
 

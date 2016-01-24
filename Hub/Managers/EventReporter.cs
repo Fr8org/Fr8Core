@@ -414,7 +414,7 @@ namespace Hub.Managers
                 Activity = "Created",
                 CustomerId = userId,
                 ObjectId = "0",
-                Data = string.Format("Route Name: {0}.",
+                Data = string.Format("Plan Name: {0}.",
                         routeName)
             };
             LogFactInformation(fact, "RouteCreated");

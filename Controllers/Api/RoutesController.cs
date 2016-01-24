@@ -22,6 +22,7 @@ using Hub.Managers;
 using Data.Crates;
 using Utilities.Interfaces;
 using HubWeb.Infrastructure;
+using Data.Interfaces.Manifests;
 
 namespace HubWeb.Controllers
 {
@@ -318,6 +319,20 @@ namespace HubWeb.Controllers
         [HttpPost]
         public async Task<IHttpActionResult> Run(Guid routeId, [FromBody]PayloadVM model)
         {
+            //ACTIVATE - activate route if its inactive
+            bool inActive = false;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var routeDO = uow.RouteRepository.GetByKey(routeId);
+
+                if (routeDO.RouteState == RouteState.Inactive)
+                    inActive = true;
+            }
+            if(inActive)
+                await _plan.Activate(routeId, false);
+
+
+            //RUN
 			CrateDTO curCrateDto;
             Crate curCrate = null;
 
@@ -346,11 +361,17 @@ namespace HubWeb.Controllers
                     if (planDO != null)
                     {
                         _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS,
-                            string.Format("Launching a new Container for Route \"{0}\"", planDO.Name));
+                            string.Format("Launching a new Container for Plan \"{0}\"", planDO.Name));
 
                         var containerDO = await _plan.Run(planDO, curCrate);
 
-                        string message = String.Format("Complete processing for Route \"{0}\"", planDO.Name);
+                        var response = _crate.GetStorage(containerDO.CrateStorage).CrateContentsOfType<OperationalStateCM>().SingleOrDefault();
+                        string responseMsg = "";
+
+                        if (response != null && (response.ResponseMessageDTO != null && !String.IsNullOrEmpty(response.ResponseMessageDTO.Message)))
+                            responseMsg = "\n" + response.ResponseMessageDTO.Message;
+
+                        string message = String.Format("Complete processing for Plan \"{0}\".{1}", planDO.Name, responseMsg);
 
                         _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, message);
 
@@ -361,13 +382,13 @@ namespace HubWeb.Controllers
                 }
                 catch (ErrorResponseException exception)
                 {
-                    string message = String.Format("Route \"{0}\" failed. {1}", planDO.Name, exception.Message);
+                    string message = String.Format("Plan \"{0}\" failed. {1}", planDO.Name, exception.Message);
 
                     _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, message);
                 }
                 catch(Exception)
                 {
-                    string message = String.Format("Route \"{0}\" failed", planDO.Name);
+                    string message = String.Format("Plan \"{0}\" failed", planDO.Name);
 
                     _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, message);
                 }

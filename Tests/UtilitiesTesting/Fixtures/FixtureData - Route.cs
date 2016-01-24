@@ -299,7 +299,7 @@ namespace UtilitiesTesting.Fixtures
             var curPlanDO = new PlanDO
             {
                 Id = GetTestGuidById(1),
-                Description = "DO-1124 Proper  deletion of Route",
+                Description = "DO-1124 Proper  deletion of Plan",
                 Name = "TestRouteWithStartingSubroutes",
                 RouteState = RouteState.Active,
             };
@@ -325,7 +325,7 @@ namespace UtilitiesTesting.Fixtures
             var curPlanDO = new PlanDO
             {
                 Id = GetTestGuidById(1),
-                Description = "DO-1124 Proper  deletion of Route",
+                Description = "DO-1124 Proper  deletion of Plan",
                 Name = "TestRouteWithStartingSubroutes",
                 RouteState = RouteState.Active,
             };
@@ -352,7 +352,7 @@ namespace UtilitiesTesting.Fixtures
             {
             var curPlanDO = new PlanDO
             {
-                Description = "DO-1124 Proper  deletion of Route",
+                Description = "DO-1124 Proper  deletion of Plan",
                 Name = "TestRouteWithStartingSubroutes_ID0",
                 RouteState = RouteState.Active,
             };
@@ -388,7 +388,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = GetTestGuidById(30),
                 Description = "Description 4",
-                Name = "Route 4",
+                Name = "Plan 4",
                 RouteState = RouteState.Active,
                 Fr8Account = FixtureData.TestDockyardAccount5()
             };
@@ -401,7 +401,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = GetTestGuidById(40),
                 Description = "Description 5",
-                Name = "Route 5",
+                Name = "Plan 5",
                 RouteState = RouteState.Active,
                 Fr8Account = FixtureData.TestDockyardAccount5()
             };

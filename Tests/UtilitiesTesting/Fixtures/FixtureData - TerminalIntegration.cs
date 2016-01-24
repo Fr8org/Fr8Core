@@ -30,8 +30,8 @@ namespace UtilitiesTesting.Fixtures
             return new PlanDO()
             {
                 Id = GetTestGuidById(1000),
-                Name = "Test Route Name",
-                Description = "Test Route Description",
+                Name = "Test Plan Name",
+                Description = "Test Plan Description",
                 RouteState = RouteState.Active,
             };
         }

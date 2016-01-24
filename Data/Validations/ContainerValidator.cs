@@ -22,7 +22,7 @@ namespace Data.Validations
                         return uow.RouteRepository.GetByKey(id) != null;
                     }
                 })
-                .WithMessage("RouteId must be a required foreign key for Route");
+                .WithMessage("RouteId must be a required foreign key for Plan");
         }
     }
 }

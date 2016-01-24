@@ -96,7 +96,7 @@ namespace terminalTests.Integration
                 CustomerId = "1",
                 Manufacturer = "Fr8 Company",
                 Data = "",
-                PrimaryCategory = "Route",
+                PrimaryCategory = "Plan",
                 SecondaryCategory = "RouteState",
                 Activity = "StateChanged",
                 Status = "",
