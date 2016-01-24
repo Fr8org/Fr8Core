@@ -95,12 +95,13 @@ namespace TerminalBase.BaseClasses
         /// </summary>
         /// <param name="payload"></param>
         /// <returns></returns>
-        protected PayloadDTO Success(PayloadDTO payload)
+        protected PayloadDTO Success(PayloadDTO payload, string message = "")
         {
             using (var updater = Crate.UpdateStorage(payload))
             {
                 var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
                 operationalState.CurrentActionResponse = ActionResponse.Success;
+                operationalState.ResponseMessageDTO = new ResponseMessageDTO() { Message = message };
             }
 
             return payload;
