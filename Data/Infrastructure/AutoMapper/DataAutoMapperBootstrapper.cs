@@ -45,7 +45,8 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(a => a.ChildrenActions, opts => opts.ResolveUsing(ad => ad.ChildNodes.OfType<ActionDO>().OrderBy(da => da.Ordering)))
                 .ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(ad => ad.ActivityTemplate))
                 .ForMember(a => a.ExplicitData, opts => opts.ResolveUsing(ad => ad.ExplicitData))
-                .ForMember(a => a.AuthToken, opts => opts.ResolveUsing(ad => ad.AuthorizationToken));
+                .ForMember(a => a.AuthToken, opts => opts.ResolveUsing(ad => ad.AuthorizationToken))
+                .ForMember(a => a.Fr8AccountId, opts => opts.ResolveUsing(ad => ad.Fr8AccountId));
 
 
             Mapper.CreateMap<ActionDTO, ActionDO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
@@ -59,7 +60,8 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(a => a.ChildNodes, opts => opts.ResolveUsing(ad => MapActions(ad.ChildrenActions)))
                 .ForMember(a => a.IsTempId, opts => opts.ResolveUsing(ad => ad.IsTempId))
                 .ForMember(a => a.ExplicitData, opts => opts.ResolveUsing(ad => ad.ExplicitData))
-                .ForMember(a => a.AuthorizationTokenId, opts => opts.ResolveUsing(ad => ad.AuthToken != null && ad.AuthToken.Id != null ? new Guid(ad.AuthToken.Id) : (Guid?)null));
+                .ForMember(a => a.AuthorizationTokenId, opts => opts.ResolveUsing(ad => ad.AuthToken != null && ad.AuthToken.Id != null ? new Guid(ad.AuthToken.Id) : (Guid?)null))
+                .ForMember(a => a.Fr8AccountId, opts => opts.ResolveUsing(ad => ad.Fr8AccountId));
 
 
             Mapper.CreateMap<ActivityTemplateDO, ActivityTemplateDTO>()
@@ -83,14 +85,14 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.NeedsAuthentication, opts => opts.ResolveUsing(x => x.NeedsAuthentication))
                 .ForMember(x => x.ActivityTemplateStateTemplate,
                     opts => opts.ResolveUsing((ActivityTemplateDTO x) => null))
-                .ForMember(x => x.WebServiceId, opts => opts.ResolveUsing((ActivityTemplateDTO x) => null)) 
+                .ForMember(x => x.WebServiceId, opts => opts.ResolveUsing((ActivityTemplateDTO x) => null))
                 .ForMember(x => x.Description, opts => opts.ResolveUsing(x => x.Description));
 
-//
-//            Mapper.CreateMap<ActionListDO, ActionListDTO>()
-//                .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
-//                .ForMember(x => x.ActionListType, opts => opts.ResolveUsing(x => x.ActionListType))
-//                .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name));
+            //
+            //            Mapper.CreateMap<ActionListDO, ActionListDTO>()
+            //                .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
+            //                .ForMember(x => x.ActionListType, opts => opts.ResolveUsing(x => x.ActionListType))
+            //                .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name));
 
             Mapper.CreateMap<RouteDO, RouteEmptyDTO>();
             Mapper.CreateMap<RouteEmptyDTO, RouteDO>();
@@ -111,12 +113,12 @@ namespace Data.Infrastructure.AutoMapper
                 .ConvertUsing<RouteDOFullConverter>();
 
             Mapper.CreateMap<RouteEmptyDTO, RouteFullDTO>();
-          //  Mapper.CreateMap<ActionListDO, FullActionListDTO>();
+            //  Mapper.CreateMap<ActionListDO, FullActionListDTO>();
             Mapper.CreateMap<SubrouteDO, FullSubrouteDTO>();
 
             //Mapper.CreateMap<Account, DocuSignAccount>();
             Mapper.CreateMap<FileDO, FileDescriptionDTO>();
-            
+
             Mapper.CreateMap<CrateStorageDTO, string>()
                 .ConvertUsing<JsonToStringConverterNoMagic<CrateStorageDTO>>();
             Mapper.CreateMap<string, CrateStorageDTO>()
@@ -126,7 +128,7 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<ContainerDO, ContainerDTO>();
             Mapper.CreateMap<AuthorizationTokenDTO, AuthorizationTokenDO>()
                 .ForMember(x => x.UserID, x => x.ResolveUsing(y => y.UserId))
-                .ForMember(x => x.Id, x => x.ResolveUsing(y => y.Id != null ? new Guid(y.Id) : (Guid?) null));
+                .ForMember(x => x.Id, x => x.ResolveUsing(y => y.Id != null ? new Guid(y.Id) : (Guid?)null));
             Mapper.CreateMap<AuthorizationTokenDO, AuthorizationTokenDTO>()
                 .ForMember(x => x.UserId, x => x.ResolveUsing(y => y.UserID))
                 .ForMember(x => x.Id, x => x.ResolveUsing(y => y.Id.ToString()));
@@ -149,5 +151,5 @@ namespace Data.Infrastructure.AutoMapper
 
             return list;
         }
-    }   
+    }
 }

@@ -87,7 +87,7 @@ namespace Hub.Services
             {
                 if (eventReportMS.ExternalAccountId == systemUserEmail)
                 {
-                    Fr8AccountDO systemUser = uow.UserRepository.FindOne(u => u.Email == systemUserEmail);
+                    Fr8AccountDO systemUser = uow.UserRepository.GetOrCreateUser(systemUserEmail);
                     await FindAccountRoutes(uow, eventReportMS, curCrateStandardEventReport, systemUser);
                 }
                 else
@@ -115,7 +115,7 @@ namespace Hub.Services
         {
             //find this Account's Routes
             var initialRoutesList = uow.RouteRepository
-                .FindList(pt => pt.Fr8Account.Id == curDockyardAccount.Id)
+                .FindList(pt => pt.Fr8AccountId == curDockyardAccount.Id)
                 .Where(x => x.RouteState == RouteState.Active);
 
             var subscribingRoutes = _route.MatchEvents(initialRoutesList.ToList(), eventReportMS);

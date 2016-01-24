@@ -211,6 +211,17 @@ namespace terminalFr8Core.Controllers
                 MinPaneWidth = 380
             });
 
+            result.Add(new ActivityTemplateDTO
+            {
+                Name = "Monitor_Fr8_Events",
+                Label = "Monitor Fr8 Events",
+                Version = "1",
+                Category = ActivityCategory.Monitors,
+                NeedsAuthentication = false,
+                Terminal = terminal,
+                MinPaneWidth = 380
+            });
+
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
                 Definition = terminal,
