@@ -85,6 +85,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalIntegrationTests", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildUtils", "BuildUtils", "{932981E0-0644-4BED-84A9-FEF0664F6296}"
 	ProjectSection(SolutionItems) = preProject
+		..\..\Build Log\handle\Handle.exe = ..\..\Build Log\handle\Handle.exe
 		BuildUtils\xcopy.exe = BuildUtils\xcopy.exe
 	EndProjectSection
 EndProject
