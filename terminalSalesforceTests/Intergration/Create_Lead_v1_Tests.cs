@@ -197,7 +197,7 @@ namespace terminalSalesforceTests.Intergration
             using (var updater = Crate.UpdateStorage(curActivityDto))
             {
                 var controls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
-                controls.Controls.Single(c => c.Name.Equals(controlName)).Value = string.Empty;
+                (controls.Controls.Single(c => c.Name.Equals(controlName)) as TextSource).TextValue = string.Empty;
 
             }
 
