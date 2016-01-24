@@ -234,7 +234,7 @@ namespace terminalDocuSign.Actions
                         // cache list of folders
                         if (folders == null)
                         {
-                             folders = _docuSignFolder.GetFolders(authToken.Email, authToken.ApiPassword);
+                             folders = _docuSignFolder.GetSearchFolders(authToken.Email, authToken.ApiPassword);
                         }
 
                         var value = condition.Value;

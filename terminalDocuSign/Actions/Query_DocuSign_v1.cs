@@ -170,7 +170,7 @@ namespace terminalDocuSign.Actions
 
         private IEnumerable<Crate> PackDesignTimeData(DocuSignAuthTokenDTO authToken)
         {
-            var folders = _docuSignFolder.GetFolders(authToken.Email, authToken.ApiPassword);
+            var folders = _docuSignFolder.GetSearchFolders(authToken.Email, authToken.ApiPassword);
             var fields = new List<FieldDTO>();
             
             foreach (var folder in folders)
