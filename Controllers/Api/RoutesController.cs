@@ -368,7 +368,7 @@ namespace HubWeb.Controllers
                         var response = _crate.GetStorage(containerDO.CrateStorage).CrateContentsOfType<OperationalStateCM>().SingleOrDefault();
                         string responseMsg = "";
 
-                        if (response.ResponseMessageDTO != null && !String.IsNullOrEmpty(response.ResponseMessageDTO.Message))
+                        if (response != null && (response.ResponseMessageDTO != null && !String.IsNullOrEmpty(response.ResponseMessageDTO.Message)))
                             responseMsg = "\n" + response.ResponseMessageDTO.Message;
 
                         string message = String.Format("Complete processing for Route \"{0}\".{1}", routeDO.Name, responseMsg);
