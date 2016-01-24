@@ -41,7 +41,7 @@ namespace terminalSalesforce.Actions
                 AddTextSourceControl(updater.CrateStorage, "Phone", "phone",
                     "Upstream Terminal-Provided Fields", addRequestConfigEvent: false, required:true);
 
-                updater.CrateStorage.Add(await CreateAvailableFieldsCrate(curActionDO));
+                updater.CrateStorage.Add(await CreateAvailableFieldsCrate(curActivityDO));
             }
 
             return await Task.FromResult(curActivityDO);

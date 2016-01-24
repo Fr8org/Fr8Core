@@ -161,7 +161,7 @@ namespace terminalSalesforceTests.Intergration
             Assert.IsTrue(configurationControls.Content.Controls.Any(ctrl => ctrl.Name.Equals("LastName")),
                 "Create Lead does not have Last Name control");
 
-            Assert.IsTrue(configurationControls.Content.Controls.Any(ctrl => ctrl.Name.Equals("CompanyName")),
+            Assert.IsTrue(configurationControls.Content.Controls.Any(ctrl => ctrl.Name.Equals("Company")),
                 "Create Lead does not have Company Name control");
 
             //@AlexAvrutin: Commented this since the textboxes here do not require requestConfig event. 
@@ -169,7 +169,7 @@ namespace terminalSalesforceTests.Intergration
             //    "Create Lead controls are not subscribed to on Change events");
         }
 
-        private ActionDTO SetSpecificValues(ActionDTO curActionDto)
+        private ActivityDTO SetSpecificValues(ActivityDTO curActivityDto)
         {
             using (var updater = Crate.UpdateStorage(curActivityDto))
             {
@@ -187,7 +187,7 @@ namespace terminalSalesforceTests.Intergration
             return curActivityDto;
         }
 
-        private ActionDTO ExcludeValue(ActionDTO curActionDto, string controlName)
+        private ActivityDTO ExcludeValue(ActivityDTO curActivityDto, string controlName)
         {
             using (var updater = Crate.UpdateStorage(curActivityDto))
             {

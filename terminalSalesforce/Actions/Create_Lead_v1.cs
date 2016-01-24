@@ -57,7 +57,7 @@ namespace terminalSalesforce.Actions
 
                 AddLeadTextSources<LeadDTO>(updater.CrateStorage);
 
-                updater.CrateStorage.Add(await CreateAvailableFieldsCrate(curActionDO));
+                updater.CrateStorage.Add(await CreateAvailableFieldsCrate(curActivityDO));
             }
 
             return await Task.FromResult(curActivityDO);
@@ -72,21 +72,21 @@ namespace terminalSalesforce.Actions
                 return NeedsAuthenticationError(payloadCrates);
             }
 
-            var firstName = ExtractSpecificOrUpstreamValue(curActionDO, payloadCrates, "FirstName");
-            var lastName = ExtractSpecificOrUpstreamValue(curActionDO, payloadCrates, "LastName");
-            var company = ExtractSpecificOrUpstreamValue(curActionDO, payloadCrates, "Company");
-            var title = ExtractSpecificOrUpstreamValue(curActionDO, payloadCrates, "Title");
-            var phone = ExtractSpecificOrUpstreamValue(curActionDO, payloadCrates, "Phone");
-            var mobile = ExtractSpecificOrUpstreamValue(curActionDO, payloadCrates, "Mobile");
-            var fax = ExtractSpecificOrUpstreamValue(curActionDO, payloadCrates, "Fax");
-            var email = ExtractSpecificOrUpstreamValue(curActionDO, payloadCrates, "Email");
-            var website = ExtractSpecificOrUpstreamValue(curActionDO, payloadCrates, "Website");
-            var street = ExtractSpecificOrUpstreamValue(curActionDO, payloadCrates, "Street");
-            var city = ExtractSpecificOrUpstreamValue(curActionDO, payloadCrates, "City");
-            var state = ExtractSpecificOrUpstreamValue(curActionDO, payloadCrates, "State");
-            var zip = ExtractSpecificOrUpstreamValue(curActionDO, payloadCrates, "Zip");
-            var country = ExtractSpecificOrUpstreamValue(curActionDO, payloadCrates, "Country");
-            var description = ExtractSpecificOrUpstreamValue(curActionDO, payloadCrates, "Description");
+            var firstName = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "FirstName");
+            var lastName = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "LastName");
+            var company = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "Company");
+            var title = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "Title");
+            var phone = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "Phone");
+            var mobile = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "MobilePhone");
+            var fax = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "Fax");
+            var email = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "Email");
+            var website = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "Website");
+            var street = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "Street");
+            var city = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "City");
+            var state = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "State");
+            var zip = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "PostalCode");
+            var country = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "Country");
+            var description = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "Description");
 
             if (string.IsNullOrEmpty(lastName))
             {
@@ -105,14 +105,14 @@ namespace terminalSalesforce.Actions
                 Company = company,
                 Title = title,
                 Phone = phone,
-                Mobile = mobile,
+                MobilePhone = mobile,
                 Fax = fax,
                 Email = email,
                 Website = website,
                 Street = street,
                 City = city,
                 State = state,
-                Zip = zip,
+                PostalCode = zip,
                 Country = country,
                 Description = description
             };
