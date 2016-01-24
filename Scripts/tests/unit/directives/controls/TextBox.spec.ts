@@ -46,7 +46,7 @@ module dockyard.tests.unit.directives.controls {
                 $timeout = _$timeout_;
 
                 scope = $rootScope.$new();
-                scope.currentAction = fx.ActionDTO.noAuthActionVM;
+                scope.currentAction = fx.ActivityDTO.noAuthActionVM;
                 scope.field = fx.FieldDTO.textField;
                 element = compileTemplate(scope, directive, $compile);
                 
@@ -106,7 +106,7 @@ module dockyard.tests.unit.directives.controls {
                 $timeout = _$timeout_;
 
                 scope = $rootScope.$new();
-                scope.currentAction = fx.ActionDTO.noAuthActionVM;
+                scope.currentAction = fx.ActivityDTO.noAuthActionVM;
                 scope.field1 = angular.copy(fx.FieldDTO.textField);
                 scope.field2 = angular.copy(fx.FieldDTO.textField);
                 element1 = compileTemplate(scope, directive1, $compile);

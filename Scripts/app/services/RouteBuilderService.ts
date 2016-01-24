@@ -15,13 +15,13 @@ module dockyard.services {
     }
 
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
-        configure: (action: interfaces.IActionDTO) => ng.resource.IResource<interfaces.IActionVM>;
+        configure: (action: interfaces.IActivityDTO) => ng.resource.IResource<interfaces.IActionVM>;
         getByRoute: (id: Object) => ng.resource.IResource<Array<interfaces.IActionVM>>;
-        create: (args: { actionTemplateId: number, name: string, label: string, parentNideId: number, createRoute: boolean }) => ng.resource.IResource<model.RouteDTO | model.ActionDTO>;
+        create: (args: { actionTemplateId: number, name: string, label: string, parentNideId: number, createRoute: boolean }) => ng.resource.IResource<model.RouteDTO | model.ActivityDTO>;
         createSolution: (args: { solutionName: string }) => ng.resource.IResource<model.RouteDTO>
         //TODO make resource class do this operation
         deleteById: (id: { id: string; confirmed: boolean }) => ng.resource.IResource < string >
-        batchSave: (actionList: interfaces.IActionDTO[]) => ng.resource.IResource < interfaces.IActionVM >
+        batchSave: (actionList: interfaces.IActivityDTO[]) => ng.resource.IResource < interfaces.IActionVM >
         //getFieldDataSources: (params: Object, data: interfaces.IActionVM) => interfaces.IDataSourceListVM;
     }
 
@@ -155,7 +155,7 @@ module dockyard.services {
     ]);
 
     /* 
-        ActionDTO CRUD service.
+        ActivityDTO CRUD service.
     */
     app.factory('ActionService', ['$resource', ($resource: ng.resource.IResourceService): IActionService =>
         <IActionService>$resource('/api/actions?id=:id',
