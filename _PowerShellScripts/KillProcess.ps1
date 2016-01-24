@@ -1,7 +1,7 @@
 $RootDir = Split-Path -parent (Split-Path -parent $MyInvocation.MyCommand.Path)
 $Path= $RootDir+"\*\obj\Release"
 $Handle = $RootDir+"\BuildUtils\handle.exe"
-$files = Get-ChildItem $Path -Recurse | where {$_.extension -eq ".resources" -OR $_.Extension -eq ".dll"}
+$files = Get-ChildItem $Path -Recurse | where {$_.extension -eq ".resources" -OR $_.FileName -eq "Utilities.dll"}
 
 foreach($file in $files)
 {
