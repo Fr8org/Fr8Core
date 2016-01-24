@@ -17,14 +17,14 @@ namespace HubWeb.Controllers
 {
     public class AuthenticationCallbackController : Controller
     {
-        private readonly IAction _action;
+        private readonly IActivity _activity;
         private readonly IAuthorization _authorization;
         private readonly ITerminal _terminal;
 
         public AuthenticationCallbackController()
         {
             _terminal = ObjectFactory.GetInstance<ITerminal>();
-            _action = ObjectFactory.GetInstance<IAction>();
+            _activity = ObjectFactory.GetInstance<IActivity>();
             _authorization = ObjectFactory.GetInstance<IAuthorization>();
         }
 

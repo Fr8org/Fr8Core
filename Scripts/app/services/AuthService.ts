@@ -66,7 +66,7 @@
                 angular.forEach(actionIds, function (it) {
                     self.$rootScope.$broadcast(
                         dockyard.directives.paneConfigureAction.MessageType[dockyard.directives.paneConfigureAction.MessageType.PaneConfigureAction_Reconfigure],
-                        new dockyard.directives.paneConfigureAction.ActionReconfigureEventArgs(<interfaces.IActionDTO>({ id: it }))
+                        new dockyard.directives.paneConfigureAction.ActionReconfigureEventArgs(<interfaces.IActivityDTO>({ id: it }))
                     );
                 });
             })

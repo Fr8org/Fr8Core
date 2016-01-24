@@ -23,8 +23,8 @@ namespace Hub.Interfaces
         RouteNodeDO GetFirstActivity(Guid curRouteId);
         Task<ActivateActionsDTO> Activate(Guid routeId, bool routeBuilderActivate);
         Task<string> Deactivate(Guid curRouteId);
-        IEnumerable<ActionDO> GetActions(int id);
-        RouteDO GetRoute(ActionDO action);
+        IEnumerable<ActivityDO> GetActivities(int id);
+        RouteDO GetRoute(ActivityDO activity);
         //  ActionListDO GetActionList(IUnitOfWork uow, int id);
         List<RouteDO> MatchEvents(List<RouteDO> curRoutes, EventReportCM curEventReport);
 

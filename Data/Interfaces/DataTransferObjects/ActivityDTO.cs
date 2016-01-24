@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
 {
-    public class ActionDTO : ActionDTOBase
+    public class ActivityDTO : ActivityDTOBase
     {
         public Guid? RootRouteNodeId { get; set; }
 
@@ -26,7 +26,7 @@ namespace Data.Interfaces.DataTransferObjects
         public string ExplicitData { get; set; }
 
         [JsonProperty("action_version")]
-        public string ActionVersion { get; set; }
+        public string ActivityVersion { get; set; }
 
         public string CurrentView { get; set; }
 
@@ -36,7 +36,7 @@ namespace Data.Interfaces.DataTransferObjects
 
         public string Fr8AccountId { get; set; }
 
-        public ActionDTO[] ChildrenActions { get; set; }
+        public ActivityDTO[] ChildrenActions { get; set; }
         public int Ordering { get; set; }
 
         

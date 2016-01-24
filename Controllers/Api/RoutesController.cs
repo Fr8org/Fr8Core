@@ -128,8 +128,8 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var action = uow.ActionRepository.GetByKey(id);
-                var route = _route.GetRoute(action);
+                var activity = uow.ActivityRepository.GetByKey(id);
+                var route = _route.GetRoute(activity);
                 var result = RouteMappingHelper.MapRouteToDto(uow, route);
 
                 return Ok(result);
@@ -231,7 +231,7 @@ namespace HubWeb.Controllers
         [HttpPost]
         [ActionName("action")]
         [Fr8ApiAuthorize]
-        public IHttpActionResult PutAction(ActionDTO actionDto)
+        public IHttpActionResult PutAction(ActivityDTO activityDto)
         {
             //A stub until the functionaltiy is ready
             return Ok();
@@ -294,8 +294,8 @@ namespace HubWeb.Controllers
         [Fr8ApiAuthorize]
         public async Task<IHttpActionResult> Deactivate(RouteDO curRoute)
         {
-            string actionDTO = await _route.Deactivate(curRoute.Id);
-            return Ok(actionDTO);
+            string activityDTO = await _route.Deactivate(curRoute.Id);
+            return Ok(activityDTO);
         }
 
         [HttpPost]
