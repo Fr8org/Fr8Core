@@ -177,11 +177,16 @@ namespace terminalSalesforceTests.Intergration
 
                 controls.Controls.ForEach(control =>
                 {
-                    var targetUrlTextBox = (TextSource)control;
-                targetUrlTextBox.ValueSource = "specific";
-                    targetUrlTextBox.TextValue = "IntegrationTestValue";
+                    var targetUrlTextBox = (TextSource) control;
+
+                    targetUrlTextBox.ValueSource = "specific";
+
+                    if (targetUrlTextBox.Name.Equals("LastName") || targetUrlTextBox.Name.Equals("Company"))
+                    {
+                        targetUrlTextBox.TextValue = "IntegrationTestValue";
+                    }
                 });
-                
+
             }
 
             return curActivityDto;
