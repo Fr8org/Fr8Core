@@ -1,5 +1,9 @@
 ﻿using System.Linq;
+using System.Reflection;
+using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
+using Data.States;
+using ServiceStack;
 using terminalSalesforce.Infrastructure;
 using System.Threading.Tasks;
 using Data.Interfaces.Manifests;
@@ -51,12 +55,9 @@ namespace terminalSalesforce.Actions
             {
                 updater.CrateStorage.Clear();
 
-                AddTextSourceControl(updater.CrateStorage, "First Name", "firstName",
-                    "Upstream Terminal-Provided Fields", addRequestConfigEvent: false);
-                AddTextSourceControl(updater.CrateStorage, "Last Name", "lastName",
-                    "Upstream Terminal-Provided Fields", addRequestConfigEvent: false, required:true);
-                AddTextSourceControl(updater.CrateStorage, "Company", "companyName",
-                    "Upstream Terminal-Provided Fields", addRequestConfigEvent: false, required:true);
+                AddLeadTextSources<LeadDTO>(updater.CrateStorage);
+
+                updater.CrateStorage.Add(await CreateAvailableFieldsCrate(curActivityDO));
             }
 
             return await Task.FromResult(curActivityDO);
@@ -71,9 +72,21 @@ namespace terminalSalesforce.Actions
                 return NeedsAuthenticationError(payloadCrates);
             }
 
-            var firstName = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates,"firstName");
-            var lastName = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "lastName");
-            var company = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "companyName");
+            var firstName = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "FirstName");
+            var lastName = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "LastName");
+            var company = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "Company");
+            var title = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "Title");
+            var phone = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "Phone");
+            var mobile = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "MobilePhone");
+            var fax = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "Fax");
+            var email = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "Email");
+            var website = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "Website");
+            var street = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "Street");
+            var city = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "City");
+            var state = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "State");
+            var zip = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "PostalCode");
+            var country = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "Country");
+            var description = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "Description");
 
             if (string.IsNullOrEmpty(lastName))
             {
@@ -85,7 +98,24 @@ namespace terminalSalesforce.Actions
                 return Error(payloadCrates, "No company name found in activity.");
             }
 
-            var lead = new LeadDTO {FirstName = firstName, LastName = lastName, Company = company};
+            var lead = new LeadDTO
+            {
+                FirstName = firstName,
+                LastName = lastName,
+                Company = company,
+                Title = title,
+                Phone = phone,
+                MobilePhone = mobile,
+                Fax = fax,
+                Email = email,
+                Website = website,
+                Street = street,
+                City = city,
+                State = state,
+                PostalCode = zip,
+                Country = country,
+                Description = description
+            };
 
             bool result = await _salesforce.CreateObject(lead, "Lead", _salesforce.CreateForceClient(authTokenDO));
 
@@ -95,6 +125,13 @@ namespace terminalSalesforce.Actions
             }
 
             return Error(payloadCrates, "Lead creation is failed");
+        }
+
+        private void AddLeadTextSources<T>(CrateStorage crateStorage)
+        {
+            typeof(T).GetProperties().Where(property => !property.Name.Equals("Id")).ToList().ForEach(
+                property => AddTextSourceControl(crateStorage, property.Name, property.Name,
+                    "Upstream Terminal-Provided Fields", addRequestConfigEvent: false));
         }
     }
 }

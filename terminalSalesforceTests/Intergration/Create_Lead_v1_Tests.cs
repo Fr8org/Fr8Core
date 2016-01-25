@@ -56,8 +56,7 @@ namespace terminalSalesforceTests.Intergration
         {
             //Arrange
             var initialConfigActionDto = await PerformInitialConfiguration();
-            initialConfigActionDto = SetLastName(initialConfigActionDto);
-            initialConfigActionDto = SetCompanyName(initialConfigActionDto);
+            initialConfigActionDto = SetSpecificValues(initialConfigActionDto);
             AddOperationalStateCrate(initialConfigActionDto, new OperationalStateCM());
 
             //Act
@@ -75,7 +74,8 @@ namespace terminalSalesforceTests.Intergration
         {
             //Arrange
             var initialConfigActionDto = await PerformInitialConfiguration();
-            initialConfigActionDto = SetCompanyName(initialConfigActionDto);
+            initialConfigActionDto = SetSpecificValues(initialConfigActionDto);
+            initialConfigActionDto = ExcludeValue(initialConfigActionDto, "LastName");
             initialConfigActionDto.AuthToken = HealthMonitor_FixtureData.Salesforce_AuthToken();
             AddOperationalStateCrate(initialConfigActionDto, new OperationalStateCM());
 
@@ -94,7 +94,8 @@ namespace terminalSalesforceTests.Intergration
         {
             //Arrange
             var initialConfigActionDto = await PerformInitialConfiguration();
-            initialConfigActionDto = SetLastName(initialConfigActionDto);
+            initialConfigActionDto = SetSpecificValues(initialConfigActionDto);
+            initialConfigActionDto = ExcludeValue(initialConfigActionDto, "Company");
             initialConfigActionDto.AuthToken = HealthMonitor_FixtureData.Salesforce_AuthToken();
             AddOperationalStateCrate(initialConfigActionDto, new OperationalStateCM());
 
@@ -113,8 +114,7 @@ namespace terminalSalesforceTests.Intergration
         {
             //Arrange
             var initialConfigActionDto = await PerformInitialConfiguration();
-            initialConfigActionDto = SetLastName(initialConfigActionDto);
-            initialConfigActionDto = SetCompanyName(initialConfigActionDto);
+            initialConfigActionDto = SetSpecificValues(initialConfigActionDto);
             initialConfigActionDto.AuthToken = HealthMonitor_FixtureData.Salesforce_AuthToken();
             AddOperationalStateCrate(initialConfigActionDto, new OperationalStateCM());
 
@@ -152,16 +152,16 @@ namespace terminalSalesforceTests.Intergration
         {
             var configurationControls = curActionCrateStorage.CratesOfType<StandardConfigurationControlsCM>().Single();
 
-            Assert.AreEqual(3, configurationControls.Content.Controls.Count,
-                "Create Lead does not contain the required 3 fields.");
+            Assert.AreEqual(15, configurationControls.Content.Controls.Count,
+                "Create Lead does not contain the required 15 fields.");
 
-            Assert.IsTrue(configurationControls.Content.Controls.Any(ctrl => ctrl.Name.Equals("firstName")),
-                "Create Lead activity does not have First Name control");
+            Assert.IsTrue(configurationControls.Content.Controls.Any(ctrl => ctrl.Name.Equals("FirstName")),
+                "Create Lead action does not have First Name control");
 
-            Assert.IsTrue(configurationControls.Content.Controls.Any(ctrl => ctrl.Name.Equals("lastName")),
+            Assert.IsTrue(configurationControls.Content.Controls.Any(ctrl => ctrl.Name.Equals("LastName")),
                 "Create Lead does not have Last Name control");
 
-            Assert.IsTrue(configurationControls.Content.Controls.Any(ctrl => ctrl.Name.Equals("companyName")),
+            Assert.IsTrue(configurationControls.Content.Controls.Any(ctrl => ctrl.Name.Equals("Company")),
                 "Create Lead does not have Company Name control");
 
             //@AlexAvrutin: Commented this since the textboxes here do not require requestConfig event. 
@@ -169,29 +169,36 @@ namespace terminalSalesforceTests.Intergration
             //    "Create Lead controls are not subscribed to on Change events");
         }
 
-        private ActivityDTO SetLastName(ActivityDTO curActivityDto)
+        private ActivityDTO SetSpecificValues(ActivityDTO curActivityDto)
         {
             using (var updater = Crate.UpdateStorage(curActivityDto))
             {
                 var controls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
 
-                var targetUrlTextBox = (TextSource)controls.Controls[1];
-                targetUrlTextBox.ValueSource = "specific";
-                targetUrlTextBox.TextValue = "IntegrationTestLastName";
+                controls.Controls.ForEach(control =>
+                {
+                    var targetUrlTextBox = (TextSource) control;
+
+                    targetUrlTextBox.ValueSource = "specific";
+
+                    if (targetUrlTextBox.Name.Equals("LastName") || targetUrlTextBox.Name.Equals("Company"))
+                    {
+                        targetUrlTextBox.TextValue = "IntegrationTestValue";
+                    }
+                });
+
             }
 
             return curActivityDto;
         }
 
-        private ActivityDTO SetCompanyName(ActivityDTO curActivityDto)
+        private ActivityDTO ExcludeValue(ActivityDTO curActivityDto, string controlName)
         {
             using (var updater = Crate.UpdateStorage(curActivityDto))
             {
                 var controls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
+                (controls.Controls.Single(c => c.Name.Equals(controlName)) as TextSource).TextValue = string.Empty;
 
-                var targetUrlTextBox = (TextSource)controls.Controls[2];
-                targetUrlTextBox.ValueSource = "specific";
-                targetUrlTextBox.TextValue = "IntegrationTestCompanyName";
             }
 
             return curActivityDto;
