@@ -20,13 +20,13 @@ namespace terminalDocuSign.Services
     public class DocuSignRoute : IDocuSignRoute
     {
         private readonly IActivityTemplate _activityTemplate;
-        private readonly IAction _action;
+        private readonly IActivity _activity;
         private readonly IHubCommunicator _hubCommunicator;
 
         public DocuSignRoute()
         {
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
-            _action = ObjectFactory.GetInstance<IAction>();
+            _activity = ObjectFactory.GetInstance<IActivity>();
             _hubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
         }
 
@@ -61,9 +61,9 @@ namespace terminalDocuSign.Services
             var activityTemplates = await _hubCommunicator.GetActivityTemplates(null, curFr8UserId);
             var recordDocusignEventsTemplate = GetActivityTemplate(activityTemplates, "Record_DocuSign_Events");
             var storeMTDataTemplate = GetActivityTemplate(activityTemplates, "StoreMTData");
-            await _hubCommunicator.CreateAndConfigureAction(recordDocusignEventsTemplate.Id, "Record_DocuSign_Events",
+            await _hubCommunicator.CreateAndConfigureActivity(recordDocusignEventsTemplate.Id, "Record_DocuSign_Events",
                 curFr8UserId, "Record DocuSign Events", monitorDocusignRoute.StartingSubrouteId, false, new Guid(authTokenDTO.Id));
-            await _hubCommunicator.CreateAndConfigureAction(storeMTDataTemplate.Id, "StoreMTData",
+            await _hubCommunicator.CreateAndConfigureActivity(storeMTDataTemplate.Id, "StoreMTData",
                 curFr8UserId, "Store MT Data", monitorDocusignRoute.StartingSubrouteId);
             var planDO = Mapper.Map<PlanDO>(monitorDocusignRoute);
             await _hubCommunicator.ActivatePlan(planDO, curFr8UserId);

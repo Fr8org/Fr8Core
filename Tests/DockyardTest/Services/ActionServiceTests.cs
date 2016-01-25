@@ -24,7 +24,7 @@ using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using Action = Hub.Services.Action;
+using Action = Hub.Services.Activity;
 
 
 namespace DockyardTest.Services
@@ -33,14 +33,14 @@ namespace DockyardTest.Services
     [Category("ActionService")]
     public class ActionServiceTests : BaseTest
     {
-        private IAction _action;
+        private IActivity _activity;
         private ICrateManager _crate;
         private IUnitOfWork _uow;
         private FixtureData _fixtureData;
         private readonly IEnumerable<ActivityTemplateDO> _pr1Activities = new List<ActivityTemplateDO>() { new ActivityTemplateDO() { Name = "Write", Version = "1.0" }, new ActivityTemplateDO() { Name = "Read", Version = "1.0" } };
         private readonly IEnumerable<ActivityTemplateDO> _pr2Activities = new List<ActivityTemplateDO>() { new ActivityTemplateDO() { Name = "SQL Write", Version = "1.0" }, new ActivityTemplateDO() { Name = "SQL Read", Version = "1.0" } };
         private bool _eventReceived;
-        private BaseTerminalAction _baseTerminalAction;
+        private BaseTerminalActivity _baseTerminalAction;
         private ITerminal _terminal;
         private Mock<ITerminalTransmitter> TerminalTransmitterMock
         {
@@ -53,12 +53,12 @@ namespace DockyardTest.Services
             base.SetUp();
             TerminalBootstrapper.ConfigureTest();
 
-            _action = ObjectFactory.GetInstance<IAction>();
+            _activity = ObjectFactory.GetInstance<IActivity>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
             _fixtureData = new FixtureData(_uow);
             _eventReceived = false;
-            _baseTerminalAction = new BaseTerminalAction();
+            _baseTerminalAction = new BaseTerminalActivity();
             _terminal = ObjectFactory.GetInstance<Terminal>();
         }
         
@@ -67,10 +67,10 @@ namespace DockyardTest.Services
 //        public async void Action_Configure_ExistingActionShouldBeUpdatedWithNewAction()
 //        {
 //            //Arrange
-//            ActionDO curActionDO = FixtureData.IntegrationTestAction();
-//            UpdateDatabase(curActionDO);
+//            ActionDO curActivityDO = FixtureData.IntegrationTestAction();
+//            UpdateDatabase(curActivityDO);
 //
-//            ActionDTO actionDto = Mapper.Map<ActionDTO>(curActionDO);
+//            ActionDTO actionDto = Mapper.Map<ActionDTO>(curActivityDO);
 //
 //            //set the new name
 //            actionDto.Name = "NewActionFromServer";
@@ -78,7 +78,7 @@ namespace DockyardTest.Services
 //                .Returns(() => Task.FromResult(actionDto));
 //
 //            //Act
-//            var returnedAction = await _action.Configure(curActionDO);
+//            var returnedAction = await _action.Configure(curActivityDO);
 //
 //            //Assert
 //            //get the action from the database
@@ -131,7 +131,7 @@ namespace DockyardTest.Services
         [Test]
         public void CanCRUDActions()
         {
-            ActionDO origActionDO;
+            ActivityDO origActivityDO;
 
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -141,47 +141,47 @@ namespace DockyardTest.Services
                 var subroute = FixtureData.TestSubrouteDO1();
                 uow.RouteNodeRepository.Add(subroute);
 
-                origActionDO = new FixtureData(uow).TestAction3();
+                origActivityDO = new FixtureData(uow).TestActivity3();
 
-                origActionDO.IsTempId = true;
-                origActionDO.ParentRouteNodeId = subroute.Id;
+                origActivityDO.IsTempId = true;
+                origActivityDO.ParentRouteNodeId = subroute.Id;
 
-                uow.ActivityTemplateRepository.Add(origActionDO.ActivityTemplate);
+                uow.ActivityTemplateRepository.Add(origActivityDO.ActivityTemplate);
                 uow.SaveChanges();
             }
 
-            IAction action = new Action();
+            IActivity activity = new Activity();
 
             //Add
-            action.SaveOrUpdateAction(origActionDO);
+            activity.SaveOrUpdateActivity(origActivityDO);
 
             //Get
-            var actionDO = action.GetById(origActionDO.Id);
-            Assert.AreEqual(origActionDO.Name, actionDO.Name);
-            Assert.AreEqual(origActionDO.Id, actionDO.Id);
-            Assert.AreEqual(origActionDO.CrateStorage, actionDO.CrateStorage);
+            var activityDO = activity.GetById(origActivityDO.Id);
+            Assert.AreEqual(origActivityDO.Name, activityDO.Name);
+            Assert.AreEqual(origActivityDO.Id, activityDO.Id);
+            Assert.AreEqual(origActivityDO.CrateStorage, activityDO.CrateStorage);
 
-            Assert.AreEqual(origActionDO.Ordering, actionDO.Ordering);
+            Assert.AreEqual(origActivityDO.Ordering, activityDO.Ordering);
 
             ISubroute subRoute = new Subroute();
             //Delete
-            subRoute.DeleteAction(null, actionDO.Id, true);
+            subRoute.DeleteActivity(null, activityDO.Id, true);
         }
 
         [Test]
         public void ActionWithNestedUpdated_StructureUnchanged()
         {
-            var tree = FixtureData.CreateTestActionTreeWithOnlyActionDo();
-            var updatedTree = FixtureData.CreateTestActionTreeWithOnlyActionDo();
+            var tree = FixtureData.CreateTestActivityTreeWithOnlyActivityDo();
+            var updatedTree = FixtureData.CreateTestActivityTreeWithOnlyActivityDo();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                Visit(tree, x => uow.ActionRepository.Add(x));
+                Visit(tree, x => uow.ActivityRepository.Add(x));
                 Visit(updatedTree, x => x.Name = string.Format("We were here {0}", x.Id));
 
-                _action.SaveOrUpdateAction(uow, updatedTree);
+                _activity.SaveOrUpdateActivity(uow, updatedTree);
 
-                var result = uow.ActionRepository.GetByKey(tree.Id);
+                var result = uow.ActivityRepository.GetByKey(tree.Id);
                 Compare(updatedTree, result, (r, a) =>
                 {
                     if (r.Name != a.Name)
@@ -195,13 +195,13 @@ namespace DockyardTest.Services
         [Test]
         public void ActionWithNestedUpdated_RemoveElements()
         {
-            var tree = FixtureData.CreateTestActionTreeWithOnlyActionDo();
-            var updatedTree = FixtureData.CreateTestActionTreeWithOnlyActionDo();
+            var tree = FixtureData.CreateTestActivityTreeWithOnlyActivityDo();
+            var updatedTree = FixtureData.CreateTestActivityTreeWithOnlyActivityDo();
 
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                Visit(tree, x => uow.ActionRepository.Add(x));
+                Visit(tree, x => uow.ActivityRepository.Add(x));
 
                 int removeCounter = 0;
 
@@ -215,9 +215,9 @@ namespace DockyardTest.Services
                     removeCounter++;
                 });
 
-                _action.SaveOrUpdateAction(uow, updatedTree);
+                _activity.SaveOrUpdateActivity(uow, updatedTree);
 
-                var result = uow.ActionRepository.GetByKey(tree.Id);
+                var result = uow.ActivityRepository.GetByKey(tree.Id);
                 Compare(updatedTree, result, (r, a) =>
                 {
                     if (r.Id != a.Id)
@@ -231,13 +231,13 @@ namespace DockyardTest.Services
         [Test]
         public void ActionWithNestedUpdated_AddElements()
         {
-            var tree = FixtureData.CreateTestActionTreeWithOnlyActionDo();
-            var updatedTree = FixtureData.CreateTestActionTreeWithOnlyActionDo();
+            var tree = FixtureData.CreateTestActivityTreeWithOnlyActivityDo();
+            var updatedTree = FixtureData.CreateTestActivityTreeWithOnlyActivityDo();
 
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                Visit(tree, x => uow.ActionRepository.Add(x));
+                Visit(tree, x => uow.ActivityRepository.Add(x));
 
                 int addCounter = 0;
 
@@ -245,7 +245,7 @@ namespace DockyardTest.Services
                 {
                     if (addCounter % 3 == 0 && a.ParentRouteNode != null)
                     {
-                        var newAction = new ActionDO
+                        var newAction = new ActivityDO
                         {
                             Id = FixtureData.GetTestGuidById(addCounter + 666),
                             ParentRouteNode = a,
@@ -253,7 +253,7 @@ namespace DockyardTest.Services
                         };
 
                         a.ParentRouteNode.ChildNodes.Add(newAction);
-                        uow.ActionRepository.Add(newAction);
+                        uow.ActivityRepository.Add(newAction);
                     }
 
                     addCounter++;
@@ -266,7 +266,7 @@ namespace DockyardTest.Services
                         // if (a.Id > 666)
                         if (FixtureData.GetTestIdByGuid(a.Id) > 666)
                         {
-                            var newAction = new ActionDO
+                            var newAction = new ActivityDO
                             {
                                 Id = FixtureData.GetTestGuidById(addCounter + 666),
                                 ParentRouteNode = a,
@@ -274,16 +274,16 @@ namespace DockyardTest.Services
                             };
 
                             a.ParentRouteNode.ChildNodes.Add(newAction);
-                            uow.ActionRepository.Add(newAction);
+                            uow.ActivityRepository.Add(newAction);
                         }
 
                         addCounter++;
                     });
                 }
 
-                _action.SaveOrUpdateAction(uow, updatedTree);
+                _activity.SaveOrUpdateActivity(uow, updatedTree);
 
-                var result = uow.ActionRepository.GetByKey(tree.Id);
+                var result = uow.ActivityRepository.GetByKey(tree.Id);
                 Compare(updatedTree, result, (r, a) =>
                 {
                     if (r.Id != a.Id)
@@ -314,13 +314,13 @@ namespace DockyardTest.Services
 
                 var template = new ActivityTemplateDO("Template1", "label", "1", "description", terminal.Id);
                 uow.ActivityTemplateRepository.Add(template);
-                var parent = new ActionDO();
-                uow.ActionRepository.Add(parent);
+                var parent = new ActivityDO();
+                uow.ActivityRepository.Add(parent);
 
                 uow.SaveChanges();
 
                 const string actionName = "TestAction";
-                var response = _action.Create(uow, template.Id, actionName, null, parent);
+                var response = _activity.Create(uow, template.Id, actionName, null, parent);
 
                 Assert.AreEqual(parent.ChildNodes.Count, 1);
                 Assert.AreEqual(parent.ChildNodes[0], response);
@@ -328,7 +328,7 @@ namespace DockyardTest.Services
             }
         }
 
-        private void Compare(ActionDO reference, ActionDO actual, Action<ActionDO, ActionDO> callback)
+        private void Compare(ActivityDO reference, ActivityDO actual, Action<ActivityDO, ActivityDO> callback)
         {
             callback(reference, actual);
 
@@ -339,15 +339,15 @@ namespace DockyardTest.Services
 
             for (int i = 0; i < reference.ChildNodes.Count; i++)
             {
-                Compare((ActionDO)reference.ChildNodes[i], (ActionDO)actual.ChildNodes[i], callback);
+                Compare((ActivityDO)reference.ChildNodes[i], (ActivityDO)actual.ChildNodes[i], callback);
             }
         }
 
-        private void Visit(ActionDO action, Action<ActionDO> callback)
+        private void Visit(ActivityDO activity, Action<ActivityDO> callback)
         {
-            callback(action);
+            callback(activity);
 
-            foreach (var child in action.ChildNodes.OfType<ActionDO>().ToArray())
+            foreach (var child in activity.ChildNodes.OfType<ActivityDO>().ToArray())
             {
                 Visit(child, callback);
             }
@@ -410,7 +410,7 @@ namespace DockyardTest.Services
 //        [Test, Ignore("Ignored execution related tests. Refactoring is going on")]
 //        public void Process_ReturnJSONDispatchError_ActionStateError()
 //        {
-//            ActionDO actionDO = FixtureData.IntegrationTestAction();
+//            ActionDO activityDO = FixtureData.IntegrationTestAction();
 //            ProcessDO procesDo = FixtureData.TestProcess1();
 //            var pluginClientMock = new Mock<IPluginTransmitter>();
 //            pluginClientMock.Setup(s => s.CallActionAsync<ActionDTO>(It.IsAny<string>(), It.IsAny<ActionDTO>())).ThrowsAsync(new RestfulServiceException());
@@ -419,22 +419,22 @@ namespace DockyardTest.Services
 //
 //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 //            {
-//                _action.PrepareToExecute(actionDO, procesDo, uow);
+//                _action.PrepareToExecute(activityDO, procesDo, uow);
 //            }
 //
-//            Assert.AreEqual(ActionState.Error, actionDO.ActionState);
+//            Assert.AreEqual(ActionState.Error, activityDO.ActionState);
 //        }
 
 //        [Test]
 //        public void Process_ReturnJSONDispatchNotError_ActionStateCompleted()
 //        {
-//            ActionDO actionDO = FixtureData.IntegrationTestAction();
-//            actionDO.ActivityTemplate.Plugin.Endpoint = "http://localhost:53234/actions/configure";
+//            ActionDO activityDO = FixtureData.IntegrationTestAction();
+//            activityDO.ActivityTemplate.Plugin.Endpoint = "http://localhost:53234/actions/configure";
 //
 //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 //            {
-//                uow.ActivityTemplateRepository.Add(actionDO.ActivityTemplate);
-//                uow.ActionRepository.Add(actionDO);
+//                uow.ActivityTemplateRepository.Add(activityDO.ActivityTemplate);
+//                uow.ActionRepository.Add(activityDO);
 //                uow.SaveChanges();
 //            }
 //
@@ -446,37 +446,37 @@ namespace DockyardTest.Services
 //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 //            {
 //
-//                _action.PrepareToExecute(actionDO, procesDO, uow);
+//                _action.PrepareToExecute(activityDO, procesDO, uow);
 //            }
 //
-//            Assert.AreEqual(ActionState.Active, actionDO.ActionState);
+//            Assert.AreEqual(ActionState.Active, activityDO.ActionState);
 //        }
 
         [Test]
         public void Process_ActionUnstarted_ShouldBeCompleted()
         {
             //Arrange
-            ActionDO actionDo = FixtureData.TestActionUnstarted();
-            actionDo.ActivityTemplate.Terminal.Endpoint = "http://localhost:53234/actions/configure";
-            actionDo.CrateStorage = JsonConvert.SerializeObject(new ActionDTO());
+            ActivityDO activityDo = FixtureData.TestActivityUnstarted();
+            activityDo.ActivityTemplate.Terminal.Endpoint = "http://localhost:53234/actions/configure";
+            activityDo.CrateStorage = JsonConvert.SerializeObject(new ActivityDTO());
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.ActivityTemplateRepository.Add(actionDo.ActivityTemplate);
-                uow.ActionRepository.Add(actionDo);
+                uow.ActivityTemplateRepository.Add(activityDo.ActivityTemplate);
+                uow.ActivityRepository.Add(activityDo);
                 uow.SaveChanges();
             }
 
-            ActionDTO actionDto = Mapper.Map<ActionDTO>(actionDo);
+            ActivityDTO activityDto = Mapper.Map<ActivityDTO>(activityDo);
             TerminalTransmitterMock.Setup(rc => rc.PostAsync(It.IsAny<Uri>(), It.IsAny<object>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
-                .Returns(() => Task.FromResult<string>(JsonConvert.SerializeObject(actionDto)));
+                .Returns(() => Task.FromResult<string>(JsonConvert.SerializeObject(activityDto)));
 
             ContainerDO containerDO = FixtureData.TestContainer1();
 
             //Act
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var response = _action.PrepareToExecute(actionDo, ActionState.InitialRun, containerDO, uow);
+                var response = _activity.PrepareToExecute(activityDo, ActionState.InitialRun, containerDO, uow);
 
                 //Assert
                 Assert.That(response.Status, Is.EqualTo(TaskStatus.RanToCompletion));
@@ -486,14 +486,14 @@ namespace DockyardTest.Services
         [Test]
         public void AddCrate_AddCratesDTO_UpdatesActionCratesStorage()
         {
-            ActionDO actionDO = FixtureData.TestAction23();
+            ActivityDO activityDO = FixtureData.TestActivity23();
 
-            using (var updater = _crate.UpdateStorage(actionDO))
+            using (var updater = _crate.UpdateStorage(activityDO))
             {
                 updater.CrateStorage.AddRange(FixtureData.CrateStorageDTO());
             }
 
-            Assert.IsNotEmpty(actionDO.CrateStorage);
+            Assert.IsNotEmpty(activityDO.CrateStorage);
         }
 
 // DO-1270
@@ -542,26 +542,26 @@ namespace DockyardTest.Services
         [Test]
         public async void PrepareToExecute_WithMockedExecute_WithoutPayload()
         {
-            ActionDO actionDo = FixtureData.TestActionStateInProcess();
-            actionDo.CrateStorage = JsonConvert.SerializeObject(new ActionDTO());
+            ActivityDO activityDo = FixtureData.TestActivityStateInProcess();
+            activityDo.CrateStorage = JsonConvert.SerializeObject(new ActivityDTO());
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.ActivityTemplateRepository.Add(actionDo.ActivityTemplate);
-                uow.ActionRepository.Add(actionDo);
+                uow.ActivityTemplateRepository.Add(activityDo.ActivityTemplate);
+                uow.ActivityRepository.Add(activityDo);
                 uow.SaveChanges();
             }
 
-            Action _action = ObjectFactory.GetInstance<Action>();
+            Activity _activity = ObjectFactory.GetInstance<Action>();
             ContainerDO containerDO = FixtureData.TestContainer1();
             EventManager.EventActionStarted += EventManager_EventActionStarted;
-            var executeActionMock = new Mock<IAction>();
-            executeActionMock.Setup(s => s.Run(actionDo, It.IsAny<ActionState>(), containerDO)).Returns<Task<PayloadDTO>>(null);
+            var executeActionMock = new Mock<IActivity>();
+            executeActionMock.Setup(s => s.Run(activityDo, It.IsAny<ActionState>(), containerDO)).Returns<Task<PayloadDTO>>(null);
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var count = uow.ActionRepository.GetAll().Count();
-                await _action.PrepareToExecute(actionDo, ActionState.InitialRun, containerDO, uow);
+                var count = uow.ActivityRepository.GetAll().Count();
+                await _activity.PrepareToExecute(activityDo, ActionState.InitialRun, containerDO, uow);
                 //Assert.AreEqual(uow.ActionRepository.GetAll().Count(), count + 1);
             }
             Assert.IsNull(containerDO.CrateStorage);
@@ -572,17 +572,17 @@ namespace DockyardTest.Services
         [Test]
         public async void PrepareToExecute_WithMockedExecute_WithPayload()
         {
-            ActionDO actionDo = FixtureData.TestActionStateInProcess();
-            actionDo.CrateStorage = JsonConvert.SerializeObject(new ActionDTO() { Label = "Test Action" });
+            ActivityDO activityDo = FixtureData.TestActivityStateInProcess();
+            activityDo.CrateStorage = JsonConvert.SerializeObject(new ActivityDTO() { Label = "Test Action" });
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.ActivityTemplateRepository.Add(actionDo.ActivityTemplate);
-                uow.ActionRepository.Add(actionDo);
+                uow.ActivityTemplateRepository.Add(activityDo.ActivityTemplate);
+                uow.ActivityRepository.Add(activityDo);
                 uow.SaveChanges();
             }
 
-            IAction _action = ObjectFactory.GetInstance<IAction>();
+            IActivity _activity = ObjectFactory.GetInstance<IActivity>();
             ContainerDO containerDO = FixtureData.TestContainer1();
             EventManager.EventActionStarted += EventManager_EventActionStarted;
 
@@ -590,15 +590,15 @@ namespace DockyardTest.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var terminalClientMock = new Mock<ITerminalTransmitter>();
-                terminalClientMock.Setup(s => s.CallActionAsync<PayloadDTO>(It.IsAny<string>(), It.IsAny<ActionDTO>(), It.IsAny<string>()))
+                terminalClientMock.Setup(s => s.CallActionAsync<PayloadDTO>(It.IsAny<string>(), It.IsAny<ActivityDTO>(), It.IsAny<string>()))
                                 .Returns(Task.FromResult(new PayloadDTO(containerDO.Id)
                                 {
-                                    CrateStorage = JsonConvert.DeserializeObject<CrateStorageDTO>(actionDo.CrateStorage)
+                                    CrateStorage = JsonConvert.DeserializeObject<CrateStorageDTO>(activityDo.CrateStorage)
                                 }));
                 ObjectFactory.Configure(cfg => cfg.For<ITerminalTransmitter>().Use(terminalClientMock.Object));
 
-                var count = uow.ActionRepository.GetAll().Count();
-                await _action.PrepareToExecute(actionDo, ActionState.InitialRun, containerDO, uow);
+                var count = uow.ActivityRepository.GetAll().Count();
+                await _activity.PrepareToExecute(activityDo, ActionState.InitialRun, containerDO, uow);
                 //Assert.AreEqual(uow.ActionRepository.GetAll().Count(), count + 1);
             }
             Assert.IsNotNull(containerDO.CrateStorage);
@@ -609,31 +609,31 @@ namespace DockyardTest.Services
         [Test]
         public async void ActionStarted_EventRaisedSuccessfully()
         {
-            ActionDO actionDo = FixtureData.TestActionStateInProcess();
-            actionDo.CrateStorage = JsonConvert.SerializeObject(new ActionDTO());
+            ActivityDO activityDo = FixtureData.TestActivityStateInProcess();
+            activityDo.CrateStorage = JsonConvert.SerializeObject(new ActivityDTO());
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.ActivityTemplateRepository.Add(actionDo.ActivityTemplate);
-                uow.ActionRepository.Add(actionDo);
+                uow.ActivityTemplateRepository.Add(activityDo.ActivityTemplate);
+                uow.ActivityRepository.Add(activityDo);
                 uow.SaveChanges();
             }
 
 
-            Action _action = ObjectFactory.GetInstance<Action>();
+            Activity _activity = ObjectFactory.GetInstance<Activity>();
             ContainerDO containerDO = FixtureData.TestContainer1();
             EventManager.EventActionStarted += EventManager_EventActionStarted;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var count = uow.ActionRepository.GetAll().Count();
-                await _action.PrepareToExecute(actionDo, ActionState.InitialRun, containerDO, uow);
+                var count = uow.ActivityRepository.GetAll().Count();
+                await _activity.PrepareToExecute(activityDo, ActionState.InitialRun, containerDO, uow);
                 //Assert.AreEqual(uow.ActionRepository.GetAll().Count(), count + 1);
             }
             Assert.IsTrue(_eventReceived);
         //            Assert.AreEqual(actionDo.ActionState, ActionState.Active);
         }
 
-        private void EventManager_EventActionStarted(ActionDO action)
+        private void EventManager_EventActionStarted(ActivityDO activity)
         {
             _eventReceived = true;
         }

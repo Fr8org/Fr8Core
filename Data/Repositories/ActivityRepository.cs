@@ -5,23 +5,23 @@ using Data.Validations;
 using FluentValidation;
 namespace Data.Repositories
 {
-    public class ActionRepository : GenericRepository<ActionDO>, IActionRepository
+    public class ActivityRepository : GenericRepository<ActivityDO>, IActivityRepository
     {
         private ActionValidator _curValidator;
-        public ActionRepository(IUnitOfWork uow)
+        public ActivityRepository(IUnitOfWork uow)
             : base(uow)
         {
             _curValidator = new ActionValidator();
         }
 
-        public new void Add(ActionDO entity)
+        public new void Add(ActivityDO entity)
         {
             _curValidator.ValidateAndThrow(entity);
             base.Add(entity);
         }
     }
 
-    public interface IActionRepository : IGenericRepository<ActionDO>
+    public interface IActivityRepository : IGenericRepository<ActivityDO>
     {
 
     }

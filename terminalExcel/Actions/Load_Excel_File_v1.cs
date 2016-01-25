@@ -21,7 +21,7 @@ using terminalExcel.Infrastructure;
 
 namespace terminalExcel.Actions
 {
-    public class Load_Excel_File_v1 : BaseTerminalAction
+    public class Load_Excel_File_v1 : BaseTerminalActivity
     {
         private class ActionUi : StandardConfigurationControlsCM
         {
@@ -71,18 +71,18 @@ namespace terminalExcel.Actions
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            return await CreateStandardPayloadDataFromStandardTableData(curActionDO, containerId);
+            return await CreateStandardPayloadDataFromStandardTableData(curActivityDO, containerId);
         }
 
-        private async Task<PayloadDTO> CreateStandardPayloadDataFromStandardTableData(ActionDO curActionDO, Guid containerId)
+        private async Task<PayloadDTO> CreateStandardPayloadDataFromStandardTableData(ActivityDO curActivityDO, Guid containerId)
         {
-            var payloadCrates = await GetPayload(curActionDO, containerId);
+            var payloadCrates = await GetPayload(curActivityDO, containerId);
 
             var tableDataMS = await GetTargetTableData(
-                curActionDO,
-                Crate.GetStorage(curActionDO)
+                curActivityDO,
+                Crate.GetStorage(curActivityDO)
             );
 
             if (!tableDataMS.FirstRowHeaders)
@@ -101,7 +101,7 @@ namespace terminalExcel.Actions
             return Success(payloadCrates);        
         }
 
-        private async Task<StandardTableDataCM> GetTargetTableData(ActionDO actionDO, CrateStorage curCrateStorageDTO)
+        private async Task<StandardTableDataCM> GetTargetTableData(ActivityDO activityDO, CrateStorage curCrateStorageDTO)
         {
             // Find crates of manifest type Standard Table Data
             var standardTableDataCrates = curCrateStorageDTO.CratesOfType<StandardTableDataCM>();
@@ -109,15 +109,15 @@ namespace terminalExcel.Actions
             // If no crate of manifest type "Standard Table Data" found, try to find upstream for a crate of type "Standard File Handle"
             if (!standardTableDataCrates.Any())
             {
-                return await GetUpstreamTableData(actionDO);
+                return await GetUpstreamTableData(activityDO);
             }
 
             return standardTableDataCrates.First().Content;
         }
 
-        private async Task<StandardTableDataCM> GetUpstreamTableData(ActionDO actionDO)
+        private async Task<StandardTableDataCM> GetUpstreamTableData(ActivityDO activityDO)
         {
-            var upstreamFileHandleCrates = await GetUpstreamFileHandleCrates(actionDO);
+            var upstreamFileHandleCrates = await GetUpstreamFileHandleCrates(activityDO);
 
             //if no "Standard File Handle" crate found then return
             if (!upstreamFileHandleCrates.Any())
@@ -161,14 +161,14 @@ namespace terminalExcel.Actions
         /// <summary>
         /// Looks for upstream and downstream Creates.
         /// </summary>
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            if (curActionDO.Id != Guid.Empty)
+            if (curActivityDO.Id != Guid.Empty)
             {
                 //Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
-                Crate upstreamFieldsCrate = await MergeUpstreamFields(curActionDO, "Select Excel File");
+                Crate upstreamFieldsCrate = await MergeUpstreamFields(curActivityDO, "Select Excel File");
 
-                using (var updater = Crate.UpdateStorage(curActionDO))
+                using (var updater = Crate.UpdateStorage(curActivityDO))
                 {
                     updater.CrateStorage.Clear();
                     updater.CrateStorage.Add(upstreamFieldsCrate);
@@ -179,15 +179,15 @@ namespace terminalExcel.Actions
             {
                 throw new ArgumentException("Configuration requires the submission of an Action that has a real ActionId");
             }
-            return curActionDO;
+            return curActivityDO;
         }
 
         /// <summary>
         /// If there's a value in select_file field of the crate, then it is a followup call.
         /// </summary>
-        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActionDO))
+            if (Crate.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -196,10 +196,10 @@ namespace terminalExcel.Actions
         }
 
         //if the user provides a file name, this action attempts to load the excel file and extracts the column headers from the first sheet in the file.
-        protected override Task<ActionDO> FollowupConfigurationResponse(
-            ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override Task<ActivityDO> FollowupConfigurationResponse(
+            ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            var storage = Crate.GetStorage(curActionDO);
+            var storage = Crate.GetStorage(curActivityDO);
             var filePathsFromUserSelection = storage.CrateContentsOfType<StandardConfigurationControlsCM>()
                 .Select(x =>
                 {
@@ -214,7 +214,7 @@ namespace terminalExcel.Actions
                 throw new AmbiguityException();
             }
 
-            using (var updater = Crate.UpdateStorage(curActionDO))
+            using (var updater = Crate.UpdateStorage(curActivityDO))
             {
                 string uploadFilePath = null;
                 if (filePathsFromUserSelection.Length > 0)
@@ -250,7 +250,7 @@ namespace terminalExcel.Actions
                 }
             }
 
-            return Task.FromResult(curActionDO);
+            return Task.FromResult(curActivityDO);
         }
 
         private string ExtractFileName(string uploadFilePath)

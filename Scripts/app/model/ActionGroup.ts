@@ -1,6 +1,6 @@
 ﻿module dockyard.model {
     export class ActionGroup {
-        public actions: model.ActionDTO[]
+        public actions: model.ActivityDTO[]
 
         public offsetTop: number = 0;
         public offsetLeft: number = 0;
@@ -9,9 +9,9 @@
         public arrowLength: number = 0;
         public arrowOffsetLeft: number = 0;
 
-        public parentAction: model.ActionDTO;
+        public parentAction: model.ActivityDTO;
 
-        constructor(actions: model.ActionDTO[], parentAction: model.ActionDTO) {
+        constructor(actions: model.ActivityDTO[], parentAction: model.ActivityDTO) {
             this.actions = actions;
             this.parentAction = parentAction;
         }

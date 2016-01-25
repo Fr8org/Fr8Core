@@ -41,13 +41,13 @@ namespace terminalDocuSignTests.Integration
             Assert.AreEqual("FinalActionsList", controls.Controls[1].Name);
         }
 
-        private void AddHubActivityTemplate(ActionDTO actionDTO)
+        private void AddHubActivityTemplate(ActivityDTO activityDTO)
         {
-            AddActivityTemplate(actionDTO, HealthMonitor_FixtureData.Monitor_DocuSign_v1_ActivityTemplate_For_Solution());
-            AddActivityTemplate(actionDTO, HealthMonitor_FixtureData.Send_DocuSign_Envelope_v1_ActivityTemplate_for_Solution());
+            AddActivityTemplate(activityDTO, HealthMonitor_FixtureData.Monitor_DocuSign_v1_ActivityTemplate_For_Solution());
+            AddActivityTemplate(activityDTO, HealthMonitor_FixtureData.Send_DocuSign_Envelope_v1_ActivityTemplate_for_Solution());
         }
 
-        private async Task<Tuple<ActionDTO, string>> GetActionDTO_WithSelectedAction()
+        private async Task<Tuple<ActivityDTO, string>> GetActionDTO_WithSelectedAction()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -57,7 +57,7 @@ namespace terminalDocuSignTests.Integration
             string selectedAction;
 
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<ActivityDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -80,7 +80,7 @@ namespace terminalDocuSignTests.Integration
                 selectedAction = availableActions.Fields[1].Key;
             }
 
-            return new Tuple<ActionDTO, string>(responseActionDTO, selectedAction);
+            return new Tuple<ActivityDTO, string>(responseActionDTO, selectedAction);
         }
 
         [Test]
@@ -92,7 +92,7 @@ namespace terminalDocuSignTests.Integration
             AddHubActivityTemplate(requestActionDTO);
 
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<ActivityDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -112,12 +112,12 @@ namespace terminalDocuSignTests.Integration
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var actionDTO = await GetActionDTO_WithSelectedAction();
+            var activityDTO = await GetActionDTO_WithSelectedAction();
 
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<ActivityDTO, ActivityDTO>(
                     configureUrl,
-                    actionDTO.Item1
+                    activityDTO.Item1
                 );
 
             var crateStorage = Crate.GetStorage(responseActionDTO);
@@ -140,12 +140,12 @@ namespace terminalDocuSignTests.Integration
         public async void Extract_Data_From_Envelopes_FollowUp_Configuration_Select_Action()
         {
             var configureUrl = GetTerminalConfigureUrl();
-            var actionDTO = await GetActionDTO_WithSelectedAction();
+            var activityDTO = await GetActionDTO_WithSelectedAction();
 
             var responseActionDTO =
-               await HttpPostAsync<ActionDTO, ActionDTO>(
+               await HttpPostAsync<ActivityDTO, ActivityDTO>(
                    configureUrl,
-                   actionDTO.Item1
+                   activityDTO.Item1
                );
             var crateStorage = Crate.GetStorage(responseActionDTO);
 
@@ -165,7 +165,7 @@ namespace terminalDocuSignTests.Integration
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<ActivityDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -187,7 +187,7 @@ namespace terminalDocuSignTests.Integration
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<ActivityDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );

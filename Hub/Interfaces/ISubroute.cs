@@ -16,15 +16,15 @@ namespace Hub.Interfaces
         SubrouteDO Create(IUnitOfWork uow, PlanDO plan, string name);
         void Update(IUnitOfWork uow, SubrouteDO subroute);
         void Delete(IUnitOfWork uow, Guid id);
-        void AddAction(IUnitOfWork uow, ActionDO resultActionDo);
+        void AddActivity(IUnitOfWork uow, ActivityDO resultActivityDo);
         /// <summary>
         /// Backups current action and calls configure on downstream actions
         /// if there are validation errors restores current action and returns false
         /// </summary>
         /// <param name="userId">Current user id</param>
-        /// <param name="actionId">Action to delete</param>
+        /// <param name="activityId">Action to delete</param>
         /// <param name="confirmed">Forces deletion of current action even when there are validation errors</param>
         /// <returns>Deletion status of action</returns>
-        Task<bool> DeleteAction(string userId, Guid actionId, bool confirmed);
+        Task<bool> DeleteActivity(string userId, Guid activityId, bool confirmed);
     }
 }

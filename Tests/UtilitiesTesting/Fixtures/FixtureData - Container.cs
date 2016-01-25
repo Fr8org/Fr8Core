@@ -193,8 +193,8 @@ namespace UtilitiesTesting.Fixtures
             container.PlanId = TestRoute2().Id;
             container.ContainerState = 1;
             container.ProcessNodes.Add(TestProcessNode1());
-            container.CurrentRouteNode = FixtureData.TestAction7();
-			container.NextRouteNode = FixtureData.TestAction10();
+            container.CurrentRouteNode = FixtureData.TestActivity7();
+			container.NextRouteNode = FixtureData.TestActivity10();
             return container;
         }
 
@@ -216,8 +216,8 @@ namespace UtilitiesTesting.Fixtures
             container.PlanId = TestRoute2().Id;
             container.ContainerState = 1;
             container.ProcessNodes.Add(TestProcessNode1());
-            container.CurrentRouteNode = FixtureData.TestAction7();
-            container.NextRouteNode = FixtureData.TestAction7();
+            container.CurrentRouteNode = FixtureData.TestActivity7();
+            container.NextRouteNode = FixtureData.TestActivity7();
             return container;
         }
 
@@ -228,7 +228,7 @@ namespace UtilitiesTesting.Fixtures
             container.PlanId = TestRoute2().Id;
             container.ContainerState = 1;
             container.ProcessNodes.Add(TestProcessNode1());
-            container.CurrentRouteNode = FixtureData.TestAction7();
+            container.CurrentRouteNode = FixtureData.TestActivity7();
             container.NextRouteNode = null;
             return container;
         }
@@ -240,7 +240,7 @@ namespace UtilitiesTesting.Fixtures
             container.PlanId = TestRoute2().Id;
             container.ContainerState = 1;
             container.ProcessNodes.Add(TestProcessNode1());
-            container.CurrentRouteNode = FixtureData.TestAction8(null);
+            container.CurrentRouteNode = FixtureData.TestActivity8(null);
             container.NextRouteNode = null;
             return container;
         }

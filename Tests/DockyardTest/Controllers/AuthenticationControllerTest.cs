@@ -104,13 +104,13 @@ namespace DockyardTest.Controllers
             activityTemplateDO.Terminal = tokenDO.Terminal;
             activityTemplateDO.Terminal.AuthenticationType = AuthenticationType.Internal;
 
-            var actionDO = FixtureData.TestAction1();
-            actionDO.ActivityTemplate = activityTemplateDO;
-            // actionDO.AuthorizationToken = tokenDO;
+            var activityDO = FixtureData.TestActivity1();
+            activityDO.ActivityTemplate = activityTemplateDO;
+            // activityDO.AuthorizationToken = tokenDO;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.ActionRepository.Add(actionDO);
+                uow.ActivityRepository.Add(activityDO);
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
                 uow.SaveChanges();
             }

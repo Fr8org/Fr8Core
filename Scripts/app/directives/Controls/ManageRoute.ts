@@ -87,7 +87,7 @@ module dockyard.directives {
     }
 
     export interface IManageRouteScope extends ng.IScope {
-        currentAction: model.ActionDTO;
+        currentAction: model.ActivityDTO;
         error: string;
         saveRouteName: string;
         copySuccess: any;

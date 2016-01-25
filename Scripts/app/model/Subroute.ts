@@ -5,7 +5,7 @@
         public routeId: string;
         public name: string;
         public criteria: CriteriaDTO;
-        public actions: Array<ActionDTO>;
+        public activities: Array<ActivityDTO>;
 
         constructor(
             id: string,
@@ -19,13 +19,13 @@
             this.name = name;
 
             this.criteria = null;
-            this.actions = [];
+            this.activities = [];
         }
 
         clone(): SubrouteDTO {
             var result = new SubrouteDTO(this.id, this.isTempId, this.routeId, this.name);
             result.criteria = this.criteria !== null ? this.criteria.clone() : null;
-            angular.forEach(this.actions, function (it) { result.actions.push(it.clone()); });
+            angular.forEach(this.activities, function (it) { result.activities.push(it.clone()); });
 
             return result;
         }

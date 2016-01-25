@@ -117,8 +117,8 @@ namespace UtilitiesTesting.Fixtures
 //               Name = "list1",
 //               ActionListType = ActionListType.Immediate
             };
-            curActionListDO.Activities.Add(TestAction20());
-            curActionListDO.Activities.Add(TestAction21());
+            curActionListDO.Activities.Add(TestActivity20());
+            curActionListDO.Activities.Add(TestActivity21());
 //
             return curActionListDO;
         }
@@ -131,8 +131,8 @@ namespace UtilitiesTesting.Fixtures
 //               Name = "list1",
 //               ActionListType = ActionListType.Immediate
             };
-            curActionListDO.Activities.Add(TestAction20());
-            curActionListDO.Activities.Add(TestAction21());
+            curActionListDO.Activities.Add(TestActivity20());
+            curActionListDO.Activities.Add(TestActivity21());
 //
             return curActionListDO;
         }
@@ -191,9 +191,9 @@ namespace UtilitiesTesting.Fixtures
 //               ActionListState = ActionListState.Unstarted,
                 Activities = new System.Collections.Generic.List<RouteNodeDO>() 
                 { 
-                    FixtureData.TestAction22(),
-                   FixtureData.TestAction7(),
-                   FixtureData.TestAction8(null)             
+                    FixtureData.TestActivity22(),
+                   FixtureData.TestActivity7(),
+                   FixtureData.TestActivity8(null)             
                 }
             };
         }
@@ -220,9 +220,9 @@ namespace UtilitiesTesting.Fixtures
 //               ActionListState = ActionListState.Unstarted,
                 Activities = new System.Collections.Generic.List<RouteNodeDO>() 
                 { 
-                    FixtureData.TestAction10(),
-                    FixtureData.TestAction7(),
-                   FixtureData.TestAction8(null)             
+                    FixtureData.TestActivity10(),
+                    FixtureData.TestActivity7(),
+                   FixtureData.TestActivity8(null)             
                 }
             };
         }
@@ -344,7 +344,7 @@ namespace UtilitiesTesting.Fixtures
             {
                  ParentActivityId = GetTestGuidById(1)
             };
-            ActionDO a_23 = new ActionDO()
+            ActivityDO a_23 = new ActivityDO()
             {
                 Id = GetTestGuidById(23), 
                 ActivityTemplate = activityTempate, 
@@ -370,7 +370,7 @@ namespace UtilitiesTesting.Fixtures
                   Name = "Monitor_DocuSign"
               };
              ActionListDO al_1 = new ActionListDO() { ParentActivityId = GetTestGuidById(12) };
-             ActionDO a_23 = new ActionDO()
+             ActivityDO a_23 = new ActivityDO()
              {
                  Id = GetTestGuidById(23), 
                  ActivityTemplate = activityTempate,

@@ -30,8 +30,8 @@ namespace Hub.Services
         private readonly InternalInterface.IContainer _container;
         private readonly ISubroute _subroute;
         private readonly Fr8Account _dockyardAccount;
-        private readonly IAction _action;
-        private readonly IRouteNode _activity;
+        private readonly IActivity _activity;
+        private readonly IRouteNode _routeNode;
         private readonly ICrateManager _crate;
         private readonly ISecurityServices _security;
         private readonly IProcessNode _processNode;
@@ -41,8 +41,8 @@ namespace Hub.Services
             _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
             _subroute = ObjectFactory.GetInstance<ISubroute>();
             _dockyardAccount = ObjectFactory.GetInstance<Fr8Account>();
-            _action = ObjectFactory.GetInstance<IAction>();
-            _activity = ObjectFactory.GetInstance<IRouteNode>();
+            _activity = ObjectFactory.GetInstance<IActivity>();
+            _routeNode = ObjectFactory.GetInstance<IRouteNode>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
             _processNode = ObjectFactory.GetInstance<IProcessNode>();
@@ -223,7 +223,7 @@ namespace Hub.Services
             var result = new ActivateActionsDTO
             {
                 Status = "no action",
-                ActionsCollections = new List<ActionDTO>()
+                ActionsCollections = new List<ActivityDTO>()
             };
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -237,12 +237,12 @@ namespace Hub.Services
 
                 foreach (SubrouteDO template in plan.Subroutes)
                 {
-                    var activities = EnumerateActivityTree<ActionDO>(template);
+                    var activities = EnumerateActivityTree<ActivityDO>(template);
                     foreach (var curActionDO in activities)
                     {
                         try
                         {
-                            var resultActivate = await _action.Activate(curActionDO);
+                            var resultActivate = await _activity.Activate(curActionDO);
 
                             string errorMessage;
                             result.Status = "success";
@@ -288,14 +288,14 @@ namespace Hub.Services
         /// <summary>
         /// After receiving response from terminals for activate action call, checks for existing validation errors on some controls
         /// </summary>
-        /// <param name="curActionDTO"></param>
+        /// <param name="curActivityDTO"></param>
         /// <param name="errorMessage"></param>
         /// <returns></returns>
-        private bool CheckForExistingValidationErrors(ActionDTO curActionDTO, out string errorMessage)
+        private bool CheckForExistingValidationErrors(ActivityDTO curActivityDTO, out string errorMessage)
         {
             errorMessage = string.Empty;
 
-            var crateStorage = _crate.GetStorage(curActionDTO);
+            var crateStorage = _crate.GetStorage(curActivityDTO);
 
             var configControls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().ToList();
             //search for an error inside the config controls and return back if exists
@@ -306,7 +306,7 @@ namespace Hub.Services
                 {
                     //here show only the first error as an issue to redirect back the user to the plan builder
                     errorMessage = string.Format("There was a problem with the configuration of the action '{0}': {1}",
-                        curActionDTO.Name, control.ErrorMessage);
+                        curActivityDTO.Name, control.ErrorMessage);
                     return true;
                 }
             }
@@ -324,12 +324,12 @@ namespace Hub.Services
 
                 foreach (SubrouteDO template in plan.Subroutes)
                 {
-                    var activities = EnumerateActivityTree<ActionDO>(template);
+                    var activities = EnumerateActivityTree<ActivityDO>(template);
                     foreach (var curActionDO in activities)
                     {
                         try
                         {
-                            var resultD = await _action.Deactivate(curActionDO);
+                            var resultD = await _activity.Deactivate(curActionDO);
 
                             result = "success";
                         }
@@ -384,7 +384,7 @@ namespace Hub.Services
         /// </summary>
         /// <param name="id">Process Template id.</param>
         /// <returns></returns>
-        public IEnumerable<ActionDO> GetActions(int id)
+        public IEnumerable<ActivityDO> GetActivities(int id)
         {
             if (id <= 0)
             {
@@ -393,7 +393,7 @@ namespace Hub.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return EnumerateActivities<ActionDO>(uow.RouteRepository.GetByKey(id), false).ToArray();
+                return EnumerateActivities<ActivityDO>(uow.RouteRepository.GetByKey(id), false).ToArray();
             }
         }
 
@@ -426,7 +426,7 @@ namespace Hub.Services
             foreach (var curPlan in curPlans)
             {
                 //get the 1st activity
-                var actionDO = GetFirstActionWithEventSubscriptions(curPlan.Id);
+                var actionDO = GetFirstActivityWithEventSubscriptions(curPlan.Id);
 
                 if (actionDO != null)
                 {
@@ -449,7 +449,7 @@ namespace Hub.Services
             return subscribingRoutes;
         }
 
-        private ActionDO GetFirstActionWithEventSubscriptions(Guid id)
+        private ActivityDO GetFirstActivityWithEventSubscriptions(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -462,14 +462,14 @@ namespace Hub.Services
                 while (queue.Count > 0)
                 {
                     var routeNode = queue.Dequeue();
-                    var action = routeNode as ActionDO;
+                    var activity = routeNode as ActivityDO;
 
-                    if (action != null)
+                    if (activity != null)
                     {
-                        var storage = _crate.GetStorage(action.CrateStorage);
+                        var storage = _crate.GetStorage(activity.CrateStorage);
                         if (storage.CratesOfType<EventSubscriptionCM>().Count() > 0)
                         {
-                            return action;
+                            return activity;
                         }
                     }
 
@@ -505,9 +505,9 @@ namespace Hub.Services
             //return EnumerateActivities<RouteNodeDO>(curPlan, false).OrderBy(a => a.Ordering).FirstOrDefault();
         }
 
-        public PlanDO GetPlan(ActionDO action)
+        public PlanDO GetPlan(ActivityDO activity)
         {
-            var root = action.ParentRouteNode;
+            var root = activity.ParentRouteNode;
 
             while (root != null)
             {

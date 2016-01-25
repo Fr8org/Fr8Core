@@ -128,8 +128,8 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var action = uow.ActionRepository.GetByKey(id);
-                var plan = _plan.GetPlan(action);
+                var activity = uow.ActivityRepository.GetByKey(id);
+                var plan = _plan.GetPlan(activity);
                 var result = RouteMappingHelper.MapRouteToDto(uow, plan);
 
                 return Ok(result);
@@ -227,11 +227,11 @@ namespace HubWeb.Controllers
             //DO-840 Return empty view as having empty process templates are valid use case.
             return Ok();
         }
-        
+
         [HttpPost]
         [ActionName("action")]
         [Fr8ApiAuthorize]
-        public IHttpActionResult PutAction(ActionDTO actionDto)
+        public IHttpActionResult PutAction(ActivityDTO activityDto)
         {
             //A stub until the functionaltiy is ready
             return Ok();
@@ -283,7 +283,7 @@ namespace HubWeb.Controllers
                 return BadRequest();
             }
             catch (Exception)
-            {
+        {
                 _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, "There is a problem with activating this plan. Please try again later.");
                 return BadRequest();
             }
@@ -292,10 +292,10 @@ namespace HubWeb.Controllers
         [HttpPost]
         //[Route("deactivate")]
         [Fr8ApiAuthorize]
-        public async Task<IHttpActionResult> Deactivate(PlanDO curPlan)
+        public async Task<IHttpActionResult> Deactivate(PlanDO curRoute)
         {
-            string actionDTO = await _plan.Deactivate(curPlan.Id);
-            return Ok(actionDTO);
+            string activityDTO = await _plan.Deactivate(curRoute.Id);
+            return Ok(activityDTO);
         }
 
         [HttpPost]
@@ -392,7 +392,7 @@ namespace HubWeb.Controllers
 
                     _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, message);
                 }
-                
+
                 return Ok();
             }
         }

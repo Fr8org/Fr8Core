@@ -102,7 +102,7 @@ namespace DockyardTest.Services
             
             var result = _planService.Activate(curPlanDO.Id, true).Result;
 
-            Assert.AreEqual(result.Status, "no action");
+            Assert.AreEqual(result.Status, "no activity");
         }
 
         [Test]

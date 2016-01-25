@@ -12,25 +12,25 @@ using terminalSalesforce.Services;
 
 namespace terminalSalesforce.Actions
 {
-    public class Create_Contact_v1 : BaseTerminalAction
+    public class Create_Contact_v1 : BaseTerminalActivity
     {
         ISalesforceManager _salesforce = new SalesforceManager();
 
-        public override async Task<ActionDO> Configure(ActionDO curActionDO,AuthorizationTokenDO authTokenDO)
+        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO,AuthorizationTokenDO authTokenDO)
         {
             CheckAuthentication(authTokenDO);
 
-            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
+            return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
             return ConfigurationRequestType.Initial;
         }
 
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO = null)
+        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO = null)
         {
-            using (var updater = Crate.UpdateStorage(curActionDO))
+            using (var updater = Crate.UpdateStorage(curActivityDO))
             {
                 updater.CrateStorage.Clear();
 
@@ -42,27 +42,29 @@ namespace terminalSalesforce.Actions
                     "Upstream Terminal-Provided Fields", addRequestConfigEvent: false, required:true);
                 AddTextSourceControl(updater.CrateStorage, "Email", "email",
                     "Upstream Terminal-Provided Fields", addRequestConfigEvent: false, required:true);
+
+                updater.CrateStorage.Add(await CreateAvailableFieldsCrate(curActivityDO));
             }
 
-            return await Task.FromResult(curActionDO);
+            return await Task.FromResult(curActivityDO);
         }
 
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var payloadCrates = await GetPayload(curActionDO, containerId);
+            var payloadCrates = await GetPayload(curActivityDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
             {
                 return NeedsAuthenticationError(payloadCrates);
             }
 
-            var firstName = ExtractSpecificOrUpstreamValue(curActionDO, payloadCrates, "firstName");
-            var lastName = ExtractSpecificOrUpstreamValue(curActionDO, payloadCrates, "lastName");
-            var mobilePhone = ExtractSpecificOrUpstreamValue(curActionDO, payloadCrates, "mobilePhone");
-            var email = ExtractSpecificOrUpstreamValue(curActionDO, payloadCrates, "email");
+            var firstName = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "firstName");
+            var lastName = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "lastName");
+            var mobilePhone = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "mobilePhone");
+            var email = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "email");
             if (string.IsNullOrEmpty(lastName))
             {
-                return Error(payloadCrates, "No last name found in action.");
+                return Error(payloadCrates, "No last name found in activity.");
             }
 
             var contact = new ContactDTO

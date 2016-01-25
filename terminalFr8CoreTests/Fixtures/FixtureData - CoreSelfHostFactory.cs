@@ -81,11 +81,11 @@ namespace terminalFr8CoreTests.Fixtures
             return WebApp.Start<ActivitiesController_SelfHostStartup>(url: CoreEndPoint);
         }
 
-        public static ActionDTO ConnectToSql_InitialConfiguration_ActionDTO()
+        public static ActivityDTO ConnectToSql_InitialConfiguration_ActionDTO()
         {
             var activityTemplate = ConnectToSql_ActivityTemplate();
 
-            return new ActionDTO()
+            return new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
                 Name = "ConnectToSql_Fr8Core",
@@ -105,11 +105,11 @@ namespace terminalFr8CoreTests.Fixtures
             };
         }
 
-        public static ActionDTO ExecuteSql_InitialConfiguration_ActionDTO()
+        public static ActivityDTO ExecuteSql_InitialConfiguration_ActionDTO()
         {
             var activityTemplate = ExecuteSql_ActivityTemplate();
 
-            return new ActionDTO()
+            return new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
                 Name = "ExecuteSql_Fr8Core",
@@ -139,11 +139,11 @@ namespace terminalFr8CoreTests.Fixtures
             };
         }
 
-        public static ActionDTO MonitorFr8Event_InitialConfiguration_ActionDTO()
+        public static ActivityDTO MonitorFr8Event_InitialConfiguration_ActionDTO()
         {
             var activityTemplate = MonitorFr8Event_ActivityTemplate();
 
-            return new ActionDTO()
+            return new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
                 Name = "Monitor_Fr8_Events",
