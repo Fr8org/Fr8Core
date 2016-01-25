@@ -773,3 +773,7 @@ div[dnd-list].dndDragover {
     color: #fff !important;
     background: #55616f !important;
 }
+
+.ui-select-match {
+    overflow: hidden;
+}

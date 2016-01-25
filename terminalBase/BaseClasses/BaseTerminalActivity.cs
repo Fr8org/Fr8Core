@@ -568,6 +568,27 @@ namespace TerminalBase.BaseClasses
             return control;
         }
 
+        protected UpstreamCrateChooser CreateUpstreamCrateChooser(string name, string label, bool isMultiSelection = true)
+        {
+            var ctrl = new UpstreamCrateChooser
+            {
+                Name = name,
+                Label = label,
+                SelectedCrates = new List<CrateSelectionField>
+                {
+                    new CrateSelectionField
+                    {
+                        ManifestType = new DropDownList { Name = name+"_mnfst_dropdown_0", Source = new FieldSourceDTO(CrateManifestTypes.StandardDesignTimeFields, "UpstreamManifestTypes") },
+                        Label = new DropDownList { Name = name+"_lbl_dropdown_0", Source = new FieldSourceDTO(CrateManifestTypes.StandardDesignTimeFields, "UpstreamLabels") }
+                    }
+                },
+                MultiSelection = isMultiSelection
+            };
+
+            return ctrl;
+        }
+
+
 
         /// <summary>
         /// Extract value from RadioButtonGroup or TextSource where specific value or upstream field was specified.

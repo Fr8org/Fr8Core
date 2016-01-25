@@ -438,6 +438,10 @@ namespace Data.Control
 
         [JsonProperty("selectedCrates")]
         public List<CrateSelectionField> SelectedCrates { get; set; }
+
+        [JsonProperty("multiSelection")]
+        public bool MultiSelection { get; set; }
+        
     }
 
     public class UpstreamFieldChooser : ControlDefinitionDTO

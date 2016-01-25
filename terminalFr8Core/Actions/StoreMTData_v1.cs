@@ -17,6 +17,7 @@ using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using Data.Repositories;
 using System.Reflection;
+using Data.States;
 
 namespace terminalFr8Core.Actions
 {
@@ -42,7 +43,6 @@ namespace terminalFr8Core.Actions
                         ManifestType = manifestType
                     }
                 });
-
             }
         }
         public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
@@ -111,13 +111,22 @@ namespace terminalFr8Core.Actions
 
             var curMergedUpstreamRunTimeObjects = await MergeUpstreamFields(curActivityDO, "Available Run-Time Objects");
 
-            var curConfigurationControlsCrate = PackControls(
-                new ActionUi(curMergedUpstreamRunTimeObjects.Label, curMergedUpstreamRunTimeObjects.ManifestType.Type));
+            var configControls = new ActionUi(curMergedUpstreamRunTimeObjects.Label, curMergedUpstreamRunTimeObjects.ManifestType.Type);
+            configControls.Controls.Add(CreateUpstreamCrateChooser("UpstreamCrateChooser", "Choose Create"));
+            var curConfigurationControlsCrate = PackControls(configControls);
 
             FieldDTO[] curSelectedFields = curMergedUpstreamRunTimeObjects.Content.
                 Fields.Select(field => new FieldDTO { Key = field.Key, Value = field.Value }).ToArray();
 
             var curSelectedObjectType = Crate.CreateDesignTimeFieldsCrate("SelectedObjectTypes", curSelectedFields);
+
+
+            var upstreamCrates = await HubCommunicator.GetCratesByDirection(curActivityDO, CrateDirection.Upstream, CurrentFr8UserId);
+            var upstreamManifestTypes = upstreamCrates.Select(c => new FieldDTO(c.ManifestType.Type, c.ManifestType.Type)).ToList();
+            var upstreamLabels = upstreamCrates.Select(c => new FieldDTO(c.Label, c.Label)).ToList();
+
+            var upstreamManifestTypesCrate = Crate.CreateDesignTimeFieldsCrate("UpstreamManifestTypes", upstreamManifestTypes);
+            var upstreamLabelsCrate = Crate.CreateDesignTimeFieldsCrate("UpstreamLabels", upstreamLabels);
 
             using (var updater = Crate.UpdateStorage(() => curActivityDO.CrateStorage))
             {
@@ -125,6 +134,8 @@ namespace terminalFr8Core.Actions
                 updater.CrateStorage.Add(curMergedUpstreamRunTimeObjects);
                 updater.CrateStorage.Add(curConfigurationControlsCrate);
                 updater.CrateStorage.Add(curSelectedObjectType);
+                updater.CrateStorage.Add(upstreamManifestTypesCrate);
+                updater.CrateStorage.Add(upstreamLabelsCrate);
             }
 
             return curActivityDO;
