@@ -14,11 +14,11 @@ namespace Hub.Managers
 {
     public class IncidentReporter
     {
-        private EventReporter _eventReporter;
+        private readonly EventReporter _eventReporter;
 
-        public IncidentReporter()
+        public IncidentReporter(EventReporter eventReporter)
         {
-            _eventReporter = new EventReporter();
+            _eventReporter = eventReporter;
         }
         public void SubscribeToAlerts()
         {
@@ -488,17 +488,17 @@ namespace Hub.Managers
             }
         }
 
-        public void IncidentMissingFieldInPayload(string fieldKey, ActionDO action, string curUserId)
+        public void IncidentMissingFieldInPayload(string fieldKey, ActivityDO activity, string curUserId)
         {
             using (var _uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 IncidentDO incidentDO = new IncidentDO();
                 incidentDO.PrimaryCategory = "Process Execution";
                 incidentDO.SecondaryCategory = "Action";
-                incidentDO.ObjectId = action.Id.ToString();
+                incidentDO.ObjectId = activity.Id.ToString();
                 incidentDO.Activity = "Occured";
                 incidentDO.CustomerId = curUserId;
-                incidentDO.Data = String.Format("MissingFieldInPayload: ActionName: {0}, Field name: {1}, ActionId {2}", action.Name, fieldKey, action.Id);
+                incidentDO.Data = String.Format("MissingFieldInPayload: ActionName: {0}, Field name: {1}, ActionId {2}", activity.Name, fieldKey, activity.Id);
                 _uow.IncidentRepository.Add(incidentDO);
                 Logger.GetLogger().Warn(incidentDO.Data);
                 _uow.SaveChanges();

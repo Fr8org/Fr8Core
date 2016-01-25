@@ -26,11 +26,11 @@ using TerminalBase.Services;
 
 namespace terminalDocuSign.Actions
 {
-    public class Generate_DocuSign_Report_v1 : BaseTerminalAction
+    public class Generate_DocuSign_Report_v1 : BaseTerminalActivity
     {
         // Here in this action we have query builder control to build queries against docusign API and out mt database.
         // Docusign and MT DB have different set of fileds and we want to provide ability to search by any field.
-        // Our action should "route" queries on the particular fields to the corresponding backend.
+        // Our action should "plan" queries on the particular fields to the corresponding backend.
         // For example, we want to search by Status = Sent and Recipient = chucknorris@gmail.com
         // Both MT DB and Docusign can search by Status, but only MT DB can search by Recipient
         // We have to make two queries with the following criterias and union the results:
@@ -107,13 +107,13 @@ namespace terminalDocuSign.Actions
             _docuSignFolder = ObjectFactory.GetInstance<IDocuSignFolder>();
         }
         
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var payload = await GetPayload(curActionDO, containerId);
+            var payload = await GetPayload(curActivityDO, containerId);
 
             CheckAuthentication(authTokenDO);
 
-            var configurationControls = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
+            var configurationControls = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
 
             if (configurationControls == null)
             {
@@ -234,7 +234,7 @@ namespace terminalDocuSign.Actions
                         // cache list of folders
                         if (folders == null)
                         {
-                             folders = _docuSignFolder.GetFolders(authToken.Email, authToken.ApiPassword);
+                             folders = _docuSignFolder.GetSearchFolders(authToken.Email, authToken.ApiPassword);
                         }
 
                         var value = condition.Value;
@@ -256,25 +256,25 @@ namespace terminalDocuSign.Actions
             return query;
         }
         
-        protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             if (NeedsAuthentication(authTokenDO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            using (var updater = Crate.UpdateStorage(curActionDO))
+            using (var updater = Crate.UpdateStorage(curActivityDO))
             {
                 updater.CrateStorage.Add(PackControls(new ActionUi()));
                 updater.CrateStorage.AddRange(PackDesignTimeData());
             }
             
-            return Task.FromResult(curActionDO);
+            return Task.FromResult(curActivityDO);
         }
 
-        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            return curActionDO;
+            return curActivityDO;
         }
 
         public static FieldDTO[] GetFieldListForQueryBuilder()
@@ -293,9 +293,9 @@ namespace terminalDocuSign.Actions
             }));
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActionDO))
+            if (Crate.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }

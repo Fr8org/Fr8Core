@@ -85,6 +85,19 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
+        public static Fr8AccountDO TestAdminAccount()
+        {
+            var curEmailAddressDO = TestEmailAddress7();
+
+            return new Fr8AccountDO()
+            {
+                Id = "testuser",
+                EmailAddress = curEmailAddressDO,
+                FirstName = "admin",
+                State = 1,
+                Email = "system1@fr.co"
+            };
+        }
         public static Fr8AccountDO TestDockyardAccount6()
         {
             string guestUserEmail = "guestuser@test.com";

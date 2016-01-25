@@ -23,7 +23,7 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(activityTemplateDO => activityTemplateDO.Version, opts => opts.ResolveUsing(e => e.Version));
 
 
-            Mapper.CreateMap<ActionDO, ActionDTO>();
+            Mapper.CreateMap<ActivityDO, ActivityDTO>();
             Mapper.CreateMap<FactDO, FactDTO>();
 
             Mapper.CreateMap<Fr8AccountDO, UserDTO>()
@@ -35,20 +35,21 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<string, JToken>().ConvertUsing<StringToJTokenConverter>();
             Mapper.CreateMap<JToken, string>().ConvertUsing<JTokenToStringConverter>();
 
-            Mapper.CreateMap<ActionDO, ActionDTO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
+            Mapper.CreateMap<ActivityDO, ActivityDTO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
                 .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
                 .ForMember(a => a.RootRouteNodeId, opts => opts.ResolveUsing(ad => ad.RootRouteNodeId))
                 .ForMember(a => a.ParentRouteNodeId, opts => opts.ResolveUsing(ad => ad.ParentRouteNodeId))
                 //.ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => ad.CrateStorage == null ? null : JsonConvert.DeserializeObject(ad.CrateStorage)))
                 .ForMember(a => a.ActivityTemplateId, opts => opts.ResolveUsing(ad => ad.ActivityTemplateId))
                 .ForMember(a => a.CurrentView, opts => opts.ResolveUsing(ad => ad.currentView))
-                .ForMember(a => a.ChildrenActions, opts => opts.ResolveUsing(ad => ad.ChildNodes.OfType<ActionDO>().OrderBy(da => da.Ordering)))
+                .ForMember(a => a.ChildrenActions, opts => opts.ResolveUsing(ad => ad.ChildNodes.OfType<ActivityDO>().OrderBy(da => da.Ordering)))
                 .ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(ad => ad.ActivityTemplate))
                 .ForMember(a => a.ExplicitData, opts => opts.ResolveUsing(ad => ad.ExplicitData))
-                .ForMember(a => a.AuthToken, opts => opts.ResolveUsing(ad => ad.AuthorizationToken));
+                .ForMember(a => a.AuthToken, opts => opts.ResolveUsing(ad => ad.AuthorizationToken))
+                .ForMember(a => a.Fr8AccountId, opts => opts.ResolveUsing(ad => ad.Fr8AccountId));
 
 
-            Mapper.CreateMap<ActionDTO, ActionDO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
+            Mapper.CreateMap<ActivityDTO, ActivityDO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
                 .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
                 .ForMember(a => a.RootRouteNodeId, opts => opts.ResolveUsing(ad => ad.RootRouteNodeId))
                 .ForMember(a => a.ParentRouteNodeId, opts => opts.ResolveUsing(ad => ad.ParentRouteNodeId))
@@ -59,7 +60,8 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(a => a.ChildNodes, opts => opts.ResolveUsing(ad => MapActions(ad.ChildrenActions)))
                 .ForMember(a => a.IsTempId, opts => opts.ResolveUsing(ad => ad.IsTempId))
                 .ForMember(a => a.ExplicitData, opts => opts.ResolveUsing(ad => ad.ExplicitData))
-                .ForMember(a => a.AuthorizationTokenId, opts => opts.ResolveUsing(ad => ad.AuthToken != null && ad.AuthToken.Id != null ? new Guid(ad.AuthToken.Id) : (Guid?)null));
+                .ForMember(a => a.AuthorizationTokenId, opts => opts.ResolveUsing(ad => ad.AuthToken != null && ad.AuthToken.Id != null ? new Guid(ad.AuthToken.Id) : (Guid?)null))
+                .ForMember(a => a.Fr8AccountId, opts => opts.ResolveUsing(ad => ad.Fr8AccountId));
 
 
             Mapper.CreateMap<ActivityTemplateDO, ActivityTemplateDTO>()
@@ -83,18 +85,18 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.NeedsAuthentication, opts => opts.ResolveUsing(x => x.NeedsAuthentication))
                 .ForMember(x => x.ActivityTemplateStateTemplate,
                     opts => opts.ResolveUsing((ActivityTemplateDTO x) => null))
-                .ForMember(x => x.WebServiceId, opts => opts.ResolveUsing((ActivityTemplateDTO x) => null)) 
+                .ForMember(x => x.WebServiceId, opts => opts.ResolveUsing((ActivityTemplateDTO x) => null))
                 .ForMember(x => x.Description, opts => opts.ResolveUsing(x => x.Description));
 
-//
-//            Mapper.CreateMap<ActionListDO, ActionListDTO>()
-//                .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
-//                .ForMember(x => x.ActionListType, opts => opts.ResolveUsing(x => x.ActionListType))
-//                .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name));
+            //
+            //            Mapper.CreateMap<ActionListDO, ActionListDTO>()
+            //                .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
+            //                .ForMember(x => x.ActionListType, opts => opts.ResolveUsing(x => x.ActionListType))
+            //                .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name));
 
-            Mapper.CreateMap<RouteDO, RouteEmptyDTO>();
-            Mapper.CreateMap<RouteEmptyDTO, RouteDO>();
-            Mapper.CreateMap<RouteDO, RouteEmptyDTO>();
+            Mapper.CreateMap<PlanDO, RouteEmptyDTO>();
+            Mapper.CreateMap<RouteEmptyDTO, PlanDO>();
+            Mapper.CreateMap<PlanDO, RouteEmptyDTO>();
             Mapper.CreateMap<SubrouteDTO, SubrouteDO>()
                 .ForMember(x => x.ParentRouteNodeId, opts => opts.ResolveUsing(x => x.RouteId))
                 .ForMember(x => x.RootRouteNodeId, opts => opts.ResolveUsing(x => x.RouteId));
@@ -107,16 +109,16 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<CriteriaDTO, CriteriaDO>()
                 .ForMember(x => x.ConditionsJSON, opts => opts.ResolveUsing(y => y.Conditions));
 
-            Mapper.CreateMap<RouteDO, RouteFullDTO>()
+            Mapper.CreateMap<PlanDO, RouteFullDTO>()
                 .ConvertUsing<RouteDOFullConverter>();
 
             Mapper.CreateMap<RouteEmptyDTO, RouteFullDTO>();
-          //  Mapper.CreateMap<ActionListDO, FullActionListDTO>();
+            //  Mapper.CreateMap<ActionListDO, FullActionListDTO>();
             Mapper.CreateMap<SubrouteDO, FullSubrouteDTO>();
 
             //Mapper.CreateMap<Account, DocuSignAccount>();
             Mapper.CreateMap<FileDO, FileDescriptionDTO>();
-            
+
             Mapper.CreateMap<CrateStorageDTO, string>()
                 .ConvertUsing<JsonToStringConverterNoMagic<CrateStorageDTO>>();
             Mapper.CreateMap<string, CrateStorageDTO>()
@@ -126,7 +128,7 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<ContainerDO, ContainerDTO>();
             Mapper.CreateMap<AuthorizationTokenDTO, AuthorizationTokenDO>()
                 .ForMember(x => x.UserID, x => x.ResolveUsing(y => y.UserId))
-                .ForMember(x => x.Id, x => x.ResolveUsing(y => y.Id != null ? new Guid(y.Id) : (Guid?) null));
+                .ForMember(x => x.Id, x => x.ResolveUsing(y => y.Id != null ? new Guid(y.Id) : (Guid?)null));
             Mapper.CreateMap<AuthorizationTokenDO, AuthorizationTokenDTO>()
                 .ForMember(x => x.UserId, x => x.ResolveUsing(y => y.UserID))
                 .ForMember(x => x.Id, x => x.ResolveUsing(y => y.Id.ToString()));
@@ -135,19 +137,19 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<TerminalDTO, TerminalDO>();
         }
 
-        private static List<RouteNodeDO> MapActions(IEnumerable<ActionDTO> actions)
+        private static List<RouteNodeDO> MapActions(IEnumerable<ActivityDTO> actions)
         {
             var list = new List<RouteNodeDO>();
 
             if (actions != null)
             {
-                foreach (var actionDto in actions)
+                foreach (var activityDto in actions)
                 {
-                    list.Add(Mapper.Map<ActionDO>(actionDto));
+                    list.Add(Mapper.Map<ActivityDO>(activityDto));
                 }
             }
 
             return list;
         }
-    }   
+    }
 }

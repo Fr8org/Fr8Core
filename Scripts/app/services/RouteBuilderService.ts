@@ -9,19 +9,19 @@ module dockyard.services {
         getFull: (id: Object) => interfaces.IRouteVM;
         getByAction: (id: { id: string }) => interfaces.IRouteVM;
         execute: (id: { id: number }, payload: { payload: string }, success: any, error: any) => void;
-        activate: (route: model.RouteDTO) => ng.resource.IResource<string>;
+        activate: (data :{routeId: string, routeBuilderActivate : boolean}) => any;
         deactivate: (route: model.RouteDTO) => ng.resource.IResource<string>;
         update: (data: { id: string, name: string}) => interfaces.IRouteVM;
     }
 
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
-        configure: (action: interfaces.IActionDTO) => ng.resource.IResource<interfaces.IActionVM>;
+        configure: (action: interfaces.IActivityDTO) => ng.resource.IResource<interfaces.IActionVM>;
         getByRoute: (id: Object) => ng.resource.IResource<Array<interfaces.IActionVM>>;
-        create: (args: { actionTemplateId: number, name: string, label: string, parentNideId: number, createRoute: boolean }) => ng.resource.IResource<model.RouteDTO | model.ActionDTO>;
+        create: (args: { actionTemplateId: number, name: string, label: string, parentNideId: number, createRoute: boolean }) => ng.resource.IResource<model.RouteDTO | model.ActivityDTO>;
         createSolution: (args: { solutionName: string }) => ng.resource.IResource<model.RouteDTO>
         //TODO make resource class do this operation
         deleteById: (id: { id: string; confirmed: boolean }) => ng.resource.IResource < string >
-        batchSave: (actionList: interfaces.IActionDTO[]) => ng.resource.IResource < interfaces.IActionVM >
+        batchSave: (actionList: interfaces.IActivityDTO[]) => ng.resource.IResource < interfaces.IActionVM >
         //getFieldDataSources: (params: Object, data: interfaces.IActionVM) => interfaces.IDataSourceListVM;
     }
 
@@ -105,6 +105,8 @@ module dockyard.services {
                     isArray: false,
                     url: '/api/routes/activate/',
                     params: {
+                        routeId: '@routeId',
+                        routeBuilderActivate : '@routeBuilderActivate'
                     }
                 },
                 'deactivate': {
@@ -153,7 +155,7 @@ module dockyard.services {
     ]);
 
     /* 
-        ActionDTO CRUD service.
+        ActivityDTO CRUD service.
     */
     app.factory('ActionService', ['$resource', ($resource: ng.resource.IResourceService): IActionService =>
         <IActionService>$resource('/api/actions?id=:id',

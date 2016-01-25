@@ -43,7 +43,7 @@ namespace terminalSalesforceTests.Actions
             }
 
             Mock<IHubCommunicator> hubCommunicatorMock = new Mock<IHubCommunicator>(MockBehavior.Default);
-            hubCommunicatorMock.Setup(h => h.GetPayload(It.IsAny<ActionDO>(), It.IsAny<Guid>(), It.IsAny<string>()))
+            hubCommunicatorMock.Setup(h => h.GetPayload(It.IsAny<ActivityDO>(), It.IsAny<Guid>(), It.IsAny<string>()))
                 .Returns(() => Task.FromResult(testPayloadDTO));
             ObjectFactory.Container.Inject(typeof(IHubCommunicator), hubCommunicatorMock.Object);
 
@@ -64,10 +64,10 @@ namespace terminalSalesforceTests.Actions
         public async void Configure_InitialConfig_CheckControlsCrate()
         {
             //Arrange
-            var actionDO = FixtureData.GetFileListTestActionDO1();
+            var activityDO = FixtureData.GetFileListTestActionDO1();
 
             //Act
-            var result = await _getData_v1.Configure(actionDO, FixtureData.Salesforce_AuthToken());
+            var result = await _getData_v1.Configure(activityDO, FixtureData.Salesforce_AuthToken());
 
             //Assert
             var stroage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(result);
@@ -90,17 +90,17 @@ namespace terminalSalesforceTests.Actions
         public async void Configure_FollowUpConfig_CheckObjectFields()
         {
             //Arrange
-            var actionDO = FixtureData.GetFileListTestActionDO1();
-            actionDO = await _getData_v1.Configure(actionDO, FixtureData.Salesforce_AuthToken());
-            actionDO = SelectSalesforceAccount(actionDO);
+            var activityDO = FixtureData.GetFileListTestActionDO1();
+            activityDO = await _getData_v1.Configure(activityDO, FixtureData.Salesforce_AuthToken());
+            activityDO = SelectSalesforceAccount(activityDO);
 
             Mock<ISalesforceManager> salesforceIntegrationMock = Mock.Get(ObjectFactory.GetInstance<ISalesforceManager>());
 
             //Act
-            actionDO = await _getData_v1.Configure(actionDO, FixtureData.Salesforce_AuthToken());
+            activityDO = await _getData_v1.Configure(activityDO, FixtureData.Salesforce_AuthToken());
 
             //Assert
-            var stroage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(actionDO);
+            var stroage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(activityDO);
             Assert.AreEqual(3, stroage.Count, "Number of configuration crates not populated correctly");
 
             Assert.AreEqual(stroage.CratesOfType<StandardDesignTimeFieldsCM>()
@@ -114,15 +114,15 @@ namespace terminalSalesforceTests.Actions
         public async void Run_Check_PayloadDTO_ForObjectData()
         {
             //Arrange
-            var actionDO = FixtureData.GetFileListTestActionDO1();
+            var activityDO = FixtureData.GetFileListTestActionDO1();
 
             //perform initial configuration
-            actionDO = await _getData_v1.Configure(actionDO, FixtureData.Salesforce_AuthToken());
-            actionDO = SelectSalesforceAccount(actionDO);
+            activityDO = await _getData_v1.Configure(activityDO, FixtureData.Salesforce_AuthToken());
+            activityDO = SelectSalesforceAccount(activityDO);
             //perform follow up configuration
-            actionDO = await _getData_v1.Configure(actionDO, FixtureData.Salesforce_AuthToken());
+            activityDO = await _getData_v1.Configure(activityDO, FixtureData.Salesforce_AuthToken());
 
-            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(actionDO))
+            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(activityDO))
             {
                 updater.CrateStorage.CratesOfType<StandardConfigurationControlsCM>()
                     .Single()
@@ -131,7 +131,7 @@ namespace terminalSalesforceTests.Actions
             }
 
             //Act
-            var resultPayload = await _getData_v1.Run(actionDO, new Guid(), FixtureData.Salesforce_AuthToken());
+            var resultPayload = await _getData_v1.Run(activityDO, new Guid(), FixtureData.Salesforce_AuthToken());
 
             //Assert
             var stroage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(resultPayload);
@@ -141,9 +141,9 @@ namespace terminalSalesforceTests.Actions
                     .Single(c => c.Label.Equals("Salesforce Objects")), "Not able to get the required salesforce object");
         }
 
-        private ActionDO SelectSalesforceAccount(ActionDO curActionDO)
+        private ActivityDO SelectSalesforceAccount(ActivityDO curActivityDO)
         {
-            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(curActionDO))
+            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(curActivityDO))
             {
                 var configControls = updater.CrateStorage.CratesOfType<StandardConfigurationControlsCM>().Single();
                 configControls.Content.Controls.Where(control => control.Name.Equals("WhatKindOfData"))
@@ -151,7 +151,7 @@ namespace terminalSalesforceTests.Actions
                     .Single()
                     .selectedKey = "Account";
             }
-            return curActionDO;
+            return curActivityDO;
         }
     }
 }

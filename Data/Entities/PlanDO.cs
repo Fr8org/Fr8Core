@@ -10,9 +10,9 @@ using System.Linq.Expressions;
 
 namespace Data.Entities
 {
-    public class RouteDO : RouteNodeDO
+    public class PlanDO : RouteNodeDO
     {
-        public RouteDO()
+        public PlanDO()
         {
             
             //Subroutes = new List<SubrouteDO>();
@@ -82,11 +82,9 @@ namespace Data.Entities
 
         public virtual _RouteStateTemplate RouteStateTemplate { get; set; }
 
-        public virtual Fr8AccountDO Fr8Account { get; set; }
-
         public string Tag { get; set; }
 
-        [InverseProperty("Route")]
+        [InverseProperty("Plan")]
         public virtual ICollection<ContainerDO> ChildContainers { get; set; }
 
         [NotMapped]
@@ -100,7 +98,7 @@ namespace Data.Entities
 
         public override RouteNodeDO Clone()
         {
-            return new RouteDO()
+            return new PlanDO()
             {
                 Ordering = this.Ordering,
                 Name = this.Name,

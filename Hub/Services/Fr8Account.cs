@@ -190,7 +190,7 @@ namespace Hub.Services
             {
                 return uow.ContainerRepository.GetQuery().Where
                     (r => r.ContainerState == ContainerState.Executing
-                          & r.Route.Fr8Account.Id == userId).ToList();
+                          & r.Plan.Fr8Account.Id == userId).ToList();
             }
         }
 
@@ -382,9 +382,9 @@ namespace Hub.Services
 		  //	 return packager.Login();
 		  //}
 
-        public IEnumerable<RouteDO> GetActiveRoutes(string userId)
+        public IEnumerable<PlanDO> GetActivePlans(string userId)
         {
-            IEnumerable<RouteDO> activeRoutes;
+            IEnumerable<PlanDO> activeRoutes;
             using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var routeQuery = unitOfWork.RouteRepository.GetQuery().Include(i => i.Fr8Account);

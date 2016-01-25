@@ -45,7 +45,7 @@ namespace terminalDocuSignTests.Integration
             Assert.AreEqual(1, controls.Controls.Count(x => x.Name == "NotificationHandler"));
         }
 
-        private void AddHubActivityTemplate(ActionDTO actionDTO)
+        private void AddHubActivityTemplate(ActivityDTO activityDTO)
         {
 
             var terminal = new TerminalDTO()
@@ -91,12 +91,12 @@ namespace terminalDocuSignTests.Integration
             };
 
             AddActivityTemplate(
-               actionDTO,
+               activityDTO,
               testIncomingDataTemplate
             );
 
             AddActivityTemplate(
-               actionDTO,
+               activityDTO,
               setDelayActionTemplate
             );
 
@@ -112,17 +112,17 @@ namespace terminalDocuSignTests.Integration
             };
 
             AddActivityTemplate(
-               actionDTO,
+               activityDTO,
               queryMTDatabaseActionTemplate
             );
 
             AddActivityTemplate(
-               actionDTO,
+               activityDTO,
               docusignEventActionTemplate
             );
 
             AddActivityTemplate(
-                actionDTO,
+                activityDTO,
                 new ActivityTemplateDTO()
                 {
                     Id = 9,
@@ -145,7 +145,7 @@ namespace terminalDocuSignTests.Integration
             requestActionDTO.AuthToken = HealthMonitor_FixtureData.DocuSign_AuthToken();
 
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<ActivityDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -159,14 +159,14 @@ namespace terminalDocuSignTests.Integration
             AssertControls(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single());
         }
 
-        private async Task<ActionDTO> GetActionDTO_WithEventsAndDelayValue()
+        private async Task<ActivityDTO> GetActionDTO_WithEventsAndDelayValue()
         {
             var configureUrl = GetTerminalConfigureUrl();
             var requestActionDTO = HealthMonitor_FixtureData.Rich_Document_Notifications_v1_InitialConfiguration_ActionDTO();
             AddHubActivityTemplate(requestActionDTO);
 
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<ActivityDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -209,14 +209,14 @@ namespace terminalDocuSignTests.Integration
             return responseActionDTO;
         }
 
-        private async Task<ActionDTO> GetActionDTO_WithEventsValue()
+        private async Task<ActivityDTO> GetActionDTO_WithEventsValue()
         {
             var configureUrl = GetTerminalConfigureUrl();
             var requestActionDTO = HealthMonitor_FixtureData.Rich_Document_Notifications_v1_InitialConfiguration_ActionDTO();
             AddHubActivityTemplate(requestActionDTO);
 
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<ActivityDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -335,7 +335,7 @@ namespace terminalDocuSignTests.Integration
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<ActivityDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -356,7 +356,7 @@ namespace terminalDocuSignTests.Integration
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<ActivityDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );

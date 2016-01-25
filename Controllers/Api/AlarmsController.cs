@@ -40,8 +40,8 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var _route = ObjectFactory.GetInstance<IRoute>();
-                await _route.Continue(alarmDTO.ContainerId);
+                var _plan = ObjectFactory.GetInstance<IPlan>();
+                await _plan.Continue(alarmDTO.ContainerId);
                 //TODO report output to somewhere to pusher service maybe
 
                 /*
