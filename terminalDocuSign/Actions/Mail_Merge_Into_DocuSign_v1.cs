@@ -234,7 +234,7 @@ namespace terminalDocuSign.Actions
         protected override async Task<ActionDO> FollowupConfigurationResponse(
             ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
+                var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 
             //extract fields in docusign form
             _docuSignManager.UpdateUserDefinedFields(curActionDO, authTokenDO, Crate.UpdateStorage(curActionDO), _docuSignTemplateValue);
@@ -269,7 +269,8 @@ namespace terminalDocuSign.Actions
                     Label = mapFieldActTempl.Label,
                     CrateStorage = Crate.EmptyStorageAsStr(),
                     ParentRouteNode = curActionDO,
-                    Ordering = 2
+                    Ordering = 2,
+                    Fr8AccountId = authTokenDO.UserID
                 });
 
                 ActivityTemplateDO sendDocuSignEnvActTempl = curActivityTemplates.FirstOrDefault(at => at.Name == "Send_DocuSign_Envelope");

@@ -170,7 +170,7 @@ namespace Hub.Services
             existingAction.Label = submittedAction.Label;
             existingAction.CrateStorage = submittedAction.CrateStorage;
             existingAction.Ordering = submittedAction.Ordering;
-            existingAction.Fr8Account = submittedAction.Fr8Account;
+            //existingAction.Fr8Account = submittedAction.Fr8Account;
         }
 
         private ActionDO SaveAndUpdateRecursive(IUnitOfWork uow, ActionDO submittedAction, ActionDO parent, List<ActionDO> pendingConfiguration)

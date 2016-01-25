@@ -113,7 +113,8 @@ namespace terminalDocuSign.Actions
                 CreateDate = DateTime.UtcNow,
                 Ordering = 1,
                 Name = "First action",
-                Label = firstActionTemplate.Label
+                Label = firstActionTemplate.Label,
+                Fr8AccountId = authTokenDO.UserID
             };
 
             curActionDO.ChildNodes.Add(firstAction);
@@ -130,7 +131,8 @@ namespace terminalDocuSign.Actions
                     CreateDate = DateTime.UtcNow,
                     Ordering = 2,
                     Name = "Final action",
-                    Label = actionUi.FinalActionsList.selectedKey
+                    Label = actionUi.FinalActionsList.selectedKey,
+                    Fr8AccountId = authTokenDO.UserID
                 };
 
                 curActionDO.ChildNodes.Add(finalAction);
