@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Data.Control;
+using Data.Crates;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Interfaces;
+using Hub.Managers;
 using StructureMap;
 using terminalDocuSign.Interfaces;
 using TerminalBase.Infrastructure;
@@ -22,12 +26,16 @@ namespace terminalDocuSign.Services
         private readonly IActivityTemplate _activityTemplate;
         private readonly IActivity _activity;
         private readonly IHubCommunicator _hubCommunicator;
+        private readonly ICrateManager _crateManager;
+
+        
 
         public DocuSignRoute()
         {
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
             _activity = ObjectFactory.GetInstance<IActivity>();
             _hubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
+            _crateManager = ObjectFactory.GetInstance<ICrateManager>();
         }
 
         /// <summary>
@@ -63,10 +71,49 @@ namespace terminalDocuSign.Services
             var storeMTDataTemplate = GetActivityTemplate(activityTemplates, "StoreMTData");
             await _hubCommunicator.CreateAndConfigureActivity(recordDocusignEventsTemplate.Id, "Record_DocuSign_Events",
                 curFr8UserId, "Record DocuSign Events", monitorDocusignRoute.StartingSubrouteId, false, new Guid(authTokenDTO.Id));
-            await _hubCommunicator.CreateAndConfigureActivity(storeMTDataTemplate.Id, "StoreMTData",
+            var storeMTDataActivity = await _hubCommunicator.CreateAndConfigureActivity(storeMTDataTemplate.Id, "StoreMTData",
                 curFr8UserId, "Store MT Data", monitorDocusignRoute.StartingSubrouteId);
+            SetSelectedCrates(storeMTDataActivity);
+            //save this
+            await _hubCommunicator.ConfigureActivity(storeMTDataActivity, curFr8UserId);
             var planDO = Mapper.Map<PlanDO>(monitorDocusignRoute);
             await _hubCommunicator.ActivatePlan(planDO, curFr8UserId);
+        }
+
+        private void SetSelectedCrates(ActivityDTO storeMTDataActivity)
+        {
+            using (var updater = _crateManager.UpdateStorage(() => storeMTDataActivity.CrateStorage))
+            {
+                var configControlCM = updater.CrateStorage
+                    .CrateContentsOfType<StandardConfigurationControlsCM>()
+                    .First();
+
+                var upstreamCrateChooser = (UpstreamCrateChooser)configControlCM.FindByName("UpstreamCrateChooser");
+                var existingDdlbSource = upstreamCrateChooser.SelectedCrates[0].Source;
+                var docusignEnvelope = new DropDownList
+                {
+                    selectedKey = "DocuSign Envelope",
+                    Value = "DocuSign Envelope",
+                    Name = "UpstreamCrateChooser_lbl_dropdown_0",
+                    Source = existingDdlbSource
+                };
+                var docusignEvent = new DropDownList
+                {
+                    selectedKey = "DocuSign Event",
+                    Value = "DocuSign Event",
+                    Name = "UpstreamCrateChooser_lbl_dropdown_1",
+                    Source = existingDdlbSource
+                };
+                var docusignRecipient = new DropDownList
+                {
+                    selectedKey = "DocuSign Recipient",
+                    Value = "DocuSign Recipient",
+                    Name = "UpstreamCrateChooser_lbl_dropdown_2",
+                    Source = existingDdlbSource
+                };
+
+                upstreamCrateChooser.SelectedCrates = new List<DropDownList>{docusignEnvelope, docusignEvent, docusignRecipient};
+            }
         }
 
         private ActivityTemplateDTO GetActivityTemplate(IEnumerable<ActivityTemplateDTO> activityList, string activityTemplateName)

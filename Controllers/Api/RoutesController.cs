@@ -6,6 +6,7 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
 using Hub.Exceptions;
+using Hub.Infrastructure;
 using HubWeb.Controllers.Helpers;
 using Microsoft.AspNet.Identity;
 using StructureMap;
@@ -262,7 +263,8 @@ namespace HubWeb.Controllers
         }
 
         [HttpPost]
-        [Fr8ApiAuthorize("Admin","Customer")]
+        [Fr8ApiAuthorize("Admin","Customer", "Terminal")]
+        [Fr8HubWebHMACAuthenticate]
         public async Task<IHttpActionResult> Activate(Guid routeId, bool routeBuilderActivate = false)
         {
             string pusherChannel = String.Format("fr8pusher_{0}", User.Identity.Name);

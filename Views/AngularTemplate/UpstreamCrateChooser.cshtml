@@ -1,16 +1,10 @@
 ﻿<div>
-    <div ng-class="{'noclick-background': isDisabled}">
-        <div class="col-md-12">
-            <div class="col-md-5" style="padding-left: 0px;padding-right: 0px;"><p style="font-size: 14px;font-weight: 600;">Manifest</p></div>
-            <div class="col-md-6" style="padding-left: 10px;padding-right: 0px;"><p style="font-size: 14px;font-weight: 600;">Label</p></div>
-            <div class="col-md-1" style="padding-left: 5px;padding-right: 0px;"></div>
-        </div>
-        <div class="col-md-12" ng-repeat="selectedCrate in field.selectedCrates track by $index">
-            <div class="col-md-5" style="padding-left: 0px;padding-right: 0px;">
-                <drop-down-list-box field="selectedCrate.manifestType" change="onChange" data-field-name="{{::'CrateChooserManifestType'+$index}}"></drop-down-list-box>
-            </div>
-            <div class="col-md-6" style="padding-left: 10px;padding-right: 0px;">
-                <drop-down-list-box field="selectedCrate.label" change="onChange" data-field-name="{{::'CrateChooserLabel'+$index}}"></drop-down-list-box>
+    <span>{{::field.label}}</span>
+    <div ng-class="{'noclick-background': isDisabled}" style="margin-top: 10px;">
+
+        <div class="col-md-12" ng-repeat="selectedCrate in field.selectedCrates track by $index" style="padding-left: 0px;">
+            <div class="col-md-11" style="padding-left: 0px;padding-right: 0px;">
+                <drop-down-list-box field="selectedCrate" change="onChange" data-field-name="{{::'CrateChooserLabel'+$index}}"></drop-down-list-box>
             </div>
             <div class="col-md-1" style="padding-left: 5px;padding-right: 0px;">
                 <img src="~/Content/img/RouteBuilder/delete-icon.png" width="15" height="15"
@@ -20,7 +14,7 @@
             </div>
         </div>
         <div>
-            <a ng-show="field.multiSelection === true" class="btn btn-primary" style="margin-left: 15px;" ng-click="addRow()" stop-click-propagation>Add Row</a>
+            <a ng-show="field.multiSelection === true" class="btn btn-primary" style="margin-top:10px;" ng-click="addRow()" stop-click-propagation>Add Row</a>
         </div>
     </div>
 </div>

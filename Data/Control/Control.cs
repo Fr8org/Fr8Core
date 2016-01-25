@@ -420,15 +420,6 @@ namespace Data.Control
         public string SelectedFieldType { get; set; }
     }
 
-    public class CrateSelectionField
-    {
-        [JsonProperty("manifestType")]
-        public DropDownList ManifestType { get; set; }
-
-        [JsonProperty("label")]
-        public DropDownList Label { get; set; }
-    }
-
     public class UpstreamCrateChooser : ControlDefinitionDTO
     {
         public UpstreamCrateChooser()
@@ -437,7 +428,7 @@ namespace Data.Control
         }
 
         [JsonProperty("selectedCrates")]
-        public List<CrateSelectionField> SelectedCrates { get; set; }
+        public List<DropDownList> SelectedCrates { get; set; }
 
         [JsonProperty("multiSelection")]
         public bool MultiSelection { get; set; }

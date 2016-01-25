@@ -574,13 +574,9 @@ namespace TerminalBase.BaseClasses
             {
                 Name = name,
                 Label = label,
-                SelectedCrates = new List<CrateSelectionField>
+                SelectedCrates = new List<DropDownList>
                 {
-                    new CrateSelectionField
-                    {
-                        ManifestType = new DropDownList { Name = name+"_mnfst_dropdown_0", Source = new FieldSourceDTO(CrateManifestTypes.StandardDesignTimeFields, "UpstreamManifestTypes") },
-                        Label = new DropDownList { Name = name+"_lbl_dropdown_0", Source = new FieldSourceDTO(CrateManifestTypes.StandardDesignTimeFields, "UpstreamLabels") }
-                    }
+                    new DropDownList { Name = name+"_lbl_dropdown_0", Source = new FieldSourceDTO(CrateManifestTypes.StandardDesignTimeFields, "UpstreamLabels") }
                 },
                 MultiSelection = isMultiSelection
             };

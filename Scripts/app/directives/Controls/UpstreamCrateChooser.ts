@@ -15,35 +15,27 @@ module dockyard.directives.upstreamCrateChooser {
     export function UpstreamCrateChooser(): ng.IDirective {
         var controller = ['$scope', 'CrateHelper', ($scope: IUpstreamCrateChooserScope, crateHelper: services.CrateHelper) => {
 
-            var populateListItems = (crateSelectionField: model.CrateSelectionField) => {
+            var populateListItems = (ddlb: model.DropDownList) => {
                 var ddList = Array<model.ControlDefinitionDTO>();
-                ddList.push(crateSelectionField.manifestType);
-                ddList.push(crateSelectionField.label);
+                ddList.push(ddlb);
                 crateHelper.populateListItemsFromDataSource(ddList, $scope.currentAction.crateStorage);
             };
 
-            for (var i = 0; i < $scope.field.selectedCrates.length; i++) {
-                populateListItems($scope.field.selectedCrates[i]);
-            }
+            crateHelper.populateListItemsFromDataSource($scope.field.selectedCrates, $scope.currentAction.crateStorage);
             
-            $scope.onChange = (fieldName: string) => {
+            $scope.onChange = () => {
                 if ($scope.change != null && angular.isFunction($scope.change)) {
                     $scope.change()($scope.field);
                 }
             };
 
             $scope.addRow = () => {
-                var crateChooserRow = new model.CrateSelectionField();
-                crateChooserRow.label = new model.DropDownList();
-                crateChooserRow.label.type = 'DropDownList';
-                crateChooserRow.label.name = $scope.field.name + '_lbl_dropdown_' + $scope.field.selectedCrates.length;
-                crateChooserRow.label.source = $scope.field.selectedCrates[0].label.source;
-                crateChooserRow.manifestType = new model.DropDownList();
-                crateChooserRow.manifestType.type = 'DropDownList';
-                crateChooserRow.manifestType.name = $scope.field.name + '_mnfst_dropdown_' + $scope.field.selectedCrates.length;
-                crateChooserRow.manifestType.source = $scope.field.selectedCrates[0].manifestType.source;
-                populateListItems(crateChooserRow);
-                $scope.field.selectedCrates.push(crateChooserRow);
+                var labelChooser = new model.DropDownList();
+                labelChooser.type = 'DropDownList';
+                labelChooser.name = $scope.field.name + '_lbl_dropdown_' + $scope.field.selectedCrates.length;
+                labelChooser.source = $scope.field.selectedCrates[0].source;
+                populateListItems(labelChooser);
+                $scope.field.selectedCrates.push(labelChooser);
             };
 
             $scope.removeRow = (rowIndex: number) => {
