@@ -170,7 +170,7 @@ namespace Hub.Services
             existingActivity.Label = submittedActivity.Label;
             existingActivity.CrateStorage = submittedActivity.CrateStorage;
             existingActivity.Ordering = submittedActivity.Ordering;
-            existingActivity.Fr8Account = submittedActivity.Fr8Account;
+            //existingActivity.Fr8Account = submittedActivity.Fr8Account;
         }
 
         private ActivityDO SaveAndUpdateRecursive(IUnitOfWork uow, ActivityDO submittedActiviy, ActivityDO parent, List<ActivityDO> pendingConfiguration)

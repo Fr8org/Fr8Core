@@ -79,7 +79,7 @@ namespace terminalDocuSignTests.Integration
 
                 selectedAction = availableActions.Fields[1].Key;
             }
-
+            responseActionDTO.AuthToken = requestActionDTO.AuthToken;
             return new Tuple<ActivityDTO, string>(responseActionDTO, selectedAction);
         }
 
@@ -114,12 +114,12 @@ namespace terminalDocuSignTests.Integration
 
             var activityDTO = await GetActionDTO_WithSelectedAction();
 
+
             var responseActionDTO =
                 await HttpPostAsync<ActivityDTO, ActivityDTO>(
                     configureUrl,
                     activityDTO.Item1
                 );
-
             var crateStorage = Crate.GetStorage(responseActionDTO);
 
             AssertCrateTypes(crateStorage);
@@ -129,7 +129,6 @@ namespace terminalDocuSignTests.Integration
             Assert.NotNull(responseActionDTO);
             Assert.NotNull(responseActionDTO.CrateStorage);
             Assert.NotNull(responseActionDTO.CrateStorage.Crates);
-            
 
         }
 
@@ -151,7 +150,8 @@ namespace terminalDocuSignTests.Integration
 
             Assert.AreEqual(1, responseActionDTO.ChildrenActions.Count(x => x.Label == "Monitor DocuSign Envelope Activity"));
             Assert.AreEqual(1, responseActionDTO.ChildrenActions.Count(x => x.Label == "Send DocuSign Envelope"));
-        }
+
+       }
 
         [Test]
         public async void Extract_Data_From_Envelopes_Activate_Returns_ActionDTO()

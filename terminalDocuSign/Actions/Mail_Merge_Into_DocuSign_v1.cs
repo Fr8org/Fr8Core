@@ -269,7 +269,8 @@ namespace terminalDocuSign.Actions
                     Label = mapFieldActTempl.Label,
                     CrateStorage = Crate.EmptyStorageAsStr(),
                     ParentRouteNode = curActivityDO,
-                    Ordering = 2
+                    Ordering = 2,
+                    Fr8AccountId = authTokenDO.UserID
                 });
 
                 ActivityTemplateDO sendDocuSignEnvActTempl = curActivityTemplates.FirstOrDefault(at => at.Name == "Send_DocuSign_Envelope");
