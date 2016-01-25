@@ -107,6 +107,18 @@ namespace TerminalBase.BaseClasses
             return payload;
         }
 
+        protected PayloadDTO ExecuteClientAction(PayloadDTO payload, string clientActionName)
+        {
+            using (var updater = Crate.UpdateStorage(payload))
+            {
+                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                operationalState.CurrentActivityResponse = ActivityResponse.ExecuteClientAction;
+                operationalState.CurrentClientActionName = clientActionName;
+            }
+
+            return payload;
+        }
+
         /// <summary>
         /// skips children of this action
         /// </summary>
