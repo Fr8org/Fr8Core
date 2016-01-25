@@ -55,12 +55,12 @@ namespace DockyardTest.Controllers
 //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 //            {
 //                //Add a template
-//                var curRoute = FixtureData.TestRoute1();
-//                uow.RouteRepository.Add(curRoute);
+//                var curPlan = FixtureData.TestRoute1();
+//                uow.RouteRepository.Add(curPlan);
 //                uow.SaveChanges();
 //
 //                _curSubroute = FixtureData.TestSubrouteDO1();
-//                _curSubroute.ParentTemplateId = curRoute.Id;
+//                _curSubroute.ParentTemplateId = curPlan.Id;
 //                uow.SubrouteRepository.Add(_curSubroute);
 //                uow.SaveChanges();
 //

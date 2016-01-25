@@ -286,10 +286,10 @@
     <Compile Include="Interfaces\DataTransferObjects\EventLoggingDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FactDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldValidationDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ActionDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ActionDTOBase.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ActivityDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ActivityDTOBase.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionPayloadDTO.cs" />
-    <Compile Include="Entities\ActionDO.cs" />
+    <Compile Include="Entities\ActivityDO.cs" />
     <Compile Include="Entities\AuthorizationTokenDO.cs" />
     <Compile Include="Entities\BaseDO.cs" />
     <Compile Include="Entities\CriteriaDO.cs" />
@@ -562,9 +562,17 @@
     <Compile Include="Migrations\201601201734569_Removed_Fr8Account_From_Route.Designer.cs">
       <DependentUpon>201601201734569_Removed_Fr8Account_From_Route.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201601240212565_FixUp_Migration1.cs" />
-    <Compile Include="Migrations\201601240212565_FixUp_Migration1.Designer.cs">
-      <DependentUpon>201601240212565_FixUp_Migration1.cs</DependentUpon>
+    <Compile Include="Migrations\201601240842409_EmptyMigration.cs" />
+    <Compile Include="Migrations\201601240842409_EmptyMigration.Designer.cs">
+      <DependentUpon>201601240842409_EmptyMigration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201601240908090_RenameActionToActivity.cs" />
+    <Compile Include="Migrations\201601240908090_RenameActionToActivity.Designer.cs">
+      <DependentUpon>201601240908090_RenameActionToActivity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201601241443338_RenameRouteToPlan.cs" />
+    <Compile Include="Migrations\201601241443338_RenameRouteToPlan.Designer.cs">
+      <DependentUpon>201601241443338_RenameRouteToPlan.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -611,7 +619,7 @@
     <Compile Include="Entities\TerminalDO.cs" />
     <Compile Include="Entities\ContainerDO.cs" />
     <Compile Include="Entities\ProcessNodeDO.cs" />
-    <Compile Include="Entities\RouteDO.cs" />
+    <Compile Include="Entities\PlanDO.cs" />
     <Compile Include="Entities\SlipDO.cs" />
     <Compile Include="Entities\SubscriptionDO.cs" />
     <Compile Include="Exceptions\EntityNotFoundException.cs" />
@@ -636,7 +644,7 @@
     <Compile Include="Migrations\DockyardDbMigration.cs" />
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
     <Compile Include="Repositories\ActivityTemplateRepository.cs" />
-    <Compile Include="Repositories\ActionRepository.cs" />
+    <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\CriteriaRepository.cs" />
     <Compile Include="Repositories\EmailStatusRepository.cs" />
     <Compile Include="Repositories\EnvelopeRepository.cs" />
@@ -946,8 +954,14 @@
     <EmbeddedResource Include="Migrations\201601201734569_Removed_Fr8Account_From_Route.resx">
       <DependentUpon>201601201734569_Removed_Fr8Account_From_Route.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201601240212565_FixUp_Migration1.resx">
-      <DependentUpon>201601240212565_FixUp_Migration1.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201601240842409_EmptyMigration.resx">
+      <DependentUpon>201601240842409_EmptyMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201601240908090_RenameActionToActivity.resx">
+      <DependentUpon>201601240908090_RenameActionToActivity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201601241443338_RenameRouteToPlan.resx">
+      <DependentUpon>201601241443338_RenameRouteToPlan.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

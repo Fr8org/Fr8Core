@@ -14,7 +14,7 @@ using TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Actions
 {
-    public class Show_Report_Onscreen_v1 : BaseTerminalAction
+    public class Show_Report_Onscreen_v1 : BaseTerminalActivity
     {
         public class ActionUi : StandardConfigurationControlsCM
         {
@@ -37,11 +37,11 @@ namespace terminalFr8Core.Actions
         }
 
 
-        private async Task<Data.Crates.Crate> FindTables(ActionDO curActionDO)
+        private async Task<Data.Crates.Crate> FindTables(ActivityDO curActivityDO)
         {
             var fields = new List<FieldDTO>();
 
-            foreach (var table in (await GetCratesByDirection<StandardDesignTimeFieldsCM>(curActionDO, CrateDirection.Upstream))
+            foreach (var table in (await GetCratesByDirection<StandardDesignTimeFieldsCM>(curActivityDO, CrateDirection.Upstream))
                                              .Select(x => x.Content)
                                              .SelectMany(x => x.Fields)
                                              .Where(x => x.Availability == AvailabilityType.RunTime && x.Value == "Table"))
@@ -52,32 +52,32 @@ namespace terminalFr8Core.Actions
             return Data.Crates.Crate.FromContent("Upstream Crate Label List", new StandardDesignTimeFieldsCM(fields));
         }
 
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActionDO))
+            using (var updater = Crate.UpdateStorage(curActivityDO))
             {
                 updater.CrateStorage.Add(PackControls(new ActionUi()));
-                updater.CrateStorage.Add(await FindTables(curActionDO));
+                updater.CrateStorage.Add(await FindTables(curActivityDO));
             }
 
-            return curActionDO;
+            return curActivityDO;
         }
 
-        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActionDO))
+            using (var updater = Crate.UpdateStorage(curActivityDO))
             {
-                updater.CrateStorage.ReplaceByLabel(await FindTables(curActionDO));
+                updater.CrateStorage.ReplaceByLabel(await FindTables(curActivityDO));
             }
 
-            return curActionDO;
+            return curActivityDO;
         }
 
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var payload = await GetPayload(curActionDO, containerId);
+            var payload = await GetPayload(curActivityDO, containerId);
 
-            var configurationControls = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
+            var configurationControls = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
 
             if (configurationControls == null)
             {
@@ -107,9 +107,9 @@ namespace terminalFr8Core.Actions
             return ExecuteClientAction(payload, "ShowTableReport");
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActionDO))
+            if (Crate.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }

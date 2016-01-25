@@ -96,7 +96,7 @@ namespace HubWeb
             ConfigureValidationEngine();
             StartupMigration.CreateSystemUser();
 
-            // At Startup Check If the Log Monitor Fr8 Event route exist in the database then active it. otherwise create the new route.
+            // At Startup Check If the Log Monitor Fr8 Event plan exist in the database then active it. otherwise create the new plan.
             RouteManager routeManager = new RouteManager();
             string sytemUserEmail = ObjectFactory.GetInstance<IConfigRepository>().Get<string>("SystemUserEmail");
 

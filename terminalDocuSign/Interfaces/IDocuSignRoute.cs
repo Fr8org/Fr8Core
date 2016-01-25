@@ -9,7 +9,7 @@ namespace terminalDocuSign.Interfaces
     public interface IDocuSignRoute
     {
         /// <summary>
-        /// Creates Monitor All DocuSign Events route with Record DocuSign Events and Store MT Data actions.
+        /// Creates Monitor All DocuSign Events plan with Record DocuSign Events and Store MT Data actions.
         /// </summary>
         Task CreateRoute_MonitorAllDocuSignEvents(string curFr8UserId, AuthorizationTokenDTO authTokenDTO);
     }

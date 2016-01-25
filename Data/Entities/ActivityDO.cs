@@ -11,7 +11,7 @@ using System;
 
 namespace Data.Entities
 {
-    public class ActionDO : RouteNodeDO
+    public class ActivityDO : RouteNodeDO
 	{
         public string Name { get; set; }
 
@@ -33,7 +33,7 @@ namespace Data.Entities
 
         public override RouteNodeDO Clone()
         {
-            return new ActionDO()
+            return new ActivityDO()
             {
                 Ordering = this.Ordering,
                 Name = this.Name,

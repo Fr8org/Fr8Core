@@ -54,8 +54,8 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var actionDO = uow.ActionRepository.GetByKey(id);
-                var upstreamActivities = _activity.GetUpstreamActivities(uow, actionDO);
+                var activityDO = uow.ActivityRepository.GetByKey(id);
+                var upstreamActivities = _activity.GetUpstreamActivities(uow, activityDO);
                 return Ok(upstreamActivities);
             }
         }
@@ -67,25 +67,25 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                ActionDO actionDO = uow.ActionRepository.GetByKey(id);
-                var downstreamActivities = _activity.GetDownstreamActivities(uow, actionDO);
+                ActivityDO activityDO = uow.ActivityRepository.GetByKey(id);
+                var downstreamActivities = _activity.GetDownstreamActivities(uow, activityDO);
                 return Ok(downstreamActivities);
             }
         }
 
         // TODO: after DO-1214 is completed, this method must be removed.
         [ActionName("upstream_actions")]
-        [ResponseType(typeof (List<ActionDTO>))]
+        [ResponseType(typeof (List<ActivityDTO>))]
         [Fr8HubWebHMACAuthenticate]
         public IHttpActionResult GetUpstreamActions(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var actionDO = uow.ActionRepository.GetByKey(id);
+                var activityDO = uow.ActivityRepository.GetByKey(id);
                 var upstreamActions = _activity
-                    .GetUpstreamActivities(uow, actionDO)
-                    .OfType<ActionDO>()
-                    .Select(x => Mapper.Map<ActionDTO>(x))
+                    .GetUpstreamActivities(uow, activityDO)
+                    .OfType<ActivityDO>()
+                    .Select(x => Mapper.Map<ActivityDTO>(x))
                     .ToList();
 
                 return Ok(upstreamActions);
@@ -94,17 +94,17 @@ namespace HubWeb.Controllers
 
         // TODO: after DO-1214 is completed, this method must be removed.
         [ActionName("downstream_actions")]
-        [ResponseType(typeof (List<ActionDTO>))]
+        [ResponseType(typeof (List<ActivityDTO>))]
         [Fr8HubWebHMACAuthenticate]
         public IHttpActionResult GetDownstreamActions(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                ActionDO actionDO = uow.ActionRepository.GetByKey(id);
+                ActivityDO activityDO = uow.ActivityRepository.GetByKey(id);
                 var downstreamActions = _activity
-                    .GetDownstreamActivities(uow, actionDO)
-                    .OfType<ActionDO>()
-                    .Select(x => Mapper.Map<ActionDTO>(x))
+                    .GetDownstreamActivities(uow, activityDO)
+                    .OfType<ActivityDO>()
+                    .Select(x => Mapper.Map<ActivityDTO>(x))
                     .ToList();
 
                 return Ok(downstreamActions);

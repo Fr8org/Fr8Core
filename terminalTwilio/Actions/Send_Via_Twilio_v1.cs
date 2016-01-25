@@ -23,7 +23,7 @@ using TextBox = Data.Control.TextBox;
 
 namespace terminalTwilio.Actions
 {
-    public class Send_Via_Twilio_v1 : BaseTerminalAction
+    public class Send_Via_Twilio_v1 : BaseTerminalActivity
     {
         protected ITwilioService _twilio;
 
@@ -32,18 +32,18 @@ namespace terminalTwilio.Actions
             _twilio = ObjectFactory.GetInstance<ITwilioService>();
 	    }
 
-        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            return await ProcessConfigurationRequest(curActionDO, EvaluateReceivedRequest, authTokenDO);
+            return await ProcessConfigurationRequest(curActivityDO, EvaluateReceivedRequest, authTokenDO);
         }
 
         /// <summary>
         /// this entire function gets passed as a delegate to the main processing code in the base class
         /// currently many actions have two stages of configuration, and this method determines which stage should be applied
         /// </summary>
-        private ConfigurationRequestType EvaluateReceivedRequest(ActionDO curActionDO)
+        private ConfigurationRequestType EvaluateReceivedRequest(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActionDO))
+            if (Crate.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -51,15 +51,15 @@ namespace terminalTwilio.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActionDO))
+            using (var updater = Crate.UpdateStorage(curActivityDO))
             {
                 updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(PackCrate_ConfigurationControls());
-                updater.CrateStorage.Add(await CreateAvailableFieldsCrate(curActionDO));
+                updater.CrateStorage.Add(await CreateAvailableFieldsCrate(curActivityDO));
             }
-            return await Task.FromResult(curActionDO);
+            return await Task.FromResult(curActivityDO);
         }
 
         private Crate PackCrate_ConfigurationControls()
@@ -89,7 +89,7 @@ namespace terminalTwilio.Actions
         }
 
         /*
-        private Crate GetAvailableDataFields(ActionDO curActionDO)
+        private Crate GetAvailableDataFields(ActionDO curActivityDO)
         {
             Crate crate;
 
@@ -98,7 +98,7 @@ namespace terminalTwilio.Actions
             if (curUpstreamFields.Length == 0)
             {
                 crate = PackCrate_ErrorTextBox("Error_NoUpstreamLists", "No Upstream fr8 Lists Were Found.");
-                curActionDO.currentView = "Error_NoUpstreamLists";
+                curActivityDO.currentView = "Error_NoUpstreamLists";
             }
             else
             {
@@ -108,20 +108,20 @@ namespace terminalTwilio.Actions
             return crate;
         }*/
 
-        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO,AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO,AuthorizationTokenDO authTokenDO)
         {
             //not currently any requirements that need attention at FollowupConfigurationResponse
-            return await Task.FromResult(curActionDO);
+            return await Task.FromResult(curActivityDO);
         }
 
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             Message curMessage;
-            var payloadCrates = await GetPayload(curActionDO, containerId);
-            var controlsCrate = Crate.GetStorage(curActionDO).CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var payloadCrates = await GetPayload(curActivityDO, containerId);
+            var controlsCrate = Crate.GetStorage(curActivityDO).CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             if (controlsCrate == null)
             {
-                PackCrate_WarningMessage(curActionDO, "No StandardConfigurationControlsCM crate provided", "No Controls");
+                PackCrate_WarningMessage(curActivityDO, "No StandardConfigurationControlsCM crate provided", "No Controls");
                 return Error(payloadCrates, "No StandardConfigurationControlsCM crate provided");
             }
             try
@@ -132,7 +132,7 @@ namespace terminalTwilio.Actions
 
                 if (String.IsNullOrEmpty(smsNumber))
                 {
-                    PackCrate_WarningMessage(curActionDO, "No SMS Number Provided", "No Number");
+                    PackCrate_WarningMessage(curActivityDO, "No SMS Number Provided", "No Number");
                     return Error(payloadCrates, "No SMS Number Provided");
                 }
                 try
@@ -148,13 +148,13 @@ namespace terminalTwilio.Actions
                 catch (Exception ex)
                 {
                     EventManager.TwilioSMSSendFailure(smsNumber, smsBody, ex.Message);
-                    PackCrate_WarningMessage(curActionDO, ex.Message, "Twilio Service Failure");
+                    PackCrate_WarningMessage(curActivityDO, ex.Message, "Twilio Service Failure");
                     return Error(payloadCrates, "Twilio Service Failure");
                 }
             }
             catch (ArgumentException appEx)
             {
-                PackCrate_WarningMessage(curActionDO, appEx.Message, "SMS Number");
+                PackCrate_WarningMessage(curActivityDO, appEx.Message, "SMS Number");
                 return Error(payloadCrates, appEx.Message);
             }
             return Success(payloadCrates);
@@ -234,10 +234,10 @@ namespace terminalTwilio.Actions
             return Data.Crates.Crate.FromContent("Message Data", new StandardPayloadDataCM(curTwilioMessage));
         }
 
-        private void PackCrate_WarningMessage(ActionDO actionDO, string warningMessage, string warningLabel)
+        private void PackCrate_WarningMessage(ActivityDO activityDO, string warningMessage, string warningLabel)
         {
             var textBlock = GenerateTextBlock(warningLabel, warningMessage, "alert alert-warning");
-            using (var updater = Crate.UpdateStorage(actionDO))
+            using (var updater = Crate.UpdateStorage(activityDO))
             {
                 updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(PackControlsCrate(textBlock));

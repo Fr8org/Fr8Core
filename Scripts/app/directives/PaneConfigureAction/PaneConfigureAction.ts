@@ -16,9 +16,9 @@ module dockyard.directives.paneConfigureAction {
     }
 
     export class ActionReconfigureEventArgs {
-        public action: interfaces.IActionDTO
+        public action: interfaces.IActivityDTO
 
-        constructor(action: interfaces.IActionDTO) {
+        constructor(action: interfaces.IActivityDTO) {
             // Clone Action to prevent any issues due to possible mutation of source object
             this.action = angular.extend({}, action);
         }
@@ -43,18 +43,18 @@ module dockyard.directives.paneConfigureAction {
     }
 
     export class RenderEventArgs {
-        public action: interfaces.IActionDTO
+        public action: interfaces.IActivityDTO
 
-        constructor(action: interfaces.IActionDTO) {
+        constructor(action: interfaces.IActivityDTO) {
             // Clone Action to prevent any issues due to possible mutation of source object
             this.action = angular.extend({}, action);
         }
     }
 
     export class MapFieldsClickedEventArgs {
-        action: model.ActionDTO;
+        action: model.ActivityDTO;
 
-        constructor(action: model.ActionDTO) {
+        constructor(action: model.ActivityDTO) {
             this.action = action;
         }
     }
@@ -97,22 +97,22 @@ module dockyard.directives.paneConfigureAction {
     export class CancelledEventArgs extends CancelledEventArgsBase { }
 
     export class ReloadActionEventArgs {
-        public action: interfaces.IActionDTO;
-        constructor(action: interfaces.IActionDTO) {
+        public action: interfaces.IActivityDTO;
+        constructor(action: interfaces.IActivityDTO) {
             this.action = action;
         }
     }
 
     export class ChildActionReconfigurationEventArgs {
-        public actions: Array<interfaces.IActionDTO>;
-        constructor(actions: Array<interfaces.IActionDTO>) {
+        public actions: Array<interfaces.IActivityDTO>;
+        constructor(actions: Array<interfaces.IActivityDTO>) {
             this.actions = actions;
         }
     }
 
     export class CallConfigureResponseEventArgs {
-        public action: interfaces.IActionDTO;
-        constructor(action: interfaces.IActionDTO) {
+        public action: interfaces.IActivityDTO;
+        constructor(action: interfaces.IActivityDTO) {
             this.action = action;
         }
     }

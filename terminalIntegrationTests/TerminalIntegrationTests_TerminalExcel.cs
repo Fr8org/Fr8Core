@@ -28,19 +28,19 @@ namespace terminalIntegrationTests
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var route = new RouteDO()
+                var plan = new PlanDO()
                 {
                     Id = UtilitiesTesting.Fixtures.FixtureData.TestParentRouteID(),
                     Name = "1",
                     RouteState = RouteState.Active
                 };
 
-                uow.RouteRepository.Add(route);
+                uow.RouteRepository.Add(plan);
 
                 uow.ContainerRepository.Add(new ContainerDO()
                 {
                     Id = UtilitiesTesting.Fixtures.FixtureData.TestContainer_Id_1(),
-                    Route = route,
+                    Plan = plan,
                     CrateStorage = _crateManager.EmptyStorageAsStr(),
                     ContainerState = ContainerState.Executing
                 });
@@ -59,7 +59,7 @@ namespace terminalIntegrationTests
                 Table = ExcelUtils.CreateTableCellPayloadObjects(excelRows, columnHeaders),
             };
 
-            var curActionDTO = new ActionDTO()
+            var curActionDTO = new ActivityDTO()
             {
                 ContainerId = UtilitiesTesting.Fixtures.FixtureData.TestContainer_Id_1(),
                 ParentRouteNodeId =  UtilitiesTesting.Fixtures.FixtureData.TestParentRouteID()
@@ -76,8 +76,8 @@ namespace terminalIntegrationTests
             ObjectFactory.Configure(cfg => cfg.For<IRestfulServiceClient>().Use(restfulServiceClient.Object));
 
 
-            var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
-            var result = await new Load_Excel_File_v1().Run(curActionDO, curActionDTO.ContainerId, null);
+            var curActivityDO = AutoMapper.Mapper.Map<ActivityDO>(curActionDTO);
+            var result = await new Load_Excel_File_v1().Run(curActivityDO, curActionDTO.ContainerId, null);
 
             var payloadCrates = _crateManager.GetStorage(result).CratesOfType<StandardPayloadDataCM>();
             var payloadDataMS = payloadCrates.First().Content;

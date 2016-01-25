@@ -27,13 +27,13 @@ namespace Hub.Services
     {
 
         private readonly ITerminal _terminal;
-        private readonly IRoute _route;
+        private readonly IPlan _plan;
 
         public Event()
         {
 
             _terminal = ObjectFactory.GetInstance<ITerminal>();
-            _route = ObjectFactory.GetInstance<IRoute>();
+            _plan = ObjectFactory.GetInstance<IPlan>();
         }
         /// <see cref="IEvent.HandleTerminalIncident"/>
         public void HandleTerminalIncident(LoggingDataCm incident)
@@ -53,14 +53,14 @@ namespace Hub.Services
         //        throw new ArgumentNullException("Paramter Standard Event Report is null.");
 
         //    //Matchup process
-        //    IList<RouteDO> matchingRoutes = _route.GetMatchingRoutes(userID, curEventReport);
+        //    IList<RouteDO> matchingRoutes = _plan.GetMatchingRoutes(userID, curEventReport);
         //    using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
         //    {
         //        foreach (var subroute in matchingRoutes)
         //        {
         //            //4. When there's a match, it means that it's time to launch a new Process based on this Route, 
         //            //so make the existing call to Route#LaunchProcess.
-        //            _route.LaunchProcess(unitOfWork, subroute);
+        //            _plan.LaunchProcess(unitOfWork, subroute);
         //        }
         //    }
         //}
@@ -118,33 +118,33 @@ namespace Hub.Services
                 .FindList(pt => pt.Fr8AccountId == curDockyardAccount.Id)
                 .Where(x => x.RouteState == RouteState.Active);
 
-            var subscribingRoutes = _route.MatchEvents(initialRoutesList.ToList(), eventReportMS);
+            var subscribingRoutes = _plan.MatchEvents(initialRoutesList.ToList(), eventReportMS);
 
             await LaunchProcesses(subscribingRoutes, curCrateStandardEventReport);
         }
 
-        public Task LaunchProcesses(List<RouteDO> curRoutes, Crate curEventReport)
+        public Task LaunchProcesses(List<PlanDO> curPlans, Crate curEventReport)
         {
             var processes = new List<Task>();
 
-            foreach (var curRoute in curRoutes)
+            foreach (var curPlan in curPlans)
             {
                 //4. When there's a match, it means that it's time to launch a new Process based on this Route, 
                 //so make the existing call to Route#LaunchProcess.
-                processes.Add(LaunchProcess(curRoute, curEventReport));
+                processes.Add(LaunchProcess(curPlan, curEventReport));
             }
 
             return Task.WhenAll(processes);
         }
 
-        public async Task LaunchProcess(RouteDO curRoute, Crate curEventData)
+        public async Task LaunchProcess(PlanDO curPlan, Crate curEventData)
         {
-            if (curRoute == null)
-                throw new EntityNotFoundException(curRoute);
+            if (curPlan == null)
+                throw new EntityNotFoundException(curPlan);
 
-            if (curRoute.RouteState != RouteState.Inactive)
+            if (curPlan.RouteState != RouteState.Inactive)
             {
-                await _route.Run(curRoute, curEventData);
+                await _plan.Run(curPlan, curEventData);
             }
         }
     }

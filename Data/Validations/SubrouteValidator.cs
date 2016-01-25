@@ -31,7 +31,7 @@ namespace Data.Validations
                         return parentTemplateExists;
                     }
                 })
-                .WithMessage("ParentTemplateId must be a valid Id for Route");
+                .WithMessage("ParentTemplateId must be a valid Id for Plan");
 
             RuleFor(pntDO => pntDO.Criteria).NotNull()
                 .Must(lst => lst.Count > 0)
