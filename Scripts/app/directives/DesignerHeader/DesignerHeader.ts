@@ -16,7 +16,12 @@ module dockyard.directives.designerHeader {
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
     class DesignerHeader implements ng.IDirective {
         public link: (scope: IDesignerHeaderScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
-        public controller: ($scope: IDesignerHeaderScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
+        public controller: (
+            $scope: IDesignerHeaderScope,
+            element: ng.IAugmentedJQuery,
+            attrs: ng.IAttributes,
+            RouteService: services.IRouteService
+        ) => void;
 
         public templateUrl = '/AngularTemplate/DesignerHeader';
         public scope = {
@@ -36,7 +41,8 @@ module dockyard.directives.designerHeader {
             DesignerHeader.prototype.controller = (
                 $scope: IDesignerHeaderScope,
                 $element: ng.IAugmentedJQuery,
-                $attrs: ng.IAttributes) => {
+                $attrs: ng.IAttributes,
+                RouteService: services.IRouteService) => {
 
                 $scope.editTitle = () => {
                     $scope.editing = true;
@@ -49,7 +55,13 @@ module dockyard.directives.designerHeader {
                 };
 
                 $scope.runRoute = () => {
-                    alert('RunRoute stub.');
+                    RouteService.run($scope.route.id)
+                        .then((containerDTO) => {
+                            console.log('SUCCESS: ', containerDTO); 
+                        })
+                        .catch((err) => {
+                            console.log('ERROR: ', err); 
+                        });
                 };
             };
         }

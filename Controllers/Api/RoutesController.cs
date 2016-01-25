@@ -328,9 +328,11 @@ namespace HubWeb.Controllers
                 if (routeDO.RouteState == RouteState.Inactive)
                     inActive = true;
             }
-            if(inActive)
-                await _plan.Activate(routeId, false);
 
+            if (inActive)
+            {
+                await _plan.Activate(routeId, false);
+            }
 
             //RUN
 			CrateDTO curCrateDto;
@@ -365,11 +367,16 @@ namespace HubWeb.Controllers
 
                         var containerDO = await _plan.Run(planDO, curCrate);
 
-                        var response = _crate.GetStorage(containerDO.CrateStorage).CrateContentsOfType<OperationalStateCM>().SingleOrDefault();
+                        var response = _crate.GetStorage(containerDO.CrateStorage)
+                            .CrateContentsOfType<OperationalStateCM>()
+                            .SingleOrDefault();
+                        
                         string responseMsg = "";
 
                         if (response != null && (response.ResponseMessageDTO != null && !String.IsNullOrEmpty(response.ResponseMessageDTO.Message)))
+                        {
                             responseMsg = "\n" + response.ResponseMessageDTO.Message;
+                        }
 
                         string message = String.Format("Complete processing for Plan \"{0}\".{1}", planDO.Name, responseMsg);
 
