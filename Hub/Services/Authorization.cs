@@ -18,13 +18,14 @@ using Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
+using System.Data.Entity.Infrastructure;
 
 namespace Hub.Services
 {
     public class Authorization : IAuthorization
     {
         private readonly ICrateManager _crate;
-	    private readonly ITime _time;
+        private readonly ITime _time;
         private readonly IActivityTemplate _activityTemplate;
         private readonly ITerminal _terminal;
 
@@ -32,8 +33,8 @@ namespace Hub.Services
         public Authorization()
         {
             _terminal = ObjectFactory.GetInstance<ITerminal>();
-			_crate = ObjectFactory.GetInstance<ICrateManager>();
-	        _time = ObjectFactory.GetInstance<ITime>();
+            _crate = ObjectFactory.GetInstance<ICrateManager>();
+            _time = ObjectFactory.GetInstance<ITime>();
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
         }
 
@@ -49,19 +50,19 @@ namespace Hub.Services
             return null;
         }
 
-//        public string GetTerminalToken(int terminalId)
-//        {
-//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-//            {
-//                var curAuthToken = uow.AuthorizationTokenRepository.FindOne(at =>
-//                    at.TerminalID == terminalId
-//                    && at.AuthorizationTokenState == AuthorizationTokenState.Active);
-//
-//                if (curAuthToken != null)
-//                    return curAuthToken.Token;
-//            }
-//            return null;
-//        }
+        //        public string GetTerminalToken(int terminalId)
+        //        {
+        //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //            {
+        //                var curAuthToken = uow.AuthorizationTokenRepository.FindOne(at =>
+        //                    at.TerminalID == terminalId
+        //                    && at.AuthorizationTokenState == AuthorizationTokenState.Active);
+        //
+        //                if (curAuthToken != null)
+        //                    return curAuthToken.Token;
+        //            }
+        //            return null;
+        //        }
 
         /// <summary>
         /// Prepare AuthToken for ActionDTO request message.
@@ -72,7 +73,7 @@ namespace Hub.Services
             {
                 // Fetch ActivityTemplate.
                 var activityTemplate = _activityTemplate.GetByKey(activityDTO.ActivityTemplateId.Value);
-                    
+
                 // Fetch Action.
                 var activity = uow.ActivityRepository.GetByKey(activityDTO.Id);
                 if (activity == null)
@@ -117,7 +118,7 @@ namespace Hub.Services
             }
         }
 
-        public async Task<AuthenticateResponse> AuthenticateInternal(Fr8AccountDO account, TerminalDO terminal, string domain,  string username,
+        public async Task<AuthenticateResponse> AuthenticateInternal(Fr8AccountDO account, TerminalDO terminal, string domain, string username,
             string password)
         {
             if (terminal.AuthenticationType == AuthenticationType.None)
@@ -194,7 +195,7 @@ namespace Hub.Services
 
                 uow.SaveChanges();
 
-                
+
                 //if terminal requires Authentication Completed Notification, follow the existing terminal event notification protocol 
                 //to notify the terminal about authentication completed event
                 if (terminalResponseAuthTokenDTO.AuthCompletedNotificationRequired)
@@ -536,14 +537,23 @@ namespace Hub.Services
 
                     // var token = uow.AuthorizationTokenRepository
                     //     .FindOne(x => x.Terminal.Id == activityTemplate.Terminal.Id && x.UserDO.Id == account.Id);
-                    
+
                     if (token != null)
                     {
                         activityDO.AuthorizationToken = null;
                         uow.SaveChanges();
 
                         uow.AuthorizationTokenRepository.Remove(token);
-                        uow.SaveChanges();
+
+                        //If an exception occurs during removal, it means that the token is used in another action -- no prob, ignore it
+                        try
+                        {
+                            uow.SaveChanges();
+                        }
+                        catch (DbUpdateException)
+                        {
+
+                        }
                     }
 
                     RemoveAuthenticationCrate(curActivityDto);
@@ -609,21 +619,21 @@ namespace Hub.Services
 
         private void RemoveToken(IUnitOfWork uow, AuthorizationTokenDO authToken)
         {
-                    var activities = uow.ActivityRepository
-                        .GetQuery()
-                        .Where(x => x.AuthorizationToken.Id == authToken.Id)
-                        .ToList();
+            var activities = uow.ActivityRepository
+                .GetQuery()
+                .Where(x => x.AuthorizationToken.Id == authToken.Id)
+                .ToList();
 
-                    foreach (var activity in activities)
-                    {
-                        activity.AuthorizationToken = null;
-                    }
+            foreach (var activity in activities)
+            {
+                activity.AuthorizationToken = null;
+            }
 
-                    uow.SaveChanges();
+            uow.SaveChanges();
 
-                    uow.AuthorizationTokenRepository.Remove(authToken);
-                    uow.SaveChanges();
-                }
+            uow.AuthorizationTokenRepository.Remove(authToken);
+            uow.SaveChanges();
+        }
 
         public void SetMainToken(string userId, Guid authTokenId)
         {
