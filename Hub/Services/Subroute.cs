@@ -250,12 +250,30 @@ namespace Hub.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-
                 var curAction = uow.RouteNodeRepository.GetQuery().FirstOrDefault(al => al.Id == id);
                 if (curAction == null)
                 {
                     throw new InvalidOperationException("Unknown RouteNode with id: " + id);
                 }
+
+                // Detach containers from action, where CurrentRouteNodeId == id.
+                var containersWithCurrentRouteNode = uow.ContainerRepository
+                    .GetQuery()
+                    .Where(x => x.CurrentRouteNodeId == id)
+                    .ToList();
+
+                containersWithCurrentRouteNode.ForEach(x => x.CurrentRouteNodeId = null);
+
+                // Detach containers from action, where NextRouteNodeId == id.
+                var containersWithNextRouteNode = uow.ContainerRepository
+                    .GetQuery()
+                    .Where(x => x.NextRouteNodeId == id)
+                    .ToList();
+
+                containersWithNextRouteNode.ForEach(x => x.NextRouteNodeId = null);
+
+                uow.SaveChanges();
+
 
                 var downStreamActivities = _routeNode.GetDownstreamActivities(uow, curAction).OfType<ActivityDO>();
                 //we should clear values of configuration controls
