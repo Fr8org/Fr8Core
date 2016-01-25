@@ -7,6 +7,8 @@ module dockyard.directives.designerHeader {
         editing: boolean;
         editTitle(): void;
         onTitleChange(): void;
+        runRoute(): void;
+
         route: model.RouteDTO;
     }
 
@@ -44,6 +46,10 @@ module dockyard.directives.designerHeader {
                     $scope.editing = false;
                     var result = RouteService.update({ id: $scope.route.id, name: $scope.route.name });
                     result.$promise.then(() => { });
+                };
+
+                $scope.runRoute = () => {
+                    alert('RunRoute stub.');
                 };
             };
         }
