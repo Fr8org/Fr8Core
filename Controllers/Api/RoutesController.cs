@@ -262,7 +262,7 @@ namespace HubWeb.Controllers
         }
 
         [HttpPost]
-        [Fr8ApiAuthorize]
+        [Fr8ApiAuthorize("Admin","Customer")]
         public async Task<IHttpActionResult> Activate(Guid routeId, bool routeBuilderActivate = false)
         {
             string pusherChannel = String.Format("fr8pusher_{0}", User.Identity.Name);
@@ -314,7 +314,7 @@ namespace HubWeb.Controllers
             }
         }
 
-        [Fr8ApiAuthorize]
+        [Fr8ApiAuthorize("Admin", "Customer")]
         //[Route("run")]
         [HttpPost]
         public async Task<IHttpActionResult> Run(Guid routeId, [FromBody]PayloadVM model)

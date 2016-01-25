@@ -79,9 +79,13 @@ module dockyard.controllers {
                 else {
                     location.reload();
                 }
-            }, () => {
+            }, (failResponse) => {
                 //activation failed
-                });
+                if (failResponse.data.details === "GuestFail") {
+                    location.href = "DockyardAccount/RegisterGuestUser";
+                }
+            });
+            
         }
         private deactivateRoute(route) {
             this.RouteService.deactivate(route).$promise.then((result) => {
@@ -100,7 +104,11 @@ module dockyard.controllers {
 				});
         }
 			else {
-				this.RouteService.execute({ id: routeId }, null, null, null);
+                this.RouteService.execute({ id: routeId }, null, null, (failResponse) => {
+                    if (failResponse.data.details === "GuestFail") {
+                        location.href = "DockyardAccount/RegisterGuestUser";
+                    }
+                });
 			}
         }
 

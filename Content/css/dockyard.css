@@ -763,3 +763,13 @@ div[dnd-list].dndDragover {
     color: #d12b41;
     display: inline;
 }
+
+.register-guest-user a{
+    color:#fff;
+    font-size:1.2em;
+}
+
+.register-guest-user a:hover{
+    color: #fff !important;
+    background: #55616f !important;
+}
