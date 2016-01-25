@@ -59,37 +59,37 @@ namespace terminalFr8CoreTests.Integration
             Assert.IsTrue(controls.Controls[1] is MappingPane);            
         }
 
-        private async Task<ActionDTO> ConfigureWithUpstreamDownstreamData()
+        private async Task<ActivityDTO> ConfigureWithUpstreamDownstreamData()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var actionDTO = HealthMonitor_FixtureData
+            var activityDTO = HealthMonitor_FixtureData
                 .MapFields_v1_InitialConfiguration_ActionDTO();
 
             AddUpstreamCrate(
-                actionDTO,
+                activityDTO,
                 new StandardDesignTimeFieldsCM(
                     new FieldDTO("A", "B")
                 )
             );
 
             AddDownstreamCrate(
-                actionDTO,
+                activityDTO,
                 new StandardDesignTimeFieldsCM(
                     new FieldDTO("C", "D")
                 )
             );
 
-            actionDTO = await HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, actionDTO);
+            activityDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, activityDTO);
 
-            return actionDTO;
+            return activityDTO;
         }
 
-        private async Task<ActionDTO> ConfigureWithUpstreamDownstreamControlData()
+        private async Task<ActivityDTO> ConfigureWithUpstreamDownstreamControlData()
         {
-            var actionDTO = await ConfigureWithUpstreamDownstreamData();
+            var activityDTO = await ConfigureWithUpstreamDownstreamData();
 
-            using (var updater = Crate.UpdateStorage(actionDTO))
+            using (var updater = Crate.UpdateStorage(activityDTO))
             {
                 var storage = updater.CrateStorage;
                 var controls = storage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
@@ -104,9 +104,9 @@ namespace terminalFr8CoreTests.Integration
             }
 
             var configureUrl = GetTerminalConfigureUrl();
-            actionDTO = await HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, actionDTO);
+            activityDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, activityDTO);
 
-            return actionDTO;
+            return activityDTO;
         }
 
         [Test]
@@ -114,11 +114,11 @@ namespace terminalFr8CoreTests.Integration
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var actionDTO = HealthMonitor_FixtureData
+            var activityDTO = HealthMonitor_FixtureData
                 .MapFields_v1_InitialConfiguration_ActionDTO();
 
-            actionDTO = await HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, actionDTO);
-            var crateStorage = Crate.GetStorage(actionDTO);
+            activityDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, activityDTO);
+            var crateStorage = Crate.GetStorage(activityDTO);
 
             AssertCrateStructure(crateStorage);
             AssertCrateContent_Initial(crateStorage);
@@ -127,8 +127,8 @@ namespace terminalFr8CoreTests.Integration
         [Test]
         public async void MapFields_Configure_With_Upstream_Downstream_Data()
         {
-            var actionDTO = await ConfigureWithUpstreamDownstreamData();
-            var crateStorage = Crate.GetStorage(actionDTO);
+            var activityDTO = await ConfigureWithUpstreamDownstreamData();
+            var crateStorage = Crate.GetStorage(activityDTO);
 
             AssertCrateStructure(crateStorage);
             AssertCrateContent_FollowUp(crateStorage);
@@ -137,12 +137,12 @@ namespace terminalFr8CoreTests.Integration
         [Test]
         public async void MapFields_Configure_With_Upstream_Downstream_Control_Data()
         {
-            var actionDTO = await ConfigureWithUpstreamDownstreamControlData();
+            var activityDTO = await ConfigureWithUpstreamDownstreamControlData();
 
             var configureUrl = GetTerminalConfigureUrl();
-            actionDTO = await HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, actionDTO);
+            activityDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, activityDTO);
 
-            var crateStorage = Crate.GetStorage(actionDTO);
+            var crateStorage = Crate.GetStorage(activityDTO);
             AssertCrateStructure(crateStorage);
             AssertCrateContent_FollowUp(crateStorage);
 

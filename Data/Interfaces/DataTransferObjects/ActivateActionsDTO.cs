@@ -15,6 +15,6 @@ namespace Data.Interfaces.DataTransferObjects
         public bool RedirectToRouteBuilder { get; set; }
     
         [JsonProperty("actionsCollection")]
-        public List<ActionDTO> ActionsCollections { get; set; } 
+        public List<ActivityDTO> ActionsCollections { get; set; } 
     }
 }

@@ -16,7 +16,7 @@ namespace terminalExcel
         {
             public LiveMode()
             {
-                For<IAction>().Use<Hub.Services.Action>();
+                For<IActivity>().Use<Hub.Services.Activity>();
                 For<ITerminal>().Use<Terminal>().Singleton();
                 For<ICrateManager>().Use<CrateManager>();
                 For<IRouteNode>().Use<RouteNode>();

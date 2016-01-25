@@ -285,7 +285,7 @@ div.action-header {
 .action-add {
 	display: inline-block;
     vertical-align:top;
-
+    min-height:300px;
 }
 .action-add-button, .action-category-icon{
     background: #fCfCfC; 
@@ -357,11 +357,12 @@ div.action-header {
     max-width:0;
     transition: all 0.2s ease-out;
     min-height:200px;
+    max-height:0px;
 }
 .action-slider--active{
     max-width:240px;
-    overflow-y:scroll;
-    max-height:100%;
+    min-height: 296px;
+    max-height:300px;
 }
 .action-slider--active:before{
     height:2px;
@@ -369,17 +370,18 @@ div.action-header {
     width:16px;
     position:absolute
 }
-.action-slider > div{
+.action-slider .slide{
     width:240px;
     display:inline-block;
     vertical-align:top;
     padding:8px 0;
-   transition: all 0.2s ease-out;
+    transition: all 0.2s ease-out;
+    height:300px;
 }
-.action-slider > div > div{
+.action-slider .slide .web-service-action, .action-slider .slide .action-action{
     padding:8px 16px;
 }
-.action-slider > div > div:hover{
+.action-slider .slide .web-service-action:hover, .action-slider .slide .action-action:hover{
     cursor:pointer;
     background:rgba(0,0,0,0.05)
 }
@@ -388,7 +390,7 @@ div.action-header {
     max-width:48px;
     margin-right:8px;
 }
-.action-terminal-active > div:first-child{
+.action-terminal-active .slide:first-child{
     margin-left:-240px;
 }
 
@@ -762,4 +764,14 @@ div[dnd-list].dndDragover {
     padding: 2px 5px 2px 4px;
     color: #d12b41;
     display: inline;
+}
+
+.register-guest-user a{
+    color:#fff;
+    font-size:1.2em;
+}
+
+.register-guest-user a:hover{
+    color: #fff !important;
+    background: #55616f !important;
 }

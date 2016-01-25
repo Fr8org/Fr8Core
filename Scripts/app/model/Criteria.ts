@@ -12,7 +12,7 @@
         public conditions: Array<Condition>;
         public executionType: CriteriaExecutionType;
         public userLabel: string;
-        public actions: Array<ActionDTO>;
+        public actions: Array<ActivityDTO>;
 
         constructor(
             id: string,

@@ -17,7 +17,7 @@
                 <div class="portlet-title">
                     <div class="caption caption-md">
                         <i class="icon-bar-chart font-green-haze hide"></i>
-                        <span class="caption-subject font-green-haze bold uppercase">Add a Route</span>
+                        <span class="caption-subject font-green-haze bold uppercase">Add a Plan</span>
                     </div>
                 </div>
                 <div class="portlet-body">
@@ -31,7 +31,7 @@
                                 {{errorMessage}}
                             </div>                            
                             <div ng-class="(form.name.$error.required && form.$submitted) ? 'has-error' : ''" class="form-group">
-                                <label class="control-label">Route Name <span class="required">*</span></label>
+                                <label class="control-label">Plan Name <span class="required">*</span></label>
                                 <div class="input-icon right">
                                     <i class="fa fa-warning" ng-show="form.name.$error.required && form.$submitted"></i>
                                     <input type="text" name="name" maxlength="50" placeholder="" class="form-control" ng-model="ptvm.name" auto-focus required data-required="1" />

@@ -246,7 +246,7 @@
     <Compile Include="Interfaces\IField.cs" />
     <Compile Include="Interfaces\IRouteNode.cs" />
     <Compile Include="Interfaces\IActivityTemplate.cs" />
-    <Compile Include="Interfaces\IAction.cs" />
+    <Compile Include="Interfaces\IActivity.cs" />
     <Compile Include="Helper\ProcessNodeTransition.cs" />
     <Compile Include="Interfaces\ITag.cs" />
     <Compile Include="Interfaces\ITime.cs" />
@@ -266,7 +266,7 @@
     <Compile Include="Interfaces\ISubroute.cs" />
     <Compile Include="Interfaces\IReport.cs" />
     <Compile Include="Interfaces\ISMSMessage.cs" />
-    <Compile Include="Interfaces\IRoute.cs" />
+    <Compile Include="Interfaces\IPlan.cs" />
     <Compile Include="Interfaces\ISubscription.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -325,7 +325,7 @@
     <Compile Include="Services\FindObjectsRoute.cs" />
     <Compile Include="Services\Manifest.cs" />
     <Compile Include="Services\RouteNode.cs" />
-    <Compile Include="Services\Action.cs" />
+    <Compile Include="Services\Activity.cs" />
     <Compile Include="Services\ActivityTemplate.cs" />
     <Compile Include="Services\AuthData.cs" />
     <Compile Include="Services\Authorization.cs" />
@@ -343,7 +343,7 @@
     <Compile Include="Services\ProcessNode.cs" />
     <Compile Include="Services\Container.cs" />
     <Compile Include="Services\Subroute.cs" />
-    <Compile Include="Services\Route.cs" />
+    <Compile Include="Services\Plan.cs" />
     <Compile Include="Services\Report.cs" />
     <Compile Include="Services\Subscription.cs" />
     <Compile Include="Services\Time.cs" />

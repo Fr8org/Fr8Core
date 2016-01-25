@@ -35,27 +35,27 @@ namespace terminalDocuSign.Actions
             _docuSignManager = new DocuSignManager();
         }
 
-        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             if (NeedsAuthentication(authTokenDO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
+            return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
         }
 
-        public async Task<PayloadDTO> Run(ActionDO actionDO,
+        public async Task<PayloadDTO> Run(ActivityDO activityDO,
             Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var payloadCrates = await GetPayload(actionDO, containerId);
+            var payloadCrates = await GetPayload(activityDO, containerId);
             
             if (NeedsAuthentication(authTokenDO))
             {
                 return NeedsAuthenticationError(payloadCrates);
             }
             //Get envlopeId
-            var control = (DropDownList) FindControl(Crate.GetStorage(actionDO), "Available_Templates");
+            var control = (DropDownList) FindControl(Crate.GetStorage(activityDO), "Available_Templates");
             string selectedDocusignTemplateId = control.Value;
             if (selectedDocusignTemplateId == null)
             {
@@ -87,9 +87,9 @@ namespace terminalDocuSign.Actions
             return Data.Crates.Crate.FromContent("DocuSign Template", manifest);
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActionDO))
+            if (Crate.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -97,13 +97,13 @@ namespace terminalDocuSign.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
             var docuSignTemplatesCrate = _docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
             var controls = CreateControlsCrate();
 
-            using (var updater = Crate.UpdateStorage(curActionDO))
+            using (var updater = Crate.UpdateStorage(curActivityDO))
             {
                 updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(controls);
@@ -111,7 +111,7 @@ namespace terminalDocuSign.Actions
 
             }
 
-            return curActionDO;
+            return curActivityDO;
         }
 
         private Crate CreateControlsCrate()

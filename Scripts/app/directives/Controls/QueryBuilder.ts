@@ -29,7 +29,7 @@ module dockyard.directives {
 
                     $scope.defaultOperator = '';
 
-                    $scope.$watch('currentAction', function (newValue: model.ActionDTO) {
+                    $scope.$watch('currentAction', function (newValue: model.ActivityDTO) {
                         if (newValue && newValue.crateStorage) {
                             var crate = crateHelper.findByManifestTypeAndLabel(
                                 newValue.crateStorage, 'Standard Design-Time Fields', 'Queryable Criteria');

@@ -85,6 +85,7 @@ namespace HubWeb.Controllers
         [AllowAnonymous]
         public ActionResult Register()
         {
+            ViewBag.GuestUserEmail =  TempData["tempEmail"];            
             return View();
         }
 
@@ -112,14 +113,24 @@ namespace HubWeb.Controllers
 #if !DEBUG
         [ValidateAntiForgeryToken]
 #endif
-        public ActionResult ProcessRegistration(RegistrationVM submittedRegData)
+        public async Task<ActionResult> ProcessRegistration(RegistrationVM submittedRegData)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    RegistrationStatus curRegStatus = _account.ProcessRegistrationRequest(
-                        submittedRegData.Email.Trim(), submittedRegData.Password.Trim());
+                    RegistrationStatus curRegStatus;
+                    if (!String.IsNullOrWhiteSpace(submittedRegData.GuestUserTempEmail))
+                    {
+                        curRegStatus = await _account.UpdateGuestUserRegistration(submittedRegData.Email.Trim()
+                            , submittedRegData.Password.Trim()
+                            ,submittedRegData.GuestUserTempEmail);
+                    }
+                    else
+                    {
+                        curRegStatus = _account.ProcessRegistrationRequest(
+                            submittedRegData.Email.Trim(), submittedRegData.Password.Trim());
+                    }
                     if (curRegStatus == RegistrationStatus.UserMustLogIn)
                     {
                         ModelState.AddModelError("", @"You are already registered with us. Please login.");
@@ -340,6 +351,25 @@ Please register first.");
 
             // If we got this far, something failed, redisplay form
             return View(viewModel);
+        }
+
+        public RedirectToRouteResult RegisterGuestUser()
+        {
+            TempData["tempEmail"] = User.Identity.Name;
+            this.Logout();
+            return RedirectToAction("Register");
+        }
+
+        [AllowAnonymous]
+        public async Task<ActionResult> ProcessGuestUserMode()
+        {
+            LoginStatus loginStatus  = await _account.CreateAuthenticateGuestUser();
+
+            if (loginStatus == LoginStatus.Successful)
+            {
+                return RedirectToAction("Index", "Dashboard");
+            }
+            return RedirectToAction("Index", "Welcome");
         }
     }
 
