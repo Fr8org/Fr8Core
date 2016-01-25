@@ -281,8 +281,8 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = TestContainer_Id_1(),
                 ContainerState = 1,
-                RouteId = routeDo.Id,
-                Route = routeDo
+                PlanId = routeDo.Id,
+                Plan = routeDo
             };
 
             var subrouteDo = new SubrouteDO()
@@ -352,7 +352,7 @@ namespace UtilitiesTesting.Fixtures
             var actionTemplate = ActionTemplate();
             //string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";
 
-            var routeDo = new RouteDO()
+            var routeDo = new PlanDO()
             {
                 Id = GetTestGuidById(1),
                 Name = "A",
@@ -364,8 +364,8 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = TestContainer_Id_1(),
                 ContainerState = 1,
-                RouteId = routeDo.Id,
-                Route = routeDo
+                PlanId = routeDo.Id,
+                Plan = routeDo
             };
 
             var subrouteDo = new SubrouteDO()
@@ -418,7 +418,7 @@ namespace UtilitiesTesting.Fixtures
 
 
 
-            var curRouteDO = new RouteDO
+            var curPlanDO = new PlanDO
             {
                 Id = GetTestGuidById(1),
                 Description = "descr 1",
@@ -430,17 +430,17 @@ namespace UtilitiesTesting.Fixtures
             var curContainerDO = new ContainerDO()
             {
                 Id = TestContainer_Id_1(),
-                RouteId = GetTestGuidById(1),
-                Route = curRouteDO
+                PlanId = GetTestGuidById(1),
+                Plan = curPlanDO
             };
 
 
             var subroute = new SubrouteDO(true)
             {
-                ParentRouteNode = curRouteDO,
-                ParentRouteNodeId = curRouteDO.Id,
-                RootRouteNodeId = curRouteDO.Id,
-                RootRouteNode = curRouteDO
+                ParentRouteNode = curPlanDO,
+                ParentRouteNodeId = curPlanDO.Id,
+                RootRouteNodeId = curPlanDO.Id,
+                RootRouteNode = curPlanDO
             };
 
             ActivityDO curActivityDO = new ActivityDO();

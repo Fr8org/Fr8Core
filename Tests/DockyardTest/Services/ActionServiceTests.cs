@@ -135,8 +135,8 @@ namespace DockyardTest.Services
 
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var route = FixtureData.TestRoute1();
-                uow.RouteRepository.Add(route);
+                var plan = FixtureData.TestRoute1();
+                uow.RouteRepository.Add(plan);
 
                 var subroute = FixtureData.TestSubrouteDO1();
                 uow.RouteNodeRepository.Add(subroute);
@@ -358,7 +358,7 @@ namespace DockyardTest.Services
         //{
             // Test.
 //            Action action = new Action();
-//            var route = FixtureData.TestRoute2();
+//            var plan = FixtureData.TestRoute2();
 //            var payloadMappings = FixtureData.FieldMappings;
 //            var actionDo = FixtureData.IntegrationTestAction();
 //            actionDo.ActivityTemplate.Plugin.Endpoint = "localhost:53234";
@@ -372,7 +372,7 @@ namespace DockyardTest.Services
 //
 //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 //            {
-//                uow.RouteRepository.Add(route);
+//                uow.RouteRepository.Add(plan);
 //                uow.ActionRepository.Add(actionDo);
 //                uow.ActionListRepository.Add((ActionListDO)actionDo.ParentActivity);
 //                uow.ProcessRepository.Add(((ActionListDO)actionDo.ParentActivity).Process);

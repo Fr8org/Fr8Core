@@ -29,8 +29,8 @@ namespace TerminalBase.Infrastructure
         Task<ActivityDTO> ConfigureActivity(ActivityDTO activityDTO, string userId);
         Task<ActivityDO> ConfigureActivity(ActivityDO activityDO, string userId);
         Task<ActivityDTO> CreateAndConfigureActivity(int templateId, string name, string userId, string label = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null);
-        Task<RouteFullDTO> CreateRoute(RouteEmptyDTO routeDTO, string userId);
-        Task<RouteDO> ActivateRoute(RouteDO routeDO, string userId);
-        Task<IEnumerable<RouteFullDTO>> GetRoutesByName(string name, string userId);
+        Task<RouteFullDTO> CreatePlan(RouteEmptyDTO planDTO, string userId);
+        Task<PlanDO> ActivatePlan(PlanDO planDO, string userId);
+        Task<IEnumerable<RouteFullDTO>> GetPlansByName(string name, string userId);
     }
 }

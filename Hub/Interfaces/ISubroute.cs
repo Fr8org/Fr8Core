@@ -13,7 +13,7 @@ namespace Hub.Interfaces
     public interface ISubroute
     {
         void Store(IUnitOfWork uow, SubrouteDO subroute);
-        SubrouteDO Create(IUnitOfWork uow, RouteDO route, string name);
+        SubrouteDO Create(IUnitOfWork uow, PlanDO plan, string name);
         void Update(IUnitOfWork uow, SubrouteDO subroute);
         void Delete(IUnitOfWork uow, Guid id);
         void AddActivity(IUnitOfWork uow, ActivityDO resultActivityDo);

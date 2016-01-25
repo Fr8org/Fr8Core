@@ -327,12 +327,12 @@ namespace Hub.Services
             }
 
             RouteNodeDO parentNode;
-            RouteDO route = null;
+            PlanDO plan = null;
 
             if (createRoute)
             {
-                route = ObjectFactory.GetInstance<IRoute>().Create(uow, label);
-                parentNode = ObjectFactory.GetInstance<ISubroute>().Create(uow, route, name + " #1");
+                plan = ObjectFactory.GetInstance<IPlan>().Create(uow, label);
+                parentNode = ObjectFactory.GetInstance<ISubroute>().Create(uow, plan, name + " #1");
             }
             else
             {
@@ -347,7 +347,7 @@ namespace Hub.Services
 
             if (createRoute)
             {
-                return route;
+                return plan;
             }
 
             return activity;

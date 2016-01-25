@@ -25,13 +25,13 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static RouteDO Route_TerminalIntegration()
+        public static PlanDO Route_TerminalIntegration()
         {
-            return new RouteDO()
+            return new PlanDO()
             {
                 Id = GetTestGuidById(1000),
-                Name = "Test Route Name",
-                Description = "Test Route Description",
+                Name = "Test Plan Name",
+                Description = "Test Plan Description",
                 RouteState = RouteState.Active,
             };
         }

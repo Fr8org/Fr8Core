@@ -28,19 +28,19 @@ namespace terminalIntegrationTests
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var route = new RouteDO()
+                var plan = new PlanDO()
                 {
                     Id = UtilitiesTesting.Fixtures.FixtureData.TestParentRouteID(),
                     Name = "1",
                     RouteState = RouteState.Active
                 };
 
-                uow.RouteRepository.Add(route);
+                uow.RouteRepository.Add(plan);
 
                 uow.ContainerRepository.Add(new ContainerDO()
                 {
                     Id = UtilitiesTesting.Fixtures.FixtureData.TestContainer_Id_1(),
-                    Route = route,
+                    Plan = plan,
                     CrateStorage = _crateManager.EmptyStorageAsStr(),
                     ContainerState = ContainerState.Executing
                 });

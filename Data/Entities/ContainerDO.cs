@@ -28,9 +28,9 @@ namespace Data.Entities
         //public string Fr8AccountId { get; set; }
 
         [Required]
-        [ForeignKey("Route")]
-        public Guid RouteId { get; set; }
-        public virtual RouteDO Route { get; set; }
+        [ForeignKey("Plan")]
+        public Guid PlanId { get; set; }
+        public virtual PlanDO Plan { get; set; }
 
         public virtual ICollection<ProcessNodeDO> ProcessNodes { get; set; }
 

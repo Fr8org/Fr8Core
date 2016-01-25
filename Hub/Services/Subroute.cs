@@ -54,22 +54,22 @@ namespace Hub.Services
         }
 
         // <summary>
-        /// Creates noew Subroute entity and add it to RouteDO. If RouteDO has no child subroute created route becomes starting subroute.
+        /// Creates noew Subroute entity and add it to RouteDO. If RouteDO has no child subroute created plan becomes starting subroute.
         /// </summary>
-        public SubrouteDO Create(IUnitOfWork uow, RouteDO route, string name)
+        public SubrouteDO Create(IUnitOfWork uow, PlanDO plan, string name)
         {
             var subroute = new SubrouteDO();
             subroute.Id = Guid.NewGuid();
-            subroute.RootRouteNode = route;
-            subroute.Fr8Account = route.Fr8Account;
+            subroute.RootRouteNode = plan;
+            subroute.Fr8Account = plan.Fr8Account;
 
             uow.SubrouteRepository.Add(subroute);
 
-            if (route != null)
+            if (plan != null)
             {
-                if (!route.Subroutes.Any())
+                if (!plan.Subroutes.Any())
                 {
-                    route.StartingSubroute = subroute;
+                    plan.StartingSubroute = subroute;
                     subroute.StartingSubroute = true;
                 }
             }

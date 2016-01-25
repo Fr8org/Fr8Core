@@ -570,6 +570,10 @@
     <Compile Include="Migrations\201601240908090_RenameActionToActivity.Designer.cs">
       <DependentUpon>201601240908090_RenameActionToActivity.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201601241443338_RenameRouteToPlan.cs" />
+    <Compile Include="Migrations\201601241443338_RenameRouteToPlan.Designer.cs">
+      <DependentUpon>201601241443338_RenameRouteToPlan.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryBase.cs" />
@@ -615,7 +619,7 @@
     <Compile Include="Entities\TerminalDO.cs" />
     <Compile Include="Entities\ContainerDO.cs" />
     <Compile Include="Entities\ProcessNodeDO.cs" />
-    <Compile Include="Entities\RouteDO.cs" />
+    <Compile Include="Entities\PlanDO.cs" />
     <Compile Include="Entities\SlipDO.cs" />
     <Compile Include="Entities\SubscriptionDO.cs" />
     <Compile Include="Exceptions\EntityNotFoundException.cs" />
@@ -955,6 +959,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201601240908090_RenameActionToActivity.resx">
       <DependentUpon>201601240908090_RenameActionToActivity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201601241443338_RenameRouteToPlan.resx">
+      <DependentUpon>201601241443338_RenameRouteToPlan.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

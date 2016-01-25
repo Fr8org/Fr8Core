@@ -433,13 +433,13 @@ namespace Data.Infrastructure
 			  return _routeNodeRepository ?? (_routeNodeRepository = new RouteNodeRepository(this));
 		  }
 	  }
-      private IRouteRepository _routeRepository;
+      private IPlanRepository _routeRepository;
 
-        public IRouteRepository RouteRepository
+        public IPlanRepository RouteRepository
         {
             get
             {
-                return _routeRepository ?? (_routeRepository = new RouteRepository(this));
+                return _routeRepository ?? (_routeRepository = new PlanRepository(this));
             }
         }
 

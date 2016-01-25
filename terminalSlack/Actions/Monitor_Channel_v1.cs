@@ -41,14 +41,14 @@ namespace terminalSlack.Actions
             }
             catch (ArgumentException)
             {
-                return Success(payloadCrates, "Route successfully activated. It will wait and respond to specified Slack postings");
+                return Success(payloadCrates, "Plan successfully activated. It will wait and respond to specified Slack postings");
             }
             
 
             var payloadChannelIdField = payloadFields.FirstOrDefault(x => x.Key == "channel_id");
             if (payloadChannelIdField == null)
             {
-                return Success(payloadCrates, "Route successfully activated. It will wait and respond to specified Slack postings");
+                return Success(payloadCrates, "Plan successfully activated. It will wait and respond to specified Slack postings");
             }
 
             var payloadChannelId = payloadChannelIdField.Value;

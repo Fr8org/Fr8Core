@@ -259,7 +259,7 @@ namespace terminalFr8Core.Actions
                 new RunRouteButton()
                 {
                     Name = "RunRoute",
-                    Label = "Run Route",
+                    Label = "Run Plan",
                 }
             );
         }

@@ -31,21 +31,21 @@ namespace terminalDocuSign.Services
         }
 
         /// <summary>
-        /// Creates Monitor All DocuSign Events route with Record DocuSign Events and Store MT Data actions.
+        /// Creates Monitor All DocuSign Events plan with Record DocuSign Events and Store MT Data actions.
         /// </summary>
         public async Task CreateRoute_MonitorAllDocuSignEvents(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
         {
-            var existingRoutes = (await _hubCommunicator.GetRoutesByName("MonitorAllDocuSignEvents", curFr8UserId)).ToList();
-            existingRoutes = existingRoutes.Where(r => r.Tag == "docusign-auto-monitor-route-"+authTokenDTO.ExternalAccountId).ToList();
+            var existingRoutes = (await _hubCommunicator.GetPlansByName("MonitorAllDocuSignEvents", curFr8UserId)).ToList();
+            existingRoutes = existingRoutes.Where(r => r.Tag == "docusign-auto-monitor-plan-"+authTokenDTO.ExternalAccountId).ToList();
             if (existingRoutes.Any())
             {
                 //hmmmm which one belongs to us?
-                //lets assume there will be only single route
+                //lets assume there will be only single plan
                 var existingRoute = existingRoutes.Single();
                 if (existingRoute.RouteState != RouteState.Active)
                 {
-                    var existingRouteDO = Mapper.Map<RouteDO>(existingRoute);
-                    await _hubCommunicator.ActivateRoute(existingRouteDO, curFr8UserId);
+                    var existingRouteDO = Mapper.Map<PlanDO>(existingRoute);
+                    await _hubCommunicator.ActivatePlan(existingRouteDO, curFr8UserId);
                 }
                 return;
             }
@@ -57,7 +57,7 @@ namespace terminalDocuSign.Services
                 RouteState = RouteState.Active,
                 Tag = "docusign-auto-monitor-route-"+authTokenDTO.ExternalAccountId
             };
-            var monitorDocusignRoute = await _hubCommunicator.CreateRoute(emptyMonitorRoute, curFr8UserId);
+            var monitorDocusignRoute = await _hubCommunicator.CreatePlan(emptyMonitorRoute, curFr8UserId);
             var activityTemplates = await _hubCommunicator.GetActivityTemplates(null, curFr8UserId);
             var recordDocusignEventsTemplate = GetActivityTemplate(activityTemplates, "Record_DocuSign_Events");
             var storeMTDataTemplate = GetActivityTemplate(activityTemplates, "StoreMTData");
@@ -65,8 +65,8 @@ namespace terminalDocuSign.Services
                 curFr8UserId, "Record DocuSign Events", monitorDocusignRoute.StartingSubrouteId, false, new Guid(authTokenDTO.Id));
             await _hubCommunicator.CreateAndConfigureActivity(storeMTDataTemplate.Id, "StoreMTData",
                 curFr8UserId, "Store MT Data", monitorDocusignRoute.StartingSubrouteId);
-            var routeDO = Mapper.Map<RouteDO>(monitorDocusignRoute);
-            await _hubCommunicator.ActivateRoute(routeDO, curFr8UserId);
+            var planDO = Mapper.Map<PlanDO>(monitorDocusignRoute);
+            await _hubCommunicator.ActivatePlan(planDO, curFr8UserId);
         }
 
         private ActivityTemplateDTO GetActivityTemplate(IEnumerable<ActivityTemplateDTO> activityList, string activityTemplateName)
@@ -80,7 +80,7 @@ namespace terminalDocuSign.Services
             return template;
         }
 
-        private RouteDO GetExistingRoute(IUnitOfWork uow, string routeName, string fr8AccountEmail)
+        private PlanDO GetExistingPlan(IUnitOfWork uow, string routeName, string fr8AccountEmail)
         {
             if (uow.RouteRepository.GetQuery().Any(existingRoute =>
                 existingRoute.Name.Equals(routeName) &&
