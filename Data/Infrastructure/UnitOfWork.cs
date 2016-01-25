@@ -407,12 +407,12 @@ namespace Data.Infrastructure
             }
         }
 
-	  private ActionRepository _actionRepository;
-	  public ActionRepository ActionRepository
+	  private ActivityRepository _actionRepository;
+	  public ActivityRepository ActivityRepository
         {
             get
             {
-                return _actionRepository ?? (_actionRepository = new ActionRepository(this));
+                return _actionRepository ?? (_actionRepository = new ActivityRepository(this));
             }
         }
 

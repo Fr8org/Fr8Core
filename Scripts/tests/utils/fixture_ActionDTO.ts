@@ -1,7 +1,7 @@
 ﻿
 module dockyard.tests.utils.fixtures {
 
-    export class ActionDTO {
+    export class ActivityDTO {
 
         public static newRoute = <interfaces.IRouteVM> {
             name: 'Test',

@@ -24,6 +24,6 @@ namespace Data.Interfaces.DataTransferObjects
         /// <summary>
         /// List of ActionList DTOs.
         /// </summary>
-        public List<ActionDTO> Actions { get; set; }
+        public List<ActivityDTO> Activities { get; set; }
     }
 }

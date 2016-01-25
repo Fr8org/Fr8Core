@@ -10,18 +10,24 @@ namespace Data.Interfaces.DataTransferObjects
         Critical
     }
 
-    public class ErrorDTO
+    public class ResponseMessageDTO
     {
-        [JsonProperty("message")]   public string Message { get; set; }
-        [JsonProperty("errorCode")] public string ErrorCode { get; set; }
-        [JsonProperty("type")]      public string Type { get; protected set; }
-        [JsonProperty("details")]   public object Details { get; set; }
+        public ResponseMessageDTO() { }
 
-        protected ErrorDTO(string type)
+        public ResponseMessageDTO(string type)
         {
             Type = type;
         }
-        
+
+        [JsonProperty("message")]
+        public string Message { get; set; }
+        [JsonProperty("errorCode")]
+        public string ErrorCode { get; set; }
+        [JsonProperty("type")]
+        public string Type { get; protected set; }
+        [JsonProperty("details")]
+        public object Details { get; set; }
+
         protected static string ErrorTypeToString(ErrorType errorType)
         {
             switch (errorType)
@@ -40,11 +46,28 @@ namespace Data.Interfaces.DataTransferObjects
             }
         }
 
+        public static ResponseMessageDTO Create(string message, ErrorType errorType, string errorCode, object details)
+        {
+            return new ResponseMessageDTO(ErrorTypeToString(errorType))
+            {
+                Details = details,
+                Message = message,
+                ErrorCode = errorCode
+            };
+        }
+    }
+
+    public class ErrorDTO : ResponseMessageDTO
+    {
+        protected ErrorDTO(string type)
+        {
+            Type = type;
+        }
+
         public static ErrorDTO InternalError(string message, string errorCode = null, object details = null)
         {
             return Create(message, ErrorType.Generic, errorCode, details);
         }
-
 
         public static ErrorDTO AuthenticationError()
         {

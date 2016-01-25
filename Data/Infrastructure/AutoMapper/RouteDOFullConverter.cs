@@ -35,7 +35,7 @@ namespace Data.Infrastructure.AutoMapper
                 .Select((SubrouteDO x) =>
                 {
                     var pntDTO = Mapper.Map<FullSubrouteDTO>(x);
-                    pntDTO.Actions = x.ChildNodes.OfType<ActionDO>().Select(Mapper.Map<ActionDTO>).ToList();
+                    pntDTO.Activities = x.ChildNodes.OfType<ActivityDO>().Select(Mapper.Map<ActivityDTO>).ToList();
                     return pntDTO;
                 }).ToList();
 

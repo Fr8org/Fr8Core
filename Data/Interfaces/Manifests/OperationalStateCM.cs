@@ -1,4 +1,5 @@
 ﻿using Data.Constants;
+using Data.Interfaces.DataTransferObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,9 +18,10 @@ namespace Data.Interfaces.Manifests
             public int Level { get; set; }
         }
         public List<LoopStatus> Loops { get; set; }
-        public ActionResponse CurrentActionResponse { get; set; }
-        public ActionErrorCode? CurrentActionErrorCode { get; set; }
-        public string CurrentActionErrorMessage { get; set; }
+        public ActivityResponse CurrentActivityResponse { get; set; }
+        public ActionErrorCode? CurrentActivityErrorCode { get; set; }
+        public string CurrentActivityErrorMessage { get; set; }
+        public ResponseMessageDTO ResponseMessageDTO { get; set; }
 
         public OperationalStateCM()
             : base(MT.OperationalStatus)
