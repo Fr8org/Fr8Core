@@ -160,7 +160,8 @@ namespace terminalGoogleTests.Unit
                 EventNames = "Google Form Response",
                 ContainerDoId = "",
                 EventPayload = WrapPayloadDataCrate(payloadFields),
-                ExternalAccountId = "g_admin@dockyard.company"
+                ExternalAccountId = "g_admin@dockyard.company",
+                Manufacturer = "Google"
             };
 
             //prepare the event report
@@ -176,7 +177,8 @@ namespace terminalGoogleTests.Unit
                 EventNames = "Google Form Response",
                 ContainerDoId = "",
                 EventPayload = WrapPayloadDataCrate(payloadFields),
-                ExternalAccountId = "g_admin@dockyard.company"
+                ExternalAccountId = "g_admin@dockyard.company",
+                Manufacturer = "Google"
             };
 
             //prepare the event report
