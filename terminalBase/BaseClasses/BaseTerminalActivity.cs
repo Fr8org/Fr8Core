@@ -17,6 +17,7 @@ using Hub.Interfaces;
 using Hub.Managers;
 using Utilities.Configuration.Azure;
 using TerminalBase.Infrastructure;
+using AutoMapper;
 
 namespace TerminalBase.BaseClasses
 {
@@ -253,7 +254,7 @@ namespace TerminalBase.BaseClasses
             {
                 return Crate.CreateDesignTimeFieldsCrate("Validation Errors", validationErrorList.ToArray());
             }
-            
+
             return null;
         }
 
@@ -492,7 +493,7 @@ namespace TerminalBase.BaseClasses
         /// </summary>
         /// <param name="activityDO">ActionDO.</param>
         /// <returns></returns>
-        protected async Task<Crate> CreateAvailableFieldsCrate(ActivityDO activityDO,string crateLabel = "Upstream Terminal-Provided Fields")
+        protected async Task<Crate> CreateAvailableFieldsCrate(ActivityDO activityDO, string crateLabel = "Upstream Terminal-Provided Fields")
         {
             var curUpstreamFields = await HubCommunicator.GetDesignTimeFieldsByDirection(activityDO, CrateDirection.Upstream, AvailabilityType.RunTime, CurrentFr8UserId);
 
@@ -794,7 +795,27 @@ namespace TerminalBase.BaseClasses
             }
 
             return await Task.FromResult<FieldDTO[]>(null);
-        } 
+        }
+
+        protected async Task<ActivityDO> AddAndConfigureChildActivity(ActivityDO parent, string templateName_Or_templateID, string name = null, string label = null, int order = -1)
+        {
+
+            //search for activity template by name or id
+            var allActivityTemplates = await HubCommunicator.GetActivityTemplates(parent, CurrentFr8UserId);
+            int templateId;
+            var activityTemplate = Int32.TryParse(templateName_Or_templateID, out templateId) ?
+                allActivityTemplates.FirstOrDefault(a => a.Id == templateId)
+                : allActivityTemplates.FirstOrDefault(a => a.Name == templateName_Or_templateID);
+
+            //assign missing properties
+            label = string.IsNullOrEmpty(label) ? activityTemplate.Label : label;
+            name = string.IsNullOrEmpty(name) ? activityTemplate.Label : label;
+            var parent_route_node_id = (parent.ChildNodes.Count > 0) ? parent.ChildNodes.LastOrDefault().Id : parent.Id;
+
+            var result = await HubCommunicator.CreateAndConfigureActivity(activityTemplate.Id, name, CurrentFr8UserId, label, parent_route_node_id, order: order);
+            var resultDO = Mapper.Map<ActivityDO>(result);
+            return resultDO;
+        }
 
         protected virtual Crate MergeUpstreamFields<TManifest>(ActivityDO curActivityDO, string label, FieldDTO[] upstreamFields)
         {

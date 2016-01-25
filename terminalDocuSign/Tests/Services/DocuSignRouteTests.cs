@@ -97,7 +97,7 @@ namespace terminalDocuSign.Tests.Services
 
                 _actionMock.Setup(
                     a => a.CreateAndConfigure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<int>(),
-                        "Record_DocuSign_Events", It.IsAny<string>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>())).Callback(() =>
+                        "Record_DocuSign_Events", It.IsAny<string>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>(), It.IsAny<int>())).Callback(() =>
                         {
                             using (var uow1 = ObjectFactory.GetInstance<IUnitOfWork>())
                             {
@@ -112,7 +112,7 @@ namespace terminalDocuSign.Tests.Services
 
                 _actionMock.Setup(
                     a => a.CreateAndConfigure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<int>(),
-                        "StoreMTData", It.IsAny<string>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>())).Callback(() =>
+                        "StoreMTData", It.IsAny<string>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>(), It.IsAny<int>())).Callback(() =>
                         {
                             using (var uow1 = ObjectFactory.GetInstance<IUnitOfWork>())
                             {

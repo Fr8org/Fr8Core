@@ -189,7 +189,7 @@ namespace terminalDocuSign.Actions
             using (var updater = Crate.UpdateStorage(curActivityDO))
             {
                 var docuSignTemplate = updater.CrateStorage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Available Templates").FirstOrDefault();
-                if (docuSignTemplate != null && docuSignTemplate.Fields != null && docuSignTemplate.Fields.Count != 0) return ;//await Task.FromResult<CrateDTO>(null);
+                if (docuSignTemplate != null && docuSignTemplate.Fields != null && docuSignTemplate.Fields.Count != 0) return;//await Task.FromResult<CrateDTO>(null);
 
                 var configControl = GetStdConfigurationControl<DropDownList>(updater.CrateStorage, "DocuSignTemplate");
                 if (configControl != null)
@@ -245,50 +245,15 @@ namespace terminalDocuSign.Actions
 
             try
             {
-                ActivityTemplateDO dataSourceActTempl = curActivityTemplates.FirstOrDefault(at => at.Name == _dataSourceValue);
-                if (dataSourceActTempl == null) return curActivityDO;
-                curActivityDO.ChildNodes.Add(new ActivityDO()
-                {
-                    ActivityTemplateId = dataSourceActTempl.Id,
-                    IsTempId = true,
-                    Name = dataSourceActTempl.Name,
-                    Label = dataSourceActTempl.Label,
-                    CrateStorage = Crate.EmptyStorageAsStr(),
-                    ParentRouteNode = curActivityDO,
-                    Ordering = 1
-                });
+                ActivityDO dataSourceActivity = await AddAndConfigureChildActivity(curActivityDO, _dataSourceValue, order: 1);
+                curActivityDO.ChildNodes.Add(dataSourceActivity);
+                ActivityDO mapFieldActivity = await AddAndConfigureChildActivity(curActivityDO, "MapFields", order: 2);
+                curActivityDO.ChildNodes.Add(mapFieldActivity);
+                ActivityDO sendDocuSignEnvActivity = await AddAndConfigureChildActivity(curActivityDO, "Send_DocuSign_Envelope", order: 3);
+                curActivityDO.ChildNodes.Add(sendDocuSignEnvActivity);
 
-                ActivityTemplateDO mapFieldActTempl = curActivityTemplates.FirstOrDefault(at => at.Name == "MapFields");
-                if (mapFieldActTempl == null) return curActivityDO;
 
-                curActivityDO.ChildNodes.Add(new ActivityDO()
-                {
-                    ActivityTemplateId = mapFieldActTempl.Id,
-                    IsTempId = true,
-                    Name = mapFieldActTempl.Name,
-                    Label = mapFieldActTempl.Label,
-                    CrateStorage = Crate.EmptyStorageAsStr(),
-                    ParentRouteNode = curActivityDO,
-                    Ordering = 2,
-                    Fr8AccountId = authTokenDO.UserID
-                });
 
-                ActivityTemplateDO sendDocuSignEnvActTempl = curActivityTemplates.FirstOrDefault(at => at.Name == "Send_DocuSign_Envelope");
-                if (sendDocuSignEnvActTempl == null) return curActivityDO;
-                curActivityDO.ChildNodes.Add(new ActivityDO()
-                {
-                    ActivityTemplateId = sendDocuSignEnvActTempl.Id,
-                    IsTempId = true,
-                    Name = sendDocuSignEnvActTempl.Name,
-                    CrateStorage = Crate.EmptyStorageAsStr(),
-                    Label = sendDocuSignEnvActTempl.Label,
-                    ParentRouteNode = curActivityDO,
-                    Ordering = 3
-                });
-
-                //uow.ActionRepository.Add(curActivityDO);
-                //uow.Db.Entry<ActionDO>(curActivityDO).State = System.Data.Entity.EntityState.Modified;
-                //uow.SaveChanges();
             }
             catch (Exception)
             {

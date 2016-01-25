@@ -161,7 +161,7 @@ namespace TerminalBase.Infrastructure
             throw new NotImplementedException();
         }
 
-        public Task<ActivityDTO> CreateAndConfigureActivity(int templateId, string name, string userId, string label = null, Guid? parentNodeId = default(Guid?), bool createRoute = false, Guid? authorizationTokenId = null)
+        public Task<ActivityDTO> CreateAndConfigureActivity(int templateId, string name, string userId, string label = null, Guid? parentNodeId = default(Guid?), bool createRoute = false, Guid? authorizationTokenId = null, int order = -1)
         {
             throw new NotImplementedException();
         }
@@ -185,5 +185,6 @@ namespace TerminalBase.Infrastructure
         {
             throw new NotImplementedException();
         }
+
     }
 }

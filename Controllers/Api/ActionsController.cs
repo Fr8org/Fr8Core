@@ -27,8 +27,8 @@ using HubWeb.Infrastructure;
 
 namespace HubWeb.Controllers
 {
-    
-    
+
+
     [Fr8ApiAuthorize]
     public class ActionsController : ApiController
     {
@@ -63,7 +63,7 @@ namespace HubWeb.Controllers
 
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
-        public async Task<IHttpActionResult> Create(int actionTemplateId, string name, string label = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null)
+        public async Task<IHttpActionResult> Create(int actionTemplateId, string name, string label = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null, int order = -1)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -92,7 +92,7 @@ namespace HubWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var activityTemplate = _activityTemplate.GetQuery().FirstOrDefault(at => at.Name == solutionName);
-                
+
                 if (activityTemplate == null)
                 {
                     throw new ArgumentException(String.Format("actionTemplate (solution) name {0} is not found in the database.", solutionName));
@@ -162,21 +162,21 @@ namespace HubWeb.Controllers
             }
         }
 
-//        /// <summary>
-//        /// POST : updates the given action
-//        /// </summary>
-//        [HttpPost]
-//        [Route("update")]
-//        public IHttpActionResult Update(ActionDTO curActionDTO)
-//        {
-//            ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);
-//
-//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-//            {
-//                await _action.SaveUpdateAndConfigure(uow, submittedActionDO);
-//            }
-//
-//            return Ok();
-//        }    
-            }
+        //        /// <summary>
+        //        /// POST : updates the given action
+        //        /// </summary>
+        //        [HttpPost]
+        //        [Route("update")]
+        //        public IHttpActionResult Update(ActionDTO curActionDTO)
+        //        {
+        //            ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);
+        //
+        //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //            {
+        //                await _action.SaveUpdateAndConfigure(uow, submittedActionDO);
+        //            }
+        //
+        //            return Ok();
+        //        }    
+    }
 }

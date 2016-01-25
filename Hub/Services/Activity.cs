@@ -64,12 +64,12 @@ namespace Hub.Services
             try
             {
                 stopwatch = System.Diagnostics.Stopwatch.StartNew();
-            var activity = SaveAndUpdateRecursive(uow, submittedActivityData, null, new List<ActivityDO>());
+                var activity = SaveAndUpdateRecursive(uow, submittedActivityData, null, new List<ActivityDO>());
 
-            activity.ParentRouteNode = submittedActivityData.ParentRouteNode;
-            activity.ParentRouteNodeId = submittedActivityData.ParentRouteNodeId;
+                activity.ParentRouteNode = submittedActivityData.ParentRouteNode;
+                activity.ParentRouteNodeId = submittedActivityData.ParentRouteNodeId;
 
-            uow.SaveChanges();
+                uow.SaveChanges();
                 success = true;
             }
             catch
@@ -292,16 +292,18 @@ namespace Hub.Services
             return uow.ActivityRepository.GetQuery().FirstOrDefault(i => i.Id == id);
         }
 
-        public ActivityDO Create(IUnitOfWork uow, int actionTemplateId, string name, string label, RouteNodeDO parentNode, Guid? AuthorizationTokenId = null)
+        public ActivityDO Create(IUnitOfWork uow, int actionTemplateId, string name, string label, RouteNodeDO parentNode, Guid? AuthorizationTokenId = null, int ordering = -1)
         {
+            // calculate ordering or apply get passed value
+            ordering = (ordering == -1) ? (parentNode.ChildNodes.Count > 0 ? parentNode.ChildNodes.Max(x => x.Ordering) + 1 : 1) : ordering;
             var activity = new ActivityDO
             {
                 Id = Guid.NewGuid(),
-                ActivityTemplateId =  actionTemplateId,
+                ActivityTemplateId = actionTemplateId,
                 Name = name,
                 Label = label,
                 CrateStorage = _crate.EmptyStorageAsStr(),
-                Ordering = parentNode.ChildNodes.Count > 0 ? parentNode.ChildNodes.Max(x => x.Ordering) + 1 : 1,
+                Ordering = ordering,
                 RootRouteNode = parentNode.RootRouteNode,
                 Fr8Account = (parentNode.RootRouteNode != null) ? parentNode.RootRouteNode.Fr8Account : null,
                 AuthorizationTokenId = AuthorizationTokenId
@@ -314,7 +316,7 @@ namespace Hub.Services
             return activity;
         }
 
-        public async Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, string name, string label = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null)
+        public async Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, string name, string label = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null, int order = -1)
         {
             if (parentNodeId != null && createRoute)
             {
@@ -339,7 +341,7 @@ namespace Hub.Services
                 parentNode = uow.RouteNodeRepository.GetByKey(parentNodeId);
             }
 
-            var activity = Create(uow, actionTemplateId, name, label, parentNode, authorizationTokenId);
+            var activity = Create(uow, actionTemplateId, name, label, parentNode, authorizationTokenId, order);
 
             uow.SaveChanges();
 

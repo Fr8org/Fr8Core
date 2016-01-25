@@ -35,22 +35,22 @@ namespace terminalDocuSign.Actions
                     IsReadOnly = true,
                     Label = "",
                     Value = "<img height=\"30px\" src=\"/Content/icons/web_services/DocuSign-Logo.png\">" +
-							"<p>You will be asked to select a DocuSign Template.</p>" +
-							"<p>Each time a related DocuSign Envelope is completed, we'll extract the data for you.</p>"
-                           
+                            "<p>You will be asked to select a DocuSign Template.</p>" +
+                            "<p>Each time a related DocuSign Envelope is completed, we'll extract the data for you.</p>"
+
                 });
 
                 Controls.Add((FinalActionsList = new DropDownList
                 {
                     Name = "FinalActionsList",
                     Required = true,
-					Label = "What would you like us to do with the data?",
+                    Label = "What would you like us to do with the data?",
                     Source = new FieldSourceDTO
                     {
                         Label = "AvailableActions",
                         ManifestType = CrateManifestTypes.StandardDesignTimeFields
                     },
-                    Events = new List<ControlEvent> {new ControlEvent("onChange", "requestConfig")}
+                    Events = new List<ControlEvent> { new ControlEvent("onChange", "requestConfig") }
                 }));
             }
         }
@@ -87,9 +87,9 @@ namespace terminalDocuSign.Actions
             var actionUi = new ActionUi();
 
             actionUi.ClonePropertiesFrom(Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().First());
-            
+
             //don't add child actions until a selection is made
-            if (string.IsNullOrEmpty(actionUi.FinalActionsList.Value)) 
+            if (string.IsNullOrEmpty(actionUi.FinalActionsList.Value))
             {
                 return curActivityDO;
             }
@@ -98,45 +98,9 @@ namespace terminalDocuSign.Actions
 
             // Always use default template for solution
             const string firstTemplateName = "Monitor_DocuSign_Envelope_Activity";
-            var firstActionTemplate = (await FindTemplates(curActivityDO, x => x.Name == "Monitor_DocuSign_Envelope_Activity")).FirstOrDefault();
 
-            if (firstActionTemplate == null)
-            {
-                throw new Exception(string.Format("ActivityTemplate {0} was not found", firstTemplateName));
-            }
-
-            var firstAction = new ActivityDO
-            {
-                IsTempId = true,
-                ActivityTemplateId = firstActionTemplate.Id,
-                CrateStorage = Crate.EmptyStorageAsStr(),
-                CreateDate = DateTime.UtcNow,
-                Ordering = 1,
-                Name = "First activity",
-                Label = firstActionTemplate.Label,
-                Fr8AccountId = authTokenDO.UserID
-            };
-
-            curActivityDO.ChildNodes.Add(firstAction);
-
-            int finalActionTemplateId;
-
-            if (int.TryParse(actionUi.FinalActionsList.Value, out finalActionTemplateId))
-            {
-                var finalAction = new ActivityDO
-                {
-                    ActivityTemplateId = finalActionTemplateId,
-                    IsTempId = true,
-                    CrateStorage = Crate.EmptyStorageAsStr(),
-                    CreateDate = DateTime.UtcNow,
-                    Ordering = 2,
-                    Name = "Final activity",
-                    Label = actionUi.FinalActionsList.selectedKey,
-                    Fr8AccountId = authTokenDO.UserID
-                };
-
-                curActivityDO.ChildNodes.Add(finalAction);
-            }
+            var firstAction = await AddAndConfigureChildActivity(curActivityDO, firstTemplateName, order: 10);
+            var second_activity = await AddAndConfigureChildActivity(curActivityDO, actionUi.FinalActionsList.Value, "Final activity", order: 1);
 
             return curActivityDO;
         }
@@ -145,13 +109,13 @@ namespace terminalDocuSign.Actions
         {
             return Success(await GetPayload(activityDO, containerId));
         }
-        
+
         private async Task<IEnumerable<ActivityTemplateDO>> FindTemplates(ActivityDO activityDO, Predicate<ActivityTemplateDO> query)
         {
-            var templates = await HubCommunicator.GetActivityTemplates(activityDO,CurrentFr8UserId);
+            var templates = await HubCommunicator.GetActivityTemplates(activityDO, CurrentFr8UserId);
             return templates.Select(x => Mapper.Map<ActivityTemplateDO>(x)).Where(x => query(x));
         }
-        
+
         private async Task<IEnumerable<Crate>> PackSources(ActivityDO activityDO)
         {
             var sources = new List<Crate>();
