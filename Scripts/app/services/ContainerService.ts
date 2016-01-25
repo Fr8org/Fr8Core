@@ -25,7 +25,7 @@ module dockyard.services {
                 'getPayload': {
                     method: 'GET',
                     isArray: false,
-                    url: '/api/containers/get/:id'
+                    url: '/api/containers/payload/:id'
                 }
             }
         )
