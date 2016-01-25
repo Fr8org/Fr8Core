@@ -364,7 +364,7 @@ namespace terminalDocuSign.Actions
                     .Select(checkBox => checkBox.Name.Substring("Event_".Length).Replace("_", ""));
 
             //create standard event subscription crate with user selected DocuSign events
-            var curEventSubscriptionCrate = Crate.CreateStandardEventSubscriptionsCrate("Standard Event Subscriptions",
+            var curEventSubscriptionCrate = Crate.CreateStandardEventSubscriptionsCrate("Standard Event Subscriptions", "DocuSign",
                 curSelectedDocuSignEvents.ToArray());
 
             storage.Remove<EventSubscriptionCM>();
@@ -388,6 +388,7 @@ namespace terminalDocuSign.Actions
 
             return Crate.CreateStandardEventSubscriptionsCrate(
                 "Standard Event Subscriptions",
+                "DocuSign",
                 subscriptions.ToArray()
                 );
         }
