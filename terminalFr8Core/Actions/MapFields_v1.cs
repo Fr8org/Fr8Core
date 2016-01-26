@@ -144,7 +144,7 @@ namespace terminalFr8Core.Actions
 
         private void AddErrorTextBlock(CrateStorage storage)
         {
-            var textBlock = GenerateTextBlock("Error",
+            var textBlock = GenerateTextBlock("Attention",
                 "In order to work this Action needs upstream and downstream Actions configured",
                 "well well-lg", "MapFieldsErrorMessage");
             AddControl(storage, textBlock);
