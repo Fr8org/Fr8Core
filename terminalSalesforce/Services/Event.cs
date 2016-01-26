@@ -36,8 +36,8 @@ namespace terminalSalesforce.Services
                 EventNames = "Lead Created",
                 ContainerDoId = "",
                 EventPayload = new CrateStorage(ExtractEventPayload(leadId, accountId)),
-                ExternalAccountId = accountId,
-                Source = "Salesforce"
+                ExternalAccountId = accountId, 
+                Manufacturer = "Salesforce",
             };
 
             return Task.FromResult(Crate.FromContent("Lead Created", eventReportContent));

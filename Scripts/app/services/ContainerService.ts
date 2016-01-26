@@ -11,28 +11,23 @@ module dockyard.services {
 
     // Container Read service
 
-    app.factory('ContainerService', [
-        '$resource',
-        ($resource: ng.resource.IResourceService): IContainerService => {
-            var resource = <IContainerService>$resource(
-                '/api/containers/get/:id',
-                { id: '@id' },
-                {
-                    'getAll': {
-                        method: 'GET',
-                        isArray: true,
-                        url: '/api/containers/get'
-                    },
-                    'getSingle': {
-                        method: 'GET',
-                        isArray: false,
-                        url: '/api/containers/get/:id'
-                    },
-                    'getPayload': {
-                        method: 'GET',
-                        isArray: false,
-                        url: '/api/containers/get/:id'
-                    }
+    app.factory('ContainerService', ['$resource', ($resource: ng.resource.IResourceService): IContainerService =>
+        <IContainerService>$resource('/api/containers/get/:id', { id: '@id' },
+            {
+                'getAll': {
+                    method: 'GET',
+                    isArray: true,
+                    url: '/api/containers/get'
+                },
+                'getSingle': {
+                    method: 'GET',
+                    isArray: false,
+                    url: '/api/containers/get/:id'
+                },
+                'getPayload': {
+                    method: 'GET',
+                    isArray: false,
+                    url: '/api/containers/payload/:id'
                 }
             );
 
