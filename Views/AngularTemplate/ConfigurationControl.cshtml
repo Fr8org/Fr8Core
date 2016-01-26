@@ -163,5 +163,12 @@
         <upstream-field-chooser field="field" current-action="currentAction"></upstream-field-chooser>
     </div>
 
+    <!--
+        UpstreamCrateChooser
+    -->
+    <div ng-if='field.type === "UpstreamCrateChooser"'>
+        <upstream-crate-chooser field="field" current-action="currentAction" change="onChange"></upstream-crate-chooser>
+    </div>
+
     <!-- Add more configuration field templates below -->
 </div>

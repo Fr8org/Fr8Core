@@ -49,8 +49,9 @@ namespace terminalDocuSign.Actions
             var curAvailableRunTimeObjectsDesignTimeCrate =
                 Crate.CreateDesignTimeFieldsCrate("Available Run-Time Objects", new FieldDTO[]
                 {
-                    new FieldDTO {Key = "DocuSign Envelope", Value = string.Empty},
-                    new FieldDTO {Key = "DocuSign Event", Value = string.Empty}
+                    new FieldDTO {Key = "DocuSign Envelope", Value = "DocuSign Envelope"},
+                    new FieldDTO {Key = "DocuSign Event", Value = "DocuSign Event"},
+                    new FieldDTO {Key = "DocuSign Recipient", Value = "DocuSign Recipient"}
                 });
 
             using (var updater = Crate.UpdateStorage(curActivityDO))
