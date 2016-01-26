@@ -593,6 +593,7 @@
     <Compile Include="Repositories\MultiTenant\Queryable\MtQueryExecutor.cs" />
     <Compile Include="Expressions\ReplaceParameterVisitor.cs" />
     <Compile Include="Repositories\MultiTenant\Queryable\MtWhere.cs" />
+    <Compile Include="Repositories\Plan\PlanRepository.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\MultiTenant\MTDataRepository.cs" />
