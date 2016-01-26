@@ -21,6 +21,10 @@ namespace terminalFr8Core.Actions
 {
     public class MapFields_v1 : BaseTerminalActivity
     {
+        public MapFields_v1() : base("terminalFr8Core.MapFields v1")
+        {
+            
+        }
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
