@@ -55,13 +55,7 @@ module dockyard.directives.designerHeader {
                 };
 
                 $scope.runRoute = () => {
-                    RouteService.run($scope.route.id)
-                        .then((containerDTO) => {
-                            console.log('SUCCESS: ', containerDTO); 
-                        })
-                        .catch((err) => {
-                            console.log('ERROR: ', err); 
-                        });
+                    RouteService.runAndProcessClientAction($scope.route.id);
                 };
             };
         }
