@@ -33,6 +33,7 @@ namespace TerminalBase.BaseClasses
         private readonly ITerminal _terminal;
         protected static readonly string ConfigurationControlsLabel = "Configuration_Controls";
         protected string CurrentFr8UserId { get; set; }
+        protected string _terminalName { get; set; }
 
         public IHubCommunicator HubCommunicator { get; set; }
         #endregion
@@ -43,7 +44,12 @@ namespace TerminalBase.BaseClasses
             ManifestDiscovery.Default.GetManifestType<EventSubscriptionCM>()
         };
 
-        public BaseTerminalActivity()
+        public BaseTerminalActivity() : this("Unknown")
+        {
+
+        }
+
+        public BaseTerminalActivity(string _actionName)
         {
             Crate = new CrateManager();
             Activity = ObjectFactory.GetInstance<IActivity>();
@@ -676,10 +682,11 @@ namespace TerminalBase.BaseClasses
             if (fieldValues.Length > 0)
                 return fieldValues[0];
 
-            IncidentReporter reporter = ObjectFactory.GetInstance<IncidentReporter>();
-            reporter.IncidentMissingFieldInPayload(fieldKey, curActivity, "");
+            var baseEvent = new BaseTerminalEvent();
+            var exceptionMessage = string.Format("No field found with specified key: {0}.", fieldKey);
+            baseEvent.SendTerminalErrorIncident(_terminalName, exceptionMessage, _terminalName);
 
-            throw new ApplicationException(string.Format("No field found with specified key: {0}.", fieldKey));
+            throw new ApplicationException(exceptionMessage + " Detailed information has been written to log.");
         }
 
         protected void AddLabelControl(CrateStorage storage, string name, string label, string text)
