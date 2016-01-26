@@ -29,9 +29,6 @@ module dockyard.services {
                     isArray: false,
                     url: '/api/containers/payload/:id'
                 }
-            );
-
-            return resource;
-        }
+            })
     ]);
 } 
