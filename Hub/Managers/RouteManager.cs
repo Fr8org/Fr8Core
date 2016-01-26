@@ -17,12 +17,12 @@ namespace Hub.Managers
     public class RouteManager
     {
         private readonly IActivityTemplate _activityTemplate;
-        private readonly IAction _action;
+        private readonly IActivity _activity;
 
         public RouteManager()
         {
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
-            _action = ObjectFactory.GetInstance<IAction>();
+            _activity = ObjectFactory.GetInstance<IActivity>();
         }
 
         public async Task CreateRoute_LogFr8InternalEvents(string curFr8UserId)
@@ -32,20 +32,20 @@ namespace Hub.Managers
             {
                 var curFr8Account = uow.UserRepository.GetOrCreateUser(curFr8UserId);
 
-                //check if the route already created
+                //check if the plan already created
 
                 var existingRoute = GetExistingRoute(uow, "LogFr8InternalEvents", curFr8Account.Email);
 
                 if (existingRoute != null)
                 {
-                    //if route is already created, just make it active and return
+                    //if plan is already created, just make it active and return
                     existingRoute.RouteState = RouteState.Active;
                     uow.SaveChanges();
                     return;
                 }
 
-                //Create a route
-                RouteDO route = new RouteDO
+                //Create a plan
+                PlanDO plan = new PlanDO
                 {
                     Name = "LogFr8InternalEvents",
                     Description = "Log Fr8Internal Events",
@@ -56,17 +56,17 @@ namespace Hub.Managers
                    
                 };
 
-                //create a sub route
+                //create a sub plan
                 var subroute = new SubrouteDO(true)
                 {
-                    ParentRouteNode = route,
+                    ParentRouteNode = plan,
                     Id = Guid.NewGuid(),
-                    RootRouteNode = route
+                    RootRouteNode = plan
                 };
 
-                //update Route and Sub route into database
-                route.ChildNodes = new List<RouteNodeDO> { subroute };
-                uow.RouteNodeRepository.Add(route);
+                //update Route and Sub plan into database
+                plan.ChildNodes = new List<RouteNodeDO> { subroute };
+                uow.RouteNodeRepository.Add(plan);
                 uow.RouteNodeRepository.Add(subroute);
                 uow.SaveChanges();
 
@@ -75,15 +75,15 @@ namespace Hub.Managers
                 var activity2 = Mapper.Map<ActivityTemplateDTO>(_activityTemplate.GetByName(uow, "StoreMTData_v1"));
 
                 //create and configure required actions
-                await _action.CreateAndConfigure(uow, curFr8Account.Id, activity1.Id, activity1.Name, activity1.Label, subroute.Id);
-                await _action.CreateAndConfigure(uow, curFr8Account.Id, activity2.Id, activity2.Name, activity2.Label, subroute.Id);
+                await _activity.CreateAndConfigure(uow, curFr8Account.Id, activity1.Id, activity1.Name, activity1.Label, subroute.Id);
+                await _activity.CreateAndConfigure(uow, curFr8Account.Id, activity2.Id, activity2.Name, activity2.Label, subroute.Id);
 
                 //update database
                 uow.SaveChanges();
             }
         }
 
-        private RouteDO GetExistingRoute(IUnitOfWork uow, string routeName, string fr8AccountEmail)
+        private PlanDO GetExistingRoute(IUnitOfWork uow, string routeName, string fr8AccountEmail)
         {
             if (uow.RouteRepository.GetQuery().Any(existingRoute =>
                 existingRoute.Name.Equals(routeName) &&

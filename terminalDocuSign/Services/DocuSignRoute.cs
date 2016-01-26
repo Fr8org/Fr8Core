@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Data.Control;
+using Data.Crates;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Interfaces;
+using Hub.Managers;
 using StructureMap;
 using terminalDocuSign.Interfaces;
 using TerminalBase.Infrastructure;
@@ -20,32 +24,36 @@ namespace terminalDocuSign.Services
     public class DocuSignRoute : IDocuSignRoute
     {
         private readonly IActivityTemplate _activityTemplate;
-        private readonly IAction _action;
+        private readonly IActivity _activity;
         private readonly IHubCommunicator _hubCommunicator;
+        private readonly ICrateManager _crateManager;
+
+        
 
         public DocuSignRoute()
         {
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
-            _action = ObjectFactory.GetInstance<IAction>();
+            _activity = ObjectFactory.GetInstance<IActivity>();
             _hubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
+            _crateManager = ObjectFactory.GetInstance<ICrateManager>();
         }
 
         /// <summary>
-        /// Creates Monitor All DocuSign Events route with Record DocuSign Events and Store MT Data actions.
+        /// Creates Monitor All DocuSign Events plan with Record DocuSign Events and Store MT Data actions.
         /// </summary>
         public async Task CreateRoute_MonitorAllDocuSignEvents(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
         {
-            var existingRoutes = (await _hubCommunicator.GetRoutesByName("MonitorAllDocuSignEvents", curFr8UserId)).ToList();
-            existingRoutes = existingRoutes.Where(r => r.Tag == "docusign-auto-monitor-route-"+authTokenDTO.ExternalAccountId).ToList();
+            var existingRoutes = (await _hubCommunicator.GetPlansByName("MonitorAllDocuSignEvents", curFr8UserId)).ToList();
+            existingRoutes = existingRoutes.Where(r => r.Tag == "docusign-auto-monitor-plan-"+authTokenDTO.ExternalAccountId).ToList();
             if (existingRoutes.Any())
             {
                 //hmmmm which one belongs to us?
-                //lets assume there will be only single route
+                //lets assume there will be only single plan
                 var existingRoute = existingRoutes.Single();
                 if (existingRoute.RouteState != RouteState.Active)
                 {
-                    var existingRouteDO = Mapper.Map<RouteDO>(existingRoute);
-                    await _hubCommunicator.ActivateRoute(existingRouteDO, curFr8UserId);
+                    var existingRouteDO = Mapper.Map<PlanDO>(existingRoute);
+                    await _hubCommunicator.ActivatePlan(existingRouteDO, curFr8UserId);
                 }
                 return;
             }
@@ -57,16 +65,55 @@ namespace terminalDocuSign.Services
                 RouteState = RouteState.Active,
                 Tag = "docusign-auto-monitor-route-"+authTokenDTO.ExternalAccountId
             };
-            var monitorDocusignRoute = await _hubCommunicator.CreateRoute(emptyMonitorRoute, curFr8UserId);
+            var monitorDocusignRoute = await _hubCommunicator.CreatePlan(emptyMonitorRoute, curFr8UserId);
             var activityTemplates = await _hubCommunicator.GetActivityTemplates(null, curFr8UserId);
             var recordDocusignEventsTemplate = GetActivityTemplate(activityTemplates, "Record_DocuSign_Events");
             var storeMTDataTemplate = GetActivityTemplate(activityTemplates, "StoreMTData");
-            await _hubCommunicator.CreateAndConfigureAction(recordDocusignEventsTemplate.Id, "Record_DocuSign_Events",
+            await _hubCommunicator.CreateAndConfigureActivity(recordDocusignEventsTemplate.Id, "Record_DocuSign_Events",
                 curFr8UserId, "Record DocuSign Events", monitorDocusignRoute.StartingSubrouteId, false, new Guid(authTokenDTO.Id));
-            await _hubCommunicator.CreateAndConfigureAction(storeMTDataTemplate.Id, "StoreMTData",
+            var storeMTDataActivity = await _hubCommunicator.CreateAndConfigureActivity(storeMTDataTemplate.Id, "StoreMTData",
                 curFr8UserId, "Store MT Data", monitorDocusignRoute.StartingSubrouteId);
-            var routeDO = Mapper.Map<RouteDO>(monitorDocusignRoute);
-            await _hubCommunicator.ActivateRoute(routeDO, curFr8UserId);
+            SetSelectedCrates(storeMTDataActivity);
+            //save this
+            await _hubCommunicator.ConfigureActivity(storeMTDataActivity, curFr8UserId);
+            var planDO = Mapper.Map<PlanDO>(monitorDocusignRoute);
+            await _hubCommunicator.ActivatePlan(planDO, curFr8UserId);
+        }
+
+        private void SetSelectedCrates(ActivityDTO storeMTDataActivity)
+        {
+            using (var updater = _crateManager.UpdateStorage(() => storeMTDataActivity.CrateStorage))
+            {
+                var configControlCM = updater.CrateStorage
+                    .CrateContentsOfType<StandardConfigurationControlsCM>()
+                    .First();
+
+                var upstreamCrateChooser = (UpstreamCrateChooser)configControlCM.FindByName("UpstreamCrateChooser");
+                var existingDdlbSource = upstreamCrateChooser.SelectedCrates[0].Source;
+                var docusignEnvelope = new DropDownList
+                {
+                    selectedKey = "DocuSign Envelope",
+                    Value = "DocuSign Envelope",
+                    Name = "UpstreamCrateChooser_lbl_dropdown_0",
+                    Source = existingDdlbSource
+                };
+                var docusignEvent = new DropDownList
+                {
+                    selectedKey = "DocuSign Event",
+                    Value = "DocuSign Event",
+                    Name = "UpstreamCrateChooser_lbl_dropdown_1",
+                    Source = existingDdlbSource
+                };
+                var docusignRecipient = new DropDownList
+                {
+                    selectedKey = "DocuSign Recipient",
+                    Value = "DocuSign Recipient",
+                    Name = "UpstreamCrateChooser_lbl_dropdown_2",
+                    Source = existingDdlbSource
+                };
+
+                upstreamCrateChooser.SelectedCrates = new List<DropDownList>{docusignEnvelope, docusignEvent, docusignRecipient};
+            }
         }
 
         private ActivityTemplateDTO GetActivityTemplate(IEnumerable<ActivityTemplateDTO> activityList, string activityTemplateName)
@@ -80,7 +127,7 @@ namespace terminalDocuSign.Services
             return template;
         }
 
-        private RouteDO GetExistingRoute(IUnitOfWork uow, string routeName, string fr8AccountEmail)
+        private PlanDO GetExistingPlan(IUnitOfWork uow, string routeName, string fr8AccountEmail)
         {
             if (uow.RouteRepository.GetQuery().Any(existingRoute =>
                 existingRoute.Name.Equals(routeName) &&

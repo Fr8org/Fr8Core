@@ -132,9 +132,9 @@ namespace Hub.Managers
             return Crate<StandardConfigurationControlsCM>.FromContent(label,  new StandardConfigurationControlsCM() { Controls = controls.ToList() }, AvailabilityType.Configuration);
         }
 
-        public Crate CreateStandardEventSubscriptionsCrate(string label, params string[] subscriptions)
+        public Crate CreateStandardEventSubscriptionsCrate(string label, string manufacturer, params string[] subscriptions )
         {
-            return Crate.FromContent(label, new EventSubscriptionCM() { Subscriptions = subscriptions.ToList() });
+            return Crate.FromContent(label, new EventSubscriptionCM() { Subscriptions = subscriptions.ToList(), Manufacturer = manufacturer});
         }
         
         public Crate CreateStandardEventReportCrate(string label, EventReportCM eventReport)

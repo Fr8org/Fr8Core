@@ -17,41 +17,41 @@ using Data.Control;
 
 namespace terminalFr8Core.Actions
 {
-    public class Monitor_Fr8_Events_v1 : BaseTerminalAction
+    public class Monitor_Fr8_Events_v1 : BaseTerminalActivity
     {
-        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
+            return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
         }
 
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             //build a controls crate to render the pane
             var eventFields = Crate.CreateDesignTimeFieldsCrate("Monitor Fr8 Event Fields", CreateMonitorFr8EventFields().ToArray());
             var eventSubscription = PackCrate_EventSubscriptions();
 
             var textBlock = GenerateTextBlock("Monitor Fr8 Events",
-                "This Action doesn't require any configuration.", "well well-lg");
+                "This Activity doesn't require any configuration.", "well well-lg");
             var curControlsCrate = PackControlsCrate(textBlock);
 
-            using (var updater = Crate.UpdateStorage(curActionDO))
+            using (var updater = Crate.UpdateStorage(curActivityDO))
             {
                 updater.CrateStorage.Add(curControlsCrate);
                 updater.CrateStorage.Add(eventFields);
                 updater.CrateStorage.Add(eventSubscription);
             }
 
-            return await Task.FromResult(curActionDO);
+            return await Task.FromResult(curActivityDO);
         }
 
-        protected override Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            return Task.FromResult(curActionDO);
+            return Task.FromResult(curActivityDO);
         }
 
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var payloadCrates = await GetPayload(curActionDO, containerId);
+            var payloadCrates = await GetPayload(curActivityDO, containerId);
             var curEventReport = Crate.GetStorage(payloadCrates).CrateContentsOfType<EventReportCM>().First();
 
             if (curEventReport != null)
@@ -81,6 +81,7 @@ namespace terminalFr8Core.Actions
 
             return Crate.CreateStandardEventSubscriptionsCrate(
                 "Standard Event Subscriptions",
+                "Fr8Core",
                 subscriptions.ToArray()
                 );
         }
@@ -96,9 +97,9 @@ namespace terminalFr8Core.Actions
             };
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActionDO))
+            if (Crate.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }

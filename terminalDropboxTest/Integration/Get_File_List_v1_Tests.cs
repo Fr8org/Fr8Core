@@ -35,7 +35,7 @@ namespace terminalDropboxTests.Integration
             AddOperationalStateCrate(requestActionDTO, new OperationalStateCM());
 
             //Act
-            var payloadDTOResult = await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, requestActionDTO);
+            var payloadDTOResult = await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, requestActionDTO);
             var jsonData = ((JValue)(payloadDTOResult.CrateStorage.Crates[1].Contents)).Value.ToString();
             var dropboxFileList = JsonConvert.DeserializeObject<List<string>>(jsonData);
 

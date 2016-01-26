@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using AutoMapper;
+using Data.Crates;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.Manifests;
 using Data.States;
 using DocuSign.Integrations.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using StructureMap;
 using Utilities.AutoMapper;
 using Signer = DocuSign.Integrations.Client.Signer;
 
@@ -23,7 +26,7 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(activityTemplateDO => activityTemplateDO.Version, opts => opts.ResolveUsing(e => e.Version));
 
 
-            Mapper.CreateMap<ActionDO, ActionDTO>();
+            Mapper.CreateMap<ActivityDO, ActivityDTO>();
             Mapper.CreateMap<FactDO, FactDTO>();
 
             Mapper.CreateMap<Fr8AccountDO, UserDTO>()
@@ -35,21 +38,21 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<string, JToken>().ConvertUsing<StringToJTokenConverter>();
             Mapper.CreateMap<JToken, string>().ConvertUsing<JTokenToStringConverter>();
 
-            Mapper.CreateMap<ActionDO, ActionDTO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
+            Mapper.CreateMap<ActivityDO, ActivityDTO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
                 .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
                 .ForMember(a => a.RootRouteNodeId, opts => opts.ResolveUsing(ad => ad.RootRouteNodeId))
                 .ForMember(a => a.ParentRouteNodeId, opts => opts.ResolveUsing(ad => ad.ParentRouteNodeId))
                 //.ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => ad.CrateStorage == null ? null : JsonConvert.DeserializeObject(ad.CrateStorage)))
                 .ForMember(a => a.ActivityTemplateId, opts => opts.ResolveUsing(ad => ad.ActivityTemplateId))
                 .ForMember(a => a.CurrentView, opts => opts.ResolveUsing(ad => ad.currentView))
-                .ForMember(a => a.ChildrenActions, opts => opts.ResolveUsing(ad => ad.ChildNodes.OfType<ActionDO>().OrderBy(da => da.Ordering)))
+                .ForMember(a => a.ChildrenActions, opts => opts.ResolveUsing(ad => ad.ChildNodes.OfType<ActivityDO>().OrderBy(da => da.Ordering)))
                 .ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(ad => ad.ActivityTemplate))
                 .ForMember(a => a.ExplicitData, opts => opts.ResolveUsing(ad => ad.ExplicitData))
                 .ForMember(a => a.AuthToken, opts => opts.ResolveUsing(ad => ad.AuthorizationToken))
                 .ForMember(a => a.Fr8AccountId, opts => opts.ResolveUsing(ad => ad.Fr8AccountId));
 
 
-            Mapper.CreateMap<ActionDTO, ActionDO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
+            Mapper.CreateMap<ActivityDTO, ActivityDO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
                 .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
                 .ForMember(a => a.RootRouteNodeId, opts => opts.ResolveUsing(ad => ad.RootRouteNodeId))
                 .ForMember(a => a.ParentRouteNodeId, opts => opts.ResolveUsing(ad => ad.ParentRouteNodeId))
@@ -94,9 +97,9 @@ namespace Data.Infrastructure.AutoMapper
             //                .ForMember(x => x.ActionListType, opts => opts.ResolveUsing(x => x.ActionListType))
             //                .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name));
 
-            Mapper.CreateMap<RouteDO, RouteEmptyDTO>();
-            Mapper.CreateMap<RouteEmptyDTO, RouteDO>();
-            Mapper.CreateMap<RouteDO, RouteEmptyDTO>();
+            Mapper.CreateMap<PlanDO, RouteEmptyDTO>();
+            Mapper.CreateMap<RouteEmptyDTO, PlanDO>();
+            Mapper.CreateMap<PlanDO, RouteEmptyDTO>();
             Mapper.CreateMap<SubrouteDTO, SubrouteDO>()
                 .ForMember(x => x.ParentRouteNodeId, opts => opts.ResolveUsing(x => x.RouteId))
                 .ForMember(x => x.RootRouteNodeId, opts => opts.ResolveUsing(x => x.RouteId));
@@ -109,7 +112,7 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<CriteriaDTO, CriteriaDO>()
                 .ForMember(x => x.ConditionsJSON, opts => opts.ResolveUsing(y => y.Conditions));
 
-            Mapper.CreateMap<RouteDO, RouteFullDTO>()
+            Mapper.CreateMap<PlanDO, RouteFullDTO>()
                 .ConvertUsing<RouteDOFullConverter>();
 
             Mapper.CreateMap<RouteEmptyDTO, RouteFullDTO>();
@@ -125,7 +128,15 @@ namespace Data.Infrastructure.AutoMapper
                 .ConvertUsing<CrateStorageFromStringConverter>();
             Mapper.CreateMap<FileDO, FileDTO>();
 
-            Mapper.CreateMap<ContainerDO, ContainerDTO>();
+            Mapper.CreateMap<ContainerDO, ContainerDTO>()
+                .ForMember(
+                    x => x.CurrentActivityResponse,
+                    x => x.ResolveUsing(y => ExtractOperationStateData(y, z => z.CurrentActivityResponse))
+                )
+                .ForMember(
+                    x => x.CurrentClientActionName,
+                    x => x.ResolveUsing(y => ExtractOperationStateData(y, z => z.CurrentClientActionName))
+                );
             Mapper.CreateMap<AuthorizationTokenDTO, AuthorizationTokenDO>()
                 .ForMember(x => x.UserID, x => x.ResolveUsing(y => y.UserId))
                 .ForMember(x => x.Id, x => x.ResolveUsing(y => y.Id != null ? new Guid(y.Id) : (Guid?)null));
@@ -137,19 +148,37 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<TerminalDTO, TerminalDO>();
         }
 
-        private static List<RouteNodeDO> MapActions(IEnumerable<ActionDTO> actions)
+        private static List<RouteNodeDO> MapActions(IEnumerable<ActivityDTO> actions)
         {
             var list = new List<RouteNodeDO>();
 
             if (actions != null)
             {
-                foreach (var actionDto in actions)
+                foreach (var activityDto in actions)
                 {
-                    list.Add(Mapper.Map<ActionDO>(actionDto));
+                    list.Add(Mapper.Map<ActivityDO>(activityDto));
                 }
             }
 
             return list;
+        }
+
+        private static object ExtractOperationStateData(
+            ContainerDO container,
+            Func<OperationalStateCM, object> extractor)
+        {
+            var crateStorageDTO = CrateStorageFromStringConverter.Convert(container.CrateStorage);
+            var crateStorage = CrateStorageSerializer.Default.ConvertFromDto(crateStorageDTO);
+            var cm = crateStorage
+                .CrateContentsOfType<OperationalStateCM>()
+                .SingleOrDefault();
+
+            if (cm == null)
+            {
+                return null;
+            }
+
+            return extractor(cm);
         }
     }
 }

@@ -26,20 +26,30 @@
 				            <li class="dropdown dropdown-user dropdown-dark">
 					        <a href="javascript:;" class="dropdown-toggle" dropdown-menu-hover data-toggle="dropdown" data-close-others="true">
                                 @*<img alt="" class="img-circle" src="/Content/templates/metronic/assets/admin/layout3/img/avatar1.jpg" />*@
-					        <span class="username username-hide-mobile">Hello  @User.Identity.GetUserName()!</span>
+
+					        <span class="username username-hide-mobile">Hello 
+                                @if(User.IsInRole("Guest")){
+                                    <text>Guest User</text>
+                                }else{
+                                    <text>@User.Identity.GetUserName()!</text>
+                                } 
+                                
+                                </span>
 					        </a>
-					        <ul class="dropdown-menu dropdown-menu-default">
-						        <li>
-                                    <a href="/Dashboard#/myaccount">
-                                        <i class="icon-user"></i> My Profile
-                                    </a>
-						        </li>
-						        <li>
-                                    <a href="/DockyardAccount/Logoff">
-                                        <i class="icon-key"></i> Log Out
-                                    </a>
-						        </li>
-					        </ul>
+                            @if(!User.IsInRole("Guest")){
+					            <ul class="dropdown-menu dropdown-menu-default">
+						            <li>
+                                        <a href="/Dashboard#/myaccount">
+                                            <i class="icon-user"></i> My Profile
+                                        </a>
+						            </li>
+						            <li>
+                                        <a href="/DockyardAccount/Logoff">
+                                            <i class="icon-key"></i> Log Out
+                                        </a>
+						            </li>
+					            </ul>
+                            }
 				        </li>
 				<!-- END USER LOGIN DROPDOWN -->
                 }
@@ -85,7 +95,7 @@
                 </li>
 								
                 <li class="menu-dropdown classic-menu-dropdown">
-                    <a data-toggle="dropdown" href="#" class="dropdown-toggle">Routes <i class="fa fa-angle-down"></i></a>
+                    <a data-toggle="dropdown" href="#" class="dropdown-toggle">Plans <i class="fa fa-angle-down"></i></a>
                     <ul class="dropdown-menu">
 
                         <li><a href="#/routes">Show All</a></li>
@@ -147,7 +157,14 @@
                     </li>
                 }
 			</ul>
+           
 		</div>
+        @if (User.IsInRole("Guest"))
+        {
+            <ul class="nav navbar-nav navbar-right pull-right">
+                <li class="pull-right register-guest-user" style="background-color: crimson;">@Html.ActionLink("Register!", "RegisterGuestUser", "DockyardAccount")</li>
+            </ul>
+        }
 		<!-- END MEGA MENU -->
 	</div>
 </div>

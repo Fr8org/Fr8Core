@@ -39,7 +39,7 @@ namespace terminalDocuSign.Services
         {
             //DO - 1449
             //if the event payload is Fr8 User ID, it is DocuSign Authentication Completed event
-            //The Monitor All DocuSign Events route should be creaed in this case.
+            //The Monitor All DocuSign Events plan should be creaed in this case.
             if (curExternalEventPayload.Contains("fr8_user_id"))
             {
                 var jo = (JObject)JsonConvert.DeserializeObject(curExternalEventPayload);
@@ -56,7 +56,7 @@ namespace terminalDocuSign.Services
                     throw new ArgumentException("Fr8 User ID is not in the correct format.");
                 }
 
-                //create MonitorAllDocuSignEvents route
+                //create MonitorAllDocuSignEvents plan
                 await _docuSignRoute.CreateRoute_MonitorAllDocuSignEvents(curFr8UserId, authToken);
                 return null;
             } 
@@ -73,6 +73,7 @@ namespace terminalDocuSign.Services
                 EventNames = "Envelope" + curDocuSignEnvelopeInfo.EnvelopeStatus.Status,
                 ContainerDoId = "",
                 EventPayload = ExtractEventPayload(curExternalEvents),
+                Manufacturer = "DocuSign",
                 ExternalAccountId = curDocuSignEnvelopeInfo.EnvelopeStatus.ExternalAccountId
             };
 

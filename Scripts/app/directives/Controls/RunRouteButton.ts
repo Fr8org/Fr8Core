@@ -77,7 +77,7 @@ module dockyard.directives {
     }
 
     export interface IRunRouteButtonScope extends ng.IScope {
-        currentAction: model.ActionDTO;
+        currentAction: model.ActivityDTO;
         error: string;
         runNow: () => void;
     }

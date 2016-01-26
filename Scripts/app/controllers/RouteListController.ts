@@ -79,9 +79,13 @@ module dockyard.controllers {
                 else {
                     location.reload();
                 }
-            }, () => {
+            }, (failResponse) => {
                 //activation failed
-                });
+                if (failResponse.data.details === "GuestFail") {
+                    location.href = "DockyardAccount/RegisterGuestUser";
+                }
+            });
+            
         }
         private deactivateRoute(route) {
             this.RouteService.deactivate(route).$promise.then((result) => {
@@ -98,9 +102,15 @@ module dockyard.controllers {
 					templateUrl: '/AngularTemplate/_AddPayloadModal',
 					controller: 'PayloadFormController', resolve: { routeId: () => routeId }
 				});
-        }
+            }
 			else {
-				this.RouteService.execute({ id: routeId }, null, null, null);
+                this.RouteService
+                    .runAndProcessClientAction(routeId)
+                    .catch((failResponse) => {
+                        if (failResponse.data.details === "GuestFail") {
+                            location.href = "DockyardAccount/RegisterGuestUser";
+                        }
+                    });
 			}
         }
 

@@ -6,12 +6,12 @@ module dockyard.interfaces {
     export interface ICriteriaDTO {
         id: string;
         isTempId: boolean;
-        actions: Array<IActionDTO>;
+        actions: Array<IActivityDTO>;
         conditions: Array<ICondition>;
         executionType: model.CriteriaExecutionType;
     }
 
-    export interface IActionDTO {
+    export interface IActivityDTO {
         id: string;
         isTempId: boolean;
         parentRouteNodeId: string;
@@ -21,7 +21,7 @@ module dockyard.interfaces {
         configurationControls: model.ControlsList;
         activityTemplate: model.ActivityTemplate;
         activityTemplateId: number;
-        childrenActions: Array<IActionDTO>;
+        childrenActions: Array<IActivityDTO>;
         ordering: number;
     }
 

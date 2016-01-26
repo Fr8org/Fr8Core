@@ -109,10 +109,10 @@ namespace Hub.StructureMap
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
                 For<IRestfulServiceClient>().Singleton().Use<RestfulServiceClient>();
                 For<ITerminalTransmitter>().Use<TerminalTransmitter>();
-                For<IRoute>().Use<Route>();
+                For<IPlan>().Use<Hub.Services.Plan>();
                 For<InternalInterfaces.IContainer>().Use<InternalClass.Container>();
                 For<ICriteria>().Use<Criteria>();
-                For<IAction>().Use<InternalClass.Action>();
+                For<IActivity>().Use<InternalClass.Activity>();
 				For<IRouteNode>().Use<RouteNode>();
                 For<ISubscription>().Use<Subscription>();
                 For<IProcessNode>().Use<ProcessNode>();
@@ -169,11 +169,11 @@ namespace Hub.StructureMap
                 For<InternalInterfaces.IContainer>().Use<InternalClass.Container>();
                 For<ICriteria>().Use<Criteria>();
                 For<ISubscription>().Use<Subscription>();
-                For<IAction>().Use<InternalClass.Action>();
+                For<IActivity>().Use<InternalClass.Activity>();
 					 For<IRouteNode>().Use<RouteNode>();
 
                 For<IProcessNode>().Use<ProcessNode>();
-                For<IRoute>().Use<Route>();
+                For<IPlan>().Use<Hub.Services.Plan>();
                 For<ISubroute>().Use<Subroute>();
                 For<IField>().Use<Field>();
                 //var mockProcess = new Mock<IProcessService>();

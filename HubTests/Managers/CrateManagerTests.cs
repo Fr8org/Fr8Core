@@ -221,14 +221,14 @@ namespace HubTests.Managers
         [Test]
         public void UpdateStorageDtoRewrite_Works()
         {
-            var actionDto = new ActionDTO();
+            var activityDto = new ActivityDTO();
 
-            actionDto.CrateStorage = GetKnownManifestsStorageDto();
+            activityDto.CrateStorage = GetKnownManifestsStorageDto();
 
             var newCrateStorageDto = GetKnownManifestsStorageDto("newValue");
             var newCrateStorage = _crateManager.FromDto(newCrateStorageDto);
 
-            using (var updater = _crateManager.UpdateStorage(actionDto))
+            using (var updater = _crateManager.UpdateStorage(activityDto))
             {
                 updater.CrateStorage.Clear();
 
@@ -238,7 +238,7 @@ namespace HubTests.Managers
                 }
             }
 
-            CheckStorageDTOs(newCrateStorageDto, actionDto.CrateStorage);
+            CheckStorageDTOs(newCrateStorageDto, activityDto.CrateStorage);
         }
 
         [Test]
@@ -266,7 +266,7 @@ namespace HubTests.Managers
         [Test]
         public void UpdateStorageStringRewrite_Works()
         {
-            var actionDo = new ActionDO();
+            var actionDo = new ActivityDO();
 
             actionDo.CrateStorage = JsonConvert.SerializeObject(GetKnownManifestsStorageDto());
 

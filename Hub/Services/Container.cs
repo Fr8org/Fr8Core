@@ -46,18 +46,18 @@ namespace Hub.Services
             uow.SaveChanges();
         }
 
-        private ActionResponse GetCurrentActionResponse(ContainerDO curContainerDO)
+        private ActivityResponse GetCurrentActionResponse(ContainerDO curContainerDO)
         {
             var storage = _crate.GetStorage(curContainerDO.CrateStorage);
             var operationalState = storage.CrateContentsOfType<OperationalStateCM>().Single();
-            return operationalState.CurrentActionResponse;
+            return operationalState.CurrentActivityResponse;
         }
 
         private string GetCurrentActionErrorMessage(ContainerDO curContainerDO)
         {
             var storage = _crate.GetStorage(curContainerDO.CrateStorage);
             var operationalState = storage.CrateContentsOfType<OperationalStateCM>().Single();
-            return operationalState.CurrentActionErrorMessage;
+            return operationalState.CurrentActivityErrorMessage;
         }
 
         /// <summary>
@@ -71,33 +71,34 @@ namespace Hub.Services
             using (var updater = _crate.UpdateStorage(() => curContainerDo.CrateStorage))
             {
                 var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActionResponse = ActionResponse.Null;
+                operationalState.CurrentActivityResponse = ActivityResponse.Null;
             }
 
             uow.SaveChanges();
         }
 
-        private void ProcessCurrentActionResponse(IUnitOfWork uow, ContainerDO curContainerDo, ActionResponse response)
+        private void ProcessCurrentActionResponse(IUnitOfWork uow, ContainerDO curContainerDo, ActivityResponse response)
         {
             switch (response)
             {
-                case ActionResponse.Success:
+                case ActivityResponse.ExecuteClientAction:
+                case ActivityResponse.Success:
                     //ResetActionResponse(uow, curContainerDo);
                     //do nothing
                     break;
-                case ActionResponse.RequestSuspend:
+                case ActivityResponse.RequestSuspend:
                     curContainerDo.ContainerState = ContainerState.Pending;
                     break;
-                case ActionResponse.Null:
+                case ActivityResponse.Null:
                     //let's assume this is success for now
                     break;
-                case ActionResponse.Error:
-                    //TODO retry action execution until 3 errors??
-                    throw new ErrorResponseException(string.Format("Error on action. {0}", GetCurrentActionErrorMessage(curContainerDo)));
-                case ActionResponse.RequestTerminate:
-                    throw new Exception("Termination request from action with id " + curContainerDo.CurrentRouteNode.Id);
+                case ActivityResponse.Error:
+                    //TODO retry activity execution until 3 errors??
+                    throw new ErrorResponseException(string.Format("Error on activity. {0}", GetCurrentActionErrorMessage(curContainerDo)));
+                case ActivityResponse.RequestTerminate:
+                    throw new Exception("Termination request from activity with id " + curContainerDo.CurrentRouteNode.Id);
                 default:
-                    throw new Exception("Unknown action state on action with id " + curContainerDo.CurrentRouteNode.Id);
+                    throw new Exception("Unknown activity state on activity with id " + curContainerDo.CurrentRouteNode.Id);
             }
         }
 
@@ -111,7 +112,7 @@ namespace Hub.Services
         * We traverse this tree in this order a-b-d-E-b-c-f-g-c-a-NULL 
         */
         /// <summary>
-        /// Moves to next Route and returns action state of this new route
+        /// Moves to next Route and returns action state of this new plan
         /// </summary>
         /// <param name="uow"></param>
         /// <param name="curContainerDO"></param>
@@ -155,20 +156,20 @@ namespace Hub.Services
         /// <param name="curContainerDO"></param>
         /// <param name="state"></param>
         /// <returns></returns>
-        private async Task<ActionResponse> ProcessAction(IUnitOfWork uow, ContainerDO curContainerDO, ActionState state)
+        private async Task<ActivityResponse> ProcessAction(IUnitOfWork uow, ContainerDO curContainerDO, ActionState state)
         {
             await _activity.Process(curContainerDO.CurrentRouteNode.Id, state, curContainerDO);
             return GetCurrentActionResponse(curContainerDO);
         }
 
-        private bool ShouldSkipChildren(ContainerDO curContainerDO, ActionState state, ActionResponse response)
+        private bool ShouldSkipChildren(ContainerDO curContainerDO, ActionState state, ActivityResponse response)
         {
             //first let's check if there is a child action related response
-            if (response == ActionResponse.SkipChildren)
+            if (response == ActivityResponse.SkipChildren)
             {
                 return true;
             }
-            else if (response == ActionResponse.ReProcessChildren)
+            else if (response == ActivityResponse.ReProcessChildren)
             {
                 return false;
             }
@@ -248,8 +249,8 @@ namespace Hub.Services
             }
 
             return (id == null
-               ? containerRepository.Where(container => container.Route.Fr8Account.Id == account.Id)
-               : containerRepository.Where(container => container.Id == id && container.Route.Fr8Account.Id == account.Id)).ToList();
+               ? containerRepository.Where(container => container.Plan.Fr8Account.Id == account.Id)
+               : containerRepository.Where(container => container.Id == id && container.Plan.Fr8Account.Id == account.Id)).ToList();
 
         }
     }
