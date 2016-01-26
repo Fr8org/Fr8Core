@@ -580,6 +580,7 @@
     <Compile Include="Repositories\Authorization\AuthorizationTokenChangeTracker.cs" />
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryForTests.cs" />
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryStub.cs" />
+    <Compile Include="Repositories\Authorization\AuthRepositoryLogger.cs" />
     <Compile Include="Repositories\Authorization\IAuthorizationTokenRepository.cs" />
     <Compile Include="Repositories\Authorization\KeyVaultAuthorizationTokenRepository.cs" />
     <Compile Include="Repositories\FileTagsRepository.cs" />

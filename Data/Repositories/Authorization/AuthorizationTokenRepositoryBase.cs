@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Repositories.Authorization;
 using Data.States;
 using Newtonsoft.Json;
 using Utilities;
@@ -18,7 +19,8 @@ namespace Data.Repositories
         private readonly Dictionary<Guid, AuthorizationTokenChangeTracker> _changesTackers = new Dictionary<Guid, AuthorizationTokenChangeTracker>();
         private readonly List<AuthorizationTokenDO> _adds = new List<AuthorizationTokenDO>();
         private readonly List<AuthorizationTokenDO> _deletes = new List<AuthorizationTokenDO>();
-        
+        protected readonly AuthRepositoryLogger Logger = new AuthRepositoryLogger();
+
         /*********************************************************************************/
 
         public Type EntityType
@@ -160,6 +162,16 @@ namespace Data.Repositories
             if (!_changesTackers.TryGetValue(token.Id, out changeTracker))
             {
                 token.Token = QuerySecurePart(token.Id);
+
+                if (token.Token == null)
+                {
+                    Logger.WriteFailure(token.Id.ToString("N"), "Token is null", "read");
+                }
+                else
+                {
+                    Logger.WriteSuccess(token.Id.ToString("N"), token.Token, "read");
+                }
+
                 _changesTackers[token.Id] = new AuthorizationTokenChangeTracker(token.Token, token);
             }
 
