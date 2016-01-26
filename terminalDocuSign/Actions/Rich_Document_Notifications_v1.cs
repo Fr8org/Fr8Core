@@ -33,6 +33,7 @@ namespace terminalDocuSign.Actions
 
                 Controls.Add(new RadioButtonGroup()
                 {
+                    Name = "Track_Which_Envelopes",
                     Label = "Track which Envelopes?",
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig },
                     Radios = new List<RadioButtonOption>
@@ -83,48 +84,26 @@ namespace terminalDocuSign.Actions
                     }
                 });
                 */
-                Controls.Add(new RadioButtonGroup()
+
+                Controls.Add(new Duration
                 {
-                    Name = "WhenToBeNotified",
-                    Label = "When do you want to be notified?",
-                    Events = new List<ControlEvent> { ControlEvent.RequestConfig },
-                    Radios = new List<RadioButtonOption>
+                    Label = "After you send a Tracked Envelope, Fr8 will wait this long",
+                    Name = "TimePeriod"
+                });
+                Controls.Add(new DropDownList
+                {
+                    Label = "Then Fr8 will notify you if a recipient has not",
+                    Name = "RecipientEvent",
+                    Source = new FieldSourceDTO
                     {
-                        new RadioButtonOption
-                        {
-                            Name = "NotificationMode",
-                            Value = "When the event happens",
-                            Selected = true
-                        },
-                        new RadioButtonOption
-                        {
-                            Name = "NotificationMode",
-                            Value = "If a recipient hasn't taken an activity within this amount of time",
-                            Controls = new ControlDefinitionDTO[]
-                            {
-                                new Duration
-                                {
-                                    Label = "After you send a Tracked Envelope, Fr8 will wait this long",
-                                    Name = "TimePeriod"
-                                },
-                                new DropDownList
-                                {
-                                    Label = "Then Fr8 will notify you if a recipient has not",
-                                    Name = "RecipientEvent",
-                                    Source = new FieldSourceDTO
-                                    {
-                                        Label = "AvailableRecipientEvents",
-                                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                        }
-                                },
-                                new TextBlock
-                                {
-                                    Name = "EventInfo",
-                                    Label = "the Envelope"
+                        Label = "AvailableRecipientEvents",
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
                     }
-                            }
-                        }
-                    }
+                });
+                Controls.Add(new TextBlock
+                {
+                    Name = "EventInfo",
+                    Label = "the Envelope"
                 });
 
                 Controls.Add(new DropDownList()
@@ -183,11 +162,6 @@ namespace terminalDocuSign.Actions
 
             var specificRecipientOption = ((RadioButtonGroup)controls.Controls[0]).Radios[0];
             var specificTemplateOption = ((RadioButtonGroup)controls.Controls[0]).Radios[1];
-            //var specificEventDdl = (DropDownList)controls.Controls[1];
-
-            var whenToBeNotifiedRadioGrp = (RadioButtonGroup)controls.FindByName("WhenToBeNotified");
-            //var notifyWhenEventHappensRadio = whenToBeNotifiedRadioGrp.Radios[0];
-            var notifyWhenEventDoesntHappenRadio = whenToBeNotifiedRadioGrp.Radios[1];
             var howToBeNotifiedDdl = (DropDownList) controls.FindByName("NotificationHandler");
 
             //let's don't add child actions to solution until how to be notified option is selected
@@ -227,30 +201,29 @@ namespace terminalDocuSign.Actions
             monitorDocuSignAction.AuthorizationTokenId = authTokenDO.Id;
             activityDO.ChildNodes.Add(monitorDocuSignAction);
 
-            if (notifyWhenEventDoesntHappenRadio.Selected)
-            {
-                var setDelayTemplate = GetActivityTemplate(activityList, "SetDelay");
-                var durationControl = (Duration)notifyWhenEventDoesntHappenRadio.Controls.First(c => c.Name == "TimePeriod");
-                var setDelayAction = await CreateSetDelayAction(setDelayTemplate, activityDO);
-                SetDelayActionFields(setDelayAction, durationControl);
-                activityDO.ChildNodes.Add(setDelayAction);
+            
+            var setDelayTemplate = GetActivityTemplate(activityList, "SetDelay");
+            var durationControl = (Duration)controls.FindByName("TimePeriod");
+            var setDelayAction = await CreateSetDelayAction(setDelayTemplate, activityDO);
+            SetDelayActionFields(setDelayAction, durationControl);
+            activityDO.ChildNodes.Add(setDelayAction);
 
-                var queryMTDatabaseTemplate = GetActivityTemplate(activityList, "QueryMTDatabase");
-                var queryMTDatabaseAction = await CreateQueryMTDatabaseAction(queryMTDatabaseTemplate, activityDO);
-                await SetQueryMTDatabaseActionFields(queryMTDatabaseAction, recipientEmail);
-                //let's make a followup configuration to fill criteria fields
+            var queryMTDatabaseTemplate = GetActivityTemplate(activityList, "QueryMTDatabase");
+            var queryMTDatabaseAction = await CreateQueryMTDatabaseAction(queryMTDatabaseTemplate, activityDO);
+            await SetQueryMTDatabaseActionFields(queryMTDatabaseAction, recipientEmail);
+            //let's make a followup configuration to fill criteria fields
                 
-                queryMTDatabaseAction = await HubCommunicator.ConfigureActivity(queryMTDatabaseAction, CurrentFr8UserId);
-                activityDO.ChildNodes.Add(queryMTDatabaseAction);
+            queryMTDatabaseAction = await HubCommunicator.ConfigureActivity(queryMTDatabaseAction, CurrentFr8UserId);
+            activityDO.ChildNodes.Add(queryMTDatabaseAction);
 
-                var recipientEventStatus = (DropDownList)notifyWhenEventDoesntHappenRadio.Controls.First(c => c.Name == "RecipientEvent");
+            var recipientEventStatus = (DropDownList)controls.FindByName("RecipientEvent");
 
 
-                var filterUsingRuntimeTemplate = GetActivityTemplate(activityList, "TestIncomingData");
-                var filterAction = await CreateFilterUsingRunTimeAction(filterUsingRuntimeTemplate, activityDO);
-                SetFilterUsingRunTimeActionFields(filterAction, recipientEventStatus.Value);
-                activityDO.ChildNodes.Add(filterAction);
-            }
+            var filterUsingRuntimeTemplate = GetActivityTemplate(activityList, "TestIncomingData");
+            var filterAction = await CreateFilterUsingRunTimeAction(filterUsingRuntimeTemplate, activityDO);
+            SetFilterUsingRunTimeActionFields(filterAction, recipientEventStatus.Value);
+            activityDO.ChildNodes.Add(filterAction);
+            
 
 
             var notifierAction = CreateNotifierAction(activityList, activityDO, howToBeNotifiedDdl, ++ordering);
