@@ -613,6 +613,12 @@ namespace Hub.Services
             return await CallTerminalActionAsync<ActivityDTO>("deactivate", curActivityDO, Guid.Empty);
         }
 
+        public async Task<SolutionPageDTO> GetDocumentation(ActivityDO curActivityDO)
+        {
+            var curDocumentationSupport = "MainPage";
+            return await CallTerminalActionAsync<SolutionPageDTO>("documentation", curActivityDO, Guid.Empty, curDocumentationSupport);
+        }
+
         //private Task<PayloadDTO> RunActionAsync(string actionName, ActionDO curActivityDO, Guid containerId)
         //{
         //    if (actionName == null) throw new ArgumentNullException("actionName");
@@ -639,13 +645,15 @@ namespace Hub.Services
         //    return ObjectFactory.GetInstance<ITerminalTransmitter>().CallActionAsync<PayloadDTO>(actionName, dto);
         //}
 
-        private Task<TResult> CallTerminalActionAsync<TResult>(string activityName, ActivityDO curActivityDO, Guid containerId)
+        private Task<TResult> CallTerminalActionAsync<TResult>(string activityName, ActivityDO curActivityDO, Guid containerId, string curDocumentationSupport=null)
         {
             if (activityName == null) throw new ArgumentNullException("activityName");
             if (curActivityDO == null) throw new ArgumentNullException("curActivityDO");
-
+             
             var dto = Mapper.Map<ActivityDO, ActivityDTO>(curActivityDO);
             dto.ContainerId = containerId;
+            if (curDocumentationSupport != null)
+                dto.DocumentationSupport = curDocumentationSupport;
             _authorizationToken.PrepareAuthToken(dto);
 
             EventManager.ActionDispatched(curActivityDO, containerId);
@@ -661,7 +669,6 @@ namespace Hub.Services
                     return reponse;
                 }
             }
-
             return ObjectFactory.GetInstance<ITerminalTransmitter>().CallActionAsync<TResult>(activityName, dto, containerId.ToString());
         }
 

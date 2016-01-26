@@ -185,7 +185,6 @@ namespace TerminalBase.BaseClasses
             {
                 BindExplicitDataHubCommunicator(curObject);
             }
-
             var curActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
             //this is a comma separated string
             var curDocumentation = curActionDTO.DocumentationSupport;

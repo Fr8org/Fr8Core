@@ -27,8 +27,6 @@ using HubWeb.Infrastructure;
 
 namespace HubWeb.Controllers
 {
-    
-    
     [Fr8ApiAuthorize]
     public class ActionsController : ApiController
     {
@@ -92,7 +90,7 @@ namespace HubWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var activityTemplate = _activityTemplate.GetQuery().FirstOrDefault(at => at.Name == solutionName);
-                
+
                 if (activityTemplate == null)
                 {
                     throw new ArgumentException(String.Format("actionTemplate (solution) name {0} is not found in the database.", solutionName));
@@ -161,22 +159,52 @@ namespace HubWeb.Controllers
                 return Ok(resultActionDTO);
             }
         }
-
-//        /// <summary>
-//        /// POST : updates the given action
-//        /// </summary>
-//        [HttpPost]
-//        [Route("update")]
-//        public IHttpActionResult Update(ActionDTO curActionDTO)
-//        {
-//            ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);
-//
-//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-//            {
-//                await _action.SaveUpdateAndConfigure(uow, submittedActionDO);
-//            }
-//
-//            return Ok();
-//        }    
+        [HttpPost]
+        [Fr8HubWebHMACAuthenticate]
+        public IHttpActionResult Documentation(string SolutionName)
+        {
+            ActivityDO curSolutionActivityDO;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curActivityTerminalDO = uow.ActivityTemplateRepository.GetAll()
+                    .Single(a => a.Name == SolutionName && a.Category == ActivityCategory.Solution);
+                curSolutionActivityDO = _activity.Create(uow, curActivityTerminalDO.Id, curActivityTerminalDO.Name,
+                    curActivityTerminalDO.Label, new RouteNodeDO());
             }
+            var solutionPageDTO = _activity.GetDocumentation(curSolutionActivityDO);
+            return Json(solutionPageDTO);
+        }
+
+        [HttpGet]
+        public IHttpActionResult GetSolutionList(string terminalName)
+        {
+            var solutionNameList = new List<string>();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curActivities = uow.ActivityTemplateRepository.GetAll()
+                    .Where(a => a.Terminal.Name == terminalName 
+                        && a.Category == ActivityCategory.Solution)
+                        .ToList();
+                solutionNameList.AddRange(curActivities.Select(activity => activity.Name));
+            }
+            return Json(solutionNameList);
+        }
+
+        //        /// <summary>
+        //        /// POST : updates the given action
+        //        /// </summary>
+        //        [HttpPost]
+        //        [Route("update")]
+        //        public IHttpActionResult Update(ActionDTO curActionDTO)
+        //        {
+        //            ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);
+        //
+        //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //            {
+        //                await _action.SaveUpdateAndConfigure(uow, submittedActionDO);
+        //            }
+        //
+        //            return Ok();
+        //        }    
+    }
 }
