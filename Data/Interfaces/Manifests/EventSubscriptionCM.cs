@@ -6,6 +6,8 @@ namespace Data.Interfaces.Manifests
     {
         public List<string> Subscriptions { get; set; }
 
+        public string Manufacturer { get; set; }
+
         public EventSubscriptionCM()
             : base(Constants.MT.StandardEventSubscription)
         { 

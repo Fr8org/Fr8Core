@@ -62,7 +62,7 @@ namespace TerminalBase.Infrastructure
         public async Task<PayloadDTO> GetPayload(ActivityDO activityDO, Guid containerId, string userId)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/containers?id="
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/containers/payload?id="
                 + containerId.ToString("D");
             var uri = new Uri(url, UriKind.Absolute);
             var payloadDTOTask = await _restfulServiceClient.GetAsync<PayloadDTO>(new Uri(url, UriKind.Absolute), containerId.ToString(), await GetHMACHeader(uri ,userId));
@@ -244,10 +244,10 @@ namespace TerminalBase.Infrastructure
         public async Task<PlanDO> ActivatePlan(PlanDO planDO, string userId)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                      + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routes/activate";
+                      + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routes/activate?routeId="+planDO.Id;
             var uri = new Uri(url);
 
-            return await _restfulServiceClient.PostAsync<PlanDO, PlanDO>(uri, planDO, null, await GetHMACHeader(uri, userId, planDO));
+            return await _restfulServiceClient.PostAsync<PlanDO>(uri, null, await GetHMACHeader(uri, userId));
         }
 
         public async Task<IEnumerable<RouteFullDTO>> GetPlansByName(string name, string userId)

@@ -47,7 +47,8 @@ namespace terminalSlack.Services
                 EventNames = "Slack Outgoing Message",
                 ContainerDoId = "",
                 EventPayload = WrapPayloadDataCrate(payloadFields),
-                ExternalAccountId = slackToken.Value
+                ExternalAccountId = slackToken.Value,
+                Manufacturer = "Slack"
             };
 
             var curEventReport = Data.Crates.Crate.FromContent("Standard Event Report", eventReportContent);

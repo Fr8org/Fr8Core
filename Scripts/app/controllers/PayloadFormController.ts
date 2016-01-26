@@ -14,7 +14,7 @@ module dockyard.controllers {
 
 		constructor(
 			private $scope: any,
-			private ProcessTemplateService: services.IRouteService,
+			private RouteService: services.IRouteService,
 			private routeId: any,
 			private $modalInstance: any) {
 
@@ -25,12 +25,12 @@ module dockyard.controllers {
 		}
 
 		private submit(form) {
-			this.ProcessTemplateService
-				.execute({ id: this.routeId }, { payload: form.payload.$modelValue },
-				(successResponse) => {
-					this.$modalInstance.close();
-				},
-				(errorResponse) => {
+            this.RouteService
+                .runAndProcessClientAction(this.routeId)
+                .then((successResponse) => {
+                    this.$modalInstance.close();
+                })
+				.catch((errorResponse) => {
 					form.payload.$error.invalid = true;
 				});
 		}

@@ -42,7 +42,7 @@ namespace Hub.Managers
         Crate<StandardDesignTimeFieldsCM> CreateDesignTimeFieldsCrate(string label, AvailabilityType availability, params FieldDTO[] fields);
         Crate<StandardConfigurationControlsCM> CreateStandardConfigurationControlsCrate(string label, params ControlDefinitionDTO[] controls);
         Crate CreateStandardEventReportCrate(string label, EventReportCM eventReport);
-        Crate CreateStandardEventSubscriptionsCrate(string label, params string[] subscriptions);
+        Crate CreateStandardEventSubscriptionsCrate(string label, string manufacturer, params string[] subscriptions);
         Crate CreateStandardTableDataCrate(string label, bool firstRowHeaders, params TableRowDTO[] table);
         Crate CreatePayloadDataCrate(string payloadDataObjectType, string crateLabel, StandardTableDataCM tableDataMS);
         Crate CreateOperationalStatusCrate(string label, OperationalStateCM eventReport);
