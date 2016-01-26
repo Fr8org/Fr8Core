@@ -54,6 +54,7 @@ namespace terminalFr8Core.Services
                     ContainerDoId = "",
                     EventNames = eventLogging.EventName,
                     ExternalAccountId = systemUser,
+                    Manufacturer = "Fr8Core",
                     EventPayload = EventPayload(eventLogging.EventName, loggingManifest),
                 };
 
