@@ -33,6 +33,7 @@ namespace terminalDocuSign.Actions
 
                 Controls.Add(new RadioButtonGroup()
                 {
+                    Name = "Track_Which_Envelopes",
                     Label = "Track which Envelopes?",
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig },
                     Radios = new List<RadioButtonOption>
