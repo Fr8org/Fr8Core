@@ -1,0 +1,20 @@
+﻿<div>
+    <span>{{::field.label}}</span>
+    <div ng-class="{'noclick-background': isDisabled}" style="margin-top: 10px;">
+
+        <div class="col-md-12" ng-repeat="selectedCrate in field.selectedCrates track by $index" style="padding-left: 0px;">
+            <div class="col-md-11" style="padding-left: 0px;padding-right: 0px;">
+                <drop-down-list-box field="selectedCrate" change="onChange" data-field-name="{{::'CrateChooserLabel'+$index}}"></drop-down-list-box>
+            </div>
+            <div class="col-md-1" style="padding-left: 5px;padding-right: 0px;">
+                <img src="~/Content/img/RouteBuilder/delete-icon.png" width="15" height="15"
+                     ng-show="field.selectedCrates.length > 1"
+                     ng-click="removeRow($index)"
+                     class="query-builder-delete-button" />
+            </div>
+        </div>
+        <div>
+            <a ng-show="field.multiSelection === true" class="btn btn-primary" style="margin-top:10px;" ng-click="addRow()" stop-click-propagation>Add Row</a>
+        </div>
+    </div>
+</div>

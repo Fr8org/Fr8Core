@@ -75,7 +75,7 @@ namespace HubWeb.Infrastructure
         protected override void Success(HttpAuthenticationContext context, string terminalId, string userId)
         {
             var identity = new Fr8Identity("terminal-" + terminalId, userId);
-            var principle = new Fr8Principle(terminalId, identity, new string[] { });
+            var principle = new Fr8Principle(terminalId, identity, new [] { "Terminal" });
             Thread.CurrentPrincipal = principle;
             context.Principal = principle;
             if (HttpContext.Current != null)
