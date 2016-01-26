@@ -25,6 +25,9 @@ namespace terminalDocuSign.Actions
 {
     public class Rich_Document_Notifications_v1 : BaseDocuSignAction
     {
+        private const string SolutionName = "Rich Document Notifications";
+        private const double SolutionVersion = 1.0;
+        private const string TerminalName = "DocuSign";
         private class ActionUi : StandardConfigurationControlsCM
         {
             public ActionUi()
@@ -563,6 +566,18 @@ namespace terminalDocuSign.Actions
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             return Success(await GetPayload(curActivityDO, containerId));
+        }
+        //This method provides some documentation for the DocuSign Solution Actions
+        public Task<SolutionPageDTO> Documentation(ActivityDO activityDO)
+        {
+            var curSolutionPage = new SolutionPageDTO
+            {
+                Name = SolutionName,
+                Version = SolutionVersion,
+                Terminal = TerminalName,
+                Body = @"<p>This is a solution action</p>"
+            };
+            return Task.FromResult(curSolutionPage);
         }
     }
 }

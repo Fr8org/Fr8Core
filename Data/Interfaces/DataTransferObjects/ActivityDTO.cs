@@ -38,7 +38,6 @@ namespace Data.Interfaces.DataTransferObjects
 
         public ActivityDTO[] ChildrenActions { get; set; }
         public int Ordering { get; set; }
-
-        
+        public string DocumentationSupport { get; set; }
     }
 }
