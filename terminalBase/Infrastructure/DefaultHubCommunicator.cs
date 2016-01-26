@@ -62,7 +62,7 @@ namespace TerminalBase.Infrastructure
         public async Task<PayloadDTO> GetPayload(ActivityDO activityDO, Guid containerId, string userId)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/containers?id="
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/containers/payload?id="
                 + containerId.ToString("D");
             var uri = new Uri(url, UriKind.Absolute);
             var payloadDTOTask = await _restfulServiceClient.GetAsync<PayloadDTO>(new Uri(url, UriKind.Absolute), containerId.ToString(), await GetHMACHeader(uri ,userId));

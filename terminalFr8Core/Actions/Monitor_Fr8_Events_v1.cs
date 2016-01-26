@@ -81,6 +81,7 @@ namespace terminalFr8Core.Actions
 
             return Crate.CreateStandardEventSubscriptionsCrate(
                 "Standard Event Subscriptions",
+                "Fr8Core",
                 subscriptions.ToArray()
                 );
         }

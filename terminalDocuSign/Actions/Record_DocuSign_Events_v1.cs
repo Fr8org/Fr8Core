@@ -43,7 +43,7 @@ namespace terminalDocuSign.Actions
             var curControlsCrate = PackControlsCrate(textBlock);
 
             //create a Standard Event Subscription crate
-            var curEventSubscriptionsCrate = Crate.CreateStandardEventSubscriptionsCrate("Standard Event Subscription", DocuSignEventNames.GetAllEventNames());
+            var curEventSubscriptionsCrate = Crate.CreateStandardEventSubscriptionsCrate("Standard Event Subscription", "DocuSign", DocuSignEventNames.GetAllEventNames());
 
             //create Standard Design Time Fields for Available Run-Time Objects
             var curAvailableRunTimeObjectsDesignTimeCrate =

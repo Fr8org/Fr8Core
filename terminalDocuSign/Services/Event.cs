@@ -73,6 +73,7 @@ namespace terminalDocuSign.Services
                 EventNames = "Envelope" + curDocuSignEnvelopeInfo.EnvelopeStatus.Status,
                 ContainerDoId = "",
                 EventPayload = ExtractEventPayload(curExternalEvents),
+                Manufacturer = "DocuSign",
                 ExternalAccountId = curDocuSignEnvelopeInfo.EnvelopeStatus.ExternalAccountId
             };
 
