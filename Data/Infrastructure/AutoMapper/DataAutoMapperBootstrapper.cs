@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using AutoMapper;
+using Data.Crates;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.Manifests;
 using Data.States;
 using DocuSign.Integrations.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using StructureMap;
 using Utilities.AutoMapper;
 using Signer = DocuSign.Integrations.Client.Signer;
 
@@ -125,7 +128,15 @@ namespace Data.Infrastructure.AutoMapper
                 .ConvertUsing<CrateStorageFromStringConverter>();
             Mapper.CreateMap<FileDO, FileDTO>();
 
-            Mapper.CreateMap<ContainerDO, ContainerDTO>();
+            Mapper.CreateMap<ContainerDO, ContainerDTO>()
+                .ForMember(
+                    x => x.CurrentActivityResponse,
+                    x => x.ResolveUsing(y => ExtractOperationStateData(y, z => z.CurrentActivityResponse))
+                )
+                .ForMember(
+                    x => x.CurrentClientActionName,
+                    x => x.ResolveUsing(y => ExtractOperationStateData(y, z => z.CurrentClientActionName))
+                );
             Mapper.CreateMap<AuthorizationTokenDTO, AuthorizationTokenDO>()
                 .ForMember(x => x.UserID, x => x.ResolveUsing(y => y.UserId))
                 .ForMember(x => x.Id, x => x.ResolveUsing(y => y.Id != null ? new Guid(y.Id) : (Guid?)null));
@@ -150,6 +161,24 @@ namespace Data.Infrastructure.AutoMapper
             }
 
             return list;
+        }
+
+        private static object ExtractOperationStateData(
+            ContainerDO container,
+            Func<OperationalStateCM, object> extractor)
+        {
+            var crateStorageDTO = CrateStorageFromStringConverter.Convert(container.CrateStorage);
+            var crateStorage = CrateStorageSerializer.Default.ConvertFromDto(crateStorageDTO);
+            var cm = crateStorage
+                .CrateContentsOfType<OperationalStateCM>()
+                .SingleOrDefault();
+
+            if (cm == null)
+            {
+                return null;
+            }
+
+            return extractor(cm);
         }
     }
 }

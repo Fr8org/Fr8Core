@@ -192,6 +192,7 @@ namespace terminalSlack.Actions
 
             return Crate.CreateStandardEventSubscriptionsCrate(
                 "Standard Event Subscriptions",
+                "Slack",
                 subscriptions.ToArray()
                 );
         }

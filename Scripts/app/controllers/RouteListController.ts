@@ -102,13 +102,15 @@ module dockyard.controllers {
 					templateUrl: '/AngularTemplate/_AddPayloadModal',
 					controller: 'PayloadFormController', resolve: { routeId: () => routeId }
 				});
-        }
+            }
 			else {
-                this.RouteService.execute({ id: routeId }, null, null, (failResponse) => {
-                    if (failResponse.data.details === "GuestFail") {
-                        location.href = "DockyardAccount/RegisterGuestUser";
-                    }
-                });
+                this.RouteService
+                    .runAndProcessClientAction(routeId)
+                    .catch((failResponse) => {
+                        if (failResponse.data.details === "GuestFail") {
+                            location.href = "DockyardAccount/RegisterGuestUser";
+                        }
+                    });
 			}
         }
 
