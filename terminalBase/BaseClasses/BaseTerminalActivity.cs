@@ -33,7 +33,7 @@ namespace TerminalBase.BaseClasses
         private readonly ITerminal _terminal;
         protected static readonly string ConfigurationControlsLabel = "Configuration_Controls";
         protected string CurrentFr8UserId { get; set; }
-        protected string _terminalName { get; set; }
+        protected string _actionName { get; set; }
 
         public IHubCommunicator HubCommunicator { get; set; }
         #endregion
@@ -49,12 +49,13 @@ namespace TerminalBase.BaseClasses
 
         }
 
-        public BaseTerminalActivity(string _actionName)
+        public BaseTerminalActivity(string actionName)
         {
             Crate = new CrateManager();
             Activity = ObjectFactory.GetInstance<IActivity>();
             _terminal = ObjectFactory.GetInstance<ITerminal>();
             HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
+            _actionName = actionName;
         }
 
         public void SetCurrentUser(string userId)
@@ -684,7 +685,7 @@ namespace TerminalBase.BaseClasses
 
             var baseEvent = new BaseTerminalEvent();
             var exceptionMessage = string.Format("No field found with specified key: {0}.", fieldKey);
-            baseEvent.SendTerminalErrorIncident(_terminalName, exceptionMessage, _terminalName);
+            baseEvent.SendTerminalErrorIncident(_actionName, exceptionMessage, _actionName);
 
             throw new ApplicationException(exceptionMessage + " Detailed information has been written to log.");
         }
