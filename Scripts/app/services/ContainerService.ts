@@ -1,8 +1,10 @@
 ﻿
 module dockyard.services {
 
-    export interface IContainerService extends ng.resource.IResourceClass<interfaces.IContainerVM>, interfaces.IContainerVM {
-        getAll: (id: { id: string; }) => Array<interfaces.IContainerVM> ;
+    export interface IContainerService
+        extends ng.resource.IResourceClass<interfaces.IContainerVM>, interfaces.IContainerVM {
+
+        getAll: (id: { id: string; }) => Array<interfaces.IContainerVM>;
         getSingle: (id: { id: string; }) => interfaces.IContainerVM;
         getPayload: (id: { id: string; }) => any;
     }
@@ -27,7 +29,6 @@ module dockyard.services {
                     isArray: false,
                     url: '/api/containers/payload/:id'
                 }
-            }
-        )
+            })
     ]);
 } 
