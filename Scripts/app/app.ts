@@ -17,7 +17,8 @@ var app = angular.module("app", [
     "frapontillo.bootstrap-switch",
     "ApplicationInsightsModule",
     "dndLists",
-    "ngTable"
+    "ngTable",
+    "mb-scrollbar"
 ]);
 
 /* For compatibility with older versions of script files. Can be safely deleted later. */
@@ -185,6 +186,12 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             url: "/managefiles",
             templateUrl: "/AngularTemplate/ManageFileList",
             data: { pageTitle: 'Manage Files', pageSubTitle: '' }
+        })
+
+        .state('fileDetail', {
+            url: "/managefiles/{id}",
+            templateUrl: "/AngularTemplate/FileDetails",
+            data: { pageTitle: 'File details', pageSubTitle: '' }
         })
 
         .state('accounts', {

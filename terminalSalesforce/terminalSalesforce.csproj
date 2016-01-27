@@ -124,6 +124,10 @@
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Moq, Version=4.2.1507.118, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Moq.4.2.1507.0118\lib\net40\Moq.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -136,12 +140,12 @@
       <HintPath>..\packages\DeveloperForce.Chatter.1.1.1\lib\Salesforce.Chatter.dll</HintPath>
     </Reference>
     <Reference Include="Salesforce.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=9f7864e53fb79388, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\DeveloperForce.Force.1.1.1\lib\Salesforce.Common.dll</HintPath>
+      <HintPath>..\packages\DeveloperForce.Force.1.2.2\lib\Salesforce.Common.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Salesforce.Force, Version=1.0.0.0, Culture=neutral, PublicKeyToken=9f7864e53fb79388, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\DeveloperForce.Force.1.1.1\lib\Salesforce.Force.dll</HintPath>
+      <HintPath>..\packages\DeveloperForce.Force.1.2.2\lib\Salesforce.Force.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="ServiceStack.Text, Version=4.0.42.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ServiceStack.Text.4.0.42\lib\net40\ServiceStack.Text.dll</HintPath>
@@ -155,6 +159,7 @@
       <HintPath>..\packages\structuremap.3.1.6.186\lib\net40\StructureMap.Net4.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.IO.Compression" />
     <Reference Include="System.Net" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.Extensions, Version=2.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -235,7 +240,8 @@
     <Compile Include="Actions\Create_Account_v1.cs" />
     <Compile Include="Actions\Create_Contact_v1.cs" />
     <Compile Include="Actions\Create_Lead_v1.cs" />
-    <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="App_Start\RoutesConfig.cs" />
+    <Compile Include="Actions\Get_Data_v1.cs" />
     <Compile Include="Controllers\ActionController.cs" />
     <Compile Include="Controllers\AuthenticationController.cs" />
     <Compile Include="Controllers\EventController.cs" />
@@ -249,11 +255,13 @@
     <Compile Include="Infrastructure\Contact.cs" />
     <Compile Include="Infrastructure\ContactDTO.cs" />
     <Compile Include="Infrastructure\IEvent.cs" />
-    <Compile Include="Infrastructure\ISalesforceIntegration.cs" />
+    <Compile Include="Infrastructure\ISalesforceManager.cs" />
     <Compile Include="Infrastructure\Lead.cs" />
     <Compile Include="Infrastructure\LeadDTO.cs" />
     <Compile Include="Infrastructure\SalesforceEnvelopeInformation.cs" />
     <Compile Include="Infrastructure\SalesforceNotificationParser.cs" />
+    <Compile Include="Infrastructure\SalesforceObject.cs" />
+    <Compile Include="Infrastructure\SalesforceObjectFactory.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -261,7 +269,7 @@
     </Compile>
     <Compile Include="SelfHostFactory.cs" />
     <Compile Include="Services\Event.cs" />
-    <Compile Include="Services\SalesforceIntegration.cs" />
+    <Compile Include="Services\SalesforceManager.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="StructureMapConfiguration.cs" />
   </ItemGroup>

@@ -17,11 +17,13 @@ namespace HubWeb.Controllers
     {
         private readonly ISecurityServices _security;
         private readonly IAuthorization _authorization;
+        private readonly ITerminal _terminal;
 
 
         public AuthenticationController()
         {
             _security = ObjectFactory.GetInstance<ISecurityServices>();
+            _terminal = ObjectFactory.GetInstance<ITerminal>();
             _authorization = ObjectFactory.GetInstance<IAuthorization>();
         }
 
@@ -35,19 +37,11 @@ namespace HubWeb.Controllers
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                terminalDO = uow.TerminalRepository
-                    .GetQuery()
-                    .SingleOrDefault(x => x.Id == credentials.TerminalId);
-
-                if (terminalDO == null)
-                {
-                    throw new ApplicationException("Terminal was not found.");
-                }
-
+                terminalDO = _terminal.GetByKey(credentials.TerminalId);
                 account = _security.GetCurrentAccount(uow);
             }
 
-            var error = await _authorization.AuthenticateInternal(
+            var response = await _authorization.AuthenticateInternal(
                 account,
                 terminalDO,
                 credentials.Domain,
@@ -55,7 +49,19 @@ namespace HubWeb.Controllers
                 credentials.Password
             );
 
-            return Ok(new { Error = error });
+            return Ok(new {
+                TerminalId =
+                    response.AuthorizationToken != null
+                        ? response.AuthorizationToken.TerminalID
+                        : (int?)null,
+
+                AuthTokenId =
+                    response.AuthorizationToken != null
+                        ? response.AuthorizationToken.Id.ToString()
+                        : null,
+
+                Error = response.Error
+            });
         }
 
         [HttpGet]
@@ -69,9 +75,7 @@ namespace HubWeb.Controllers
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                terminal = uow.TerminalRepository
-                    .GetQuery()
-                    .SingleOrDefault(x => x.Id == terminalId);
+                terminal = _terminal.GetByKey(terminalId);
 
                 if (terminal == null)
                 {

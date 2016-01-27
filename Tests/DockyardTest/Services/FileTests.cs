@@ -40,7 +40,7 @@ namespace DockyardTest.Services
                 _curBlobFile = null;
             }
         }
-        
+        /*
         [Test]
         public void File_Store_CanStoreFile()
         {
@@ -59,7 +59,7 @@ namespace DockyardTest.Services
             _uow.FileRepository.Remove(curFileDO);
             _uow.SaveChanges();
         }
-        
+        */
         [Test]
         [ExpectedException(typeof(StorageException))]
         public void File_Store_WithTimeOutZero_ShouldThrowTimeOutExpcetion()
@@ -99,7 +99,7 @@ namespace DockyardTest.Services
                 throw storageException;
             }
         }
-        
+        /*
         [Test]
         public void File_Retrieve_CanRetrieveFile()
         {
@@ -119,7 +119,7 @@ namespace DockyardTest.Services
             _uow.FileRepository.Remove(curFileDO);
             _uow.SaveChanges();
         }
-        
+        */
         [Test]
         [ExpectedException(typeof(StorageException))]
         public void File_Retrieve_WithTimeOutZero_ShouldThrowTimeOutException()
@@ -168,7 +168,7 @@ namespace DockyardTest.Services
                 throw storageException;
             }
         }
-        
+        /*
         [Test]
 
         public void File_Delete_CanDeleteFile()
@@ -187,7 +187,7 @@ namespace DockyardTest.Services
             curFileDO = _uow.FileRepository.GetByKey(curFileDO.Id);
             Assert.IsNull(curFileDO, "Updating database about file delete is failed.");
         }
-        
+        */
         private void WriteRemoteFile()
         {
             var file = ObjectFactory.GetInstance<IFile>();

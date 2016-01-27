@@ -10,7 +10,8 @@ module dockyard.directives {
             templateUrl: '/AngularTemplate/FilterPane',
             scope: {
                 currentAction: '=',
-                field: '='
+                field: '=',
+                change: '&'
             },
             controller: ['$scope', '$timeout', 'CrateHelper',
                 function (
@@ -30,7 +31,7 @@ module dockyard.directives {
 
                     $scope.defaultOperator = '';
 
-                    $scope.$watch('currentAction', function (newValue: model.ActionDTO) {
+                    $scope.$watch('currentAction', function (newValue: model.ActivityDTO) {
                         if (newValue && newValue.crateStorage) {
                             var crate = crateHelper.findByManifestTypeAndLabel(
                                 newValue.crateStorage, 'Standard Design-Time Fields', 'Queryable Criteria');
@@ -70,12 +71,19 @@ module dockyard.directives {
                         });
                     };
 
-                    $scope.$watch('conditions', function () {
+                    $scope.$watch('conditions', () => {
                         updateFieldValue();
                     }, true);
 
-                    $scope.$watch('executionType', function () {
+                    $scope.$watch('executionType', (oldValue, newValue) => {
                         updateFieldValue();
+                        if (oldValue === newValue) {
+                            return;
+                        }
+                        // Invoke onChange event handler
+                        if ($scope.change != null && angular.isFunction($scope.change)) {
+                            $scope.change()($scope.field);
+                        }
                     });
                 }
             ]
@@ -84,6 +92,7 @@ module dockyard.directives {
 
     export interface IPaneDefineCriteriaScope extends ng.IScope {
         field: any;
+        change: () => (field: model.ControlDefinitionDTO) => void;
         fields: Array<interfaces.IField>;
         operators: Array<interfaces.IOperator>;
         defaultOperator: string;

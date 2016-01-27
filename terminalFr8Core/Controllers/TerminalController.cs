@@ -25,7 +25,7 @@ namespace terminalFr8Core.Controllers
         public IHttpActionResult DiscoverTerminals()
         {
             var result = new List<ActivityTemplateDTO>();
-            
+
             var terminal = new TerminalDTO
             {
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
@@ -34,20 +34,20 @@ namespace terminalFr8Core.Controllers
                 Version = "1"
             };
 
-	        var webService = new WebServiceDTO
-	        {
-		        Name = "fr8 Core"
-	        };
+            var webService = new WebServiceDTO
+            {
+                Name = "fr8 Core"
+            };
 
             result.Add(new ActivityTemplateDTO
             {
-                Name = "FilterUsingRunTimeData",
-                Label = "Filter Using Runtime Data",
+                Name = "TestIncomingData",
+                Label = "Test Incoming Data",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 Version = "1",
-				MinPaneWidth = 330,
-				WebService = webService
+                MinPaneWidth = 330,
+                WebService = webService
             });
 
             result.Add(new ActivityTemplateDTO
@@ -69,7 +69,7 @@ namespace terminalFr8Core.Controllers
                 Terminal = terminal,
                 Tags = "AggressiveReload",
                 Version = "1",
-				MinPaneWidth = 380,
+                MinPaneWidth = 380,
                 WebService = webService
             });
 
@@ -80,7 +80,7 @@ namespace terminalFr8Core.Controllers
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 Version = "1",
-				MinPaneWidth = 330,
+                MinPaneWidth = 330,
                 WebService = webService
             });
 
@@ -138,7 +138,7 @@ namespace terminalFr8Core.Controllers
             result.Add(new ActivityTemplateDTO
             {
                 Name = "ManageRoute",
-                Label = "Manage Route",
+                Label = "Manage Plan",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 WebService = webService,
@@ -187,6 +187,39 @@ namespace terminalFr8Core.Controllers
                 WebService = webService,
                 Version = "1",
                 MinPaneWidth = 400
+            });
+
+            result.Add(new ActivityTemplateDTO()
+            {
+                Name = "QueryMTDatabase",
+                Label = "Query MT Database",
+                Category = ActivityCategory.Processors,
+                Terminal = terminal,
+                WebService = webService,
+                Version = "1"
+            });
+
+            result.Add(new ActivityTemplateDTO
+            {
+                Name = "Show_Report_Onscreen",
+                Label = "Show Report Onscreen",
+                Version = "1",
+                Category = ActivityCategory.Processors,
+                NeedsAuthentication = false,
+                Terminal = terminal,
+                WebService = webService,
+                MinPaneWidth = 380
+            });
+
+            result.Add(new ActivityTemplateDTO
+            {
+                Name = "Monitor_Fr8_Events",
+                Label = "Monitor Fr8 Events",
+                Version = "1",
+                Category = ActivityCategory.Monitors,
+                NeedsAuthentication = false,
+                Terminal = terminal,
+                MinPaneWidth = 380
             });
 
             result.Add(new ActivityTemplateDTO()

@@ -11,6 +11,7 @@ using TerminalBase.BaseClasses;
 using terminalDocuSign.Interfaces;
 using Utilities.Configuration.Azure;
 using terminalDocuSign.DataTransferObjects;
+using Hub.Managers.APIManagers.Transmitters.Restful;
 
 namespace terminalDocuSign.Controllers
 {
@@ -37,7 +38,7 @@ namespace terminalDocuSign.Controllers
                     };
                 }
 
-                var docuSignAuthDTO = new DocuSignAuth()
+                var docuSignAuthDTO = new DocuSignAuthTokenDTO()
                 {
                     Email = curCredentials.Username,
                     ApiPassword = oauthToken
@@ -56,43 +57,36 @@ namespace terminalDocuSign.Controllers
 
                 return new AuthorizationTokenDTO()
                 {
-                    Error = "An error occured while trying to authenticate, please try again later."
+                    Error = "An error occurred while trying to authorize, please try again later."
                 };
             }
         }
 
         private async Task<string> ObtainOAuthToken(CredentialsDTO curCredentials, string baseUrl)
         {
-            var response = await CreateHttpClient(baseUrl)
-                .PostAsync("oauth2/token",
-                    new FormUrlEncodedContent(new[]
-                    {
-                        new KeyValuePair<string, string>("grant_type", "password"), 
-                        new KeyValuePair<string, string>("client_id", CloudConfigurationManager.GetSetting("DocuSignIntegratorKey")), 
-                        new KeyValuePair<string, string>("username", curCredentials.Username),
-                        new KeyValuePair<string, string>("password", curCredentials.Password),
-                        new KeyValuePair<string, string>("scope", "api"), 
-                    }));
+            var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
             try
             {
-                var responseAsString = await response.Content.ReadAsStringAsync();
-                var responseObject = JsonConvert.DeserializeAnonymousType(responseAsString, new { access_token = "" });
+                var response = await client
+                .PostAsync(new Uri(new Uri(baseUrl), "oauth2/token"),
+                    (HttpContent)new FormUrlEncodedContent(new[]
+                    {
+                        new KeyValuePair<string, string>("grant_type", "password"),
+                        new KeyValuePair<string, string>("client_id", CloudConfigurationManager.GetSetting("DocuSignIntegratorKey")),
+                        new KeyValuePair<string, string>("username", curCredentials.Username),
+                        new KeyValuePair<string, string>("password", curCredentials.Password),
+                        new KeyValuePair<string, string>("scope", "api"),
+                    }));
+
+                var responseObject = JsonConvert.DeserializeAnonymousType(response, new { access_token = "" });
 
                 return responseObject.access_token;
             }
             catch (Exception ex)
             {
+                ReportTerminalError("terminalDocuSign", ex);
                 return null;
             }
-            finally
-            {
-                response.Dispose();
-            }
-        }
-
-        private HttpClient CreateHttpClient(string endPoint)
-        {
-            return new HttpClient() { BaseAddress = new Uri(endPoint) };
         }
     }
 }

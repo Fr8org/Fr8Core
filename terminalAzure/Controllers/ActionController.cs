@@ -7,19 +7,21 @@ using Data.Entities;
 using Data.States;
 using TerminalBase.BaseClasses;
 using AutoMapper;
+using TerminalBase.Infrastructure;
 
 namespace terminalAzure.Controllers
 {    
     [RoutePrefix("actions")]
-    public class ActionController : ApiController
+    public class ActionController : BaseTerminalController
     {
         private const string curTerminal = "terminalAzure";
-        private BaseTerminalController _baseTerminalController = new BaseTerminalController();
 
         [HttpPost]
-        public Task<object> Execute([FromUri] String actionType, [FromBody] ActionDTO curActionDTO)
+        [fr8TerminalHMACAuthenticate(curTerminal)]
+        [Authorize]
+        public Task<object> Execute([FromUri] String actionType, [FromBody] ActivityDTO curActionDTO)
         {
-            return _baseTerminalController.HandleFr8Request(curTerminal, actionType, curActionDTO);
+            return HandleFr8Request(curTerminal, actionType, curActionDTO);
         }
 
         //----------------------------------------------------------
@@ -28,7 +30,7 @@ namespace terminalAzure.Controllers
         [HttpPost]
         [Route("Write_To_Sql_Server")]
         [Obsolete]
-        public IHttpActionResult Process(ActionDO curActionDO)
+        public IHttpActionResult Process(ActivityDO curActivityDO)
         {
             //var _actionHandler = ObjectFactory.GetInstance<Write_To_Sql_Server_v1>();
             //ActionDO curAction = Mapper.Map<ActionDO>(curActionDTO);
@@ -40,7 +42,7 @@ namespace terminalAzure.Controllers
 
         [HttpPost]
         [Route("Write_To_Sql_Server/{path}")]
-        public IHttpActionResult Process(string path, ActionDO curActionDO)
+        public IHttpActionResult Process(string path, ActivityDO curActivityDO)
 
         {
             //ActionDO curAction = Mapper.Map<ActionDO>(curActionDTO);

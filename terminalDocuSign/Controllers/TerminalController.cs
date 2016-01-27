@@ -126,6 +126,17 @@ namespace terminalDocuSign.Controllers
                 Name = "Query_DocuSign",
                 Label = "Query DocuSign",
                 Version = "1",
+                Category = ActivityCategory.Receivers,
+                NeedsAuthentication = true,
+                Terminal = terminal,
+                MinPaneWidth = 380
+            };
+
+            var generateDocusignReport = new ActivityTemplateDTO
+            {
+                Name = "Generate_DocuSign_Report",
+                Label = "Generate a DocuSign Report",
+                Version = "1",
                 Category = ActivityCategory.Processors,
                 NeedsAuthentication = true,
                 Terminal = terminal,
@@ -137,7 +148,7 @@ namespace terminalDocuSign.Controllers
                 Name = "Search_DocuSign_History",
                 Label = "Search DocuSign History",
                 Version = "1",
-                Category = ActivityCategory.Processors,
+                Category = ActivityCategory.Receivers,
                 NeedsAuthentication = true,
                 Terminal = terminal,
                 MinPaneWidth = 380
@@ -165,6 +176,7 @@ namespace terminalDocuSign.Controllers
                 collectFormDataSolution,
                 richDocumentNotificationsSolution,
                 queryDocusign,
+                generateDocusignReport,
                 searchDocusignHistory,
                 getDocuSignTemplateActionTemplate,
                 archiveDocusignTemplate

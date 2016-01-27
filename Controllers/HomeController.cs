@@ -19,20 +19,13 @@ namespace HubWeb.Controllers
     {
         private readonly EmailAddress _emailAddress;
         private readonly Email _email;
-
+        private readonly IConfigRepository _configRepository;
         public HomeController()
         {
             _emailAddress = ObjectFactory.GetInstance<EmailAddress>();
             _email = ObjectFactory.GetInstance<Email>();
+            _configRepository = ObjectFactory.GetInstance<IConfigRepository>();
         }
-
-
-
-        public ActionResult DocuSign()
-        {
-            return View();
-        }
-
         public ActionResult Index(string emailAddress)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -178,7 +171,7 @@ namespace HubWeb.Controllers
                 using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     _emailAddress.ConvertFromMailAddress(uow, new MailAddress(emailId, name));
-                    string toRecipient = "info@fr8.co";
+                    string toRecipient = _configRepository.Get("CustomerSupportEmail");
                     string fromAddress = emailId;
 
                     // EmailDO emailDO = email.GenerateBasicMessage(emailAddressDO, message);

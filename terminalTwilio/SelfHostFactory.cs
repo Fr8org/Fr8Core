@@ -11,35 +11,18 @@ namespace terminalTwilio
 {
     public class SelfHostFactory
     {
-        private class TwilioControllerTypeResolver : IHttpControllerTypeResolver
-        {
-            public ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
-            {
-                return new[] {
-                    typeof(ActionController),
-                    typeof(EventController),
-                    typeof(TerminalController)
-                };
-            }
-        }
-
         public class SelfHostStartup
         {
             public void Configuration(IAppBuilder app)
             {
-                var config = new HttpConfiguration();
-
-                WebApiConfig.Register(config);
-
-                config.Services.Replace(typeof(IHttpControllerTypeResolver), new TwilioControllerTypeResolver());
-
-                app.UseWebApi(config);
+                var startup = new Startup();
+                startup.Configuration(app, selfHost: true);
             }
         }
 
         public static IDisposable CreateServer(string url)
         {
-            return WebApp.Start<SelfHostStartup>(url);
+            return WebApp.Start<SelfHostFactory.SelfHostStartup>(url: url);
         }
     }
 }

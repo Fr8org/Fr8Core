@@ -43,6 +43,7 @@ namespace Data.Control
         public const string RunRouteButton = "RunRouteButton";
         public const string UpstreamDataChooser = "UpstreamDataChooser";
         public const string UpstreamFieldChooser = "UpstreamFieldChooser";
+        public const string UpstreamCrateChooser = "UpstreamCrateChooser";
     }
 
     public class CheckBox : ControlDefinitionDTO
@@ -69,7 +70,7 @@ namespace Data.Control
         [JsonProperty("selectedKey")]
         public string selectedKey { get; set; }
 
-        public DropDownList()
+        public DropDownList() : base()
         {
             ListItems = new List<ListItem>();
             Type = "DropDownList";
@@ -216,12 +217,12 @@ namespace Data.Control
         [JsonProperty("valueSource")]
         public string ValueSource;
 
-        public TextSource() 
+        public TextSource() : base()
         {
             Type = ControlTypes.TextSource;
         }
 
-        public TextSource(string initialLabel, string upstreamSourceLabel, string name)
+        public TextSource(string initialLabel, string upstreamSourceLabel, string name) : base()
         {
             Type = ControlTypes.TextSource;
             this.InitialLabel = initialLabel;
@@ -261,7 +262,7 @@ namespace Data.Control
             if (fieldValues.Length > 0)
                 return fieldValues[0];
 
-            throw new ApplicationException("No field found with specified key.");
+            throw new ApplicationException(string.Format("No field found with specified key: {0}.", selectedKey));
         }
     }
 
@@ -310,8 +311,8 @@ namespace Data.Control
 
     }
 
-    
- 
+
+
 
     public class FieldSourceDTO
     {
@@ -402,7 +403,7 @@ namespace Data.Control
         public string Value { get; set; }
     }
 
-    public class UpstreamDataChooser: ControlDefinitionDTO
+    public class UpstreamDataChooser : ControlDefinitionDTO
     {
         public UpstreamDataChooser()
         {
@@ -419,7 +420,22 @@ namespace Data.Control
         public string SelectedFieldType { get; set; }
     }
 
-    public class UpstreamFieldChooser: ControlDefinitionDTO
+    public class UpstreamCrateChooser : ControlDefinitionDTO
+    {
+        public UpstreamCrateChooser()
+        {
+            Type = ControlTypes.UpstreamCrateChooser;
+        }
+
+        [JsonProperty("selectedCrates")]
+        public List<DropDownList> SelectedCrates { get; set; }
+
+        [JsonProperty("multiSelection")]
+        public bool MultiSelection { get; set; }
+        
+    }
+
+    public class UpstreamFieldChooser : ControlDefinitionDTO
     {
         public UpstreamFieldChooser()
         {

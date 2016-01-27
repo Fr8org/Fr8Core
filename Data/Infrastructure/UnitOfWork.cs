@@ -407,12 +407,12 @@ namespace Data.Infrastructure
             }
         }
 
-	  private ActionRepository _actionRepository;
-	  public ActionRepository ActionRepository
+	  private ActivityRepository _actionRepository;
+	  public ActivityRepository ActivityRepository
         {
             get
             {
-                return _actionRepository ?? (_actionRepository = new ActionRepository(this));
+                return _actionRepository ?? (_actionRepository = new ActivityRepository(this));
             }
         }
 
@@ -433,13 +433,13 @@ namespace Data.Infrastructure
 			  return _routeNodeRepository ?? (_routeNodeRepository = new RouteNodeRepository(this));
 		  }
 	  }
-      private IRouteRepository _routeRepository;
+      private IPlanRepository _routeRepository;
 
-        public IRouteRepository RouteRepository
+        public IPlanRepository RouteRepository
         {
             get
             {
-                return _routeRepository ?? (_routeRepository = new RouteRepository(this));
+                return _routeRepository ?? (_routeRepository = new PlanRepository(this));
             }
         }
 
@@ -577,6 +577,26 @@ namespace Data.Infrastructure
 		    }
 	    }
 
+        private TagRepository _tagRepository;
+
+        public ITagRepository TagRepository
+        {
+            get
+            {
+                return _tagRepository ?? (_tagRepository = new TagRepository(this));
+            }
+        }
+
+        private FileTagsRepository _fileTagsRepository;
+
+        public IFileTagsRepository FileTagsRepository
+        {
+            get
+            {
+                return _fileTagsRepository ?? (_fileTagsRepository = new FileTagsRepository(this));
+            }
+        }
+
         public void Save()
         {
             _context.SaveChanges();
@@ -585,8 +605,12 @@ namespace Data.Infrastructure
         protected virtual void Dispose(bool disposing)
         {
             if (_transaction != null)
+            {
                 _transaction.Dispose();
+            }
+
             _context.Dispose();
+            _container.Dispose();
         }
 
         public void StartTransaction()

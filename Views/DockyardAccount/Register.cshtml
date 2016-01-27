@@ -16,6 +16,7 @@
         {
             @Html.AntiForgeryToken()
             @Html.ValidationSummary()
+            @Html.Hidden("GuestUserTempEmail", (String)ViewBag.GuestUserEmail)
             <div class="form-body">
                 <div class="form-group">
                     @Html.LabelFor(m => m.Email, new { @class = "col-md-3 control-label" })

@@ -59,19 +59,19 @@ namespace terminalBaseTests.BaseClasses
         [ExpectedException(typeof(ArgumentException))]
         public async void HandleFr8Request_NullActivityTemplate_ThrowsException()
         {
-            var actionDTO = Fixture_HandleRequest.terminalMockActionDTO();
-            actionDTO.ActivityTemplate = null;
-            await _baseTerminalController.HandleFr8Request(terminalName, "", actionDTO);
+            var activityDTO = Fixture_HandleRequest.terminalMockActionDTO();
+            activityDTO.ActivityTemplate = null;
+            await _baseTerminalController.HandleFr8Request(terminalName, "", activityDTO);
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentException))]
         public async void HandleFr8Request_TerminalNotExist_ThrowsException()
         {
-            ActionDTO actionDTO = new ActionDTO();
-            actionDTO.ActivityTemplate = new ActivityTemplateDTO() { Name = "terminalDummy", Version = "1.1" };
+            ActivityDTO activityDTO = new ActivityDTO();
+            activityDTO.ActivityTemplate = new ActivityTemplateDTO() { Name = "terminalDummy", Version = "1.1" };
 
-            await _baseTerminalController.HandleFr8Request(terminalName, "", actionDTO);
+            await _baseTerminalController.HandleFr8Request(terminalName, "", activityDTO);
         }
 
         [Test]
@@ -80,9 +80,9 @@ namespace terminalBaseTests.BaseClasses
             var result = await _baseTerminalController.HandleFr8Request(terminalName, "configure", Fixture_HandleRequest.terminalMockActionDTO());
 
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf(typeof(ActionDTO), result);
+            Assert.IsInstanceOf(typeof(ActivityDTO), result);
 
-            var crateStorage = CrateManagerHelper.FromDto(((ActionDTO)result).CrateStorage);
+            var crateStorage = CrateManagerHelper.FromDto(((ActivityDTO)result).CrateStorage);
             var crateResult = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
 
             Assert.Greater(crateResult.Controls.Where(x => x.Label.ToLower() == "configure").Count(), 0);
@@ -112,9 +112,9 @@ namespace terminalBaseTests.BaseClasses
             var result = await _baseTerminalController.HandleFr8Request(terminalName, "activate", Fixture_HandleRequest.terminalMockActionDTO());
 
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf(typeof(ActionDTO), result);
+            Assert.IsInstanceOf(typeof(ActivityDTO), result);
 
-            var crateStorage = CrateManagerHelper.FromDto(((ActionDTO)result).CrateStorage);
+            var crateStorage = CrateManagerHelper.FromDto(((ActivityDTO)result).CrateStorage);
             var crateResult = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
 
             Assert.Greater(crateResult.Controls.Where(x => x.Label.ToLower() == "activate").Count(), 0);
@@ -126,9 +126,9 @@ namespace terminalBaseTests.BaseClasses
             var result = await _baseTerminalController.HandleFr8Request(terminalName, "deactivate", Fixture_HandleRequest.terminalMockActionDTO());
 
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf(typeof(ActionDTO), result);
+            Assert.IsInstanceOf(typeof(ActivityDTO), result);
 
-            var crateStorage = CrateManagerHelper.FromDto(((ActionDTO)result).CrateStorage);
+            var crateStorage = CrateManagerHelper.FromDto(((ActivityDTO)result).CrateStorage);
             var crateResult = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
 
             Assert.Greater(crateResult.Controls.Where(x => x.Label.ToLower() == "deactivate").Count(), 0);
@@ -140,9 +140,9 @@ namespace terminalBaseTests.BaseClasses
             var result = await _baseTerminalController.HandleFr8Request(terminalName, "OtherMethod", Fixture_HandleRequest.terminalMockActionDTO());
 
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf(typeof(ActionDTO), result);
+            Assert.IsInstanceOf(typeof(ActivityDTO), result);
 
-            var crateStorage = CrateManagerHelper.FromDto(((ActionDTO)result).CrateStorage);
+            var crateStorage = CrateManagerHelper.FromDto(((ActivityDTO)result).CrateStorage);
             var crateResult = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
 
             Assert.Greater(crateResult.Controls.Where(x => x.Label.ToLower() == "othermethod").Count(), 0);

@@ -23,6 +23,8 @@ using Segment;
 using StructureMap;
 using Utilities;
 using Logger = Utilities.Logging.Logger;
+using HubWeb.Infrastructure;
+using System.Threading.Tasks;
 
 namespace HubWeb
 {
@@ -46,8 +48,6 @@ namespace HubWeb
             settings.Formatting = Formatting.Indented;
             settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
 
-
-
             //Register global Exception Filter for WebAPI 
             GlobalConfiguration.Configuration.Filters.Add(new WebApiExceptionFilterAttribute());
 
@@ -61,7 +61,7 @@ namespace HubWeb
             Utilities.Server.ServerPhysicalPath = Server.MapPath("~");
 
             //AutoMapper create map configuration
-            AutoMapperBootStrapper.ConfigureAutoMapper();
+            ObjectFactory.GetInstance<AutoMapperBootStrapper>().ConfigureAutoMapper();
 
             Utilities.Server.IsProduction = ObjectFactory.GetInstance<IConfigRepository>().Get<bool>("IsProduction");
             Utilities.Server.IsDevMode = ObjectFactory.GetInstance<IConfigRepository>().Get<bool>("IsDev", true);
@@ -72,10 +72,11 @@ namespace HubWeb
             var segmentWriteKey = new ConfigRepository().Get("SegmentWriteKey");
             Analytics.Initialize(segmentWriteKey);
 
-            EventReporter curReporter = new EventReporter();
+            EventReporter curReporter = ObjectFactory.GetInstance<EventReporter>()
+                ;
             curReporter.SubscribeToAlerts();
 
-            IncidentReporter incidentReporter = new IncidentReporter();
+            IncidentReporter incidentReporter = ObjectFactory.GetInstance <IncidentReporter>();
             incidentReporter.SubscribeToAlerts();
 
             ModelBinders.Binders.Add(typeof(DateTimeOffset), new KwasantDateBinder());
@@ -93,6 +94,13 @@ namespace HubWeb
             Logger.GetLogger().Warn("Dockyard  starting...");
 
             ConfigureValidationEngine();
+            StartupMigration.CreateSystemUser();
+
+            // At Startup Check If the Log Monitor Fr8 Event plan exist in the database then active it. otherwise create the new plan.
+            RouteManager routeManager = new RouteManager();
+            string sytemUserEmail = ObjectFactory.GetInstance<IConfigRepository>().Get<string>("SystemUserEmail");
+
+            Task.Factory.StartNew(async () => await routeManager.CreateRoute_LogFr8InternalEvents(sytemUserEmail).ConfigureAwait(true));
 
         }
 
@@ -126,6 +134,7 @@ namespace HubWeb
         //But on production, there is no need for this call
         protected void Application_BeginRequest(object sender, EventArgs e)
         {
+
 #if DEBUG
             SetServerUrl(HttpContext.Current);
 #endif
@@ -239,9 +248,12 @@ namespace HubWeb
             if (principal != null)
             {
                 var claims = principal.Claims;
-                GenericPrincipal userPrincipal =
-                    new GenericPrincipal(principal.Identity,
+                var roles = claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToArray();
+                var userPrincipal = new Fr8Principle(null, principal.Identity, roles);
+                /*
+                GenericPrincipal userPrincipal = new GenericPrincipal(principal.Identity,
                                          claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToArray());
+                */
                 Context.User = userPrincipal;
             }
         }

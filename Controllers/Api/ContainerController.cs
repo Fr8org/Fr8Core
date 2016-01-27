@@ -1,19 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web.Http.Description;
 using AutoMapper;
+using HubWeb.Infrastructure;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 // This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
-using Utilities;
 using InternalInterface = Hub.Interfaces;
 using Data.Entities;
 using Data.Infrastructure;
@@ -21,12 +14,7 @@ using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using Hub.Interfaces;
-using Hub.Managers;
-using Hub.Services;
-using HubWeb.ViewModels;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace HubWeb.Controllers
 {
@@ -37,17 +25,17 @@ namespace HubWeb.Controllers
     {
         private readonly InternalInterface.IContainer _container;
         private readonly ISecurityServices _security;
-       // private readonly ICrateManager _crateManager;
 
         public ContainersController()
         {
             _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
-      //      _crateManager = ObjectFactory.GetInstance<ICrateManager>();
         }
 
         [HttpGet]
-        public IHttpActionResult Get(Guid id)
+        [Fr8HubWebHMACAuthenticate]
+        [ActionName("payload")]
+        public IHttpActionResult GetPayload(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

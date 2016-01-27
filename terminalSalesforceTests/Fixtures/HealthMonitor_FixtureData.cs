@@ -50,11 +50,22 @@ namespace terminalSalesforceTests.Fixtures
             };
         }
 
-        public static ActionDTO Create_Account_v1_InitialConfiguration_ActionDTO()
+        public static ActivityTemplateDTO Get_Data_v1_ActivityTemplate()
+        {
+            return new ActivityTemplateDTO()
+            {
+                Version = "1",
+                Name = "Get_Data_TEST",
+                Label = "Get Data",
+                NeedsAuthentication = true
+            };
+        }
+
+        public static ActivityDTO Create_Account_v1_InitialConfiguration_ActionDTO()
         {
             var activityTemplate = Create_Account_v1_ActivityTemplate();
 
-            return new ActionDTO()
+            return new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
                 Name = "Create_Account",
@@ -65,11 +76,11 @@ namespace terminalSalesforceTests.Fixtures
             };
         }
 
-        public static ActionDTO Create_Contact_v1_InitialConfiguration_ActionDTO()
+        public static ActivityDTO Create_Contact_v1_InitialConfiguration_ActionDTO()
         {
             var activityTemplate = Create_Contact_v1_ActivityTemplate();
 
-            return new ActionDTO()
+            return new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
                 Name = "Create_Contact",
@@ -80,15 +91,30 @@ namespace terminalSalesforceTests.Fixtures
             };
         }
 
-        public static ActionDTO Create_Lead_v1_InitialConfiguration_ActionDTO()
+        public static ActivityDTO Create_Lead_v1_InitialConfiguration_ActionDTO()
         {
             var activityTemplate = Create_Lead_v1_ActivityTemplate();
 
-            return new ActionDTO()
+            return new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
                 Name = "Create_Lead",
                 Label = "Create Lead",
+                AuthToken = Salesforce_AuthToken(),
+                ActivityTemplate = activityTemplate,
+                ActivityTemplateId = activityTemplate.Id
+            };
+        }
+
+        public static ActivityDTO Get_Data_v1_InitialConfiguration_ActionDTO()
+        {
+            var activityTemplate = Get_Data_v1_ActivityTemplate();
+
+            return new ActivityDTO()
+            {
+                Id = Guid.NewGuid(),
+                Name = "Get_Data",
+                Label = "Get Data",
                 AuthToken = Salesforce_AuthToken(),
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id

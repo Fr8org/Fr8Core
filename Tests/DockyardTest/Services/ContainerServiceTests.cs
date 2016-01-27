@@ -43,7 +43,7 @@ namespace DockyardTest.Services
             base.SetUp();
             _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
             _userService = ObjectFactory.GetInstance<Fr8Account>();
-            _eventReporter = new EventReporter();
+            _eventReporter = ObjectFactory.GetInstance <EventReporter>();
             //_docuSignNotificationService = ObjectFactory.GetInstance<IDocuSignNotification>();
 
             xmlPayloadFullPath = FixtureData.FindXmlPayloadFullPath(Environment.CurrentDirectory);
@@ -60,8 +60,8 @@ namespace DockyardTest.Services
             //Arrange 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var route = FixtureData.TestRoute5();
-                uow.RouteRepository.Add(route);
+                var plan = FixtureData.TestRoute5();
+                uow.RouteRepository.Add(plan);
                 foreach (var container in FixtureData.GetContainers())
                 {
                     uow.ContainerRepository.Add(container);
@@ -86,14 +86,14 @@ namespace DockyardTest.Services
             {
                 //Arrange
                 var envelope = FixtureData.TestEnvelope1();
-                var route = FixtureData.TestRouteWithStartingSubroutes();
+                var plan = FixtureData.TestRouteWithStartingSubroutes();
 
                 uow.EnvelopeRepository.Add(envelope);
-                uow.RouteRepository.Add(route);
+                uow.RouteRepository.Add(plan);
                 uow.SaveChanges();
 
                 //Act
-                ProcessDO curProcess = _processService.Create(route.Id, FixtureData.GetEnvelopeIdCrate(envelope.DocusignEnvelopeId));
+                ProcessDO curProcess = _processService.Create(plan.Id, FixtureData.GetEnvelopeIdCrate(envelope.DocusignEnvelopeId));
 
                 //Assert
                 int expectedProcessNodeCount = uow.ProcessNodeRepository.GetAll().Count();
@@ -108,14 +108,14 @@ namespace DockyardTest.Services
             {
                 //Arrange
                 var envelope = FixtureData.TestEnvelope1();
-                var route = FixtureData.TestRoute1();
+                var plan = FixtureData.TestRoute1();
 
                 uow.EnvelopeRepository.Add(envelope);
-                uow.RouteRepository.Add(route);
+                uow.RouteRepository.Add(plan);
                 uow.SaveChanges();
 
                 //Act
-                ProcessDO curProcess = _processService.Create(route.Id, FixtureData.GetEnvelopeIdCrate(envelope.DocusignEnvelopeId));
+                ProcessDO curProcess = _processService.Create(plan.Id, FixtureData.GetEnvelopeIdCrate(envelope.DocusignEnvelopeId));
 
                 //Assert
                 int expectedProcessId = curProcess.ProcessNodes.First().ParentProcessId;

@@ -15,11 +15,11 @@ namespace terminalTwilio.Tests.Fixtures
             return new Guid("A1C11E86-9B54-42D4-AA91-605BF46E68E9");
         }
 
-        public static ActionDO ConfigureTwilioAction()
+        public static ActivityDO ConfigureTwilioAction()
         {
             var actionTemplate = TwilioActionTemplateDTO();
 
-            var actionDO = new ActionDO
+            var activityDO = new ActivityDO
             {
                 Name = "testaction",
                 Id = TestGuid_Id_57(),
@@ -28,7 +28,7 @@ namespace terminalTwilio.Tests.Fixtures
                 CrateStorage = ""
             };
 
-            return actionDO;
+            return activityDO;
         }
 
         public static ActivityTemplateDO TwilioActionTemplateDTO()
@@ -45,7 +45,7 @@ namespace terminalTwilio.Tests.Fixtures
         {
             var confControls =
                 JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(
-                    "{\"Controls\": [{\"initialLabel\": \"For the SMS Number Use:\",\"upstreamSourceLabel\": null,\"valueSource\": \"specific\",\"listItems\": [],\"name\": \"Recipient\",\"required\": false,\"value\": \"+15005550006\",\"label\": null,\"type\": \"TextSource\",\"selected\": false,\"events\": null,\"source\": {\"manifestType\": \"Standard Design-Time Fields\",\"label\": \"Upstream Terminal-Provided Fields\"}},{\"name\": \"SMS_Body\",\"required\": true,\"value\": \"DO-1437 test\",\"label\": \"SMS Body\",\"type\": \"TextBox\",\"selected\": false,\"events\": null,\"source\": null}]}",
+                    "{\"Controls\": [{\"initialLabel\": \"For the SMS Number Use:\",\"upstreamSourceLabel\": null,\"valueSource\": \"specific\",\"listItems\": [],\"name\": \"Recipient\",\"required\": false,\"TextValue\": \"+15005550006\",\"label\": null,\"type\": \"TextSource\",\"selected\": false,\"events\": null,\"source\": {\"manifestType\": \"Standard Design-Time Fields\",\"label\": \"Upstream Terminal-Provided Fields\"}},{\"name\": \"SMS_Body\",\"required\": true,\"value\": \"DO-1437 test\",\"label\": \"SMS Body\",\"type\": \"TextBox\",\"selected\": false,\"events\": null,\"source\": null}]}",
                     new ControlDefinitionDTOConverter());
 
             return Crate.FromContent("Configuration_Controls", confControls);

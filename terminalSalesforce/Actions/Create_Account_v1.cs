@@ -12,74 +12,68 @@ using terminalSalesforce.Services;
 
 namespace terminalSalesforce.Actions
 {
-    public class Create_Account_v1 : BaseTerminalAction
+    public class Create_Account_v1 : BaseTerminalActivity
     {
-        ISalesforceIntegration _salesforce = new SalesforceIntegration();
+        ISalesforceManager _salesforce = new SalesforceManager();
 
-        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             CheckAuthentication(authTokenDO);
 
-            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
+            return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
         }
 
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        {
+            return ConfigurationRequestType.Initial;
+        }
+
+        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        {
+            using (var updater = Crate.UpdateStorage(curActivityDO))
+            {
+                updater.CrateStorage.Clear();
+
+                AddTextSourceControl(updater.CrateStorage, "Account Name", "accountName",
+                    "Upstream Terminal-Provided Fields", addRequestConfigEvent: false);
+                AddTextSourceControl(updater.CrateStorage, "Account Number", "accountNumber",
+                    "Upstream Terminal-Provided Fields", addRequestConfigEvent: false, required:true);
+                AddTextSourceControl(updater.CrateStorage, "Phone", "phone",
+                    "Upstream Terminal-Provided Fields", addRequestConfigEvent: false, required:true);
+
+                updater.CrateStorage.Add(await CreateAvailableFieldsCrate(curActivityDO));
+            }
+
+            return await Task.FromResult(curActivityDO);
+        }
+
+        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
 
-            var payloadCrates = await GetPayload(curActionDO, containerId);
+            var payloadCrates = await GetPayload(curActivityDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
             {
                 return NeedsAuthenticationError(payloadCrates);
             }
 
-            var accountName = ExtractControlFieldValue(curActionDO, "accountName");
+            var accountName = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "accountName");
+            var accountNumber = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "accountNumber");
+            var phone = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "phone");
             if (string.IsNullOrEmpty(accountName))
             {
-                return Error(payloadCrates, "No account name found in action.");
+                return Error(payloadCrates, "No account name found in activity.");
+            }
+            var account = new AccountDTO {AccountNumber = accountNumber, Name = accountName, Phone = phone};
+
+            bool result = await _salesforce.CreateObject(account, "Account", _salesforce.CreateForceClient(authTokenDO));
+
+            if (result)
+            {
+                return Success(payloadCrates);
             }
 
-            bool result = _salesforce.CreateAccount(curActionDO, authTokenDO);
-
-            return Success(payloadCrates);
-        }
-
-        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
-        {
-            return ConfigurationRequestType.Initial;
-        }
-
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
-        {
-            var accountName = new TextBox()
-            {
-                Label = "Account Name",
-                Name = "accountName"
-
-            };
-            var accountNumber = new TextBox()
-            {
-                Label = "Account Number",
-                Name = "accountNumber",
-                Required = true
-            };
-
-            var phone = new TextBox()
-            {
-                Label = "Phone",
-                Name = "phone",
-                Required = true
-            };
-
-            var controls = PackControlsCrate(accountName, accountNumber, phone);
-
-            using (var updater = Crate.UpdateStorage(curActionDO))
-            {
-                updater.CrateStorage.Clear();
-                updater.CrateStorage.Add(controls);
-            }
-
-            return await Task.FromResult(curActionDO);
+            return Error(payloadCrates, "Account creation is failed");
         }
     }
 }

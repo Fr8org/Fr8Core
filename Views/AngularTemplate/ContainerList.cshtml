@@ -31,7 +31,7 @@
                             <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>Route Id</th>
+                                    <th>Plan Id</th>
                                     <th>Create Date</th>
                                     <th>Last Updated</th>
                                     <th>Name</th>
@@ -44,8 +44,8 @@
                                 <tr ng-repeat="container in currentAccountContainers" ng-click="goToContainerDetailsPage(container.id)">
                                     <td>{{ container.id }}</td>
                                     <td>{{ container.routeId }}</td>
-                                    <td>{{ container.createDate }}</td>
-                                    <td>{{ container.lastUpdated }}</td>
+                                    <td>{{ container.createDate | datetime }}</td>
+                                    <td>{{ container.lastUpdated | datetime }}</td>
                                     <td>{{ container.name }}</td>
                                     <td>
                                        <span>{{ container.containerState | ContainerState }}</span>

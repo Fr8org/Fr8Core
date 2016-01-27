@@ -93,11 +93,11 @@ module dockyard.directives.paneWorkflowDesigner {
 
     export class AddActionEventArgs {
         public criteriaId: string;
-        public action: model.ActionDTO;
+        public action: model.ActivityDTO;
         public doNotRaiseSelectedEvent: boolean;
 
         constructor(criteriaId: string,
-            action: model.ActionDTO,
+            action: model.ActivityDTO,
             doNotRaiseSelectedEvent?: boolean) {
 
             this.criteriaId = criteriaId;

@@ -18,10 +18,12 @@ using TerminalBase.Infrastructure;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services;
 using Utilities.Configuration.Azure;
+using terminalDocuSign.Infrastructure;
+using Data.Constants;
 
 namespace terminalDocuSign.Actions
 {
-    public class Mail_Merge_Into_DocuSign_v1 : BaseTerminalAction
+    public class Mail_Merge_Into_DocuSign_v1 : BaseDocuSignAction
     {
         readonly DocuSignManager _docuSignManager;
         string _dataSourceValue;
@@ -35,15 +37,47 @@ namespace terminalDocuSign.Actions
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            return Success(await GetPayload(curActionDO, containerId));
+            var payloadCrates = await GetPayload(curActivityDO, containerId);
+
+            if (NeedsAuthentication(authTokenDO))
+            {
+                return NeedsAuthenticationError(payloadCrates);
+            }
+
+            var storage = Crate.GetStorage(curActivityDO);
+            DropDownList docuSignTemplate = GetStdConfigurationControl<DropDownList>(storage, "DocuSignTemplate");
+            string envelopeId = docuSignTemplate.Value;
+
+            // Make sure that it exists
+            if (string.IsNullOrEmpty(envelopeId))
+            {
+                return Error(payloadCrates, "EnvelopeId", ActionErrorCode.PAYLOAD_DATA_MISSING);
+            }
+
+            //Create run-time fields
+            var fields = CreateDocuSignEventFields();
+            foreach (var field in fields)
+            {
+                field.Value = GetValueForKey(payloadCrates, field.Key);
+            }
+
+            using (var updater = Crate.UpdateStorage(payloadCrates))
+            {
+                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(fields)));
+
+                var userDefinedFieldsPayload = _docuSignManager.CreateActionPayload(curActivityDO, authTokenDO, envelopeId);
+                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Data", userDefinedFieldsPayload));
+            }
+
+            return Success(payloadCrates);
         }
 
         /// <summary>
         /// Create configuration controls crate.
         /// </summary>
-        private async Task<Crate> CreateConfigurationControlsCrate(ActionDO actionDO)
+        private async Task<Crate> CreateConfigurationControlsCrate(ActivityDO activityDO)
         {
             var controlList = new List<ControlDefinitionDTO>();
 
@@ -51,34 +85,38 @@ namespace terminalDocuSign.Actions
             {
                 Label = "1. Where is your Source Data?",
                 Name = "DataSource",
-                ListItems = await GetDataSourceListItems(actionDO, "Table Data Generator")
+                ListItems = await GetDataSourceListItems(activityDO, "Table Data Generator")
             });
 
             controlList.Add(DocuSignManager.CreateDocuSignTemplatePicker(false, "DocuSignTemplate", "2. Use which DocuSign Template?"));
             controlList.Add(new Button()
             {
                 Label = "Continue",
-                Name = "Continue"
+                Name = "Continue",
+                Events = new List<ControlEvent>()
+                {
+                    new ControlEvent("onClick", "requestConfig")
+                }
             });
 
             return PackControlsCrate(controlList.ToArray());
         }
 
-        private async Task<List<ListItem>> GetDataSourceListItems(ActionDO actionDO, string tag)
+        private async Task<List<ListItem>> GetDataSourceListItems(ActivityDO activityDO, string tag)
         {
-            var curActivityTempaltes = await HubCommunicator.GetActivityTemplates(actionDO, tag);
+            var curActivityTempaltes = await HubCommunicator.GetActivityTemplates(activityDO, tag);
             return curActivityTempaltes.Select(at => new ListItem() { Key = at.Label, Value = at.Name }).ToList();
         }
 
         /// <summary>
         /// Looks for upstream and downstream Creates.
         /// </summary>
-        protected override async Task<ActionDO> InitialConfigurationResponse(
-            ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> InitialConfigurationResponse(
+            ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            if (curActionDO.Id != Guid.Empty)
+            if (curActivityDO.Id != Guid.Empty)
             {
-                using (var updater = Crate.UpdateStorage(curActionDO))
+                using (var updater = Crate.UpdateStorage(curActivityDO))
                 {
                     if (authTokenDO == null || authTokenDO.Token == null)
                     {
@@ -86,13 +124,14 @@ namespace terminalDocuSign.Actions
                     }
                     else
                     {
-                        var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
+                        var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 
                         //build a controls crate to render the pane
-                        var configurationControlsCrate = await CreateConfigurationControlsCrate(curActionDO);
+                        var configurationControlsCrate = await CreateConfigurationControlsCrate(curActivityDO);
                         var templatesFieldCrate = _docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
 
-                        updater.CrateStorage = new CrateStorage(templatesFieldCrate, configurationControlsCrate);
+                        updater.CrateStorage.Add(configurationControlsCrate);
+                        updater.CrateStorage.Add(templatesFieldCrate);
                     }
                 }
             }
@@ -100,7 +139,11 @@ namespace terminalDocuSign.Actions
             {
                 throw new ArgumentException("Configuration requires the submission of an Action that has a real ActionId");
             }
-            return curActionDO;
+
+            //validate if any DocuSignTemplates has been linked to the Account
+            ValidateDocuSignAtLeastOneTemplate(curActivityDO);
+
+            return curActivityDO;
         }
 
         private Task<Crate> CreateNoAuthCrate()
@@ -109,7 +152,7 @@ namespace terminalDocuSign.Actions
 
             controlList.Add(new TextBlock()
             {
-                Value = "This action requires authentication. Please authenticate."
+                Value = "This activity requires authentication. Please authenticate."
             });
             return Task.FromResult((Crate)PackControlsCrate(controlList.ToArray()));
         }
@@ -127,15 +170,44 @@ namespace terminalDocuSign.Actions
             return control;
         }
 
+
+        /// <summary>
+        /// All validation scenarios for Mail_Merge_Into_DocuSign action
+        /// </summary>
+        /// <param name="curActivityDO"></param>
+        /// <returns></returns>
+        protected override async Task<CrateStorage> ValidateActivity(ActivityDO curActivityDO)
+        {
+            ValidateDocuSignAtLeastOneTemplate(curActivityDO);
+
+            return await Task.FromResult<CrateStorage>(null);
+        }
+
+        private void ValidateDocuSignAtLeastOneTemplate(ActivityDO curActivityDO)
+        {
+            //validate DocuSignTemplate for present selected template 
+            using (var updater = Crate.UpdateStorage(curActivityDO))
+            {
+                var docuSignTemplate = updater.CrateStorage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Available Templates").FirstOrDefault();
+                if (docuSignTemplate != null && docuSignTemplate.Fields != null && docuSignTemplate.Fields.Count != 0) return ;//await Task.FromResult<CrateDTO>(null);
+
+                var configControl = GetStdConfigurationControl<DropDownList>(updater.CrateStorage, "DocuSignTemplate");
+                if (configControl != null)
+                {
+                    configControl.ErrorMessage = "Please link some templates to your DocuSign account.";
+                }
+            }
+        }
+
         /// <summary>
         /// If there's a value in select_file field of the crate, then it is a followup call.
         /// </summary>
-        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
             // Do not tarsnfer to follow up when child actions are already present 
-            if (curActionDO.ChildNodes.Count() > 0) return ConfigurationRequestType.Initial;
+            if (curActivityDO.ChildNodes.Count() > 0) return ConfigurationRequestType.Initial;
 
-            var storage = Crate.GetStorage(curActionDO);
+            var storage = Crate.GetStorage(curActivityDO);
             if (storage == null || storage.Count() == 0)
             {
                 return ConfigurationRequestType.Initial;
@@ -159,59 +231,63 @@ namespace terminalDocuSign.Actions
         }
 
         //if the user provides a file name, this action attempts to load the excel file and extracts the column headers from the first sheet in the file.
-        protected override async Task<ActionDO> FollowupConfigurationResponse(
-            ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> FollowupConfigurationResponse(
+            ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
-            _docuSignManager.ExtractFieldsAndAddToCrate(_docuSignTemplateValue, docuSignAuthDTO, curActionDO);
-            var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(curActionDO, null))
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
+
+            //extract fields in docusign form
+            _docuSignManager.UpdateUserDefinedFields(curActivityDO, authTokenDO, Crate.UpdateStorage(curActivityDO), _docuSignTemplateValue);
+
+            var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(curActivityDO, null))
                 .Select(x => Mapper.Map<ActivityTemplateDO>(x))
                 .ToList();
 
             try
             {
                 ActivityTemplateDO dataSourceActTempl = curActivityTemplates.FirstOrDefault(at => at.Name == _dataSourceValue);
-                if (dataSourceActTempl == null) return curActionDO;
-                curActionDO.ChildNodes.Add(new ActionDO()
+                if (dataSourceActTempl == null) return curActivityDO;
+                curActivityDO.ChildNodes.Add(new ActivityDO()
                 {
                     ActivityTemplateId = dataSourceActTempl.Id,
                     IsTempId = true,
                     Name = dataSourceActTempl.Name,
                     Label = dataSourceActTempl.Label,
                     CrateStorage = Crate.EmptyStorageAsStr(),
-                    ParentRouteNode = curActionDO,
+                    ParentRouteNode = curActivityDO,
                     Ordering = 1
                 });
 
                 ActivityTemplateDO mapFieldActTempl = curActivityTemplates.FirstOrDefault(at => at.Name == "MapFields");
-                if (mapFieldActTempl == null) return curActionDO;
+                if (mapFieldActTempl == null) return curActivityDO;
 
-                curActionDO.ChildNodes.Add(new ActionDO()
+                curActivityDO.ChildNodes.Add(new ActivityDO()
                 {
                     ActivityTemplateId = mapFieldActTempl.Id,
                     IsTempId = true,
                     Name = mapFieldActTempl.Name,
                     Label = mapFieldActTempl.Label,
                     CrateStorage = Crate.EmptyStorageAsStr(),
-                    ParentRouteNode = curActionDO,
-                    Ordering = 2
+                    ParentRouteNode = curActivityDO,
+                    Ordering = 2,
+                    Fr8AccountId = authTokenDO.UserID
                 });
 
                 ActivityTemplateDO sendDocuSignEnvActTempl = curActivityTemplates.FirstOrDefault(at => at.Name == "Send_DocuSign_Envelope");
-                if (sendDocuSignEnvActTempl == null) return curActionDO;
-                curActionDO.ChildNodes.Add(new ActionDO()
+                if (sendDocuSignEnvActTempl == null) return curActivityDO;
+                curActivityDO.ChildNodes.Add(new ActivityDO()
                 {
                     ActivityTemplateId = sendDocuSignEnvActTempl.Id,
                     IsTempId = true,
                     Name = sendDocuSignEnvActTempl.Name,
                     CrateStorage = Crate.EmptyStorageAsStr(),
                     Label = sendDocuSignEnvActTempl.Label,
-                    ParentRouteNode = curActionDO,
+                    ParentRouteNode = curActivityDO,
                     Ordering = 3
                 });
 
-                //uow.ActionRepository.Add(curActionDO);
-                //uow.Db.Entry<ActionDO>(curActionDO).State = System.Data.Entity.EntityState.Modified;
+                //uow.ActionRepository.Add(curActivityDO);
+                //uow.Db.Entry<ActionDO>(curActivityDO).State = System.Data.Entity.EntityState.Modified;
                 //uow.SaveChanges();
             }
             catch (Exception)
@@ -220,7 +296,7 @@ namespace terminalDocuSign.Actions
             }
 
 
-            return await Task.FromResult(curActionDO);
+            return await Task.FromResult(curActivityDO);
         }
     }
 }

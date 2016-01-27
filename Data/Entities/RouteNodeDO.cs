@@ -10,10 +10,15 @@ using Data.Interfaces.DataTransferObjects;
 
 namespace Data.Entities
 {
-    public class RouteNodeDO : BaseDO
+    public class RouteNodeDO : BaseObject
     {
         [Key]
         public Guid Id { get; set; }
+
+        [ForeignKey("RootRouteNode")]
+        public Guid? RootRouteNodeId { get; set; }
+
+        public virtual RouteNodeDO RootRouteNode { get; set; }
 
         [ForeignKey("ParentRouteNode")]
         public Guid? ParentRouteNodeId { get; set; }
@@ -22,6 +27,12 @@ namespace Data.Entities
 
         [InverseProperty("ParentRouteNode")]
         public virtual IList<RouteNodeDO> ChildNodes { get; set; }
+
+
+        [ForeignKey("Fr8Account")]
+        public string Fr8AccountId { get; set; }
+
+        public virtual Fr8AccountDO Fr8Account { get; set; }
 
         public int Ordering { get; set; }
 

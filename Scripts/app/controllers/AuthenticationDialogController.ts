@@ -11,7 +11,6 @@
         $close: () => void;
     }
 
-
     export class AuthenticationDialogController {
         public static $inject = [
             '$scope',
@@ -58,7 +57,7 @@
                         if ($scope.terminals[j].id === terminalId) {
                             data.push({
                                 actionId: _terminalActions[i].actionId,
-                                authTokenId: (<any>$scope.terminals[j]).selectedAuthTokenId,
+                                authTokenId: $scope.terminals[j].selectedAuthTokenId,
                                 isMain: (<any>$scope.terminals[j]).isMain
                             });
                             break;
@@ -104,7 +103,17 @@
                     scope: modalScope
                 })
                 .result
-                .then(() => _reloadTerminals());
+                .then(data => {
+                    var selectedAuthTokens = [];
+                    if (data.terminalId && data.authTokenId) {
+                        selectedAuthTokens.push({
+                            terminalId: data.terminalId,
+                            authTokenId: data.authTokenId
+                        });
+                    }
+
+                    _reloadTerminals(selectedAuthTokens);
+                });
             };
 
             var _authenticateExternal = function (terminal: model.ManageAuthToken_TerminalDTO) {
@@ -112,12 +121,21 @@
                 var childWindow;
                 
                 var messageListener = function (event) {
-                    if (!event.data || event.data != 'external-auth-success') {
+                    if (!event.data || event.data.type != 'external-auth-success') {
                         return;
                     }
                 
                     childWindow.close();
-                    _reloadTerminals();
+
+                    var selectedAuthTokens = [];
+                    if (event.data.terminalId && event.data.authTokenId) {
+                        selectedAuthTokens.push({
+                            terminalId: event.data.terminalId,
+                            authTokenId: event.data.authTokenId
+                        });
+                    }
+
+                    _reloadTerminals(selectedAuthTokens);
                 };
                 
                 $http
@@ -139,11 +157,33 @@
                     });
             };
 
-            var _reloadTerminals = function () {
+            var _reloadTerminals = function (preselectedTokens?) {
                 var actionIds = $scope.actionIds || [];
 
                 _loading = true;
 
+                var selectedAuthTokens = [];
+
+                // Fill with preselected auth tokens.
+                if (preselectedTokens) {
+                    preselectedTokens.forEach(function (it) {
+                        selectedAuthTokens.push(it);
+                    });
+                }
+
+                // Save previously selected auth tokens.
+                if ($scope.terminals) {
+                    angular.forEach($scope.terminals, function (term) {
+                        if (term.selectedAuthTokenId) {
+                            selectedAuthTokens.push({
+                                terminalId: term.id,
+                                authTokenId: term.selectedAuthTokenId
+                            });
+                        }
+                    });
+                }
+
+                // Refresh terminals & auth-tokens list.
                 $http.post(
                     urlPrefix + '/ManageAuthToken/TerminalsByActions',
                     actionIds
@@ -169,6 +209,31 @@
                     }
 
                     $scope.terminals = terminals;
+
+                    // Explicitly selected current token (in case when user chooses another token for existing action).
+                    angular.forEach(terminals, function (term) {
+                        var i;
+                        for (i = 0; i < term.authTokens.length; ++i) {
+                            if (term.authTokens[i].isSelected) {
+                                term.selectedAuthTokenId = term.authTokens[i].id;
+                                break;
+                            }
+                        }
+                    });
+
+                    // Restore previously selected tokens.
+                    angular.forEach(terminals, function (term) {
+                        var i;
+
+                        if (!term.selectedAuthTokenId) {
+                            for (i = 0; i < selectedAuthTokens.length; ++i) {
+                                if (selectedAuthTokens[i].terminalId == term.id) {
+                                    term.selectedAuthTokenId = selectedAuthTokens[i].authTokenId;
+                                    break;
+                                }
+                            }
+                        }
+                    });
                 })
                 .finally(function () {
                     _loading = false;

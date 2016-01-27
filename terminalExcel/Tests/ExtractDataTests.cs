@@ -36,7 +36,7 @@ namespace terminalExcel.PluginExcelTests
 
         public const string filesCommand = "files";
 
-        private IAction _action;
+        private IActivity _activity;
         private ICrateManager _crate;
         private FixtureData _fixtureData;
 
@@ -47,7 +47,7 @@ namespace terminalExcel.PluginExcelTests
             TerminalBootstrapper.ConfigureTest();
 
             _fixtureData = new FixtureData(ObjectFactory.GetInstance<IUnitOfWork>());
-            _action = ObjectFactory.GetInstance<IAction>();
+            _activity = ObjectFactory.GetInstance<IActivity>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
@@ -61,9 +61,9 @@ namespace terminalExcel.PluginExcelTests
         public void ConfigEvaluatorInitialResponse_Test()
         {
             
-            var curActionDTO = new ActionDTO();
-            var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
-            var result = new Load_Excel_File_v1().ConfigurationEvaluator(curActionDO);
+            var curActionDTO = new ActivityDTO();
+            var curActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
+            var result = new Load_Excel_File_v1().ConfigurationEvaluator(curActivityDO);
 
             Assert.AreEqual(result, TerminalBase.Infrastructure.ConfigurationRequestType.Initial);
         }
@@ -95,7 +95,7 @@ namespace terminalExcel.PluginExcelTests
         //    //Mock<ICrate> crateMock = new Mock<ICrate>();
         //    //crateMock.Setup(a => a.GetElementByKey<int>(It.IsAny<IEnumerable<CrateDTO>>(), It.IsAny<int>(), It.IsAny<string>())).Returns(() => new List<JObject>() { new JObject(), new JObject() });
 
-        //    //ActionDO actionDO = new FixtureData(uow).TestAction3();
+        //    //ActionDO activityDO = new FixtureData(uow).TestAction3();
         //    //var controller = new ActionController(crateMock.Object);
 
 
@@ -129,7 +129,7 @@ namespace terminalExcel.PluginExcelTests
         //    //Mock<ICrate> crateMock = new Mock<ICrate>();
         //    //crateMock.Setup(a => a.GetElementByKey<int>(It.IsAny<IEnumerable<CrateDTO>>(), It.IsAny<int>(), It.IsAny<string>())).Returns(() => new List<JObject>() { new JObject(), new JObject() });
 
-        //    //ActionDO actionDO = new FixtureData(uow).TestAction3();
+        //    //ActionDO activityDO = new FixtureData(uow).TestAction3();
         //    //var controller = new ActionController(crateMock.Object);
 
 

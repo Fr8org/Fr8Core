@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -16,12 +17,14 @@ namespace HubWeb.Controllers
 {
     public class AuthenticationCallbackController : Controller
     {
-        private readonly IAction _action;
+        private readonly IActivity _activity;
         private readonly IAuthorization _authorization;
+        private readonly ITerminal _terminal;
 
         public AuthenticationCallbackController()
         {
-            _action = ObjectFactory.GetInstance<IAction>();
+            _terminal = ObjectFactory.GetInstance<ITerminal>();
+            _activity = ObjectFactory.GetInstance<IActivity>();
             _authorization = ObjectFactory.GetInstance<IAuthorization>();
         }
 
@@ -41,16 +44,11 @@ namespace HubWeb.Controllers
                 requestQueryString = requestQueryString.Substring(1);
             }
 
-            TerminalDO terminal;
+            TerminalDO terminal = _terminal.GetAll().FirstOrDefault(x => x.Name == terminalName && x.Version == terminalVersion);
 
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            if (terminal == null)
             {
-                terminal = uow.TerminalRepository
-                    .FindOne(x => x.Name == terminalName && x.Version == terminalVersion);
-                if (terminal == null)
-                {
-                    throw new ApplicationException("Could not find terminal.");
-                }
+                throw new ApplicationException("Could not find terminal.");
             }
             
             var externalAuthenticationDTO = new ExternalAuthenticationDTO()
@@ -58,18 +56,18 @@ namespace HubWeb.Controllers
                 RequestQueryString = requestQueryString
             };
 
-            var error = await _authorization.GetOAuthToken(terminal, externalAuthenticationDTO);
+            var response = await _authorization.GetOAuthToken(terminal, externalAuthenticationDTO);
 
-            if (string.IsNullOrEmpty(error))
+            if (string.IsNullOrEmpty(response.Error))
             {
-                return View();
+                return View(response);
             }
             else
             {
-                EventManager.OAuthAuthenticationFailed(requestQueryString, error);
+                EventManager.OAuthAuthenticationFailed(requestQueryString, response.Error);
                 return View("Error", new AuthenticationErrorVM()
                 {
-                    Error = error
+                    Error = response.Error
                 });
             }
         }

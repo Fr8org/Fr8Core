@@ -1,0 +1,52 @@
+﻿using Data.Interfaces.DataTransferObjects;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace terminalDropboxTests.Fixtures
+{
+    public class HealthMonitor_FixtureData
+    {
+        public static Guid TestGuid_Id_333()
+        {
+            return new Guid("8339DC87-F011-4FB1-B47C-FEC406E4100A");
+        }
+
+        public static ActivityDTO GetFileListTestActionDTO()
+        {
+            var actionTemplate = GetFileListTestActivityTemplateDTO();
+
+            var activityDTO = new ActivityDTO()
+            {
+                Name = "testaction",
+                Id = TestGuid_Id_333(),
+                ActivityTemplateId = actionTemplate.Id,
+                ActivityTemplate = actionTemplate,
+                CrateStorage = null,
+                AuthToken = DropboxAuthorizationTokenDTO()
+
+            };
+            return activityDTO;
+        }
+
+        public static ActivityTemplateDTO GetFileListTestActivityTemplateDTO()
+        {
+            return new ActivityTemplateDTO
+            {
+                Id = 1,
+                Name = "Get_File_List_TEST",
+                Version = "1"
+            };
+        }
+
+        public static AuthorizationTokenDTO DropboxAuthorizationTokenDTO()
+        {
+            return new AuthorizationTokenDTO()
+            {
+                Token = "bLgeJYcIkHAAAAAAAAAAFf6hjXX_RfwsFNTfu3z00zrH463seBYMNqBaFpbfBmqf"
+            };
+        }
+    }
+}

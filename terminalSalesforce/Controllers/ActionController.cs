@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using System.Reflection;
 using TerminalBase.BaseClasses;
 using System.Threading.Tasks;
+using TerminalBase.Infrastructure;
 using terminalSalesforce.Infrastructure;
 using terminalSalesforce.Services;
 using Salesforce.Common;
@@ -14,17 +15,16 @@ using Salesforce.Common;
 namespace terminalSalesforce.Controllers
 {
     [RoutePrefix("actions")]
-    public class ActionController:ApiController
+    public class ActionController: BaseTerminalController
     {
         private const string curTerminal = "terminalSalesforce";
-        private BaseTerminalController _baseTerminalController = new BaseTerminalController();
-        private ISalesforceIntegration _salesforceIntegration = new SalesforceIntegration();
-
 
         [HttpPost]
-        public Task<object> Execute([FromUri] String actionType, [FromBody] ActionDTO curActionDTO)
+        [fr8TerminalHMACAuthenticate(curTerminal)]
+        [Authorize]
+        public Task<object> Execute([FromUri] String actionType, [FromBody] ActivityDTO curActionDTO)
         {
-            return _baseTerminalController.HandleFr8Request(curTerminal, actionType, curActionDTO);
+            return HandleFr8Request(curTerminal, actionType, curActionDTO);
         }
     }
 }

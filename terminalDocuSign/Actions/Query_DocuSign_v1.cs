@@ -13,22 +13,15 @@ using Newtonsoft.Json;
 using StructureMap;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Interfaces;
+using terminalDocuSign.Services;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
+using terminalDocuSign.Infrastructure;
 
 namespace terminalDocuSign.Actions
 {
-    public class Query_DocuSign_v1  : BaseTerminalAction
+    public class Query_DocuSign_v1  : BaseDocuSignAction
     {
-        public class QuerySettings
-        {
-            public string SearchText;
-            public DateTime? FromDate;
-            public DateTime? ToDate;
-            public string Status;
-            public string Folder;
-            }
-
         public class ActionUi : StandardConfigurationControlsCM
         {
             [JsonIgnore]
@@ -74,58 +67,37 @@ namespace terminalDocuSign.Actions
         }
 
         private readonly IDocuSignFolder _docuSignFolder;
+        private readonly DocuSignManager _docuSignManager;
 
         public Query_DocuSign_v1()
         {
             _docuSignFolder = ObjectFactory.GetInstance<IDocuSignFolder>();
+            _docuSignManager = ObjectFactory.GetInstance<DocuSignManager>();
         }
 
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var payload = await GetPayload(curActionDO, containerId);
+            var payload = await GetPayload(curActivityDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
             {
                 return NeedsAuthenticationError(payload);
             }
 
-            var ui = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
+            var configurationControls = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
 
-            if (ui == null)
+            if (configurationControls == null)
             {
                 return Error(payload, "Action was not configured correctly");
             }
 
 
-            var settings = GetSettings(ui);
+            var settings = GetDocusignQuery(configurationControls);
             
-            var docuSignAuthDto = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
+            var docuSignAuthDto = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
             var payloadCm = new StandardPayloadDataCM();
+            var envelopes = _docuSignManager.SearchDocusign(docuSignAuthDto, settings);
 
-            if (string.IsNullOrWhiteSpace(settings.Folder) || settings.Folder == "<any>")
-            {
-                foreach (var folder in _docuSignFolder.GetFolders(docuSignAuthDto.Email, docuSignAuthDto.ApiPassword))
-                {
-                    SearchFolder(settings, _docuSignFolder, folder.FolderId, docuSignAuthDto, payloadCm);
-                }
-            }
-            else
-            {
-                SearchFolder(settings, _docuSignFolder, settings.Folder, docuSignAuthDto, payloadCm);
-            }
-
-            using (var updater = Crate.UpdateStorage(payload))
-            {
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Sql Query Result", payloadCm));
-            }
-
-            return Success(payload);
-        }
-
-        private void SearchFolder(QuerySettings configuration, IDocuSignFolder docuSignFolder, string folder, DocuSignAuth docuSignAuthDto, StandardPayloadDataCM payload)
-        {
-            var envelopes = docuSignFolder.Search(docuSignAuthDto.Email, docuSignAuthDto.ApiPassword, configuration.SearchText, folder, configuration.Status == "<any>" ? null : configuration.Status, configuration.FromDate, configuration.ToDate);
-            
             foreach (var envelope in envelopes)
             {
                 var row = new PayloadObjectDTO();
@@ -141,57 +113,64 @@ namespace terminalDocuSign.Actions
                 row.PayloadObject.Add(new FieldDTO("CompletedDate", envelope.CompletedDateTime.ToString(CultureInfo.InvariantCulture)));
                 row.PayloadObject.Add(new FieldDTO("CreatedDateTime", envelope.CreatedDateTime.ToString(CultureInfo.InvariantCulture)));
 
-                payload.PayloadObjects.Add(row);
+                payloadCm.PayloadObjects.Add(row);
             }
+            
+            using (var updater = Crate.UpdateStorage(payload))
+            {
+                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Sql Query Result", payloadCm));
+            }
+
+            return Success(payload);
         }
 
-        protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             if (NeedsAuthentication(authTokenDO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            var docuSignAuthDto = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
+            var docuSignAuthDto = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 
-            using (var updater = Crate.UpdateStorage(curActionDO))
+            using (var updater = Crate.UpdateStorage(curActivityDO))
             {
                 updater.CrateStorage.Add(PackControls(new ActionUi()));
                 updater.CrateStorage.AddRange(PackDesignTimeData(docuSignAuthDto));
             }
             
-            return Task.FromResult(curActionDO);
+            return Task.FromResult(curActivityDO);
         }
 
 
-        private static QuerySettings GetSettings(StandardConfigurationControlsCM ui)
+        private static DocusignQuery GetDocusignQuery(StandardConfigurationControlsCM configurationControls)
                 {
-                var controls = new ActionUi();
+            var actionUi = new ActionUi();
                
-                controls.ClonePropertiesFrom(ui);
+            actionUi.ClonePropertiesFrom(configurationControls);
 
-            var settings = new QuerySettings();
+            var settings = new DocusignQuery();
 
-            settings.Folder = controls.Folder.Value;
-            settings.Status = controls.Status.Value;
-            settings.SearchText = controls.SearchText.Value;
+            settings.Folder = actionUi.Folder.Value;
+            settings.Status = actionUi.Status.Value;
+            settings.SearchText = actionUi.SearchText.Value;
 
             return settings;
         }
                 
-        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActionDO))
+            using (var updater = Crate.UpdateStorage(curActivityDO))
             {
                 updater.CrateStorage.RemoveByLabel("Queryable Criteria");
                 
-                return curActionDO;
+                return curActivityDO;
             }
         }
 
-        private IEnumerable<Crate> PackDesignTimeData(DocuSignAuth authDTO)
+        private IEnumerable<Crate> PackDesignTimeData(DocuSignAuthTokenDTO authToken)
         {
-            var folders = _docuSignFolder.GetFolders(authDTO.Email, authDTO.ApiPassword);
+            var folders = _docuSignFolder.GetSearchFolders(authToken.Email, authToken.ApiPassword);
             var fields = new List<FieldDTO>();
             
             foreach (var folder in folders)
@@ -200,35 +179,12 @@ namespace terminalDocuSign.Actions
             }
 
             yield return Data.Crates.Crate.FromContent("Folders", new StandardDesignTimeFieldsCM(fields));
-
-
-            yield return Data.Crates.Crate.FromContent("Statuses", new StandardDesignTimeFieldsCM(new[]
-            {
-                new FieldDTO("Any status", "<any>"),
-                new FieldDTO("Sent", "sent"),
-                new FieldDTO("Delivered", "delivered"),
-                new FieldDTO("Signed", "signed"),
-                new FieldDTO("Completed", "completed"),
-                new FieldDTO("Declined", "declined"),
-                new FieldDTO("Voided", "voided"),
-                new FieldDTO("Timed Out", "timedout"),
-                new FieldDTO("Authoritative Copy", "authoritativecopy"),
-                new FieldDTO("Transfer Completed", "transfercompleted"),
-                new FieldDTO("Template", "template"),
-                new FieldDTO("Correct", "correct"),
-                new FieldDTO("Created", "created"),
-                new FieldDTO("Delivered", "delivered"),
-                new FieldDTO("Signed", "signed"),
-                new FieldDTO("Declined", "declined"),
-                new FieldDTO("Completed", "completed"),
-                new FieldDTO("Fax Pending", "faxpending"),
-                new FieldDTO("Auto Responded", "autoresponded"),
-            }));
+            yield return Data.Crates.Crate.FromContent("Statuses", new StandardDesignTimeFieldsCM(DocusignQuery.Statuses));
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActionDO))
+            if (Crate.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }

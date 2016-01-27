@@ -7,7 +7,6 @@ using Hub.ExternalServices;
 using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Authorizers;
-using Hub.Managers.APIManagers.Authorizers.Docusign;
 using Hub.Managers.APIManagers.Authorizers.Google;
 using Hub.Managers.APIManagers.Packagers;
 using Hub.Managers.APIManagers.Packagers.SegmentIO;
@@ -30,10 +29,9 @@ namespace terminalQuickBooks
     {
         protected void Application_Start()
         {
-            GlobalConfiguration.Configure(WebApiConfig.Register);
-			DataAutoMapperBootStrapper.ConfigureAutoMapper();
-            // StructureMap Dependencies configuration
             StructureMapBootStrapper.ConfigureDependencies(DependencyType.LIVE);
+            GlobalConfiguration.Configure(RoutesConfig.Register);
+			DataAutoMapperBootStrapper.ConfigureAutoMapper();   
             TerminalBootstrapper.ConfigureLive();
         }
     }

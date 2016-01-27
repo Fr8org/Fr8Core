@@ -31,7 +31,8 @@ namespace terminalDocuSignTests.Integration
         [Test]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}"
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}",
+            MatchType = MessageMatch.Contains
         )]
         public async void Query_DocuSign_Configuration_NoAuth()
         {
@@ -41,7 +42,7 @@ namespace terminalDocuSignTests.Integration
 
             requestActionDTO.AuthToken = null;
 
-            await HttpPostAsync<ActionDTO, ActionDTO>(
+            await HttpPostAsync<ActivityDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                );
@@ -53,7 +54,8 @@ namespace terminalDocuSignTests.Integration
         [Test]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""No AuthToken provided.""}"
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}",
+            MatchType = MessageMatch.Contains
         )]
         public async void Query_DocuSign_Run_NoAuth()
         {
@@ -63,7 +65,7 @@ namespace terminalDocuSignTests.Integration
             requestActionDTO.AuthToken = null;
             requestActionDTO.CrateStorage = Crate.ToDto(CreateConfiguredStorage());
 
-            await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, requestActionDTO);
+            await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, requestActionDTO);
         }
 
         /// <summary>
@@ -72,7 +74,8 @@ namespace terminalDocuSignTests.Integration
         [Test]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""Action was not configured correctly""}"
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""Action was not configured correctly""}",
+            MatchType = MessageMatch.Contains
         )]
         public async void Query_DocuSign_Run_NoConfig()
         {
@@ -81,7 +84,7 @@ namespace terminalDocuSignTests.Integration
             var requestActionDTO = HealthMonitor_FixtureData.Query_DocuSign_v1_InitialConfiguration_ActionDTO();
             requestActionDTO.AuthToken = HealthMonitor_FixtureData.DocuSign_AuthToken();
 
-            await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, requestActionDTO);
+            await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, requestActionDTO);
         }
 
         [Test]
@@ -95,7 +98,7 @@ namespace terminalDocuSignTests.Integration
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<ActivityDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -116,7 +119,7 @@ namespace terminalDocuSignTests.Integration
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<ActivityDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );

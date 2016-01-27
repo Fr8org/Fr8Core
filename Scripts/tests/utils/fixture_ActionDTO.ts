@@ -1,7 +1,7 @@
 ﻿
 module dockyard.tests.utils.fixtures {
 
-    export class ActionDTO {
+    export class ActivityDTO {
 
         public static newRoute = <interfaces.IRouteVM> {
             name: 'Test',
@@ -17,6 +17,7 @@ module dockyard.tests.utils.fixtures {
                     "name": "connection_string",
                     "required": true,
                     "value": "",
+                    "errorMessage": null,
                     "fieldLabel": "SQL Connection String",
                     "events": []
                 },
@@ -25,6 +26,7 @@ module dockyard.tests.utils.fixtures {
                     "name": "query",
                     "required": true,
                     "value": "",
+                    "errorMessage": null,
                     "fieldLabel": "Custom SQL Query",
                     "events": []
                 },
@@ -34,7 +36,8 @@ module dockyard.tests.utils.fixtures {
                     "selected": false,
                     "value": "",
                     "fieldLabel": "Log All Transactions?",
-                    "events": []
+                    "events": [],
+                    "errorMessage": null,
                 },
                 {
                     "type": "checkboxField",
@@ -42,7 +45,8 @@ module dockyard.tests.utils.fixtures {
                     "selected": false,
                     "value": "",
                     "fieldLabel": "Log Some Transactions?",
-                    "events": []
+                    "events": [],
+                    "errorMessage": null
                 },
                 {
                     "type": "checkboxField",
@@ -50,7 +54,8 @@ module dockyard.tests.utils.fixtures {
                     "selected": false,
                     "value": "",
                     "fieldLabel": "Log No Transactions?",
-                    "events": []
+                    "events": [],
+                    "errorMessage": null
                 },
                 {
                     "type": "checkboxField",
@@ -58,7 +63,8 @@ module dockyard.tests.utils.fixtures {
                     "selected": false,
                     "value": "",
                     "fieldLabel": "Log Failed Transactions?",
-                    "events": []
+                    "events": [],
+                    "errorMessage": null
                 }
             ]
         };

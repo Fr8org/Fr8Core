@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Data.Constants;
 using Data.Entities;
 
 namespace Data.Interfaces.DataTransferObjects
@@ -20,9 +21,11 @@ namespace Data.Interfaces.DataTransferObjects
         public Guid? CurrentRouteNodeId { get; set; }
         public Guid? NextRouteNodeId { get; set; }
 
-        public string LastUpdated { get; set; }
+        public DateTimeOffset LastUpdated { get; set; }
 
-        public string CreateDate { get; set; }
+        public DateTimeOffset CreateDate { get; set; }
 
+        public ActivityResponse? CurrentActivityResponse { get; set; }
+        public string CurrentClientActionName { get; set; }
     }
 }

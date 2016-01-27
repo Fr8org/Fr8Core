@@ -173,7 +173,7 @@
     background-size: contain;
     display: inline-block;
     height: 50px;
-    margin: 125px 10px 0 7px;
+    margin: 84px 10px 0 7px;
     width: 50px;
 }
 
@@ -266,7 +266,8 @@ div.action-header {
 
 .action-header-icon img {
     border-radius: 8px!important;
-    width: 48px;
+   /*width: 48px;*/
+    max-width: 72px;
     height: 48px;
     vertical-align: middle;
     }
@@ -281,19 +282,116 @@ div.action-header {
         min-height:180px;
 }
 
-.action-to-add {
+.action-add {
 	display: inline-block;
-	background-color: white;
-	box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 3px 0px, rgba(0, 0, 0, 0.137255) 0px 1px 1px 0px, rgba(0, 0, 0, 0.117647) 0px 2px 1px -1px;
-    cursor: pointer;
-    opacity: 0.5;
-    margin-bottom: 48px;
-    height: 150px;
-	width: 150px;
-	vertical-align: middle;
-	border-radius: 50% !important;
-	text-align: center;
-	line-height: 150px; 
+    vertical-align:top;
+    min-height:300px;
+}
+.action-add-button, .action-category-icon{
+    background: #fCfCfC; 
+    border-radius:50%; 
+    font-size:24px !important;
+    line-height:24px !important; 
+    padding:16px; 
+    margin: 8px;
+    width:24px;
+    box-sizing:content-box;
+    text-align:center;
+    height:24px;
+        transition: all 0.2s ease-out;
+    color: rgba(0,25,0,0.6)
+}
+.action-add-button{
+    margin-top:80px;
+    margin-left:-128px;
+    transition: all 0.2s ease-out;
+    pointer-events: none;
+}
+.action-categories{
+    margin-top:144px;
+    transition: all 0.2s ease-out
+}
+.action-category{
+    display:flex; 
+    align-items:center; 
+    margin-top:-72px;
+    transition: all 0.2s ease-out
+}
+.action-category-name{
+    margin-left:8px;
+    width:56px;
+    opacity:0;
+    transition: all 0.2s ease-out
+}
+.action-category-icon:hover, .action-category--active .action-category-icon{
+    cursor:pointer;
+    background:white;
+}
+.action-category--active .action-category-icon{
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    background:white;
+    color:#444d58
+}
+.action-add:hover .action-add-button, .action-add--active .action-add-button{
+    opacity:0;
+    transform: rotate(90deg);
+}
+.action-add:hover .action-categories, .action-add--active .action-categories{
+    margin-top:-16px;
+}
+.action-add:hover .action-category, .action-add--active .action-category{
+    margin-top:8px;
+}
+.action-add:hover .action-category-name, .action-add--active .action-category-name{
+    opacity:1
+}
+.action-slider{
+    background:white;
+    position:absolute;
+    margin-left:8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    border-radius:8px;
+    top:0px;
+    overflow:hidden;
+    z-index:10 !important;
+    max-width:0;
+    transition: all 0.2s ease-out;
+    min-height:200px;
+    max-height:0px;
+}
+.action-slider--active{
+    max-width:240px;
+    min-height: 296px;
+    max-height:300px;
+}
+.action-slider--active:before{
+    height:2px;
+    background:white;
+    width:16px;
+    position:absolute
+}
+.action-slider .slide{
+    width:240px;
+    display:inline-block;
+    vertical-align:top;
+    padding:8px 0;
+    transition: all 0.2s ease-out;
+    height:300px;
+}
+.action-slider .slide .web-service-action, .action-slider .slide .action-action{
+    padding:8px 16px;
+}
+.action-slider .slide .web-service-action:hover, .action-slider .slide .action-action:hover{
+    cursor:pointer;
+    background:rgba(0,0,0,0.05)
+}
+.action-slider .web-service-action img{
+    max-height:48px;
+    max-width:48px;
+    margin-right:8px;
+}
+.action-terminal-active .slide:first-child{
+    margin-left:-240px;
 }
 
     .action-to-add:hover {
@@ -596,6 +694,10 @@ a.documentation-link {
     cursor: progress;
 }
 
+.disabled-control {
+    background-color: #EBEBE4;
+}
+
 /* DRAG DROP RELATED CSS */
 
 /**
@@ -637,3 +739,43 @@ div[dnd-list].dndDragover {
 }
 
 [ng-table-pagination] { display: none; }
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.glyphicon-remove-tag {
+    color:#cb5a5e;
+}
+
+/* validation error message*/
+.validation-Icon {
+    background-image: url(/Content/img/exclamation-small.png);
+    background-repeat: no-repeat;
+    background-size: contain;
+    display: inline-block;
+    height: 15px;
+    margin: -3px 0;
+    position: relative;
+    width: 15px;
+}
+
+.validation-message {
+    padding: 2px 5px 2px 4px;
+    color: #d12b41;
+    display: inline;
+}
+
+.register-guest-user a{
+    color:#fff;
+    font-size:1.2em;
+}
+
+.register-guest-user a:hover{
+    color: #fff !important;
+    background: #55616f !important;
+}
+
+.ui-select-match {
+    overflow: hidden;
+}

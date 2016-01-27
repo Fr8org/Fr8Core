@@ -29,12 +29,15 @@ namespace Data.Interfaces.DataTransferObjects
 
         [JsonProperty("isMain")]
         public bool IsMain { get; set; }
+
+        [JsonProperty("isSelected")]
+        public bool IsSelected { get; set; }
     }
 
-    public class ManageAuthToken_Terminal_Action
+    public class ManageAuthToken_Terminal_Activity
     {
         [JsonProperty("actionId")]
-        public Guid ActionId { get; set; }
+        public Guid ActivityId { get; set; }
 
         [JsonProperty("terminal")]
         public ManageAuthToken_Terminal Terminal { get; set; }
@@ -43,7 +46,7 @@ namespace Data.Interfaces.DataTransferObjects
     public class ManageAuthToken_Apply
     {
         [JsonProperty("actionId")]
-        public Guid ActionId { get; set; }
+        public Guid ActivityId { get; set; }
 
         [JsonProperty("authTokenId")]
         public Guid AuthTokenId { get; set; }

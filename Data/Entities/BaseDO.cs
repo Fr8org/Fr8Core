@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
 using Data.Infrastructure;
 using Data.Interfaces;
 
 namespace Data.Entities
 {
-    public class BaseDO : IBaseDO, ICreateHook, ISaveHook, IModifyHook
+    public class BaseObject : IBaseDO, ICreateHook, ISaveHook, IModifyHook
     {
         public DateTimeOffset LastUpdated { get; set; }
         public DateTimeOffset CreateDate { get; set; }
@@ -22,7 +23,8 @@ namespace Data.Entities
 
         public virtual void BeforeSave()
         {
-			LastUpdated = DateTimeOffset.UtcNow;
+            // Updateing this property cause  deadlock in some cases
+			//LastUpdated = DateTimeOffset.UtcNow;
         }
 
         public virtual void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)

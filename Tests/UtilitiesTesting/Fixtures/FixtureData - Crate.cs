@@ -11,6 +11,7 @@ using Data.Control;
 using Data.Crates;
 using Newtonsoft.Json;
 using Utilities;
+using Hub.Managers;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -276,6 +277,17 @@ namespace UtilitiesTesting.Fixtures
             curLogItemDTOList.Add(curLogItemDTO);
 
             return curLogItemDTOList;
+        }
+
+        public static CrateDTO CrateDTOForEvents(string externalAccountId)
+        {
+            EventReportCM curEventReportMS = new EventReportCM();
+            curEventReportMS.EventNames = "DocuSign Envelope Sent";
+            curEventReportMS.EventPayload.Add(FixtureData.GetEnvelopeIdCrate());
+            curEventReportMS.ExternalAccountId = externalAccountId;
+            curEventReportMS.Manufacturer = "DocuSign";
+            var curEventReport = Crate.FromContent("Standard Event Report", curEventReportMS);
+            return new CrateManager().ToDto(curEventReport);
         }
     }
 }
