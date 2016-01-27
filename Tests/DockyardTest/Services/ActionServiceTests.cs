@@ -320,7 +320,7 @@ namespace DockyardTest.Services
                 uow.SaveChanges();
 
                 const string actionName = "TestAction";
-                var response = _activity.Create(uow, template.Id, actionName, null, parent);
+                var response = _activity.Create(uow, template.Id, actionName, null, null, parent);
 
                 Assert.AreEqual(parent.ChildNodes.Count, 1);
                 Assert.AreEqual(parent.ChildNodes[0], response);
