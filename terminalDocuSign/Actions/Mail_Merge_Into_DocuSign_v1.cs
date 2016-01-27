@@ -246,14 +246,8 @@ namespace terminalDocuSign.Actions
             try
             {
                 ActivityDO dataSourceActivity = await AddAndConfigureChildActivity(curActivityDO, _dataSourceValue, order: 1);
-                curActivityDO.ChildNodes.Add(dataSourceActivity);
                 ActivityDO mapFieldActivity = await AddAndConfigureChildActivity(curActivityDO, "MapFields", order: 2);
-                curActivityDO.ChildNodes.Add(mapFieldActivity);
                 ActivityDO sendDocuSignEnvActivity = await AddAndConfigureChildActivity(curActivityDO, "Send_DocuSign_Envelope", order: 3);
-                curActivityDO.ChildNodes.Add(sendDocuSignEnvActivity);
-
-
-
             }
             catch (Exception)
             {

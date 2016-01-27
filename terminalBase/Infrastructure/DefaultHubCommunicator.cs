@@ -222,7 +222,7 @@ namespace TerminalBase.Infrastructure
                 formattedPostUrl += "&authorizationTokenId=" + authorizationTokenId.ToString();
             }
 
-            formattedPostUrl += "&ordering=" + ordering.ToString();
+            formattedPostUrl += "&order=" + ordering.ToString();
 
 
             var uri = new Uri(url + formattedPostUrl);
