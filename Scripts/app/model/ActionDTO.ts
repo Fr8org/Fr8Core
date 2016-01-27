@@ -1,5 +1,5 @@
 ﻿module dockyard.model {
-    export class ActionDTO implements interfaces.IActionDTO {
+    export class ActivityDTO implements interfaces.IActivityDTO {
         rootRouteNodeId: string;
         parentRouteNodeId: string;
         id: string;
@@ -11,7 +11,7 @@
         activityTemplateId: number;
         activityTemplate: ActivityTemplate;
         currentView: string;
-        childrenActions: Array<interfaces.IActionDTO>;
+        childrenActions: Array<interfaces.IActivityDTO>;
         height: number = 300;
         ordering: number;
 
@@ -33,8 +33,8 @@
             return <interfaces.IActionVM>angular.extend({}, this);
         }
 
-        clone(): ActionDTO {
-            var result = new ActionDTO(
+        clone(): ActivityDTO {
+            var result = new ActivityDTO(
                 this.rootRouteNodeId,
                 this.parentRouteNodeId,
                 this.id,
@@ -50,8 +50,8 @@
             return action && action.$resolved && !action.isTempId;
         }
 
-        static create(dataObject: interfaces.IActionDTO): ActionDTO {
-            var result = new ActionDTO('', '', '', false);
+        static create(dataObject: interfaces.IActivityDTO): ActivityDTO {
+            var result = new ActivityDTO('', '', '', false);
             result.activityTemplateId = dataObject.activityTemplateId;
             result.activityTemplate = dataObject.activityTemplate;
             result.crateStorage = dataObject.crateStorage;

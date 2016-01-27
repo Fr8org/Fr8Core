@@ -19,7 +19,7 @@ namespace terminalDocuSignTests.Integration
     [Explicit]
     public class Receive_DocuSign_Envelope_v1_Tests : BaseHealthMonitorTest
     {
-        ActionDTO actionDTODesignFields;
+        ActivityDTO actionDTODesignFields;
 
         public override string TerminalName
         {
@@ -40,7 +40,7 @@ namespace terminalDocuSignTests.Integration
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<ActivityDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -78,7 +78,7 @@ namespace terminalDocuSignTests.Integration
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<ActivityDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -113,7 +113,7 @@ namespace terminalDocuSignTests.Integration
             var requestActionDTO = HealthMonitor_FixtureData.Receive_DocuSign_Envelope_v1_Example_ActionDTO();
             requestActionDTO.AuthToken = null;
 
-            await HttpPostAsync<ActionDTO, JToken>(
+            await HttpPostAsync<ActivityDTO, JToken>(
                 configureUrl,
                 requestActionDTO
             );
@@ -129,10 +129,10 @@ namespace terminalDocuSignTests.Integration
 
             var runUrl = GetTerminalRunUrl();
 
-            var actionDTO = actionDTODesignFields;
+            var activityDTO = actionDTODesignFields;
 
             AddPayloadCrate(
-                actionDTO,
+                activityDTO,
                 new EventReportCM()
                 {
                     EventPayload = new CrateStorage()
@@ -148,7 +148,7 @@ namespace terminalDocuSignTests.Integration
             );
 
             var responsePayloadDTO =
-                await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+                await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, activityDTO);
 
             //Assert
             var crateStorage = Crate.GetStorage(responsePayloadDTO);
@@ -168,7 +168,7 @@ namespace terminalDocuSignTests.Integration
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<ActivityDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -189,7 +189,7 @@ namespace terminalDocuSignTests.Integration
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<ActivityDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );

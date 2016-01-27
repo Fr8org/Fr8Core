@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Web;
 using Data.Crates;
 using AutoMapper;
@@ -26,7 +27,7 @@ namespace terminalSlack.Services
             _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
-        public Crate Process(string externalEventPayload)
+        public Task<Crate> Process(string externalEventPayload)
         {
             if (string.IsNullOrEmpty(externalEventPayload))
             {
@@ -46,12 +47,13 @@ namespace terminalSlack.Services
                 EventNames = "Slack Outgoing Message",
                 ContainerDoId = "",
                 EventPayload = WrapPayloadDataCrate(payloadFields),
-                ExternalAccountId = slackToken.Value
+                ExternalAccountId = slackToken.Value,
+                Manufacturer = "Slack"
             };
 
             var curEventReport = Data.Crates.Crate.FromContent("Standard Event Report", eventReportContent);
 
-            return curEventReport;
+            return Task.FromResult(curEventReport);
         }
 
         private List<FieldDTO> ParseSlackPayloadData(string message)

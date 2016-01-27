@@ -43,6 +43,7 @@ namespace Data.Control
         public const string RunRouteButton = "RunRouteButton";
         public const string UpstreamDataChooser = "UpstreamDataChooser";
         public const string UpstreamFieldChooser = "UpstreamFieldChooser";
+        public const string UpstreamCrateChooser = "UpstreamCrateChooser";
     }
 
     public class CheckBox : ControlDefinitionDTO
@@ -261,7 +262,7 @@ namespace Data.Control
             if (fieldValues.Length > 0)
                 return fieldValues[0];
 
-            throw new ApplicationException("No field found with specified key.");
+            throw new ApplicationException(string.Format("No field found with specified key: {0}.", selectedKey));
         }
     }
 
@@ -417,6 +418,21 @@ namespace Data.Control
 
         [JsonProperty("selectedFieldType")]
         public string SelectedFieldType { get; set; }
+    }
+
+    public class UpstreamCrateChooser : ControlDefinitionDTO
+    {
+        public UpstreamCrateChooser()
+        {
+            Type = ControlTypes.UpstreamCrateChooser;
+        }
+
+        [JsonProperty("selectedCrates")]
+        public List<DropDownList> SelectedCrates { get; set; }
+
+        [JsonProperty("multiSelection")]
+        public bool MultiSelection { get; set; }
+        
     }
 
     public class UpstreamFieldChooser : ControlDefinitionDTO

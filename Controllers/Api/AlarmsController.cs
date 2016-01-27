@@ -19,7 +19,8 @@ namespace HubWeb.Controllers
     public class AlarmsController : ApiController
     {
         [HttpPost]
-        [fr8HubWebHMACAuthorize]
+        [Fr8HubWebHMACAuthenticate]
+        [Fr8ApiAuthorize]
         public async Task<IHttpActionResult> Post(AlarmDTO alarmDTO)
         {
             //TODO what happens to AlarmsController? does it stay in memory all this time?
@@ -39,8 +40,8 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var _route = ObjectFactory.GetInstance<IRoute>();
-                await _route.Continue(alarmDTO.ContainerId);
+                var _plan = ObjectFactory.GetInstance<IPlan>();
+                await _plan.Continue(alarmDTO.ContainerId);
                 //TODO report output to somewhere to pusher service maybe
 
                 /*

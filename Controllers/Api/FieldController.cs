@@ -40,7 +40,7 @@ namespace HubWeb.Controllers
         [HttpPost]
         //[Fr8ApiAuthorize]
         [ResponseType(typeof(List<FieldValidationResult>))]
-        [fr8HubWebHMACAuthorize]
+        [Fr8HubWebHMACAuthenticate]
         public async Task<IHttpActionResult> Exists(List<FieldValidationDTO> fieldCheckList)
         {
             var result = new List<FieldValidationResult>();

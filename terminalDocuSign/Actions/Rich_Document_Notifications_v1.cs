@@ -33,6 +33,7 @@ namespace terminalDocuSign.Actions
 
                 Controls.Add(new RadioButtonGroup()
                 {
+                    Name = "Track_Which_Envelopes",
                     Label = "Track which Envelopes?",
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig },
                     Radios = new List<RadioButtonOption>
@@ -83,48 +84,26 @@ namespace terminalDocuSign.Actions
                     }
                 });
                 */
-                Controls.Add(new RadioButtonGroup()
+
+                Controls.Add(new Duration
                 {
-                    Name = "WhenToBeNotified",
-                    Label = "When do you want to be notified?",
-                    Events = new List<ControlEvent> { ControlEvent.RequestConfig },
-                    Radios = new List<RadioButtonOption>
+                    Label = "After you send a Tracked Envelope, Fr8 will wait this long",
+                    Name = "TimePeriod"
+                });
+                Controls.Add(new DropDownList
+                {
+                    Label = "Then Fr8 will notify you if a recipient has not",
+                    Name = "RecipientEvent",
+                    Source = new FieldSourceDTO
                     {
-                        new RadioButtonOption
-                        {
-                            Name = "NotificationMode",
-                            Value = "When the event happens",
-                            Selected = true
-                        },
-                        new RadioButtonOption
-                        {
-                            Name = "NotificationMode",
-                            Value = "If a recipient hasn't taken an action within this amount of time",
-                            Controls = new ControlDefinitionDTO[]
-                            {
-                                new Duration
-                                {
-                                    Label = "After you send a Tracked Envelope, Fr8 will wait this long",
-                                    Name = "TimePeriod"
-                                },
-                                new DropDownList
-                                {
-                                    Label = "Then Fr8 will notify you if a recipient has not",
-                                    Name = "RecipientEvent",
-                                    Source = new FieldSourceDTO
-                                    {
-                                        Label = "AvailableRecipientEvents",
-                                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                        }
-                                },
-                                new TextBlock
-                                {
-                                    Name = "EventInfo",
-                                    Label = "the Envelope"
+                        Label = "AvailableRecipientEvents",
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
                     }
-                            }
-                        }
-                    }
+                });
+                Controls.Add(new TextBlock
+                {
+                    Name = "EventInfo",
+                    Label = "the Envelope"
                 });
 
                 Controls.Add(new DropDownList()
@@ -151,60 +130,57 @@ namespace terminalDocuSign.Actions
             ExplicitConfigurationHelper = new ExplicitConfigurationHelper();
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActionDO))
+            if (Crate.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
 
             return ConfigurationRequestType.Followup;
         }
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO actionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO activityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(actionDO))
+            using (var updater = Crate.UpdateStorage(activityDO))
             {
                 updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(PackControls(new ActionUi()));
                 updater.CrateStorage.Add(PackAvailableTemplates(authTokenDO));
                 updater.CrateStorage.Add(PackAvailableEvents());
-                updater.CrateStorage.Add(await PackAvailableHandlers(actionDO));
-                updater.CrateStorage.Add(await PackAvailableRecipientEvents(actionDO));
+                updater.CrateStorage.Add(await PackAvailableHandlers(activityDO));
+                updater.CrateStorage.Add(await PackAvailableRecipientEvents(activityDO));
             }
 
-            return actionDO;
+            return activityDO;
         }
 
-        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO actionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO activityDO, AuthorizationTokenDO authTokenDO)
         {
-            var controls = Crate.GetStorage(actionDO)
+            var controls = Crate.GetStorage(activityDO)
                 .CrateContentsOfType<StandardConfigurationControlsCM>()
                 .First();
 
             var specificRecipientOption = ((RadioButtonGroup)controls.Controls[0]).Radios[0];
             var specificTemplateOption = ((RadioButtonGroup)controls.Controls[0]).Radios[1];
-            //var specificEventDdl = (DropDownList)controls.Controls[1];
-
-            var whenToBeNotifiedRadioGrp = (RadioButtonGroup)controls.FindByName("WhenToBeNotified");
-            //var notifyWhenEventHappensRadio = whenToBeNotifiedRadioGrp.Radios[0];
-            var notifyWhenEventDoesntHappenRadio = whenToBeNotifiedRadioGrp.Radios[1];
             var howToBeNotifiedDdl = (DropDownList) controls.FindByName("NotificationHandler");
 
             //let's don't add child actions to solution until how to be notified option is selected
             //FR-1873
             if (string.IsNullOrEmpty(howToBeNotifiedDdl.Value))
             {
-                return actionDO;
+                return activityDO;
             }
 
-            actionDO.ChildNodes = new List<RouteNodeDO>();
+            activityDO.ChildNodes = new List<RouteNodeDO>();
 
             int ordering = 0;
 
-            var activityList = await HubCommunicator.GetActivityTemplates(actionDO, CurrentFr8UserId);
+            var activityList = await HubCommunicator.GetActivityTemplates(activityDO, CurrentFr8UserId);
 
             var monitorDocuSignTemplate = GetActivityTemplate(activityList, "Monitor_DocuSign_Envelope_Activity");
-            var monitorDocuSignAction = await CreateMonitorDocuSignAction(monitorDocuSignTemplate, authTokenDO, ++ordering);
+            var monitorDocuSignAction = await CreateMonitorDocuSignAction(monitorDocuSignTemplate, authTokenDO, activityDO);
+
+            
 
             string recipientEmail = null;
             if (specificRecipientOption.Selected)
@@ -220,69 +196,43 @@ namespace terminalDocuSign.Actions
 
             //let's make followup configuration for monitorDocuSignEventAction
             //followup call places EventSubscription crate in storage
-            monitorDocuSignAction = await ConfigureAction(monitorDocuSignTemplate, monitorDocuSignAction, authTokenDO);
+            monitorDocuSignAction = await HubCommunicator.ConfigureActivity(monitorDocuSignAction, CurrentFr8UserId);
             monitorDocuSignAction.AuthorizationToken = authTokenDO;
             monitorDocuSignAction.AuthorizationTokenId = authTokenDO.Id;
-            actionDO.ChildNodes.Add(monitorDocuSignAction);
+            activityDO.ChildNodes.Add(monitorDocuSignAction);
 
-            if (notifyWhenEventDoesntHappenRadio.Selected)
-            {
-                var setDelayTemplate = GetActivityTemplate(activityList, "SetDelay");
-                var durationControl = (Duration)notifyWhenEventDoesntHappenRadio.Controls.First(c => c.Name == "TimePeriod");
-                var setDelayAction = await CreateSetDelayAction(setDelayTemplate, ++ordering);
-                SetDelayActionFields(setDelayAction, durationControl);
-                actionDO.ChildNodes.Add(setDelayAction);
+            
+            var setDelayTemplate = GetActivityTemplate(activityList, "SetDelay");
+            var durationControl = (Duration)controls.FindByName("TimePeriod");
+            var setDelayAction = await CreateSetDelayAction(setDelayTemplate, activityDO);
+            SetDelayActionFields(setDelayAction, durationControl);
+            activityDO.ChildNodes.Add(setDelayAction);
 
-                var queryMTDatabaseTemplate = GetActivityTemplate(activityList, "QueryMTDatabase");
-                var queryMTDatabaseAction = await CreateQueryMTDatabaseAction(queryMTDatabaseTemplate, ++ordering);
-                await SetQueryMTDatabaseActionFields(queryMTDatabaseAction, recipientEmail);
-                //let's make a followup configuration to fill criteria fields
-                queryMTDatabaseAction = await ConfigureAction(queryMTDatabaseTemplate, queryMTDatabaseAction, null);
-                actionDO.ChildNodes.Add(queryMTDatabaseAction);
+            var queryMTDatabaseTemplate = GetActivityTemplate(activityList, "QueryMTDatabase");
+            var queryMTDatabaseAction = await CreateQueryMTDatabaseAction(queryMTDatabaseTemplate, activityDO);
+            await SetQueryMTDatabaseActionFields(queryMTDatabaseAction, recipientEmail);
+            //let's make a followup configuration to fill criteria fields
+                
+            queryMTDatabaseAction = await HubCommunicator.ConfigureActivity(queryMTDatabaseAction, CurrentFr8UserId);
+            activityDO.ChildNodes.Add(queryMTDatabaseAction);
 
-                var recipientEventStatus = (DropDownList)notifyWhenEventDoesntHappenRadio.Controls.First(c => c.Name == "RecipientEvent");
-
-
-                var filterUsingRuntimeTemplate = GetActivityTemplate(activityList, "TestIncomingData");
-                var filterAction = await CreateFilterUsingRunTimeAction(filterUsingRuntimeTemplate, ++ordering);
-                SetFilterUsingRunTimeActionFields(filterAction, recipientEventStatus.Value);
-                actionDO.ChildNodes.Add(filterAction);
-            }
+            var recipientEventStatus = (DropDownList)controls.FindByName("RecipientEvent");
 
 
-            var notifierAction = await CreateNotifierAction(activityList, actionDO, howToBeNotifiedDdl, ++ordering);
+            var filterUsingRuntimeTemplate = GetActivityTemplate(activityList, "TestIncomingData");
+            var filterAction = await CreateFilterUsingRunTimeAction(filterUsingRuntimeTemplate, activityDO);
+            SetFilterUsingRunTimeActionFields(filterAction, recipientEventStatus.Value);
+            activityDO.ChildNodes.Add(filterAction);
+            
+
+
+            var notifierAction = CreateNotifierAction(activityList, activityDO, howToBeNotifiedDdl, ++ordering);
             if (notifierAction != null)
             {
-                actionDO.ChildNodes.Add(notifierAction);
+                activityDO.ChildNodes.Add(notifierAction);
             }
 
-            return actionDO;
-        }
-
-        //TODO next 3 functions could be widely used in project
-        private async Task<ActionDO> ConfigureAction(ActivityTemplateDTO template, ActionDO action, AuthorizationTokenDO authToken)
-            {
-            return await ExplicitConfigurationHelper.Configure(
-                action,
-                template,
-                authToken
-            );
-            }
-
-        private async Task<ActionDO> CreateAction(ActivityTemplateDTO template, string actionName, string actionLabel, int ordering, AuthorizationTokenDO authToken = null)
-            {
-            var action = new ActionDO
-            {
-                IsTempId = true,
-                ActivityTemplateId = template.Id,
-                CrateStorage = Crate.EmptyStorageAsStr(),
-                CreateDate = DateTime.Now,
-                Ordering = ordering,
-                Name = actionName,
-                Label = actionLabel
-            };
-
-            return await ConfigureAction(template, action, authToken);
+            return activityDO;
         }
 
         private ActivityTemplateDTO GetActivityTemplate(IEnumerable<ActivityTemplateDTO> activityList, string activityTemplateName)
@@ -296,7 +246,7 @@ namespace terminalDocuSign.Actions
             return template;
         }
 
-        private void SetFilterUsingRunTimeActionFields(ActionDO filterUsingRunTimeAction, string status)
+        private void SetFilterUsingRunTimeActionFields(ActivityDO filterUsingRunTimeAction, string status)
         {
             using (var updater = Crate.UpdateStorage(filterUsingRunTimeAction))
             {
@@ -325,7 +275,7 @@ namespace terminalDocuSign.Actions
             
         }
 
-        private async Task SetQueryMTDatabaseActionFields(ActionDO queryMTDatabase, string recipientEmail)
+        private async Task SetQueryMTDatabaseActionFields(ActivityDO queryMTDatabase, string recipientEmail)
         {
             //update action's duration value
             using (var updater = Crate.UpdateStorage(queryMTDatabase))
@@ -375,7 +325,7 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        private void SetDelayActionFields(ActionDO setDelayAction, Duration externalDurationControl)
+        private void SetDelayActionFields(ActivityDO setDelayAction, Duration externalDurationControl)
         {
             //update action's duration value
             using (var updater = Crate.UpdateStorage(setDelayAction))
@@ -393,29 +343,33 @@ namespace terminalDocuSign.Actions
 
         #region Action_Creation
 
-        private async Task<ActionDO> CreateFilterUsingRunTimeAction(ActivityTemplateDTO template, int ordering)
+        private async Task<ActivityDO> CreateFilterUsingRunTimeAction(ActivityTemplateDTO template, ActivityDO parentAction)
         {
-            return await CreateAction(template, "Filter Using Run Time", "Filter Using Run Time", ordering);
+            var activity = await HubCommunicator.CreateAndConfigureActivity(template.Id, "Filter Using Run Time", CurrentFr8UserId, "Filter Using Run Time", parentAction.Id, false);
+            return Mapper.Map<ActivityDO>(activity);
         }
-        private async Task<ActionDO> CreateQueryMTDatabaseAction(ActivityTemplateDTO template, int ordering)
+        private async Task<ActivityDO> CreateQueryMTDatabaseAction(ActivityTemplateDTO template, ActivityDO parentAction)
         {
-            return await CreateAction(template, "Query MT Database", "Query MT Database", ordering);
-        }
-
-        private async Task<ActionDO> CreateSetDelayAction(ActivityTemplateDTO template, int ordering)
-        {
-            return await CreateAction(template, "Set Delay", "Set Delay", ordering);
+            var activity = await HubCommunicator.CreateAndConfigureActivity(template.Id, "Query MT Database", CurrentFr8UserId, "Query MT Database", parentAction.Id, false);
+            return Mapper.Map<ActivityDO>(activity);
         }
 
-        private async Task<ActionDO> CreateMonitorDocuSignAction(ActivityTemplateDTO activity, AuthorizationTokenDO authTokenDO, int ordering)
+        private async Task<ActivityDO> CreateSetDelayAction(ActivityTemplateDTO template, ActivityDO parentAction)
         {
-            return await CreateAction(activity, "Monitor DocuSign", "Monitor DocuSign", ordering, authTokenDO);
+            var activity = await HubCommunicator.CreateAndConfigureActivity(template.Id, "Set Delay", CurrentFr8UserId, "Set Delay", parentAction.Id, false);
+            return Mapper.Map<ActivityDO>(activity);
+        }
+
+        private async Task<ActivityDO> CreateMonitorDocuSignAction(ActivityTemplateDTO template, AuthorizationTokenDO authTokenDO, ActivityDO parentAction)
+        {
+            var activity = await HubCommunicator.CreateAndConfigureActivity(template.Id, "Monitor Docusign", CurrentFr8UserId, "Monitor DocuSign", parentAction.Id, false, authTokenDO.Id);
+            return Mapper.Map<ActivityDO>(activity);
         }
 
         #endregion
 
         #region Monitor_DocuSign routines.
-        private string SetMonitorDocuSignSpecificRecipient(ActionDO monitorAction, RadioButtonOption source)
+        private string SetMonitorDocuSignSpecificRecipient(ActivityDO monitorAction, RadioButtonOption source)
         {
             using (var updater = Crate.UpdateStorage(monitorAction))
             {
@@ -433,7 +387,7 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        private void SetMonitorDocuSignSpecificTemplate(ActionDO monitorAction, RadioButtonOption option)
+        private void SetMonitorDocuSignSpecificTemplate(ActivityDO monitorAction, RadioButtonOption option)
         {
             using (var updater = Crate.UpdateStorage(monitorAction))
             {
@@ -451,7 +405,7 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        private void SetMonitorDocuSignSpecificEvent(ActionDO monitorAction)
+        private void SetMonitorDocuSignSpecificEvent(ActivityDO monitorAction)
         {
             using (var updater = Crate.UpdateStorage(monitorAction))
             {
@@ -502,10 +456,10 @@ namespace terminalDocuSign.Actions
             }
         }*/
 
-        private async Task<ActionDO> CreateNotifierAction(IEnumerable<ActivityTemplateDTO> activityList, ActionDO solutionAction, DropDownList ddl, int ordering)
+        private ActivityDO CreateNotifierAction(IEnumerable<ActivityTemplateDTO> activityList, ActivityDO solutionAction, DropDownList ddl, int ordering)
         {
             
-            var notifierAction = (ActionDO)solutionAction.ChildNodes.FirstOrDefault(c => ((ActionDO)c).ActivityTemplate.Tags != null && ((ActionDO)c).ActivityTemplate.Tags.Contains("Notifier"));
+            var notifierAction = (ActivityDO)solutionAction.ChildNodes.FirstOrDefault(c => ((ActivityDO)c).ActivityTemplate.Tags != null && ((ActivityDO)c).ActivityTemplate.Tags.Contains("Notifier"));
             // Remove action if action types do not match.
             if (notifierAction != null)
             {
@@ -527,7 +481,7 @@ namespace terminalDocuSign.Actions
 
                 if (selectedTemplate != null)
                 {
-                    var handlerAction = new ActionDO
+                    var handlerAction = new ActivityDO
                     {
                         IsTempId = true,
                         ActivityTemplateId = selectedTemplate.Id,
@@ -542,7 +496,7 @@ namespace terminalDocuSign.Actions
             }
 
             return null;
-                }
+        }
 
         private async Task<MT_Object> GetMTObject(MT manifestType)
         {
@@ -578,7 +532,7 @@ namespace terminalDocuSign.Actions
             return crate;
         }
 
-        private async Task<Crate> PackAvailableRecipientEvents(ActionDO actionDO)
+        private async Task<Crate> PackAvailableRecipientEvents(ActivityDO activityDO)
         {
             var events = new []{"Created", "Sent", "Delivered", "Signed", "Declined", "FaxPending", "AutoResponded"};
 
@@ -590,9 +544,9 @@ namespace terminalDocuSign.Actions
             return availableRecipientEventsCrate;
         }
 
-        private async Task<Crate> PackAvailableHandlers(ActionDO actionDO)
+        private async Task<Crate> PackAvailableHandlers(ActivityDO activityDO)
         {
-            var templates = await HubCommunicator.GetActivityTemplates(actionDO, CurrentFr8UserId);
+            var templates = await HubCommunicator.GetActivityTemplates(activityDO, CurrentFr8UserId);
             var taggedTemplates = templates.Where(x => x.Tags != null && x.Tags.Contains("Notifier"));
 
             var availableHandlersCrate =
@@ -606,9 +560,9 @@ namespace terminalDocuSign.Actions
 
         #endregion Monitor_DocuSign routines.
 
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            return Success(await GetPayload(curActionDO, containerId));
+            return Success(await GetPayload(curActivityDO, containerId));
         }
     }
 }

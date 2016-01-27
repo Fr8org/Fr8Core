@@ -42,12 +42,12 @@ namespace terminalDocuSign.Tests.Actions
         public async Task Configure_ConfigurationRequestTypeIsInitial_ShouldCrateStorage()
         {
             //Arrange
-            ActionDTO curActionDTO = FixtureData.TestActionDTO1();
+            ActivityDTO curActionDTO = FixtureData.TestActionDTO1();
             curActionDTO.AuthToken = new AuthorizationTokenDTO() { Token = JsonConvert.SerializeObject(TerminalFixtureData.TestDocuSignAuthDTO1()) };
             AuthorizationTokenDO curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
-            ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+            ActivityDO curActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
             //Act
-            var result = await _monitor_DocuSign.Configure(curActionDO,curAuthTokenDO);
+            var result = await _monitor_DocuSign.Configure(curActivityDO,curAuthTokenDO);
 
             //Assert
             var storage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(result);
@@ -83,12 +83,12 @@ namespace terminalDocuSign.Tests.Actions
         public void Configure_ConfigurationRequestTypeIsFollowup_ShouldUpdateEventSubscription()
         {
             //Arrange
-            ActionDTO curActionDTO = FixtureData.TestActionDTO3();
+            ActivityDTO curActionDTO = FixtureData.TestActionDTO3();
             curActionDTO.AuthToken = new AuthorizationTokenDTO() { Token = JsonConvert.SerializeObject(TerminalFixtureData.TestDocuSignAuthDTO1()) };
             AuthorizationTokenDO curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
-            ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+            ActivityDO curActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
             //Act
-            var result = _monitor_DocuSign.Configure(curActionDO,curAuthTokenDO);
+            var result = _monitor_DocuSign.Configure(curActivityDO,curAuthTokenDO);
 
             //Assert
 //            Assert.AreEqual(result.Result.CrateStorage.CrateDTO.Count, result.Result.CrateStorage.CrateDTO.Count);
@@ -96,6 +96,7 @@ namespace terminalDocuSign.Tests.Actions
         }
 
         [Test]
+        [Ignore("Monitor_DocuSign_Envelope_Activity_v1 has no method GetValueForKey")]
         public void GetEnvelopeId_ParameterAsPayloadDTO_ReturnsEnvelopeInformation()
         {
             //Arrange

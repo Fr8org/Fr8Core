@@ -11,17 +11,17 @@ namespace Data.Infrastructure.AutoMapper
     /// AutoMapper converter to convert RouteDO to FullRouteDTO.
     /// </summary>
     public class RouteDOFullConverter
-        : ITypeConverter<RouteDO, RouteFullDTO>
+        : ITypeConverter<PlanDO, RouteFullDTO>
     {
         public const string UnitOfWork_OptionsKey = "UnitOfWork";
 
 
         public RouteFullDTO Convert(ResolutionContext context)
         {
-            var route = (RouteDO)context.SourceValue;
+            var plan = (PlanDO)context.SourceValue;
             var uow = (IUnitOfWork)context.Options.Items[UnitOfWork_OptionsKey];
 
-            if (route == null)
+            if (plan == null)
             {
                 return null;
             }
@@ -29,19 +29,19 @@ namespace Data.Infrastructure.AutoMapper
             var subrouteDTOList = uow.SubrouteRepository
                 .GetQuery()
                 .Include(x => x.ChildNodes)
-                .Where(x => x.ParentRouteNodeId == route.Id)
+                .Where(x => x.ParentRouteNodeId == plan.Id)
                 .OrderBy(x => x.Id)
                 .ToList()
                 .Select((SubrouteDO x) =>
                 {
                     var pntDTO = Mapper.Map<FullSubrouteDTO>(x);
-                    pntDTO.Actions = x.ChildNodes.OfType<ActionDO>().Select(Mapper.Map<ActionDTO>).ToList();
+                    pntDTO.Activities = x.ChildNodes.OfType<ActivityDO>().Select(Mapper.Map<ActivityDTO>).ToList();
                     return pntDTO;
                 }).ToList();
 
-            var result = Mapper.Map<RouteFullDTO>(Mapper.Map<RouteEmptyDTO>(route));
+            var result = Mapper.Map<RouteFullDTO>(Mapper.Map<RouteEmptyDTO>(plan));
             result.Subroutes = subrouteDTOList;
-            result.Fr8UserId = route.Fr8Account.Id;
+            result.Fr8UserId = plan.Fr8Account.Id;
 
             return result;
         }

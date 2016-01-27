@@ -25,13 +25,13 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static RouteDO Route_TerminalIntegration()
+        public static PlanDO Route_TerminalIntegration()
         {
-            return new RouteDO()
+            return new PlanDO()
             {
                 Id = GetTestGuidById(1000),
-                Name = "Test Route Name",
-                Description = "Test Route Description",
+                Name = "Test Plan Name",
+                Description = "Test Plan Description",
                 RouteState = RouteState.Active,
             };
         }
@@ -204,12 +204,26 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static ActionDO TestAction_Blank()
+        public static ActivityDO TestAction_Blank()
         {
-            return new ActionDO()
+            return new ActivityDO()
             {
                 Name = "New Action #1",
                 CrateStorage = ""
+            };
+        }
+
+        public static ActivityTemplateDO TestActivityTemplateDO_MonitorFr8Events()
+        {
+            return new ActivityTemplateDO()
+            {
+                Name = "Monitor_Fr8_Events",
+                Label = "Monitor Fr8 Events",
+                Version = "1",
+                Category = ActivityCategory.Monitors,
+                NeedsAuthentication = false,
+                Terminal = TestTerminal_Core(),
+                MinPaneWidth = 380
             };
         }
     }

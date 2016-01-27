@@ -35,7 +35,7 @@ namespace Data.Infrastructure
         public delegate void IncidentTerminalActionActivationPOSTFailureHandler(string terminalUrl, string curActionDTO, string objectId);
         public static event IncidentTerminalActionActivationPOSTFailureHandler IncidentTerminalActionActivationFailed;
 
-        public delegate void TerminalActionActivatedHandler(ActionDO action);
+        public delegate void TerminalActionActivatedHandler(ActivityDO activity);
         public static event TerminalActionActivatedHandler TerminalActionActivated;
 
 
@@ -105,10 +105,10 @@ namespace Data.Infrastructure
         public delegate void EventContainerCreatedHandler(ContainerDO containerDO);
         public static event EventContainerCreatedHandler EventContainerCreated;
 
-        public delegate void EventContainerSentHandler(ContainerDO containerDO, ActionDO actionDO);
+        public delegate void EventContainerSentHandler(ContainerDO containerDO, ActivityDO activityDO);
         public static event EventContainerSentHandler EventContainerSent;
 
-        public delegate void EventContainerReceivedHandler(ContainerDO containerDO, ActionDO actionDO);
+        public delegate void EventContainerReceivedHandler(ContainerDO containerDO, ActivityDO activityDO);
         public static event EventContainerReceivedHandler EventContainerReceived;
 
         public delegate void EventContainerStateChangedHandler(DbPropertyValues currentValues);
@@ -123,10 +123,10 @@ namespace Data.Infrastructure
         public delegate void EventCriteriaEvaluationFinishedHandler(Guid processId);
         public static event EventCriteriaEvaluationFinishedHandler EventCriteriaEvaluationFinished;
 
-        public delegate void EventActionStartedHandler(ActionDO action);
+        public delegate void EventActionStartedHandler(ActivityDO activity);
         public static event EventActionStartedHandler EventActionStarted;
 
-        public delegate void EventActionDispatchedHandler(ActionDO curAction, Guid processId);
+        public delegate void EventActionDispatchedHandler(ActivityDO curActivity, Guid processId);
         public static event EventActionDispatchedHandler EventActionDispatched;
 
         public delegate void TerminalEventHandler(LoggingDataCm eventDataCm);
@@ -138,7 +138,7 @@ namespace Data.Infrastructure
         public delegate void IncidentDocuSignFieldMissingHandler(string envelopeId, string fieldName);
         public static event IncidentDocuSignFieldMissingHandler IncidentDocuSignFieldMissing;
 
-        public delegate void IncidentMissingFieldInPayloadHandler(string fieldKey, ActionDO action, string curUserId);
+        public delegate void IncidentMissingFieldInPayloadHandler(string fieldKey, ActivityDO activity, string curUserId);
         public static event IncidentMissingFieldInPayloadHandler IncidentMissingFieldInPayload;
 
         public delegate void UnparseableNotificationReceivedHandler(string curNotificationUrl, string curNotificationPayload);
@@ -150,35 +150,46 @@ namespace Data.Infrastructure
         public delegate void IncidentTwilioSMSSendFailureHandler(string number, string message, string errorMsg);
         public static event IncidentTwilioSMSSendFailureHandler IncidentTwilioSMSSendFailure;
 
-        public delegate object AuthenticationCompletedEventHandler(string userId, TerminalDO authenticatedTerminal);
+        public delegate object AuthenticationCompletedEventHandler(string userId, TerminalDO authenticatedTerminal, AuthorizationTokenDTO authToken);
         public static event AuthenticationCompletedEventHandler EventAuthenticationCompleted;
 
+        public delegate void KeyVaultFailureHandler(string keyVaultMethod, Exception ex);
+        public static event KeyVaultFailureHandler KeyVaultFailure;
 
         #region Method
 
+        public static void KeyVaultFailed(string keyVaultMethod, Exception ex)
+        {
+            var handler = KeyVaultFailure;
 
-        public static void TerminalConfigureFailed(string terminalUrl, string actionDTO, string errorMessage, string objectId)
+            if (handler != null)
+            {
+                handler.Invoke(keyVaultMethod, ex);
+            }
+        }
+
+        public static void TerminalConfigureFailed(string terminalUrl, string activityDTO, string errorMessage, string objectId)
         {
             IncidentTerminalConfigurePOSTFailureHandler handler = IncidentTerminalConfigureFailed;
-            if (handler != null) handler(terminalUrl, actionDTO, errorMessage, objectId);
+            if (handler != null) handler(terminalUrl, activityDTO, errorMessage, objectId);
         }
 
-        public static void TerminalRunFailed(string terminalUrl, string actionDTO, string errorMessage, string objectId)
+        public static void TerminalRunFailed(string terminalUrl, string activityDTO, string errorMessage, string objectId)
         {
             IncidentTerminalRunPOSTFailureHandler handler = IncidentTerminalRunFailed;
-            if (handler != null) handler(terminalUrl, actionDTO, errorMessage, objectId);
+            if (handler != null) handler(terminalUrl, activityDTO, errorMessage, objectId);
         }
 
-        public static void TerminalInternalFailureOccurred(string terminalUrl, string actionDTO, Exception e, string objectId)
+        public static void TerminalInternalFailureOccurred(string terminalUrl, string activityDTO, Exception e, string objectId)
         {
             IncidentTerminalInternalFailureHandler handler = IncidentTerminalInternalFailureOccurred;
-            if (handler != null) handler(terminalUrl, actionDTO, e, objectId);
+            if (handler != null) handler(terminalUrl, activityDTO, e, objectId);
         }
 
-        public static void TerminalActionActivationFailed(string terminalUrl, string actionDTO, string objectId)
+        public static void TerminalActionActivationFailed(string terminalUrl, string activityDTO, string objectId)
         {
             IncidentTerminalActionActivationPOSTFailureHandler handler = IncidentTerminalActionActivationFailed;
-            if (handler != null) handler(terminalUrl, actionDTO, objectId);
+            if (handler != null) handler(terminalUrl, activityDTO, objectId);
         }
 
         public static void UserNotification(string userid, string message, TimeSpan expiresIn = default(TimeSpan))
@@ -414,16 +425,16 @@ namespace Data.Infrastructure
             if (handler != null) handler(processId);
         }
 
-        public static void ActionStarted(ActionDO action)
+        public static void ActionStarted(ActivityDO activity)
         {
             var handler = EventActionStarted;
-            if (handler != null) handler(action);
+            if (handler != null) handler(activity);
         }
 
-        public static void ActionDispatched(ActionDO curAction, Guid processId)
+        public static void ActionDispatched(ActivityDO curActivity, Guid processId)
         {
             var handler = EventActionDispatched;
-            if (handler != null) handler(curAction, processId);
+            if (handler != null) handler(curActivity, processId);
         }
 
         public static void ReportTerminalEvent(LoggingDataCm eventDataCm)
@@ -449,10 +460,10 @@ namespace Data.Infrastructure
             var handler = IncidentDocuSignFieldMissing;
             if (handler != null) handler(envelopeId, fieldName);
         }
-        public static void MissingFieldInPayload(string fieldKey, ActionDO action, string userId)
+        public static void MissingFieldInPayload(string fieldKey, ActivityDO activity, string userId)
         {
             var handler = IncidentMissingFieldInPayload;
-            if (handler != null) handler(fieldKey, action, userId);
+            if (handler != null) handler(fieldKey, activity, userId);
         }
 
         public static void OAuthAuthenticationFailed(string requestQueryString, string errorMessage)
@@ -461,10 +472,10 @@ namespace Data.Infrastructure
             if (handler != null) handler(requestQueryString, errorMessage);
         }
 
-        public static void ActionActivated(ActionDO action)
+        public static void ActionActivated(ActivityDO activity)
         {
             var handler = TerminalActionActivated;
-            if (handler != null) handler(action);
+            if (handler != null) handler(activity);
         }
 
         public static void ProcessRequestReceived(ContainerDO containerDO)
@@ -491,16 +502,16 @@ namespace Data.Infrastructure
             if (handler != null) handler(containerDO);
         }
 
-        public static void ContainerSent(ContainerDO containerDO, ActionDO actionDO)
+        public static void ContainerSent(ContainerDO containerDO, ActivityDO activityDO)
         {
             var handler = EventContainerSent;
-            if (handler != null) handler(containerDO, actionDO);
+            if (handler != null) handler(containerDO, activityDO);
         }
 
-        public static void ContainerReceived(ContainerDO containerDO, ActionDO actionDO)
+        public static void ContainerReceived(ContainerDO containerDO, ActivityDO activityDO)
         {
             var handler = EventContainerReceived;
-            if (handler != null) handler(containerDO, actionDO);
+            if (handler != null) handler(containerDO, activityDO);
         }
         internal static void ContainerStateChanged(DbPropertyValues currentValues)
         {
@@ -508,10 +519,10 @@ namespace Data.Infrastructure
             if (handler != null) handler(currentValues);
         }
 
-        public static void TerminalAuthenticationCompleted(string userId, TerminalDO authenticatedTerminal)
+        public static void TerminalAuthenticationCompleted(string userId, TerminalDO authenticatedTerminal, AuthorizationTokenDTO authToken)
         {
             var handler = EventAuthenticationCompleted;
-            if (handler != null) handler(userId, authenticatedTerminal);
+            if (handler != null) handler(userId, authenticatedTerminal, authToken);
         }
 
 

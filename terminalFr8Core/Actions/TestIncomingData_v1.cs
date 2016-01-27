@@ -21,7 +21,7 @@ using TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Actions
 {
-    public class TestIncomingData_v1 : BaseTerminalAction
+    public class TestIncomingData_v1 : BaseTerminalActivity
     {
 
         public TestIncomingData_v1()
@@ -31,11 +31,11 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var curPayloadDTO = await GetPayload(curActionDO, containerId);
+            var curPayloadDTO = await GetPayload(curActivityDO, containerId);
 
-            var controlsMS = Action.GetControlsManifest(curActionDO);
+            var controlsMS = Activity.GetControlsManifest(curActivityDO);
 
             ControlDefinitionDTO filterPaneControl = controlsMS.Controls.FirstOrDefault(x => x.Type == ControlTypes.FilterPane);
             if (filterPaneControl == null)
@@ -206,9 +206,9 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Configure infrastructure.
         /// </summary>
-        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authToken)
+        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authToken)
         {
-            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authToken);
+            return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authToken);
         }
 
         private Crate CreateControlsCrate()
@@ -232,10 +232,10 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Looks for first Create with Id == "Standard Design-Time" among all upcoming Actions.
         /// </summary>
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             var curUpstreamFields =
-                (await GetDesignTimeFields(curActionDO.Id, CrateDirection.Upstream))
+                (await GetDesignTimeFields(curActivityDO, CrateDirection.Upstream))
                 .Fields
                 .ToArray();
 
@@ -245,34 +245,34 @@ namespace terminalFr8Core.Actions
             //build a controls crate to render the pane
             var configurationControlsCrate = CreateControlsCrate();
 
-            using (var updater = Crate.UpdateStorage(() => curActionDO.CrateStorage))
+            using (var updater = Crate.UpdateStorage(() => curActivityDO.CrateStorage))
             {
                 updater.CrateStorage = AssembleCrateStorage(queryFieldsCrate, configurationControlsCrate);
             }
 
-            return curActionDO;
+            return curActivityDO;
         }
 
-        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             var curUpstreamFields =
-                (await GetDesignTimeFields(curActionDO.Id, CrateDirection.Upstream))
+                (await GetDesignTimeFields(curActivityDO.Id, CrateDirection.Upstream))
                 .Fields
                 .ToArray();
 
             //2) Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
             var queryFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Queryable Criteria", curUpstreamFields);
 
-            using (var updater = Crate.UpdateStorage(() => curActionDO.CrateStorage))
+            using (var updater = Crate.UpdateStorage(() => curActivityDO.CrateStorage))
             {
                 updater.CrateStorage.RemoveByLabel("Queryable Criteria");
                 updater.CrateStorage.Add(queryFieldsCrate);
             }
 
-            return curActionDO;
+            return curActivityDO;
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDataPackageDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActionDataPackageDO)
         {
             if (Crate.IsStorageEmpty(curActionDataPackageDO))
             {
@@ -293,9 +293,9 @@ namespace terminalFr8Core.Actions
             }
         }
 
-        protected async Task<CrateDTO> ValidateAction(ActionDO curActionDO)
+        protected async Task<CrateDTO> ValidateAction(ActivityDO curActivityDO)
         {
-            return await ValidateByStandartDesignTimeFields(curActionDO, Crate.GetStorage(curActionDO).FirstCrate<StandardDesignTimeFieldsCM>(x => x.Label == "Queryable Criteria").Content);
+            return await ValidateByStandartDesignTimeFields(curActivityDO, Crate.GetStorage(curActivityDO).FirstCrate<StandardDesignTimeFieldsCM>(x => x.Label == "Queryable Criteria").Content);
         }
 
         /// <summary>
@@ -331,7 +331,7 @@ namespace terminalFr8Core.Actions
 //            return false;
 //        }
 
-        private Crate<TManifest> GetCratesByManifestType<TManifest>(ActionDO curActionDataPackageDO)
+        private Crate<TManifest> GetCratesByManifestType<TManifest>(ActivityDO curActionDataPackageDO)
         {
             string curLabel = string.Empty;
 

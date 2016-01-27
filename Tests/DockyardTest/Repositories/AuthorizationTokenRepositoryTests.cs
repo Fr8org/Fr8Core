@@ -195,7 +195,8 @@ namespace DockyardTest.Repositories
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var tFound = uow.AuthorizationTokenRepository.FindTokenByExternalAccount("ext1");
+                var tFound = uow.AuthorizationTokenRepository
+                    .FindTokenByExternalAccount("ext1", t1.TerminalID, t1.UserID);
 
                 Assert.AreEqual(0, tester.AddedTokens.Count);
                 Assert.AreEqual(0, tester.UpdatedTokens.Count);

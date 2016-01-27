@@ -22,8 +22,9 @@ namespace terminalYammer.Controllers
         private const string curTerminal = "terminalYammer";
 
         [HttpPost]
-        [fr8TerminalHMACAuthorize(curTerminal)]
-        public Task<object> Execute([FromUri] String actionType, [FromBody] ActionDTO curActionDTO)
+        [fr8TerminalHMACAuthenticate(curTerminal)]
+        [Authorize]
+        public Task<object> Execute([FromUri] String actionType, [FromBody] ActivityDTO curActionDTO)
         {
             return HandleFr8Request(curTerminal, actionType, curActionDTO);
         }

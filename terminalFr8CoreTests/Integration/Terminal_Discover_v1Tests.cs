@@ -31,6 +31,7 @@ namespace terminalFr8CoreTests.Integration
         private const string QueryMTDatabaseName = "QueryMTDatabase";
         private const string ShowReportName = "Show_Report_Onscreen";
         private const string StoreFileName = "StoreFile";
+        private const string MonitorFr8Events = "Monitor_Fr8_Events";
 
         public override string TerminalName
         {
@@ -64,6 +65,8 @@ namespace terminalFr8CoreTests.Integration
             Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == ShowReportName));
             Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == StoreFileName));
 
+            
+            Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == MonitorFr8Events));
             
         }
     }

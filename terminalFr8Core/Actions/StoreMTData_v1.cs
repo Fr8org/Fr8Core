@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Data.Control;
+using Data.Crates;
 using Hub.Managers;
 using Newtonsoft.Json;
 using StructureMap;
@@ -15,127 +17,79 @@ using Data.Interfaces.Manifests;
 using Hub.Interfaces;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
+using Data.Repositories;
+using System.Reflection;
+using Data.States;
 
 namespace terminalFr8Core.Actions
 {
-    public class StoreMTData_v1 : BaseTerminalAction
+    public class StoreMTData_v1 : BaseTerminalActivity
     {
-        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
+            return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
         }
 
-        public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            var controls = Crate.GetStorage(activityDO)
+               .CrateContentsOfType<StandardConfigurationControlsCM>()
+               .SingleOrDefault();
+
+            // get the selected event from the drop down
+            var crateChooser = (UpstreamCrateChooser)controls.FindByName("UpstreamCrateChooser");
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+
+                var curProcessPayload = await GetPayload(activityDO, containerId);
+                var labelList = crateChooser.SelectedCrates.Select(c => c.Value);
+
+                var curCrates = Crate.FromDto(curProcessPayload.CrateStorage).CratesOfType<Manifest>().Where(c => labelList.Contains(c.Label));
+
                 //get the process payload
-                var curProcessPayload = await GetPayload(actionDO, containerId);
-
-                //get docu sign envelope crate from payload
-                var curDocuSignEnvelopeCrate = Crate.FromDto(curProcessPayload.CrateStorage).CratesOfType<DocuSignEnvelopeCM>().Single(x => x.Label == "DocuSign Envelope Manifest");
-
-                
-
-                string curFr8AccountId = string.Empty;
-                if (curDocuSignEnvelopeCrate != null)
+                foreach (var curCrate in curCrates)
                 {
-                    DocuSignEnvelopeCM docuSignEnvelope = curDocuSignEnvelopeCrate.Content;
-                    curFr8AccountId = uow.AuthorizationTokenRepository.GetPublicDataQuery().First(x => x.ExternalAccountId == docuSignEnvelope.ExternalAccountId).UserDO.Id;    
-
-                    //store envelope in MT database
-                    uow.MultiTenantObjectRepository.AddOrUpdate(uow, curFr8AccountId, docuSignEnvelope, e => e.EnvelopeId);
-                    uow.SaveChanges();
-                }
-
-                //get docu sign event crate from payload
-                var curDocuSignEventCrate = Crate.FromDto(curProcessPayload.CrateStorage).CratesOfType<DocuSignEventCM>().Single(x => x.Label == "DocuSign Event Manifest");
-
-                if (curDocuSignEventCrate != null)
-                {
-                    DocuSignEventCM docuSignEvent = curDocuSignEventCrate.Content;
-
-                    curFr8AccountId = uow.AuthorizationTokenRepository.GetPublicDataQuery().First(x => x.ExternalAccountId == docuSignEvent.ExternalAccountId).UserDO.Id;
-
-                    //store event in MT database
-                    uow.MultiTenantObjectRepository.AddOrUpdate(uow, curFr8AccountId, docuSignEvent, e => e.EnvelopeId);
-                    uow.SaveChanges();
-                }
-
-                var docusignRecipientCrate = Crate.FromDto(curProcessPayload.CrateStorage).CratesOfType<DocuSignRecipientCM>().Single(x => x.Label == "DocuSign Recipient Manifest");
-                if (docusignRecipientCrate != null)
-                {
-                    var docusignRecipient = docusignRecipientCrate.Content;
-
-                    curFr8AccountId = uow.AuthorizationTokenRepository.GetPublicDataQuery().First(x => x.ExternalAccountId == docusignRecipient.DocuSignAccountId).UserDO.Id;
-
-                    //store event in MT database
-                    uow.MultiTenantObjectRepository.AddOrUpdate(uow, curFr8AccountId, docusignRecipient, e => e.EnvelopeId);
-                    uow.SaveChanges();
+                    var curManifest = (Manifest)curCrate.Content;
+                    // Use reflection to call the generic method
+                    MethodInfo method = typeof(MultiTenantObjectRepository).GetMethod("AddOrUpdate");
+                    MethodInfo addOrUpdate = method.MakeGenericMethod(curManifest.GetType());
+                    addOrUpdate.Invoke(uow.MultiTenantObjectRepository, new object[] { uow, authTokenDO.UserID, curManifest, null });
                 }
 
                 return Success(curProcessPayload);
             }
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActionDO))
+            if (Crate.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
-            var storage = Crate.GetStorage(curActionDO);
-
-            var hasAvailableRunTimeObjectsCrate = storage
-                .CratesOfType<StandardDesignTimeFieldsCM>(c => c.Label == "Available Run-Time Objects").FirstOrDefault() != null;
-
-            var hasSelectedObjectTypeCrate = storage
-                .CratesOfType<StandardDesignTimeFieldsCM>(c => c.Label == "SelectedObjectTypes").FirstOrDefault() != null;
             
-            var hasConfigurationControlsCrate = storage
-                .CratesOfType<StandardConfigurationControlsCM>(c => c.Label == "Configuration_Controls").FirstOrDefault() != null;
-
-
-            if (hasAvailableRunTimeObjectsCrate && hasSelectedObjectTypeCrate && hasConfigurationControlsCrate)
-            {
-                return ConfigurationRequestType.Followup;
-            }
-
-            return ConfigurationRequestType.Initial;
+            return ConfigurationRequestType.Followup;
         }
 
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
+            var mergedUpstreamRunTimeObjects = await MergeUpstreamFields(curActivityDO, "Available Run-Time Objects");
+            FieldDTO[] upstreamLabels = mergedUpstreamRunTimeObjects.Content.
+                Fields.Select(field => new FieldDTO { Key = field.Key, Value = field.Value }).ToArray();
 
-            var curMergedUpstreamRunTimeObjects = await MergeUpstreamFields(curActionDO, "Available Run-Time Objects");
+            var configControls = new StandardConfigurationControlsCM();
+            configControls.Controls.Add(CreateUpstreamCrateChooser("UpstreamCrateChooser", "Choose crate/s to store at MT database"));
+            var curConfigurationControlsCrate = PackControls(configControls);
+            var upstreamLabelsCrate = Crate.CreateDesignTimeFieldsCrate("UpstreamLabels", upstreamLabels);
 
-            var fieldSelectObjectTypes = new DropDownList()
-            {
-                Label = "Save Which Data Types?",
-                Name = "Save Object Name",
-                Required = true,
-                Source = new FieldSourceDTO
-                {
-                    Label = curMergedUpstreamRunTimeObjects.Label,
-                    ManifestType = curMergedUpstreamRunTimeObjects.ManifestType.Type
-                }
-            };
-
-            var curConfigurationControlsCrate = PackControlsCrate(fieldSelectObjectTypes);
-
-            FieldDTO[] curSelectedFields = curMergedUpstreamRunTimeObjects.Content.Fields.Select(field => new FieldDTO {Key = field.Key, Value = field.Value}).ToArray();
-
-            var curSelectedObjectType = Crate.CreateDesignTimeFieldsCrate("SelectedObjectTypes", curSelectedFields);
-
-            using (var updater = Crate.UpdateStorage(() => curActionDO.CrateStorage))
+            using (var updater = Crate.UpdateStorage(() => curActivityDO.CrateStorage))
             {
                 updater.CrateStorage.Clear();
-                updater.CrateStorage.Add(curMergedUpstreamRunTimeObjects);
                 updater.CrateStorage.Add(curConfigurationControlsCrate);
-                updater.CrateStorage.Add(curSelectedObjectType);
+                updater.CrateStorage.Add(upstreamLabelsCrate);
             }
 
-            return curActionDO;
+            return curActivityDO;
         }
     }
 }
