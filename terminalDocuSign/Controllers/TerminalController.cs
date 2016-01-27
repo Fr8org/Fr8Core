@@ -161,8 +161,7 @@ namespace terminalDocuSign.Controllers
                 Version = "1",
                 NeedsAuthentication = true,
                 Category = ActivityCategory.Solution,
-                Terminal = terminal,
-                MinPaneWidth = 500
+                Terminal = terminal
             };
 
 

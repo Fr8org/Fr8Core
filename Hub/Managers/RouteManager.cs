@@ -75,8 +75,8 @@ namespace Hub.Managers
                 var activity2 = Mapper.Map<ActivityTemplateDTO>(_activityTemplate.GetByName(uow, "StoreMTData_v1"));
 
                 //create and configure required actions
-                await _activity.CreateAndConfigure(uow, curFr8Account.Id, activity1.Id, activity1.Name, activity1.Label, subroute.Id);
-                await _activity.CreateAndConfigure(uow, curFr8Account.Id, activity2.Id, activity2.Name, activity2.Label, subroute.Id);
+                await _activity.CreateAndConfigure(uow, curFr8Account.Id, activity1.Id, activity1.Name, activity1.Label, null, subroute.Id);
+                await _activity.CreateAndConfigure(uow, curFr8Account.Id, activity2.Id, activity2.Name, activity2.Label, null, subroute.Id);
 
                 //update database
                 uow.SaveChanges();

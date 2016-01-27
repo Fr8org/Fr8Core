@@ -99,7 +99,7 @@ namespace HubWeb.Controllers
                 }
 
                 var result = await _activity.CreateAndConfigure(uow, userId,
-                    activityTemplate.Id, activityTemplate.Name, activityTemplate.Label, null, true);
+                    activityTemplate.Id, activityTemplate.Name, activityTemplate.Label, null, null, true);
                 return Ok(RouteMappingHelper.MapRouteToDto(uow, (PlanDO)result));
             }
         }

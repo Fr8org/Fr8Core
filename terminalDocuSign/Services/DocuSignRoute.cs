@@ -70,9 +70,9 @@ namespace terminalDocuSign.Services
             var recordDocusignEventsTemplate = GetActivityTemplate(activityTemplates, "Record_DocuSign_Events");
             var storeMTDataTemplate = GetActivityTemplate(activityTemplates, "StoreMTData");
             await _hubCommunicator.CreateAndConfigureActivity(recordDocusignEventsTemplate.Id, "Record_DocuSign_Events",
-                curFr8UserId, "Record DocuSign Events", monitorDocusignRoute.StartingSubrouteId, false, new Guid(authTokenDTO.Id));
+                curFr8UserId, "Record DocuSign Events", 1, monitorDocusignRoute.StartingSubrouteId, false, new Guid(authTokenDTO.Id));
             var storeMTDataActivity = await _hubCommunicator.CreateAndConfigureActivity(storeMTDataTemplate.Id, "StoreMTData",
-                curFr8UserId, "Store MT Data", monitorDocusignRoute.StartingSubrouteId);
+                curFr8UserId, "Store MT Data", 2, monitorDocusignRoute.StartingSubrouteId);
             SetSelectedCrates(storeMTDataActivity);
             //save this
             await _hubCommunicator.ConfigureActivity(storeMTDataActivity, curFr8UserId);
