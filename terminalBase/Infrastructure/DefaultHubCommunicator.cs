@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Formatting;
@@ -257,6 +258,31 @@ namespace TerminalBase.Infrastructure
             var uri = new Uri(url);
 
             return await _restfulServiceClient.GetAsync<IEnumerable<RouteFullDTO>>(uri, null, await GetHMACHeader(uri, userId));
+        }
+
+        public static byte[] ReadFully(Stream input)
+        {
+            var buffer = new byte[16 * 1024];
+            using (var ms = new MemoryStream())
+            {
+                int read;
+                while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    ms.Write(buffer, 0, read);
+                }
+                return ms.ToArray();
+            }
+        }
+
+        public async Task<FileDO> SaveFile(string name, Stream stream, string userId)
+        {
+            var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/files/files";
+            var multiPartData = new MultipartFormDataContent();
+            var byteData = ReadFully(stream);
+            multiPartData.Add(new ByteArrayContent(byteData), name, name);
+            var uri = new Uri(hubUrl);
+            return await _restfulServiceClient.PostAsync<FileDO>(uri, multiPartData, null, await GetHMACHeader(uri, userId, (HttpContent)multiPartData));
         }
     }
 }
