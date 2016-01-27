@@ -15,6 +15,8 @@ using terminalDocuSign.Infrastructure;
 using TerminalBase.BaseClasses;
 using Data.Entities;
 using Utilities.Configuration.Azure;
+using Data.Constants;
+using Data.States;
 
 namespace terminalDocuSign.Actions
 {
@@ -38,13 +40,16 @@ namespace terminalDocuSign.Actions
              * Discussed with Alexei and it is required to have empty Standard UI Control in the crate.
              * So we create a text block which informs the user that this particular aciton does not require any configuration.
              */
-            var textBlock = GenerateTextBlock("Monitor All DocuSign events",
-                "This Action doesn't require any configuration.", "well well-lg");
+            var textBlock = GenerateTextBlock("Monitor All DocuSign events", "This Action doesn't require any configuration.", "well well-lg");
             var curControlsCrate = PackControlsCrate(textBlock);
 
             //create a Standard Event Subscription crate
             var curEventSubscriptionsCrate = Crate.CreateStandardEventSubscriptionsCrate("Standard Event Subscription", "DocuSign", DocuSignEventNames.GetAllEventNames());
 
+            
+            var envelopeCrate = Crate.CreateManifestDescriptionCrate("Available Run-Time Objects", MT.DocuSignEnvelope.ToString(), ((int)MT.DocuSignEnvelope).ToString(), AvailabilityType.RunTime);
+            var eventCrate = Crate.CreateManifestDescriptionCrate("Available Run-Time Objects", MT.DocuSignEvent.ToString(), ((int)MT.DocuSignEvent).ToString(), AvailabilityType.RunTime);
+            var recipientCrate = Crate.CreateManifestDescriptionCrate("Available Run-Time Objects", MT.DocuSignRecipient.ToString(), ((int)MT.DocuSignRecipient).ToString(), AvailabilityType.RunTime);
             //create Standard Design Time Fields for Available Run-Time Objects
             var curAvailableRunTimeObjectsDesignTimeCrate =
                 Crate.CreateDesignTimeFieldsCrate("Available Run-Time Objects", new FieldDTO[]
@@ -56,7 +61,7 @@ namespace terminalDocuSign.Actions
 
             using (var updater = Crate.UpdateStorage(curActivityDO))
             {
-                updater.CrateStorage = new CrateStorage(curControlsCrate, curEventSubscriptionsCrate, curAvailableRunTimeObjectsDesignTimeCrate);
+                updater.CrateStorage = new CrateStorage(curControlsCrate, curEventSubscriptionsCrate, curAvailableRunTimeObjectsDesignTimeCrate, envelopeCrate, eventCrate, recipientCrate);
             }
 
             /*

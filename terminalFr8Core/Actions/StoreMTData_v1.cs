@@ -39,9 +39,9 @@ namespace terminalFr8Core.Actions
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curProcessPayload = await GetPayload(activityDO, containerId);
-                //var labelList = crateChooser.SelectedCrates.Select(c => c.Value);
+                var manifestTypes = crateChooser.SelectedCrates.Select(c => c.ManifestType.Value);
 
-                var curCrates = Crate.FromDto(curProcessPayload.CrateStorage).CratesOfType<Manifest>();/*.Where(c => labelList.Contains(c.Label));*/
+                var curCrates = Crate.FromDto(curProcessPayload.CrateStorage).CratesOfType<Manifest>().Where(c => manifestTypes.Contains(c.ManifestType.Id.ToString(CultureInfo.InvariantCulture)));
 
                 //get the process payload
                 foreach (var curCrate in curCrates)
@@ -76,8 +76,16 @@ namespace terminalFr8Core.Actions
             var configControls = new StandardConfigurationControlsCM();
             configControls.Controls.Add(CreateUpstreamCrateChooser("UpstreamCrateChooser", "Choose crate/s to store at MT database"));
             var curConfigurationControlsCrate = PackControls(configControls);
-            var upstreamLabelsCrate = Crate.CreateDesignTimeFieldsCrate("AvailableUpstreamLabels", upstreamLabels);
-            var upstreamManifestsCrate = Crate.CreateDesignTimeFieldsCrate("AvailableUpstreamManifests", new FieldDTO[] { });
+            
+            //TODO let's leave this like that until Alex decides what to do
+            var upstreamLabelsCrate = Crate.CreateDesignTimeFieldsCrate("AvailableUpstreamLabels", new FieldDTO[] { });
+            //var upstreamLabelsCrate = Crate.CreateDesignTimeFieldsCrate("AvailableUpstreamLabels", upstreamLabels);
+
+
+            var upstreamDescriptions = await GetCratesByDirection<ManifestDescriptionCM>(curActivityDO, CrateDirection.Upstream);
+            var upstreamRunTimeDescriptions = upstreamDescriptions.Where(c => c.Availability == AvailabilityType.RunTime);
+            var fields = upstreamRunTimeDescriptions.Select(c => new FieldDTO(c.Content.Name, c.Content.Id));
+            var upstreamManifestsCrate = Crate.CreateDesignTimeFieldsCrate("AvailableUpstreamManifests", fields.ToArray());
 
             using (var updater = Crate.UpdateStorage(() => curActivityDO.CrateStorage))
             {
