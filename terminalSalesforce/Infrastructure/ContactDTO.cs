@@ -8,9 +8,9 @@ namespace terminalSalesforce.Infrastructure
     public class ContactDTO
     {
         public string FirstName { get; set; }
+
         public string LastName { get; set; }
 
-        //change Mobile Phone to Mobile
         public string MobilePhone { get; set; }
 
         public string Email { get; set; }

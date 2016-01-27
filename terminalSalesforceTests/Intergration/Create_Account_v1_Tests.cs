@@ -132,7 +132,7 @@ namespace terminalSalesforceTests.Intergration
         {
             var configurationControls = curActionCrateStorage.CratesOfType<StandardConfigurationControlsCM>().Single();
 
-            Assert.AreEqual(3, configurationControls.Content.Controls.Count,
+            Assert.AreEqual(16, configurationControls.Content.Controls.Count,
                 "Create Account does not contain the required 3 fields.");
 
             Assert.IsTrue(configurationControls.Content.Controls.Any(ctrl => ctrl.Name.Equals("accountName")),
