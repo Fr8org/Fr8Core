@@ -86,13 +86,12 @@ namespace terminalFr8Core.Controllers
 
             result.Add(new ActivityTemplateDTO
             {
-                Name = "StoreMTData",
-                Label = "Store MT Data",
+                Name = "SaveToFr8Warehouse",
+                Label = "Save To Fr8 Warehouse",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 WebService = webService,
-                Version = "1",
-                MinPaneWidth = 450
+                Version = "1"
             });
 
             result.Add(new ActivityTemplateDTO

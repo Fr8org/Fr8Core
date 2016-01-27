@@ -23,7 +23,7 @@ using Data.States;
 
 namespace terminalFr8Core.Actions
 {
-    public class StoreMTData_v1 : BaseTerminalActivity
+    public class SaveToFr8Warehouse_v1 : BaseTerminalActivity
     {
         public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
@@ -74,7 +74,7 @@ namespace terminalFr8Core.Actions
                 Fields.Select(field => new FieldDTO { Key = field.Key, Value = field.Value }).ToArray();
 
             var configControls = new StandardConfigurationControlsCM();
-            configControls.Controls.Add(CreateUpstreamCrateChooser("UpstreamCrateChooser", "Choose crate/s to store at MT database"));
+            configControls.Controls.Add(CreateUpstreamCrateChooser("UpstreamCrateChooser", "Store which crates?"));
             var curConfigurationControlsCrate = PackControls(configControls);
             
             //TODO let's leave this like that until Alex decides what to do
