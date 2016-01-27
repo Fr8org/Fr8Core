@@ -33,7 +33,7 @@
             $scope.hasDemoService = function () {
                 // temporary solution for checking terminals which services support demo account
                 // terminal == terminalDocuSign
-                return $scope.terminalId == 3;
+                return $scope.terminalId == 2;
             }
 
 
