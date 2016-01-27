@@ -114,7 +114,7 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var plan = uow.RouteRepository.GetByKey(id);
+                var plan = uow.PlanRepository.GetByKey(id);
                 var result = RouteMappingHelper.MapRouteToDto(uow, plan);
 
                 return Ok(result);
@@ -185,7 +185,7 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curPlanDO = uow.RouteRepository.GetByKey(id);
+                var curPlanDO = uow.PlanRepository.GetByKey(id);
                 if (curPlanDO == null)
                 {
                     throw new ApplicationException("Unable to find plan with specified id.");
@@ -265,13 +265,13 @@ namespace HubWeb.Controllers
         [HttpPost]
         [Fr8ApiAuthorize("Admin","Customer", "Terminal")]
         [Fr8HubWebHMACAuthenticate]
-        public async Task<IHttpActionResult> Activate(Guid routeId, bool routeBuilderActivate = false)
+        public async Task<IHttpActionResult> Activate(Guid planId, bool routeBuilderActivate = false)
         {
             string pusherChannel = String.Format("fr8pusher_{0}", User.Identity.Name);
 
             try
             {
-                var activateDTO = await _plan.Activate(routeId, routeBuilderActivate);
+                var activateDTO = await _plan.Activate(planId, routeBuilderActivate);
 
                 //check if the response contains any error message and show it to the user 
                 if(activateDTO != null && activateDTO.ErrorMessage != string.Empty)
@@ -319,13 +319,13 @@ namespace HubWeb.Controllers
         [Fr8ApiAuthorize("Admin", "Customer")]
         //[Route("run")]
         [HttpPost]
-        public async Task<IHttpActionResult> Run(Guid routeId, [FromBody]PayloadVM model)
+        public async Task<IHttpActionResult> Run(Guid planId, [FromBody]PayloadVM model)
         {
             //ACTIVATE - activate route if its inactive
             bool inActive = false;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var routeDO = uow.RouteRepository.GetByKey(routeId);
+                var routeDO = uow.PlanRepository.GetByKey(planId);
 
                 if (routeDO.RouteState == RouteState.Inactive)
                     inActive = true;
@@ -333,7 +333,7 @@ namespace HubWeb.Controllers
 
             if (inActive)
             {
-                await _plan.Activate(routeId, false);
+                await _plan.Activate(planId, false);
             }
 
             //RUN
@@ -358,7 +358,7 @@ namespace HubWeb.Controllers
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var planDO = uow.RouteRepository.GetByKey(routeId);
+                var planDO = uow.PlanRepository.GetByKey(planId);
 
                 try
                 {

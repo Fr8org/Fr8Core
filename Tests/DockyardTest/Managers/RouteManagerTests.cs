@@ -35,7 +35,7 @@ namespace DockyardTest.Managers
             // assert
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                Assert.IsFalse(uow.RouteRepository.GetAll().Count() > 1, "Automatic plan is created in following success");
+                Assert.IsFalse(uow.PlanRepository.GetAll().Count() > 1, "Automatic plan is created in following success");
             }
         }
 

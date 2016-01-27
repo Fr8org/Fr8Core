@@ -249,7 +249,7 @@ namespace TerminalBase.Infrastructure
         public async Task<PlanDO> ActivatePlan(PlanDO planDO, string userId)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                      + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routes/activate?routeId="+planDO.Id;
+                      + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routes/activate?planId=" + planDO.Id;
             var uri = new Uri(url);
 
             return await _restfulServiceClient.PostAsync<PlanDO>(uri, null, await GetHMACHeader(uri, userId));

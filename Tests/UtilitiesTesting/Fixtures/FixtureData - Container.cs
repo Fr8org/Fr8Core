@@ -66,7 +66,7 @@ namespace UtilitiesTesting.Fixtures
             return new Guid("4002ADA2-DCA3-424F-885B-3E7658512150");
         }
 
-        public static Guid TestParentRouteID()
+        public static Guid TestParentPlanID()
         {
             return new Guid("e901f1d8-a042-49c8-94a0-862702e1042c");
         }

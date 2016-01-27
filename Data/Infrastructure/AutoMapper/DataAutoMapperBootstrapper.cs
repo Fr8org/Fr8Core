@@ -101,11 +101,11 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<RouteEmptyDTO, PlanDO>();
             Mapper.CreateMap<PlanDO, RouteEmptyDTO>();
             Mapper.CreateMap<SubrouteDTO, SubrouteDO>()
-                .ForMember(x => x.ParentRouteNodeId, opts => opts.ResolveUsing(x => x.RouteId))
-                .ForMember(x => x.RootRouteNodeId, opts => opts.ResolveUsing(x => x.RouteId));
+                .ForMember(x => x.ParentRouteNodeId, opts => opts.ResolveUsing(x => x.PlanId))
+                .ForMember(x => x.RootRouteNodeId, opts => opts.ResolveUsing(x => x.PlanId));
             Mapper.CreateMap<SubrouteDO, SubrouteDTO>()
-                .ForMember(x => x.RouteId, opts => opts.ResolveUsing(x => x.ParentRouteNodeId))
-                .ForMember(x => x.RouteId, opts => opts.ResolveUsing(x => x.RootRouteNodeId));
+                .ForMember(x => x.PlanId, opts => opts.ResolveUsing(x => x.ParentRouteNodeId))
+                .ForMember(x => x.PlanId, opts => opts.ResolveUsing(x => x.RootRouteNodeId));
 
             Mapper.CreateMap<CriteriaDO, CriteriaDTO>()
                 .ForMember(x => x.Conditions, opts => opts.ResolveUsing(y => y.ConditionsJSON));
