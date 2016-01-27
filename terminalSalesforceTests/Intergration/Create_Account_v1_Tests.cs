@@ -133,15 +133,15 @@ namespace terminalSalesforceTests.Intergration
             var configurationControls = curActionCrateStorage.CratesOfType<StandardConfigurationControlsCM>().Single();
 
             Assert.AreEqual(16, configurationControls.Content.Controls.Count,
-                "Create Account does not contain the required 3 fields.");
+                "Create Account does not contain the required 16 fields.");
 
-            Assert.IsTrue(configurationControls.Content.Controls.Any(ctrl => ctrl.Name.Equals("accountName")),
+            Assert.IsTrue(configurationControls.Content.Controls.Any(ctrl => ctrl.Name.Equals("Name")),
                 "Create Account activity does not have Account Name control");
 
-            Assert.IsTrue(configurationControls.Content.Controls.Any(ctrl => ctrl.Name.Equals("accountNumber")),
+            Assert.IsTrue(configurationControls.Content.Controls.Any(ctrl => ctrl.Name.Equals("AccountNumber")),
                 "Create Account does not have Account Number control");
 
-            Assert.IsTrue(configurationControls.Content.Controls.Any(ctrl => ctrl.Name.Equals("phone")),
+            Assert.IsTrue(configurationControls.Content.Controls.Any(ctrl => ctrl.Name.Equals("Phone")),
                 "Create Account does not have Phone control");
 
             //@AlexAvrutin: Commented this since these textboxes do not require requestConfig event. 
