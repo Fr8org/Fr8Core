@@ -17,7 +17,7 @@ namespace terminalFr8CoreTests.Integration
         private const string TestIncomingDataName = "TestIncomingData";
         private const string MapFieldsName = "MapFields";
         private const string AddPayloadManuallyName = "AddPayloadManually";
-        private const string StoreMTDataName = "StoreMTData";
+        private const string SaveToFr8WarehouseName = "SaveToFr8Warehouse";
         private const string Select_Fr8_ObjectName = "Select_Fr8_Object";
         private const string ConnectToSqlName = "ConnectToSql";
         private const string BuildQueryName = "BuildQuery";
@@ -49,7 +49,7 @@ namespace terminalFr8CoreTests.Integration
             Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == TestIncomingDataName));
             Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == MapFieldsName));
             Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == AddPayloadManuallyName));
-            Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == StoreMTDataName));
+            Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == SaveToFr8WarehouseName));
             Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == Select_Fr8_ObjectName));
             Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == ConnectToSqlName));
             Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == BuildQueryName));
