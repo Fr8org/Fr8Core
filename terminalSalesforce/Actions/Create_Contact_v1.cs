@@ -51,22 +51,11 @@ namespace terminalSalesforce.Actions
                 return NeedsAuthenticationError(payloadCrates);
             }
 
-            var firstName = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "firstName");
-            var lastName = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "lastName");
-            var mobilePhone = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "mobilePhone");
-            var email = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "email");
-            if (string.IsNullOrEmpty(lastName))
+            var contact = _salesforce.CreateSalesforceDTO<ContactDTO>(curActivityDO, payloadCrates, ExtractSpecificOrUpstreamValue);
+            if (string.IsNullOrEmpty(contact.LastName))
             {
                 return Error(payloadCrates, "No last name found in activity.");
             }
-
-            var contact = new ContactDTO
-            {
-                FirstName = firstName,
-                LastName = lastName,
-                MobilePhone = mobilePhone,
-                Email = email
-            };
 
             bool result = await _salesforce.CreateObject(contact, "Contact", _salesforce.CreateForceClient(authTokenDO));
 
