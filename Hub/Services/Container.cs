@@ -95,6 +95,7 @@ namespace Hub.Services
                     //TODO retry activity execution until 3 errors??
                     throw new ErrorResponseException(string.Format("Error on activity. {0}", GetCurrentActionErrorMessage(curContainerDo)));
                 case ActivityResponse.RequestTerminate:
+                    //FR-2163 - If action response requests for termination, we make the container as Completed to avoid unwanted errors.
                     curContainerDo.ContainerState = ContainerState.Completed;
                     break;
                 default:
