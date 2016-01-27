@@ -154,7 +154,7 @@ namespace DockyardTest.Security
                     RouteState = RouteState.Active,
                     Fr8Account = tokenDO.UserDO
                 };
-                uow.RouteRepository.Add(planDO);
+                uow.PlanRepository.Add(planDO);
                 uow.SaveChanges();
 
                 var activityDO = new ActivityDO()

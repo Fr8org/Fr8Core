@@ -19,10 +19,10 @@ namespace Data.Validations
                 .Must(id => {
                     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
-                        return uow.RouteRepository.GetByKey(id) != null;
+                        return uow.PlanRepository.GetByKey(id) != null;
                     }
                 })
-                .WithMessage("RouteId must be a required foreign key for Plan");
+                .WithMessage("PlanId must be a required foreign key for Plan");
         }
     }
 }

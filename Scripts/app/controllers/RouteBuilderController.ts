@@ -13,7 +13,7 @@ module dockyard.controllers {
     }
 
     export interface IRouteBuilderScope extends ng.IScope {
-        routeId: string;
+        planId: string;
         subroutes: Array<model.SubrouteDTO>;
         fields: Array<model.Field>;
         currentSubroute: model.SubrouteDTO;
@@ -188,7 +188,7 @@ module dockyard.controllers {
                         if ($scope.current.route.routeState === model.RouteState.Inactive) {
                             RouteService.deactivate($scope.current.route);
                         } else if ($scope.current.route.routeState === model.RouteState.Active) {
-                                RouteService.activate(<any>{ routeId: $scope.current.route.id, routeBuilderActivate: true })
+                            RouteService.activate(<any>{ planId: $scope.current.route.id, routeBuilderActivate: true })
                                     .$promise.then((result) => {
                                     if (result != null && result.status === "validation_error") {
                                         this.renderActions(result.actionsCollection);
@@ -353,12 +353,12 @@ module dockyard.controllers {
             if ($state.params.solutionName) {
                 var isGuid = /\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/.test($state.params.solutionName);
                 if (isGuid) {
-                    this.$scope.routeId = $state.params.solutionName;
+                    this.$scope.planId = $state.params.solutionName;
                 } else {
                     return this.createNewSolution($state.params.solutionName);
                 }
             } else {
-                this.$scope.routeId = $state.params.id;
+                this.$scope.planId = $state.params.id;
             }
 
             this.loadRoute();
@@ -369,13 +369,13 @@ module dockyard.controllers {
                 solutionName: solutionName
             });
             route.$promise.then((curRoute: interfaces.IRouteVM) => {
-                this.$scope.routeId = curRoute.id;
+                this.$scope.planId = curRoute.id;
                 this.onRouteLoad('solution', curRoute);
             });
         }
 
         private loadRoute(mode = 'route') {
-            var routePromise = this.RouteService.getFull({ id: this.$scope.routeId });
+            var routePromise = this.RouteService.getFull({ id: this.$scope.planId });
             routePromise.$promise.then(this.onRouteLoad.bind(this, mode));
         }
 
@@ -539,7 +539,7 @@ module dockyard.controllers {
                 parentId = eventArgs.group.parentAction.id;
             }
             // Create new action object.
-            var action = new model.ActivityDTO(this.$scope.routeId, parentId, id, true);
+            var action = new model.ActivityDTO(this.$scope.planId, parentId, id, true);
             action.name = activityTemplate.name;
             action.label = activityTemplate.label;
             // Add action to Workflow Designer.

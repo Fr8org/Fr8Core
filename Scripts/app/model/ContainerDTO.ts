@@ -2,7 +2,7 @@
     export class ContainerDTO {
         id: string;
         name: string;
-        routeId: number;
+        planId: number;
         containerState: number;
         currentRouteNodeId: string;
         nextRouteNodeId: string;

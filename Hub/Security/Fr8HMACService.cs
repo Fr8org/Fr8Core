@@ -75,6 +75,14 @@ namespace Hub.Security
             };
         }
 
+        public async Task<Dictionary<string, string>> GenerateHMACHeader(Uri requestUri, string terminalId, string terminalSecret, string userId, HttpContent content)
+        {
+            var timeStamp = GetCurrentUnixTimestampSeconds().ToString(CultureInfo.InvariantCulture);
+            var nonce = Guid.NewGuid().ToString();
+            var hash = await CalculateHMACHash(requestUri, userId, terminalId, terminalSecret, timeStamp, nonce, content);
+            return await GetHMACHeader(hash, userId, terminalId, timeStamp, nonce);
+        }
+
         public async Task<Dictionary<string, string>> GenerateHMACHeader<T>(Uri requestUri, string terminalId, string terminalSecret, string userId, T content)
         {
             var timeStamp = GetCurrentUnixTimestampSeconds().ToString(CultureInfo.InvariantCulture);

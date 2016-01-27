@@ -68,7 +68,7 @@ namespace DockyardTest.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 Assert.AreEqual(0, ptc.ModelState.Count()); //must be no errors
-                var ptdo = uow.RouteRepository.
+                var ptdo = uow.PlanRepository.
                     GetQuery().SingleOrDefault(pt => pt.Fr8Account.Id == _testUserAccount.Id && pt.Name == routeDto.Name);
                 Assert.IsNotNull(ptdo);
                 Assert.AreEqual(routeDto.Description, ptdo.Description);
@@ -208,7 +208,7 @@ namespace DockyardTest.Controllers
             var tPT = FixtureData.TestRouteWithStartingSubroutes_ID0();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.RouteRepository.Add(tPT);
+                uow.PlanRepository.Add(tPT);
                 uow.SaveChanges();
             }
 
@@ -263,7 +263,7 @@ namespace DockyardTest.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 Assert.AreEqual(0, ptc.ModelState.Count()); //must be no errors
-                var ptdo = uow.RouteRepository.
+                var ptdo = uow.PlanRepository.
                     GetQuery().SingleOrDefault(pt => pt.Fr8Account.Id == _testUserAccount.Id && pt.Name == routeDto.Name);
                 Assert.IsNotNull(ptdo);
                 Assert.AreEqual(routeDto.Name, ptdo.Name);
@@ -279,7 +279,7 @@ namespace DockyardTest.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 curPlanDO.Fr8Account = FixtureData.TestDeveloperAccount();
-                uow.RouteRepository.Add(curPlanDO);
+                uow.PlanRepository.Add(curPlanDO);
                 uow.SaveChanges();
             }
 

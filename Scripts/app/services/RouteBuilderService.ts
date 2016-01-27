@@ -9,7 +9,7 @@ module dockyard.services {
         getFull: (id: Object) => interfaces.IRouteVM;
         getByAction: (id: { id: string }) => interfaces.IRouteVM;
         execute: (id: { id: number }, payload: { payload: string }, success: any, error: any) => void;
-        activate: (data :{routeId: string, routeBuilderActivate : boolean}) => any;
+        activate: (data :{planId: string, routeBuilderActivate : boolean}) => any;
         deactivate: (route: model.RouteDTO) => ng.resource.IResource<string>;
         update: (data: { id: string, name: string }) => interfaces.IRouteVM;
         run: (id: string) => ng.IPromise<model.ContainerDTO>;
@@ -110,7 +110,7 @@ module dockyard.services {
                     'execute': {
                         method: 'POST',
                         isArray: false,
-                        url: '/api/routes/run?routeId=:id',
+                        url: '/api/routes/run?planId=:id',
                         params: {
                             id: '@id'
                         }
@@ -120,7 +120,7 @@ module dockyard.services {
                         isArray: false,
                         url: '/api/routes/activate/',
                         params: {
-                            routeId: '@routeId',
+                            planId: '@planId',
                             routeBuilderActivate: '@routeBuilderActivate'
                         }
                     },
@@ -141,7 +141,7 @@ module dockyard.services {
                 });
 
             resource.run = (id: string) : ng.IPromise<model.ContainerDTO> => {
-                var url = '/api/routes/run?routeId=' + id;
+                var url = '/api/routes/run?planId=' + id;
 
                 var d = $q.defer();
 

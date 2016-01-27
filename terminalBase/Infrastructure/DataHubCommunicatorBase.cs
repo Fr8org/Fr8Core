@@ -11,6 +11,7 @@ using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Managers;
 using Data.Constants;
+using System.IO;
 
 namespace TerminalBase.Infrastructure
 {
@@ -95,6 +96,19 @@ namespace TerminalBase.Infrastructure
 
         }
 
+        public Task<FileDO> SaveFile(string name, Stream stream, string userId)
+        {
+            var fileDO = new FileDO
+            {
+                OriginalFileName = name,
+                CreateDate = DateTime.Now,
+                Id = 0,
+                LastUpdated = DateTime.Now
+            };
+            
+            return Task.FromResult(fileDO);
+        }
+
         public Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityDO activityDO, string userId)
         {
             var searchLabel = LabelPrefix + "_ActivityTemplate";
@@ -161,7 +175,7 @@ namespace TerminalBase.Infrastructure
             throw new NotImplementedException();
         }
 
-        public Task<ActivityDTO> CreateAndConfigureActivity(int templateId, string name, string userId, string label = null, Guid? parentNodeId = default(Guid?), bool createRoute = false, Guid? authorizationTokenId = null)
+        public Task<ActivityDTO> CreateAndConfigureActivity(int templateId, string name, string userId, string label = null, int? order = null, Guid? parentNodeId = default(Guid?), bool createRoute = false, Guid? authorizationTokenId = null)
         {
             throw new NotImplementedException();
         }
