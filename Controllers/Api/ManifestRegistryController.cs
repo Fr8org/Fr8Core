@@ -9,19 +9,21 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using Utilities;
 
 namespace HubWeb.Controllers.Api
 {
     public class ManifestRegistryController : ApiController
     {
-
+        private static string systemUserAccountId = ObjectFactory.GetInstance<IConfigRepository>().Get("SystemUserEmail");
+        
         [HttpGet]
-        public IHttpActionResult Get(string userAccountId)
+        public IHttpActionResult Get()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 
-                var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(uow, userAccountId);
+                var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(uow, systemUserAccountId);
                 var list = manifestDescriptions.Select(m => new { m.Id, m.Name, m.Version, m.SampleJSON, m.Description, m.RegisteredBy }).ToList();
 
                 return Ok(list);
@@ -32,11 +34,11 @@ namespace HubWeb.Controllers.Api
         public IHttpActionResult Post(ManifestDescriptionDTO description)
         {
             ManifestDescriptionCM manifestDescription = Mapper.Map<ManifestDescriptionCM>(description);
-            manifestDescription.Id = NextId(description.UserAccountId);
+            manifestDescription.Id = NextId();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.MultiTenantObjectRepository.Add(uow, manifestDescription, description.UserAccountId);
+                uow.MultiTenantObjectRepository.Add(uow, manifestDescription, systemUserAccountId);
 
                 uow.SaveChanges();
             }
@@ -48,27 +50,25 @@ namespace HubWeb.Controllers.Api
 
         [HttpGet]
         [ActionName("checkVersionAndName")]
-        public IHttpActionResult CheckVersionAndName(string versionAndName, string userAccountId)
+        public IHttpActionResult CheckVersionAndName(string version, string name)
         {
-            string version = versionAndName.Split(':')[0];
-            string name = versionAndName.Split(':')[1];
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-
+                // TODO: change this to check version too, expression can be only unary on key property! 
+                // TODO: Need to upgrade MultiTennantObjectRepository
                 var manifestDescription = uow.MultiTenantObjectRepository.Get<ManifestDescriptionCM>
-                                                (uow, userAccountId, a => a.Version == version && a.Name == name);
-
+                                                (uow, systemUserAccountId, a => a.Name == name);
+                
                 return Ok(manifestDescription == null);
             }
         }
 
-        private string NextId(string userAccountId)
+        private string NextId()
         {
             int result = 0;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(uow, userAccountId);
+                var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(uow, systemUserAccountId);
                 if (!manifestDescriptions.Any())
                 {
                     return result.ToString();

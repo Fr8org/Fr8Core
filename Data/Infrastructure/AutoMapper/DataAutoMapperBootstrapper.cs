@@ -132,11 +132,9 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.UserId, x => x.ResolveUsing(y => y.UserID))
                 .ForMember(x => x.Id, x => x.ResolveUsing(y => y.Id.ToString()));
 
-            Mapper.CreateMap<ManifestDescriptionCM, ManifestDescriptionDTO>()
-                  .ForMember(dest => dest.UserAccountId, opt => opt.Ignore());
-            Mapper.CreateMap<ManifestDescriptionDTO, ManifestDescriptionCM>()
-                  .IgnoreAllSourcePropertiesWithAnInaccessibleSetter();
-                  
+            Mapper.CreateMap<ManifestDescriptionCM, ManifestDescriptionDTO>();
+            Mapper.CreateMap<ManifestDescriptionDTO, ManifestDescriptionCM>();
+                                    
 
             Mapper.CreateMap<TerminalDO, TerminalDTO>();
             Mapper.CreateMap<TerminalDTO, TerminalDO>();

@@ -27,7 +27,5 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("registeredBy")]
         public string RegisteredBy { get; set; }
 
-        [JsonProperty("userAccountId")]
-        public string UserAccountId { get; private set; }
     }
 }

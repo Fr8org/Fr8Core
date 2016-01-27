@@ -47,7 +47,7 @@
     </div>
 
     <script type="text/ng-template" id="manifestDescriptionFormModal" >
-        <form role="form" ng-submit="submit(form.$pending == undefined && form.$valid)" name="form" novalidate>
+        <form role="form" ng-submit="submit(form.$valid)" name="form" novalidate>
 
             <div class="modal-header">
                 <h3 class="modal-title">Add ManifestDescription</h3>
@@ -62,12 +62,11 @@
                 </div>
                 <div class="form-group">
                     <label class="control-label">Name</label>
-                    <input type="text" name="name" placeholder="" maxlength="100" class="form-control" ng-model="manifestDescription.name" required ng-change="onChangeNameVersion()"/>
+                    <input type="text" name="name" placeholder="" maxlength="100" class="form-control" ng-model="manifestDescription.name" required />
                 </div>
                 <div class="form-group">
                     <label class="control-label">Version</label>
-                    <input type="text" name="version" placeholder="" maxlength="100" class="form-control" ng-model="manifestDescription.version" required ng-change="onChangeNameVersion()"/>
-                    <input type="text" name="validator" ng-model="validationModel" class="display-hide" unique-version-name />
+                    <input type="text" name="version" placeholder="" maxlength="100" class="form-control" ng-model="manifestDescription.version" required />
                 </div>
                 <div class="form-group">
                     <label class="control-label">SampleJSON</label>
@@ -85,7 +84,7 @@
             </div>
 
             <div class="modal-footer">
-                <button class="btn btn-primary" type="submit" ng-disabled="!(form.$pending == undefined && form.$valid)">Ok</button>
+                <button class="btn btn-primary" type="submit" ng-disabled="!form.$valid">Ok</button>
                 <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
             </div>
 

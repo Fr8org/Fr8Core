@@ -16,26 +16,21 @@ module dockyard.controllers {
         // See http://docs.angularjs.org/guide/di
         public static $inject = [
             '$scope',
-            'UserService',
             'ManifestRegistryService',
             '$modal'
         ];
 
         constructor(
             private $scope: IManifestRegistryListScope,
-            private UserService: services.IUserService,
             private ManifestRegistryService: services.IManifestRegistryService,
             private $modal: any) {
 
             $scope.showAddManifestDescriptionModal = <() => void> angular.bind(this, this.showAddManifestDescriptionModal);
 
-            this.UserService.getCurrentUser().$promise.then(user => {
-                ManifestRegistryService.query({ userAccountId: user.emailAddress }).$promise.then(data => {
+            ManifestRegistryService.query().$promise.then(data => {
                     $scope.manifestRegistry = data;
                 });
-            });
-
-            
+               
         }
 
         private showAddManifestDescriptionModal() {
@@ -45,7 +40,7 @@ module dockyard.controllers {
                 controller: 'ManifestRegistryFormController'
             })
                 .result.then(manifestDescription => {
-                this.$scope.manifestRegistry.push(manifestDescription);
+                    this.$scope.manifestRegistry.push(manifestDescription);
                 });
         }
     }
