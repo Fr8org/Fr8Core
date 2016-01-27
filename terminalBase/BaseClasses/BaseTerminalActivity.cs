@@ -553,6 +553,22 @@ namespace TerminalBase.BaseClasses
         }
 
         /// <summary>
+        /// Adds Text Source for the DTO type. 
+        /// </summary>
+        /// <remarks>The (T), DTO's Proerty Names will be used to name and label the new Text Source Controls</remarks>
+        protected void AddTextSourceControlForDTO<T>(CrateStorage storage, string upstreamSourceLabel,
+                                                     string filterByTag = "",
+                                                     bool addRequestConfigEvent = true, bool required = false)
+        {
+            typeof (T).GetProperties()
+                .Where(property => !property.Name.Equals("Id")).ToList().ForEach(property =>
+                {
+                    AddTextSourceControl(storage, property.Name, property.Name, upstreamSourceLabel, filterByTag,
+                        addRequestConfigEvent, required);
+                });
+        }
+
+        /// <summary>
         /// Creates RadioButtonGroup to enter specific value or choose value from upstream crate.
         /// </summary>
         protected ControlDefinitionDTO CreateSpecificOrUpstreamValueChooser(
