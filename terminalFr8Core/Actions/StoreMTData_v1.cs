@@ -32,20 +32,16 @@ namespace terminalFr8Core.Actions
 
         public async Task<PayloadDTO> Run(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var controls = Crate.GetStorage(activityDO)
-               .CrateContentsOfType<StandardConfigurationControlsCM>()
-               .SingleOrDefault();
-
+            var controls = GetConfigurationControls(activityDO);
             // get the selected event from the drop down
-            var crateChooser = (UpstreamCrateChooser)controls.FindByName("UpstreamCrateChooser");
+            var crateChooser = controls.FindByName<UpstreamCrateChooser>("UpstreamCrateChooser");
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-
                 var curProcessPayload = await GetPayload(activityDO, containerId);
-                var labelList = crateChooser.SelectedCrates.Select(c => c.Value);
+                //var labelList = crateChooser.SelectedCrates.Select(c => c.Value);
 
-                var curCrates = Crate.FromDto(curProcessPayload.CrateStorage).CratesOfType<Manifest>().Where(c => labelList.Contains(c.Label));
+                var curCrates = Crate.FromDto(curProcessPayload.CrateStorage).CratesOfType<Manifest>();/*.Where(c => labelList.Contains(c.Label));*/
 
                 //get the process payload
                 foreach (var curCrate in curCrates)
@@ -80,13 +76,15 @@ namespace terminalFr8Core.Actions
             var configControls = new StandardConfigurationControlsCM();
             configControls.Controls.Add(CreateUpstreamCrateChooser("UpstreamCrateChooser", "Choose crate/s to store at MT database"));
             var curConfigurationControlsCrate = PackControls(configControls);
-            var upstreamLabelsCrate = Crate.CreateDesignTimeFieldsCrate("UpstreamLabels", upstreamLabels);
+            var upstreamLabelsCrate = Crate.CreateDesignTimeFieldsCrate("AvailableUpstreamLabels", upstreamLabels);
+            var upstreamManifestsCrate = Crate.CreateDesignTimeFieldsCrate("AvailableUpstreamManifests", new FieldDTO[] { });
 
             using (var updater = Crate.UpdateStorage(() => curActivityDO.CrateStorage))
             {
                 updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(curConfigurationControlsCrate);
                 updater.CrateStorage.Add(upstreamLabelsCrate);
+                updater.CrateStorage.Add(upstreamManifestsCrate);
             }
 
             return curActivityDO;

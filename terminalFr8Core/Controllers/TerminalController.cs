@@ -91,7 +91,8 @@ namespace terminalFr8Core.Controllers
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 WebService = webService,
-                Version = "1"
+                Version = "1",
+                MinPaneWidth = 450
             });
 
             result.Add(new ActivityTemplateDTO

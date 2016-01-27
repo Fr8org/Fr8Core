@@ -89,7 +89,7 @@ namespace terminalDocuSign.Services
                     .First();
 
                 var upstreamCrateChooser = (UpstreamCrateChooser)configControlCM.FindByName("UpstreamCrateChooser");
-                var existingDdlbSource = upstreamCrateChooser.SelectedCrates[0].Source;
+                var existingDdlbSource = upstreamCrateChooser.SelectedCrates[0].Label.Source;
                 var docusignEnvelope = new DropDownList
                 {
                     selectedKey = "DocuSign Envelope",
@@ -112,7 +112,7 @@ namespace terminalDocuSign.Services
                     Source = existingDdlbSource
                 };
 
-                upstreamCrateChooser.SelectedCrates = new List<DropDownList>{docusignEnvelope, docusignEvent, docusignRecipient};
+                //upstreamCrateChooser.SelectedCrates = new List<DropDownList>{docusignEnvelope, docusignEvent, docusignRecipient};
             }
         }
 
