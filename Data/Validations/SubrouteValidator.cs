@@ -27,7 +27,7 @@ namespace Data.Validations
                     // By the time validation rule gets executed, external UnitOfWork will be disposed.
                     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
-                        var parentTemplateExists = (uow.RouteRepository.GetByKey(id) != null);
+                        var parentTemplateExists = (uow.PlanRepository.GetByKey(id) != null);
                         return parentTemplateExists;
                     }
                 })

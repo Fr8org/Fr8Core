@@ -99,7 +99,7 @@ namespace Hub.Services
         private string GenerateFindObjectsRouteName(
             IUnitOfWork uow, Fr8AccountDO account)
         {
-            var findObjectRoutes = uow.RouteRepository
+            var findObjectRoutes = uow.PlanRepository
                 .GetQuery()
                 .Where(x => x.Fr8Account.Id == account.Id)
                 .Where(x => x.Name.StartsWith("FindObjects #"))

@@ -15,7 +15,7 @@ namespace Data.Interfaces.DataTransferObjects
         [Required]
         public Guid Id { get; set; }
         public string Name { get; set; }
-        public Guid RouteId { get; set; }
+        public Guid PlanId { get; set; }
         public int ContainerState;
 
         public Guid? CurrentRouteNodeId { get; set; }

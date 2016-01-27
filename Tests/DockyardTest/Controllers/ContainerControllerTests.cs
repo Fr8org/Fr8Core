@@ -43,7 +43,7 @@ namespace DockyardTest.Controllers
                 var plan = FixtureData.TestRoute4();
 
                 // This will Add a user as well as a plan for creating Containers
-                unitOfWork.RouteRepository.Add(plan);
+                unitOfWork.PlanRepository.Add(plan);
                 unitOfWork.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, _testUserAccount.Id);
                 unitOfWork.SaveChanges();
 

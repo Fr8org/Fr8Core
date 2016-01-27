@@ -8,14 +8,14 @@ module dockyard.controllers {
 		public static $inject = [
 			'$scope',
 			'RouteService',
-			'routeId',
+			'planId',
 			'$modalInstance'
 		];
 
 		constructor(
 			private $scope: any,
 			private RouteService: services.IRouteService,
-			private routeId: any,
+			private planId: any,
 			private $modalInstance: any) {
 
 			$scope.submit = <() => void> angular.bind(this, this.submit);
@@ -26,7 +26,7 @@ module dockyard.controllers {
 
 		private submit(form) {
             this.RouteService
-                .runAndProcessClientAction(this.routeId)
+                .runAndProcessClientAction(this.planId)
                 .then((successResponse) => {
                     this.$modalInstance.close();
                 })

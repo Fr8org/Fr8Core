@@ -28,7 +28,7 @@ namespace DockyardTest.Controllers
 			rrMock.Setup(x => x.GetByKey(It.IsAny<Guid>())).Returns(new PlanDO());
 
 			Mock<IUnitOfWork> uowMock = new Mock<IUnitOfWork>();
-			uowMock.Setup(x => x.RouteRepository).Returns(rrMock.Object);
+			uowMock.Setup(x => x.PlanRepository).Returns(rrMock.Object);
 
 			Mock<IPlan> routeMock = new Mock<IPlan>();
 			routeMock.Setup(x => x.Run(It.IsAny<PlanDO>(), It.IsAny<Crate>())).ReturnsAsync(new ContainerDO());
@@ -58,7 +58,7 @@ namespace DockyardTest.Controllers
 			rrMock.Setup(x => x.GetByKey(It.IsAny<Guid>())).Returns(new PlanDO());
 
 			Mock<IUnitOfWork> uowMock = new Mock<IUnitOfWork>();
-			uowMock.Setup(x => x.RouteRepository).Returns(rrMock.Object);
+			uowMock.Setup(x => x.PlanRepository).Returns(rrMock.Object);
 
 			Mock<IPlan> routeMock = new Mock<IPlan>();
 			routeMock.Setup(x => x.Run(It.IsAny<PlanDO>(), It.IsAny<Crate>())).ReturnsAsync(new ContainerDO());
@@ -88,7 +88,7 @@ namespace DockyardTest.Controllers
 			rrMock.Setup(x => x.GetByKey(It.IsAny<Guid>())).Returns(new PlanDO());
 
 			Mock<IUnitOfWork> uowMock = new Mock<IUnitOfWork>();
-			uowMock.Setup(x => x.RouteRepository).Returns(rrMock.Object);
+			uowMock.Setup(x => x.PlanRepository).Returns(rrMock.Object);
 
 			Mock<IPlan> routeMock = new Mock<IPlan>();
 			routeMock.Setup(x => x.Run(It.IsAny<PlanDO>(), It.IsAny<Crate>())).ReturnsAsync(new ContainerDO());
