@@ -53,6 +53,6 @@ namespace Hub.Managers
         IEnumerable<FieldDTO> GetFields(IEnumerable<Crate> crates);
         IEnumerable<string> GetLabelsByManifestType(IEnumerable<Crate> crates, string manifestType);
         StandardDesignTimeFieldsCM MergeContentFields(List<Crate<StandardDesignTimeFieldsCM>> curCrates);
-
+        T GetContentType<T>(string crate) where T : class;
     }
 }

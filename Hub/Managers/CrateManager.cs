@@ -11,6 +11,7 @@ using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
 using Data.States;
 using System.Threading.Tasks;
+using StructureMap;
 
 namespace Hub.Managers
 {
@@ -327,6 +328,14 @@ namespace Hub.Managers
             return crates.Where(c => c.ManifestType.Type == manifestType)
                     .GroupBy(c => c.Label)
                     .Select(c => c.Key).ToList();
+        }
+
+        public T GetContentType<T>(string crate) where T : class
+        {
+            ICrateManager _crate = ObjectFactory.GetInstance<ICrateManager>();
+            return _crate.GetStorage(crate)
+                            .CrateContentsOfType<T>()
+                            .FirstOrDefault();
         }
     }
 }

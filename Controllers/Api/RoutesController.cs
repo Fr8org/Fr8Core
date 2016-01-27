@@ -369,9 +369,7 @@ namespace HubWeb.Controllers
 
                         var containerDO = await _plan.Run(planDO, curCrate);
 
-                        var response = _crate.GetStorage(containerDO.CrateStorage)
-                            .CrateContentsOfType<OperationalStateCM>()
-                            .SingleOrDefault();
+                        var response = _crate.GetContentType<OperationalStateCM>(containerDO.CrateStorage);
                         
                         string responseMsg = "";
 
