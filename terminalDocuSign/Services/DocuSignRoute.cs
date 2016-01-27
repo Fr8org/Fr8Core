@@ -15,6 +15,7 @@ using Hub.Managers;
 using StructureMap;
 using terminalDocuSign.Interfaces;
 using TerminalBase.Infrastructure;
+using Data.Constants;
 
 namespace terminalDocuSign.Services
 {
@@ -68,11 +69,11 @@ namespace terminalDocuSign.Services
             var monitorDocusignRoute = await _hubCommunicator.CreatePlan(emptyMonitorRoute, curFr8UserId);
             var activityTemplates = await _hubCommunicator.GetActivityTemplates(null, curFr8UserId);
             var recordDocusignEventsTemplate = GetActivityTemplate(activityTemplates, "Record_DocuSign_Events");
-            var storeMTDataTemplate = GetActivityTemplate(activityTemplates, "StoreMTData");
+            var storeMTDataTemplate = GetActivityTemplate(activityTemplates, "SaveToFr8Warehouse");
             await _hubCommunicator.CreateAndConfigureActivity(recordDocusignEventsTemplate.Id, "Record_DocuSign_Events",
                 curFr8UserId, "Record DocuSign Events", monitorDocusignRoute.StartingSubrouteId, false, new Guid(authTokenDTO.Id));
-            var storeMTDataActivity = await _hubCommunicator.CreateAndConfigureActivity(storeMTDataTemplate.Id, "StoreMTData",
-                curFr8UserId, "Store MT Data", monitorDocusignRoute.StartingSubrouteId);
+            var storeMTDataActivity = await _hubCommunicator.CreateAndConfigureActivity(storeMTDataTemplate.Id, "Save To Fr8 Warehouse",
+                curFr8UserId, "Save To Fr8 Warehouse", monitorDocusignRoute.StartingSubrouteId);
             SetSelectedCrates(storeMTDataActivity);
             //save this
             await _hubCommunicator.ConfigureActivity(storeMTDataActivity, curFr8UserId);
@@ -89,30 +90,36 @@ namespace terminalDocuSign.Services
                     .First();
 
                 var upstreamCrateChooser = (UpstreamCrateChooser)configControlCM.FindByName("UpstreamCrateChooser");
-                var existingDdlbSource = upstreamCrateChooser.SelectedCrates[0].Source;
+                var existingDdlbSource = upstreamCrateChooser.SelectedCrates[0].ManifestType.Source;
+                var existingLabelDdlb = upstreamCrateChooser.SelectedCrates[0].Label;
                 var docusignEnvelope = new DropDownList
                 {
-                    selectedKey = "DocuSign Envelope",
-                    Value = "DocuSign Envelope",
-                    Name = "UpstreamCrateChooser_lbl_dropdown_0",
+                    selectedKey = MT.DocuSignEnvelope.ToString(),
+                    Value = ((int)MT.DocuSignEnvelope).ToString(),
+                    Name = "UpstreamCrateChooser_mnfst_dropdown_0",
                     Source = existingDdlbSource
                 };
                 var docusignEvent = new DropDownList
                 {
-                    selectedKey = "DocuSign Event",
-                    Value = "DocuSign Event",
-                    Name = "UpstreamCrateChooser_lbl_dropdown_1",
+                    selectedKey = MT.DocuSignEvent.ToString(),
+                    Value = ((int)MT.DocuSignEvent).ToString(),
+                    Name = "UpstreamCrateChooser_mnfst_dropdown_1",
                     Source = existingDdlbSource
                 };
                 var docusignRecipient = new DropDownList
                 {
-                    selectedKey = "DocuSign Recipient",
-                    Value = "DocuSign Recipient",
-                    Name = "UpstreamCrateChooser_lbl_dropdown_2",
+                    selectedKey = MT.DocuSignRecipient.ToString(),
+                    Value = ((int)MT.DocuSignRecipient).ToString(),
+                    Name = "UpstreamCrateChooser_mnfst_dropdown_2",
                     Source = existingDdlbSource
                 };
 
-                upstreamCrateChooser.SelectedCrates = new List<DropDownList>{docusignEnvelope, docusignEvent, docusignRecipient};
+                upstreamCrateChooser.SelectedCrates = new List<CrateDetails>()
+                {
+                    new CrateDetails { ManifestType = docusignEnvelope, Label = existingLabelDdlb },
+                    new CrateDetails { ManifestType = docusignEvent, Label = existingLabelDdlb },
+                    new CrateDetails { ManifestType = docusignRecipient, Label = existingLabelDdlb }
+                };
             }
         }
 

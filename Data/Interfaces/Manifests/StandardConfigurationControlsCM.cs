@@ -115,6 +115,11 @@ namespace Data.Interfaces.Manifests
             return Controls.SingleOrDefault(x => x.Name == name);
         }
 
+        public T FindByName<T>(string name) where T : ControlDefinitionDTO
+        {
+            return (T) Controls.SingleOrDefault(x => x.Name == name);
+        }
+
         // Find control of type T recusively.
         public T FindByNameNested<T>(string name)
         {
