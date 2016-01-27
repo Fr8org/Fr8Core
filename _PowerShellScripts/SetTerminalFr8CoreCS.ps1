@@ -11,7 +11,7 @@ if(Test-Path $WebConfig)
    Write-Host "Adding database connection string to $($WebRoleSize)" 
    $xml = [xml](Get-Content $WebConfig)
    $node = $xml.configuration.connectionStrings.add | where {$_.name -eq 'DockyardDB'}
-   $node.connectionString=$ConnectionString
+   $node.connectionString="$ConnectionString"
    try
    {
      $xml.Save($WebConfig)
