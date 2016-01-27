@@ -12,7 +12,7 @@ namespace terminalFr8CoreTests.Integration
     [Explicit]
     public class Terminal_Discover_v1Tests : BaseHealthMonitorTest
     {
-        private const int Fr8CoreActionCount = 17;
+        private const int Fr8CoreActionCount = 18;
 
         private const string TestIncomingDataName = "TestIncomingData";
         private const string MapFieldsName = "MapFields";
@@ -64,8 +64,6 @@ namespace terminalFr8CoreTests.Integration
             Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == QueryMTDatabaseName));
             Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == ShowReportName));
             Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == StoreFileName));
-
-            
             Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == MonitorFr8Events));
             
         }
