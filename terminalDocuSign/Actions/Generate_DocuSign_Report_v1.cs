@@ -79,7 +79,6 @@ namespace terminalDocuSign.Actions
                 Controls.Add((QueryBuilder = new QueryBuilder
                 {
                     Name = "QueryBuilder",
-                    Events = new List<ControlEvent> {ControlEvent.RequestConfig},
                     Value = initialQuery,
                     Source = new FieldSourceDTO
                     {

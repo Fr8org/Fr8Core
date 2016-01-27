@@ -34,6 +34,7 @@ namespace UtilitiesTesting.Fixtures
 
             EventReportCM curEventReportMS = new EventReportCM();
             curEventReportMS.EventNames = "DocuSign Envelope Sent";
+            curEventReportMS.Manufacturer = "DocuSign";
             curEventReportMS.EventPayload.Add(Crate.FromContent("Standard Event Report", new StandardPayloadDataCM(curFields)));
             var payload = new PayloadDTO(TestContainer_Id_1());
 

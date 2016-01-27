@@ -11,7 +11,9 @@ module dockyard.services {
         execute: (id: { id: number }, payload: { payload: string }, success: any, error: any) => void;
         activate: (data :{routeId: string, routeBuilderActivate : boolean}) => any;
         deactivate: (route: model.RouteDTO) => ng.resource.IResource<string>;
-        update: (data: { id: string, name: string}) => interfaces.IRouteVM;
+        update: (data: { id: string, name: string }) => interfaces.IRouteVM;
+        run: (id: string) => ng.IPromise<model.ContainerDTO>;
+        runAndProcessClientAction: (id: string) => ng.IPromise<model.ContainerDTO>;
     }
 
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
@@ -61,69 +63,131 @@ module dockyard.services {
         RouteDTO CRUD service.
     */
 
-    app.factory('RouteService', ['$resource', ($resource: ng.resource.IResourceService): IRouteService =>
-        <IRouteService>$resource('/api/routes?id=:id', { id: '@id' },
-            {
-                'save': {
-                    method: 'POST',
-                    url: '/api/routes/post'
-                },
-                'getFull': {
-                    method: 'GET',
-                    isArray: false,
-                    url: '/api/routes/full/:id',
-                    params: {
-                        id: '@id'
-                    }
-                },
-                'getbystatus': {
-                    method: 'GET',
-                    isArray: true,
-                    url: '/api/routes/status?status=:status',
-                    params: {
-                        status: '@status'
-                    }
-                },
-                'getByAction': {
-                    method: 'GET',
-                    isArray: false,
-                    url: '/api/routes/getByAction/:id',
-                    params: {
-                        id: '@id'
-                    }
-                },
-                'execute': {
-                    method: 'POST',
-                    isArray: false,
-                    url: '/api/routes/run?routeId=:id',
-                    params: {
-                        id: '@id'
-                    }
-                },
-                'activate': {
-                    method: 'POST',
-                    isArray: false,
-                    url: '/api/routes/activate/',
-                    params: {
-                        routeId: '@routeId',
-                        routeBuilderActivate : '@routeBuilderActivate'
-                    }
-                },
-                'deactivate': {
-                    method: 'POST',
-                    isArray: false,
-                    url: '/api/routes/deactivate/',
-                    params: {
-                    }
-                },
-                'update': {
-                    method: 'POST',
-                    url: '/api/routes/',
-                    params: {
+    app.factory('RouteService', [
+        '$resource',
+        '$http',
+        '$q',
+        '$location',
+        function (
+            $resource: ng.resource.IResourceService,
+            $http: ng.IHttpService,
+            $q: ng.IQService,
+            $location: ng.ILocationService
+        ): IRouteService {
 
+            var resource = <IRouteService>$resource(
+                '/api/routes?id=:id',
+                { id: '@id' },
+                {
+                    'save': {
+                        method: 'POST',
+                        url: '/api/routes/post'
+                    },
+                    'getFull': {
+                        method: 'GET',
+                        isArray: false,
+                        url: '/api/routes/full/:id',
+                        params: {
+                            id: '@id'
+                        }
+                    },
+                    'getbystatus': {
+                        method: 'GET',
+                        isArray: true,
+                        url: '/api/routes/status?status=:status',
+                        params: {
+                            status: '@status'
+                        }
+                    },
+                    'getByAction': {
+                        method: 'GET',
+                        isArray: false,
+                        url: '/api/routes/getByAction/:id',
+                        params: {
+                            id: '@id'
+                        }
+                    },
+                    'execute': {
+                        method: 'POST',
+                        isArray: false,
+                        url: '/api/routes/run?routeId=:id',
+                        params: {
+                            id: '@id'
+                        }
+                    },
+                    'activate': {
+                        method: 'POST',
+                        isArray: false,
+                        url: '/api/routes/activate/',
+                        params: {
+                            routeId: '@routeId',
+                            routeBuilderActivate: '@routeBuilderActivate'
+                        }
+                    },
+                    'deactivate': {
+                        method: 'POST',
+                        isArray: false,
+                        url: '/api/routes/deactivate/',
+                        params: {
+                        }
+                    },
+                    'update': {
+                        method: 'POST',
+                        url: '/api/routes/',
+                        params: {
+
+                        }
                     }
-                }
-            })
+                });
+
+            resource.run = (id: string) : ng.IPromise<model.ContainerDTO> => {
+                var url = '/api/routes/run?routeId=' + id;
+
+                var d = $q.defer();
+
+                $http.post(url, null)
+                    .then((res: any) => {
+                        d.resolve(res.data);
+                    })
+                    .catch((err: any) => {
+                        d.reject(err);
+                    });
+
+                return d.promise;
+            };
+
+            resource.runAndProcessClientAction =
+                (id: string): ng.IPromise<model.ContainerDTO> => {
+                    var d = $q.defer();
+
+                    resource.run(id)
+                        .then((container: model.ContainerDTO) => {
+                            if (container
+                                && container.currentActivityResponse == model.ActivityResponse.ExecuteClientAction
+                                && container.currentClientActionName) {
+
+                                switch (container.currentClientActionName) {
+                                    case 'ShowTableReport':
+                                        var path = '/findObjects/' + container.id + '/results';
+                                        $location.path(path);
+                                        break;
+
+                                    default:
+                                        break;
+                                }
+                            }
+
+                            d.resolve(container);
+                        })
+                        .catch((err: any) => {
+                            d.reject(err);
+                        });
+
+                    return d.promise;
+                };
+
+            return resource;
+        }
     ]);
 
     /*

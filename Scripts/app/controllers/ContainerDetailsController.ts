@@ -5,6 +5,7 @@ module dockyard.controllers {
 
     export interface IContainerDetailsScope extends ng.IScope {
         container: interfaces.IContainerVM;
+        payload: interfaces.IContainerVM;
         errorMessage: string;
         id: string
     }
@@ -32,6 +33,7 @@ module dockyard.controllers {
             //     $scope.container = ContainerService.getSingle({ id: $stateParams.id });
             // }
             $scope.container = ContainerService.getSingle({ id: $stateParams.id });
+            $scope.payload = ContainerService.getPayload({ id: $stateParams.id });
         }
     }
 

@@ -81,6 +81,7 @@ namespace Hub.Services
         {
             switch (response)
             {
+                case ActivityResponse.ExecuteClientAction:
                 case ActivityResponse.Success:
                     //ResetActionResponse(uow, curContainerDo);
                     //do nothing

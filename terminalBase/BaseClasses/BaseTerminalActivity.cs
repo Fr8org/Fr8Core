@@ -33,6 +33,7 @@ namespace TerminalBase.BaseClasses
         private readonly ITerminal _terminal;
         protected static readonly string ConfigurationControlsLabel = "Configuration_Controls";
         protected string CurrentFr8UserId { get; set; }
+        protected string _actionName { get; set; }
 
         public IHubCommunicator HubCommunicator { get; set; }
         #endregion
@@ -43,12 +44,18 @@ namespace TerminalBase.BaseClasses
             ManifestDiscovery.Default.GetManifestType<EventSubscriptionCM>()
         };
 
-        public BaseTerminalActivity()
+        public BaseTerminalActivity() : this("Unknown")
+        {
+
+        }
+
+        public BaseTerminalActivity(string actionName)
         {
             Crate = new CrateManager();
             Activity = ObjectFactory.GetInstance<IActivity>();
             _terminal = ObjectFactory.GetInstance<ITerminal>();
             HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
+            _actionName = actionName;
         }
 
         public void SetCurrentUser(string userId)
@@ -568,6 +575,23 @@ namespace TerminalBase.BaseClasses
             return control;
         }
 
+        protected UpstreamCrateChooser CreateUpstreamCrateChooser(string name, string label, bool isMultiSelection = true)
+        {
+            var ctrl = new UpstreamCrateChooser
+            {
+                Name = name,
+                Label = label,
+                SelectedCrates = new List<DropDownList>
+                {
+                    new DropDownList { Name = name+"_lbl_dropdown_0", Source = new FieldSourceDTO(CrateManifestTypes.StandardDesignTimeFields, "UpstreamLabels") }
+                },
+                MultiSelection = isMultiSelection
+            };
+
+            return ctrl;
+        }
+
+
 
         /// <summary>
         /// Extract value from RadioButtonGroup or TextSource where specific value or upstream field was specified.
@@ -659,10 +683,11 @@ namespace TerminalBase.BaseClasses
             if (fieldValues.Length > 0)
                 return fieldValues[0];
 
-            IncidentReporter reporter = ObjectFactory.GetInstance<IncidentReporter>();
-            reporter.IncidentMissingFieldInPayload(fieldKey, curActivity, "");
+            var baseEvent = new BaseTerminalEvent();
+            var exceptionMessage = string.Format("No field found with specified key: {0}.", fieldKey);
+            baseEvent.SendTerminalErrorIncident(_actionName, exceptionMessage, _actionName);
 
-            throw new ApplicationException(string.Format("No field found with specified key: {0}.", fieldKey));
+            throw new ApplicationException(exceptionMessage + " Detailed information has been written to log.");
         }
 
         protected void AddLabelControl(CrateStorage storage, string name, string label, string text)

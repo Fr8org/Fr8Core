@@ -434,9 +434,17 @@ namespace Hub.Services
 
                     foreach (var subscriptionsList in storage.CrateContentsOfType<EventSubscriptionCM>())
                     {
-                        bool hasEvents = subscriptionsList.Subscriptions
-                            .Where(events => curEventReport.EventNames.ToUpper().Trim().Replace(" ", "").Contains(events.ToUpper().Trim().Replace(" ", "")))
-                            .Any();
+                        var manufacturer = subscriptionsList.Manufacturer;
+                        bool hasEvents;
+                        if (string.IsNullOrEmpty(manufacturer) || string.IsNullOrEmpty(curEventReport.Manufacturer))
+                        {
+                            hasEvents = subscriptionsList.Subscriptions.Any(events => curEventReport.EventNames.ToUpper().Trim().Replace(" ", "").Contains(events.ToUpper().Trim().Replace(" ", "")));
+                        }
+                        else
+                        {
+                            hasEvents = subscriptionsList.Subscriptions.Any(events => curEventReport.Manufacturer == manufacturer &&
+                                curEventReport.EventNames.ToUpper().Trim().Replace(" ", "").Contains(events.ToUpper().Trim().Replace(" ", "")));
+                        }
 
                         if (hasEvents)
                         {

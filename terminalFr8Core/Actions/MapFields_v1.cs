@@ -21,6 +21,10 @@ namespace terminalFr8Core.Actions
 {
     public class MapFields_v1 : BaseTerminalActivity
     {
+        public MapFields_v1() : base("terminalFr8Core.MapFields v1")
+        {
+            
+        }
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
@@ -144,7 +148,7 @@ namespace terminalFr8Core.Actions
 
         private void AddErrorTextBlock(CrateStorage storage)
         {
-            var textBlock = GenerateTextBlock("Error",
+            var textBlock = GenerateTextBlock("Attention",
                 "In order to work this Action needs upstream and downstream Actions configured",
                 "well well-lg", "MapFieldsErrorMessage");
             AddControl(storage, textBlock);
