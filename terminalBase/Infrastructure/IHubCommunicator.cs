@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Data.Crates;
 using Data.Entities;
@@ -32,5 +33,6 @@ namespace TerminalBase.Infrastructure
         Task<RouteFullDTO> CreatePlan(RouteEmptyDTO planDTO, string userId);
         Task<PlanDO> ActivatePlan(PlanDO planDO, string userId);
         Task<IEnumerable<RouteFullDTO>> GetPlansByName(string name, string userId);
+        Task<FileDO> SaveFile(string name, Stream stream, string userId);
     }
 }

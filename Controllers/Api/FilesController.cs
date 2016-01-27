@@ -42,16 +42,14 @@ namespace HubWeb.Controllers
 
         [HttpPost]
         [ActionName("files")]
-        [fr8HubWebHMACAuthorize]
+        [Fr8HubWebHMACAuthenticate]
         public async Task<IHttpActionResult> Post()
         {
             FileDO fileDO = null;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                //TODO Create a standard way to get current user id on HMAC authentication
-                var currentUserId = ((TerminalPrinciple) HttpContext.Current.User).GetOnBehalfUserId();
-
+                var currentUserId = _security.GetCurrentUser();
 
                 await Request.Content.ReadAsMultipartAsync<MultipartMemoryStreamProvider>(new MultipartMemoryStreamProvider()).ContinueWith((tsk) =>
                 {
