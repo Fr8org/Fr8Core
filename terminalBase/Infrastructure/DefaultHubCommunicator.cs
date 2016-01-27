@@ -200,7 +200,7 @@ namespace TerminalBase.Infrastructure
             return await _restfulServiceClient.PostAsync<ActivityDTO, ActivityDTO>(uri, activityDTO, null, await GetHMACHeader(uri, userId, activityDTO));
         }
 
-        public async Task<ActivityDTO> CreateAndConfigureActivity(int templateId, string name, string userId, string label = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null)
+        public async Task<ActivityDTO> CreateAndConfigureActivity(int templateId, string name, string userId, string label = null, int? order = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                       + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/actions/create";
@@ -219,7 +219,11 @@ namespace TerminalBase.Infrastructure
             }
             if (authorizationTokenId != null)
             {
-                formattedPostUrl += "&authorizationTokenId=" + authorizationTokenId.ToString();
+                formattedPostUrl += "&authorizationTokenId=" + authorizationTokenId;
+            }
+            if (order != null)
+            {
+                formattedPostUrl += "&order=" + order;
             }
             
             var uri = new Uri(url + formattedPostUrl);

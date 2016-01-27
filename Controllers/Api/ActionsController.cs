@@ -63,13 +63,13 @@ namespace HubWeb.Controllers
 
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
-        public async Task<IHttpActionResult> Create(int actionTemplateId, string name, string label = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null)
+        public async Task<IHttpActionResult> Create(int actionTemplateId, string name, string label = null, int? order = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var userId = User.Identity.GetUserId();
 
-                var result = await _activity.CreateAndConfigure(uow, userId, actionTemplateId, name, label, parentNodeId, createRoute, authorizationTokenId);
+                var result = await _activity.CreateAndConfigure(uow, userId, actionTemplateId, name, label, order, parentNodeId, createRoute, authorizationTokenId);
 
                 if (result is ActivityDO)
                 {
