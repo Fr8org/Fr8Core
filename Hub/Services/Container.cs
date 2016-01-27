@@ -95,7 +95,8 @@ namespace Hub.Services
                     //TODO retry activity execution until 3 errors??
                     throw new ErrorResponseException(string.Format("Error on activity. {0}", GetCurrentActionErrorMessage(curContainerDo)));
                 case ActivityResponse.RequestTerminate:
-                    throw new Exception("Termination request from activity with id " + curContainerDo.CurrentRouteNode.Id);
+                    curContainerDo.ContainerState = ContainerState.Completed;
+                    break;
                 default:
                     throw new Exception("Unknown activity state on activity with id " + curContainerDo.CurrentRouteNode.Id);
             }
