@@ -34,14 +34,7 @@ namespace terminalSalesforce.Actions
             {
                 updater.CrateStorage.Clear();
 
-                AddTextSourceControl(updater.CrateStorage, "First Name", "firstName",
-                    "Upstream Terminal-Provided Fields", addRequestConfigEvent: false);
-                AddTextSourceControl(updater.CrateStorage, "Last Name", "lastName",
-                    "Upstream Terminal-Provided Fields", addRequestConfigEvent: false, required:true);
-                AddTextSourceControl(updater.CrateStorage, "Mobile Phone", "mobilePhone",
-                    "Upstream Terminal-Provided Fields", addRequestConfigEvent: false, required:true);
-                AddTextSourceControl(updater.CrateStorage, "Email", "email",
-                    "Upstream Terminal-Provided Fields", addRequestConfigEvent: false, required:true);
+                AddTextSourceControlForDTO<ContactDTO>(updater.CrateStorage, "Upstream Terminal-Provided Fields", addRequestConfigEvent: false);
 
                 updater.CrateStorage.Add(await CreateAvailableFieldsCrate(curActivityDO));
             }

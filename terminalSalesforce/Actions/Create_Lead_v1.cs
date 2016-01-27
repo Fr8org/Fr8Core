@@ -55,7 +55,7 @@ namespace terminalSalesforce.Actions
             {
                 updater.CrateStorage.Clear();
 
-                AddLeadTextSources<LeadDTO>(updater.CrateStorage);
+                AddTextSourceControlForDTO<LeadDTO>(updater.CrateStorage, "Upstream Terminal-Provided Fields",addRequestConfigEvent: false);
 
                 updater.CrateStorage.Add(await CreateAvailableFieldsCrate(curActivityDO));
             }
@@ -125,13 +125,6 @@ namespace terminalSalesforce.Actions
             }
 
             return Error(payloadCrates, "Lead creation is failed");
-        }
-
-        private void AddLeadTextSources<T>(CrateStorage crateStorage)
-        {
-            typeof(T).GetProperties().Where(property => !property.Name.Equals("Id")).ToList().ForEach(
-                property => AddTextSourceControl(crateStorage, property.Name, property.Name,
-                    "Upstream Terminal-Provided Fields", addRequestConfigEvent: false));
         }
     }
 }
