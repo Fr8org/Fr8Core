@@ -11,6 +11,7 @@ using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Managers;
 using Data.Constants;
+using System.IO;
 
 namespace TerminalBase.Infrastructure
 {
@@ -93,6 +94,19 @@ namespace TerminalBase.Infrastructure
         public async Task CreateAlarm(AlarmDTO alarmDTO, string userId)
         {
 
+        }
+
+        public Task<FileDO> SaveFile(string name, Stream stream, string userId)
+        {
+            var fileDO = new FileDO
+            {
+                OriginalFileName = name,
+                CreateDate = DateTime.Now,
+                Id = 0,
+                LastUpdated = DateTime.Now
+            };
+            
+            return Task.FromResult(fileDO);
         }
 
         public Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityDO activityDO, string userId)

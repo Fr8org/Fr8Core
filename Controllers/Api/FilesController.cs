@@ -7,7 +7,9 @@ using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
+using HubWeb.Infrastructure;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 using Data.Entities;
@@ -40,16 +42,16 @@ namespace HubWeb.Controllers
 
         [HttpPost]
         [ActionName("files")]
+        [fr8HubWebHMACAuthorize]
         public async Task<IHttpActionResult> Post()
         {
             FileDO fileDO = null;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                //var account = _security.GetCurrentAccount(uow);
-                var account = new Fr8AccountDO {
-                    Id = "asdasd"
-                };
+                //TODO Create a standard way to get current user id on HMAC authentication
+                var currentUserId = ((TerminalPrinciple) HttpContext.Current.User).GetOnBehalfUserId();
+
 
                 await Request.Content.ReadAsMultipartAsync<MultipartMemoryStreamProvider>(new MultipartMemoryStreamProvider()).ContinueWith((tsk) =>
                 {
@@ -61,7 +63,7 @@ namespace HubWeb.Controllers
                         var fileName = ctnt.Headers.ContentDisposition.FileName.Replace("\"", string.Empty);
                         fileDO = new FileDO
                         {
-                            DockyardAccountID = account.Id
+                            DockyardAccountID = currentUserId
                         };
 
                         _fileService.Store(uow, fileDO, stream, fileName);
