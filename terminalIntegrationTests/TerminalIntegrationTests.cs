@@ -111,7 +111,7 @@ namespace terminalIntegrationTests
                 uow.UserRepository.Add(_testUserAccount);
                 uow.AuthorizationTokenRepository.Add(_authToken);
 
-                uow.RouteRepository.Add(_planDO);
+                uow.PlanRepository.Add(_planDO);
                 uow.SubrouteRepository.Add(_subrouteDO);
                 // This fix inability of MockDB to correctly resolve requests to collections of derived entites
                 uow.RouteNodeRepository.Add(_subrouteDO);

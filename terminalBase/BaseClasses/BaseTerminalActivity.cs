@@ -33,6 +33,7 @@ namespace TerminalBase.BaseClasses
         private readonly ITerminal _terminal;
         protected static readonly string ConfigurationControlsLabel = "Configuration_Controls";
         protected string CurrentFr8UserId { get; set; }
+        protected string _actionName { get; set; }
 
         public IHubCommunicator HubCommunicator { get; set; }
         #endregion
@@ -43,12 +44,18 @@ namespace TerminalBase.BaseClasses
             ManifestDiscovery.Default.GetManifestType<EventSubscriptionCM>()
         };
 
-        public BaseTerminalActivity()
+        public BaseTerminalActivity() : this("Unknown")
+        {
+
+        }
+
+        public BaseTerminalActivity(string actionName)
         {
             Crate = new CrateManager();
             Activity = ObjectFactory.GetInstance<IActivity>();
             _terminal = ObjectFactory.GetInstance<ITerminal>();
             HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
+            _actionName = actionName;
         }
 
         public void SetCurrentUser(string userId)
@@ -546,6 +553,22 @@ namespace TerminalBase.BaseClasses
         }
 
         /// <summary>
+        /// Adds Text Source for the DTO type. 
+        /// </summary>
+        /// <remarks>The (T), DTO's Proerty Names will be used to name and label the new Text Source Controls</remarks>
+        protected void AddTextSourceControlForDTO<T>(CrateStorage storage, string upstreamSourceLabel,
+                                                     string filterByTag = "",
+                                                     bool addRequestConfigEvent = true, bool required = false)
+        {
+            typeof (T).GetProperties()
+                .Where(property => !property.Name.Equals("Id")).ToList().ForEach(property =>
+                {
+                    AddTextSourceControl(storage, property.Name, property.Name, upstreamSourceLabel, filterByTag,
+                        addRequestConfigEvent, required);
+                });
+        }
+
+        /// <summary>
         /// Creates RadioButtonGroup to enter specific value or choose value from upstream crate.
         /// </summary>
         protected ControlDefinitionDTO CreateSpecificOrUpstreamValueChooser(
@@ -570,14 +593,15 @@ namespace TerminalBase.BaseClasses
 
         protected UpstreamCrateChooser CreateUpstreamCrateChooser(string name, string label, bool isMultiSelection = true)
         {
+            
+            var manifestDdlb = new DropDownList { Name = name+"_mnfst_dropdown_0", Source = new FieldSourceDTO(CrateManifestTypes.StandardDesignTimeFields, "AvailableUpstreamManifests") };
+            var labelDdlb = new DropDownList { Name = name + "_lbl_dropdown_0", Source = new FieldSourceDTO(CrateManifestTypes.StandardDesignTimeFields, "AvailableUpstreamLabels") };
+
             var ctrl = new UpstreamCrateChooser
             {
                 Name = name,
                 Label = label,
-                SelectedCrates = new List<DropDownList>
-                {
-                    new DropDownList { Name = name+"_lbl_dropdown_0", Source = new FieldSourceDTO(CrateManifestTypes.StandardDesignTimeFields, "UpstreamLabels") }
-                },
+                SelectedCrates = new List<CrateDetails> { new CrateDetails { Label = labelDdlb, ManifestType = manifestDdlb } },
                 MultiSelection = isMultiSelection
             };
 
@@ -676,10 +700,11 @@ namespace TerminalBase.BaseClasses
             if (fieldValues.Length > 0)
                 return fieldValues[0];
 
-            IncidentReporter reporter = ObjectFactory.GetInstance<IncidentReporter>();
-            reporter.IncidentMissingFieldInPayload(fieldKey, curActivity, "");
+            var baseEvent = new BaseTerminalEvent();
+            var exceptionMessage = string.Format("No field found with specified key: {0}.", fieldKey);
+            baseEvent.SendTerminalErrorIncident(_actionName, exceptionMessage, _actionName);
 
-            throw new ApplicationException(string.Format("No field found with specified key: {0}.", fieldKey));
+            throw new ApplicationException(exceptionMessage + " Detailed information has been written to log.");
         }
 
         protected void AddLabelControl(CrateStorage storage, string name, string label, string text)

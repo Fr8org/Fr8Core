@@ -75,8 +75,8 @@ namespace Hub.Managers
                 var activity2 = Mapper.Map<ActivityTemplateDTO>(_activityTemplate.GetByName(uow, "StoreMTData_v1"));
 
                 //create and configure required actions
-                await _activity.CreateAndConfigure(uow, curFr8Account.Id, activity1.Id, activity1.Name, activity1.Label, subroute.Id);
-                await _activity.CreateAndConfigure(uow, curFr8Account.Id, activity2.Id, activity2.Name, activity2.Label, subroute.Id);
+                await _activity.CreateAndConfigure(uow, curFr8Account.Id, activity1.Id, activity1.Name, activity1.Label, null, subroute.Id);
+                await _activity.CreateAndConfigure(uow, curFr8Account.Id, activity2.Id, activity2.Name, activity2.Label, null, subroute.Id);
 
                 //update database
                 uow.SaveChanges();
@@ -85,11 +85,11 @@ namespace Hub.Managers
 
         private PlanDO GetExistingRoute(IUnitOfWork uow, string routeName, string fr8AccountEmail)
         {
-            if (uow.RouteRepository.GetQuery().Any(existingRoute =>
+            if (uow.PlanRepository.GetQuery().Any(existingRoute =>
                 existingRoute.Name.Equals(routeName) &&
                 existingRoute.Fr8Account.Email.Equals(fr8AccountEmail)))
             {
-                return uow.RouteRepository.GetQuery().First(existingRoute =>
+                return uow.PlanRepository.GetQuery().First(existingRoute =>
                     existingRoute.Name.Equals(routeName) &&
                     existingRoute.Fr8Account.Email.Equals(fr8AccountEmail));
             }

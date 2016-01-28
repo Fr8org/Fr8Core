@@ -21,8 +21,8 @@ module dockyard.directives {
             });
         };
         
-        var copyRoute = function ($q, $http, routeId, routeName): ng.IPromise<any> {
-            var url = '/api/routes/copy?id=' + routeId + '&name=' + routeName;
+        var copyRoute = function ($q, $http, planId, routeName): ng.IPromise<any> {
+            var url = '/api/routes/copy?id=' + planId + '&name=' + routeName;
 
             return $q(function (resolve, reject) {
                 $http.post(url)

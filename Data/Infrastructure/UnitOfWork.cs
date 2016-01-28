@@ -435,7 +435,7 @@ namespace Data.Infrastructure
 	  }
       private IPlanRepository _routeRepository;
 
-        public IPlanRepository RouteRepository
+        public IPlanRepository PlanRepository
         {
             get
             {
