@@ -697,11 +697,10 @@ namespace TerminalBase.BaseClasses
 
 
         /// <summary>
-        /// TextBlock TextBox and DropDownList are supported
         /// specify selected FieldDO for DropDownList
         /// specify Value (TimeSpan) for Duration
         /// </summary>
-        protected void SetChildActivityControlValue(ActivityDO activity, string name, object value)
+        protected void SetControlValue(ActivityDO activity, string controlFullName, object value)
         {
             using (var updater = Crate.UpdateStorage(activity))
             {
@@ -709,7 +708,7 @@ namespace TerminalBase.BaseClasses
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
                     .First().Controls;
 
-                var control = TraverseNestedControls(controls, name);
+                var control = TraverseNestedControls(controls, controlFullName);
                 switch (control.Type)
                 {
                     case "TextBlock":

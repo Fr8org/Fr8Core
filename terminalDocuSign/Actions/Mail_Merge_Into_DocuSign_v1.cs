@@ -27,7 +27,7 @@ namespace terminalDocuSign.Actions
     {
         readonly DocuSignManager _docuSignManager;
         string _dataSourceValue;
-        string _docuSignTemplateValue;
+        DropDownList _docuSignTemplate;
 
         public Mail_Merge_Into_DocuSign_v1() : base()
         {
@@ -223,9 +223,8 @@ namespace terminalDocuSign.Actions
             if (dataSource.Value == null) return ConfigurationRequestType.Initial;
             _dataSourceValue = dataSource.Value;
 
-            DropDownList docuSignTemplate = GetStdConfigurationControl<DropDownList>(storage, "DocuSignTemplate");
-            if (docuSignTemplate.Value == null) return ConfigurationRequestType.Initial;
-            _docuSignTemplateValue = docuSignTemplate.Value;
+            _docuSignTemplate = GetStdConfigurationControl<DropDownList>(storage, "DocuSignTemplate");
+            if (_docuSignTemplate.Value == null) return ConfigurationRequestType.Initial;
 
             return ConfigurationRequestType.Followup;
         }
@@ -237,7 +236,7 @@ namespace terminalDocuSign.Actions
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 
             //extract fields in docusign form
-            _docuSignManager.UpdateUserDefinedFields(curActivityDO, authTokenDO, Crate.UpdateStorage(curActivityDO), _docuSignTemplateValue);
+            _docuSignManager.UpdateUserDefinedFields(curActivityDO, authTokenDO, Crate.UpdateStorage(curActivityDO), _docuSignTemplate.Value);
 
             var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(curActivityDO, null))
                 .Select(x => Mapper.Map<ActivityTemplateDO>(x))
@@ -248,6 +247,14 @@ namespace terminalDocuSign.Actions
                 ActivityDO dataSourceActivity = await AddAndConfigureChildActivity(curActivityDO, _dataSourceValue, order: 1);
                 ActivityDO mapFieldActivity = await AddAndConfigureChildActivity(curActivityDO, "MapFields", order: 2);
                 ActivityDO sendDocuSignEnvActivity = await AddAndConfigureChildActivity(curActivityDO, "Send_DocuSign_Envelope", order: 3);
+
+                //set docusign template
+
+                SetControlValue(sendDocuSignEnvActivity, "target_docusign_template", 
+                    _docuSignTemplate.ListItems.Where(a => a.Key == _docuSignTemplate.selectedKey).FirstOrDefault());
+
+                await HubCommunicator.ConfigureActivity(sendDocuSignEnvActivity, CurrentFr8UserId);
+                await HubCommunicator.ConfigureActivity(mapFieldActivity, CurrentFr8UserId);
             }
             catch (Exception)
             {

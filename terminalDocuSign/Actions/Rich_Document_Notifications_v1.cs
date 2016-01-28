@@ -202,16 +202,16 @@ namespace terminalDocuSign.Actions
 
             if (specificRecipientOption.Selected)
             {
-                SetChildActivityControlValue(monitorDocuSignAction, "TemplateRecipientPicker.recipient.RecipientValue", specificRecipientOption.Controls[0].Value);
+                SetControlValue(monitorDocuSignAction, "TemplateRecipientPicker.recipient.RecipientValue", specificRecipientOption.Controls[0].Value);
             }
             else if (specificTemplateOption.Selected)
             {
                 var ddlbTemplate = (specificTemplateOption.Controls[0] as DropDownList);
-                SetChildActivityControlValue(monitorDocuSignAction, "TemplateRecipientPicker.template.UpstreamCrate",
+                SetControlValue(monitorDocuSignAction, "TemplateRecipientPicker.template.UpstreamCrate",
                    ddlbTemplate.ListItems.Where(a => a.Key == ddlbTemplate.selectedKey).Single());
             }
 
-            SetChildActivityControlValue(monitorDocuSignAction, "Event_Envelope_Sent", "true");
+            SetControlValue(monitorDocuSignAction, "Event_Envelope_Sent", "true");
 
             //let's make followup configuration for monitorDocuSignEventAction
             //followup call places EventSubscription crate in storage
@@ -223,7 +223,7 @@ namespace terminalDocuSign.Actions
                 var durationControl = (Duration)notifyWhenEventDoesntHappenRadio.Controls.First(c => c.Name == "TimePeriod");
                 var setDelayAction = await AddAndConfigureChildActivity(activityDO, "SetDelay");
                 //   SetDelayActionFields(setDelayAction, durationControl);
-                SetChildActivityControlValue(setDelayAction, "Delay_Duration", durationControl.Value);
+                SetControlValue(setDelayAction, "Delay_Duration", durationControl.Value);
 
                 var queryMTDatabaseAction = await AddAndConfigureChildActivity(activityDO, "QueryMTDatabase");
                 await SetQueryMTDatabaseActionFields(queryMTDatabaseAction, specificRecipientOption.Controls[0].Value);
