@@ -553,6 +553,22 @@ namespace TerminalBase.BaseClasses
         }
 
         /// <summary>
+        /// Adds Text Source for the DTO type. 
+        /// </summary>
+        /// <remarks>The (T), DTO's Proerty Names will be used to name and label the new Text Source Controls</remarks>
+        protected void AddTextSourceControlForDTO<T>(CrateStorage storage, string upstreamSourceLabel,
+                                                     string filterByTag = "",
+                                                     bool addRequestConfigEvent = true, bool required = false)
+        {
+            typeof (T).GetProperties()
+                .Where(property => !property.Name.Equals("Id")).ToList().ForEach(property =>
+                {
+                    AddTextSourceControl(storage, property.Name, property.Name, upstreamSourceLabel, filterByTag,
+                        addRequestConfigEvent, required);
+                });
+        }
+
+        /// <summary>
         /// Creates RadioButtonGroup to enter specific value or choose value from upstream crate.
         /// </summary>
         protected ControlDefinitionDTO CreateSpecificOrUpstreamValueChooser(
@@ -577,14 +593,15 @@ namespace TerminalBase.BaseClasses
 
         protected UpstreamCrateChooser CreateUpstreamCrateChooser(string name, string label, bool isMultiSelection = true)
         {
+            
+            var manifestDdlb = new DropDownList { Name = name+"_mnfst_dropdown_0", Source = new FieldSourceDTO(CrateManifestTypes.StandardDesignTimeFields, "AvailableUpstreamManifests") };
+            var labelDdlb = new DropDownList { Name = name + "_lbl_dropdown_0", Source = new FieldSourceDTO(CrateManifestTypes.StandardDesignTimeFields, "AvailableUpstreamLabels") };
+
             var ctrl = new UpstreamCrateChooser
             {
                 Name = name,
                 Label = label,
-                SelectedCrates = new List<DropDownList>
-                {
-                    new DropDownList { Name = name+"_lbl_dropdown_0", Source = new FieldSourceDTO(CrateManifestTypes.StandardDesignTimeFields, "UpstreamLabels") }
-                },
+                SelectedCrates = new List<CrateDetails> { new CrateDetails { Label = labelDdlb, ManifestType = manifestDdlb } },
                 MultiSelection = isMultiSelection
             };
 

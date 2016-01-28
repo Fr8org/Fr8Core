@@ -55,7 +55,7 @@ namespace terminalSalesforce.Actions
             {
                 updater.CrateStorage.Clear();
 
-                AddLeadTextSources<LeadDTO>(updater.CrateStorage);
+                AddTextSourceControlForDTO<LeadDTO>(updater.CrateStorage, "Upstream Terminal-Provided Fields",addRequestConfigEvent: false);
 
                 updater.CrateStorage.Add(await CreateAvailableFieldsCrate(curActivityDO));
             }
@@ -72,50 +72,17 @@ namespace terminalSalesforce.Actions
                 return NeedsAuthenticationError(payloadCrates);
             }
 
-            var firstName = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "FirstName");
-            var lastName = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "LastName");
-            var company = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "Company");
-            var title = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "Title");
-            var phone = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "Phone");
-            var mobile = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "MobilePhone");
-            var fax = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "Fax");
-            var email = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "Email");
-            var website = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "Website");
-            var street = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "Street");
-            var city = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "City");
-            var state = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "State");
-            var zip = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "PostalCode");
-            var country = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "Country");
-            var description = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "Description");
+            var lead = _salesforce.CreateSalesforceDTO<LeadDTO>(curActivityDO, payloadCrates, ExtractSpecificOrUpstreamValue);
 
-            if (string.IsNullOrEmpty(lastName))
+            if (string.IsNullOrEmpty(lead.LastName))
             {
                 return Error(payloadCrates, "No last name found in activity.");
             }
-            
-            if (string.IsNullOrEmpty(company))
+
+            if (string.IsNullOrEmpty(lead.Company))
             {
                 return Error(payloadCrates, "No company name found in activity.");
             }
-
-            var lead = new LeadDTO
-            {
-                FirstName = firstName,
-                LastName = lastName,
-                Company = company,
-                Title = title,
-                Phone = phone,
-                MobilePhone = mobile,
-                Fax = fax,
-                Email = email,
-                Website = website,
-                Street = street,
-                City = city,
-                State = state,
-                PostalCode = zip,
-                Country = country,
-                Description = description
-            };
 
             bool result = await _salesforce.CreateObject(lead, "Lead", _salesforce.CreateForceClient(authTokenDO));
 
@@ -125,13 +92,6 @@ namespace terminalSalesforce.Actions
             }
 
             return Error(payloadCrates, "Lead creation is failed");
-        }
-
-        private void AddLeadTextSources<T>(CrateStorage crateStorage)
-        {
-            typeof(T).GetProperties().Where(property => !property.Name.Equals("Id")).ToList().ForEach(
-                property => AddTextSourceControl(crateStorage, property.Name, property.Name,
-                    "Upstream Terminal-Provided Fields", addRequestConfigEvent: false));
         }
     }
 }

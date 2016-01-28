@@ -36,6 +36,8 @@ namespace Hub.Managers
         string CrateStorageAsStr(CrateStorage storage);
         void AddLogMessage(string label, List<LogItemDTO> logItemList, ContainerDO containerDO);
         Crate CreateAuthenticationCrate(string label, AuthenticationMode mode);
+
+        Crate<ManifestDescriptionCM> CreateManifestDescriptionCrate(string label, string name, string id, AvailabilityType availability);
         Crate<StandardDesignTimeFieldsCM> CreateDesignTimeFieldsCrate(string label, params FieldDTO[] fields);
         Crate<StandardDesignTimeFieldsCM> CreateDesignTimeFieldsCrate(string label, List<FieldDTO> fields);
         Crate<StandardDesignTimeFieldsCM> CreateDesignTimeFieldsCrate(string label, List<FieldDTO> fields, AvailabilityType availability);

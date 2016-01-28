@@ -35,7 +35,7 @@ namespace DockyardTest.Managers
             // assert
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                Assert.IsFalse(uow.RouteRepository.GetAll().Count() > 1, "Automatic plan is created in following success");
+                Assert.IsFalse(uow.PlanRepository.GetAll().Count() > 1, "Automatic plan is created in following success");
             }
         }
 
@@ -74,7 +74,7 @@ namespace DockyardTest.Managers
 
                 _setupMock.Setup(
                     a => a.CreateAndConfigure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<int>(),
-                        "Monitor_Fr8_Events", It.IsAny<string>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>())).Callback(() =>
+                        "Monitor_Fr8_Events", It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>())).Callback(() =>
                         {
                             using (var uow1 = ObjectFactory.GetInstance<IUnitOfWork>())
                             {
@@ -89,7 +89,7 @@ namespace DockyardTest.Managers
 
                 _setupMock.Setup(
                     a => a.CreateAndConfigure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<int>(),
-                        "StoreMTData", It.IsAny<string>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>())).Callback(() =>
+                        "StoreMTData", It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>())).Callback(() =>
                         {
                             using (var uow1 = ObjectFactory.GetInstance<IUnitOfWork>())
                             {

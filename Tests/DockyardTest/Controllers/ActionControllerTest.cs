@@ -47,7 +47,7 @@ namespace DockyardTest.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var plan = FixtureData.TestRoute1();
-                uow.RouteRepository.Add(plan);
+                uow.PlanRepository.Add(plan);
 
                 var subroute = FixtureData.TestSubrouteDO1();
                 uow.RouteNodeRepository.Add(subroute);
@@ -80,7 +80,7 @@ namespace DockyardTest.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var plan = FixtureData.TestRoute1();
-                uow.RouteRepository.Add(plan);
+                uow.PlanRepository.Add(plan);
 
                 var subroute = FixtureData.TestSubrouteDO1();
                 uow.RouteNodeRepository.Add(subroute);
