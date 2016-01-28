@@ -100,6 +100,35 @@ namespace HubWeb.Controllers
             return Ok(fileDto);
         }
 
+        [Fr8HubWebHMACAuthenticate]
+        [Fr8ApiAuthorize]
+        [HttpGet]
+        public IHttpActionResult Download(int id)
+        {
+            FileDO fileDO = null;
+            if (_security.IsCurrentUserHasRole(Roles.Admin))
+            {
+                fileDO = _fileService.GetFileByAdmin(id);
+            }
+            else
+            {
+                string userId;
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    userId = _security.GetCurrentAccount(uow).Id;
+                }
+                fileDO = _fileService.GetFile(id, userId);
+            }
+            if (fileDO == null)
+            {
+                return NotFound();
+            }
+            var file = _fileService.Retrieve(fileDO);
+            return new FileActionResult(file);
+        }
+
+        [Fr8HubWebHMACAuthenticate]
+        [Fr8ApiAuthorize]
         public IHttpActionResult Get()
         {
             IList<FileDTO> fileList;

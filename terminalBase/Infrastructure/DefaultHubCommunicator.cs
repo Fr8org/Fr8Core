@@ -288,5 +288,13 @@ namespace TerminalBase.Infrastructure
             var uri = new Uri(hubUrl);
             return await _restfulServiceClient.PostAsync<FileDO>(uri, multiPartData, null, await GetHMACHeader(uri, userId, (HttpContent)multiPartData));
         }
+
+        public async Task<IEnumerable<FileDTO>> GetFiles(string userId)
+        {
+            var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/files";
+            var uri = new Uri(hubUrl);
+            return await _restfulServiceClient.GetAsync<IEnumerable<FileDTO>>(uri, null, await GetHMACHeader(uri, userId));
+        }
     }
 }

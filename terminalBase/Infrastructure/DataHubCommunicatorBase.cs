@@ -199,5 +199,10 @@ namespace TerminalBase.Infrastructure
         {
             throw new NotImplementedException();
         }
+
+        public Task<IEnumerable<FileDTO>> GetFiles(string userId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
