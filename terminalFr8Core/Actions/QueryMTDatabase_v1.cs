@@ -170,14 +170,17 @@ namespace terminalFr8Core.Actions
             return curActivityDO;
         }
 
-        private Crate<ManifestDescriptionCM> GetUpstreamCrateManifestListCrate()
+        private Crate<StandardDesignTimeFieldsCM> GetUpstreamCrateManifestListCrate()
         {
-            var crate = Crate.CreateManifestDescriptionCrate(
-                "Upstream Crate ManifestType List",
-                MT.DocuSignEnvelope.ToString(),
-                ((int)MT.DocuSignEnvelope).ToString(CultureInfo.InvariantCulture),
-                AvailabilityType.Always
-            );
+            var fields = new List<FieldDTO>()
+            {
+                new FieldDTO(
+                    MT.DocuSignEnvelope.ToString(),
+                    ((int)MT.DocuSignEnvelope).ToString(CultureInfo.InvariantCulture)
+                )
+            };
+
+            var crate = Crate.CreateDesignTimeFieldsCrate("Upstream Crate ManifestType List", fields);
 
             return crate;
         }
@@ -240,7 +243,6 @@ namespace terminalFr8Core.Actions
 
             List<FilterConditionDTO> conditions;
             int selectedObjectId;
-            bool applyFilter;
 
             if (config.QueryPicker.Radios[0].Selected)
             {
