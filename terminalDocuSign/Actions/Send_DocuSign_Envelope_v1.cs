@@ -84,7 +84,7 @@ namespace terminalDocuSign.Actions
             var configurationControls = GetConfigurationControls(activityDO);
             var recipientField = (TextSource)GetControl(configurationControls, "Recipient", ControlTypes.TextSource);
 
-            var curRecipientAddress = recipientField.GetValue(payloadCrateStorage);
+            var curRecipientAddress = recipientField.GetValue(payloadCrateStorage, true);
 
             curEnvelope.TemplateId = curTemplateId;
             curEnvelope.TemplateRoles = new TemplateRole[]
@@ -244,6 +244,10 @@ namespace terminalDocuSign.Actions
             {
                 fieldSelectDocusignTemplateDTO,
                 new TextSource("Email Address", "Upstream Terminal-Provided Fields", "Recipient")
+                {
+                    selectedKey = "Recipient",
+                    ValueSource = "upstream"
+                }
             };
 
             var controls = new StandardConfigurationControlsCM()

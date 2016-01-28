@@ -765,6 +765,8 @@
     <Content Include="_PowerShellScripts\MASTER-settings.job" />
     <Content Include="_PowerShellScripts\DeployAzureWebJob-HealthMonitor-MASTER.ps1" />
     <Content Include="_PowerShellScripts\KillProcess.ps1" />
+    <Content Include="_PowerShellScripts\SetCloudServiceSize.ps1" />
+    <Content Include="_PowerShellScripts\SetTerminalFr8CoreCS.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamCrateChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamFieldChooser.ts" />

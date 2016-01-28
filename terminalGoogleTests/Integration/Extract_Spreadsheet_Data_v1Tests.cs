@@ -187,7 +187,7 @@ namespace terminalGoogleTests.Integration
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardTableDataCM>().Count());
             Assert.IsFalse(crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.FirstRowHeaders);
-            Assert.AreEqual(0, crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.Table.Count);
+            Assert.AreEqual(1, crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.Table.Count);
         }
         /////////////
         /// Followup Configuration End
