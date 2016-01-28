@@ -542,6 +542,14 @@ namespace Hub.Services
             {
                 var actionName = curActionState == ActionState.InitialRun ? "Run" : "ChildrenExecuted";
                 var payloadDTO = await CallTerminalActionAsync<PayloadDTO>(actionName, curActivityDO, curContainerDO.Id);
+
+                // this will break the infinite loop created for logFr8InternalEvents...
+                if (curContainerDO.Plan != null && curContainerDO.Plan.Name != "LogFr8InternalEvents")
+                {
+                    var actionDTO = Mapper.Map<ActivityDTO>(curActivityDO);
+                    await Hub.Managers.Event.Publish("ActionExecuted", curActivityDO.Fr8Account.Id, curActivityDO.Id.ToString(), JsonConvert.SerializeObject(actionDTO).ToString(), "Success");
+                }
+
                 return payloadDTO;
 
             }

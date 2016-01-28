@@ -72,7 +72,7 @@ namespace Hub.Managers
 
                 //get activity templates of required actions
                 var activity1 = Mapper.Map<ActivityTemplateDTO>(_activityTemplate.GetByName(uow, "Monitor_Fr8_Events_v1"));
-                var activity2 = Mapper.Map<ActivityTemplateDTO>(_activityTemplate.GetByName(uow, "StoreMTData_v1"));
+                var activity2 = Mapper.Map<ActivityTemplateDTO>(_activityTemplate.GetByName(uow, "SaveToFr8Warehouse_v1"));
 
                 //create and configure required actions
                 await _activity.CreateAndConfigure(uow, curFr8Account.Id, activity1.Id, activity1.Name, activity1.Label, null, subroute.Id);

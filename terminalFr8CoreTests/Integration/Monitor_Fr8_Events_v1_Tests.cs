@@ -42,7 +42,7 @@ namespace terminalTests.Integration
             Assert.NotNull(responseActivityDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActivityDTO.CrateStorage);
-            Assert.AreEqual(3, crateStorage.Count);
+            Assert.AreEqual(7, crateStorage.Count);
         }
 
         [Test]
