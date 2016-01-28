@@ -33,7 +33,6 @@ namespace Hub.Interfaces
         
         Task<ActivityDTO> Activate(ActivityDO curActivityDO);
         Task<ActivityDTO> Deactivate(ActivityDO curActivityDO);
-        Task<SolutionPageDTO> GetDocumentation(ActivityDO curActivityDO);
         StandardConfigurationControlsCM GetControlsManifest(ActivityDO curActivity);
         Task<SolutionPageDTO> GetSolutionDocumentation(string solutionName);
         List<string> GetSolutionList(string terminalName);

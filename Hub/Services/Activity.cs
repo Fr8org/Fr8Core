@@ -13,12 +13,14 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using Castle.DynamicProxy.Generators;
 using Data.Control;
 using Data.Crates;
+using Data.Infrastructure.StructureMap;
 using Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
@@ -33,7 +35,7 @@ namespace Hub.Services
         private readonly ICrateManager _crate;
         private readonly IAuthorization _authorizationToken;
         private readonly TelemetryClient _telemetryClient;
-
+        private readonly ISecurityServices _security;
         private readonly IActivityTemplate _activityTemplate;
         private readonly IRouteNode _routeNode;
 
@@ -44,6 +46,7 @@ namespace Hub.Services
             _routeNode = ObjectFactory.GetInstance<IRouteNode>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
             _telemetryClient = ObjectFactory.GetInstance<TelemetryClient>();
+            _security = ObjectFactory.GetInstance<ISecurityServices>();
         }
 
         public IEnumerable<TViewModel> GetAllActivities<TViewModel>()
@@ -613,13 +616,6 @@ namespace Hub.Services
         {
             return await CallTerminalActionAsync<ActivityDTO>("deactivate", curActivityDO, Guid.Empty);
         }
-
-        public async Task<SolutionPageDTO> GetDocumentation(ActivityDO curActivityDO)
-        {
-            var curDocumentationSupport = "MainPage";
-            return await CallTerminalActionAsync<SolutionPageDTO>("documentation", curActivityDO, Guid.Empty, curDocumentationSupport);
-        }
-
         //private Task<PayloadDTO> RunActionAsync(string actionName, ActionDO curActivityDO, Guid containerId)
         //{
         //    if (actionName == null) throw new ArgumentNullException("actionName");
@@ -672,28 +668,38 @@ namespace Hub.Services
             }
             return ObjectFactory.GetInstance<ITerminalTransmitter>().CallActionAsync<TResult>(activityName, dto, containerId.ToString());
         }
-        //This method finds and returns signle Activity that is solution by Name
+        //This method finds and returns single SolutionPageDTO that holds some documentation of Activities that is obtained from a solution by aame
         public async Task<SolutionPageDTO> GetSolutionDocumentation(string solutionName)
         {
-            using (var uow= ObjectFactory.GetInstance<IUnitOfWork>())
+            SolutionPageDTO solutionPageDTO;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                ActivityDO curSolutionActivityDO;
-                var allActivityTemplates = uow.ActivityTemplateRepository.GetAll()
-                    .Where(a => a.Category == ActivityCategory.Solution)
-                        .ToList();
-                var curActivityTerminalDO = allActivityTemplates.Single(a => a.Name == solutionName);
-                curSolutionActivityDO = Create(uow, curActivityTerminalDO.Id, curActivityTerminalDO.Name,
-                    curActivityTerminalDO.Label, new RouteNodeDO());
-                uow.SaveChanges();
-                var curSolutionActivityDTO = Mapper.Map<ActivityDTO>(curSolutionActivityDO);
-                _authorizationToken.PrepareAuthToken(curSolutionActivityDTO);
-                uow.SaveChanges();
-                var curActivityDO = GetById(curSolutionActivityDO.Id);
-
-                var solutionPageDTO = await GetDocumentation(curActivityDO);
-                //Delete(curSolutionActivityDO.Id);
-                return solutionPageDTO;
+                var curAccount = _security.GetCurrentAccount(uow);
+                //Get the list of all actions that are solutions from database
+                var allActivityTemplates = _routeNode.GetSolutions(uow, curAccount);
+                //find the solution by the provided name
+                var curActivityTerminalDTO = allActivityTemplates.Single(a => a.Name == solutionName);
+                //prepare an Activity object to be sent to Activity in a Terminal
+                //IMPORTANT: this object will not be hold in the database
+                //It is used to transfer data
+                //as ActivityDTO is the first mean of communication between The Hub and Terminals
+                var curSolutionActivityDO = new ActivityDO
+                {
+                    Id = Guid.NewGuid(),
+                    ActivityTemplateId = curActivityTerminalDTO.Id,
+                    Name = curActivityTerminalDTO.Name,
+                    Label = curActivityTerminalDTO.Label,
+                    CrateStorage = _crate.EmptyStorageAsStr(),
+                    RootRouteNode = new RouteNodeDO(),
+                    Fr8Account = curAccount,
+                    AuthorizationToken = new AuthorizationTokenDO
+                    {
+                        UserID = curAccount.Id
+                    }
+                };
+                solutionPageDTO = await GetDocumentation(curSolutionActivityDO);
             }
+            return solutionPageDTO;
         }
         //This method returns Solutions of a certain terminal by terminal name
         public List<string> GetSolutionList(string terminalName)
@@ -708,6 +714,21 @@ namespace Hub.Services
                 solutionNameList.AddRange(curActivities.Select(activity => activity.Name));
             }
             return solutionNameList;
+        }
+        private Task<SolutionPageDTO> GetDocumentation(ActivityDO curActivityDO)
+        {
+            //Prepare a string with "MainPage" keyword to be a signal to Action to proved SolutionPageDTO
+            var curDocumentationSupport = "MainPage";
+            //Put a method name so that HandleFr8Request could find correct method in the terminal Action
+            var actionName = "documentation";
+            var curActivityDTO = Mapper.Map<ActivityDTO>(curActivityDO);
+            curActivityDTO.DocumentationSupport = curDocumentationSupport;
+            var curContainderId = Guid.Empty;
+            //Add log to the database
+            EventManager.ActionDispatched(curActivityDO, curContainderId);
+            //Call the terminal
+            return ObjectFactory.GetInstance<ITerminalTransmitter>()
+                .CallActionAsync<SolutionPageDTO>(actionName, curActivityDTO, curContainderId.ToString());
         }
         //        public Task<IEnumerable<T>> FindCratesByManifestType<T>(ActionDO curActivityDO, GetCrateDirection direction = GetCrateDirection.None)
         //        {

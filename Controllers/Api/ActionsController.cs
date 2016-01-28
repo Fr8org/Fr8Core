@@ -150,30 +150,26 @@ namespace HubWeb.Controllers
         public IHttpActionResult Save(ActivityDTO curActionDTO)
         {
             ActivityDO submittedActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var resultActionDO = _activity.SaveOrUpdateActivity(uow, submittedActivityDO);
                 var resultActionDTO = Mapper.Map<ActivityDTO>(resultActionDO);
-
                 return Ok(resultActionDTO);
             }
         }
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
-        public IHttpActionResult Documentation(string solutionName)
+        public async Task<IHttpActionResult> Documentation(string solutionName)
         {
-            var solutionPageDTO = _activity.GetSolutionDocumentation(solutionName);
-            return Ok(solutionPageDTO);
+                var solutionPageDTO = await _activity.GetSolutionDocumentation(solutionName);
+                return Json(solutionPageDTO);
         }
-
         [HttpPost]
         public IHttpActionResult GetSolutionList(string terminalName)
         {
             var solutionNameList = _activity.GetSolutionList(terminalName);
             return Json(solutionNameList);
         }
-
         //        /// <summary>
         //        /// POST : updates the given action
         //        /// </summary>

@@ -115,7 +115,6 @@ namespace Hub.Services
                 }
             }
         }
-
         public async Task<AuthenticateResponse> AuthenticateInternal(Fr8AccountDO account, TerminalDO terminal, string domain, string username,
             string password)
         {
