@@ -11,7 +11,7 @@ namespace Hub.Interfaces
         void PrepareAuthToken(ActionDTO actionDTO);
 
         Task<AuthenticateResponse> AuthenticateInternal(Fr8AccountDO account, TerminalDO terminal,
-            string domain, string username, string password);
+            string domain, string username, string password, bool isDemoAccount = false);
 
         Task<AuthenticateResponse> GetOAuthToken(TerminalDO terminal, ExternalAuthenticationDTO externalAuthDTO);
 

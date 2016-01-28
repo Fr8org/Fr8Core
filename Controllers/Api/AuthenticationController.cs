@@ -52,7 +52,8 @@ namespace HubWeb.Controllers
                 terminalDO,
                 credentials.Domain,
                 credentials.Username,
-                credentials.Password
+                credentials.Password,
+                credentials.IsDemoAccount
             );
 
             return Ok(new {
