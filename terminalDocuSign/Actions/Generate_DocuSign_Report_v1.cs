@@ -15,6 +15,7 @@ using Data.Repositories;
 using Data.States;
 using Hub.Managers;
 using Newtonsoft.Json;
+using AutoMapper;
 using StructureMap;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Infrastructure;
@@ -86,6 +87,16 @@ namespace terminalDocuSign.Actions
                         ManifestType = CrateManifestTypes.StandardDesignTimeFields
                     }
                 }));
+
+                Controls.Add(new Button()
+                {
+                    Label = "Continue",
+                    Name = "Continue",
+                    Events = new List<ControlEvent>()
+                    {
+                        new ControlEvent("onClick", "requestConfig")
+                    }
+                });
             }
         }
 
@@ -109,34 +120,40 @@ namespace terminalDocuSign.Actions
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payload = await GetPayload(curActivityDO, containerId);
-
-            CheckAuthentication(authTokenDO);
-
-            var configurationControls = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
-
-            if (configurationControls == null)
-            {
-                return Error(payload, "Action was not configured correctly");
-            }
-
-            var actionUi = new ActionUi();
-
-            actionUi.ClonePropertiesFrom(configurationControls);
-
-            var criteria = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(actionUi.QueryBuilder.Value);
-            var existingEnvelopes = new HashSet<string>();
-            var searchResult = new StandardPayloadDataCM();
-            var docuSignAuthToken = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
-
-            SearchDocusignInRealTime(docuSignAuthToken, criteria, searchResult, existingEnvelopes);
-            SearchMtDataBase(authTokenDO, criteria, existingEnvelopes, searchResult);
             
-            using (var updater = Crate.UpdateStorage(payload))
-            {
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Report", searchResult));
-            }
+            // CheckAuthentication(authTokenDO);
+            // 
+            // var configurationControls = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
+            // 
+            // if (configurationControls == null)
+            // {
+            //     return Error(payload, "Action was not configured correctly");
+            // }
+            // 
+            // var actionUi = new ActionUi();
+            // 
+            // actionUi.ClonePropertiesFrom(configurationControls);
+            // 
+            // var criteria = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(actionUi.QueryBuilder.Value);
+            // var existingEnvelopes = new HashSet<string>();
+            // var searchResult = new StandardPayloadDataCM();
+            // var docuSignAuthToken = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
+            // 
+            // SearchDocusignInRealTime(docuSignAuthToken, criteria, searchResult, existingEnvelopes);
+            // SearchMtDataBase(authTokenDO, criteria, existingEnvelopes, searchResult);
+            // 
+            // using (var updater = Crate.UpdateStorage(payload))
+            // {
+            //     updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Report", searchResult));
+            // }
 
             return Success(payload);
+        }
+
+        public override async Task<PayloadDTO> ChildrenExecuted(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        {
+            var payload = await GetPayload(curActivityDO, containerId);
+            return ExecuteClientAction(payload, "ShowTableReport");
         }
 
         private static void SearchMtDataBase(AuthorizationTokenDO authTokenDO, List<FilterConditionDTO> criteria, HashSet<string> existingEnvelopes, StandardPayloadDataCM searchResult)
@@ -271,9 +288,35 @@ namespace terminalDocuSign.Actions
             return Task.FromResult(curActivityDO);
         }
 
-        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO activityDO, AuthorizationTokenDO authTokenDO)
         {
-            return curActivityDO;
+            var activityTemplates = (await HubCommunicator.GetActivityTemplates(activityDO, null))
+                .Select(x => Mapper.Map<ActivityTemplateDO>(x))
+                .ToList();
+
+            try
+            {
+                var queryMtDatabaseAction = activityTemplates.FirstOrDefault(x => x.Name == "QueryMTDatabase");
+                if (queryMtDatabaseAction == null) { return activityDO; }
+
+                activityDO.ChildNodes.Add(new ActivityDO()
+                {
+                    ActivityTemplateId = queryMtDatabaseAction.Id,
+                    IsTempId = true,
+                    Name = queryMtDatabaseAction.Name,
+                    Label = queryMtDatabaseAction.Label,
+                    CrateStorage = Crate.EmptyStorageAsStr(),
+                    ParentRouteNode = activityDO,
+                    Ordering = 1
+                });
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+
+
+            return activityDO;
         }
 
         public static FieldDTO[] GetFieldListForQueryBuilder()
