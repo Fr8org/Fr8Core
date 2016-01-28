@@ -267,6 +267,7 @@
     <Compile Include="Integration\RunTimeTests.cs" />
     <Compile Include="Integration\AccountITests.cs" />
     <Compile Include="Managers\OAuthAuthorizerTest.cs" />
+    <Compile Include="Managers\RouteManagerTests.cs" />
     <Compile Include="MockedDB\MockedDBTests.cs" />
     <Compile Include="MockedDB\MoqDemoTests.cs" />
     <Compile Include="Repositories\AuthorizationTokenRepositoryTests.cs" />
@@ -276,8 +277,10 @@
     <Compile Include="Managers\CommunicationManagerTest.cs" />
     <Compile Include="Entities\CustomerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\ActivityTemplateTests.cs" />
     <Compile Include="Services\ActivityTests.cs" />
     <Compile Include="Services\CrateServiceTests.cs" />
+    <Compile Include="Services\DisableCacheSettings.cs" />
     <Compile Include="Services\DockyardAccountTest.cs" />
     <Compile Include="Services\ActionDTO.cs" />
     <Compile Include="Services\ActionServiceTests.cs" />
@@ -293,6 +296,7 @@
     <Compile Include="Services\SubscriptionServiceTests.cs" />
     <Compile Include="Services\ContainerExecuteTests.cs" />
     <Compile Include="Services\TagTests.cs" />
+    <Compile Include="Services\TerminalServiceTests.cs" />
     <Compile Include="Services\UserServiceTests.cs" />
     <Compile Include="Utilities\EncryptionTests.cs" />
     <Compile Include="Validations\ValidationsTest.cs" />

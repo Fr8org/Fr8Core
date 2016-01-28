@@ -9,8 +9,9 @@ namespace terminalYammer
     {
         protected void Application_Start()
         {
-            GlobalConfiguration.Configure(WebApiConfig.Register);
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE);
+            GlobalConfiguration.Configure(WebApiConfig.Register);
+            
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
             TerminalBootstrapper.ConfigureLive();
         }

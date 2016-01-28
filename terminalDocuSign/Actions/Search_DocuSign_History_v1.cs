@@ -77,12 +77,12 @@ namespace terminalDocuSign.Actions
             _docuSignFolder = ObjectFactory.GetInstance<IDocuSignFolder>();
         }
         
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            return Success(await GetPayload(curActionDO, containerId));
+            return Success(await GetPayload(curActivityDO, containerId));
         }
         
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             if (NeedsAuthentication(authTokenDO))
             {
@@ -92,46 +92,46 @@ namespace terminalDocuSign.Actions
             var docuSignAuthDto = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
             var actionUi = new ActionUi();
 
-            using (var updater = Crate.UpdateStorage(curActionDO))
+            using (var updater = Crate.UpdateStorage(curActivityDO))
             {
                 
                 updater.CrateStorage.Add(PackControls(actionUi));
                 updater.CrateStorage.AddRange(PackDesignTimeData(docuSignAuthDto));
             }
 
-            await ConfigureNestedActions(curActionDO, actionUi);
+            await ConfigureNestedActions(curActivityDO, actionUi);
             
-            return curActionDO;
+            return curActivityDO;
         }
 
-        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             if (NeedsAuthentication(authTokenDO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            using (var updater = Crate.UpdateStorage(curActionDO))
+            using (var updater = Crate.UpdateStorage(curActivityDO))
             {
                 var configurationControls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
                 if (configurationControls == null)
                 {
                     updater.DiscardChanges();
-                    return curActionDO;
+                    return curActivityDO;
                 }
 
                 var actionUi = new ActionUi();
                
                 actionUi.ClonePropertiesFrom(configurationControls);
 
-                await ConfigureNestedActions(curActionDO, actionUi);
+                await ConfigureNestedActions(curActivityDO, actionUi);
                 
-                return curActionDO;
+                return curActivityDO;
             }
         }
 
-        private async Task ConfigureNestedActions(ActionDO curActionDO, ActionUi actionUi)
+        private async Task ConfigureNestedActions(ActivityDO curActivityDO, ActionUi actionUi)
         {
             var config = new Query_DocuSign_v1.ActionUi
             {
@@ -140,11 +140,11 @@ namespace terminalDocuSign.Actions
                 SearchText = {Value = actionUi.SearchText.Value}
             };
             
-            var template = (await FindTemplates(curActionDO, x => x.Name == "Query_DocuSign")).FirstOrDefault();
+            var template = (await FindTemplates(curActivityDO, x => x.Name == "Query_DocuSign")).FirstOrDefault();
 
             if (template == null)
             {
-                throw new Exception("Can't find action template: Query_DocuSign");
+                throw new Exception("Can't find activity template: Query_DocuSign");
             }
 
             var storage = new CrateStorage(Data.Crates.Crate.FromContent("Config", config));
@@ -153,14 +153,14 @@ namespace terminalDocuSign.Actions
             {
                 IsReadOnly = true,
                 Label = "",
-                Value = "<p>This action is managed by the parent action</p>"
+                Value = "<p>This activity is managed by the parent activity</p>"
             }));
 
-            var action = curActionDO.ChildNodes.OfType<ActionDO>().FirstOrDefault();
+            var activity = curActivityDO.ChildNodes.OfType<ActivityDO>().FirstOrDefault();
 
-            if (action == null)
+            if (activity == null)
             {
-                action = new ActionDO
+                activity = new ActivityDO
                 {
                     ActivityTemplate = template,
                     IsTempId = true,
@@ -171,21 +171,21 @@ namespace terminalDocuSign.Actions
                     ActivityTemplateId = template.Id,
                 };
 
-                curActionDO.ChildNodes.Add(action);
+                curActivityDO.ChildNodes.Add(activity);
             }
 
-            action.CrateStorage = JsonConvert.SerializeObject(Crate.ToDto(storage));
+            activity.CrateStorage = JsonConvert.SerializeObject(Crate.ToDto(storage));
         }
 
-        private async Task<IEnumerable<ActivityTemplateDO>> FindTemplates(ActionDO actionDO, Predicate<ActivityTemplateDO> query)
+        private async Task<IEnumerable<ActivityTemplateDO>> FindTemplates(ActivityDO activityDO, Predicate<ActivityTemplateDO> query)
         {
-            var templates = await HubCommunicator.GetActivityTemplates(actionDO);
+            var templates = await HubCommunicator.GetActivityTemplates(activityDO, CurrentFr8UserId);
             return templates.Select(x => Mapper.Map<ActivityTemplateDO>(x)).Where(x => query(x));
         }
 
         private IEnumerable<Crate> PackDesignTimeData(DocuSignAuthTokenDTO authToken)
         {
-            var folders = _docuSignFolder.GetFolders(authToken.Email, authToken.ApiPassword);
+            var folders = _docuSignFolder.GetSearchFolders(authToken.Email, authToken.ApiPassword);
             var fields = new List<FieldDTO>();
             
             foreach (var folder in folders)
@@ -220,9 +220,9 @@ namespace terminalDocuSign.Actions
             }));
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActionDO))
+            if (Crate.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }

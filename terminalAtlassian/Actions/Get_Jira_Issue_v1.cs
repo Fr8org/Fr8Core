@@ -15,7 +15,7 @@ using TerminalBase.Infrastructure;
 
 namespace terminalAtlassian.Actions
 {
-    public class Get_Jira_Issue_v1 : BaseTerminalAction
+    public class Get_Jira_Issue_v1 : BaseTerminalActivity
     {
         private readonly AtlassianService _atlassianService;
         protected ICrateManager _crateManager;
@@ -27,16 +27,16 @@ namespace terminalAtlassian.Actions
 
         }
 
-        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             CheckAuthentication(authTokenDO);
 
-            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
+            return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActionDO))
+            if (Crate.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -44,24 +44,24 @@ namespace terminalAtlassian.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActionDO))
+            using (var updater = Crate.UpdateStorage(curActivityDO))
             {
                 updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(CreateControlsCrate());
             }
 
-            return await Task.FromResult<ActionDO>(curActionDO);
+            return await Task.FromResult<ActivityDO>(curActivityDO);
         }
 
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             CheckAuthentication(authTokenDO);
 
-            var payloadCrates = await GetPayload(curActionDO, containerId);
+            var payloadCrates = await GetPayload(curActivityDO, containerId);
 
-            string jiraKey = ExtractJiraKey(curActionDO);
+            string jiraKey = ExtractJiraKey(curActivityDO);
             var jiraIssue = _atlassianService.GetJiraIssue(jiraKey, authTokenDO);
 
             using (var updater = _crateManager.UpdateStorage(payloadCrates))
@@ -72,9 +72,9 @@ namespace terminalAtlassian.Actions
             return Success(payloadCrates);
         }
 
-        private string ExtractJiraKey(ActionDO curActionDO)
+        private string ExtractJiraKey(ActivityDO curActivityDO)
         {
-            var controls = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().First().Controls;
+            var controls = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().First().Controls;
             var templateTextBox = controls.SingleOrDefault(x => x.Name == "jira_key");
 
             if (templateTextBox == null)

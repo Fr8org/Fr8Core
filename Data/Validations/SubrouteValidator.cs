@@ -27,11 +27,11 @@ namespace Data.Validations
                     // By the time validation rule gets executed, external UnitOfWork will be disposed.
                     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
-                        var parentTemplateExists = (uow.RouteRepository.GetByKey(id) != null);
+                        var parentTemplateExists = (uow.PlanRepository.GetByKey(id) != null);
                         return parentTemplateExists;
                     }
                 })
-                .WithMessage("ParentTemplateId must be a valid Id for Route");
+                .WithMessage("ParentTemplateId must be a valid Id for Plan");
 
             RuleFor(pntDO => pntDO.Criteria).NotNull()
                 .Must(lst => lst.Count > 0)

@@ -25,6 +25,7 @@
                                    class="form-control"
                                    ng-required="true"
                                    ng-model="row.value"
+                                   ng-model-options="{ updateOn: 'default blur', debounce: { 'default': 500, 'blur': 0 } }"
                                    ng-change="valueChanged(row)"
                                    ng-disabled="!row.field" />
                         </div>

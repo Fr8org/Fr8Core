@@ -12,8 +12,19 @@ namespace Hub.Managers
 
         protected override void HandleUnauthorizedRequest(AuthorizationContext context)
         {
-            // redirect to Error page
-            context.Result = new RedirectResult("/DockyardAccount/InterceptLogin?returnUrl=" + context.RequestContext.HttpContext.Request.RawUrl + "&urlReferrer=" + context.RequestContext.HttpContext.Request.UrlReferrer);
+            if (context.HttpContext.Request.Url.ToString().Contains("dashboard"))
+            {
+                context.Result = new RedirectResult("/DockyardAccount/ProcessGuestUserMode");
+                
+            }
+            else
+            {
+                // redirect to Error page
+                context.Result = new RedirectResult("/DockyardAccount/InterceptLogin?returnUrl="
+                    + context.RequestContext.HttpContext.Request.RawUrl 
+                    + "&urlReferrer=" 
+                    + context.RequestContext.HttpContext.Request.UrlReferrer);
+            }
         }
     }
 }

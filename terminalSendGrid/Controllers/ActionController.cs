@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using System.Reflection;
 using TerminalBase.BaseClasses;
 using System.Threading.Tasks;
+using TerminalBase.Infrastructure;
 
 namespace terminalSendGrid.Controllers
 {
@@ -16,7 +17,9 @@ namespace terminalSendGrid.Controllers
         private const string curTerminal = "terminalSendGrid";
 
         [HttpPost]
-        public Task<object> Execute([FromUri] String actionType, [FromBody] ActionDTO curActionDTO)
+        [fr8TerminalHMACAuthenticate(curTerminal)]
+        [Authorize]
+        public Task<object> Execute([FromUri] String actionType, [FromBody] ActivityDTO curActionDTO)
         {
             return HandleFr8Request(curTerminal, actionType, curActionDTO);
         }

@@ -18,7 +18,6 @@ namespace Hub.Interfaces
         List<RouteNodeDO> GetDownstreamActivities(IUnitOfWork uow, RouteNodeDO curActivityDO);
 
         StandardDesignTimeFieldsCM GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability);
-        Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirectionTerminal(Guid activityId, CrateDirection direction, AvailabilityType availability);
 
         Task Process(Guid curActivityId, ActionState curActionState, ContainerDO curContainerDO);
 
@@ -34,10 +33,6 @@ namespace Hub.Interfaces
         void Delete(IUnitOfWork uow, RouteNodeDO activity);
 
         IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivitiyGroups();
-
-        Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(Guid activityId, CrateDirection direction);
-
-        Task<List<Crate>> GetCratesByDirection(Guid activityId, CrateDirection direction);
 	    
         IEnumerable<ActivityTemplateDTO> GetSolutions(IUnitOfWork uow, IFr8AccountDO curAccount);
     }

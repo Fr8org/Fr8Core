@@ -67,7 +67,7 @@ namespace terminalAzureTests.Integration
             var requestActionDTO = HealthMonitor_FixtureData.Write_To_Sql_Server_v1_InitialConfiguration_ActionDTO();
 
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<ActivityDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -91,7 +91,7 @@ namespace terminalAzureTests.Integration
             var requestActionDTO = HealthMonitor_FixtureData.Write_To_Sql_Server_v1_InitialConfiguration_ActionDTO();
 
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<ActivityDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -111,7 +111,7 @@ namespace terminalAzureTests.Integration
             }
 
             responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<ActivityDTO, ActivityDTO>(
                     configureUrl,
                     responseActionDTO
                 );
@@ -139,17 +139,17 @@ namespace terminalAzureTests.Integration
         {
             var runUrl = GetTerminalRunUrl();
 
-            var actionDTO = HealthMonitor_FixtureData.Write_To_Sql_Server_v1_InitialConfiguration_ActionDTO();
+            var activityDTO = HealthMonitor_FixtureData.Write_To_Sql_Server_v1_InitialConfiguration_ActionDTO();
             
-            using (var updater = Crate.UpdateStorage(actionDTO))
+            using (var updater = Crate.UpdateStorage(activityDTO))
             {
                 updater.CrateStorage.Add(CreateConnectionStringCrate());
             }
 
-            AddOperationalStateCrate(actionDTO, new OperationalStateCM());
+            AddOperationalStateCrate(activityDTO, new OperationalStateCM());
 
             AddPayloadCrate(
-               actionDTO,
+               activityDTO,
                new StandardPayloadDataCM(
                     new FieldDTO("Field1", "[Customer].[Physician]"),
                     new FieldDTO("Field2", "[Customer].[CurrentMedicalCondition]")
@@ -158,7 +158,7 @@ namespace terminalAzureTests.Integration
             );
 
             AddPayloadCrate(
-                actionDTO,
+                activityDTO,
                 new StandardPayloadDataCM(
                     new FieldDTO("Field1", "test physician"),
                     new FieldDTO("Field2", "teststring")
@@ -166,8 +166,7 @@ namespace terminalAzureTests.Integration
                "DocuSign Envelope Data"
             );
 
-            var responsePayloadDTO =
-                await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+            var responsePayloadDTO = await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, activityDTO);
 
             Assert.NotNull(responsePayloadDTO);
             Assert.NotNull(responsePayloadDTO.CrateStorage);
@@ -185,7 +184,7 @@ namespace terminalAzureTests.Integration
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<ActivityDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -206,7 +205,7 @@ namespace terminalAzureTests.Integration
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<ActivityDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );

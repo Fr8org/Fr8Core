@@ -232,6 +232,7 @@
     </Compile>
     <Compile Include="Actions\Get_DocuSign_Template_v1.cs" />
     <Compile Include="Actions\Mail_Merge_Into_DocuSign_v1.cs" />
+    <Compile Include="Actions\Archive_DocuSign_Template_v1.cs" />
     <Compile Include="Actions\Search_DocuSign_History_v1.cs" />
     <Compile Include="Actions\Query_DocuSign_v1.cs" />
     <Compile Include="Actions\Get_DocuSign_Envelope_v1.cs" />

@@ -13,6 +13,9 @@
                    stop-click-propagation>
             <label for='pca__chk__{{::field.name}}{{::currentAction.id}}' stop-click-propagation>{{::field.label}}</label>
         </div>
+        <div data-ng-if="field.errorMessage != null && field.errorMessage !==''" class="validationWraper">
+            <span class="validation-Icon"></span><div class="validation-message">{{field.errorMessage}}</div>
+        </div>
     </div>
 
     <!--
@@ -39,6 +42,9 @@
     <div ng-if='field.type == "RadioButtonGroup"'>
         <label class='control-label'>{{::field.label}}</label>
         <radio-button-group field='field' current-action='currentAction' change='onChange'></radio-button-group>
+        <div data-ng-if="field.errorMessage != null && field.errorMessage !==''" class="validationWraper">
+            <span class="validation-Icon"></span><div class="validation-message">{{field.errorMessage}}</div>
+        </div>
     </div>
 
     <!--
@@ -47,9 +53,8 @@
     <div ng-if='field.type == "DropDownList"'>
         <label ng-if="field.label !== null && field.label.length > 0" class='control-label'>{{::field.label}}</label>
         <drop-down-list-box field='field' change='onChange' data-field-name='{{::field.name}}'></drop-down-list-box>
-        <div data-ng-if="field.errorMessage !== null && field.errorMessage !==''" class="validationWraper">
-            <span class="validation-Icon"></span>
-            <div class="validation-message">{{field.errorMessage}}</div>
+        <div data-ng-if="field.errorMessage != null && field.errorMessage !==''" class="validationWraper">
+            <span class="validation-Icon"></span><div class="validation-message">{{field.errorMessage}}</div>
         </div>
     </div>
 
@@ -156,6 +161,13 @@
     -->
     <div ng-if='field.type === "UpstreamFieldChooser"'>
         <upstream-field-chooser field="field" current-action="currentAction"></upstream-field-chooser>
+    </div>
+
+    <!--
+        UpstreamCrateChooser
+    -->
+    <div ng-if='field.type === "UpstreamCrateChooser"'>
+        <upstream-crate-chooser field="field" current-action="currentAction" change="onChange"></upstream-crate-chooser>
     </div>
 
     <!-- Add more configuration field templates below -->

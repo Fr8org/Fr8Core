@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Interfaces.DataTransferObjects;
@@ -65,6 +66,34 @@ namespace terminalSalesforce.Services
             string instanceUrl, apiVersion;
             ParseAuthToken(authTokenResult.AdditionalAttributes, out instanceUrl, out apiVersion);
             return new ForceClient(instanceUrl, authTokenResult.Token, apiVersion);
+        }
+
+        public T CreateSalesforceDTO<T>(ActivityDO curActivity, PayloadDTO curPayload,
+                                        Func<ActivityDO, PayloadDTO, string, string> extractControlValue)
+        {
+            var requiredType = typeof (T);
+            var requiredObject = (T)Activator.CreateInstance(requiredType);
+            var requiredProperties = requiredType.GetProperties().Where(p => !p.Name.Equals("Id"));
+
+            requiredProperties.ToList().ForEach(prop =>
+            {
+                try
+                {
+                    var propValue = extractControlValue(curActivity, curPayload, prop.Name);
+                    prop.SetValue(requiredObject, propValue);
+                }
+                catch (ApplicationException applicationException)
+                {
+                    //If it can not extract the property, user did not enter any value for this property.
+                    //No problems. We can treat that value as empty and continue.
+                    if (applicationException.Message.Equals("Could not extract recipient, unknown recipient mode."))
+                    {
+                        prop.SetValue(requiredObject, string.Empty);
+                    }
+                }
+            });
+
+            return requiredObject;
         }
 
         /// <summary>

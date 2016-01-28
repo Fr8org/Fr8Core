@@ -8,7 +8,7 @@ module dockyard.controllers {
     'use strict';
 
     export interface ISandboxScope extends ng.IScope {
-        routeId: number;
+        planId: number;
         processNodeTemplates: Array<model.SubrouteDTO>,
         fields: Array<model.Field>;
 
@@ -76,7 +76,7 @@ module dockyard.controllers {
             private ActivityTemplateService: services.IActivityTemplateService
             ) {
             this._scope = $scope;
-            this._scope.routeId = $state.params.id;
+            this._scope.planId = $state.params.id;
 
 
             this._scope.processNodeTemplates = [];

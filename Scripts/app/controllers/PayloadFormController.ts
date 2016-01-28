@@ -8,14 +8,14 @@ module dockyard.controllers {
 		public static $inject = [
 			'$scope',
 			'RouteService',
-			'routeId',
+			'planId',
 			'$modalInstance'
 		];
 
 		constructor(
 			private $scope: any,
-			private ProcessTemplateService: services.IRouteService,
-			private routeId: any,
+			private RouteService: services.IRouteService,
+			private planId: any,
 			private $modalInstance: any) {
 
 			$scope.submit = <() => void> angular.bind(this, this.submit);
@@ -25,12 +25,12 @@ module dockyard.controllers {
 		}
 
 		private submit(form) {
-			this.ProcessTemplateService
-				.execute({ id: this.routeId }, { payload: form.payload.$modelValue },
-				(successResponse) => {
-					this.$modalInstance.close();
-				},
-				(errorResponse) => {
+            this.RouteService
+                .runAndProcessClientAction(this.planId)
+                .then((successResponse) => {
+                    this.$modalInstance.close();
+                })
+				.catch((errorResponse) => {
 					form.payload.$error.invalid = true;
 				});
 		}
