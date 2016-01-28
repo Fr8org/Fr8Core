@@ -24,7 +24,7 @@ using AutoMapper;
 
 namespace HubWeb.Controllers
 {
-    //[Fr8ApiAuthorize]
+    //
     public class FilesController : ApiController
     {
         private readonly IFile _fileService;
@@ -43,6 +43,7 @@ namespace HubWeb.Controllers
         [HttpPost]
         [ActionName("files")]
         [Fr8HubWebHMACAuthenticate]
+        [Fr8ApiAuthorize]
         public async Task<IHttpActionResult> Post()
         {
             FileDO fileDO = null;

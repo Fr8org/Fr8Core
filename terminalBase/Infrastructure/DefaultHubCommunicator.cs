@@ -58,6 +58,11 @@ namespace TerminalBase.Infrastructure
             return await _hmacService.GenerateHMACHeader(requestUri, TerminalId, TerminalSecret, userId, content);
         }
 
+        private async Task<Dictionary<string, string>> GetHMACHeader(Uri requestUri, string userId, HttpContent content)
+        {
+            return await _hmacService.GenerateHMACHeader(requestUri, TerminalId, TerminalSecret, userId, content);
+        }
+
         #endregion
 
         public async Task<PayloadDTO> GetPayload(ActivityDO activityDO, Guid containerId, string userId)
