@@ -31,16 +31,16 @@ namespace terminalDocuSignTests.Integration
 
         private void AssertCrateTypes(CrateStorage crateStorage)
         {
-            Assert.AreEqual(3, crateStorage.Count);
+            Assert.AreEqual(2, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "Available Templates"));
         }
 
-        private void AddHubActivityTemplate(ActionDTO actionDTO)
+        private void AddHubActivityTemplate(ActivityDTO activityDTO)
         {
 
             AddActivityTemplate(
-              actionDTO,
+              activityDTO,
               new ActivityTemplateDTO()
               {
                   Id = 1,
@@ -51,7 +51,7 @@ namespace terminalDocuSignTests.Integration
           );
 
             AddActivityTemplate(
-                actionDTO,
+                activityDTO,
                 new ActivityTemplateDTO()
                 {
                     Id = 2,
@@ -81,7 +81,7 @@ namespace terminalDocuSignTests.Integration
             Assert.AreEqual("Available Templates", templateDropdown.Source.Label);
         }
 
-        private async Task<ActionDTO> GetActionDTO_WithDataStorage(string childAction)
+        private async Task<ActivityDTO> GetActionDTO_WithDataStorage(string childAction)
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -90,7 +90,7 @@ namespace terminalDocuSignTests.Integration
             AddHubActivityTemplate(requestActionDTO);
             
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<ActivityDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -131,7 +131,7 @@ namespace terminalDocuSignTests.Integration
             AddHubActivityTemplate(requestActionDTO);
 
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<ActivityDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -154,7 +154,7 @@ namespace terminalDocuSignTests.Integration
             var requestActionDTO = HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_ActionDTO();
 
             var responseActionDTO = await GetActionDTO_WithDataStorage(childAction);
-             responseActionDTO = await HttpPostAsync<ActionDTO, ActionDTO>(
+             responseActionDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(
                     configureUrl,
                     responseActionDTO
                 );
@@ -177,7 +177,7 @@ namespace terminalDocuSignTests.Integration
             var requestActionDTO = HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_ActionDTO();
 
             var responseActionDTO = await GetActionDTO_WithDataStorage(childAction);
-            responseActionDTO = await HttpPostAsync<ActionDTO, ActionDTO>(
+            responseActionDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(
                    configureUrl,
                    responseActionDTO
                );
@@ -202,7 +202,7 @@ namespace terminalDocuSignTests.Integration
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<ActivityDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -223,7 +223,7 @@ namespace terminalDocuSignTests.Integration
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<ActivityDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );

@@ -8,19 +8,22 @@
             <li data-scroll="scrolling" class="dropdown">
                 <a href="/#services" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Services">Services <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                    <li><a href="/Home/DocuSign">DocuSign</a></li>
+                    <li><a href="/Services/DocuSign">DocuSign</a></li>
                     @*<li><a href="/Home/ConditionalLogicBranching">Conditional Logic Branching</a></li>
                     <li><a href="/Home/IntegrationWithOtherDataServices">Integration with Other Data Services</a></li>
                     <li><a href="/Home/InterOrganizationWorkflows">Inter-Organization Workflows</a></li>
                     <li><a href="/Home/DataExtractionintoSQLServer">Data Extraction into SQL Server</a></li>*@
                 </ul>
             </li>
+            <li data-scroll="scrolling"><a href="http://fr8-documentation.azurewebsites.net" class="develop" title="Develop">Develop</a></li>
             @*<li data-scroll="scrolling"><a href="http://dsigndocs.azurewebsites.net/RestApiDocs/RestAPIGuide.html">DocuSign REST API</a></li>*@
             <li data-scroll="scrolling"><a href="/#aboutus" class="about-us" title="About Us">About Us</a></li>
             <li data-scroll="scrolling"><a href="/#contacts" title="Contact">Contact</a></li>
             <li><a href="../dashboard#/myaccount">My Account</a> </li>
-            <li>@Html.ActionLink("Sign Out", "LogOff", "DockyardAccount", routeValues: null, htmlAttributes: new { id = "logoffLink" })</li>
-
+            @if (!User.IsInRole("Guest"))
+            {
+                <li>@Html.ActionLink("Sign Out", "LogOff", "DockyardAccount", routeValues: null, htmlAttributes: new { id = "logoffLink" })</li>
+            }
         </ul>
     }
 }
@@ -33,7 +36,7 @@ else
         <li data-scroll="scrolling" class="dropdown">
             <a href="/#services" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Services">Services <span class="caret"></span></a>
             <ul class="dropdown-menu">
-                <li><a href="/Home/DocuSign">DocuSign</a></li>
+                <li><a href="/Services/DocuSign">DocuSign</a></li>
                 @*<li><a href="/Home/ConditionalLogicBranching">Conditional Logic Branching</a></li>
                 <li><a href="/Home/IntegrationWithOtherDataServices">Integration with Other Data Services</a></li>
                 <li><a href="/Home/InterOrganizationWorkflows">Inter-Organization Workflows</a></li>
@@ -44,7 +47,9 @@ else
         <li data-scroll="scrolling"><a href="/#contacts" title="Contact">Contact</a></li>
         @*<li data-scroll="scrolling" class="visible-phone"><a href="/DockyardAccount" title="SignUp/Login">SignUp/Login</a></li>*@
     </ul>
-    <ul class="nav navbar-nav navbar-right">
-        <li style="background-color: crimson;">@Html.ActionLink("Try It Now", "Index", "Welcome")</li>
-    </ul>
+    if (String.IsNullOrWhiteSpace((String)ViewBag.GuestUserEmail)) { 
+        <ul class="nav navbar-nav navbar-right">
+            <li style="background-color: crimson;">@Html.ActionLink("Try It Now", "Index", "Welcome")</li>
+        </ul>
+    }
 }

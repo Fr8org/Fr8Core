@@ -5,16 +5,16 @@ using Data.Interfaces;
 
 namespace Data.Repositories
 {
-    public class RouteRepository : GenericRepository<RouteDO>, IRouteRepository
+    public class PlanRepository : GenericRepository<PlanDO>, IPlanRepository
     {
-        internal RouteRepository(IUnitOfWork uow)
+        internal PlanRepository(IUnitOfWork uow)
             : base(uow)
         {
 
         }
     }
 
-    public interface IRouteRepository : IGenericRepository<RouteDO>
+    public interface IPlanRepository : IGenericRepository<PlanDO>
     {
 
     }

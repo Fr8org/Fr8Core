@@ -18,7 +18,8 @@ namespace UtilitiesTesting.Fixtures
                 Name = "terminalAzureSqlServer",
                 Endpoint = "terminalAzureSqlServer",
                 TerminalStatus = TerminalStatus.Active,
-                Version = "1"
+                Version = "1",
+                Secret = Guid.NewGuid().ToString()
             };
         }
 
@@ -29,7 +30,8 @@ namespace UtilitiesTesting.Fixtures
                 Name = "AzureSqlServer",
                 Endpoint = "AzureSqlServer",
                 TerminalStatus = TerminalStatus.Active,
-                Version = "1"
+                Version = "1",
+                Secret = Guid.NewGuid().ToString()
             };
         }
 
@@ -40,7 +42,8 @@ namespace UtilitiesTesting.Fixtures
                 Name = "http://localhost:46281/",
                 Endpoint = "http://localhost:46281/",
                 TerminalStatus = TerminalStatus.Active,
-                Version = "1"
+                Version = "1",
+                Secret = Guid.NewGuid().ToString()
             };
         }
 
@@ -51,7 +54,8 @@ namespace UtilitiesTesting.Fixtures
                 Name = "AzureSqlServer",
                 Endpoint = "AzureSqlServer",
                 TerminalStatus = TerminalStatus.Active,
-                Version = "1"
+                Version = "1",
+                Secret = Guid.NewGuid().ToString()
             };
         }
 
@@ -62,7 +66,8 @@ namespace UtilitiesTesting.Fixtures
                 Name = "DocuSign",
                 Endpoint = "localhost",
                 TerminalStatus = TerminalStatus.Active,
-                Version = "1"
+                Version = "1",
+                Secret = Guid.NewGuid().ToString()
             };
         }
 
@@ -75,7 +80,8 @@ namespace UtilitiesTesting.Fixtures
                 Endpoint = "localhost",
                 TerminalStatus = TerminalStatus.Active,
                 Version = "1",
-                AuthenticationType = AuthenticationType.External
+                AuthenticationType = AuthenticationType.External,
+                Secret = Guid.NewGuid().ToString()
             };
         }
     }

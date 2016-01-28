@@ -96,6 +96,7 @@ namespace Data.Entities
 
         public int MinPaneWidth { get; set; }
 
+        [ForeignKey("WebService")]
 		public int? WebServiceId { get; set; }
 
 		public virtual WebServiceDO WebService { get; set; }

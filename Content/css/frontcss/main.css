@@ -904,3 +904,18 @@ ul.bordered-list li:first-child {
 .login-block {
     border-right: 1px solid #A5A5A5;
 }
+.auth-error-page
+{
+	display: inline-block;
+	text-align: center;
+	width: 100%;
+	margin-top: 40px;
+}
+.auth-error-page-body {
+    font-size: 15px;
+    font-family: sans-serif;
+}
+.auth-error-header {
+    padding: 9px 15px;
+    display:inline-block;
+}

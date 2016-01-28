@@ -25,7 +25,7 @@ namespace terminalGoogle.Services
             _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
-        public Crate Process(string externalEventPayload)
+        public async Task<Crate> Process(string externalEventPayload)
         {
             if (string.IsNullOrEmpty(externalEventPayload))
             {
@@ -45,7 +45,8 @@ namespace terminalGoogle.Services
                 EventNames = "Google Form Response",
                 ContainerDoId = "",
                 EventPayload = WrapPayloadDataCrate(payloadFields),
-                ExternalAccountId = externalAccountId.Value
+                ExternalAccountId = externalAccountId.Value,
+                Manufacturer = "Google"
             };
 
             //prepare the event report

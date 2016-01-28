@@ -24,7 +24,7 @@ namespace DockyardTest.Services
     [Category("Route")]
     public class RouteTests : BaseTest
     {
-        private IRoute _routeService;
+        private Hub.Interfaces.IPlan _planService;
         private InternalInterface.IContainer _container;
 
         [SetUp]
@@ -32,7 +32,7 @@ namespace DockyardTest.Services
         {
             base.SetUp();
             _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
-            _routeService = ObjectFactory.GetInstance<IRoute>();
+            _planService = ObjectFactory.GetInstance<IPlan>();
            
         }
 
@@ -41,14 +41,14 @@ namespace DockyardTest.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curRouteDO = FixtureData.TestRouteWithSubroutes();
-                uow.RouteRepository.Add(curRouteDO);
+                var curPlanDO = FixtureData.TestRouteWithSubroutes();
+                uow.PlanRepository.Add(curPlanDO);
                 uow.SaveChanges();
 
-                var curSubroutes = _routeService.GetSubroutes(curRouteDO);
+                var curSubroutes = _planService.GetSubroutes(curPlanDO);
 
                 Assert.IsNotNull(curSubroutes);
-                Assert.AreEqual(curRouteDO.Subroutes.Count(), curSubroutes.Count);
+                Assert.AreEqual(curPlanDO.Subroutes.Count(), curSubroutes.Count);
             }
         }
 
@@ -60,13 +60,13 @@ namespace DockyardTest.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curRouteDO = FixtureData.TestRoute_CanCreate();
+                var curPlanDO = FixtureData.TestRoute_CanCreate();
                 var curUserAccount = FixtureData.TestDockyardAccount1();
-                curRouteDO.Fr8Account = curUserAccount;
-                _routeService.CreateOrUpdate(uow, curRouteDO, false);
+                curPlanDO.Fr8Account = curUserAccount;
+                _planService.CreateOrUpdate(uow, curPlanDO, false);
                 uow.SaveChanges();
 
-                var result = uow.RouteRepository.GetByKey(curRouteDO.Id);
+                var result = uow.PlanRepository.GetByKey(curPlanDO.Id);
                 Assert.NotNull(result);
                 Assert.AreNotEqual(result.Id, 0);
                 Assert.NotNull(result.StartingSubroute);
@@ -80,15 +80,15 @@ namespace DockyardTest.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curRouteDO = FixtureData.TestRouteWithStartingSubroutes_ID0();
-                uow.RouteRepository.Add(curRouteDO);
+                var curPlanDO = FixtureData.TestRouteWithStartingSubroutes_ID0();
+                uow.PlanRepository.Add(curPlanDO);
                 uow.SaveChanges();
 
-                Assert.AreNotEqual(curRouteDO.Id, 0);
+                Assert.AreNotEqual(curPlanDO.Id, 0);
 
-                var currRouteDOId = curRouteDO.Id;
-                _routeService.Delete(uow, curRouteDO.Id);
-                var result = uow.RouteRepository.GetByKey(currRouteDOId);
+                var currRouteDOId = curPlanDO.Id;
+                _planService.Delete(uow, curPlanDO.Id);
+                var result = uow.PlanRepository.GetByKey(currRouteDOId);
 
                 Assert.NotNull(result);
             }
@@ -98,11 +98,11 @@ namespace DockyardTest.Services
         [Ignore("ActivityTemplates are not being added to ActivityTemplate respository. Should be fixed if test is needed")]
         public void Activate_NoMatchingParentActivityId_ReturnsNoAction()
         {
-            var curRouteDO = FixtureData.TestRouteNoMatchingParentActivity();
+            var curPlanDO = FixtureData.TestRouteNoMatchingParentActivity();
             
-            string result = _routeService.Activate(curRouteDO).Result;
+            var result = _planService.Activate(curPlanDO.Id, true).Result;
 
-            Assert.AreEqual(result, "no action");
+            Assert.AreEqual(result.Status, "no activity");
         }
 
         [Test]
@@ -113,19 +113,19 @@ namespace DockyardTest.Services
                 //Arrange
                 //Create a Route 
                 
-                var curRoute = FixtureData.TestRouteWithSubscribeEvent();
+                var curPlan = FixtureData.TestRouteWithSubscribeEvent();
 
                 //Create activity mock to process the actions
                 Mock<IRouteNode> activityMock = new Mock<IRouteNode>(MockBehavior.Default);
                 activityMock.Setup(a => a.Process(FixtureData.GetTestGuidById(1), It.IsAny<ActionState>(), It.IsAny<ContainerDO>())).Returns(Task.Delay(1));
-                activityMock.Setup(a => a.HasChildren(It.Is<RouteNodeDO>(r => r.Id == curRoute.StartingSubroute.Id))).Returns(true);
-                activityMock.Setup(a => a.HasChildren(It.Is<RouteNodeDO>(r => r.Id != curRoute.StartingSubroute.Id))).Returns(false);
-                activityMock.Setup(a => a.GetFirstChild(It.IsAny<RouteNodeDO>())).Returns(curRoute.ChildNodes.First().ChildNodes.First());
+                activityMock.Setup(a => a.HasChildren(It.Is<RouteNodeDO>(r => r.Id == curPlan.StartingSubroute.Id))).Returns(true);
+                activityMock.Setup(a => a.HasChildren(It.Is<RouteNodeDO>(r => r.Id != curPlan.StartingSubroute.Id))).Returns(false);
+                activityMock.Setup(a => a.GetFirstChild(It.IsAny<RouteNodeDO>())).Returns(curPlan.ChildNodes.First().ChildNodes.First());
                 ObjectFactory.Container.Inject(typeof(IRouteNode), activityMock.Object);
 
                 //Act
-                _routeService = new InternalClasses.Route();
-                _routeService.Run(curRoute, FixtureData.TestDocuSignEventCrate());
+                _planService = new InternalClasses.Plan();
+                _planService.Run(curPlan, FixtureData.TestDocuSignEventCrate());
 
                 //Assert
                 //since we have only one action in the template, the process should be called exactly once
@@ -139,12 +139,12 @@ namespace DockyardTest.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var route = FixtureData.TestRouteWithStartingSubrouteAndActionList();
+                var plan = FixtureData.TestRouteWithStartingSubrouteAndActionList();
 
-                uow.RouteRepository.Add(route);
+                uow.PlanRepository.Add(plan);
                 uow.SaveChanges();
 
-                var container = _routeService.Create(uow, route.Id, FixtureData.GetEnvelopeIdCrate());
+                var container = _planService.Create(uow, plan.Id, FixtureData.GetEnvelopeIdCrate());
                 Assert.IsNotNull(container);
                 Assert.IsTrue(container.Id != Guid.Empty);
             }

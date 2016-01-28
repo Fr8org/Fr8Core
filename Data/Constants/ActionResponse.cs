@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Data.Constants
 {
-    public enum ActionResponse
+    public enum ActivityResponse
     {
         Null = 0,
         Success,
@@ -14,6 +14,7 @@ namespace Data.Constants
         RequestTerminate,
         RequestSuspend,
         SkipChildren,
-        ReProcessChildren
+        ReProcessChildren,
+        ExecuteClientAction
     }
 }

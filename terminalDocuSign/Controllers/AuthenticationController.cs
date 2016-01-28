@@ -86,7 +86,7 @@ namespace terminalDocuSign.Controllers
 
                 return new AuthorizationTokenDTO()
                 {
-                    Error = "An error occured while trying to authenticate, please try again later."
+                    Error = "An error occurred while trying to authorize, please try again later."
                 };
             }
         }
@@ -113,6 +113,7 @@ namespace terminalDocuSign.Controllers
             }
             catch (Exception ex)
             {
+                ReportTerminalError("terminalDocuSign", ex);
                 return null;
             }
         }
