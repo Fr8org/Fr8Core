@@ -204,5 +204,10 @@ namespace TerminalBase.Infrastructure
         {
             throw new NotImplementedException();
         }
+
+        public Task<Stream> DownloadFile(int fileId, string userId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -12,6 +12,7 @@ using Utilities.Logging;
 using System.Diagnostics;
 using System.Net;
 using System.Globalization;
+using System.IO;
 
 namespace Hub.Managers.APIManagers.Transmitters.Restful
 {
@@ -211,6 +212,18 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
         }
 
         #region GenericRequestMethods
+
+        public async Task<Stream> DownloadAsync(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null)
+        {
+            using (var response = await GetInternalAsync(requestUri, CorrelationId, headers))
+            {
+                //copy stream because response will be disposed on return
+                var downloadedFile = await response.Content.ReadAsStreamAsync();
+                var copy = new MemoryStream();
+                await downloadedFile.CopyToAsync(copy);
+                return copy;
+            }
+        }
 
         public async Task<TResponse> GetAsync<TResponse>(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null)
         {

@@ -24,6 +24,7 @@ using Utilities;
 using StructureMap;
 using Hub.Interfaces;
 using System.IO;
+using System.Text;
 
 namespace terminalFr8Core.Actions
 {
@@ -71,35 +72,40 @@ namespace terminalFr8Core.Actions
             var payloadStorage = Crate.GetStorage(curPayloadDTO);
 
             var configContrls = GetConfigurationControls(curActivityDO);
-            var textSourceControl = (TextSource)GetControl(configContrls, "File Crate label", ControlTypes.TextSource);
-            var fileNameField = (TextBox)GetControl(configContrls, "File_Name", ControlTypes.TextBox);
-            var fileCrateLabel = textSourceControl.GetValue(payloadStorage);
-            if (string.IsNullOrEmpty(fileCrateLabel))
+            var fileSelector = configContrls.FindByName<DropDownList>("FileSelector");
+            
+            if (string.IsNullOrEmpty(fileSelector.Value))
             {
-                return Error(curPayloadDTO, "No Label was selected on design time", ActionErrorCode.DESIGN_TIME_DATA_MISSING);
-            }
-            if (string.IsNullOrEmpty(fileNameField.Value))
-            {
-                return Error(curPayloadDTO, "No file name was given on design time", ActionErrorCode.DESIGN_TIME_DATA_MISSING);
+                return Error(curPayloadDTO, "No File was selected on design time", ActionErrorCode.DESIGN_TIME_DATA_MISSING);
             }
 
+            //let's download this file
+            var file = await HubCommunicator.DownloadFile(int.Parse(fileSelector.Value), CurrentFr8UserId);
 
-            //we should upload this file to our file storage
-            var userSelectedFileManifest = payloadStorage.CrateContentsOfType<StandardFileDescriptionCM>(f => f.Label == fileCrateLabel).FirstOrDefault();
-            if (userSelectedFileManifest == null)
+            if (file == null || file.Length < 1)
             {
-                return Error(curPayloadDTO, "No StandardFileDescriptionCM Crate was found with label "+ fileCrateLabel, ActionErrorCode.PAYLOAD_DATA_MISSING);
+                return Error(curPayloadDTO, "Unable to download file from Hub", ActionErrorCode.OPERATION_FAILED);
             }
 
-
-            var fileContents = userSelectedFileManifest.TextRepresentation;
-
-            using (var stream = GenerateStreamFromString(fileContents))
+            string textRepresentation = string.Empty;
+            using (var reader = new StreamReader(file, Encoding.UTF8))
             {
-                //TODO what to do with this fileDO??
-                var fileDO = await HubCommunicator.SaveFile(fileNameField.Value, stream, CurrentFr8UserId);
+                textRepresentation = reader.ReadToEnd();
             }
 
+            //let's convert this file to a string and store it in a file crate
+            var fileDescription = new StandardFileDescriptionCM
+            {
+                Filename = fileSelector.selectedKey,
+                TextRepresentation = textRepresentation
+            };
+
+            var fileCrate = Data.Crates.Crate.FromContent("DownloadFile", fileDescription);
+
+            using (var updater = Crate.UpdateStorage(curPayloadDTO))
+            {
+                updater.CrateStorage.Add(fileCrate);
+            }
             
             return Success(curPayloadDTO);
         }
