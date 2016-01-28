@@ -161,32 +161,16 @@ namespace HubWeb.Controllers
         }
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
-        public IHttpActionResult Documentation(string SolutionName)
+        public IHttpActionResult Documentation(string solutionName)
         {
-            ActivityDO curSolutionActivityDO;
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curActivityTerminalDO = uow.ActivityTemplateRepository.GetAll()
-                    .Single(a => a.Name == SolutionName && a.Category == ActivityCategory.Solution);
-                curSolutionActivityDO = _activity.Create(uow, curActivityTerminalDO.Id, curActivityTerminalDO.Name,
-                    curActivityTerminalDO.Label, new RouteNodeDO());
-            }
-            var solutionPageDTO = _activity.GetDocumentation(curSolutionActivityDO);
-            return Json(solutionPageDTO);
+            var solutionPageDTO = _activity.GetSolutionDocumentation(solutionName);
+            return Ok(solutionPageDTO);
         }
 
-        [HttpGet]
+        [HttpPost]
         public IHttpActionResult GetSolutionList(string terminalName)
         {
-            var solutionNameList = new List<string>();
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curActivities = uow.ActivityTemplateRepository.GetAll()
-                    .Where(a => a.Terminal.Name == terminalName 
-                        && a.Category == ActivityCategory.Solution)
-                        .ToList();
-                solutionNameList.AddRange(curActivities.Select(activity => activity.Name));
-            }
+            var solutionNameList = _activity.GetSolutionList(terminalName);
             return Json(solutionNameList);
         }
 

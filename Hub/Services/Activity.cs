@@ -16,9 +16,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using Castle.DynamicProxy.Generators;
 using Data.Control;
 using Data.Crates;
-
+using Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
@@ -64,12 +65,12 @@ namespace Hub.Services
             try
             {
                 stopwatch = System.Diagnostics.Stopwatch.StartNew();
-            var activity = SaveAndUpdateRecursive(uow, submittedActivityData, null, new List<ActivityDO>());
+                var activity = SaveAndUpdateRecursive(uow, submittedActivityData, null, new List<ActivityDO>());
 
-            activity.ParentRouteNode = submittedActivityData.ParentRouteNode;
-            activity.ParentRouteNodeId = submittedActivityData.ParentRouteNodeId;
+                activity.ParentRouteNode = submittedActivityData.ParentRouteNode;
+                activity.ParentRouteNodeId = submittedActivityData.ParentRouteNodeId;
 
-            uow.SaveChanges();
+                uow.SaveChanges();
                 success = true;
             }
             catch
@@ -297,7 +298,7 @@ namespace Hub.Services
             var activity = new ActivityDO
             {
                 Id = Guid.NewGuid(),
-                ActivityTemplateId =  actionTemplateId,
+                ActivityTemplateId = actionTemplateId,
                 Name = name,
                 Label = label,
                 CrateStorage = _crate.EmptyStorageAsStr(),
@@ -645,11 +646,11 @@ namespace Hub.Services
         //    return ObjectFactory.GetInstance<ITerminalTransmitter>().CallActionAsync<PayloadDTO>(actionName, dto);
         //}
 
-        private Task<TResult> CallTerminalActionAsync<TResult>(string activityName, ActivityDO curActivityDO, Guid containerId, string curDocumentationSupport=null)
+        private Task<TResult> CallTerminalActionAsync<TResult>(string activityName, ActivityDO curActivityDO, Guid containerId, string curDocumentationSupport = null)
         {
             if (activityName == null) throw new ArgumentNullException("activityName");
             if (curActivityDO == null) throw new ArgumentNullException("curActivityDO");
-             
+
             var dto = Mapper.Map<ActivityDO, ActivityDTO>(curActivityDO);
             dto.ContainerId = containerId;
             if (curDocumentationSupport != null)
@@ -671,8 +672,43 @@ namespace Hub.Services
             }
             return ObjectFactory.GetInstance<ITerminalTransmitter>().CallActionAsync<TResult>(activityName, dto, containerId.ToString());
         }
+        //This method finds and returns signle Activity that is solution by Name
+        public async Task<SolutionPageDTO> GetSolutionDocumentation(string solutionName)
+        {
+            using (var uow= ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                ActivityDO curSolutionActivityDO;
+                var allActivityTemplates = uow.ActivityTemplateRepository.GetAll()
+                    .Where(a => a.Category == ActivityCategory.Solution)
+                        .ToList();
+                var curActivityTerminalDO = allActivityTemplates.Single(a => a.Name == solutionName);
+                curSolutionActivityDO = Create(uow, curActivityTerminalDO.Id, curActivityTerminalDO.Name,
+                    curActivityTerminalDO.Label, new RouteNodeDO());
+                uow.SaveChanges();
+                var curSolutionActivityDTO = Mapper.Map<ActivityDTO>(curSolutionActivityDO);
+                _authorizationToken.PrepareAuthToken(curSolutionActivityDTO);
+                uow.SaveChanges();
+                var curActivityDO = GetById(curSolutionActivityDO.Id);
 
-
+                var solutionPageDTO = await GetDocumentation(curActivityDO);
+                //Delete(curSolutionActivityDO.Id);
+                return solutionPageDTO;
+            }
+        }
+        //This method returns Solutions of a certain terminal by terminal name
+        public List<string> GetSolutionList(string terminalName)
+        {
+            var solutionNameList = new List<string>();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curActivities = uow.ActivityTemplateRepository.GetAll()
+                    .Where(a => a.Terminal.Name == terminalName
+                        && a.Category == ActivityCategory.Solution)
+                        .ToList();
+                solutionNameList.AddRange(curActivities.Select(activity => activity.Name));
+            }
+            return solutionNameList;
+        }
         //        public Task<IEnumerable<T>> FindCratesByManifestType<T>(ActionDO curActivityDO, GetCrateDirection direction = GetCrateDirection.None)
         //        {
         //

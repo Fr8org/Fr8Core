@@ -30,12 +30,12 @@ namespace terminalDocuSign.Controllers
         {
             return HandleFr8Request(curTerminal, actionType, curActionDTO);
         }
-        //Farrukh FR-2042: This method will not be reached as Execute is a Catch-All method.
-        //Clarification on its funtionality is required.
-        [HttpPost]
-        public HttpResponseMessage Documentation(string helpPath)
-        {
-            return GetActionDocumentation(helpPath);
-        }
+        ////Farrukh FR-2042: This method will not be reached as Execute is a Catch-All method.
+        ////Clarification on its funtionality is required.
+        //[HttpPost]
+        //public HttpResponseMessage Documentation(string helpPath)
+        //{
+        //    return GetActionDocumentation(helpPath);
+        //}
     }
 }

@@ -28,8 +28,6 @@ namespace Hub.Services
         private readonly ITime _time;
         private readonly IActivityTemplate _activityTemplate;
         private readonly ITerminal _terminal;
-
-
         public Authorization()
         {
             _terminal = ObjectFactory.GetInstance<ITerminal>();
