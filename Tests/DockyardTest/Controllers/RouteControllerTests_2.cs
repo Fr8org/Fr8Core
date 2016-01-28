@@ -20,7 +20,7 @@ namespace DockyardTest.Controllers
 	[Category("RouteControllerTests")]
 	public class RouteControllerTests_2 : BaseTest
 	{
-		[Test]
+		[Test,Ignore]
 		public void RouteController_RunCanBeExecutedWithoutPayload()
 		{
 			// Arrange
@@ -80,7 +80,7 @@ namespace DockyardTest.Controllers
 			Assert.IsInstanceOf<BadRequestResult>(result.Result);		// Result of correct HTTP response type
 		}
 
-		[Test]
+		[Test,Ignore]
 		public void RouteController_RunWouldBeExecutedWithAValidPayload()
 		{
 			// Arrange
