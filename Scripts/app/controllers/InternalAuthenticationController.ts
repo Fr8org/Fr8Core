@@ -34,7 +34,6 @@
                 return $scope.terminalName == "terminalDocuSign";
             }
 
-
             $scope.submitForm = function () {
                 if (!$scope.form.$valid) {
                     return;
