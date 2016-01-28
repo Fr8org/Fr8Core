@@ -19,5 +19,7 @@ namespace terminalSalesforce.Infrastructure
         Task<IList<FieldDTO>> GetFields(string salesforceObjectName, ForceClient forceClient);
 
         Task<StandardPayloadDataCM> GetObjectByQuery(string salesforceObjectName, string conditionQuery, ForceClient forceClient);
+
+        T CreateSalesforceDTO<T>(ActivityDO curActivity, PayloadDTO curPayload, Func<ActivityDO, PayloadDTO, string, string> extractControlValue);
     }
 }

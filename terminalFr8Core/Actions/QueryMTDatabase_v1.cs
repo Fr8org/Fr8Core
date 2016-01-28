@@ -15,6 +15,7 @@ using TerminalBase.BaseClasses;
 using Data.Entities;
 using StructureMap;
 using Hub.Managers;
+using Data.Constants;
 using Data.Control;
 using Data.Crates;
 using Data.States;
@@ -59,12 +60,26 @@ namespace terminalFr8Core.Actions
                                 (UpstreamCrateChooser = new UpstreamCrateChooser()
                                 {
                                     Name = "UpstreamCrateChooser",
-                                    SelectedCrates = new List<DropDownList>()
+                                    SelectedCrates = new List<CrateDetails>()
                                     {
-                                        new DropDownList()
+                                        new CrateDetails()
                                         {
-                                            Name = "UpstreamCrateDdl",
-                                            Source = new FieldSourceDTO(CrateManifestTypes.StandardDesignTimeFields, "Upstream Crate Label List")
+                                            ManifestType = new DropDownList()
+                                            {
+                                                Name = "UpstreamCrateManifestTypeDdl",
+                                                Source = new FieldSourceDTO(
+                                                    CrateManifestTypes.StandardDesignTimeFields,
+                                                    "Upstream Crate ManifestType List"
+                                                )
+                                            },
+                                            Label = new DropDownList()
+                                            {
+                                                Name = "UpstreamCrateLabelDdl",
+                                                Source = new FieldSourceDTO(
+                                                    CrateManifestTypes.StandardDesignTimeFields,
+                                                    "Upstream Crate Label List"
+                                                )
+                                            }
                                         }
                                     },
                                     MultiSelection = false
@@ -128,11 +143,13 @@ namespace terminalFr8Core.Actions
         {
             var objectList = GetObjects();
 
+            var upstreamQueryCrateManifests = GetUpstreamCrateManifestListCrate();
             var upstreamQueryCrateLabels = await GetUpstreamCrateLabelListCrate(curActivityDO);
 
             using (var updater = Crate.UpdateStorage(curActivityDO))
             {
                 updater.CrateStorage.Add(PackControls(new ActionUi()));
+                updater.CrateStorage.Add(upstreamQueryCrateManifests);
                 updater.CrateStorage.Add(upstreamQueryCrateLabels);
                 updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("Queryable Objects", objectList.ToArray()));
                 updater.CrateStorage.Add(
@@ -151,6 +168,18 @@ namespace terminalFr8Core.Actions
             }
 
             return curActivityDO;
+        }
+
+        private Crate<ManifestDescriptionCM> GetUpstreamCrateManifestListCrate()
+        {
+            var crate = Crate.CreateManifestDescriptionCrate(
+                "Upstream Crate ManifestType List",
+                MT.DocuSignEnvelope.ToString(),
+                ((int)MT.DocuSignEnvelope).ToString(CultureInfo.InvariantCulture),
+                AvailabilityType.Always
+            );
+
+            return crate;
         }
 
         private async Task<Crate<StandardDesignTimeFieldsCM>>
@@ -287,7 +316,7 @@ namespace terminalFr8Core.Actions
             ActivityDO activityDO,
             ActionUi config)
         {
-            var upstreamQueryCrateLabel = config.UpstreamCrateChooser.SelectedCrates[0].Value;
+            var upstreamQueryCrateLabel = config.UpstreamCrateChooser.SelectedCrates[0].Label.Value;
 
             if (string.IsNullOrEmpty(upstreamQueryCrateLabel))
             {

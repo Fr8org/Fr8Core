@@ -292,7 +292,7 @@ namespace Hub.Services
             return uow.ActivityRepository.GetQuery().FirstOrDefault(i => i.Id == id);
         }
 
-        public ActivityDO Create(IUnitOfWork uow, int actionTemplateId, string name, string label, RouteNodeDO parentNode, Guid? AuthorizationTokenId = null)
+        public ActivityDO Create(IUnitOfWork uow, int actionTemplateId, string name, string label, int? order, RouteNodeDO parentNode, Guid? AuthorizationTokenId = null)
         {
             var activity = new ActivityDO
             {
@@ -301,7 +301,7 @@ namespace Hub.Services
                 Name = name,
                 Label = label,
                 CrateStorage = _crate.EmptyStorageAsStr(),
-                Ordering = parentNode.ChildNodes.Count > 0 ? parentNode.ChildNodes.Max(x => x.Ordering) + 1 : 1,
+                Ordering = order ?? (parentNode.ChildNodes.Count > 0 ? parentNode.ChildNodes.Max(x => x.Ordering) + 1 : 1),
                 RootRouteNode = parentNode.RootRouteNode,
                 Fr8Account = (parentNode.RootRouteNode != null) ? parentNode.RootRouteNode.Fr8Account : null,
                 AuthorizationTokenId = AuthorizationTokenId
@@ -314,7 +314,7 @@ namespace Hub.Services
             return activity;
         }
 
-        public async Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, string name, string label = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null)
+        public async Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, string name, string label = null, int? order = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null)
         {
             if (parentNodeId != null && createRoute)
             {
@@ -339,7 +339,7 @@ namespace Hub.Services
                 parentNode = uow.RouteNodeRepository.GetByKey(parentNodeId);
             }
 
-            var activity = Create(uow, actionTemplateId, name, label, parentNode, authorizationTokenId);
+            var activity = Create(uow, actionTemplateId, name, label, order, parentNode, authorizationTokenId);
 
             uow.SaveChanges();
 

@@ -57,7 +57,7 @@ namespace Data.Interfaces.Manifests
         {
         }
 
-        public bool TryGetValue(string key, bool skipNull, out string value)
+        public bool TryGetValue(string key, bool skipNull, bool ignoreCase, out string value)
         {
             if (PayloadObjects == null)
             {
@@ -67,7 +67,7 @@ namespace Data.Interfaces.Manifests
 
             foreach (var payloadObjectDto in PayloadObjects)
             {
-                if (payloadObjectDto.TryGetValue(key, skipNull, out value))
+                if (payloadObjectDto.TryGetValue(key, skipNull, ignoreCase, out value))
                 {
                     return true;
                 }
@@ -78,16 +78,16 @@ namespace Data.Interfaces.Manifests
         }
 
 
-        public string GetValueOrDefault(string key, bool skipNull = false)
+        public string GetValueOrDefault(string key, bool skipNull = false, bool ignoreCase = false)
         {
             string value;
-            
-            TryGetValue(key, skipNull, out value);
+
+            TryGetValue(key, skipNull, ignoreCase, out value);
 
             return value;
         }
 
-        public IEnumerable<string> GetValues(string key)
+        public IEnumerable<string> GetValues(string key, bool ignoreCase = false)
         {
             if (PayloadObjects == null)
             {
@@ -96,7 +96,7 @@ namespace Data.Interfaces.Manifests
 
             foreach (var payloadObjectDto in PayloadObjects)
             {
-                foreach (var value in payloadObjectDto.GetValues(key))
+                foreach (var value in payloadObjectDto.GetValues(key, ignoreCase))
                 {
                     yield return value;
                 }
@@ -159,8 +159,8 @@ namespace Data.Interfaces.Manifests
         {
             PayloadObject = new List<FieldDTO>(fieldData);
         }
-        
-        public bool TryGetValue(string key, bool skipNull, out string value)
+
+        public bool TryGetValue(string key, bool skipNull, bool ignoreCase, out string value)
         {
             if (PayloadObject == null)
             {
@@ -168,9 +168,13 @@ namespace Data.Interfaces.Manifests
                 return false;
             }
 
+            var stringComparison = ignoreCase
+                ? StringComparison.InvariantCultureIgnoreCase
+                : StringComparison.InvariantCulture;
+
             foreach (var fieldDto in PayloadObject)
             {
-                if (fieldDto.Key == key)
+                if (string.Equals(fieldDto.Key, key, stringComparison))
                 {
                     if (skipNull && fieldDto.Value == null)
                     {
@@ -186,9 +190,13 @@ namespace Data.Interfaces.Manifests
             return false;
         }
 
-        public string GetValue(string key)
+        public string GetValue(string key, bool ignoreCase = false)
         {
-            var pair = PayloadObject.FirstOrDefault(x => x.Key == key);
+            var stringComparison = ignoreCase
+                ? StringComparison.InvariantCultureIgnoreCase
+                : StringComparison.InvariantCulture;
+
+            var pair = PayloadObject.FirstOrDefault(x => string.Equals(x.Key, key, stringComparison));
             
             if (pair == null)
             {
@@ -198,16 +206,20 @@ namespace Data.Interfaces.Manifests
             return pair.Value;
         }
 
-        public IEnumerable<string> GetValues(string key)
+        public IEnumerable<string> GetValues(string key, bool ignoreCase = false)
         {
             if (PayloadObject == null)
             {
                yield break;
             }
 
+            var stringComparison = ignoreCase
+                ? StringComparison.InvariantCultureIgnoreCase
+                : StringComparison.InvariantCulture;
+
             foreach (var fieldDto in PayloadObject)
             {
-                if (fieldDto.Key == key)
+                if (string.Equals(fieldDto.Key, key, stringComparison))
                 {
                     yield return fieldDto.Value;
                 }

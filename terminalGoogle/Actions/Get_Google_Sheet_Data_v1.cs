@@ -248,13 +248,17 @@ namespace terminalGoogle.Actions
             // To fetch rows in excel file, please uncomment below line of code.
             // var rows = _google.EnumerateDataRows(spreadsheetUri, authDTO);
 
-            List<TableRowDTO> rows = new List<TableRowDTO>();
+            var rows = new List<TableRowDTO>();
             var headerTableRowDTO = new TableRowDTO() { Row = new List<TableCellDTO>(), };
+
             foreach (var header in headers)
             {
                 var tableCellDTO = TableCellDTO.Create(header.Key, header.Value);
                 headerTableRowDTO.Row.Add(tableCellDTO);
             }
+
+            rows.Add(headerTableRowDTO);
+
             using (var updater = Crate.UpdateStorage(curActivityDO))
             {
                 const string label = "Spreadsheet Payload Rows";
