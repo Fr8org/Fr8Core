@@ -24,11 +24,11 @@ namespace DockyardTest.Controllers
 		public void RouteController_RunCanBeExecutedWithoutPayload()
 		{
 			// Arrange
-			Mock<IPlanRepository> rrMock = new Mock<IPlanRepository>();
-			rrMock.Setup(x => x.GetByKey(It.IsAny<Guid>())).Returns(new PlanDO());
+            Mock<IPlanRepository> rrMock = new Mock<IPlanRepository>();
+            rrMock.Setup(x => x.GetById<PlanDO>(It.IsAny<Guid>())).Returns(new PlanDO());
 
-			Mock<IUnitOfWork> uowMock = new Mock<IUnitOfWork>();
-			uowMock.Setup(x => x.RouteRepository).Returns(rrMock.Object);
+            Mock<IUnitOfWork> uowMock = new Mock<IUnitOfWork>();
+            uowMock.Setup(x => x.PlanRepository).Returns(rrMock.Object);
 
 			Mock<IPlan> routeMock = new Mock<IPlan>();
 			routeMock.Setup(x => x.Run(It.IsAny<PlanDO>(), It.IsAny<Crate>())).ReturnsAsync(new ContainerDO());
@@ -55,10 +55,10 @@ namespace DockyardTest.Controllers
 		{
 			// Arrange
 			Mock<IPlanRepository> rrMock = new Mock<IPlanRepository>();
-			rrMock.Setup(x => x.GetByKey(It.IsAny<Guid>())).Returns(new PlanDO());
+			rrMock.Setup(x => x.GetById<PlanDO>(It.IsAny<Guid>())).Returns(new PlanDO());
 
 			Mock<IUnitOfWork> uowMock = new Mock<IUnitOfWork>();
-			uowMock.Setup(x => x.RouteRepository).Returns(rrMock.Object);
+			uowMock.Setup(x => x.PlanRepository).Returns(rrMock.Object);
 
 			Mock<IPlan> routeMock = new Mock<IPlan>();
 			routeMock.Setup(x => x.Run(It.IsAny<PlanDO>(), It.IsAny<Crate>())).ReturnsAsync(new ContainerDO());
@@ -85,10 +85,10 @@ namespace DockyardTest.Controllers
 		{
 			// Arrange
 			Mock<IPlanRepository> rrMock = new Mock<IPlanRepository>();
-			rrMock.Setup(x => x.GetByKey(It.IsAny<Guid>())).Returns(new PlanDO());
+            rrMock.Setup(x => x.GetById<PlanDO>(It.IsAny<Guid>())).Returns(new PlanDO());
 
-			Mock<IUnitOfWork> uowMock = new Mock<IUnitOfWork>();
-			uowMock.Setup(x => x.RouteRepository).Returns(rrMock.Object);
+            Mock<IUnitOfWork> uowMock = new Mock<IUnitOfWork>();
+            uowMock.Setup(x => x.PlanRepository).Returns(rrMock.Object);
 
 			Mock<IPlan> routeMock = new Mock<IPlan>();
 			routeMock.Setup(x => x.Run(It.IsAny<PlanDO>(), It.IsAny<Crate>())).ReturnsAsync(new ContainerDO());

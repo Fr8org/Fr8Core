@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Data.Entities
 {
@@ -83,10 +84,7 @@ namespace Data.Entities
         public virtual _RouteStateTemplate RouteStateTemplate { get; set; }
 
         public string Tag { get; set; }
-
-        [InverseProperty("Plan")]
-        public virtual ICollection<ContainerDO> ChildContainers { get; set; }
-
+        
         [NotMapped]
         public IEnumerable<SubrouteDO> Subroutes
         {
@@ -96,28 +94,53 @@ namespace Data.Entities
             }
         }
 
-        public override RouteNodeDO Clone()
+        private static readonly PropertyInfo[] TrackingProperties = 
         {
-            return new PlanDO()
+            typeof(PlanDO).GetProperty("Name"),
+            typeof(PlanDO).GetProperty("Tag"),
+            typeof(PlanDO).GetProperty("Description"),
+        };
+
+        protected override IEnumerable<PropertyInfo> GetTrackingProperties()
+        {
+            foreach (var trackingProperty in base.GetTrackingProperties())
             {
-                Ordering = this.Ordering,
-                Name = this.Name,
-                Description = this.Description,
-                RouteState = this.RouteState,
-                Fr8Account = this.Fr8Account
-            };
+                yield return trackingProperty;
+            }
+
+            foreach (var trackingProperty in TrackingProperties)
+            {
+                yield return trackingProperty;
+            }
         }
 
-        public override void BeforeCreate()
+        protected override RouteNodeDO CreateNewInstance()
         {
-            base.BeforeCreate();
-            RootRouteNode = this;
+            return new PlanDO();
         }
 
-        public override void BeforeSave()
+
+        public override bool AreContentPropertiesEquals(RouteNodeDO other)
         {
-            base.BeforeSave();
-            RootRouteNode = this;
+            var plan = (PlanDO)other;
+            
+            return base.AreContentPropertiesEquals(other) &&
+                   Name == plan.Name &&
+                   Tag == plan.Tag &&
+                   RouteState == plan.RouteState &&
+                   Description == plan.Description;
+        }
+
+        protected override void CopyProperties(RouteNodeDO source)
+        {
+            var plan = (PlanDO)source;
+
+            base.CopyProperties(source);
+            Name = plan.Name;
+            Tag = plan.Tag;
+            RouteState = plan.RouteState;
+            Description = plan.Description;
+
         }
         
         private class SmartNavigationalPropertyCollectionProxy<TBase, TDerived> : ICollection<TDerived>

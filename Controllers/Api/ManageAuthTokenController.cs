@@ -84,7 +84,8 @@ namespace HubWeb.Controllers.Api
 
                 foreach (Guid actionId in actionIds)
                 {
-                    var activity = Activity.GetById(uow, actionId);
+                    var activity =  uow.PlanRepository.GetActivityQueryUncached().FirstOrDefault(x => x.Id == actionId);
+                    
                     var template = _activityTemplate.GetByKey(activity.ActivityTemplateId.Value);
                     result.Add(
                         new ManageAuthToken_Terminal_Activity()

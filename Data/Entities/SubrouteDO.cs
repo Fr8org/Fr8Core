@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Reflection;
 using Data.States;
 using Data.States.Templates;
 using Data.Validations;
@@ -20,8 +21,6 @@ namespace Data.Entities
         public SubrouteDO(bool startingSubroute)
         {
             this.StartingSubroute = true;
-           // this.Criteria = new List<CriteriaDO>();
-           // this.ProcessNode = new List<ProcessNodeDO>();
         }
 
         public string Name { get; set; }
@@ -33,11 +32,7 @@ namespace Data.Entities
         ///[{'TransitionKey':'true','ProcessNodeId':'234kljdf'},{'TransitionKey':'false','ProcessNodeId':'dfgkjfg'}]. In this case the values are Id's of other ProcessNodes.
         /// </summary>
         public string NodeTransitions { get; set; }
-
-        public virtual List<CriteriaDO> Criteria { get; set; }
-
-        public virtual List<ProcessNodeDO> ProcessNode { get; set; }
-
+        
         [NotMapped]
         public PlanDO Plan
         {
@@ -61,14 +56,49 @@ namespace Data.Entities
             // curValidator.ValidateAndThrow(this);
         }
 
-        public override RouteNodeDO Clone()
+        private static readonly PropertyInfo[] TrackingProperties = 
         {
-            return new SubrouteDO()
+            typeof(SubrouteDO).GetProperty("Name"),
+            typeof(SubrouteDO).GetProperty("StartingSubroute"),
+            typeof(SubrouteDO).GetProperty("NodeTransitions"),
+        };
+
+        protected override IEnumerable<PropertyInfo> GetTrackingProperties()
+        {
+            foreach (var trackingProperty in base.GetTrackingProperties())
             {
-                Ordering = this.Ordering,
-                Name = this.Name,
-                StartingSubroute = this.StartingSubroute
-            };
+                yield return trackingProperty;
+            }
+
+            foreach (var trackingProperty in TrackingProperties)
+            {
+                yield return trackingProperty;
+            }
+        }
+
+        public override bool AreContentPropertiesEquals(RouteNodeDO other)
+        {
+            var subroute = (SubrouteDO)other;
+
+            return base.AreContentPropertiesEquals(other) &&
+                   Name == subroute.Name &&
+                   StartingSubroute == subroute.StartingSubroute &&
+                   NodeTransitions == subroute.NodeTransitions;
+        }
+
+        protected override RouteNodeDO CreateNewInstance()
+        {
+            return new SubrouteDO();
+        }
+
+        protected override void CopyProperties(RouteNodeDO source)
+        {
+            var subroute = (SubrouteDO)source;
+
+            base.CopyProperties(source);
+            Name = subroute.Name;
+            StartingSubroute = subroute.StartingSubroute;
+            NodeTransitions = subroute.NodeTransitions;
         }
     }
 }

@@ -149,17 +149,23 @@ namespace DockyardTest.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var containerDO = FixtureData.TestContainerExecute();
+             
+                
                 var currAction = FixtureData.TestActivity4();
                 currAction.CrateStorage = crateStorage;
                 var nextAction = FixtureData.TestActivity5();
                 nextAction.CrateStorage = crateStorage;
+                
                 containerDO.CurrentRouteNode = currAction;
                 containerDO.NextRouteNode = nextAction;
 
-                uow.ContainerRepository.Add(containerDO);
-                uow.RouteNodeRepository.Add(currAction);
-                uow.RouteNodeRepository.Add(nextAction);
+                uow.PlanRepository.Add(new PlanDO()
+                {
+                    ChildNodes = { currAction, nextAction }
+                });
 
+                uow.ContainerRepository.Add(containerDO);
+                
                 uow.SaveChanges();
             }
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -180,11 +186,14 @@ namespace DockyardTest.Services
             {
                 var containerDO = FixtureData.TestContainerExecute();
                 var currActivity = FixtureData.TestActivityTreeWithActivityTemplates();
-                
+
+                uow.PlanRepository.Add(new PlanDO()
+                {
+                    ChildNodes = { currActivity }
+                });
+
                 containerDO.CurrentRouteNode = currActivity;
                 uow.ContainerRepository.Add(containerDO);
-                
-                AddActionToRepository(uow, currActivity);
                 
                 uow.SaveChanges();
             }
@@ -198,19 +207,7 @@ namespace DockyardTest.Services
             }
         }
 
-        private static void AddActionToRepository(IUnitOfWork uow, RouteNodeDO currActivity)
-        {
-            if (currActivity == null)
-                return;
-          
-            uow.RouteNodeRepository.Add(currActivity);
-
-            if (currActivity.ChildNodes != null)
-            {
-                foreach (var activity in currActivity.ChildNodes)
-                    AddActionToRepository(uow, activity);
-            }
-        }
+       
 
         private static string GetCrateStorageAsString()
         {

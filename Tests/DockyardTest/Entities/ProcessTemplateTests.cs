@@ -21,16 +21,15 @@ namespace DockyardTest.Entities
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var plan = FixtureData.TestRoute2();
-                uow.RouteRepository.Add(plan);
-
                 var subroute = FixtureData.TestSubrouteDO2();
-                uow.SubrouteRepository.Add(subroute);
+
+                plan.ChildNodes.Add(subroute);
+                uow.PlanRepository.Add(plan);
                 plan.StartingSubroute = subroute;
 
                 uow.SaveChanges();
 
-                var result = uow.RouteRepository.GetQuery()
-                    .SingleOrDefault(pt => pt.StartingSubrouteId == subroute.Id);
+                var result = uow.PlanRepository.GetPlanQueryUncached().SingleOrDefault(pt => pt.StartingSubrouteId == subroute.Id);
 
                 Assert.AreEqual(subroute.Id, result.StartingSubroute.Id);
                 Assert.AreEqual(subroute.Name, result.StartingSubroute.Name);

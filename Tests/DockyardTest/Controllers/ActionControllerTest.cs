@@ -47,10 +47,11 @@ namespace DockyardTest.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var plan = FixtureData.TestRoute1();
-                uow.RouteRepository.Add(plan);
+                
+                uow.PlanRepository.Add(plan);
 
                 var subroute = FixtureData.TestSubrouteDO1();
-                uow.RouteNodeRepository.Add(subroute);
+                plan.ChildNodes.Add(subroute);
                 uow.SaveChanges();
 
                 //Arrange is done with empty action list
@@ -65,10 +66,10 @@ namespace DockyardTest.Controllers
                 controller.Save(actualAction);
 
                 //Assert
-                Assert.IsNotNull(uow.ActivityRepository);
-                Assert.IsTrue(uow.ActivityRepository.GetAll().Count() == 1);
+                Assert.IsNotNull(uow.PlanRepository);
+                Assert.IsTrue(uow.PlanRepository.GetActivityQueryUncached().Count() == 1);
 
-                var expectedAction = uow.ActivityRepository.GetByKey(actualAction.Id);
+                var expectedAction = uow.PlanRepository.GetById<ActivityDO>(actualAction.Id);
                 Assert.IsNotNull(expectedAction);
                 Assert.AreEqual(actualAction.Name, expectedAction.Name);
             }
@@ -80,17 +81,16 @@ namespace DockyardTest.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var plan = FixtureData.TestRoute1();
-                uow.RouteRepository.Add(plan);
+
+                uow.PlanRepository.Add(plan);
 
                 var subroute = FixtureData.TestSubrouteDO1();
-                uow.RouteNodeRepository.Add(subroute);
+                plan.ChildNodes.Add(subroute);
 
                 //Arrange
                 //Add one test action
                 var activity = FixtureData.TestActivity1();
-                activity.ParentRouteNodeId = subroute.Id;
-                
-                uow.ActivityRepository.Add(activity);
+                subroute.ChildNodes.Add(activity);
                 uow.SaveChanges();
 
                 //Act
@@ -102,11 +102,11 @@ namespace DockyardTest.Controllers
                 controller.Save(actualAction);
 
                 //Assert
-                Assert.IsNotNull(uow.ActivityRepository);
-                Assert.IsTrue(uow.ActivityRepository.GetAll().Count() == 2);
+                Assert.IsNotNull(uow.PlanRepository);
+                Assert.IsTrue(uow.PlanRepository.GetActivityQueryUncached().Count() == 2);
 
                 //Still there is only one action as the update happened.
-                var expectedAction = uow.ActivityRepository.GetByKey(actualAction.Id);
+                var expectedAction = uow.PlanRepository.GetById<ActivityDO>(actualAction.Id);
                 Assert.IsNotNull(expectedAction);
                 Assert.AreEqual(actualAction.Name, expectedAction.Name);
             }
@@ -121,7 +121,13 @@ namespace DockyardTest.Controllers
                 //Arrange
                 //Add one test action
                 var activity = FixtureData.TestActivity1();
-                uow.ActivityRepository.Add(activity);
+
+                var plan = new PlanDO
+                {
+                    ChildNodes = {activity}
+                };
+
+                uow.PlanRepository.Add(plan);
                 uow.SaveChanges();
 
                 //Act
@@ -131,11 +137,11 @@ namespace DockyardTest.Controllers
                 controller.Save(actualAction);
 
                 //Assert
-                Assert.IsNotNull(uow.ActivityRepository);
-                Assert.IsTrue(uow.ActivityRepository.GetAll().Count() == 1);
+                Assert.IsNotNull(uow.PlanRepository);
+                Assert.IsTrue(uow.PlanRepository.GetActivityQueryUncached().Count() == 1);
 
                 //Still there is only one action as the update happened.
-                var expectedAction = uow.ActivityRepository.GetByKey(actualAction.Id);
+                var expectedAction = uow.PlanRepository.GetById<ActivityDO>(actualAction.Id);
                 Assert.IsNotNull(expectedAction);
                 Assert.AreEqual(actualAction.Name, expectedAction.Name);
             }
@@ -343,19 +349,19 @@ namespace DockyardTest.Controllers
             };
         }
 
-        private ActivityDO CreateActionWithV2ActionTemplate(IUnitOfWork uow)
-        {
-
-            var curActionTemplate = FixtureData.TestActivityTemplateV2();
-            uow.ActivityTemplateRepository.Add(curActionTemplate);
-
-            var curAction = FixtureData.TestActivity1();
-            curAction.ActivityTemplateId = curActionTemplate.Id;
-            curAction.ActivityTemplate = curActionTemplate;
-            uow.ActivityRepository.Add(curAction);
-
-            return curAction;
-        }
+//        private ActivityDO CreateActionWithV2ActionTemplate(IUnitOfWork uow)
+//        {
+//
+//            var curActionTemplate = FixtureData.TestActivityTemplateV2();
+//            uow.ActivityTemplateRepository.Add(curActionTemplate);
+//
+//            var curAction = FixtureData.TestActivity1();
+//            curAction.ActivityTemplateId = curActionTemplate.Id;
+//            curAction.ActivityTemplate = curActionTemplate;
+//            uow.ActivityRepository.Add(curAction);
+//
+//            return curAction;
+//        }
 
 
      

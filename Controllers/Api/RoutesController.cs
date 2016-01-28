@@ -96,8 +96,9 @@ namespace HubWeb.Controllers
                     return BadRequest("Some of the request data is invalid");
                 }
                 var curPlanDO = Mapper.Map<RouteEmptyDTO, PlanDO>(routeDto, opts => opts.Items.Add("ptid", routeDto.Id));
-                curPlanDO.Fr8Account = _security.GetCurrentAccount(uow);
+                
                 _plan.CreateOrUpdate(uow, curPlanDO, updateRegistrations);
+                
                 uow.SaveChanges();
                 var result = RouteMappingHelper.MapRouteToDto(uow, curPlanDO);
                 return Ok(result);
@@ -113,7 +114,7 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var plan = uow.RouteRepository.GetByKey(id);
+                var plan = uow.PlanRepository.GetById<PlanDO>(id);
                 var result = RouteMappingHelper.MapRouteToDto(uow, plan);
 
                 return Ok(result);
@@ -128,7 +129,7 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var activity = uow.ActivityRepository.GetByKey(id);
+                var activity = uow.PlanRepository.GetById<ActivityDO>(id);
                 var plan = _plan.GetPlan(activity);
                 var result = RouteMappingHelper.MapRouteToDto(uow, plan);
 
@@ -184,7 +185,7 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curPlanDO = uow.RouteRepository.GetByKey(id);
+                var curPlanDO = uow.PlanRepository.GetById<PlanDO>(id);
                 if (curPlanDO == null)
                 {
                     throw new ApplicationException("Unable to find plan with specified id.");
@@ -323,7 +324,7 @@ namespace HubWeb.Controllers
             bool inActive = false;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var routeDO = uow.RouteRepository.GetByKey(routeId);
+                var routeDO = uow.PlanRepository.GetById<PlanDO>(routeId);
 
                 if (routeDO.RouteState == RouteState.Inactive)
                     inActive = true;
@@ -354,7 +355,7 @@ namespace HubWeb.Controllers
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var planDO = uow.RouteRepository.GetByKey(routeId);
+                var planDO = uow.PlanRepository.GetById<PlanDO>(routeId);
 
                 try
                 {

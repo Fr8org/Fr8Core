@@ -49,8 +49,77 @@ namespace Hub.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return uow.ActivityRepository.GetAll().Select(Mapper.Map<TViewModel>);
+                return uow.PlanRepository.GetActivityQueryUncached().Select(Mapper.Map<TViewModel>);
             }
+        }
+
+
+        private void AssignIds(ActivityDO submittedActivity, ActivityDO parent)
+        {
+            if (submittedActivity.IsTempId)
+            {
+                submittedActivity.Id = Guid.NewGuid();
+                submittedActivity.ParentRouteNode = parent;
+                submittedActivity.Ordering = parent.ChildNodes.Count > 0 ? parent.ChildNodes.Max(x => x.Ordering) + 1 : 1;
+            }
+
+            foreach (ActivityDO child in submittedActivity.ChildNodes)
+            {
+                AssignIds(child, submittedActivity);
+            }
+        }
+
+        public void SaveOrUpdateActivityNew(IUnitOfWork uow, ActivityDO submittedActivity)
+        {
+            var route = uow.PlanRepository.GetById<RouteNodeDO>(submittedActivity.ParentRouteNodeId);
+            // var editableRoute = submittedActivity.ToEditable();
+
+            AssignIds(submittedActivity, (ActivityDO)route);
+
+            /*
+            
+                var flatten = submittedActivity.Flatten ();
+                var flattenSubtree = route.Flatten();
+                
+               foreach (var node in flattenSubtree)
+               {
+                 if (!flatten.Contains (node.Id))
+                 {
+                      route.Remove(node.Id)
+                 }
+               }
+                
+               foreach (var node in flatten)
+               {
+                if (!route.Contains (node.Id)
+                {
+                    route.Add (node);
+                }
+                else
+                {
+                    CopyProperties (node, route[node.Id]);
+                }
+               }
+               
+               foreach (var node in flatten)
+             * {
+             *     route.AttachToParent (node, node.ParentRouteNodeId);
+             * }
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+            
+             */
         }
 
         public ActivityDO SaveOrUpdateActivity(IUnitOfWork uow, ActivityDO submittedActivityData)
@@ -90,7 +159,7 @@ namespace Hub.Services
 
             try
             {
-                var result = uow.ActivityRepository.GetByKey(submittedActivityData.Id);
+                var result = uow.PlanRepository.GetById<ActivityDO>(submittedActivityData.Id);
                 success = true;
                 return result;
             }
@@ -152,7 +221,7 @@ namespace Hub.Services
 
         private void UpdateActionProperties(IUnitOfWork uow, ActivityDO submittedActivity)
         {
-            var existingAction = uow.ActivityRepository.GetByKey(submittedActivity.Id);
+            var existingAction = uow.PlanRepository.GetById<ActivityDO>(submittedActivity.Id);
 
             if (existingAction == null)
             {
@@ -198,7 +267,7 @@ namespace Hub.Services
                 {
                     if (submittedActiviy.ParentRouteNodeId != null)
                     {
-                        subroute = uow.RouteNodeRepository.GetByKey(submittedActiviy.ParentRouteNodeId);
+                        subroute = uow.PlanRepository.GetById<ActivityDO>(submittedActiviy.ParentRouteNodeId);
                     }
                 }
                 else
@@ -211,13 +280,7 @@ namespace Hub.Services
                     throw new Exception(string.Format("Unable to find Subroute by id = {0}", submittedActiviy.ParentRouteNodeId));
                 }
 
-                submittedActiviy.Ordering = subroute.ChildNodes.Count > 0 ? subroute.ChildNodes.Max(x => x.Ordering) + 1 : 1;
-
-                //assign Fr8Account from Route -> Action -> ...
-                submittedActiviy.Fr8Account = (subroute.Fr8Account != null) ? subroute.Fr8Account : null;
-
-                // Add Action to repo.
-                uow.ActivityRepository.Add(submittedActiviy);
+                subroute.AddChildWithDefaultOrdering(submittedActiviy);
 
                 // If we have created new action add it to pending configuration list.
                 pendingConfiguration.Add(submittedActiviy);
@@ -234,7 +297,7 @@ namespace Hub.Services
             }
             else
             {
-                existingActivity = uow.ActivityRepository.GetByKey(submittedActiviy.Id);
+                existingActivity = uow.PlanRepository.GetById<ActivityDO>(submittedActiviy.Id);
 
                 if (existingActivity == null)
                 {
@@ -289,31 +352,9 @@ namespace Hub.Services
 
         public ActivityDO GetById(IUnitOfWork uow, Guid id)
         {
-            return uow.ActivityRepository.GetQuery().FirstOrDefault(i => i.Id == id);
+            return uow.PlanRepository.GetById<ActivityDO>(id);
         }
-
-        public ActivityDO Create(IUnitOfWork uow, int actionTemplateId, string name, string label, RouteNodeDO parentNode, Guid? AuthorizationTokenId = null)
-        {
-            var activity = new ActivityDO
-            {
-                Id = Guid.NewGuid(),
-                ActivityTemplateId =  actionTemplateId,
-                Name = name,
-                Label = label,
-                CrateStorage = _crate.EmptyStorageAsStr(),
-                Ordering = parentNode.ChildNodes.Count > 0 ? parentNode.ChildNodes.Max(x => x.Ordering) + 1 : 1,
-                RootRouteNode = parentNode.RootRouteNode,
-                Fr8Account = (parentNode.RootRouteNode != null) ? parentNode.RootRouteNode.Fr8Account : null,
-                AuthorizationTokenId = AuthorizationTokenId
-            };
-
-            uow.ActivityRepository.Add(activity);
-
-            parentNode.ChildNodes.Add(activity);
-
-            return activity;
-        }
-
+        
         public async Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, string name, string label = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null)
         {
             if (parentNodeId != null && createRoute)
@@ -332,15 +373,41 @@ namespace Hub.Services
             if (createRoute)
             {
                 plan = ObjectFactory.GetInstance<IPlan>().Create(uow, label);
-                parentNode = ObjectFactory.GetInstance<ISubroute>().Create(uow, plan, name + " #1");
+
+                plan.ChildNodes.Add(parentNode = new SubrouteDO
+                {
+                    Id = Guid.NewGuid(),
+                    Name = name + " #1"
+                });
             }
             else
             {
-                parentNode = uow.RouteNodeRepository.GetByKey(parentNodeId);
+                parentNode = uow.PlanRepository.GetById<ActivityDO>(parentNodeId);
             }
 
-            var activity = Create(uow, actionTemplateId, name, label, parentNode, authorizationTokenId);
+            AuthorizationTokenDO authorizationToken = null;
 
+            if (authorizationTokenId != null)
+            {
+                authorizationToken = uow.AuthorizationTokenRepository.GetPublicDataQuery().FirstOrDefault(x => x.Id == authorizationTokenId);
+
+                if (authorizationToken == null)
+                {
+                    throw new ArgumentException("Supplied authorization token id is invalid", "authorizationTokenId");
+                }
+            }
+
+            var activity = new ActivityDO
+            {
+                Id = Guid.NewGuid(),
+                ActivityTemplateId =  actionTemplateId,
+                Name = name,
+                Label = label,
+                CrateStorage = _crate.EmptyStorageAsStr(),
+                AuthorizationToken = authorizationToken
+            };
+            parentNode.AddChildWithDefaultOrdering(activity);
+            
             uow.SaveChanges();
 
             await ConfigureSingleAction(uow, userId, activity);
@@ -447,7 +514,7 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
 
-                var curAction = uow.RouteNodeRepository.GetQuery().FirstOrDefault(al => al.Id == id);
+                var curAction = uow.PlanRepository.GetById<ActivityDO>(id);
                 if (curAction == null)
                 {
                     throw new InvalidOperationException("Unknown RouteNode with id: " + id);
@@ -479,7 +546,7 @@ namespace Hub.Services
                     }
                 }
 
-                _routeNode.Delete(uow, curAction);
+                curAction.ParentRouteNode.ChildNodes.Remove(curAction);
 
                 uow.SaveChanges();
             }
@@ -525,8 +592,7 @@ namespace Hub.Services
                 }
                 //curContainerDO.CrateStorage = payload.CrateStorage;
             }
-
-            uow.ActivityRepository.Attach(curActivity);
+            
             uow.SaveChanges();
         }
 

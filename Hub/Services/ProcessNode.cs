@@ -46,7 +46,7 @@ namespace Hub.Services
             };
 
             processNode.SubrouteId = subrouteId;
-            processNode.Subroute = uow.SubrouteRepository.GetByKey(subrouteId);
+            processNode.Subroute = uow.PlanRepository.GetById<SubrouteDO>(subrouteId);
 
             uow.ProcessNodeRepository.Add(processNode);
             EventManager.ProcessNodeCreated(processNode);
@@ -87,7 +87,7 @@ namespace Hub.Services
 
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    var curSubroute = uow.SubrouteRepository.GetByKey(curProcessNode.SubrouteId);
+                    var curSubroute = uow.PlanRepository.GetById<SubrouteDO>(curProcessNode.SubrouteId);
                     RouteNodeDO currentAction = curSubroute;
 
                     do

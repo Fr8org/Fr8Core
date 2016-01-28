@@ -387,7 +387,7 @@ namespace Hub.Services
             IEnumerable<PlanDO> activeRoutes;
             using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var routeQuery = unitOfWork.RouteRepository.GetQuery().Include(i => i.Fr8Account);
+                var routeQuery = unitOfWork.PlanRepository.GetPlanQueryUncached().Include(i => i.Fr8Account);
 
                 routeQuery
                     .Where(pt => pt.RouteState == RouteState.Active)//1.

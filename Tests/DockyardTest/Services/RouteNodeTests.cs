@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Hub.Interfaces;
@@ -31,10 +32,15 @@ namespace DockyardTest.Services
         [Test]
         public void GetDesignTimeFieldsByDirection_ShouldReturnDesignTimeFieldsCrate()
         {
+            var route = new PlanDO();
+
             var testActionTree = FixtureData.TestActionTree();
+            
+            route.ChildNodes.Add(testActionTree);
+            
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.RouteNodeRepository.Add(testActionTree);
+                uow.PlanRepository.Add(route);
                 uow.SaveChanges();
             }
 

@@ -79,19 +79,5 @@ namespace terminalDocuSign.Services
 
             return template;
         }
-
-        private PlanDO GetExistingPlan(IUnitOfWork uow, string routeName, string fr8AccountEmail)
-        {
-            if (uow.RouteRepository.GetQuery().Any(existingRoute =>
-                existingRoute.Name.Equals(routeName) &&
-                existingRoute.Fr8Account.Email.Equals(fr8AccountEmail)))
-            {
-                return uow.RouteRepository.GetQuery().First(existingRoute =>
-                    existingRoute.Name.Equals(routeName) &&
-                    existingRoute.Fr8Account.Email.Equals(fr8AccountEmail));
-            }
-
-            return null;
-        }
     }
 }

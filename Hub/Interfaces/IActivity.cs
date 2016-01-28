@@ -22,8 +22,7 @@ namespace Hub.Interfaces
         ActivityDO GetById(IUnitOfWork uow, Guid id);
         //void Delete(int id); -> Delete is moved to ProcessNodeTemplate
         ActivityDO MapFromDTO(ActivityDTO curActivityDTO);
-        ActivityDO Create(IUnitOfWork uow, int actionTemplateId, string name, string label, RouteNodeDO parentNode, Guid? authorizationTokenId = null);
-
+        
         Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, string name,
                                              string label = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null);
 

@@ -1,29 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
-
+using System.Net;
 using System.Net.Http;
-using System.Reflection;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Http;
-using System.Web.Http.Description;
 using AutoMapper;
-using Hub.Services;
-using HubWeb.Controllers.Helpers;
-using Microsoft.AspNet.Identity;
-using Newtonsoft.Json;
-using StructureMap;
 using Data.Entities;
-using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.States;
 using Hub.Interfaces;
-using Hub.Managers;
+using HubWeb.Controllers.Helpers;
 using HubWeb.Infrastructure;
+using Microsoft.AspNet.Identity;
+using StructureMap;
 
 namespace HubWeb.Controllers
 {
@@ -33,21 +22,14 @@ namespace HubWeb.Controllers
     public class ActionsController : ApiController
     {
         private readonly IActivity _activity;
-        private readonly ISecurityServices _security;
         private readonly IActivityTemplate _activityTemplate;
         private readonly ISubroute _subRoute;
-        private readonly Hub.Interfaces.IPlan _plan;
-
-        private readonly IAuthorization _authorization;
 
         public ActionsController()
         {
             _activity = ObjectFactory.GetInstance<IActivity>();
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
-            _security = ObjectFactory.GetInstance<ISecurityServices>();
             _subRoute = ObjectFactory.GetInstance<ISubroute>();
-            _plan = ObjectFactory.GetInstance<IPlan>();
-            _authorization = ObjectFactory.GetInstance<IAuthorization>();
         }
 
         public ActionsController(IActivity service)
@@ -68,7 +50,6 @@ namespace HubWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var userId = User.Identity.GetUserId();
-
                 var result = await _activity.CreateAndConfigure(uow, userId, actionTemplateId, name, label, parentNodeId, createRoute, authorizationTokenId);
 
                 if (result is ActivityDO)
@@ -140,7 +121,7 @@ namespace HubWeb.Controllers
             var isDeleted = await _subRoute.DeleteActivity(User.Identity.GetUserId(), id, confirmed);
             if (!isDeleted)
             {
-                return ResponseMessage(new HttpResponseMessage(System.Net.HttpStatusCode.PreconditionFailed));
+                return ResponseMessage(new HttpResponseMessage(HttpStatusCode.PreconditionFailed));
             }
             return Ok();
         }

@@ -46,6 +46,11 @@ namespace Hub.Services
             uow.SaveChanges();
         }
 
+        public List<ContainerDO> LoadContainers(IUnitOfWork uow, PlanDO plan)
+        {
+            return uow.ContainerRepository.GetQuery().Where(x => x.PlanId == plan.Id).ToList();
+        }
+
         private ActivityResponse GetCurrentActionResponse(ContainerDO curContainerDO)
         {
             var storage = _crate.GetStorage(curContainerDO.CrateStorage);

@@ -59,7 +59,7 @@ namespace Data.Migrations
 
             private void StoreTemplate(IUnitOfWork uow)
             {
-                var plan = uow.RouteRepository.GetQuery().FirstOrDefault(x => x.Name == _name);
+                var plan = uow.PlanRepository.GetPlanQueryUncached().FirstOrDefault(x => x.Name == _name);
                 bool add = plan == null;
 
                 if (add)
@@ -77,7 +77,7 @@ namespace Data.Migrations
 
                 if (add)
                 {
-                    uow.RouteRepository.Add(plan);
+                    uow.PlanRepository.Add(plan);
                     uow.SaveChanges();
                 }
 

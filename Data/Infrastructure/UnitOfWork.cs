@@ -6,6 +6,7 @@ using System.Linq;
 using System.Transactions;
 using Data.Interfaces;
 using Data.Repositories;
+using Data.Repositories.Plan;
 using StructureMap;
 
 namespace Data.Infrastructure
@@ -27,7 +28,8 @@ namespace Data.Infrastructure
             // Register self in the nested container to allow constructor injection
             _container.Configure(expression =>
             {
-                expression.For<IUnitOfWork>().Use(this).Singleton();
+                expression.For<IUnitOfWork>().Use(this);
+                expression.For<IPlanRepository>().Use<PlanRepository>().Transient();
             });
         }
 
@@ -433,16 +435,7 @@ namespace Data.Infrastructure
 			  return _routeNodeRepository ?? (_routeNodeRepository = new RouteNodeRepository(this));
 		  }
 	  }
-      private IPlanRepository _routeRepository;
-
-        public IPlanRepository RouteRepository
-        {
-            get
-            {
-                return _routeRepository ?? (_routeRepository = new PlanRepository(this));
-            }
-        }
-
+      
 		private ProcessNodeRepository _proeProcessNodeRepository;
 
         public ProcessNodeRepository ProcessNodeRepository
@@ -522,6 +515,11 @@ namespace Data.Infrastructure
             {
                 return _mtDataRepository ?? (_mtDataRepository = new MTDataRepository(this));
             }
+        }
+
+        public IPlanRepository PlanRepository
+        {
+            get { return _container.GetInstance<IPlanRepository>(); }
         }
 
         private MultiTenantObjectRepository _multiTenantObjectRepository;

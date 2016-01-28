@@ -272,6 +272,8 @@
     <Compile Include="MockedDB\MoqDemoTests.cs" />
     <Compile Include="Repositories\AuthorizationTokenRepositoryTests.cs" />
     <Compile Include="Repositories\MultiTenantObjectRepositoryTests.cs" />
+    <Compile Include="Repositories\Plan\PlanCacheTests.cs" />
+    <Compile Include="Repositories\Plan\RouteSnapshotTests.cs" />
     <Compile Include="Security\AuthorizationMethodsTests.cs" />
     <Compile Include="Security\AuthorizationTokenTests.cs" />
     <Compile Include="Managers\CommunicationManagerTest.cs" />

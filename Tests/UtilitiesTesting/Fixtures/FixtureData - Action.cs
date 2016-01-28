@@ -292,7 +292,7 @@ namespace UtilitiesTesting.Fixtures
                 ParentRouteNodeId = routeDo.Id,
                 ParentRouteNode = routeDo,
                 RootRouteNodeId = routeDo.Id,
-                RootRouteNode = routeDo
+              //  RootRouteNode = routeDo
             };
 
 
@@ -375,7 +375,7 @@ namespace UtilitiesTesting.Fixtures
                 ParentRouteNodeId = routeDo.Id,
                 ParentRouteNode = routeDo,
                 RootRouteNodeId = routeDo.Id,
-                RootRouteNode = routeDo
+               // RootRouteNode = routeDo
             };
 
             using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => containerDO.CrateStorage))
@@ -440,7 +440,7 @@ namespace UtilitiesTesting.Fixtures
                 ParentRouteNode = curPlanDO,
                 ParentRouteNodeId = curPlanDO.Id,
                 RootRouteNodeId = curPlanDO.Id,
-                RootRouteNode = curPlanDO
+              //  RootRouteNode = curPlanDO
             };
 
             ActivityDO curActivityDO = new ActivityDO();
@@ -463,6 +463,22 @@ namespace UtilitiesTesting.Fixtures
 
 
             return curActivityDO;
+        }
+
+
+        public static PlanDO GetPlan(RouteNodeDO node)
+        {
+            while (node != null)
+            {
+                if (node is PlanDO)
+                {
+                    return (PlanDO)node;
+                }
+
+                node = node.ParentRouteNode;
+            }
+
+            throw new InvalidOperationException("No route found for activity");
         }
 
         public static ActivityDO WaitForDocuSignEvent_Activity()

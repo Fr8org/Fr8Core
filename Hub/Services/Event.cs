@@ -114,10 +114,7 @@ namespace Hub.Services
                Crate curCrateStandardEventReport, Fr8AccountDO curDockyardAccount = null)
         {
             //find this Account's Routes
-            var initialRoutesList = uow.RouteRepository
-                .FindList(pt => pt.Fr8AccountId == curDockyardAccount.Id)
-                .Where(x => x.RouteState == RouteState.Active);
-
+            var initialRoutesList = uow.PlanRepository.GetPlanQueryUncached().Where(pt => pt.Fr8AccountId == curDockyardAccount.Id && pt.RouteState == RouteState.Active);
             var subscribingRoutes = _plan.MatchEvents(initialRoutesList.ToList(), eventReportMS);
 
             await LaunchProcesses(subscribingRoutes, curCrateStandardEventReport);

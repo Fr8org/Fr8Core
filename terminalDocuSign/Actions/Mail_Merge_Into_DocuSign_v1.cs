@@ -254,7 +254,6 @@ namespace terminalDocuSign.Actions
                     Name = dataSourceActTempl.Name,
                     Label = dataSourceActTempl.Label,
                     CrateStorage = Crate.EmptyStorageAsStr(),
-                    ParentRouteNode = curActivityDO,
                     Ordering = 1
                 });
 
@@ -268,7 +267,6 @@ namespace terminalDocuSign.Actions
                     Name = mapFieldActTempl.Name,
                     Label = mapFieldActTempl.Label,
                     CrateStorage = Crate.EmptyStorageAsStr(),
-                    ParentRouteNode = curActivityDO,
                     Ordering = 2,
                     Fr8AccountId = authTokenDO.UserID
                 });
@@ -282,7 +280,6 @@ namespace terminalDocuSign.Actions
                     Name = sendDocuSignEnvActTempl.Name,
                     CrateStorage = Crate.EmptyStorageAsStr(),
                     Label = sendDocuSignEnvActTempl.Label,
-                    ParentRouteNode = curActivityDO,
                     Ordering = 3
                 });
 

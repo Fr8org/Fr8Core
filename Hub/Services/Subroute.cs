@@ -35,12 +35,14 @@ namespace Hub.Services
         /// </summary>
         public void Store(IUnitOfWork uow, SubrouteDO subroute )
         {
-            if (subroute == null)
+            // IF we use this anymore?
+            throw new NotImplementedException();
+            /*if (subroute == null)
             {
                 subroute = ObjectFactory.GetInstance<SubrouteDO>();
             }
 
-            uow.SubrouteRepository.Add(subroute);
+            uow.PlanRepository.Add(subroute);
             
             // Saving criteria entity in repository.
             var criteria = new CriteriaDO()
@@ -49,38 +51,11 @@ namespace Hub.Services
                 CriteriaExecutionType = CriteriaExecutionType.WithoutConditions
             };
             uow.CriteriaRepository.Add(criteria);
-            
+            */
             //we don't want to save changes here, to enable upstream transactions
         }
 
-        // <summary>
-        /// Creates noew Subroute entity and add it to RouteDO. If RouteDO has no child subroute created plan becomes starting subroute.
-        /// </summary>
-        public SubrouteDO Create(IUnitOfWork uow, PlanDO plan, string name)
-        {
-            var subroute = new SubrouteDO();
-            subroute.Id = Guid.NewGuid();
-            subroute.RootRouteNode = plan;
-            subroute.Fr8Account = plan.Fr8Account;
-
-            uow.SubrouteRepository.Add(subroute);
-
-            if (plan != null)
-            {
-                if (!plan.Subroutes.Any())
-                {
-                    plan.StartingSubroute = subroute;
-                    subroute.StartingSubroute = true;
-                }
-            }
-
-            subroute.Name = name;
-
-
-
-            return subroute;
-        }
-
+      
         /// <summary>
         /// Update Subroute entity.
         /// </summary>
@@ -91,7 +66,8 @@ namespace Hub.Services
                 throw new Exception("Updating logic was passed a null SubrouteDO");
             }
 
-            var curSubroute = uow.SubrouteRepository.GetByKey(subroute.Id);
+            var curSubroute =  uow.PlanRepository.GetById<SubrouteDO>(subroute.Id);
+            
             if (curSubroute == null)
             {
                 throw new Exception(string.Format("Unable to find criteria by id = {0}", subroute.Id));
@@ -99,6 +75,7 @@ namespace Hub.Services
 
             curSubroute.Name = subroute.Name;
             curSubroute.NodeTransitions = subroute.NodeTransitions;
+            
             uow.SaveChanges();
         }
 
@@ -107,52 +84,29 @@ namespace Hub.Services
         /// </summary>
         public void Delete(IUnitOfWork uow, Guid id)
         {
-            var subroute = uow.SubrouteRepository.GetByKey(id);
+            var subroute = uow.PlanRepository.GetById<SubrouteDO>(id);
 
             if (subroute == null)
             {
                 throw new Exception(string.Format("Unable to find Subroute by id = {0}", id));
             }
 
-            // Remove all actions.
-
-            
-
-          //  subroute.Activities.ForEach(x => uow.ActivityRepository.Remove(x));
-
-//            uow.SaveChanges();
-//            
-//            // Remove Criteria.
-//            uow.CriteriaRepository
-//                .GetQuery()
-//                .Where(x => x.SubrouteId == id)
-//                .ToList()
-//                .ForEach(x => uow.CriteriaRepository.Remove(x));
-//
-//            uow.SaveChanges();
-
-            // Remove Subroute.
-            //uow.SubrouteRepository.Remove(subroute);
-
-
-            ObjectFactory.GetInstance<IRouteNode>().Delete(uow, subroute);
+            subroute.RemoveFromParent();
 
             uow.SaveChanges();
         }
 
         public void AddActivity(IUnitOfWork uow, ActivityDO curActivityDO)
         {
-            var subroute = uow.SubrouteRepository.GetByKey(curActivityDO.ParentRouteNodeId);
+            var subroute = uow.PlanRepository.GetById<SubrouteDO>(curActivityDO.ParentRouteNodeId.Value);
 
             if (subroute == null)
             {
                 throw new Exception(string.Format("Unable to find Subroute by id = {0}", curActivityDO.ParentRouteNodeId));
             }
 
-            curActivityDO.Ordering = subroute.ChildNodes.Count > 0 ? subroute.ChildNodes.Max(x => x.Ordering) + 1 : 1;
-
-            subroute.ChildNodes.Add(curActivityDO);
-
+            subroute.AddChildWithDefaultOrdering(curActivityDO);
+            
             uow.SaveChanges();
         }
 
@@ -174,7 +128,7 @@ namespace Hub.Services
             var validationErrors = new List<Crate>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curAction = await uow.ActivityRepository.GetQuery().SingleAsync(a => a.Id == actionId);
+                var curAction = uow.PlanRepository.GetById<ActivityDO>(actionId);
                 var downstreamActions = _routeNode.GetDownstreamActivities(uow, curAction).OfType<ActivityDO>();
 
                 //set ActivityTemplate and parentRouteNode of current action to null -> to simulate a delete
@@ -217,7 +171,7 @@ namespace Hub.Services
                 }
                 else
                 {
-                    uow.ActivityRepository.Remove(curAction);
+                    curAction.RemoveFromParent();
                     uow.SaveChanges();
                     //TODO update ordering of downstream actions
                 }
@@ -250,7 +204,7 @@ namespace Hub.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curAction = uow.RouteNodeRepository.GetQuery().FirstOrDefault(al => al.Id == id);
+                var curAction = uow.PlanRepository.GetById<RouteNodeDO>(id);
                 if (curAction == null)
                 {
                     throw new InvalidOperationException("Unknown RouteNode with id: " + id);

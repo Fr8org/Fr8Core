@@ -44,7 +44,12 @@ namespace DockyardTest.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var root = FixtureData.TestActivityTree();
-                uow.RouteNodeRepository.Add(root);
+
+                uow.PlanRepository.Add(new PlanDO()
+                {
+                    ChildNodes = { root }
+                });
+                
                 uow.SaveChanges();
 
                 RouteNodeDO curActivity = root;
@@ -87,7 +92,12 @@ namespace DockyardTest.Services
             //print out the list of activity ids
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.RouteNodeRepository.Add(FixtureData.TestActivityTree());
+
+                uow.PlanRepository.Add(new PlanDO()
+                {
+                    ChildNodes = { FixtureData.TestActivityTree() }
+                });
+                
                 uow.SaveChanges();
 
 
@@ -113,7 +123,12 @@ namespace DockyardTest.Services
             //print out the list of activity ids
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.RouteNodeRepository.Add(FixtureData.TestActivityTree());
+                uow.PlanRepository.Add(new PlanDO()
+                {
+                    ChildNodes = { FixtureData.TestActivityTree() }
+                });
+                
+                //uow.RouteNodeRepository.Add(FixtureData.TestActivityTree());
                 uow.SaveChanges();
 
 
@@ -175,11 +190,11 @@ namespace DockyardTest.Services
                 uow.SaveChanges();
 
                 var activity = FixtureData.TestActivity1();
-                uow.ActivityRepository.Add(activity);
+                //uow.ActivityRepository.Add(activity);
                 uow.SaveChanges();
 
                 ActivityDO obj = FixtureData.TestActivityProcess();
-                uow.RouteNodeRepository.Add(obj);
+               // uow.RouteNodeRepository.Add(obj);
                 uow.SaveChanges();
 
                 ContainerDO containerDO = FixtureData.TestContainer1();

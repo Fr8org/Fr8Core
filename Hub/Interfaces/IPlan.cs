@@ -17,13 +17,12 @@ namespace Hub.Interfaces
         PlanDO Create(IUnitOfWork uow, string name);
         void Delete(IUnitOfWork uow, Guid id);
         RouteNodeDO GetInitialActivity(IUnitOfWork uow, PlanDO curPlan);
-
-        IList<SubrouteDO> GetSubroutes(PlanDO curPlanDO);
+        
         IList<PlanDO> GetMatchingPlans(string userId, EventReportCM curEventReport);
         RouteNodeDO GetFirstActivity(Guid curPlanId);
         Task<ActivateActionsDTO> Activate(Guid planId, bool routeBuilderActivate);
         Task<string> Deactivate(Guid curPlanId);
-        IEnumerable<ActivityDO> GetActivities(int id);
+        
         PlanDO GetPlan(ActivityDO activity);
         //  ActionListDO GetActionList(IUnitOfWork uow, int id);
         List<PlanDO> MatchEvents(List<PlanDO> curPlans, EventReportCM curEventReport);

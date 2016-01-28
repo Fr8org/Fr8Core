@@ -154,7 +154,7 @@ namespace DockyardTest.Security
                     RouteState = RouteState.Active,
                     Fr8Account = tokenDO.UserDO
                 };
-                uow.RouteRepository.Add(planDO);
+                uow.PlanRepository.Add(planDO);
                 uow.SaveChanges();
 
                 var activityDO = new ActivityDO()
@@ -171,7 +171,9 @@ namespace DockyardTest.Security
                     Ordering = 1
                 };
 
-                uow.ActivityRepository.Add(activityDO);
+                planDO.ChildNodes.Add(activityDO);
+
+               // uow.ActivityRepository.Add(activityDO);
                 uow.SaveChanges();
 
                 activityDTO.Id = activityDO.Id;
@@ -199,7 +201,12 @@ namespace DockyardTest.Security
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {   
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
-                uow.RouteNodeRepository.Add(activityDO);
+
+                uow.PlanRepository.Add(new PlanDO()
+                {
+                    ChildNodes = { activityDO }
+                });
+                
                 uow.SaveChanges();
             }
 
@@ -285,7 +292,10 @@ namespace DockyardTest.Security
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {   
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
-                uow.RouteNodeRepository.Add(activityDO);
+                uow.PlanRepository.Add(new PlanDO()
+                {
+                    ChildNodes = { activityDO }
+                });
                 uow.SaveChanges();
             }
 
@@ -331,7 +341,10 @@ namespace DockyardTest.Security
                 activityDTO.ActivityTemplateId = activityTemplateDO.Id;
 
                 activityDO.ActivityTemplate = activityTemplateDO;
-                uow.ActivityRepository.Add(activityDO);
+                   uow.PlanRepository.Add(new PlanDO()
+                {
+                    ChildNodes = { activityDO }
+                });
 
                 uow.SaveChanges();
 
@@ -360,7 +373,10 @@ namespace DockyardTest.Security
 
                 activityDO.ActivityTemplate = activityTemplateDO;
                 activityDO.AuthorizationToken = tokenDO;
-                uow.ActivityRepository.Add(activityDO);
+                uow.PlanRepository.Add(new PlanDO()
+                {
+                    ChildNodes = { activityDO }
+                });
 
                 uow.SaveChanges();
 

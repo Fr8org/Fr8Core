@@ -28,10 +28,8 @@ namespace Hub.Services
     {
         // private readonly IProcess _process;
         private readonly InternalInterface.IContainer _container;
-        private readonly ISubroute _subroute;
         private readonly Fr8Account _dockyardAccount;
         private readonly IActivity _activity;
-        private readonly IRouteNode _routeNode;
         private readonly ICrateManager _crate;
         private readonly ISecurityServices _security;
         private readonly IProcessNode _processNode;
@@ -39,10 +37,8 @@ namespace Hub.Services
         public Plan()
         {
             _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
-            _subroute = ObjectFactory.GetInstance<ISubroute>();
             _dockyardAccount = ObjectFactory.GetInstance<Fr8Account>();
             _activity = ObjectFactory.GetInstance<IActivity>();
-            _routeNode = ObjectFactory.GetInstance<IRouteNode>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
             _processNode = ObjectFactory.GetInstance<IProcessNode>();
@@ -50,7 +46,7 @@ namespace Hub.Services
 
         public IList<PlanDO> GetForUser(IUnitOfWork unitOfWork, Fr8AccountDO account, bool isAdmin = false, Guid? id = null, int? status = null)
         {
-            var queryableRepo = unitOfWork.RouteRepository.GetQuery().Include(pt => pt.ChildContainers); // whe have to include Activities as it is a real navigational property. Not Routes
+            var queryableRepo = unitOfWork.PlanRepository.GetPlanQueryUncached(); 
 
             if (isAdmin)
             {
@@ -68,32 +64,35 @@ namespace Hub.Services
 
         public IList<PlanDO> GetByName(IUnitOfWork uow, Fr8AccountDO account, string name)
         {
-            return uow.RouteRepository.GetQuery().Where(r => r.Fr8Account.Id == account.Id && r.Name == name).ToList();
+            return uow.PlanRepository.GetPlanQueryUncached().Where(r => r.Fr8Account.Id == account.Id && r.Name == name).ToList();
         }
 
         public void CreateOrUpdate(IUnitOfWork uow, PlanDO ptdo, bool updateChildEntities)
         {
             var creating = ptdo.Id == Guid.Empty;
+            
             if (creating)
             {
                 ptdo.Id = Guid.NewGuid();
                 ptdo.RouteState = RouteState.Inactive;
+                ptdo.Fr8Account = _security.GetCurrentAccount(uow);
 
-                var subroute = new SubrouteDO(true);
-                subroute.Id = Guid.NewGuid();
-                subroute.RootRouteNode = ptdo;
-                subroute.ParentRouteNode = ptdo;
-                subroute.Fr8Account = ptdo.Fr8Account;
-                ptdo.ChildNodes.Add(subroute);
-
-                uow.RouteRepository.Add(ptdo);
-                _subroute.Store(uow, ptdo.StartingSubroute);
+                ptdo.ChildNodes.Add(new SubrouteDO(true)
+                {
+                    Id = Guid.NewGuid()
+                });
+                
+                uow.PlanRepository.Add(ptdo);
             }
             else
             {
-                var curPlan = uow.RouteRepository.GetByKey(ptdo.Id);
+                var curPlan = uow.PlanRepository.GetById<PlanDO>(ptdo.Id);
+                
                 if (curPlan == null)
+                {
                     throw new EntityNotFoundException();
+                }
+
                 curPlan.Name = ptdo.Name;
                 curPlan.Description = ptdo.Description;
                 // ChildEntities update code has been deleted by demel 09/28/2015
@@ -104,70 +103,36 @@ namespace Hub.Services
 
         public PlanDO Create(IUnitOfWork uow, string name)
         {
-            var plan = new PlanDO()
+            var plan = new PlanDO
             {
                 Id = Guid.NewGuid(),
-                Name = name
+                Name = name,
+                Fr8Account = _security.GetCurrentAccount(uow),
+                RouteState = RouteState.Inactive
             };
 
-            if (plan.Fr8Account == null)
-            {
-                plan.Fr8Account = _security.GetCurrentAccount(uow);
-            }
-
-            plan.RouteState = RouteState.Inactive;
-            uow.RouteRepository.Add(plan);
+            uow.PlanRepository.Add(plan);
 
             return plan;
         }
 
         public void Delete(IUnitOfWork uow, Guid id)
         {
-            var curPlan = uow.RouteRepository.GetQuery().Include(c => c.ChildContainers).SingleOrDefault(pt => pt.Id == id);
+            var plan = uow.PlanRepository.GetById<PlanDO>(id);
 
-            if (curPlan == null)
+            if (plan == null)
             {
                 throw new EntityNotFoundException<PlanDO>(id);
             }
 
-            curPlan.RouteState = RouteState.Deleted;
+            plan.RouteState = RouteState.Deleted;
 
             //Route deletion will only update its RouteState = Deleted
-            //_activity.Delete(uow, curPlan);
-
-            var containers = curPlan.ChildContainers;
-            if (containers != null)
+            foreach (var container in _container.LoadContainers(uow, plan))
             {
-                foreach (var container in containers)
-                {
-                    container.ContainerState = ContainerState.Deleted;
-                }
+                container.ContainerState = ContainerState.Deleted;
             }
         }
-
-        public IList<SubrouteDO> GetSubroutes(PlanDO curPlanDO)
-        {
-            using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                //var queryableRepo = unitOfWork.SubrouteRepository
-                //.GetQuery()
-                //.Include(x => x.ChildNodes)
-                //.Where(x => x.ParentRouteNodeId == curPlanDO.Id)
-                //.OrderBy(x => x.Id)
-                //.ToList();
-
-                //return queryableRepo;
-
-                var queryableRepo = unitOfWork.RouteRepository.GetQuery()
-                    .Include("Subroutes")
-                    .Where(x => x.Id == curPlanDO.Id);
-
-                return queryableRepo.SelectMany<PlanDO, SubrouteDO>(x => x.Subroutes)
-                    .ToList();
-            }
-        }
-
-
 
         private IEnumerable<TActivity> EnumerateActivities<TActivity>(PlanDO curPlan, bool allowOnlyOneNoteTemplate = true)
         {
@@ -228,16 +193,12 @@ namespace Hub.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var plan = uow.RouteRepository.GetByKey(curPlanId);
-
-                if (plan.Subroutes == null)
-                {
-                    throw new ArgumentNullException("Parameter Subroutes is null.");
-                }
+                var plan = uow.PlanRepository.GetById<PlanDO>(curPlanId);
 
                 foreach (SubrouteDO template in plan.Subroutes)
                 {
                     var activities = EnumerateActivityTree<ActivityDO>(template);
+
                     foreach (var curActionDO in activities)
                     {
                         try
@@ -259,14 +220,14 @@ namespace Hub.Services
                             {
                                 result.ActionsCollections.Add(resultActivate);
                             }
-                            else if(validationErrorChecker)
+                            else if (validationErrorChecker)
                             {
                                 //if the activate call is comming from the Routes List then show the first error message and redirect to plan builder 
                                 //so the user could fix the configuration
                                 result.RedirectToRouteBuilder = true;
 
                                 return result;
-                        }
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -277,9 +238,9 @@ namespace Hub.Services
 
                 if (result.Status != "validation_error")
                 {
-                uow.RouteRepository.GetByKey(curPlanId).RouteState = RouteState.Active;
-                uow.SaveChanges();
-            }
+                    plan.RouteState = RouteState.Active;
+                    uow.SaveChanges();
+                }
             }
 
             return result;
@@ -320,7 +281,7 @@ namespace Hub.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var plan = uow.RouteRepository.GetByKey(curPlanId);
+                var plan = uow.PlanRepository.GetById<PlanDO>(curPlanId);
 
                 foreach (SubrouteDO template in plan.Subroutes)
                 {
@@ -340,7 +301,7 @@ namespace Hub.Services
                     }
                 }
 
-                uow.RouteRepository.GetByKey(curPlanId).RouteState = RouteState.Inactive;
+                plan.RouteState = RouteState.Inactive;
                 uow.SaveChanges();
             }
 
@@ -378,26 +339,7 @@ namespace Hub.Services
         //
         //        }
 
-
-        /// <summary>
-        /// Returns all actions created within a Process Template.
-        /// </summary>
-        /// <param name="id">Process Template id.</param>
-        /// <returns></returns>
-        public IEnumerable<ActivityDO> GetActivities(int id)
-        {
-            if (id <= 0)
-            {
-                throw new ArgumentException("id");
-            }
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                return EnumerateActivities<ActivityDO>(uow.RouteRepository.GetByKey(id), false).ToArray();
-            }
-        }
-
-
+        
 
         public IList<PlanDO> GetMatchingPlans(string userId, EventReportCM curEventReport)
         {
@@ -453,7 +395,7 @@ namespace Hub.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var root = uow.RouteNodeRepository.GetByKey(id);
+                var root = uow.PlanRepository.GetById<PlanDO>(id);
 
                 
                 var queue = new Queue<RouteNodeDO>();
@@ -490,7 +432,7 @@ namespace Hub.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return GetInitialActivity(uow, uow.RouteRepository.GetByKey(curPlanId));
+                return GetInitialActivity(uow, uow.PlanRepository.GetById<PlanDO>(curPlanId));
             }
         }
 
@@ -524,39 +466,41 @@ namespace Hub.Services
 
         public PlanDO Copy(IUnitOfWork uow, PlanDO plan, string name)
         {
-            var root = (PlanDO)plan.Clone();
-            root.Id = Guid.NewGuid();
-            root.Name = name;
-            uow.RouteNodeRepository.Add(root);
+            throw new NotImplementedException();
 
-            var queue = new Queue<Tuple<RouteNodeDO, Guid>>();
-            queue.Enqueue(new Tuple<RouteNodeDO, Guid>(root, plan.Id));
-
-            while (queue.Count > 0)
-            {
-                var routeTuple = queue.Dequeue();
-                var routeNode = routeTuple.Item1;
-                var sourceRouteNodeId = routeTuple.Item2;
-
-                var sourceChildren = uow.RouteNodeRepository
-                    .GetQuery()
-                    .Where(x => x.ParentRouteNodeId == sourceRouteNodeId)
-                    .ToList();
-
-                foreach (var sourceChild in sourceChildren)
-                {
-                    var childCopy = sourceChild.Clone();
-                    childCopy.Id = Guid.NewGuid();
-                    childCopy.ParentRouteNode = routeNode;
-                    routeNode.ChildNodes.Add(childCopy);
-
-                    uow.RouteNodeRepository.Add(childCopy);
-
-                    queue.Enqueue(new Tuple<RouteNodeDO, Guid>(childCopy, sourceChild.Id));
-                }
-            }
-
-            return root;
+//            var root = (PlanDO)plan.Clone();
+//            root.Id = Guid.NewGuid();
+//            root.Name = name;
+//            uow.PlanRepository.Add(root);
+//
+//            var queue = new Queue<Tuple<RouteNodeDO, Guid>>();
+//            queue.Enqueue(new Tuple<RouteNodeDO, Guid>(root, plan.Id));
+//
+//            while (queue.Count > 0)
+//            {
+//                var routeTuple = queue.Dequeue();
+//                var routeNode = routeTuple.Item1;
+//                var sourceRouteNodeId = routeTuple.Item2;
+//
+//                var sourceChildren = uow.
+//                    .GetQuery()
+//                    .Where(x => x.ParentRouteNodeId == sourceRouteNodeId)
+//                    .ToList();
+//
+//                foreach (var sourceChild in sourceChildren)
+//                {
+//                    var childCopy = sourceChild.Clone();
+//                    childCopy.Id = Guid.NewGuid();
+//                    childCopy.ParentRouteNode = routeNode;
+//                    routeNode.ChildNodes.Add(childCopy);
+//
+//                    uow.RouteNodeRepository.Add(childCopy);
+//
+//                    queue.Enqueue(new Tuple<RouteNodeDO, Guid>(childCopy, sourceChild.Id));
+//                }
+//            }
+//
+//            return root;
         }
 
         /// <summary>
@@ -569,7 +513,7 @@ namespace Hub.Services
         {
             var containerDO = new ContainerDO { Id = Guid.NewGuid() };
 
-            var curPlan = uow.RouteRepository.GetByKey(planId);
+            var curPlan = uow.PlanRepository.GetById<PlanDO>(planId);
             if (curPlan == null)
                 throw new ArgumentNullException("planId");
             containerDO.Plan = curPlan;

@@ -35,7 +35,7 @@ namespace DockyardTest.Managers
             // assert
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                Assert.IsFalse(uow.RouteRepository.GetAll().Count() > 1, "Automatic plan is created in following success");
+                Assert.IsFalse(uow.PlanRepository.GetNodesQueryUncached().Count() > 1, "Automatic plan is created in following success");
             }
         }
 
@@ -78,10 +78,10 @@ namespace DockyardTest.Managers
                         {
                             using (var uow1 = ObjectFactory.GetInstance<IUnitOfWork>())
                             {
-                                uow1.ActivityRepository.Add(monitorFr8Action);
-
-                                var subRoute = uow1.SubrouteRepository.GetQuery().Single();
-                                subRoute.ChildNodes.Add(monitorFr8Action);
+                                uow1.PlanRepository.Add(FixtureData.GetPlan(monitorFr8Action));
+                                
+//                                var subRoute = uow1.SubrouteRepository.GetQuery().Single();
+//                                subRoute.ChildNodes.Add(monitorFr8Action);
 
                                 uow1.SaveChanges();
                             }
@@ -93,10 +93,11 @@ namespace DockyardTest.Managers
                         {
                             using (var uow1 = ObjectFactory.GetInstance<IUnitOfWork>())
                             {
-                                uow1.ActivityRepository.Add(storeMtDataAction);
-
-                                var subRoute = uow1.SubrouteRepository.GetQuery().Single();
-                                subRoute.ChildNodes.Add(storeMtDataAction);
+                                uow1.PlanRepository.Add(FixtureData.GetPlan(storeMtDataAction));
+//                                uow1.ActivityRepository.Add(storeMtDataAction);
+//
+//                                var subRoute = uow1.SubrouteRepository.GetQuery().Single();
+//                                subRoute.ChildNodes.Add(storeMtDataAction);
 
                                 uow1.SaveChanges();
                             }

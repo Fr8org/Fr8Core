@@ -75,7 +75,7 @@ namespace Hub.Services
                 var activityTemplate = _activityTemplate.GetByKey(activityDTO.ActivityTemplateId.Value);
 
                 // Fetch Action.
-                var activity = uow.ActivityRepository.GetByKey(activityDTO.Id);
+                var activity = uow.PlanRepository.GetById<ActivityDO>(activityDTO.Id);
                 if (activity == null)
                 {
                     throw new ApplicationException("Could not find Action.");
@@ -85,17 +85,12 @@ namespace Hub.Services
                 if (activityTemplate.NeedsAuthentication &&
                     activityTemplate.Terminal.AuthenticationType != AuthenticationType.None)
                 {
-                    AuthorizationTokenDO authToken = null;
-                    if (activity.AuthorizationTokenId.HasValue)
-                    {
-                        authToken = uow.AuthorizationTokenRepository
-                            .FindTokenById(activity.AuthorizationTokenId.ToString());
-                    }
+                    AuthorizationTokenDO authToken = activity.AuthorizationToken;
 
                     // If AuthToken is not empty, fill AuthToken property for ActionDTO.
                     if (authToken != null && !string.IsNullOrEmpty(authToken.Token))
                     {
-                        activityDTO.AuthToken = new AuthorizationTokenDTO()
+                        activityDTO.AuthToken = new AuthorizationTokenDTO
                         {
                             Id = authToken.Id.ToString(),
                             UserId = authToken.UserDO != null ? authToken.UserDO.Id : authToken.UserID,
@@ -431,13 +426,7 @@ namespace Hub.Services
                 {
                     throw new NullReferenceException("ActivityTemplate was not found.");
                 }
-
-                var account = uow.UserRepository.GetByKey(userId);
-
-                if (account == null)
-                {
-                    throw new NullReferenceException("Current account was not found.");
-                }
+                
 
                 if (activityTemplate.Terminal.AuthenticationType != AuthenticationType.None
                     && activityTemplate.NeedsAuthentication)
@@ -445,43 +434,28 @@ namespace Hub.Services
                     RemoveAuthenticationCrate(curActionDTO);
                     RemoveAuthenticationLabel(curActionDTO);
 
-                    var activityDO = uow.ActivityRepository.GetByKey(curActionDTO.Id);
+                    var activityDO = uow.PlanRepository.GetById<ActivityDO>(curActionDTO.Id);
                     if (activityDO == null)
                     {
                         throw new NullReferenceException("Current activity was not found.");
                     }
 
-                    AuthorizationTokenDO authToken = null;
-
-                    // Check if action has assigned auth-token.
-                    if (activityDO.AuthorizationTokenId != null)
-                    {
-                        authToken = uow.AuthorizationTokenRepository
-                            .FindTokenById(activityDO.AuthorizationTokenId.Value.ToString());
-                    }
+                    AuthorizationTokenDO authToken = activityDO.AuthorizationToken;
 
                     // If action does not have assigned auth-token,
                     // then look for AuthToken with IsMain == true,
                     // and assign that token to action.
-                    else
+                    if (authToken == null)
                     {
-                        var mainAuthTokenId = uow.AuthorizationTokenRepository
-                            .GetPublicDataQuery()
-                            .Where(x => x.UserID == userId
-                                && x.TerminalID == activityTemplate.Terminal.Id
-                                && x.IsMain == true)
-                            .Select(x => (Guid?)x.Id)
-                            .FirstOrDefault();
+                        activityDO.AuthorizationToken = authToken = uow.AuthorizationTokenRepository.
+                            GetPublicDataQuery().
+                            FirstOrDefault(x => x.UserID == userId
+                                                && x.TerminalID == activityTemplate.Terminal.Id
+                                                && x.IsMain);
 
-                        if (mainAuthTokenId.HasValue)
-                        {
-                            authToken = uow.AuthorizationTokenRepository
-                                .FindTokenById(mainAuthTokenId.Value.ToString());
-                        }
-
+                        
                         if (authToken != null)
                         {
-                            activityDO.AuthorizationToken = authToken;
                             uow.SaveChanges();
                         }
                     }
@@ -516,18 +490,11 @@ namespace Hub.Services
                 {
                     throw new NullReferenceException("ActivityTemplate was not found.");
                 }
-
-                var account = uow.UserRepository.GetByKey(userId);
-
-                if (account == null)
-                {
-                    throw new NullReferenceException("Current account was not found.");
-                }
-
+                
                 if (activityTemplate.Terminal.AuthenticationType != AuthenticationType.None
                     && activityTemplate.NeedsAuthentication)
                 {
-                    var activityDO = uow.ActivityRepository.GetByKey(curActivityDto.Id);
+                    var activityDO = uow.PlanRepository.GetById<ActivityDO>(curActivityDto.Id);
                     if (activityDO == null)
                     {
                         throw new NullReferenceException("Current activity was not found.");
@@ -583,7 +550,7 @@ namespace Hub.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var activity = uow.ActivityRepository.GetByKey(actionId);
+                var activity = uow.PlanRepository.GetById<ActivityDO>(actionId);
                 if (activity == null)
                 {
                     throw new ApplicationException("Could not find specified Action.");
@@ -605,10 +572,9 @@ namespace Hub.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var authToken = uow.AuthorizationTokenRepository
-                    .GetPublicDataQuery()
-                    .Where(x => x.UserID == accountId && x.Id == authTokenId)
-                    .SingleOrDefault();
+                var authToken = uow.AuthorizationTokenRepository.
+                    GetPublicDataQuery().
+                    SingleOrDefault(x => x.UserID == accountId && x.Id == authTokenId);
 
                 if (authToken != null)
                 {
@@ -619,14 +585,14 @@ namespace Hub.Services
 
         private void RemoveToken(IUnitOfWork uow, AuthorizationTokenDO authToken)
         {
-            var activities = uow.ActivityRepository
-                .GetQuery()
+            var activities = uow.PlanRepository.GetActivityQueryUncached()
                 .Where(x => x.AuthorizationToken.Id == authToken.Id)
                 .ToList();
 
             foreach (var activity in activities)
             {
                 activity.AuthorizationToken = null;
+                uow.PlanRepository.RemoveAuthorizationTokenFromCache(activity);
             }
 
             uow.SaveChanges();

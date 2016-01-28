@@ -7,8 +7,10 @@ using Data.Interfaces;
 
 namespace Data.Validations
 {
-    public class SubroutetValidator : AbstractValidator<SubrouteDO>
+      // Is not used anywhere
+    /*public class SubroutetValidator : AbstractValidator<SubrouteDO>
     {
+      
         public SubroutetValidator()
         {
             // Commented out. See https://maginot.atlassian.net/browse/DO-940 for more description.
@@ -27,7 +29,7 @@ namespace Data.Validations
                     // By the time validation rule gets executed, external UnitOfWork will be disposed.
                     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
-                        var parentTemplateExists = (uow.RouteRepository.GetByKey(id) != null);
+                        var parentTemplateExists = id != null && (uow.PlanRepository.GetById<RouteNodeDO>(id.Value) != null);
                         return parentTemplateExists;
                     }
                 })
@@ -41,5 +43,5 @@ namespace Data.Validations
                 .Must(lst => lst.Count > 0)
                 .WithMessage("Must have at least one child ActionList");
         }
-    }
+    }*/
 }
