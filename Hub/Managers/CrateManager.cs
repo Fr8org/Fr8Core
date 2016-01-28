@@ -225,7 +225,7 @@ namespace Hub.Managers
                 if (crateContentType != null)
                 {
                     if (crateContentType is StandardPayloadDataCM)
-                        (crateContentType as StandardPayloadDataCM).TryGetValue(findKey, true, out key);
+                        (crateContentType as StandardPayloadDataCM).TryGetValue(findKey, true, false, out key);
                     else
                         throw new Exception("Manifest type GetFieldByKey implementation is missing");
                 }
