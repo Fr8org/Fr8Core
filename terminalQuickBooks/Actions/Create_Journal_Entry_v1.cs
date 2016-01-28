@@ -14,24 +14,24 @@ using JournalEntry = terminalQuickBooks.Services.JournalEntry;
 
 namespace terminalQuickBooks.Actions
 {
-    public class Create_Journal_Entry_v1 : BaseTerminalActivity
+    public class Create_Journal_Entry_v1 : BaseTerminalAction
     {
         private JournalEntry _journalEntry;
         public Create_Journal_Entry_v1()
         {
             _journalEntry = new JournalEntry();
         }
-        public async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        public async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             CheckAuthentication(authTokenDO);
-            return await ProcessConfigurationRequest(curActivityDO, dto => ConfigurationRequestType.Initial, authTokenDO);
+            return await ProcessConfigurationRequest(curActionDO, dto => ConfigurationRequestType.Initial, authTokenDO);
         }
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            if (curActivityDO.Id != Guid.Empty)
+            if (curActionDO.Id != Guid.Empty)
             {
                 //get StandardAccountingTransactionCM
-                var upstream = await GetCratesByDirection<StandardAccountingTransactionCM>(curActivityDO, CrateDirection.Upstream);
+                var upstream = await GetCratesByDirection<StandardAccountingTransactionCM>(curActionDO, CrateDirection.Upstream);
                 //In order to Create Journal Entry an upstream action needs to provide a StandardAccountingTransactionCM.
                 TextBlock textBlock;
                 if (upstream.Count != 0)
@@ -39,7 +39,7 @@ namespace terminalQuickBooks.Actions
                     textBlock = GenerateTextBlock("Create a Journal Entry",
                         "This Action doesn't require any configuration.",
                         "well well-lg");
-                    using (var updater = Crate.UpdateStorage(curActivityDO))
+                    using (var updater = Crate.UpdateStorage(curActionDO))
                     {
                         updater.CrateStorage.Add(upstream[0]);
                     }
@@ -47,10 +47,10 @@ namespace terminalQuickBooks.Actions
                 else
                 {
                     textBlock = GenerateTextBlock("Create a Journal Entry",
-                        "When this Action runs, it will be expecting to find a Crate of Standard Accounting Transactions. Right now, it doesn't detect any Upstream Actions that produce that kind of Crate. Please add an activity upstream (to the left) of this action that does so.",
+                        "When this Action runs, it will be expecting to find a Crate of Standard Accounting Transactions. Right now, it doesn't detect any Upstream Actions that produce that kind of Crate. Please add an action upstream (to the left) of this action that does so.",
                         "alert alert-warning");
                 }
-                using (var updater = Crate.UpdateStorage(curActivityDO))
+                using (var updater = Crate.UpdateStorage(curActionDO))
                 {
                     updater.CrateStorage.Clear();
                     updater.CrateStorage.Add(PackControlsCrate(textBlock));
@@ -61,19 +61,19 @@ namespace terminalQuickBooks.Actions
                 throw new ArgumentException(
                     "Configuration requires the submission of an Action that has a real ActionId");
             }
-            return curActivityDO;
+            return curActionDO;
         }
         //It is assumed that Action is the child of the Loop action.
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             CheckAuthentication(authTokenDO);
-            var payloadCrates = await GetPayload(curActivityDO, containerId);
+            var payloadCrates = await GetPayload(curActionDO, containerId);
             //Obtain the crate of type StandardAccountingTransactionCM that holds the required information
             var curStandardAccountingTransactionCM = Crate.GetByManifest<StandardAccountingTransactionCM>(payloadCrates);
             //Obtain the crate of type OperationalStateCM to extract the correct StandardAccountingTransactionDTO
             var curOperationalStateCM = Crate.GetOperationalState(payloadCrates);
             //Get the LoopId that is equal to the Action.Id for to obtain the correct StandardAccountingTransactionDTO
-            var curLoopId = curActivityDO.GetLoopId();
+            var curLoopId = curActionDO.GetLoopId();
             //Validate fields of the StandardAccountingTransactionCM crate
             StandardAccountingTransactionCM.Validate(curStandardAccountingTransactionCM);
             //Get the list of the StandardAccountingTransactionDTO

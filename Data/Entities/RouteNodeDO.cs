@@ -28,12 +28,6 @@ namespace Data.Entities
         [InverseProperty("ParentRouteNode")]
         public virtual IList<RouteNodeDO> ChildNodes { get; set; }
 
-
-        [ForeignKey("Fr8Account")]
-        public string Fr8AccountId { get; set; }
-
-        public virtual Fr8AccountDO Fr8Account { get; set; }
-
         public int Ordering { get; set; }
 
 

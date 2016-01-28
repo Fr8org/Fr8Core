@@ -75,16 +75,16 @@ namespace terminalDocuSign.Actions
             _docuSignManager = ObjectFactory.GetInstance<DocuSignManager>();
         }
 
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var payload = await GetPayload(curActivityDO, containerId);
+            var payload = await GetPayload(curActionDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
             {
                 return NeedsAuthenticationError(payload);
             }
 
-            var configurationControls = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
+            var configurationControls = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
 
             if (configurationControls == null)
             {
@@ -124,7 +124,7 @@ namespace terminalDocuSign.Actions
             return Success(payload);
         }
 
-        protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             if (NeedsAuthentication(authTokenDO))
             {
@@ -133,13 +133,13 @@ namespace terminalDocuSign.Actions
 
             var docuSignAuthDto = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.Add(PackControls(new ActionUi()));
                 updater.CrateStorage.AddRange(PackDesignTimeData(docuSignAuthDto));
             }
             
-            return Task.FromResult(curActivityDO);
+            return Task.FromResult(curActionDO);
         }
 
 
@@ -158,19 +158,19 @@ namespace terminalDocuSign.Actions
             return settings;
         }
                 
-        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.RemoveByLabel("Queryable Criteria");
                 
-                return curActivityDO;
+                return curActionDO;
             }
         }
 
         private IEnumerable<Crate> PackDesignTimeData(DocuSignAuthTokenDTO authToken)
         {
-            var folders = _docuSignFolder.GetSearchFolders(authToken.Email, authToken.ApiPassword);
+            var folders = _docuSignFolder.GetFolders(authToken.Email, authToken.ApiPassword);
             var fields = new List<FieldDTO>();
             
             foreach (var folder in folders)
@@ -182,9 +182,9 @@ namespace terminalDocuSign.Actions
             yield return Data.Crates.Crate.FromContent("Statuses", new StandardDesignTimeFieldsCM(DocusignQuery.Statuses));
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (Crate.IsStorageEmpty(curActionDO))
             {
                 return ConfigurationRequestType.Initial;
             }

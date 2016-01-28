@@ -21,7 +21,7 @@ using Task = System.Threading.Tasks.Task;
 
 namespace terminalQuickBooks.Actions
 {
-    public class Convert_TableData_To_AccountingTransactions_v1 : BaseTerminalActivity
+    public class Convert_TableData_To_AccountingTransactions_v1 : BaseTerminalAction
     {
         private const string UpsteamCrateLabel = "DocuSignTableDataMappedToQuickbooks";
         //Prefix and the OR related to it are included for testing purposes as
@@ -36,38 +36,38 @@ namespace terminalQuickBooks.Actions
         {
             _chartOfAccounts = new ChartOfAccounts();
         }
-        public async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        public async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             CheckAuthentication(authTokenDO);
-            return await ProcessConfigurationRequest(curActivityDO, dto => ConfigurationRequestType.Initial, authTokenDO);
+            return await ProcessConfigurationRequest(curActionDO, dto => ConfigurationRequestType.Initial, authTokenDO);
         }
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            return Crate.IsStorageEmpty(curActivityDO) ? ConfigurationRequestType.Initial : ConfigurationRequestType.Followup;
+            return Crate.IsStorageEmpty(curActionDO) ? ConfigurationRequestType.Initial : ConfigurationRequestType.Followup;
         }
-        protected override Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             //Grasp the user data from the controls in the follow up configuration
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 MemoText = GetMemoText(updater.CrateStorage);
                 DebitAccount = GetDebitAccount(updater.CrateStorage);
             }
-            return Task.FromResult(curActivityDO);
+            return Task.FromResult(curActionDO);
         }
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            if (curActivityDO.Id != Guid.Empty)
+            if (curActionDO.Id != Guid.Empty)
             {
                 //Check the availability of ChartOfAccountsCM
-                using (var updater = Crate.UpdateStorage(curActivityDO))
+                using (var updater = Crate.UpdateStorage(curActionDO))
                 {
                     var crate = updater.CrateStorage.CrateContentsOfType<ChartOfAccountsCM>();
                     if (crate != null && crate.Any())
                         ChartOfAccountsCrate = crate.First();
                 }
                 //Get StandardTableDataCM crate using desing time
-                var tableDataCrate = await GetCratesByDirection<StandardTableDataCM>(curActivityDO, CrateDirection.Upstream);
+                var tableDataCrate = await GetCratesByDirection<StandardTableDataCM>(curActionDO, CrateDirection.Upstream);
                 //In order to convert Table Data an upstream action needs to provide a StandardTableDataCM.
                 StandardConfigurationControlsCM actionControls;
                 if (tableDataCrate.Count != 0 || tableDataCrate.Any(x => x.Label == UpsteamCrateLabel || x.Label == HealthMonitorPrefix + UpsteamCrateLabel))
@@ -92,7 +92,7 @@ namespace terminalQuickBooks.Actions
                     };
 
                 }
-                using (var updater = Crate.UpdateStorage(curActivityDO))
+                using (var updater = Crate.UpdateStorage(curActionDO))
                 {
                     updater.CrateStorage.Add(PackControls(actionControls));
                     updater.CrateStorage.AddRange(await PackSources(authTokenDO));
@@ -103,7 +103,7 @@ namespace terminalQuickBooks.Actions
                 throw new ArgumentException(
                     "Configuration requires the submission of an Action that has a real ActionId");
             }
-            return curActivityDO;
+            return curActionDO;
         }
         /// <summary>
         ///It is supposed to obtain StandardTableDataCM and user input in the form of
@@ -112,21 +112,21 @@ namespace terminalQuickBooks.Actions
         /// <returns>
         /// The StandardAccountingTransactionCM is added to the payload.
         /// </returns>
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             
             //CheckAuthentication(authTokenDO);
             AccountDTO curDebitAccount = null;
             string memoText="Unspecified";
-            var payloadCrates = await GetPayload(curActivityDO, containerId);
+            var payloadCrates = await GetPayload(curActionDO, containerId);
             //Obtain the crate of type StandardTableDataCM and label "DocuSignTableDataMappedToQuickbooks" that holds the required information in the tabular format
-            var curStandardTableDataCM = GetCratesByDirection<StandardTableDataCM>(curActivityDO, CrateDirection.Upstream).Result.Single(x => x.Label == UpsteamCrateLabel || x.Label == HealthMonitorPrefix + UpsteamCrateLabel).Content;
+            var curStandardTableDataCM = GetCratesByDirection<StandardTableDataCM>(curActionDO, CrateDirection.Upstream).Result.Single(x => x.Label == UpsteamCrateLabel || x.Label == HealthMonitorPrefix + UpsteamCrateLabel).Content;
             //Validate the header row format
             ValidateTableHeaderRow(curStandardTableDataCM.GetHeaderRow());
             //The check on the accounts' existence in QB is performed only once in the run method
             //ChartOfAccounts is perloaded once and the accounts are compared with the the perloaded list
             if (ChartOfAccountsCrate == null || ChartOfAccountsCrate.Accounts.Count == 0)
-                using (var updater = Crate.UpdateStorage(curActivityDO))
+                using (var updater = Crate.UpdateStorage(curActionDO))
                 {
                     var crate = updater.CrateStorage.CrateContentsOfType<ChartOfAccountsCM>();
                     ChartOfAccountsCrate = crate != null
@@ -293,7 +293,7 @@ namespace terminalQuickBooks.Actions
         }
         /// <summary>
         /// This method should update controls data
-        /// This action should be called from Crate.UpdateStorage(curActivityDO)
+        /// This action should be called from Crate.UpdateStorage(curActionDO)
         /// 1) Decide which line is debit depending on the value of the
         /// ButtonGroup with the Name "Debit/Credit", update the debitLineAccount values
         /// 2) Extract Memo from the TextBlock with Name "Transaction_Memo"

@@ -14,7 +14,7 @@ using TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Actions
 {
-    public class Show_Report_Onscreen_v1 : BaseTerminalActivity
+    public class Show_Report_Onscreen_v1 : BaseTerminalAction
     {
         public class ActionUi : StandardConfigurationControlsCM
         {
@@ -37,11 +37,11 @@ namespace terminalFr8Core.Actions
         }
 
 
-        private async Task<Data.Crates.Crate> FindTables(ActivityDO curActivityDO)
+        private async Task<Data.Crates.Crate> FindTables(ActionDO curActionDO)
         {
             var fields = new List<FieldDTO>();
 
-            foreach (var table in (await GetCratesByDirection<StandardDesignTimeFieldsCM>(curActivityDO, CrateDirection.Upstream))
+            foreach (var table in (await GetCratesByDirection<StandardDesignTimeFieldsCM>(curActionDO, CrateDirection.Upstream))
                                              .Select(x => x.Content)
                                              .SelectMany(x => x.Fields)
                                              .Where(x => x.Availability == AvailabilityType.RunTime && x.Value == "Table"))
@@ -52,32 +52,32 @@ namespace terminalFr8Core.Actions
             return Data.Crates.Crate.FromContent("Upstream Crate Label List", new StandardDesignTimeFieldsCM(fields));
         }
 
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.Add(PackControls(new ActionUi()));
-                updater.CrateStorage.Add(await FindTables(curActivityDO));
+                updater.CrateStorage.Add(await FindTables(curActionDO));
             }
 
-            return curActivityDO;
+            return curActionDO;
         }
 
-        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
-                updater.CrateStorage.ReplaceByLabel(await FindTables(curActivityDO));
+                updater.CrateStorage.ReplaceByLabel(await FindTables(curActionDO));
             }
 
-            return curActivityDO;
+            return curActionDO;
         }
 
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var payload = await GetPayload(curActivityDO, containerId);
+            var payload = await GetPayload(curActionDO, containerId);
 
-            var configurationControls = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
+            var configurationControls = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
 
             if (configurationControls == null)
             {
@@ -104,12 +104,12 @@ namespace terminalFr8Core.Actions
                 }
             }
 
-            return ExecuteClientAction(payload, "ShowTableReport");
+            return payload;
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (Crate.IsStorageEmpty(curActionDO))
             {
                 return ConfigurationRequestType.Initial;
             }

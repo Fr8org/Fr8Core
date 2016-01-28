@@ -19,7 +19,7 @@ using terminalFr8Core.Infrastructure;
 
 namespace terminalFr8Core.Actions
 {
-    public class ConnectToSql_v1 : BaseTerminalActivity
+    public class ConnectToSql_v1 : BaseTerminalAction
     {
         public FindObjectHelper FindObjectHelper { get; set; }
 
@@ -31,9 +31,9 @@ namespace terminalFr8Core.Actions
         #region Configuration.
 
         public override ConfigurationRequestType ConfigurationEvaluator(
-            ActivityDO curActivityDO)
+            ActionDO curActionDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (Crate.IsStorageEmpty(curActionDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -41,15 +41,15 @@ namespace terminalFr8Core.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(CreateControlsCrate());
             }
 
-            return Task.FromResult<ActivityDO>(curActivityDO);
+            return Task.FromResult<ActionDO>(curActionDO);
         }
 
         private Crate CreateControlsCrate()
@@ -65,16 +65,16 @@ namespace terminalFr8Core.Actions
             return PackControlsCrate(control);
         }
 
-        protected override Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 RemoveControl(updater.CrateStorage, "ErrorLabel");
 
 
                 updater.CrateStorage.RemoveByLabel("Sql Table Definitions");
 
-            var connectionString = ExtractConnectionString(curActivityDO);
+            var connectionString = ExtractConnectionString(curActionDO);
                 
             if (!string.IsNullOrEmpty(connectionString))
             {
@@ -120,12 +120,12 @@ namespace terminalFr8Core.Actions
             }
             }
 
-            return base.FollowupConfigurationResponse(curActivityDO, authTokenDO);
+            return base.FollowupConfigurationResponse(curActionDO, authTokenDO);
         }
 
-        private string ExtractConnectionString(ActivityDO curActivityDO)
+        private string ExtractConnectionString(ActionDO curActionDO)
         {
-            var configControls = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().First();
+            var configControls = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().First();
             var connectionStringControl = configControls.FindByName("ConnectionString");
 
             return connectionStringControl.Value;
@@ -135,9 +135,9 @@ namespace terminalFr8Core.Actions
 
         #region Execution.
 
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            return Success(await GetPayload(curActivityDO, containerId));
+            return Success(await GetPayload(curActionDO, containerId));
         }
 
         #endregion Execution.

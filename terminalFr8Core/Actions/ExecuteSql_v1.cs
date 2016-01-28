@@ -18,32 +18,32 @@ using Data.States;
 
 namespace terminalFr8Core.Actions
 {
-    public class ExecuteSql_v1 : BaseTerminalActivity
+    public class ExecuteSql_v1 : BaseTerminalAction
     {
         private const string DefaultDbProvider = "System.Data.SqlClient";
 
 
         #region Configuration
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
             return ConfigurationRequestType.Initial;
         }
 
-        protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 AddLabelControl(
 
                     updater.CrateStorage,
                     "NoConfigLabel",
                     "No configuration",
-                    "This activity does not require any configuration."
+                    "This action does not require any configuration."
                     );
             }
 
-            return Task.FromResult(curActivityDO);
+            return Task.FromResult(curActionDO);
         }
 
         #endregion Configuration
@@ -132,10 +132,10 @@ namespace terminalFr8Core.Actions
             return payloadCM;
         }
 
-        private async Task<string> ExtractConnectionString(ActivityDO activityDO)
+        private async Task<string> ExtractConnectionString(ActionDO actionDO)
         {
             var upstreamCrates = await GetCratesByDirection<StandardDesignTimeFieldsCM>(
-                activityDO,
+                actionDO,
                 CrateDirection.Upstream
             );
 
@@ -156,12 +156,12 @@ namespace terminalFr8Core.Actions
             return connectionStringFields[0].Key;
         }
 
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var findObjectHelper = new FindObjectHelper();
-            var payload = await GetPayload(curActivityDO, containerId);
+            var payload = await GetPayload(curActionDO, containerId);
 
-            var columnTypes = await findObjectHelper.ExtractColumnTypes(this, curActivityDO);
+            var columnTypes = await findObjectHelper.ExtractColumnTypes(this, curActionDO);
             if (columnTypes == null)
             {
                 return Error(payload, "No column types crate found.");
@@ -173,7 +173,7 @@ namespace terminalFr8Core.Actions
                 return Error(payload, "No Sql Query payload crate found.");
             }
 
-            var connectionString = await ExtractConnectionString(curActivityDO);
+            var connectionString = await ExtractConnectionString(curActionDO);
 
             var query = BuildQuery(connectionString, queryPayloadValue, columnTypes);
 

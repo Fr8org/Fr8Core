@@ -21,10 +21,10 @@ namespace terminalFr8Core.Infrastructure
         private const string DefaultDbProvider = "System.Data.SqlClient";
 
         public async Task<Dictionary<string, DbType>> ExtractColumnTypes(
-            BaseTerminalActivity activity, ActivityDO activityDO)
+            BaseTerminalAction action, ActionDO actionDO)
         {
-            var upstreamCrates = await activity.GetCratesByDirection<StandardDesignTimeFieldsCM>(
-                activityDO,
+            var upstreamCrates = await action.GetCratesByDirection<StandardDesignTimeFieldsCM>(
+                actionDO,
                 CrateDirection.Upstream
             );
 

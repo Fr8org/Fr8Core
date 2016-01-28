@@ -103,9 +103,9 @@ namespace terminalDocuSign.Tests.Actions
         }
 
 
-        private void ConfigureActivity(ActivityDO activity, params KeyValuePair<string, string>[] settings)
+        private void ConfigureAction(ActionDO action, params KeyValuePair<string, string>[] settings)
         {
-            using (var updater = _crateManager.UpdateStorage(activity))
+            using (var updater = _crateManager.UpdateStorage(action))
             {
                 var filterConditions = new List<FilterConditionDTO>();
 
@@ -129,7 +129,7 @@ namespace terminalDocuSign.Tests.Actions
         {
             var docusignFolder = new Mock<IDocuSignFolder>();
 
-            docusignFolder.Setup(r => r.GetSearchFolders(It.IsAny<string>(), It.IsAny<string>())).Returns(TerminalFixtureData.GetFolders());
+            docusignFolder.Setup(r => r.GetFolders(It.IsAny<string>(), It.IsAny<string>())).Returns(TerminalFixtureData.GetFolders());
             docusignFolder.Setup(r => r.Search(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>()))
                 .Returns<string, string, string, string, string, DateTime?, DateTime?>(SearchByStatus);
 
@@ -150,13 +150,13 @@ namespace terminalDocuSign.Tests.Actions
 
             var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(new AuthorizationTokenDTO { Token = JsonConvert.SerializeObject(TerminalFixtureData.TestDocuSignAuthDTO1()) });
 
-            var actionDo = new ActivityDO();
+            var actionDo = new ActionDO();
 
-            ConfigureActivity(actionDo, new KeyValuePair<string, string>("Status", "Sent"),
+            ConfigureAction(actionDo, new KeyValuePair<string, string>("Status", "Sent"),
                                       new KeyValuePair<string, string>("Folder", "folder_1"));
 
-            var activity = new Generate_DocuSign_Report_v1();
-            var result = await activity.Run(actionDo, Guid.NewGuid(), curAuthTokenDO);
+            var action = new Generate_DocuSign_Report_v1();
+            var result = await action.Run(actionDo, Guid.NewGuid(), curAuthTokenDO);
             var storage = _crateManager.GetStorage(result);
 
             var payload = storage.CrateContentsOfType<StandardPayloadDataCM>().FirstOrDefault();
@@ -179,7 +179,7 @@ namespace terminalDocuSign.Tests.Actions
         {
             var docusignFolder = new Mock<IDocuSignFolder>();
 
-            docusignFolder.Setup(r => r.GetSearchFolders(It.IsAny<string>(), It.IsAny<string>())).Returns(TerminalFixtureData.GetFolders());
+            docusignFolder.Setup(r => r.GetFolders(It.IsAny<string>(), It.IsAny<string>())).Returns(TerminalFixtureData.GetFolders());
             docusignFolder.Setup(r => r.Search(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>()))
                 .Returns<string, string, string, string, string, DateTime?, DateTime?>(SearchDuplicates);
 
@@ -195,12 +195,12 @@ namespace terminalDocuSign.Tests.Actions
 
             var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(new AuthorizationTokenDTO { Token = JsonConvert.SerializeObject(TerminalFixtureData.TestDocuSignAuthDTO1()) });
 
-            var actionDo = new ActivityDO();
+            var actionDo = new ActionDO();
 
-            ConfigureActivity(actionDo, new KeyValuePair<string, string>("Folder", "folder_1"));
+            ConfigureAction(actionDo, new KeyValuePair<string, string>("Folder", "folder_1"));
 
-            var activity = new Generate_DocuSign_Report_v1();
-            var result = await activity.Run(actionDo, Guid.NewGuid(), curAuthTokenDO);
+            var action = new Generate_DocuSign_Report_v1();
+            var result = await action.Run(actionDo, Guid.NewGuid(), curAuthTokenDO);
             var storage = _crateManager.GetStorage(result);
 
             var payload = storage.CrateContentsOfType<StandardPayloadDataCM>().FirstOrDefault();

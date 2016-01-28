@@ -39,9 +39,9 @@ namespace Data.Entities
         public virtual List<ProcessNodeDO> ProcessNode { get; set; }
 
         [NotMapped]
-        public PlanDO Plan
+        public RouteDO Route
         {
-            get { return (PlanDO) ParentRouteNode; }
+            get { return (RouteDO) ParentRouteNode; }
         }
 
         public override string ToString()

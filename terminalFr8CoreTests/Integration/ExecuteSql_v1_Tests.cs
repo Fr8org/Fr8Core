@@ -45,7 +45,7 @@ namespace terminalFr8CoreTests.Integration
             var requestActionDTO = FixtureData.ExecuteSql_InitialConfiguration_ActionDTO();
 
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<ActionDTO, ActionDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -70,10 +70,10 @@ namespace terminalFr8CoreTests.Integration
 
             var runUrl = GetTerminalRunUrl();
 
-            var activityDTO = FixtureData.ExecuteSql_InitialConfiguration_ActionDTO();
+            var actionDTO = FixtureData.ExecuteSql_InitialConfiguration_ActionDTO();
             
             AddPayloadCrate(
-               activityDTO,
+               actionDTO,
                new StandardQueryCM()
                {
                    Queries = new List<QueryDTO>() { new QueryDTO() { Name = "Customer" } }
@@ -86,7 +86,7 @@ namespace terminalFr8CoreTests.Integration
             lstFields.Add(new FieldDTO() { Key = "Customer.Physician", Value = "String" });
             lstFields.Add(new FieldDTO() { Key = "Customer.CurrentMedicalCondition", Value = "String" });
             AddUpstreamCrate(
-                activityDTO,
+                actionDTO,
                 new StandardDesignTimeFieldsCM(lstFields),
                 "Sql Column Types"
             );
@@ -94,15 +94,15 @@ namespace terminalFr8CoreTests.Integration
             lstFields.Clear();
             lstFields.Add(new FieldDTO() { Key = UtilitiesTesting.Fixtures.FixtureData.TestConnectionString2().Value, Value = "value" });
             AddUpstreamCrate(
-                activityDTO,
+                actionDTO,
                 new StandardDesignTimeFieldsCM(lstFields),
                 "Sql Connection String"
             );
 
-            AddOperationalStateCrate(activityDTO, new OperationalStateCM());
+            AddOperationalStateCrate(actionDTO, new OperationalStateCM());
 
             var responsePayloadDTO =
-                await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, activityDTO);
+                await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
 
             Assert.NotNull(responsePayloadDTO);
             Assert.NotNull(responsePayloadDTO.CrateStorage);

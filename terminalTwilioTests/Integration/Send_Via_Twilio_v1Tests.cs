@@ -34,7 +34,7 @@ namespace terminalTwilioTests.Integration
             var requestActionDTO = HealthMonitor_FixtureData.Send_Via_Twilio_v1_InitialConfiguration_ActionDTO();
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<ActionDTO, ActionDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -64,14 +64,14 @@ namespace terminalTwilioTests.Integration
             //OperationalStateCM crate is required to be added,
             //as upon return the Run method takes this crate and updates the status to "Success"
             AddOperationalStateCrate(curActionDTO, new OperationalStateCM());
-            var payloadDTO = await HttpPostAsync<ActivityDTO, PayloadDTO>(
+            var payloadDTO = await HttpPostAsync<ActionDTO, PayloadDTO>(
                 runUrl,
                 curActionDTO
                 );
             //Assert
             var operationalCrate = Crate.FromDto(payloadDTO.CrateStorage).CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
-            Assert.AreEqual(ActivityResponse.Error, operationalCrate.CurrentActivityResponse, "Run method of the Send_Via_Twilio did not set CurentActionResponce to Error");
-            Assert.AreEqual("No StandardConfigurationControlsCM crate provided", operationalCrate.CurrentActivityErrorMessage, "Run method of the Send_Via_Twilio did not set error message");
+            Assert.AreEqual(ActionResponse.Error, operationalCrate.CurrentActionResponse, "Run method of the Send_Via_Twilio did not set CurentActionResponce to Error");
+            Assert.AreEqual("No StandardConfigurationControlsCM crate provided", operationalCrate.CurrentActionErrorMessage, "Run method of the Send_Via_Twilio did not set error message");
 
         }
         /// <summary>
@@ -86,7 +86,7 @@ namespace terminalTwilioTests.Integration
             var runUrl = GetTerminalRunUrl();
             var curActionDTO = HealthMonitor_FixtureData.Send_Via_Twilio_v1_InitialConfiguration_ActionDTO();
             //Act
-            var responceActionDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, curActionDTO);
+            var responceActionDTO = await HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, curActionDTO);
             var crateManager = new CrateManager();
             using (var updater = crateManager.UpdateStorage(responceActionDTO))
             {
@@ -101,7 +101,7 @@ namespace terminalTwilioTests.Integration
             //OperationalStateCM crate is required to be added,
             //as upon return the Run method takes this crate and updates the status to "Success"
             AddOperationalStateCrate(responceActionDTO, new OperationalStateCM());
-            var payloadDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(runUrl,responceActionDTO);
+            var payloadDTO = await HttpPostAsync<ActionDTO, ActionDTO>(runUrl,responceActionDTO);
             //Assert
             //After Configure Test
             Assert.NotNull(responceActionDTO);
@@ -133,7 +133,7 @@ namespace terminalTwilioTests.Integration
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<ActionDTO, ActionDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -154,7 +154,7 @@ namespace terminalTwilioTests.Integration
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<ActionDTO, ActionDTO>(
                     configureUrl,
                     requestActionDTO
                 );

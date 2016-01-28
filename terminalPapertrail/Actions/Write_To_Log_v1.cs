@@ -22,7 +22,7 @@ namespace terminalPapertrail.Actions
     /// <summary>
     /// Write To Log action which writes Log Messages to Papertrail at run time
     /// </summary>
-    public class Write_To_Log_v1 : BaseTerminalActivity
+    public class Write_To_Log_v1 : BaseTerminalAction
     {
         private IPapertrailLogger _papertrailLogger;
 
@@ -31,14 +31,14 @@ namespace terminalPapertrail.Actions
             _papertrailLogger = ObjectFactory.GetInstance<IPapertrailLogger>();
         }
 
-        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO = null)
+        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO = null)
         {
-            return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
+            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (Crate.IsStorageEmpty(curActionDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -46,7 +46,7 @@ namespace terminalPapertrail.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO = null)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO = null)
         {
             var targetUrlTextBlock = new TextBox
             {
@@ -58,18 +58,18 @@ namespace terminalPapertrail.Actions
 
             var curControlsCrate = PackControlsCrate(targetUrlTextBlock);
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage = new CrateStorage(curControlsCrate);
             }
 
-            return await Task.FromResult(curActivityDO);
+            return await Task.FromResult(curActionDO);
         }
 
-        public async Task<PayloadDTO> Run(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             //get process payload
-            var curProcessPayload = await GetPayload(activityDO, containerId);
+            var curProcessPayload = await GetPayload(actionDO, containerId);
 
             //get the Papertrail URL value fromt configuration control
             string curPapertrailUrl;
@@ -77,7 +77,7 @@ namespace terminalPapertrail.Actions
 
             try
             {
-                GetPapertrailTargetUrlAndPort(activityDO, out curPapertrailUrl, out curPapertrailPort);
+                GetPapertrailTargetUrlAndPort(actionDO, out curPapertrailUrl, out curPapertrailPort);
             }
             catch (ArgumentException e)
             {
@@ -106,11 +106,11 @@ namespace terminalPapertrail.Actions
             return Success(curProcessPayload);
         }
 
-        private void GetPapertrailTargetUrlAndPort(ActivityDO curActivityDO, out string paperrrialTargetUrl, out int papertrailTargetPort)
+        private void GetPapertrailTargetUrlAndPort(ActionDO curActionDO, out string paperrrialTargetUrl, out int papertrailTargetPort)
         {
             //get the configuration control of the given action
             var curActionConfigControls =
-                Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().Single();
+                Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().Single();
 
             //the URL is given in "URL:PortNumber" format. Parse the input value to get the URL and port number
             var targetUrlValue = curActionConfigControls.FindByName("TargetUrlTextBox").Value.Split(new char[] { ':' });

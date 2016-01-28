@@ -17,13 +17,13 @@ using Data.Control;
 
 namespace terminalFr8Core.Actions
 {
-    public class AddPayloadManually_v1 : BaseTerminalActivity
+    public class AddPayloadManually_v1 : BaseTerminalAction
     {
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var payloadCrates = await GetPayload(curActivityDO, containerId);
+            var payloadCrates = await GetPayload(curActionDO, containerId);
 
-            var controlsMS = Crate.GetStorage(curActivityDO.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var controlsMS = Crate.GetStorage(curActionDO.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (controlsMS == null)
             {
@@ -57,27 +57,27 @@ namespace terminalFr8Core.Actions
             return Success(payloadCrates);
         }
 
-        public override async Task<ActivityDO> Configure(ActivityDO curActionDataPackageDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActionDO> Configure(ActionDO curActionDataPackageDO, AuthorizationTokenDO authTokenDO)
         {
             return await ProcessConfigurationRequest(curActionDataPackageDO, ConfigurationEvaluator, authTokenDO);
         }
 
-        protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             //build a controls crate to render the pane
             var configurationControlsCrate = CreateControlsCrate();
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage = AssembleCrateStorage(configurationControlsCrate);
             }
 
-            return Task.FromResult(curActivityDO);
+            return Task.FromResult(curActionDO);
         }
 
-        protected override Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            var controlsMS = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var controlsMS = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (controlsMS == null)
             {
@@ -96,14 +96,14 @@ namespace terminalFr8Core.Actions
                 var userDefinedPayload = JsonConvert.DeserializeObject<List<FieldDTO>>(fieldListControl.Value);
                 userDefinedPayload.ForEach(x => x.Value = x.Key);
 
-                using (var updater = Crate.UpdateStorage(curActivityDO))
+                using (var updater = Crate.UpdateStorage(curActionDO))
                 {
                     updater.CrateStorage.RemoveByLabel("ManuallyAddedPayload");
                     updater.CrateStorage.Add(Data.Crates.Crate.FromContent("ManuallyAddedPayload", new StandardDesignTimeFieldsCM() { Fields = userDefinedPayload }));
                 }
             }
 
-            return Task.FromResult(curActivityDO);
+            return Task.FromResult(curActionDO);
         }
 
         private Crate CreateControlsCrate()
@@ -119,9 +119,9 @@ namespace terminalFr8Core.Actions
             return PackControlsCrate(fieldFilterPane);
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (Crate.IsStorageEmpty(curActionDO))
             {
                 return ConfigurationRequestType.Initial;
             }

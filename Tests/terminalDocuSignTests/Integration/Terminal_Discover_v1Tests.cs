@@ -12,7 +12,7 @@ namespace terminalDocuSignTests.Integration
     [Explicit]
     public class Terminal_Discover_v1Tests : BaseHealthMonitorTest
     {
-        private const int ActionCount = 12;
+        private const int ActionCount = 11;
         private const string Extract_Data_From_Envelopes_Name = "Extract_Data_From_Envelopes";
         private const string Mail_Merge_Into_DocuSign_Name = "Mail_Merge_Into_DocuSign";
         private const string Monitor_DocuSign_Name = "Monitor_DocuSign_Envelope_Activity";
@@ -24,7 +24,6 @@ namespace terminalDocuSignTests.Integration
         private const string Search_DocuSign_History_Name = "Search_DocuSign_History";
         private const string Get_DocuSign_Template_Name = "Get_DocuSign_Template";
         private const string Generate_DocuSign_Report = "Generate_DocuSign_Report";
-        private const string Archive_DocuSign_Template = "Archive_DocuSign_Template";
         
 
         public override string TerminalName
@@ -55,8 +54,6 @@ namespace terminalDocuSignTests.Integration
             Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == Search_DocuSign_History_Name));
             Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == Get_DocuSign_Template_Name));
             Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == Generate_DocuSign_Report));
-            Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == Archive_DocuSign_Template));
-            
         }
     }
 }

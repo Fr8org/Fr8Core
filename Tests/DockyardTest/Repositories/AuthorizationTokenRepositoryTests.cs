@@ -88,8 +88,7 @@ namespace DockyardTest.Repositories
                     TerminalStatus = TerminalStatus.Active,
                     Id = 1,
                     Version = "v1",
-                    Name = "Test terminal",
-                    Secret = Guid.NewGuid().ToString()
+                    Name = "Test terminal"
                 });
 
                 uow.SaveChanges();
@@ -195,8 +194,7 @@ namespace DockyardTest.Repositories
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var tFound = uow.AuthorizationTokenRepository
-                    .FindTokenByExternalAccount("ext1", t1.TerminalID, t1.UserID);
+                var tFound = uow.AuthorizationTokenRepository.FindTokenByExternalAccount("ext1");
 
                 Assert.AreEqual(0, tester.AddedTokens.Count);
                 Assert.AreEqual(0, tester.UpdatedTokens.Count);

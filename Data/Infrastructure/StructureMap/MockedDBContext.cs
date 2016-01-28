@@ -12,7 +12,6 @@ using System.Reflection;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Migrations;
-using Data.States.Templates;
 using Segment.Model;
 using Utilities;
 
@@ -78,7 +77,6 @@ namespace Data.Infrastructure.StructureMap
             AddForeignRows();
 
             var adds = GetAdds().ToList();
-            var update = GetUpdates().ToList();
             var createdEntityList = adds.OfType<ICreateHook>().ToList();
 
             foreach (var createdEntity in createdEntityList)
@@ -90,11 +88,9 @@ namespace Data.Infrastructure.StructureMap
 
             DetectChanges();
 
+            AssignIDs(adds);
 
-            var changed = adds.Union(update).ToArray();
-
-            AssignIDs(changed);
-            UpdateForeignKeyReferences(changed);
+            UpdateForeignKeyReferences(adds);
 
             AssertConstraints();
 
@@ -281,12 +277,6 @@ namespace Data.Infrastructure.StructureMap
             }
         }
 
-        // hardcode for handling Id <-> Fk synchronization in case of our enum properties that has DB 'templates' (IStateTemplate).
-        private static bool IsStateTemplateProperty(PropertyInfo fkId, PropertyInfo fkDo)
-        {
-            return typeof (IStateTemplate).IsAssignableFrom(fkDo.PropertyType);
-        }
-
         private void UpdateForeignKeyReferences(IEnumerable<object> newRows)
         {
             foreach (var grouping in newRows.GroupBy(r => r.GetType()))
@@ -341,8 +331,7 @@ namespace Data.Infrastructure.StructureMap
                     foreach (var value in grouping)
                     {
                         var foreignDO = parentFKDOProperty.GetValue(value);
-                        // In case of StateTemplates we never updates DO, so Id has more priority
-                        if (foreignDO != null && !IsStateTemplateProperty(foreignIDProperty, parentFKDOProperty)) //If the DO is set, then we update the ID
+                        if (foreignDO != null) //If the DO is set, then we update the ID
                         {
                             var fkID = foreignIDProperty.GetValue(foreignDO);
                             parentFKIDProperty.SetValue(value, fkID);
@@ -389,10 +378,7 @@ namespace Data.Infrastructure.StructureMap
         {
             List<Object> currentPass;
             lock (_cachedSets)
-            {
                 currentPass = new List<object>(_cachedSets.SelectMany(c => c.Value.LocalEnumerable.OfType<object>()));
-                currentPass.AddRange(_cachedSets.SelectMany(c => c.Value.ModifiedEntries.OfType<object>()));
-            }
 
             var nextPass = new List<Object>();
 

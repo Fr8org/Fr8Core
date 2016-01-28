@@ -11,7 +11,6 @@ namespace terminalPapertrail
     {
         protected void Application_Start()
         {
-            StructureMapBootStrapper.ConfigureDependencies(DependencyType.LIVE);
             //var formatters = GlobalConfiguration.Configuration.Formatters;
             //formatters.Remove(formatters.XmlFormatter);
 
@@ -19,7 +18,7 @@ namespace terminalPapertrail
 			DataAutoMapperBootStrapper.ConfigureAutoMapper();
             //TerminalDataAutoMapperBootStrapper.ConfigureAutoMapper();
             // StructureMap Dependencies configuration
-            
+            StructureMapBootStrapper.ConfigureDependencies(DependencyType.LIVE);
             TerminalPapertrailMapBootstrapper.ConfigureDependencies(DependencyType.LIVE);
             TerminalBootstrapper.ConfigureLive();
         }

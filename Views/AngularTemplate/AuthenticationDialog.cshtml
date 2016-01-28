@@ -1,15 +1,12 @@
 ﻿<div class="modal-header">
-    <h4 class="pull-left">Authorize Accounts</h4>
+    <h4 class="pull-left">Choose accounts</h4>
 </div>
 <div class="modal-body" block-if="isLoading()">
     <div class="panel panel-default" ng-repeat="terminal in terminals">
         <div class="panel-heading">
-            Terminal: {{terminal.name}}
+            This route requires authentication for {{terminal.name}}
         </div>
         <div class="panel-body">
-            <div ng-if="terminal.authTokens.length" style="margin: 5px 0 5px 0;">
-                Select authorization:
-            </div>
             <div ng-repeat="authToken in terminal.authTokens">
                 <label>
                     <input type="radio" name="terminal_{{terminal.id}}"
@@ -19,11 +16,14 @@
                     <span>{{authToken.externalAccountName}}</span>
                 </label>
             </div>
+            <div ng-if="terminal.authTokens.length" style="margin: 5px 0 5px 0;">
+                Please select previously added user account on the external service for use by &laquo;{{terminal.name}}&raquo;. To add a user account not in the list, click on the <strong>Link a New User Account</strong> button.
+            </div>
             <div ng-if="!terminal.authTokens.length" style="margin: 5px 0 5px 0;">
-                Please click on the <strong>Add Authorization</strong> button to enable &laquo;{{terminal.name}}&raquo; to access the external service.
+                Please click on the <strong>Link a New User Account</strong> button to enable &laquo;{{terminal.name}}&raquo; to access the external service.
             </div>
             <div>
-                <button class="btn btn-default" ng-click="linkAccount(terminal)">Add Authorization</button>
+                <button class="btn btn-default" ng-click="linkAccount(terminal)">Add Account</button>
             </div>
             <div style="margin-top: 10px;">
                 <label>
@@ -35,6 +35,5 @@
     </div>
 </div>
 <div class="modal-footer" style="margin-top: -20px;">
-    <button class="btn btn-default pull-right" style="width: 100px;" ng-click="$dismiss()">Cancel</button>
     <button class="btn btn-primary pull-right" style="width: 100px;" ng-click="apply()" ng-disabled="!isAllSelected()">Ok</button>
 </div>

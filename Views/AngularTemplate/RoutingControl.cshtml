@@ -7,7 +7,7 @@
                 <div class="radio">
                     <label>
                         <input type="radio" name="routing_rc_{{uniqueDirectiveId}}" value="none" ng-model="route.selection" />
-                        <span>Go to Next Activity</span>
+                        <span>Go to Next Action</span>
                     </label>
                 </div>
                 <!--</td>
@@ -27,7 +27,7 @@
                 <div class="radio">
                     <label>
                         <input type="radio" name="routing_rc_{{uniqueDirectiveId}}" value="return" ng-model="route.selection" />
-                        <span>Return to Previous Activity:</span>
+                        <span>Return to Previous Action:</span>
                     </label>
                     <div class="previous-action-selection">
                         <select name="repeatSelect_rc_{{uniqueDirectiveId}}" ng-model="route.previousActionList.selectionId" ng-disabled="route.selection != 'return'">
@@ -59,7 +59,7 @@
                 <br />
                 selection: {{route.selection}}
                 <br />
-                plan: {{route.previousActionList.selectionId}}
+                route: {{route.previousActionList.selectionId}}
             </td>
         </tr>
     </table>

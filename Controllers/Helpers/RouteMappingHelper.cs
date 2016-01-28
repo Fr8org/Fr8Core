@@ -11,33 +11,32 @@ namespace HubWeb.Controllers.Helpers
     public static class RouteMappingHelper
     {
         // Manual mapping method to resolve DO-1164.
-        public static RouteFullDTO MapRouteToDto(IUnitOfWork uow, PlanDO curPlanDO)
+        public static RouteFullDTO MapRouteToDto(IUnitOfWork uow, RouteDO curRouteDO)
         {
             var subrouteDTOList = uow.SubrouteRepository
                 .GetQuery()
                 .Include(x => x.ChildNodes)
-                .Where(x => x.ParentRouteNodeId == curPlanDO.Id)
+                .Where(x => x.ParentRouteNodeId == curRouteDO.Id)
                 .OrderBy(x => x.Ordering)
                 .ToList()
                 .Select((SubrouteDO x) =>
                 {
                     var pntDTO = Mapper.Map<FullSubrouteDTO>(x);
 
-                    pntDTO.Activities = x.ChildNodes.OrderBy(y => y.Ordering).Select(Mapper.Map<ActivityDTO>).ToList();
+                    pntDTO.Actions = x.ChildNodes.OrderBy(y => y.Ordering).Select(Mapper.Map<ActionDTO>).ToList();
 
                     return pntDTO;
                 }).ToList();
 
-            var result = new RouteFullDTO()
+            RouteFullDTO result = new RouteFullDTO()
             {
-                Description = curPlanDO.Description,
-                Id = curPlanDO.Id,
-                Name = curPlanDO.Name,
-                RouteState = curPlanDO.RouteState,
-                StartingSubrouteId = curPlanDO.StartingSubrouteId,
+                Description = curRouteDO.Description,
+                Id = curRouteDO.Id,
+                Name = curRouteDO.Name,
+                RouteState = curRouteDO.RouteState,
+                StartingSubrouteId = curRouteDO.StartingSubrouteId,
                 Subroutes = subrouteDTOList,
-                Fr8UserId = curPlanDO.Fr8Account.Id,
-                Tag = curPlanDO.Tag
+                Fr8UserId = curRouteDO.Fr8Account.Id
             };
 
             return result;

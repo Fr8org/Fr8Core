@@ -20,16 +20,16 @@ namespace DockyardTest.Entities
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var plan = FixtureData.TestRoute2();
-                uow.PlanRepository.Add(plan);
+                var route = FixtureData.TestRoute2();
+                uow.RouteRepository.Add(route);
 
                 var subroute = FixtureData.TestSubrouteDO2();
                 uow.SubrouteRepository.Add(subroute);
-                plan.StartingSubroute = subroute;
+                route.StartingSubroute = subroute;
 
                 uow.SaveChanges();
 
-                var result = uow.PlanRepository.GetQuery()
+                var result = uow.RouteRepository.GetQuery()
                     .SingleOrDefault(pt => pt.StartingSubrouteId == subroute.Id);
 
                 Assert.AreEqual(subroute.Id, result.StartingSubroute.Id);
@@ -41,10 +41,10 @@ namespace DockyardTest.Entities
         public void GetStandardEventSubscribers_ReturnsRoutes()
         {
             FixtureData.TestRouteWithSubscribeEvent();
-            IPlan curPlan = ObjectFactory.GetInstance<IPlan>();
+            IRoute curRoute = ObjectFactory.GetInstance<IRoute>();
             EventReportCM curEventReport = FixtureData.StandardEventReportFormat();
 
-            var result = curPlan.GetMatchingPlans("testuser1", curEventReport);
+            var result = curRoute.GetMatchingRoutes("testuser1", curEventReport);
 
             Assert.IsNotNull(result);
             Assert.Greater(result.Count, 0);
@@ -55,18 +55,18 @@ namespace DockyardTest.Entities
         [ExpectedException(ExpectedException = typeof(System.ArgumentNullException))]
         public void GetStandardEventSubscribers_UserIDEmpty_ThrowsException()
         {
-            IPlan curPlan = ObjectFactory.GetInstance<IPlan>();
+            IRoute curRoute = ObjectFactory.GetInstance<IRoute>();
 
-            curPlan.GetMatchingPlans("", new EventReportCM());
+            curRoute.GetMatchingRoutes("", new EventReportCM());
         }
 
         [Test]
         [ExpectedException(ExpectedException = typeof(System.ArgumentNullException))]
         public void GetStandardEventSubscribers_EventReportMSNULL_ThrowsException()
         {
-            IPlan curPlan = ObjectFactory.GetInstance<IPlan>();
+            IRoute curRoute = ObjectFactory.GetInstance<IRoute>();
 
-            curPlan.GetMatchingPlans("UserTest", null);
+            curRoute.GetMatchingRoutes("UserTest", null);
         }
 
 

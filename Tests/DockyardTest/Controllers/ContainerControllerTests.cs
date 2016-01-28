@@ -40,10 +40,10 @@ namespace DockyardTest.Controllers
             using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //uow.UserRepository.Add(_testUserAccount);
-                var plan = FixtureData.TestRoute4();
+                var route = FixtureData.TestRoute4();
 
-                // This will Add a user as well as a plan for creating Containers
-                unitOfWork.PlanRepository.Add(plan);
+                // This will Add a user as well as a route for creating Containers
+                unitOfWork.RouteRepository.Add(route);
                 unitOfWork.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, _testUserAccount.Id);
                 unitOfWork.SaveChanges();
 

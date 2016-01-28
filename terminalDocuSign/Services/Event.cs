@@ -35,29 +35,23 @@ namespace terminalDocuSign.Services
             _docuSignRoute = ObjectFactory.GetInstance<IDocuSignRoute>();
         }
 
-        public async Task<Crate> Process(string curExternalEventPayload)
+        public Crate Process(string curExternalEventPayload)
         {
             //DO - 1449
             //if the event payload is Fr8 User ID, it is DocuSign Authentication Completed event
-            //The Monitor All DocuSign Events plan should be creaed in this case.
+            //The Monitor All DocuSign Events route should be creaed in this case.
             if (curExternalEventPayload.Contains("fr8_user_id"))
             {
-                var jo = (JObject)JsonConvert.DeserializeObject(curExternalEventPayload);
-                var curFr8UserId = jo["fr8_user_id"].Value<string>();
-                var authToken = JsonConvert.DeserializeObject<AuthorizationTokenDTO>(jo["auth_token"].ToString());
-
-                if (authToken == null)
-                {
-                    throw new ArgumentException("Authorization Token required");
-                }
+                var curFr8UserId = JObject.Parse(curExternalEventPayload)["fr8_user_id"].Value<string>();
 
                 if (string.IsNullOrEmpty(curFr8UserId))
                 {
                     throw new ArgumentException("Fr8 User ID is not in the correct format.");
                 }
 
-                //create MonitorAllDocuSignEvents plan
-                await _docuSignRoute.CreateRoute_MonitorAllDocuSignEvents(curFr8UserId, authToken);
+                //create MonitorAllDocuSignEvents route
+                _docuSignRoute.CreateRoute_MonitorAllDocuSignEvents(curFr8UserId);
+
                 return null;
             } 
 
@@ -73,7 +67,6 @@ namespace terminalDocuSign.Services
                 EventNames = "Envelope" + curDocuSignEnvelopeInfo.EnvelopeStatus.Status,
                 ContainerDoId = "",
                 EventPayload = ExtractEventPayload(curExternalEvents),
-                Manufacturer = "DocuSign",
                 ExternalAccountId = curDocuSignEnvelopeInfo.EnvelopeStatus.ExternalAccountId
             };
 

@@ -21,11 +21,11 @@ using Utilities;
 
 namespace terminalFr8Core.Actions
 {
-    public class SetDelay_v1 : BaseTerminalActivity
+    public class SetDelay_v1 : BaseTerminalAction
     {
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var curPayloadDTO = await GetPayload(curActivityDO, containerId);
+            var curPayloadDTO = await GetPayload(curActionDO, containerId);
             var payloadStorage = Crate.GetStorage(curPayloadDTO);
             var operationsCrate = payloadStorage.CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
             //check for operations crate
@@ -35,61 +35,61 @@ namespace terminalFr8Core.Actions
             }
             
             //find our action state in operations crate
-            var myPreviousResponse = operationsCrate.CurrentActivityResponse;
-            if (myPreviousResponse == ActivityResponse.RequestSuspend)
+            var myPreviousResponse = operationsCrate.CurrentActionResponse;
+            if (myPreviousResponse == ActionResponse.RequestSuspend)
             {
                 //this is second time we are being called. this means alarm has triggered
                 return Success(curPayloadDTO);
             }
 
             //get user selected design time duration
-            var delayDuration = GetUserDefinedDelayDuration(curActivityDO);
-            var alarmDTO = CreateAlarm(curActivityDO, containerId, delayDuration);
+            var delayDuration = GetUserDefinedDelayDuration(curActionDO);
+            var alarmDTO = CreateAlarm(curActionDO, containerId, delayDuration);
             //post to hub to create an alarm
-            await HubCommunicator.CreateAlarm(alarmDTO, CurrentFr8UserId);
+            await HubCommunicator.CreateAlarm(alarmDTO);
 
             return SuspendHubExecution(curPayloadDTO);
             
         }
 
-        private AlarmDTO CreateAlarm(ActivityDO activityDO, Guid containerId, TimeSpan duration)
+        private AlarmDTO CreateAlarm(ActionDO actionDO, Guid containerId, TimeSpan duration)
         {
             return new AlarmDTO
             {
-                ActivityDTO = Mapper.Map<ActivityDTO>(activityDO),
+                ActionDTO = Mapper.Map<ActionDTO>(actionDO),
                 ContainerId = containerId,
                 TerminalName = "fr8Core",
                 TerminalVersion = "v1",
                 StartTime = DateTime.UtcNow.Add(duration)
             };
         }
-        private TimeSpan GetUserDefinedDelayDuration(ActivityDO curActivityDO)
+        private TimeSpan GetUserDefinedDelayDuration(ActionDO curActionDO)
         {
-            var controlsMS = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().First();
+            var controlsMS = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().First();
             var manifestTypeDropdown = (Duration) controlsMS.Controls.Single(x => x.Type == ControlTypes.Duration && x.Name == "Delay_Duration");
             if (manifestTypeDropdown.Value == null)
             {
-                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Delay activity can't create a delay without a selected duration on design time");
+                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Delay action can't create a delay without a selected duration on design time");
             }
             return manifestTypeDropdown.Value;
         }
 
-        public override async Task<ActivityDO> Configure(ActivityDO curActionDataPackageDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActionDO> Configure(ActionDO curActionDataPackageDO, AuthorizationTokenDO authTokenDO)
         {
             return await ProcessConfigurationRequest(curActionDataPackageDO, ConfigurationEvaluator, authTokenDO);
         }
 
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             //build a controls crate to render the pane
             var configurationControlsCrate = CreateControlsCrate();
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage = AssembleCrateStorage(configurationControlsCrate);
             }
 
-            return curActivityDO;
+            return curActionDO;
         }
 
         private Crate CreateControlsCrate()
@@ -104,14 +104,14 @@ namespace terminalFr8Core.Actions
             return PackControlsCrate(duration);
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (Crate.IsStorageEmpty(curActionDO))
             {
                 return ConfigurationRequestType.Initial;
             }
 
-            var controlsMS = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var controlsMS = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (controlsMS == null)
             {

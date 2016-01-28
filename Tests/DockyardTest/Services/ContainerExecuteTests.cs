@@ -149,9 +149,9 @@ namespace DockyardTest.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var containerDO = FixtureData.TestContainerExecute();
-                var currAction = FixtureData.TestActivity4();
+                var currAction = FixtureData.TestAction4();
                 currAction.CrateStorage = crateStorage;
-                var nextAction = FixtureData.TestActivity5();
+                var nextAction = FixtureData.TestAction5();
                 nextAction.CrateStorage = crateStorage;
                 containerDO.CurrentRouteNode = currAction;
                 containerDO.NextRouteNode = nextAction;
@@ -179,7 +179,7 @@ namespace DockyardTest.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var containerDO = FixtureData.TestContainerExecute();
-                var currActivity = FixtureData.TestActivityTreeWithActivityTemplates();
+                var currActivity = FixtureData.TestActionTreeWithActionTemplates();
                 
                 containerDO.CurrentRouteNode = currActivity;
                 uow.ContainerRepository.Add(containerDO);
@@ -216,7 +216,7 @@ namespace DockyardTest.Services
         {
             var curCratesDTO = FixtureData.TestCrateDTO1();
             
-            var tmp = new ActivityDO();
+            var tmp = new ActionDO();
 
             using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(tmp))
             {

@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
 using Hub.Exceptions;
-using Hub.Infrastructure;
 using HubWeb.Controllers.Helpers;
 using Microsoft.AspNet.Identity;
 using StructureMap;
@@ -22,8 +20,6 @@ using Newtonsoft.Json;
 using Hub.Managers;
 using Data.Crates;
 using Utilities.Interfaces;
-using HubWeb.Infrastructure;
-using Data.Interfaces.Manifests;
 
 namespace HubWeb.Controllers
 {
@@ -34,7 +30,7 @@ namespace HubWeb.Controllers
 	    private const string PUSHER_EVENT_GENERIC_SUCCESS = "fr8pusher_generic_success";
 	    private const string PUSHER_EVENT_GENERIC_FAILURE = "fr8pusher_generic_failure";
 
-        private readonly Hub.Interfaces.IPlan _plan;
+        private readonly IRoute _route;
         private readonly IFindObjectsRoute _findObjectsRoute;
         private readonly ISecurityServices _security;
         private readonly ICrateManager _crate;
@@ -42,67 +38,11 @@ namespace HubWeb.Controllers
         
         public RoutesController()
         {
-			_plan = ObjectFactory.GetInstance<IPlan>();
+			_route = ObjectFactory.GetInstance<IRoute>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
             _findObjectsRoute = ObjectFactory.GetInstance<IFindObjectsRoute>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
 	        _pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
-        }
-        /*
-        //[Route("~/routes")]
-        [Fr8ApiAuthorize]
-        [Fr8HubWebHMACAuthenticate]
-        public IHttpActionResult Post(RouteEmptyDTO routeDto, bool updateRegistrations = false)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                if (string.IsNullOrEmpty(routeDto.Name))
-                {
-                    ModelState.AddModelError("Name", "Name cannot be null");
-                }
-
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest("Some of the request data is invalid");
-                }
-
-                var curPlanDO = Mapper.Map<RouteEmptyDTO, RouteDO>(routeDto, opts => opts.Items.Add("ptid", routeDto.Id));
-                curPlanDO.Fr8Account = _security.GetCurrentAccount(uow);
-
-                //this will return 0 on create operation because of not saved changes
-                _plan.CreateOrUpdate(uow, curPlanDO, updateRegistrations);
-                uow.SaveChanges();
-                routeDto.Id = curPlanDO.Id;
-                //what a mess lets try this
-                /*curPlanDO.StartingSubroute.Route = curPlanDO;
-                uow.SaveChanges();
-                processTemplateDto.Id = curPlanDO.Id;
-                return Ok(routeDto);
-            }
-        }
-        */
-        [Fr8HubWebHMACAuthenticate]
-        [ResponseType(typeof(RouteFullDTO))]
-        public IHttpActionResult Post(RouteEmptyDTO routeDto, bool updateRegistrations = false)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                if (string.IsNullOrEmpty(routeDto.Name))
-                {
-                    ModelState.AddModelError("Name", "Name cannot be null");
-                }
-
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest("Some of the request data is invalid");
-                }
-                var curPlanDO = Mapper.Map<RouteEmptyDTO, PlanDO>(routeDto, opts => opts.Items.Add("ptid", routeDto.Id));
-                curPlanDO.Fr8Account = _security.GetCurrentAccount(uow);
-                _plan.CreateOrUpdate(uow, curPlanDO, updateRegistrations);
-                uow.SaveChanges();
-                var result = RouteMappingHelper.MapRouteToDto(uow, curPlanDO);
-                return Ok(result);
-            }
         }
 
         [Fr8ApiAuthorize]
@@ -114,8 +54,8 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var plan = uow.PlanRepository.GetByKey(id);
-                var result = RouteMappingHelper.MapRouteToDto(uow, plan);
+                var route = uow.RouteRepository.GetByKey(id);
+                var result = RouteMappingHelper.MapRouteToDto(uow, route);
 
                 return Ok(result);
             };
@@ -129,9 +69,9 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var activity = uow.ActivityRepository.GetByKey(id);
-                var plan = _plan.GetPlan(activity);
-                var result = RouteMappingHelper.MapRouteToDto(uow, plan);
+                var action = uow.ActionRepository.GetByKey(id);
+                var route = _route.GetRoute(action);
+                var result = RouteMappingHelper.MapRouteToDto(uow, route);
 
                 return Ok(result);
             };
@@ -144,7 +84,7 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curPlans = _plan.GetForUser(
+                var curRoutes = _route.GetForUser(
                     uow,
                     _security.GetCurrentAccount(uow),
                     _security.IsCurrentUserHasRole(Roles.Admin),
@@ -152,9 +92,9 @@ namespace HubWeb.Controllers
                     status
                 );
 
-                if (curPlans.Any())
+                if (curRoutes.Any())
                 {
-                    var queryableRepoOrdered = curPlans.OrderByDescending(x => x.LastUpdated);
+                    var queryableRepoOrdered = curRoutes.OrderByDescending(x => x.LastUpdated);
                     return Ok(queryableRepoOrdered.Select(Mapper.Map<RouteEmptyDTO>).ToArray());
                 }
             }
@@ -163,38 +103,22 @@ namespace HubWeb.Controllers
        }
 
         [Fr8ApiAuthorize]
-        [Fr8HubWebHMACAuthenticate]
-        [HttpGet]
-        [ResponseType(typeof(IEnumerable<RouteFullDTO>))]
-        public IHttpActionResult GetByName(string name)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curPlans = _plan.GetByName(uow, _security.GetCurrentAccount(uow), name);
-                var fullRoutes = curPlans.Select(curPlan => RouteMappingHelper.MapRouteToDto(uow, curPlan)).ToList();
-                return Ok(fullRoutes);
-                
-            }
-            
-        }
-
-        [Fr8ApiAuthorize]
         //[Route("copy")]
         [HttpPost]
         public IHttpActionResult Copy(Guid id, string name)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curPlanDO = uow.PlanRepository.GetByKey(id);
-                if (curPlanDO == null)
+                var curRouteDO = uow.RouteRepository.GetByKey(id);
+                if (curRouteDO == null)
                 {
-                    throw new ApplicationException("Unable to find plan with specified id.");
+                    throw new ApplicationException("Unable to find route with specified id.");
                 }
 
-                var plan = _plan.Copy(uow, curPlanDO, name);
+                var route = _route.Copy(uow, curRouteDO, name);
                 uow.SaveChanges();
 
-                return Ok(new { id = plan.Id });
+                return Ok(new { id = route.Id });
             }
         }
         
@@ -204,24 +128,24 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curPlans = _plan.GetForUser(
+                var curRoutes = _route.GetForUser(
                     uow,
                     _security.GetCurrentAccount(uow),
                     _security.IsCurrentUserHasRole(Roles.Admin),
                     id
                 );
 
-            if (curPlans.Any())
+            if (curRoutes.Any())
             {
-                // Return first record from curPlans, in case id parameter was provided.
+                // Return first record from curRoutes, in case id parameter was provided.
                 // User intentionally wants to receive a single JSON object in response.
                 if (id.HasValue)
                 {
-                    return Ok(Mapper.Map<RouteEmptyDTO>(curPlans.First()));
+                    return Ok(Mapper.Map<RouteEmptyDTO>(curRoutes.First()));
                 }
 
                 // Return JSON array of objects, in case no id parameter was provided.
-                return Ok(curPlans.Select(Mapper.Map<RouteEmptyDTO>).ToArray());
+                return Ok(curRoutes.Select(Mapper.Map<RouteEmptyDTO>).ToArray());
             }
             }
 
@@ -229,10 +153,42 @@ namespace HubWeb.Controllers
             return Ok();
         }
 
+        //[Route("~/routes")]
+        [Fr8ApiAuthorize]
+        public IHttpActionResult Post(RouteEmptyDTO routeDto, bool updateRegistrations = false)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                if (string.IsNullOrEmpty(routeDto.Name))
+                {
+                    ModelState.AddModelError("Name", "Name cannot be null");
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Some of the request data is invalid");
+                }
+
+                var curRouteDO = Mapper.Map<RouteEmptyDTO, RouteDO>(routeDto, opts => opts.Items.Add("ptid", routeDto.Id));
+                curRouteDO.Fr8Account = _security.GetCurrentAccount(uow);
+
+                //this will return 0 on create operation because of not saved changes
+                _route.CreateOrUpdate(uow, curRouteDO, updateRegistrations);
+                uow.SaveChanges();
+                routeDto.Id = curRouteDO.Id;
+                //what a mess lets try this
+                /*curRouteDO.StartingSubroute.Route = curRouteDO;
+                uow.SaveChanges();
+                processTemplateDto.Id = curRouteDO.Id;*/
+                return Ok(routeDto);
+            }
+        }
+
+        
         [HttpPost]
         [ActionName("action")]
         [Fr8ApiAuthorize]
-        public IHttpActionResult PutAction(ActivityDTO activityDto)
+        public IHttpActionResult PutAction(ActionDTO actionDto)
         {
             //A stub until the functionaltiy is ready
             return Ok();
@@ -247,7 +203,7 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                _plan.Delete(uow, id);
+                _route.Delete(uow, id);
 
                 uow.SaveChanges();
                 return Ok(id);
@@ -263,41 +219,21 @@ namespace HubWeb.Controllers
         }
 
         [HttpPost]
-        [Fr8ApiAuthorize("Admin","Customer", "Terminal")]
-        [Fr8HubWebHMACAuthenticate]
-        public async Task<IHttpActionResult> Activate(Guid planId, bool routeBuilderActivate = false)
+        //[Route("activate")]
+        [Fr8ApiAuthorize]
+        public async Task<IHttpActionResult> Activate(RouteDO curRoute)
         {
-            string pusherChannel = String.Format("fr8pusher_{0}", User.Identity.Name);
-
-            try
-            {
-                var activateDTO = await _plan.Activate(planId, routeBuilderActivate);
-
-                //check if the response contains any error message and show it to the user 
-                if(activateDTO != null && activateDTO.ErrorMessage != string.Empty)
-                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, activateDTO.ErrorMessage);
-
-                return Ok(activateDTO);
-            }
-            catch (ApplicationException ex)
-            {
-                _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, ex.Message);
-                return BadRequest();
-            }
-            catch (Exception)
-        {
-                _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, "There is a problem with activating this plan. Please try again later.");
-                return BadRequest();
-            }
+            string actionDTO = await _route.Activate(curRoute);
+            return Ok(actionDTO);
         }
 
         [HttpPost]
         //[Route("deactivate")]
         [Fr8ApiAuthorize]
-        public async Task<IHttpActionResult> Deactivate(PlanDO curRoute)
+        public async Task<IHttpActionResult> Deactivate(RouteDO curRoute)
         {
-            string activityDTO = await _plan.Deactivate(curRoute.Id);
-            return Ok(activityDTO);
+            string actionDTO = await _route.Deactivate(curRoute);
+            return Ok(actionDTO);
         }
 
         [HttpPost]
@@ -308,35 +244,19 @@ namespace HubWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var account = uow.UserRepository.GetByKey(User.Identity.GetUserId());
-                var plan = _findObjectsRoute.CreatePlan(uow, account);
+                var route = _findObjectsRoute.CreateRoute(uow, account);
 
                 uow.SaveChanges();
 
-                return Ok(new { id = plan.Id });
+                return Ok(new { id = route.Id });
             }
         }
 
-        [Fr8ApiAuthorize("Admin", "Customer")]
+        [Fr8ApiAuthorize]
         //[Route("run")]
         [HttpPost]
-        public async Task<IHttpActionResult> Run(Guid planId, [FromBody]PayloadVM model)
+        public async Task<IHttpActionResult> Run(Guid routeId, [FromBody]PayloadVM model)
         {
-            //ACTIVATE - activate route if its inactive
-            bool inActive = false;
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var routeDO = uow.PlanRepository.GetByKey(planId);
-
-                if (routeDO.RouteState == RouteState.Inactive)
-                    inActive = true;
-            }
-
-            if (inActive)
-            {
-                await _plan.Activate(planId, false);
-            }
-
-            //RUN
 			CrateDTO curCrateDto;
             Crate curCrate = null;
 
@@ -358,27 +278,18 @@ namespace HubWeb.Controllers
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var planDO = uow.PlanRepository.GetByKey(planId);
+                var routeDO = uow.RouteRepository.GetByKey(routeId);
 
                 try
                 {
-                    if (planDO != null)
+                    if (routeDO != null)
                     {
                         _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS,
-                            string.Format("Launching a new Container for Plan \"{0}\"", planDO.Name));
+                            string.Format("Launching a new Container for Route \"{0}\"", routeDO.Name));
 
-                        var containerDO = await _plan.Run(planDO, curCrate);
+                        var containerDO = await _route.Run(routeDO, curCrate);
 
-                        var response = _crate.GetContentType<OperationalStateCM>(containerDO.CrateStorage);
-                        
-                        string responseMsg = "";
-
-                        if (response != null && (response.ResponseMessageDTO != null && !String.IsNullOrEmpty(response.ResponseMessageDTO.Message)))
-                        {
-                            responseMsg = "\n" + response.ResponseMessageDTO.Message;
-                        }
-
-                        string message = String.Format("Complete processing for Plan \"{0}\".{1}", planDO.Name, responseMsg);
+                        string message = String.Format("Complete processing for Route \"{0}\"", routeDO.Name);
 
                         _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, message);
 
@@ -389,16 +300,18 @@ namespace HubWeb.Controllers
                 }
                 catch (ErrorResponseException exception)
                 {
-                    string message = String.Format("Plan \"{0}\" failed. {1}", planDO.Name, exception.Message);
+                    string message = String.Format("Route \"{0}\" failed. {1}", routeDO.Name, exception.Message);
 
                     _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, message);
                 }
                 catch(Exception)
                 {
-                    string message = String.Format("Plan \"{0}\" failed", planDO.Name);
+                    string message = String.Format("Route \"{0}\" failed", routeDO.Name);
 
                     _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, message);
                 }
+
+
 
                 return Ok();
             }

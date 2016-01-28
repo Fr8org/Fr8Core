@@ -407,12 +407,12 @@ namespace Data.Infrastructure
             }
         }
 
-	  private ActivityRepository _actionRepository;
-	  public ActivityRepository ActivityRepository
+	  private ActionRepository _actionRepository;
+	  public ActionRepository ActionRepository
         {
             get
             {
-                return _actionRepository ?? (_actionRepository = new ActivityRepository(this));
+                return _actionRepository ?? (_actionRepository = new ActionRepository(this));
             }
         }
 
@@ -433,13 +433,13 @@ namespace Data.Infrastructure
 			  return _routeNodeRepository ?? (_routeNodeRepository = new RouteNodeRepository(this));
 		  }
 	  }
-      private IPlanRepository _routeRepository;
+      private IRouteRepository _routeRepository;
 
-        public IPlanRepository PlanRepository
+        public IRouteRepository RouteRepository
         {
             get
             {
-                return _routeRepository ?? (_routeRepository = new PlanRepository(this));
+                return _routeRepository ?? (_routeRepository = new RouteRepository(this));
             }
         }
 

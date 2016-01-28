@@ -1,5 +1,4 @@
 ﻿
-﻿using System;
 ﻿using System.Collections.Generic;
 using Data.Entities;
 ﻿using Data.Interfaces.DataTransferObjects;
@@ -25,13 +24,13 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static PlanDO Route_TerminalIntegration()
+        public static RouteDO Route_TerminalIntegration()
         {
-            return new PlanDO()
+            return new RouteDO()
             {
                 Id = GetTestGuidById(1000),
-                Name = "Test Plan Name",
-                Description = "Test Plan Description",
+                Name = "Test Route Name",
+                Description = "Test Route Description",
                 RouteState = RouteState.Active,
             };
         }
@@ -63,8 +62,7 @@ namespace UtilitiesTesting.Fixtures
                 TerminalStatus = TerminalStatus.Active,
                 Endpoint = TestTerminal_DocuSign_EndPoint,
                 Version = "1",
-                AuthenticationType = AuthenticationType.Internal,
-                Secret = Guid.NewGuid().ToString()
+                AuthenticationType = AuthenticationType.Internal
             };
         }
 
@@ -88,8 +86,7 @@ namespace UtilitiesTesting.Fixtures
                 Endpoint = TestTerminal_Core_EndPoint,
                 TerminalStatus = TerminalStatus.Active,
                 Version = "1",
-                AuthenticationType = AuthenticationType.None,
-                Secret = Guid.NewGuid().ToString()
+                AuthenticationType = AuthenticationType.None
             };
         }
 
@@ -101,8 +98,7 @@ namespace UtilitiesTesting.Fixtures
                 Endpoint = TestTerminal_AzureSqlServer_EndPoint,
                 TerminalStatus = TerminalStatus.Active,
                 Version = "1",
-                AuthenticationType = AuthenticationType.None,
-                Secret = Guid.NewGuid().ToString()
+                AuthenticationType = AuthenticationType.None
             };
         }
 
@@ -121,8 +117,7 @@ namespace UtilitiesTesting.Fixtures
                 Name = "terminalExcel",
                 TerminalStatus = TerminalStatus.Active,
                 Version = "1",
-                AuthenticationType = AuthenticationType.None,
-                Secret = Guid.NewGuid().ToString()
+                AuthenticationType = AuthenticationType.None
             };
         }
 
@@ -164,11 +159,11 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static ActivityTemplateDO TestActivityTemplateDO_TestIncomingData()
+        public static ActivityTemplateDO TestActivityTemplateDO_FilterUsingRunTimeData()
         {
             return new ActivityTemplateDO()
             {
-                Name = "TestIncomingData",
+                Name = "FilterUsingRunTimeData",
                 Version = "1",
                 Terminal = TestTerminal_Core()
             };
@@ -204,26 +199,12 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static ActivityDO TestAction_Blank()
+        public static ActionDO TestAction_Blank()
         {
-            return new ActivityDO()
+            return new ActionDO()
             {
                 Name = "New Action #1",
                 CrateStorage = ""
-            };
-        }
-
-        public static ActivityTemplateDO TestActivityTemplateDO_MonitorFr8Events()
-        {
-            return new ActivityTemplateDO()
-            {
-                Name = "Monitor_Fr8_Events",
-                Label = "Monitor Fr8 Events",
-                Version = "1",
-                Category = ActivityCategory.Monitors,
-                NeedsAuthentication = false,
-                Terminal = TestTerminal_Core(),
-                MinPaneWidth = 380
             };
         }
     }

@@ -79,7 +79,7 @@ namespace terminalDocuSign.Tests.Actions
         {
             //Arrange
             PayloadDTO curPayloadDTO = FixtureData.PayloadDTO2();
-            AuthorizationTokenDO token = FixtureData.TestActivityAuthenticate2();
+            AuthorizationTokenDO token = FixtureData.TestActionAuthenticate2();
             object[] parameters = new object[] { curPayloadDTO, token };
 
             //Act
@@ -94,10 +94,10 @@ namespace terminalDocuSign.Tests.Actions
         public void GetFields_ActionDTOAsParameter_ReturnsFieldsInformation()
         {
             //Arrange
-            ActivityDTO curActionDTO = FixtureData.CreateStandardDesignTimeFields();
+            ActionDTO curActionDTO = FixtureData.CreateStandardDesignTimeFields();
             curActionDTO.AuthToken = new AuthorizationTokenDTO() { Token = JsonConvert.SerializeObject(TerminalFixtureData.TestDocuSignAuthDTO1()) };
-            var curActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
-            object[] parameters = new object[] { curActivityDO };
+            var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+            object[] parameters = new object[] { curActionDO };
 
             //Act
             var result = (List<FieldDTO>)ClassMethod.Invoke(typeof(Get_DocuSign_Envelope_v1), "GetFields", parameters);
@@ -114,13 +114,13 @@ namespace terminalDocuSign.Tests.Actions
         public void CreateActionPayload_ReturnsFieldsValue()
         {
             //Arrange
-            ActivityDTO curActionDTO = FixtureData.CreateStandardDesignTimeFields();
+            ActionDTO curActionDTO = FixtureData.CreateStandardDesignTimeFields();
             curActionDTO.AuthToken = new AuthorizationTokenDTO() { Token = JsonConvert.SerializeObject(TerminalFixtureData.TestDocuSignAuthDTO1()) };
-            var curActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
+            var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
             var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
             //Act
             var _docusign_manager = new DocuSignManager();
-            var result = _docusign_manager.CreateActionPayload(curActivityDO, curAuthTokenDO, "6ef29903-e405-4a24-8b92-a3a3ae8d1824");
+            var result = _docusign_manager.CreateActionPayload(curActionDO, curAuthTokenDO, "6ef29903-e405-4a24-8b92-a3a3ae8d1824");
 
             //Assert
             Assert.AreEqual(2, result.AllValues().Count());
@@ -142,11 +142,11 @@ namespace terminalDocuSign.Tests.Actions
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var activityDO = uow.ActivityRepository.GetByKey(activityId);
+                var actionDO = uow.ActionRepository.GetByKey(activityId);
                 var upstreamActions = _activity
-                    .GetUpstreamActivities(uow, activityDO)
-                    .OfType<ActivityDO>()
-                    .Select(x => Mapper.Map<ActivityDTO>(x))
+                    .GetUpstreamActivities(uow, actionDO)
+                    .OfType<ActionDO>()
+                    .Select(x => Mapper.Map<ActionDTO>(x))
                     .ToList();
 
                 var curCrates = new List<Crate>();

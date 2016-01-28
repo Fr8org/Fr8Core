@@ -61,14 +61,13 @@ namespace DockyardTest.Controllers
             var ptc = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
             var response = ptc.Post(routeDto);
 
-            
             //Assert
-            var okResult = response as OkNegotiatedContentResult<RouteFullDTO>;
+            var okResult = response as OkNegotiatedContentResult<RouteEmptyDTO>;
             Assert.NotNull(okResult);
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 Assert.AreEqual(0, ptc.ModelState.Count()); //must be no errors
-                var ptdo = uow.PlanRepository.
+                var ptdo = uow.RouteRepository.
                     GetQuery().SingleOrDefault(pt => pt.Fr8Account.Id == _testUserAccount.Id && pt.Name == routeDto.Name);
                 Assert.IsNotNull(ptdo);
                 Assert.AreEqual(routeDto.Description, ptdo.Description);
@@ -100,7 +99,7 @@ namespace DockyardTest.Controllers
 
             //Assert
             var postResult = routeController.Get(FixtureData.GetTestGuidById(55));
-            Assert.IsNull(postResult as OkNegotiatedContentResult<PlanDO>);
+            Assert.IsNull(postResult as OkNegotiatedContentResult<RouteDO>);
         }
 
         [Test]
@@ -143,15 +142,15 @@ namespace DockyardTest.Controllers
             //Arrange
             var routeController = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
             var routeDto = FixtureData.CreateTestRouteDTO();
-            var resultRoute = (routeController.Post(routeDto) as OkNegotiatedContentResult<RouteFullDTO>).Content;
+            routeController.Post(routeDto);
 
             //Act
-            var actionResult = routeController.Get(resultRoute.Id) as OkNegotiatedContentResult<RouteEmptyDTO>;
+            var actionResult = routeController.Get(routeDto.Id) as OkNegotiatedContentResult<RouteEmptyDTO>;
 
             //Assert
             Assert.NotNull(actionResult);
             Assert.NotNull(actionResult.Content);
-            Assert.AreEqual(resultRoute.Id, actionResult.Content.Id);
+            Assert.AreEqual(routeDto.Id, actionResult.Content.Id);
 
         }
 
@@ -208,12 +207,12 @@ namespace DockyardTest.Controllers
             var tPT = FixtureData.TestRouteWithStartingSubroutes_ID0();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.PlanRepository.Add(tPT);
+                uow.RouteRepository.Add(tPT);
                 uow.SaveChanges();
             }
 
             //Save First
-            var postResult = routeController.Post(routeDto) as OkNegotiatedContentResult<RouteFullDTO>;
+            var postResult = routeController.Post(routeDto) as OkNegotiatedContentResult<RouteEmptyDTO>;
             Assert.NotNull(postResult);
 
             //Then Get
@@ -223,7 +222,7 @@ namespace DockyardTest.Controllers
             //Then Edit
             var postEditNameValue = "EditedName";
             getResult.Content.Name = postEditNameValue;
-            var editResult = routeController.Post(getResult.Content) as OkNegotiatedContentResult<RouteFullDTO>;
+            var editResult = routeController.Post(getResult.Content) as OkNegotiatedContentResult<RouteEmptyDTO>;
             Assert.NotNull(editResult);
 
             //Then Get
@@ -263,7 +262,7 @@ namespace DockyardTest.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 Assert.AreEqual(0, ptc.ModelState.Count()); //must be no errors
-                var ptdo = uow.PlanRepository.
+                var ptdo = uow.RouteRepository.
                     GetQuery().SingleOrDefault(pt => pt.Fr8Account.Id == _testUserAccount.Id && pt.Name == routeDto.Name);
                 Assert.IsNotNull(ptdo);
                 Assert.AreEqual(routeDto.Name, ptdo.Name);
@@ -274,22 +273,22 @@ namespace DockyardTest.Controllers
         public void ShouldGetFullRoute()
         {
             var curRouteController = new RoutesController();
-            var curPlanDO = FixtureData.TestRoute3();
+            var curRouteDO = FixtureData.TestRoute3();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                curPlanDO.Fr8Account = FixtureData.TestDeveloperAccount();
-                uow.PlanRepository.Add(curPlanDO);
+                curRouteDO.Fr8Account = FixtureData.TestDeveloperAccount();
+                uow.RouteRepository.Add(curRouteDO);
                 uow.SaveChanges();
             }
 
-            var curResult = curRouteController.GetFullRoute(curPlanDO.Id) as OkNegotiatedContentResult<RouteFullDTO>;
+            var curResult = curRouteController.GetFullRoute(curRouteDO.Id) as OkNegotiatedContentResult<RouteFullDTO>;
             var curRouteDTO = curResult.Content;
 
-            Assert.AreEqual(curPlanDO.Name, curRouteDTO.Name);
-            Assert.AreEqual(curPlanDO.Description, curRouteDTO.Description);
-            Assert.AreEqual(curPlanDO.Subroutes.Count(), 2);
-            Assert.AreEqual(curPlanDO.Subroutes.First().ChildNodes.Count, 1);
+            Assert.AreEqual(curRouteDO.Name, curRouteDTO.Name);
+            Assert.AreEqual(curRouteDO.Description, curRouteDTO.Description);
+            Assert.AreEqual(curRouteDO.Subroutes.Count(), 2);
+            Assert.AreEqual(curRouteDO.Subroutes.First().ChildNodes.Count, 1);
 
         }
 

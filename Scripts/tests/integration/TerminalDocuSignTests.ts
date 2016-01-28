@@ -70,10 +70,10 @@ module dockyard.tests.controller {
         beforeEach(function (done) {
             // First POST, create a dummy entry
 
-            var actions: interfaces.IActivityDTO =
+            var actions: interfaces.IActionDTO =
                 { 
                     name: "test action type",
-                    configurationControls: utils.fixtures.ActivityDTO.configurationControls,
+                    configurationControls: utils.fixtures.ActionDTO.configurationControls,
                     crateStorage: null,
                     parentRouteNodeId: '89EBF277-0CC4-4D6D-856B-52457F10C686',
                     activityTemplate: null,

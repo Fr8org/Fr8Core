@@ -32,7 +32,7 @@ namespace terminalFr8CoreTests.Integration
 
 			var requestActionDTO = CreateRequestActionFixture();
 
-			var responseActionDTO = HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, requestActionDTO).Result;
+			var responseActionDTO = HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, requestActionDTO).Result;
 
 			Assert.NotNull(responseActionDTO);
 			Assert.NotNull(responseActionDTO.CrateStorage);
@@ -61,11 +61,11 @@ namespace terminalFr8CoreTests.Integration
 
 			var requestActionDTO = CreateRequestActionFixture();
 
-			var responseActionDTO = HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, requestActionDTO).Result;
+			var responseActionDTO = HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, requestActionDTO).Result;
 
             SetDuration(responseActionDTO);
 
-			responseActionDTO = HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, responseActionDTO).Result;
+			responseActionDTO = HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, responseActionDTO).Result;
 
 			Assert.NotNull(responseActionDTO);
 			Assert.NotNull(responseActionDTO.CrateStorage);
@@ -95,15 +95,15 @@ namespace terminalFr8CoreTests.Integration
 		{
 			var configureUrl = GetTerminalConfigureUrl();
 			var requestActionDTO = CreateRequestActionFixture();
-			var responseActionDTO = HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, requestActionDTO).Result;
+			var responseActionDTO = HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, requestActionDTO).Result;
 			SetDuration(responseActionDTO);
 			var runUrl = GetTerminalRunUrl();
 		    AddOperationalStateCrate(responseActionDTO, new OperationalStateCM());
-            var runResponse = HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, responseActionDTO).Result;
+            var runResponse = HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, responseActionDTO).Result;
 			Assert.NotNull(runResponse);
 		    var crateStorage = Crate.GetStorage(runResponse);
             var operationalStateCrate = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-            Assert.AreEqual(ActivityResponse.RequestSuspend, operationalStateCrate.CurrentActivityResponse);
+            Assert.AreEqual(ActionResponse.RequestSuspend, operationalStateCrate.CurrentActionResponse);
 		}
 
         [Test]
@@ -111,20 +111,20 @@ namespace terminalFr8CoreTests.Integration
         {
             var configureUrl = GetTerminalConfigureUrl();
             var requestActionDTO = CreateRequestActionFixture();
-            var responseActionDTO = HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, requestActionDTO).Result;
+            var responseActionDTO = HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, requestActionDTO).Result;
             SetDuration(responseActionDTO);
             var runUrl = GetTerminalRunUrl();
             var operationalState = new OperationalStateCM
             {
-                CurrentActivityResponse = ActivityResponse.RequestSuspend
+                CurrentActionResponse = ActionResponse.RequestSuspend
             };
             AddOperationalStateCrate(responseActionDTO, operationalState);
 
-            var runResponse = HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, responseActionDTO).Result;
+            var runResponse = HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, responseActionDTO).Result;
             Assert.NotNull(runResponse);
             var crateStorage = Crate.GetStorage(runResponse);
             var operationalStateCrate = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-            Assert.AreEqual(ActivityResponse.Success, operationalStateCrate.CurrentActivityResponse);
+            Assert.AreEqual(ActionResponse.Success, operationalStateCrate.CurrentActionResponse);
         }
         
 		private ActivityTemplateDTO CreateActivityTemplateFixture()
@@ -139,11 +139,11 @@ namespace terminalFr8CoreTests.Integration
 			return activityTemplate;
 		}
 
-		private ActivityDTO CreateRequestActionFixture()
+		private ActionDTO CreateRequestActionFixture()
 		{
 			var activityTemplate = CreateActivityTemplateFixture();
 
-			var requestActionDTO = new ActivityDTO
+			var requestActionDTO = new ActionDTO
 			{
 				Id = Guid.NewGuid(),
 				Name = "SetDelay",
@@ -156,7 +156,7 @@ namespace terminalFr8CoreTests.Integration
 			return requestActionDTO;
 		}
 
-		private void SetDuration(ActivityDTO responseActionDTO)
+		private void SetDuration(ActionDTO responseActionDTO)
 		{
 			using (var updater = Crate.UpdateStorage(responseActionDTO))
 			{

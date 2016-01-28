@@ -18,7 +18,7 @@ using Newtonsoft.Json;
 namespace terminalYammer.Actions
 {
 
-    public class Post_To_Yammer_v1 : BaseTerminalActivity
+    public class Post_To_Yammer_v1 : BaseTerminalAction
     {
         private readonly IYammer _yammer;
 
@@ -59,19 +59,19 @@ namespace terminalYammer.Actions
             _yammer = new Yammer();
         }
 
-        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             if (NeedsAuthentication(authTokenDO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
+            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (Crate.IsStorageEmpty(curActionDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -79,15 +79,15 @@ namespace terminalYammer.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             var oauthToken = authTokenDO.Token;
             var groups = await _yammer.GetGroupsList(oauthToken);
 
             var crateAvailableGroups = CreateAvailableGroupsCrate(groups);
-            var crateAvailableFields = await CreateAvailableFieldsCrate(curActivityDO);
+            var crateAvailableFields = await CreateAvailableFieldsCrate(curActionDO);
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(PackControls(new ActionUi()));
@@ -95,14 +95,14 @@ namespace terminalYammer.Actions
                 updater.CrateStorage.Add(crateAvailableFields);
             }
 
-            return curActivityDO;
+            return curActionDO;
         }
 
-        public async Task<PayloadDTO> Run(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
 
             CheckAuthentication(authTokenDO);
-            var ui = Crate.GetStorage(activityDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
+            var ui = Crate.GetStorage(actionDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
 
             if (ui == null)
             {
@@ -110,14 +110,14 @@ namespace terminalYammer.Actions
             }
             var groupMessageField = GetGroupMessageFields(ui);
 
-            ValidateYammerAction(groupMessageField.GroupID, "No selected group found in activity.");
-            ValidateYammerAction(groupMessageField.Message, "No selected field found in activity.");
+            ValidateYammerAction(groupMessageField.GroupID, "No selected group found in action.");
+            ValidateYammerAction(groupMessageField.Message, "No selected field found in action.");
 
-            var processPayload = await GetPayload(activityDO, containerId);
+            var processPayload = await GetPayload(actionDO, containerId);
 
             var payloadMessageField = Crate.GetFieldByKey<StandardPayloadDataCM>(processPayload.CrateStorage, groupMessageField.Message);
 
-            ValidateYammerAction(payloadMessageField, "No specified field found in activity.");
+            ValidateYammerAction(payloadMessageField, "No specified field found in action.");
 
             await _yammer.PostMessageToGroup(authTokenDO.Token,
                 groupMessageField.GroupID, payloadMessageField);
@@ -147,10 +147,10 @@ namespace terminalYammer.Actions
             return groupMessage;
         }
 
-        private async Task<Crate> CreateAvailableFieldsCrate(ActivityDO activityDO)
+        private async Task<Crate> CreateAvailableFieldsCrate(ActionDO actionDO)
         {
             var curUpstreamFields =
-                (await GetCratesByDirection<StandardDesignTimeFieldsCM>(activityDO, CrateDirection.Upstream))
+                (await GetCratesByDirection<StandardDesignTimeFieldsCM>(actionDO, CrateDirection.Upstream))
 
                 .Where(x => x.Label != "Available Groups")
                 .SelectMany(x => x.Content.Fields)

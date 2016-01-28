@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Data.Interfaces.DataTransferObjects;
+﻿using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using System.Xml;
 using System.Xml.Linq;
@@ -12,6 +11,6 @@ namespace terminalSalesforce.Infrastructure
         /// <summary>
         /// Processes external event payload from the terminal
         /// </summary>
-        Task<Crate> ProcessEvent(string curExternalEventPayload);
+        Crate ProcessEvent(string curExternalEventPayload);
     }
 }

@@ -6,11 +6,11 @@ namespace terminalSlackTests.Fixtures
 {
     public class HealthMonitor_FixtureData
     {
-        public static ActivityDTO Monitor_Channel_v1_InitialConfiguration_ActionDTO()
+        public static ActionDTO Monitor_Channel_v1_InitialConfiguration_ActionDTO()
         {
             var activityTemplate = Monitor_Channel_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            return new ActionDTO()
             {
                 Id = Guid.NewGuid(),
                 Name = "Monitor_Channel",
@@ -57,11 +57,11 @@ namespace terminalSlackTests.Fixtures
            };
         }
 
-        public static ActivityDTO Publish_To_Slack_v1_InitialConfiguration_ActionDTO(bool isAuthToken = true)
+        public static ActionDTO Publish_To_Slack_v1_InitialConfiguration_ActionDTO(bool isAuthToken = true)
         {
             var activityTemplate = Monitor_Channel_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            return new ActionDTO()
             {
                 Id = Guid.NewGuid(),
                 Name = "Select Slack Channel",

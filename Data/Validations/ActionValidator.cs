@@ -4,14 +4,14 @@ using FluentValidation;
 
 namespace Data.Validations
 {
-    public class ActionValidator : AbstractValidator<ActivityDO>
+    public class ActionValidator : AbstractValidator<ActionDO>
     {
         public ActionValidator()
         {
             // TODO: remove this, DO-1397
-            // RuleFor(curActivityDO => curActivityDO.ActivityTemplate)
+            // RuleFor(curActionDO => curActionDO.ActivityTemplate)
             //     .Must(actionTemplate => string.IsNullOrEmpty(actionTemplate.AuthenticationType) || actionTemplate.AuthenticationType == "OAuth")
-            //     .When(curActivityDO => curActivityDO.ActivityTemplate != null)
+            //     .When(curActionDO => curActionDO.ActivityTemplate != null)
             //     .WithMessage("Must be a valid authentication type.");
         }
     }

@@ -7,6 +7,6 @@ namespace terminalGoogle.Infrastructure
 {
     public interface IEvent
     {
-        Task<Crate> Process(string externalEventPayload);
+        Crate Process(string externalEventPayload);
     }
 }

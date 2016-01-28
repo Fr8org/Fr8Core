@@ -53,13 +53,6 @@ namespace UtilitiesTesting.Fixtures
             emailAddressDO.Id = 6;
             return emailAddressDO;
         }
-
-        public static EmailAddressDO TestEmailAddress7()
-        {
-            var emailAddressDO = new EmailAddressDO("system1@fr8.co");
-            emailAddressDO.Id = 7;
-            return emailAddressDO;
-        }
     }
 }
 

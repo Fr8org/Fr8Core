@@ -41,8 +41,8 @@ namespace terminalFr8Core.Controllers
 
             result.Add(new ActivityTemplateDTO
             {
-                Name = "TestIncomingData",
-                Label = "Test Incoming Data",
+                Name = "FilterUsingRunTimeData",
+                Label = "Filter Using Runtime Data",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 Version = "1",
@@ -86,8 +86,8 @@ namespace terminalFr8Core.Controllers
 
             result.Add(new ActivityTemplateDTO
             {
-                Name = "SaveToFr8Warehouse",
-                Label = "Save To Fr8 Warehouse",
+                Name = "StoreMTData",
+                Label = "Store MT Data",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 WebService = webService,
@@ -138,7 +138,7 @@ namespace terminalFr8Core.Controllers
             result.Add(new ActivityTemplateDTO
             {
                 Name = "ManageRoute",
-                Label = "Manage Plan",
+                Label = "Manage Route",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 WebService = webService,
@@ -207,30 +207,7 @@ namespace terminalFr8Core.Controllers
                 Category = ActivityCategory.Processors,
                 NeedsAuthentication = false,
                 Terminal = terminal,
-                WebService = webService,
                 MinPaneWidth = 380
-            });
-
-            result.Add(new ActivityTemplateDTO
-            {
-                Name = "Monitor_Fr8_Events",
-                Label = "Monitor Fr8 Events",
-                Version = "1",
-                Category = ActivityCategory.Monitors,
-                NeedsAuthentication = false,
-                Terminal = terminal,
-                MinPaneWidth = 380
-            });
-
-            result.Add(new ActivityTemplateDTO()
-            {
-                Name = "StoreFile",
-                Label = "Store File",
-                Category = ActivityCategory.Processors,
-                Terminal = terminal,
-                WebService = webService,
-                Version = "1",
-                Type = ActivityType.Standard
             });
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()

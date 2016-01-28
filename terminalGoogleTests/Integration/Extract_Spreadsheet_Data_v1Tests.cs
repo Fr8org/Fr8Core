@@ -41,7 +41,7 @@ namespace terminalGoogleTests.Integration
             var requestActionDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
             requestActionDTO.AuthToken = HealthMonitor_FixtureData.Google_AuthToken1();
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<ActionDTO, ActionDTO>(
                     configureUrl, requestActionDTO
                 );
 
@@ -99,7 +99,7 @@ namespace terminalGoogleTests.Integration
 
             //As the ActionDTO is preconfigured configure url actually calls the follow up configuration
             var responseActionDTO =
-               await HttpPostAsync<ActivityDTO, ActivityDTO>(
+               await HttpPostAsync<ActionDTO, ActionDTO>(
                    configureUrl,
                    requestActionDTO
                );
@@ -114,10 +114,8 @@ namespace terminalGoogleTests.Integration
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardTableDataCM>().Count());
             Assert.IsFalse(crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.FirstRowHeaders);
-            
-            // Due to performance issue, remove functionalilty to load table contents
-            //  Assert.AreEqual("(2,1)", crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.Table[0].Row[0].Cell.Value);
-            //Assert.AreEqual("(2,2)", crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.Table[0].Row[1].Cell.Value);
+            Assert.AreEqual("(2,1)", crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.Table[0].Row[0].Cell.Value);
+            Assert.AreEqual("(2,2)", crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.Table[0].Row[1].Cell.Value);
         }
         /// <summary>
         /// Spreadsheet with the following structure is passed: {{(1,1)},{(2,2)}}
@@ -136,7 +134,7 @@ namespace terminalGoogleTests.Integration
 
             //As the ActionDTO is preconfigured configure url actually calls the follow up configuration
             var responseActionDTO =
-               await HttpPostAsync<ActivityDTO, ActivityDTO>(
+               await HttpPostAsync<ActionDTO, ActionDTO>(
                    configureUrl,
                    requestActionDTO
                );
@@ -151,9 +149,7 @@ namespace terminalGoogleTests.Integration
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardTableDataCM>().Count());
             Assert.IsFalse(crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.FirstRowHeaders);
-
-            // Due to performance issue, remove functionalilty to load table contents
-           // Assert.AreEqual("(2,1)", crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.Table[0].Row[0].Cell.Value);
+            Assert.AreEqual("(2,1)", crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.Table[0].Row[0].Cell.Value);
         }
         /// <summary>
         /// Spreadsheet with the following structure is passed: {{(1,1),(1,2)}}
@@ -172,7 +168,7 @@ namespace terminalGoogleTests.Integration
 
             //As the ActionDTO is preconfigured configure url actually calls the follow up configuration
             var responseActionDTO =
-               await HttpPostAsync<ActivityDTO, ActivityDTO>(
+               await HttpPostAsync<ActionDTO, ActionDTO>(
                    configureUrl,
                    requestActionDTO
                );
@@ -187,7 +183,7 @@ namespace terminalGoogleTests.Integration
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardTableDataCM>().Count());
             Assert.IsFalse(crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.FirstRowHeaders);
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.Table.Count);
+            Assert.AreEqual(0, crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.Table.Count);
         }
         /////////////
         /// Followup Configuration End
@@ -235,12 +231,12 @@ namespace terminalGoogleTests.Integration
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
 
             //prepare the action DTO with valid target URL
-            var activityDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
-            activityDTO.AuthToken = null;
+            var actionDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
+            actionDTO.AuthToken = null;
 
-            AddOperationalStateCrate(activityDTO, new OperationalStateCM());
+            AddOperationalStateCrate(actionDTO, new OperationalStateCM());
             //Act
-            var payload = await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, activityDTO);
+            var payload = await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
             CheckIfPayloadHasNeedsAuthenticationError(payload);
         }
         /// <summary>
@@ -258,10 +254,10 @@ namespace terminalGoogleTests.Integration
             var runUrl = GetTerminalRunUrl();
 
             //prepare the action DTO
-            var activityDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
-            AddOperationalStateCrate(activityDTO, new OperationalStateCM());
+            var actionDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
+            AddOperationalStateCrate(actionDTO, new OperationalStateCM());
             //Act
-            await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, activityDTO);
+            await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
         }
         /// <summary>
         /// One Upstream Crate throws NonImplementedException.
@@ -279,11 +275,11 @@ namespace terminalGoogleTests.Integration
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
 
             //prepare the action DTO with valid target URL
-            var activityDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
-            AddUpstreamCrate(activityDTO, fixture.GetUpstreamCrate(), "Upsteam Crate");
-            AddOperationalStateCrate(activityDTO, new OperationalStateCM());
+            var actionDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
+            AddUpstreamCrate(actionDTO, fixture.GetUpstreamCrate(), "Upsteam Crate");
+            AddOperationalStateCrate(actionDTO, new OperationalStateCM());
             //Act
-            await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, activityDTO);
+            await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
         }
         /// <summary>
         /// Two Upstream Crate throw exception.
@@ -301,12 +297,12 @@ namespace terminalGoogleTests.Integration
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
 
             //prepare the action DTO with valid target URL
-            var activityDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
-            AddUpstreamCrate(activityDTO, fixture.GetUpstreamCrate(), "Upsteam Crate");
-            AddUpstreamCrate(activityDTO, fixture.GetUpstreamCrate(), "Upsteam Crate");
-            AddOperationalStateCrate(activityDTO, new OperationalStateCM());
+            var actionDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
+            AddUpstreamCrate(actionDTO, fixture.GetUpstreamCrate(), "Upsteam Crate");
+            AddUpstreamCrate(actionDTO, fixture.GetUpstreamCrate(), "Upsteam Crate");
+            AddOperationalStateCrate(actionDTO, new OperationalStateCM());
             //Act
-            await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, activityDTO);
+            await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
         }
         /// <summary>
         /// Test run-time without Auth-Token.
@@ -319,7 +315,7 @@ namespace terminalGoogleTests.Integration
             var requestActionDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
             requestActionDTO.AuthToken = null;
             AddOperationalStateCrate(requestActionDTO, new OperationalStateCM());
-            var payload = await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, requestActionDTO);
+            var payload = await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, requestActionDTO);
             CheckIfPayloadHasNeedsAuthenticationError(payload);
         }
         /////////////

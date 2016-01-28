@@ -23,11 +23,11 @@ namespace terminalSendGridTests.Fixtures
             };
         }
 
-        public static ActivityDTO SendEmailViaSendGrid_v1_InitialConfiguration_ActionDTO()
+        public static ActionDTO SendEmailViaSendGrid_v1_InitialConfiguration_ActionDTO()
         {
             var activityTemplate = SendEmailViaSendGrid_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            return new ActionDTO()
             {
                 Id = Guid.NewGuid(),
                 Name = "SendEmailViaSendGrid",

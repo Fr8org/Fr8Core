@@ -44,11 +44,11 @@ namespace terminalAzure.Tests.Controllers
             string curTerminal = "terminalAzure";
             string curActionPath = "Configure";
 
-            ActivityDTO curActionDTO = FixtureData.TestActionDTO1();
+            ActionDTO curActionDTO = FixtureData.TestActionDTO1();
 
             object response = await _baseTerminalController.HandleFr8Request(curTerminal, curActionPath, curActionDTO);
-            ActivityDTO activityDTO = (ActivityDTO) response;
-            Assert.AreEqual("Standard UI Controls", _crateManager.FromDto(activityDTO.CrateStorage).First().ManifestType.Type);
+            ActionDTO actionDTO = (ActionDTO) response;
+            Assert.AreEqual("Standard UI Controls", _crateManager.FromDto(actionDTO.CrateStorage).First().ManifestType.Type);
         }
     }
 }

@@ -61,11 +61,11 @@ namespace terminalSalesforceTests.Fixtures
             };
         }
 
-        public static ActivityDTO Create_Account_v1_InitialConfiguration_ActionDTO()
+        public static ActionDTO Create_Account_v1_InitialConfiguration_ActionDTO()
         {
             var activityTemplate = Create_Account_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            return new ActionDTO()
             {
                 Id = Guid.NewGuid(),
                 Name = "Create_Account",
@@ -76,11 +76,11 @@ namespace terminalSalesforceTests.Fixtures
             };
         }
 
-        public static ActivityDTO Create_Contact_v1_InitialConfiguration_ActionDTO()
+        public static ActionDTO Create_Contact_v1_InitialConfiguration_ActionDTO()
         {
             var activityTemplate = Create_Contact_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            return new ActionDTO()
             {
                 Id = Guid.NewGuid(),
                 Name = "Create_Contact",
@@ -91,11 +91,11 @@ namespace terminalSalesforceTests.Fixtures
             };
         }
 
-        public static ActivityDTO Create_Lead_v1_InitialConfiguration_ActionDTO()
+        public static ActionDTO Create_Lead_v1_InitialConfiguration_ActionDTO()
         {
             var activityTemplate = Create_Lead_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            return new ActionDTO()
             {
                 Id = Guid.NewGuid(),
                 Name = "Create_Lead",
@@ -106,11 +106,11 @@ namespace terminalSalesforceTests.Fixtures
             };
         }
 
-        public static ActivityDTO Get_Data_v1_InitialConfiguration_ActionDTO()
+        public static ActionDTO Get_Data_v1_InitialConfiguration_ActionDTO()
         {
             var activityTemplate = Get_Data_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            return new ActionDTO()
             {
                 Id = Guid.NewGuid(),
                 Name = "Get_Data",

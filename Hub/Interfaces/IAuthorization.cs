@@ -8,7 +8,7 @@ namespace Hub.Interfaces
 {
     public interface IAuthorization
     {
-        void PrepareAuthToken(ActivityDTO activityDTO);
+        void PrepareAuthToken(ActionDTO actionDTO);
 
         Task<AuthenticateResponse> AuthenticateInternal(Fr8AccountDO account, TerminalDO terminal,
             string domain, string username, string password, bool isDemoAccount = false);
@@ -17,13 +17,13 @@ namespace Hub.Interfaces
 
         Task<ExternalAuthUrlDTO> GetOAuthInitiationURL(Fr8AccountDO user, TerminalDO terminal);
 
-        void AddAuthenticationCrate(ActivityDTO activityDTO, int authType);
+        void AddAuthenticationCrate(ActionDTO actionDTO, int authType);
 
-        void RemoveAuthenticationCrate(ActivityDTO activityDTO);
+        void RemoveAuthenticationCrate(ActionDTO actionDTO);
 
-        bool ValidateAuthenticationNeeded(string userId, ActivityDTO curActionDTO);
+        bool ValidateAuthenticationNeeded(string userId, ActionDTO curActionDTO);
 
-        void InvalidateToken(string userId, ActivityDTO curActivityDto);
+        void InvalidateToken(string userId, ActionDTO curActionDto);
 
         IEnumerable<AuthorizationTokenDO> GetAllTokens(string accountId);
 

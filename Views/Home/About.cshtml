@@ -61,11 +61,7 @@
                                 <li data-section="3"><a href="/" title="FAQ">FAQ</a></li>
                                 <li data-section="4" class="contact-lnk"><a href="#contacts" title="Contact">Contact</a></li>
                                 <li>@Html.ActionLink("My Account", "MyAccount", "User") </li>
-                                @if (!User.IsInRole("Guest"))
-                                {
-                                    <li>@Html.ActionLink("Sign Out", "LogOff", "DockyardAccount", routeValues: null, htmlAttributes: new { id = "logoffLink" })</li>
-
-                                }
+                                <li>@Html.ActionLink("Sign Out", "LogOff", "DockyardAccount", routeValues: null, htmlAttributes: new { id = "logoffLink" })</li>
                             </ul>
                         }
                     }

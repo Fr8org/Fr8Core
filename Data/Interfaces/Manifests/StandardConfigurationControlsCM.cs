@@ -64,7 +64,7 @@ namespace Data.Interfaces.Manifests
     /// Name of the property must be the same as the name of the corresponding control.
     /// If you use this approach to define action's UI then it will be possible to access individual state of controls in the confinguration controls crate the following way:
     /// 
-    ///  var ui = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
+    ///  var ui = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
     ///  var controls = new ActionUi();
     ///  controls.ClonePropertiesFrom(ui);
     ///  var mySearchTextBoxValue = ui.SearchText.Value;
@@ -113,11 +113,6 @@ namespace Data.Interfaces.Manifests
         public ControlDefinitionDTO FindByName(string name)
         {
             return Controls.SingleOrDefault(x => x.Name == name);
-        }
-
-        public T FindByName<T>(string name) where T : ControlDefinitionDTO
-        {
-            return (T) Controls.SingleOrDefault(x => x.Name == name);
         }
 
         // Find control of type T recusively.

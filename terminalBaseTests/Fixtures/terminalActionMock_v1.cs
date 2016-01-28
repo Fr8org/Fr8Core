@@ -13,17 +13,17 @@ using Data.Control;
 using Data.Interfaces.Manifests;
 namespace terminalBaseTests.Actions
 {
-    public class terminalActionMock_v1 : BaseTerminalActivity
+    public class terminalActionMock_v1 : BaseTerminalAction
     {
-        public override Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        public override Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            AddCrateMethodInvoked(curActivityDO, "Configure");
-            return Task.FromResult(curActivityDO);
+            AddCrateMethodInvoked(curActionDO, "Configure");
+            return Task.FromResult(curActionDO);
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (Crate.IsStorageEmpty(curActionDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -31,54 +31,54 @@ namespace terminalBaseTests.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            AddCrateMethodInvoked(curActivityDO, "InitialConfigurationResponse");
-            return base.InitialConfigurationResponse(curActivityDO, authTokenDO);
+            AddCrateMethodInvoked(curActionDO, "InitialConfigurationResponse");
+            return base.InitialConfigurationResponse(curActionDO, authTokenDO);
         }
 
-        protected override Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            AddCrateMethodInvoked(curActivityDO, "FollowupConfigurationResponse");
-            return base.FollowupConfigurationResponse(curActivityDO, authTokenDO);
+            AddCrateMethodInvoked(curActionDO, "FollowupConfigurationResponse");
+            return base.FollowupConfigurationResponse(curActionDO, authTokenDO);
         }
 
-        public override Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        public override Task<ActionDO> Activate(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            AddCrateMethodInvoked(curActivityDO, "Activate");
-            return base.Activate(curActivityDO, authTokenDO);
+            AddCrateMethodInvoked(curActionDO, "Activate");
+            return base.Activate(curActionDO, authTokenDO);
         }
 
-        public override Task<ActivityDO> Deactivate(ActivityDO curActivityDO)
+        public override Task<ActionDO> Deactivate(ActionDO curActionDO)
         {
-            AddCrateMethodInvoked(curActivityDO, "Deactivate");
-            return base.Deactivate(curActivityDO);
+            AddCrateMethodInvoked(curActionDO, "Deactivate");
+            return base.Deactivate(curActionDO);
         }
 
-        public Task<ActivityDO> OtherMethod(ActivityDO curActivityDO)
+        public Task<ActionDO> OtherMethod(ActionDO curActionDO)
         {
-            AddCrateMethodInvoked(curActivityDO, "OtherMethod");
-            return base.Deactivate(curActivityDO);
+            AddCrateMethodInvoked(curActionDO, "OtherMethod");
+            return base.Deactivate(curActionDO);
         }
 
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            AddCrateMethodInvoked(curActivityDO, "Run");
+            AddCrateMethodInvoked(curActionDO, "Run");
             var processPayload = new PayloadDTO(Guid.NewGuid());
             return await Task.FromResult(processPayload);
         }
 
-        public async Task<PayloadDTO> ChildrenExecuted(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> ChildrenExecuted(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            AddCrateMethodInvoked(curActivityDO, "ChildrenExecuted");
+            AddCrateMethodInvoked(curActionDO, "ChildrenExecuted");
             var processPayload = new PayloadDTO(Guid.NewGuid());
             
             return await Task.FromResult(processPayload);
         }
 
-        private void AddCrateMethodInvoked(ActivityDO curActivityDO, string methodName)
+        private void AddCrateMethodInvoked(ActionDO curActionDO, string methodName)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.Remove<StandardConfigurationControlsCM>();
                 updater.CrateStorage = new CrateStorage(CreateControlsCrate(methodName));

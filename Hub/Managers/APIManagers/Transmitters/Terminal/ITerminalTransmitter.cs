@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Data.Constants;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
@@ -13,12 +12,8 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
         /// Posts a DTO to terminal API
         /// </summary>
         /// <param name="actionType">Action type</param>
-        /// <param name="activityDTO">ActionDTO</param>
-        /// <param name="correlationId"></param>
-        /// <param name="userId"></param>
-        /// <param name="terminalId"></param>
-        /// <param name="terminalSecret"></param>
+        /// <param name="actionDTO">ActionDTO</param>
         /// <returns></returns>
-        Task<TResponse> CallActionAsync<TResponse>(string actionType, ActivityDTO activityDTO, string correlationId);
+        Task<TResponse> CallActionAsync<TResponse>(string actionType, ActionDTO actionDTO);
     }
 }

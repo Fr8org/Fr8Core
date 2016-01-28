@@ -42,7 +42,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\</OutputPath>
-    <DefineConstants>TRACE;RELEASE</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -156,10 +156,6 @@
     </Reference>
     <Reference Include="Microsoft.ApplicationInsights, Version=1.2.3.490, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.ApplicationInsights.1.2.3\lib\net45\Microsoft.ApplicationInsights.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.ApplicationInsights.Log4NetAppender, Version=1.2.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.ApplicationInsights.Log4NetAppender.1.2.6\lib\net45\Microsoft.ApplicationInsights.Log4NetAppender.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -365,7 +361,6 @@
     <Compile Include="Controllers\Api\ManifestsController.cs" />
     <Compile Include="Controllers\Api\RoutesController.cs" />
     <Compile Include="Controllers\Api\TerminalsController.cs" />
-    <Compile Include="Controllers\ServicesController.cs" />
     <Compile Include="Controllers\WelcomeController.cs" />
     <Compile Include="Controllers\Api\FieldController.cs" />
     <Compile Include="Controllers\Api\ActionListController.cs" />
@@ -378,6 +373,7 @@
     <Compile Include="Controllers\JsTestsController.cs" />
     <Compile Include="Controllers\Api\SubrouteController.cs" />
     <Compile Include="Controllers\Api\EventController.cs" />
+    <Compile Include="Controllers\External\DocuSign\DocusignAuthCallbackController.cs" />
     <Compile Include="Controllers\EnvelopeController.cs" />
     <Compile Include="Controllers\Api\ContainerController.cs" />
     <Compile Include="Controllers\StatusController.cs" />
@@ -426,9 +422,6 @@
     <Compile Include="Controllers\Api\ReportController.cs" />
     <Compile Include="Controllers\TokenAuthController.cs" />
     <Compile Include="ExceptionHandling\MvcHandleErrorAttribute.cs" />
-    <Compile Include="Infrastructure\Fr8HubWebHMACAuthenticateAttribute.cs" />
-    <Compile Include="Infrastructure\Fr8Identity.cs" />
-    <Compile Include="Infrastructure\Fr8Principle.cs" />
     <Compile Include="ViewModels\AuthenticationErrorVM.cs" />
     <Compile Include="ViewModels\DocusignLoginVM.cs" />
     <Compile Include="ViewModels\ForgotPasswordVM.cs" />
@@ -764,11 +757,7 @@
     <Content Include="_PowerShellScripts\MASTER-job-run.cmd" />
     <Content Include="_PowerShellScripts\MASTER-settings.job" />
     <Content Include="_PowerShellScripts\DeployAzureWebJob-HealthMonitor-MASTER.ps1" />
-    <Content Include="_PowerShellScripts\KillProcess.ps1" />
-    <Content Include="_PowerShellScripts\SetCloudServiceSize.ps1" />
-    <Content Include="_PowerShellScripts\SetTerminalFr8CoreCS.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamCrateChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamFieldChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\DateTimeFormatter.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\FilterByTag.ts" />
@@ -855,7 +844,7 @@
     <None Include="Properties\PublishProfiles\dockyard - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\fr8 - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\fr8 - Web Deploy.pubxml" />
-    <Content Include="Views\Services\DocuSign.cshtml" />
+    <Content Include="Views\Home\DocuSign.cshtml" />
     <Content Include="Views\Shared\_HomePage.cshtml" />
     <Content Include="_PowerShellScripts\UpdateTerminalUrl.ps1" />
     <Content Include="_PowerShellScripts\CheckWebSettings.ps1" />
@@ -873,8 +862,6 @@
     <Content Include="Views\AngularTemplate\UpstreamFieldChooser.cshtml" />
     <Content Include="Views\AngularTemplate\UsersEmailList.cshtml" />
     <Content Include="Views\AngularTemplate\FileDetails.cshtml" />
-    <Content Include="Views\AngularTemplate\_Debug.cshtml" />
-    <Content Include="Views\AngularTemplate\UpstreamCrateChooser.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -4306,7 +4293,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dev|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;DEV</DefineConstants>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>

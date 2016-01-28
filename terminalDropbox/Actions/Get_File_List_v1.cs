@@ -13,7 +13,7 @@ using terminalDropbox.Services;
 
 namespace terminalDropbox.Actions
 {
-    public class Get_File_List_v1 : BaseTerminalActivity
+    public class Get_File_List_v1 : BaseTerminalAction
     {
         private readonly DropboxService _dropboxService;
         protected ICrateManager _crateManager;
@@ -24,16 +24,16 @@ namespace terminalDropbox.Actions
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
         }
 
-        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             CheckAuthentication(authTokenDO);
 
-            return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
+            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
         }
 
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var payloadCrates = await GetPayload(curActivityDO, containerId);
+            var payloadCrates = await GetPayload(curActionDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
             {
@@ -55,7 +55,7 @@ namespace terminalDropbox.Actions
             return Data.Crates.Crate.FromJson("Dropbox File List", JsonConvert.SerializeObject(fileNames));
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
             return ConfigurationRequestType.Initial;
         }

@@ -15,11 +15,11 @@ namespace terminalTests.Fixtures
             };
         }
 
-        public static ActivityDTO MapFields_v1_InitialConfiguration_ActionDTO()
+        public static ActionDTO MapFields_v1_InitialConfiguration_ActionDTO()
         {
             var activityTemplate = MapFields_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            return new ActionDTO()
             {
                 Id = Guid.NewGuid(),
                 Name = "MapFields",

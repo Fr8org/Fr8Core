@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
 using Data.Infrastructure;
 using Data.Interfaces;
@@ -23,8 +22,7 @@ namespace Data.Entities
 
         public virtual void BeforeSave()
         {
-            // Updateing this property cause  deadlock in some cases
-			//LastUpdated = DateTimeOffset.UtcNow;
+			LastUpdated = DateTimeOffset.UtcNow;
         }
 
         public virtual void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)

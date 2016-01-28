@@ -16,7 +16,7 @@ using Data.Control;
 
 namespace terminalGoogle.Actions
 {
-    public class Receive_Google_Form_v1 : BaseTerminalActivity
+    public class Receive_Google_Form_v1 : BaseTerminalAction
     {
         GoogleDrive _googleDrive;
         public Receive_Google_Form_v1()
@@ -35,16 +35,16 @@ namespace terminalGoogle.Actions
                     !string.IsNullOrEmpty(token.RefreshToken));
         }
 
-        public override Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        public override Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             CheckAuthentication(authTokenDO);
 
-            return base.Configure(curActivityDO, authTokenDO);
+            return base.Configure(curActionDO, authTokenDO);
         }
             
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (Crate.IsStorageEmpty(curActionDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -52,16 +52,16 @@ namespace terminalGoogle.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            if (curActivityDO.Id != Guid.Empty)
+            if (curActionDO.Id != Guid.Empty)
             {
                 var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
                 var configurationControlsCrate = PackCrate_ConfigurationControls();
                 var crateDesignTimeFields = await PackCrate_GoogleForms(authDTO);
                 var eventCrate = CreateEventSubscriptionCrate();
 
-                using (var updater = Crate.UpdateStorage(curActivityDO))
+                using (var updater = Crate.UpdateStorage(curActionDO))
                 {
                     updater.CrateStorage.Add(configurationControlsCrate);
                     updater.CrateStorage.Add(crateDesignTimeFields);
@@ -73,7 +73,7 @@ namespace terminalGoogle.Actions
                 throw new ArgumentException(
                     "Configuration requires the submission of an Action that has a real ActionId");
             }
-            return await Task.FromResult(curActivityDO);
+            return await Task.FromResult(curActionDO);
         }
 
         private Crate PackCrate_ConfigurationControls()
@@ -115,12 +115,11 @@ namespace terminalGoogle.Actions
 
             return Crate.CreateStandardEventSubscriptionsCrate(
                 "Standard Event Subscriptions",
-                "Google",
                 subscriptions.ToArray()
                 );
         }
 
-        public async Task<ActivityDO> Activate(ActivityDO curActionDTO, AuthorizationTokenDO authTokenDO)
+        public async Task<ActionDO> Activate(ActionDO curActionDTO, AuthorizationTokenDO authTokenDO)
         {
             var googleAuthDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
 
@@ -146,14 +145,14 @@ namespace terminalGoogle.Actions
             return await Task.FromResult(curActionDTO);
         }
 
-        public async Task<ActivityDO> Deactivate(ActivityDO curActionDTO, AuthorizationTokenDO authTokenDO)
+        public async Task<ActionDO> Deactivate(ActionDO curActionDTO, AuthorizationTokenDO authTokenDO)
         {
             return await Task.FromResult(curActionDTO);
         }
 
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var payloadCrates = await GetPayload(curActivityDO, containerId);
+            var payloadCrates = await GetPayload(curActionDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
             {

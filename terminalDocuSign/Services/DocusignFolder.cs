@@ -27,12 +27,6 @@ namespace terminalDocuSign.Services
             return MakeRequest<FolderListResponse>("/folders", accout).Folders;
         }
 
-
-        public List<DocusignFolderInfo> GetSearchFolders(string login, string password)
-        {
-            return GetFolders(login, password).Where(x => x.Type != "report").ToList();
-        }
-
         public List<FolderItem> Search(string login, string password, string searchText, string folderId, string status = null, DateTime? fromDate = null, DateTime? toDate = null)
         {
             if (string.IsNullOrWhiteSpace(folderId)) throw new ArgumentNullException("folderId");

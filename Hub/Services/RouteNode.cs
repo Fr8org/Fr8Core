@@ -28,12 +28,11 @@ namespace Hub.Services
         private readonly ICrateManager _crate;
         private readonly IRestfulServiceClient _restfulServiceClient;
         private readonly IRouteNode _activity;
-        private readonly IActivityTemplate _activityTemplate;
+
         #endregion
 
         public RouteNode()
         {
-            _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
             _restfulServiceClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
         }
@@ -112,9 +111,9 @@ namespace Hub.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                ActivityDO activityDO = uow.ActivityRepository.GetByKey(activityId);
-                var curCrates = GetActivitiesByDirection(uow, direction, activityDO)
-                    .OfType<ActivityDO>()
+                ActionDO actionDO = uow.ActionRepository.GetByKey(activityId);
+                var curCrates = GetActivitiesByDirection(uow, direction, actionDO)
+                    .OfType<ActionDO>()
                     .SelectMany(x => _crate.GetStorage(x).CratesOfType<StandardDesignTimeFieldsCM>().Where(cratePredicate))
                     .ToList();
 
@@ -333,7 +332,7 @@ namespace Hub.Services
 
             TraverseActivity(activity, activities.Add);
 
-	        activities.Reverse();
+            activities.Reverse();
 
             activities.ForEach(x =>
             {
@@ -383,10 +382,10 @@ namespace Hub.Services
                     throw new ArgumentException("Cannot find Activity with the supplied curActivityId");
                 }
 
-                if (curActivityDO is ActivityDO)
+                if (curActivityDO is ActionDO)
                 {
-                    IActivity _activity = ObjectFactory.GetInstance<IActivity>();
-                    await _activity.PrepareToExecute((ActivityDO)curActivityDO, curActionState, curContainerDO, uow);
+                    IAction _action = ObjectFactory.GetInstance<IAction>();
+                    await _action.PrepareToExecute((ActionDO)curActivityDO, curActionState, curContainerDO, uow);
                     //TODO inspect this
                     //why do we get container from db again???
                     containerDO.CrateStorage = curContainerDO.CrateStorage;
@@ -398,7 +397,7 @@ namespace Hub.Services
         {
             IEnumerable<ActivityTemplateDTO> curActivityTemplates;
 
-            curActivityTemplates = _activityTemplate
+            curActivityTemplates = uow.ActivityTemplateRepository
                 .GetAll()
                 .OrderBy(t => t.Category)
                 .Select(Mapper.Map<ActivityTemplateDTO>)
@@ -422,7 +421,7 @@ namespace Hub.Services
         /// </summary>
         public IEnumerable<ActivityTemplateDTO> GetAvailableActivities(IUnitOfWork uow, Func<ActivityTemplateDO, bool> predicate)
         {
-            return _activityTemplate
+            return uow.ActivityTemplateRepository
                 .GetAll()
                 .Where(predicate)
                 .Where(at => at.ActivityTemplateState == Data.States.ActivityTemplateState.Active)
@@ -434,9 +433,9 @@ namespace Hub.Services
         public IEnumerable<ActivityTemplateDTO> GetSolutions(IUnitOfWork uow, IFr8AccountDO curAccount)
         {
             IEnumerable<ActivityTemplateDTO> curActivityTemplates;
-            curActivityTemplates = _activityTemplate
+            curActivityTemplates = uow.ActivityTemplateRepository
                 .GetAll()
-                .Where(at => at.Category == Data.States.ActivityCategory.Solution 
+                .Where(at => at.Category == Data.States.ActivityCategory.Solution
                     && at.ActivityTemplateState == Data.States.ActivityTemplateState.Active)
                 .OrderBy(t => t.Category)
                 .Select(Mapper.Map<ActivityTemplateDTO>)
@@ -456,21 +455,86 @@ namespace Hub.Services
 
         public IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivitiyGroups()
         {
-            var curActivityTemplates = _activityTemplate
-                .GetQuery()
-                .Where(at => at.ActivityTemplateState == ActivityTemplateState.Active).AsEnumerable().ToArray()
-                .GroupBy(t => t.Category)
-                .OrderBy(c => c.Key)
-                .Select(c => new ActivityTemplateCategoryDTO
-                {
-                    Activities = c.Select(Mapper.Map<ActivityTemplateDTO>).ToList(),
-                    Name = c.Key.ToString()
-                })
-                .ToList();
+            List<ActivityTemplateCategoryDTO> curActivityTemplates;
 
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                curActivityTemplates = uow.ActivityTemplateRepository
+                    .GetQuery()
+                    .Where(at => at.ActivityTemplateState == Data.States.ActivityTemplateState.Active).AsEnumerable().ToArray()
+                    .GroupBy(t => t.Category)
+                    .OrderBy(c => c.Key)
+                    .Select(c => new ActivityTemplateCategoryDTO
+                    {
+                        Activities = c.Select(Mapper.Map<ActivityTemplateDTO>).ToList(),
+                        Name = c.Key.ToString()
+                    })
+                    .ToList();
+            }
 
             return curActivityTemplates;
         }
 
+        public async Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(
+            Guid activityId, CrateDirection direction)
+        {
+            // TODO: after DO-1214 this must target to "ustream" and "downstream" accordingly.
+            var directionSuffix = (direction == CrateDirection.Upstream)
+                ? "upstream_actions/"
+                : "downstream_actions/";
+
+            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routenodes/"
+                + directionSuffix
+                + "?id=" + activityId;
+
+            var curActions = await _restfulServiceClient.GetAsync<List<ActionDTO>>(new Uri(url, UriKind.Absolute));
+            var curCrates = new List<Crate<TManifest>>();
+
+            foreach (var curAction in curActions)
+            {
+                var storage = _crate.FromDto(curAction.CrateStorage);
+
+                curCrates.AddRange(storage.CratesOfType<TManifest>());
+            }
+
+            return curCrates;
+        }
+
+        public async Task<List<Crate>> GetCratesByDirection(Guid activityId, CrateDirection direction)
+        {
+            // TODO: after DO-1214 this must target to "upstream" and "downstream" accordingly.
+            var directionSuffix = (direction == CrateDirection.Upstream)
+                ? "upstream_actions/"
+                : "downstream_actions/";
+
+            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routenodes/"
+                + directionSuffix
+                + "?id=" + activityId;
+
+            var curActions = await _restfulServiceClient.GetAsync<List<ActionDTO>>(new Uri(url, UriKind.Absolute));
+            var curCrates = new List<Crate>();
+
+            foreach (var curAction in curActions)
+            {
+                var storage = _crate.FromDto(curAction.CrateStorage);
+                curCrates.AddRange(storage);
+            }
+
+            return curCrates;
+        }
+
+        public async Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirectionTerminal(Guid activityId, CrateDirection direction, AvailabilityType availability)
+        {
+            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routenodes/designtime_fields_dir"
+                + "?id=" + activityId
+                + "&direction=" + (int)direction
+                + "&availability=" + (int)availability;
+
+            var curFields = await _restfulServiceClient.GetAsync<StandardDesignTimeFieldsCM>(new Uri(url, UriKind.Absolute));
+            return curFields;
+        }
     }
 }

@@ -8,12 +8,12 @@ namespace Data.Interfaces.DataTransferObjects
 {
     public class ActionDataPackageDTO
     {
-        public ActionDataPackageDTO(ActivityDTO curActionDTO, PayloadDTO curPayloadDTO)
+        public ActionDataPackageDTO(ActionDTO curActionDTO, PayloadDTO curPayloadDTO)
         {
-            ActivityDTO = curActionDTO;
+            ActionDTO = curActionDTO;
             PayloadDTO = curPayloadDTO;
         }
-        public ActivityDTO ActivityDTO { get; set; }
+        public ActionDTO ActionDTO { get; set; }
         public PayloadDTO PayloadDTO { get; set; }
     }
 }

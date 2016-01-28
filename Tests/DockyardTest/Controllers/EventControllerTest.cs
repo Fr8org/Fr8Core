@@ -35,8 +35,8 @@ namespace DockyardTest.Controllers
         {
             base.SetUp();
             _eventController = new EventController();
-            _eventReporter = ObjectFactory.GetInstance <EventReporter>();
-            _incidentReporter = ObjectFactory.GetInstance <IncidentReporter>();
+            _eventReporter = new EventReporter();
+            _incidentReporter = new IncidentReporter();
             _eventReportCrateFactoryHelper = new EventReportCrateFactory();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
 
@@ -133,7 +133,7 @@ namespace DockyardTest.Controllers
         {
             //Arrange 
             var externalAccountId = "docusign_developer@dockyard.company";
-            var curPlan = FixtureData.TestRouteWithSubscribeEvent(FixtureData.TestDockyardAccount1());
+            var curRoute = FixtureData.TestRouteWithSubscribeEvent(FixtureData.TestDockyardAccount1());
             FixtureData.TestRouteWithSubscribeEvent(FixtureData.TestDeveloperAccount());
             FixtureData.AddAuthorizationToken(FixtureData.TestDockyardAccount1(), externalAccountId);
             FixtureData.AddAuthorizationToken(FixtureData.TestDeveloperAccount(), externalAccountId);
@@ -141,9 +141,9 @@ namespace DockyardTest.Controllers
             //Create activity mock to process the actions
             Mock<IRouteNode> activityMock = new Mock<IRouteNode>(MockBehavior.Default);
             activityMock.Setup(a => a.Process(FixtureData.GetTestGuidById(1), It.IsAny<ActionState>(), It.IsAny<ContainerDO>())).Returns(Task.Delay(1));
-            activityMock.Setup(a => a.HasChildren(It.Is<RouteNodeDO>(r => r.Id == curPlan.StartingSubroute.Id))).Returns(true);
-            activityMock.Setup(a => a.HasChildren(It.Is<RouteNodeDO>(r => r.Id != curPlan.StartingSubroute.Id))).Returns(false);
-            activityMock.Setup(a => a.GetFirstChild(It.IsAny<RouteNodeDO>())).Returns(curPlan.ChildNodes.First().ChildNodes.First());
+            activityMock.Setup(a => a.HasChildren(It.Is<RouteNodeDO>(r => r.Id == curRoute.StartingSubroute.Id))).Returns(true);
+            activityMock.Setup(a => a.HasChildren(It.Is<RouteNodeDO>(r => r.Id != curRoute.StartingSubroute.Id))).Returns(false);
+            activityMock.Setup(a => a.GetFirstChild(It.IsAny<RouteNodeDO>())).Returns(curRoute.ChildNodes.First().ChildNodes.First());
             ObjectFactory.Container.Inject(typeof(IRouteNode), activityMock.Object);
 
             //Act

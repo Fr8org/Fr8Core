@@ -6,6 +6,5 @@ namespace Data.Interfaces.DataTransferObjects
 	{
 		public string WebServiceIconPath { get; set; }
 		public List<ActivityTemplateDTO> Actions { get; set; }
-        public string WebServiceName { get; set; }
 	}
 }

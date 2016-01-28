@@ -5,6 +5,6 @@ namespace Hub.Interfaces
 {
     public interface IFindObjectsRoute
     {
-        PlanDO CreatePlan(IUnitOfWork uow, Fr8AccountDO account);
+        RouteDO CreateRoute(IUnitOfWork uow, Fr8AccountDO account);
     }
 }

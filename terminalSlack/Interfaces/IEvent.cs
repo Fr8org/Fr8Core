@@ -1,10 +1,9 @@
-﻿using System.Threading.Tasks;
-using Data.Crates;
+﻿using Data.Crates;
 
 namespace terminalSlack.Interfaces
 {
     public interface IEvent
     {
-        Task<Crate> Process(string externalEventPayload);
+        Crate Process(string externalEventPayload);
     }
 }

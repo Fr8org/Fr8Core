@@ -10,8 +10,6 @@ using System.Web.Http.Routing;
 using Microsoft.Owin.Hosting;
 using Owin;
 using Data.Interfaces.DataTransferObjects;
-using Data.States;
-using Data.Entities;
 
 namespace terminalFr8CoreTests.Fixtures
 {
@@ -81,11 +79,11 @@ namespace terminalFr8CoreTests.Fixtures
             return WebApp.Start<ActivitiesController_SelfHostStartup>(url: CoreEndPoint);
         }
 
-        public static ActivityDTO ConnectToSql_InitialConfiguration_ActionDTO()
+        public static ActionDTO ConnectToSql_InitialConfiguration_ActionDTO()
         {
             var activityTemplate = ConnectToSql_ActivityTemplate();
 
-            return new ActivityDTO()
+            return new ActionDTO()
             {
                 Id = Guid.NewGuid(),
                 Name = "ConnectToSql_Fr8Core",
@@ -105,11 +103,11 @@ namespace terminalFr8CoreTests.Fixtures
             };
         }
 
-        public static ActivityDTO ExecuteSql_InitialConfiguration_ActionDTO()
+        public static ActionDTO ExecuteSql_InitialConfiguration_ActionDTO()
         {
             var activityTemplate = ExecuteSql_ActivityTemplate();
 
-            return new ActivityDTO()
+            return new ActionDTO()
             {
                 Id = Guid.NewGuid(),
                 Name = "ExecuteSql_Fr8Core",
@@ -128,30 +126,5 @@ namespace terminalFr8CoreTests.Fixtures
                 Version = "1"
             };
         }
-
-        public static ActivityTemplateDTO MonitorFr8Event_ActivityTemplate()
-        {
-            return new ActivityTemplateDTO()
-            {
-                Id = 4,
-                Name = "Monitor_Fr8_Events_TEST",
-                Version = "1"
-            };
-        }
-
-        public static ActivityDTO MonitorFr8Event_InitialConfiguration_ActionDTO()
-        {
-            var activityTemplate = MonitorFr8Event_ActivityTemplate();
-
-            return new ActivityDTO()
-            {
-                Id = Guid.NewGuid(),
-                Name = "Monitor_Fr8_Events",
-                Label = "Monitor Fr8 Events",
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
-            };
-        }
-
     }
 }

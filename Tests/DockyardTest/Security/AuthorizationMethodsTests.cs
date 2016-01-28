@@ -48,8 +48,7 @@ namespace DockyardTest.Security
                     Version = "1",
                     TerminalStatus = 1,
                     Endpoint = "localhost:39504",
-                    AuthenticationType = authType,
-                    Secret = Guid.NewGuid().ToString()
+                    AuthenticationType = authType
                 };
 
                 uow.TerminalRepository.Add(terminalDO);
@@ -101,6 +100,22 @@ namespace DockyardTest.Security
         }
 
         [Test]
+        public void CanGetTokenByUserId()
+        {    
+            var tokenDO = CreateAndAddTokenDO();
+            var testToken = _authorization.GetToken(tokenDO.UserDO.Id);
+
+            Assert.AreEqual(Token, testToken);
+        }
+
+        [Test]
+        public void GetTokenByUserIdIsNull()
+        {
+            var token = _authorization.GetToken("null");
+            Assert.IsNull(token);
+        }
+
+        [Test]
         public void CanGetTokenByUserIdAndTerminalId()
         {
             var tokenDO = CreateAndAddTokenDO();
@@ -127,12 +142,36 @@ namespace DockyardTest.Security
 //        }
 
         [Test]
+        public void CanUpdateToken()
+        {
+            var tokenDO = CreateAndAddTokenDO();
+            var newToken = Token + "new";
+            _authorization.AddOrUpdateToken(tokenDO.UserID, newToken);
+
+            Assert.AreEqual(newToken, tokenDO.Token);
+        }
+
+
+        [Test]
+        public void CanRemoveToken()
+        {
+            var tokenDO = CreateAndAddTokenDO();
+            var userId = tokenDO.UserID;
+
+            _authorization.RemoveToken(userId);
+
+            var testToken = _authorization.GetToken(userId);
+
+            Assert.IsNullOrEmpty(testToken);
+        }
+
+        [Test]
         public void CanPrepareAuthToken()
         {
             var tokenDO = CreateAndAddTokenDO();
             tokenDO.Terminal.AuthenticationType = AuthenticationType.Internal;
 
-            var activityDTO = new ActivityDTO();
+            var actionDTO = new ActionDTO();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var activityTemplateDO = new ActivityTemplateDO(
@@ -146,7 +185,7 @@ namespace DockyardTest.Security
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
                 uow.SaveChanges();
 
-                var planDO = new PlanDO()
+                var routeDO = new RouteDO()
                 {
                     Id = FixtureData.GetTestGuidById(23),
                     Description = "HealthDemo Integration Test",
@@ -154,13 +193,13 @@ namespace DockyardTest.Security
                     RouteState = RouteState.Active,
                     Fr8Account = tokenDO.UserDO
                 };
-                uow.PlanRepository.Add(planDO);
+                uow.RouteRepository.Add(routeDO);
                 uow.SaveChanges();
 
-                var activityDO = new ActivityDO()
+                var actionDO = new ActionDO()
                 {
-                    ParentRouteNode = planDO,
-                    ParentRouteNodeId = planDO.Id,
+                    ParentRouteNode = routeDO,
+                    ParentRouteNodeId = routeDO.Id,
                     Name = "testaction",
 
                     Id = FixtureData.GetTestGuidById(1),
@@ -171,17 +210,17 @@ namespace DockyardTest.Security
                     Ordering = 1
                 };
 
-                uow.ActivityRepository.Add(activityDO);
+                uow.ActionRepository.Add(actionDO);
                 uow.SaveChanges();
 
-                activityDTO.Id = activityDO.Id;
-                activityDTO.ActivityTemplateId = activityTemplateDO.Id;
+                actionDTO.Id = actionDO.Id;
+                actionDTO.ActivityTemplateId = activityTemplateDO.Id;
             }
             
                 
-            _authorization.PrepareAuthToken(activityDTO);
+            _authorization.PrepareAuthToken(actionDTO);
 
-            Assert.AreEqual(Token, activityDTO.AuthToken.Token);
+            Assert.AreEqual(Token, actionDTO.AuthToken.Token);
         }
 
         [Test]
@@ -192,14 +231,14 @@ namespace DockyardTest.Security
             activityTemplateDO.Terminal = tokenDO.Terminal;
             activityTemplateDO.Terminal.AuthenticationType = AuthenticationType.Internal;
 
-            var activityDO = FixtureData.TestActivity1();
-            activityDO.ActivityTemplate = activityTemplateDO;
-            activityDO.AuthorizationToken = tokenDO;
+            var actionDO = FixtureData.TestAction1();
+            actionDO.ActivityTemplate = activityTemplateDO;
+            actionDO.AuthorizationToken = tokenDO;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {   
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
-                uow.RouteNodeRepository.Add(activityDO);
+                uow.RouteNodeRepository.Add(actionDO);
                 uow.SaveChanges();
             }
 
@@ -278,14 +317,14 @@ namespace DockyardTest.Security
                 "test_name", "test_label", "1", "test_description", tokenDO.TerminalID
             );
 
-            var activityDO = FixtureData.TestActivity1();
-            activityDO.ActivityTemplate = activityTemplateDO;
-            activityDO.AuthorizationToken = tokenDO;
+            var actionDO = FixtureData.TestAction1();
+            actionDO.ActivityTemplate = activityTemplateDO;
+            actionDO.AuthorizationToken = tokenDO;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {   
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
-                uow.RouteNodeRepository.Add(activityDO);
+                uow.RouteNodeRepository.Add(actionDO);
                 uow.SaveChanges();
             }
 
@@ -312,8 +351,8 @@ namespace DockyardTest.Security
             
             var terminalDO = CreateAndAddTerminalDO(AuthenticationType.Internal);
 
-            var activityDO = FixtureData.TestActivity1();
-            var activityDTO = new ActivityDTO();
+            var actionDO = FixtureData.TestAction1();
+            var actionDTO = new ActionDTO();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -328,17 +367,17 @@ namespace DockyardTest.Security
                 activityTemplateDO.NeedsAuthentication = true;
 
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
-                activityDTO.ActivityTemplateId = activityTemplateDO.Id;
+                actionDTO.ActivityTemplateId = activityTemplateDO.Id;
 
-                activityDO.ActivityTemplate = activityTemplateDO;
-                uow.ActivityRepository.Add(activityDO);
+                actionDO.ActivityTemplate = activityTemplateDO;
+                uow.ActionRepository.Add(actionDO);
 
                 uow.SaveChanges();
 
-                activityDTO.ActivityTemplateId = activityTemplateDO.Id;
-                activityDTO.Id = activityDO.Id;
+                actionDTO.ActivityTemplateId = activityTemplateDO.Id;
+                actionDTO.Id = actionDO.Id;
             }
-            var testResult = _authorization.ValidateAuthenticationNeeded(userDO.Id, activityDTO);
+            var testResult = _authorization.ValidateAuthenticationNeeded(userDO.Id, actionDTO);
 
             Assert.IsTrue(testResult);
         }
@@ -349,26 +388,26 @@ namespace DockyardTest.Security
             var tokenDO = CreateAndAddTokenDO();
             tokenDO.Terminal.AuthenticationType = AuthenticationType.Internal;
 
-            var activityDO = FixtureData.TestActivity1();
-            var activityDTO = new ActivityDTO();
+            var actionDO = FixtureData.TestAction1();
+            var actionDTO = new ActionDTO();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var activityTemplateDO = new ActivityTemplateDO("test_name", "test_label", "1", "test_description", tokenDO.TerminalID);
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
-                activityDTO.ActivityTemplateId = activityTemplateDO.Id;
+                actionDTO.ActivityTemplateId = activityTemplateDO.Id;
 
-                activityDO.ActivityTemplate = activityTemplateDO;
-                activityDO.AuthorizationToken = tokenDO;
-                uow.ActivityRepository.Add(activityDO);
+                actionDO.ActivityTemplate = activityTemplateDO;
+                actionDO.AuthorizationToken = tokenDO;
+                uow.ActionRepository.Add(actionDO);
 
                 uow.SaveChanges();
 
-                activityDTO.Id = activityDO.Id;
-                activityDTO.ActivityTemplateId = activityTemplateDO.Id;
+                actionDTO.Id = actionDO.Id;
+                actionDTO.ActivityTemplateId = activityTemplateDO.Id;
             }
 
-            var testResult = _authorization.ValidateAuthenticationNeeded(tokenDO.UserID, activityDTO);
+            var testResult = _authorization.ValidateAuthenticationNeeded(tokenDO.UserID, actionDTO);
 
             Assert.IsFalse(testResult);
         }
@@ -380,33 +419,33 @@ namespace DockyardTest.Security
             var terminalDO = CreateAndAddTerminalDO();
             terminalDO.AuthenticationType = AuthenticationType.Internal;
 
-            var activityDTO = new ActivityDTO();
+            var actionDTO = new ActionDTO();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var activityTemplateDO = new ActivityTemplateDO("test_name", "test_label", "1", "test_description", terminalDO.Id);
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
-                activityDTO.ActivityTemplateId = activityTemplateDO.Id;
+                actionDTO.ActivityTemplateId = activityTemplateDO.Id;
                 uow.SaveChanges();
 
-                activityDTO.ActivityTemplateId = activityTemplateDO.Id;
+                actionDTO.ActivityTemplateId = activityTemplateDO.Id;
             }
 
             
-            _authorization.AddAuthenticationCrate(activityDTO, AuthenticationType.Internal);
-            Assert.IsTrue(IsCratePresents(activityDTO, AuthenticationMode.InternalMode));
+            _authorization.AddAuthenticationCrate(actionDTO, AuthenticationType.Internal);
+            Assert.IsTrue(IsCratePresents(actionDTO, AuthenticationMode.InternalMode));
 
-            _authorization.AddAuthenticationCrate(activityDTO, AuthenticationType.External);
-            Assert.IsTrue(IsCratePresents(activityDTO, AuthenticationMode.ExternalMode));
+            _authorization.AddAuthenticationCrate(actionDTO, AuthenticationType.External);
+            Assert.IsTrue(IsCratePresents(actionDTO, AuthenticationMode.ExternalMode));
 
-            _authorization.AddAuthenticationCrate(activityDTO, AuthenticationType.InternalWithDomain);
-            Assert.IsTrue(IsCratePresents(activityDTO, AuthenticationMode.InternalModeWithDomain));
+            _authorization.AddAuthenticationCrate(actionDTO, AuthenticationType.InternalWithDomain);
+            Assert.IsTrue(IsCratePresents(actionDTO, AuthenticationMode.InternalModeWithDomain));
         }
 
-        private bool IsCratePresents(ActivityDTO activityDTO, AuthenticationMode mode)
+        private bool IsCratePresents(ActionDTO actionDTO, AuthenticationMode mode)
         {
             var result = false;
-            foreach (var crate in activityDTO.CrateStorage.Crates)
+            foreach (var crate in actionDTO.CrateStorage.Crates)
             {
                 if ( (int)mode == crate.Contents["Mode"].ToObject<int>())
                 {

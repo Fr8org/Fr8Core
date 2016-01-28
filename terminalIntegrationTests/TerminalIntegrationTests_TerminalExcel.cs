@@ -28,19 +28,19 @@ namespace terminalIntegrationTests
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var plan = new PlanDO()
+                var route = new RouteDO()
                 {
-                    Id = UtilitiesTesting.Fixtures.FixtureData.TestParentPlanID(),
+                    Id = UtilitiesTesting.Fixtures.FixtureData.TestParentRouteID(),
                     Name = "1",
                     RouteState = RouteState.Active
                 };
 
-                uow.PlanRepository.Add(plan);
+                uow.RouteRepository.Add(route);
 
                 uow.ContainerRepository.Add(new ContainerDO()
                 {
                     Id = UtilitiesTesting.Fixtures.FixtureData.TestContainer_Id_1(),
-                    Plan = plan,
+                    Route = route,
                     CrateStorage = _crateManager.EmptyStorageAsStr(),
                     ContainerState = ContainerState.Executing
                 });
@@ -59,10 +59,10 @@ namespace terminalIntegrationTests
                 Table = ExcelUtils.CreateTableCellPayloadObjects(excelRows, columnHeaders),
             };
 
-            var curActionDTO = new ActivityDTO()
+            var curActionDTO = new ActionDTO()
             {
                 ContainerId = UtilitiesTesting.Fixtures.FixtureData.TestContainer_Id_1(),
-                ParentRouteNodeId =  UtilitiesTesting.Fixtures.FixtureData.TestParentPlanID()
+                ParentRouteNodeId =  UtilitiesTesting.Fixtures.FixtureData.TestParentRouteID()
             };
 
             using (var updater = _crateManager.UpdateStorage(curActionDTO))
@@ -76,8 +76,8 @@ namespace terminalIntegrationTests
             ObjectFactory.Configure(cfg => cfg.For<IRestfulServiceClient>().Use(restfulServiceClient.Object));
 
 
-            var curActivityDO = AutoMapper.Mapper.Map<ActivityDO>(curActionDTO);
-            var result = await new Load_Excel_File_v1().Run(curActivityDO, curActionDTO.ContainerId, null);
+            var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
+            var result = await new Load_Excel_File_v1().Run(curActionDO, curActionDTO.ContainerId, null);
 
             var payloadCrates = _crateManager.GetStorage(result).CratesOfType<StandardPayloadDataCM>();
             var payloadDataMS = payloadCrates.First().Content;

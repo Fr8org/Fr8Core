@@ -7,8 +7,6 @@ module dockyard.directives.designerHeader {
         editing: boolean;
         editTitle(): void;
         onTitleChange(): void;
-        runRoute(): void;
-
         route: model.RouteDTO;
     }
 
@@ -16,12 +14,7 @@ module dockyard.directives.designerHeader {
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
     class DesignerHeader implements ng.IDirective {
         public link: (scope: IDesignerHeaderScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
-        public controller: (
-            $scope: IDesignerHeaderScope,
-            element: ng.IAugmentedJQuery,
-            attrs: ng.IAttributes,
-            RouteService: services.IRouteService
-        ) => void;
+        public controller: ($scope: IDesignerHeaderScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
 
         public templateUrl = '/AngularTemplate/DesignerHeader';
         public scope = {
@@ -41,8 +34,7 @@ module dockyard.directives.designerHeader {
             DesignerHeader.prototype.controller = (
                 $scope: IDesignerHeaderScope,
                 $element: ng.IAugmentedJQuery,
-                $attrs: ng.IAttributes,
-                RouteService: services.IRouteService) => {
+                $attrs: ng.IAttributes) => {
 
                 $scope.editTitle = () => {
                     $scope.editing = true;
@@ -54,9 +46,21 @@ module dockyard.directives.designerHeader {
                     result.$promise.then(() => { });
                 };
 
-                $scope.runRoute = () => {
-                    RouteService.runAndProcessClientAction($scope.route.id);
-                };
+                var currentState: number;
+                $scope.$watch('route.routeState', () => {
+                    if ($scope.route) {
+                        if (currentState === undefined) currentState = $scope.route.routeState;
+
+                        if (currentState !== $scope.route.routeState) {
+                            if ($scope.route.routeState === model.RouteState.Inactive) {
+                                RouteService.deactivate($scope.route);
+                            } else if ($scope.route.routeState === model.RouteState.Active) {
+                                RouteService.activate($scope.route);
+                            }
+                        }
+                    }
+                });
+
             };
         }
 

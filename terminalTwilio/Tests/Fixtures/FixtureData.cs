@@ -15,11 +15,11 @@ namespace terminalTwilio.Tests.Fixtures
             return new Guid("A1C11E86-9B54-42D4-AA91-605BF46E68E9");
         }
 
-        public static ActivityDO ConfigureTwilioAction()
+        public static ActionDO ConfigureTwilioAction()
         {
             var actionTemplate = TwilioActionTemplateDTO();
 
-            var activityDO = new ActivityDO
+            var actionDO = new ActionDO
             {
                 Name = "testaction",
                 Id = TestGuid_Id_57(),
@@ -28,7 +28,7 @@ namespace terminalTwilio.Tests.Fixtures
                 CrateStorage = ""
             };
 
-            return activityDO;
+            return actionDO;
         }
 
         public static ActivityTemplateDO TwilioActionTemplateDTO()

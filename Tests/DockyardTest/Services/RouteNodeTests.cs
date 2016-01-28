@@ -29,6 +29,28 @@ namespace DockyardTest.Services
         }
 
         [Test]
+        public void GetDesignTimeFieldsByDirectionTerminal_ShouldGenerateCorrectDesigntimeURL()
+        {
+            var _restfulServiceClient = new Mock<IRestfulServiceClient>();
+            _restfulServiceClient.Setup(r => r.GetAsync<StandardDesignTimeFieldsCM>(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()));
+            ObjectFactory.Configure(cfg => cfg.For<IRestfulServiceClient>().Use(_restfulServiceClient.Object));
+            IRouteNode _routeNodeService = ObjectFactory.GetInstance<IRouteNode>();
+
+            Guid id = Guid.NewGuid();
+            CrateDirection direction = CrateDirection.Downstream;
+            AvailabilityType availability = AvailabilityType.RunTime;
+
+            string resultUrl = String.Format(
+                "http://localhost:30643/api/v1/routenodes/designtime_fields_dir?id={0}&direction={1}&availability={2}",
+                id.ToString(),
+                ((int)direction).ToString(),
+                ((int)availability).ToString());
+            _routeNodeService.GetDesignTimeFieldsByDirectionTerminal(id, direction, availability);
+
+            _restfulServiceClient.Verify(o => o.GetAsync<StandardDesignTimeFieldsCM>(It.Is<Uri>(p => p.ToString() == resultUrl), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()));
+        }
+
+        [Test]
         public void GetDesignTimeFieldsByDirection_ShouldReturnDesignTimeFieldsCrate()
         {
             var testActionTree = FixtureData.TestActionTree();

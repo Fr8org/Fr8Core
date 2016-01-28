@@ -117,15 +117,9 @@ namespace Data.Repositories
 
         /*********************************************************************************/
 
-        public AuthorizationTokenDO FindTokenByExternalAccount(string externalAccountId, int terminalId, string userId)
+        public AuthorizationTokenDO FindTokenByExternalAccount(string externalAccountId)
         {
-            return EnrichAndTrack(
-                GetQuery()
-                    .FirstOrDefault(x => x.ExternalAccountId == externalAccountId
-                        && x.TerminalID == terminalId
-                        && x.UserID == userId
-                    )
-            );
+            return EnrichAndTrack(GetQuery().FirstOrDefault(x => x.ExternalAccountId == externalAccountId));
         }
 
         /*********************************************************************************/
@@ -137,13 +131,16 @@ namespace Data.Repositories
 
         /*********************************************************************************/
 
-        public AuthorizationTokenDO FindTokenByExternalState(
-            string externalStateToken, int terminalId)
+        public AuthorizationTokenDO FindTokenByUserId(string userId)
         {
-            return EnrichAndTrack(
-                GetQuery().FirstOrDefault(x => x.TerminalID == terminalId
-                    && x.ExternalStateToken == externalStateToken)
-            );
+            return EnrichAndTrack(GetQuery().FirstOrDefault(x => x.UserID == userId));
+        }
+
+        /*********************************************************************************/
+
+        public AuthorizationTokenDO FindTokenByExternalState(string externalStateToken)
+        {
+            return EnrichAndTrack(GetQuery().FirstOrDefault(x => x.ExternalStateToken == externalStateToken));
         }
 
         /*********************************************************************************/

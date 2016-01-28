@@ -25,7 +25,7 @@ using Utilities;
 
 namespace terminalFr8Core.Actions
 {
-    public class ConvertCrates_v1 : BaseTerminalActivity
+    public class ConvertCrates_v1 : BaseTerminalAction
     {
         private class ManifestTypeMatch
         {
@@ -44,12 +44,12 @@ namespace terminalFr8Core.Actions
             { new ManifestTypeMatch(MT.DocuSignTemplate, MT.StandardFileHandle), new DocuSignTemplateToStandardFileDescriptionConversion() }
         };
 
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var curPayloadDTO = await GetPayload(curActivityDO, containerId);
+            var curPayloadDTO = await GetPayload(curActionDO, containerId);
 
             //find from type
-            var controlsMS = GetConfigurationControls(curActivityDO);
+            var controlsMS = GetConfigurationControls(curActionDO);
 
             var fromDropdown = (DropDownList)GetControl(controlsMS, "Available_From_Manifests", ControlTypes.DropDownList);
             if (string.IsNullOrEmpty(fromDropdown.Value))
@@ -86,32 +86,33 @@ namespace terminalFr8Core.Actions
             return Success(curPayloadDTO);
         }
 
-        public override async Task<ActivityDO> Configure(ActivityDO curActionDataPackageDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActionDO> Configure(ActionDO curActionDataPackageDO, AuthorizationTokenDO authTokenDO)
         {
             return await ProcessConfigurationRequest(curActionDataPackageDO, ConfigurationEvaluator, authTokenDO);
         }
 
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             //build a controls crate to render the pane
             var configurationControlsCrate = CreateControlsCrate();
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage = AssembleCrateStorage(configurationControlsCrate);
                 updater.CrateStorage.Add(GetAvailableFromManifests());
             }
 
-            return curActivityDO;
+            return curActionDO;
         }
 
-        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            var controlsMS = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().Single();
+            var controlsMS = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().Single();
             var manifestTypeDropdown = controlsMS.Controls.Single(x => x.Type == ControlTypes.DropDownList && x.Name == "Available_From_Manifests");
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
+                updater.CrateStorage.RemoveUsingPredicate(c => c.IsOfType<StandardDesignTimeFieldsCM>() && c.Label == "Available From Manifests");
                 updater.CrateStorage.RemoveUsingPredicate(c => c.IsOfType<StandardDesignTimeFieldsCM>() && c.Label == "Available To Manifests");
                 if (manifestTypeDropdown.Value != null)
                 {
@@ -119,7 +120,7 @@ namespace terminalFr8Core.Actions
                 }
             }
             
-            return curActivityDO;
+            return curActionDO;
         }
 
         private Crate GetAvailableToManifests(String manifestId)
@@ -148,7 +149,7 @@ namespace terminalFr8Core.Actions
         {
             var infoText = new TextBlock
             {
-                Value = "This activity converts data from one type of Crate to another type of Crate"
+                Value = "This action converts data from one type of Crate to another type of Crate"
             };
             var availableFromManifests = new DropDownList
             {
@@ -178,14 +179,14 @@ namespace terminalFr8Core.Actions
             return PackControlsCrate(infoText, availableFromManifests, availableToManifests);
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (Crate.IsStorageEmpty(curActionDO))
             {
                 return ConfigurationRequestType.Initial;
             }
 
-            var controlsMS = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var controlsMS = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (controlsMS == null)
             {

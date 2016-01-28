@@ -12,7 +12,6 @@ namespace Data.Interfaces.Manifests
         public string Object { get; set; }
         public string Status { get; set; }
         public string EventId { get; set; }
-        [MtPrimaryKey]
         public string EnvelopeId { get; set; }
         public string RecepientId { get; set; }
         public string ExternalAccountId { get; set; }

@@ -43,7 +43,6 @@ namespace Data.Control
         public const string RunRouteButton = "RunRouteButton";
         public const string UpstreamDataChooser = "UpstreamDataChooser";
         public const string UpstreamFieldChooser = "UpstreamFieldChooser";
-        public const string UpstreamCrateChooser = "UpstreamCrateChooser";
     }
 
     public class CheckBox : ControlDefinitionDTO
@@ -234,7 +233,7 @@ namespace Data.Control
             };
         }
 
-        public string GetValue(CrateStorage payloadCrateStorage, bool ignoreCase = false)
+        public string GetValue(CrateStorage payloadCrateStorage)
         {
             switch (ValueSource)
             {
@@ -242,7 +241,7 @@ namespace Data.Control
                     return TextValue;
 
                 case "upstream":
-                    return ExtractPayloadFieldValue(payloadCrateStorage, ignoreCase);
+                    return ExtractPayloadFieldValue(payloadCrateStorage);
 
                 default:
                     throw new ApplicationException("Could not extract recipient, unknown recipient mode.");
@@ -253,16 +252,16 @@ namespace Data.Control
         /// Extracts crate with specified label and ManifestType = Standard Design Time,
         /// then extracts field with specified fieldKey.
         /// </summary>
-        private string ExtractPayloadFieldValue(CrateStorage payloadCrateStorage, bool ignoreCase)
+        private string ExtractPayloadFieldValue(CrateStorage payloadCrateStorage)
         {
-            var fieldValues = payloadCrateStorage.CratesOfType<StandardPayloadDataCM>().SelectMany(x => x.Content.GetValues(selectedKey, ignoreCase))
+            var fieldValues = payloadCrateStorage.CratesOfType<StandardPayloadDataCM>().SelectMany(x => x.Content.GetValues(selectedKey))
                 .Where(s => !string.IsNullOrEmpty(s))
                 .ToArray();
 
             if (fieldValues.Length > 0)
                 return fieldValues[0];
 
-            throw new ApplicationException(string.Format("No field found with specified key: {0}.", selectedKey));
+            throw new ApplicationException("No field found with specified key.");
         }
     }
 
@@ -418,30 +417,6 @@ namespace Data.Control
 
         [JsonProperty("selectedFieldType")]
         public string SelectedFieldType { get; set; }
-    }
-
-    public class CrateDetails
-    {
-        [JsonProperty("manifestType")]
-        public DropDownList ManifestType { get; set; }
-
-        [JsonProperty("label")]
-        public DropDownList Label { get; set; }
-    }
-
-    public class UpstreamCrateChooser : ControlDefinitionDTO
-    {
-        public UpstreamCrateChooser()
-        {
-            Type = ControlTypes.UpstreamCrateChooser;
-        }
-
-        [JsonProperty("selectedCrates")]
-        public List<CrateDetails> SelectedCrates { get; set; }
-
-        [JsonProperty("multiSelection")]
-        public bool MultiSelection { get; set; }
-        
     }
 
     public class UpstreamFieldChooser : ControlDefinitionDTO

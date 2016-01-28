@@ -19,7 +19,7 @@ using terminalFr8Core.Infrastructure;
 
 namespace terminalFr8Core.Actions
 {
-    public class FindObjects_Solution_v1 : BaseTerminalActivity
+    public class FindObjects_Solution_v1 : BaseTerminalAction
     {
         public FindObjectHelper FindObjectHelper { get; set; }
         public ExplicitConfigurationHelper ExplicitConfigurationHelper { get; set; }
@@ -32,9 +32,9 @@ namespace terminalFr8Core.Actions
 
         #region Configration.
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (Crate.IsStorageEmpty(curActionDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -42,12 +42,12 @@ namespace terminalFr8Core.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        protected override Task<ActivityDO> InitialConfigurationResponse(
-            ActivityDO activityDO, AuthorizationTokenDO authTokenDO)
+        protected override Task<ActionDO> InitialConfigurationResponse(
+            ActionDO actionDO, AuthorizationTokenDO authTokenDO)
         {
             var connectionString = GetConnectionString();
 
-            using (var updater = Crate.UpdateStorage(activityDO))
+            using (var updater = Crate.UpdateStorage(actionDO))
             {
                 updater.CrateStorage.Clear();
 
@@ -57,13 +57,13 @@ namespace terminalFr8Core.Actions
                 UpdatePrevSelectedObject(updater);
             }
 
-            return Task.FromResult(activityDO);
+            return Task.FromResult(actionDO);
         }
 
-        protected async override Task<ActivityDO> FollowupConfigurationResponse(
-            ActivityDO activityDO, AuthorizationTokenDO authTokenDO)
+        protected async override Task<ActionDO> FollowupConfigurationResponse(
+            ActionDO actionDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(activityDO))
+            using (var updater = Crate.UpdateStorage(actionDO))
             {
                 var crateStorage = updater.CrateStorage;
 
@@ -83,9 +83,9 @@ namespace terminalFr8Core.Actions
                 UpdatePrevSelectedObject(updater);
             }
 
-            await UpdateChildActions(activityDO);
+            await UpdateChildActions(actionDO);
 
-            return activityDO;
+            return actionDO;
         }
 
         private string GetCurrentSelectedObject(CrateStorage storage)
@@ -259,7 +259,7 @@ namespace terminalFr8Core.Actions
                 new RunRouteButton()
                 {
                     Name = "RunRoute",
-                    Label = "Run Plan",
+                    Label = "Run Route",
                 }
             );
         }
@@ -278,27 +278,28 @@ namespace terminalFr8Core.Actions
 
         #region Child action management.
 
-        private async Task<ActivityTemplateDTO> ExtractActivityTemplate(ActivityDO activityDO, string name)
+        private async Task<ActivityTemplateDTO> ExtractActivityTemplate(ActionDO actionDO, string name)
         {
-            var activityTemplate = (await HubCommunicator.GetActivityTemplates(activityDO, CurrentFr8UserId))
+            var activityTemplate =
+                (await HubCommunicator.GetActivityTemplates(actionDO))
                 .FirstOrDefault(x => x.Name == name);
 
             return activityTemplate;
         }
 
-        private async Task<ActivityDO> CreateConnectToSqlAction(ActivityDO activityDO)
+        private async Task<ActionDO> CreateConnectToSqlAction(ActionDO actionDO)
         {
             var connectionString = GetConnectionString();
 
             var activityTemplateName = "ConnectToSql";
-            var activityTemplateDTO = await ExtractActivityTemplate(activityDO, activityTemplateName);
+            var activityTemplateDTO = await ExtractActivityTemplate(actionDO, activityTemplateName);
 
             if (activityTemplateDTO == null)
             {
                 throw new Exception(string.Format("ActivityTemplate {0} was not found", activityTemplateName));
             }
 
-            var connectToSqlActionDO = new ActivityDO()
+            var connectToSqlActionDO = new ActionDO()
             {
                 IsTempId = true,
                 ActivityTemplateId = activityTemplateDTO.Id,
@@ -334,21 +335,21 @@ namespace terminalFr8Core.Actions
             return connectToSqlActionDO;
         }
 
-        private async Task<ActivityDO> CreateBuildQueryAction(ActivityDO activityDO)
+        private async Task<ActionDO> CreateBuildQueryAction(ActionDO actionDO)
         {
-            var crateStorage = Crate.GetStorage(activityDO);
+            var crateStorage = Crate.GetStorage(actionDO);
             var selectedObject = GetCurrentSelectedObject(crateStorage);
             var selectedConditions = GetCurrentSelectedConditions(crateStorage);
 
             var activityTemplateName = "BuildQuery";
-            var activityTemplateDTO = await ExtractActivityTemplate(activityDO, activityTemplateName);
+            var activityTemplateDTO = await ExtractActivityTemplate(actionDO, activityTemplateName);
 
             if (activityTemplateDTO == null)
             {
                 throw new Exception(string.Format("ActivityTemplate {0} was not found", activityTemplateName));
             }
 
-            var buildQueryActionDO = new ActivityDO()
+            var buildQueryActionDO = new ActionDO()
             {
                 IsTempId = true,
                 ActivityTemplateId = activityTemplateDTO.Id,
@@ -372,17 +373,17 @@ namespace terminalFr8Core.Actions
             return buildQueryActionDO;
         }
 
-        private async Task<ActivityDO> CreateExecuteSqlAction(ActivityDO activityDO)
+        private async Task<ActionDO> CreateExecuteSqlAction(ActionDO actionDO)
         {
             var activityTemplateName = "ExecuteSql";
-            var activityTemplateDTO = await ExtractActivityTemplate(activityDO, activityTemplateName);
+            var activityTemplateDTO = await ExtractActivityTemplate(actionDO, activityTemplateName);
 
             if (activityTemplateDTO == null)
             {
                 throw new Exception(string.Format("ActivityTemplate {0} was not found", activityTemplateName));
             }
 
-            var executeSqlActionDO = new ActivityDO()
+            var executeSqlActionDO = new ActionDO()
             {
                 IsTempId = true,
                 ActivityTemplateId = activityTemplateDTO.Id,
@@ -396,20 +397,20 @@ namespace terminalFr8Core.Actions
             return executeSqlActionDO;
         }
 
-        private async Task UpdateChildActions(ActivityDO activityDO)
+        private async Task UpdateChildActions(ActionDO actionDO)
         {
-            activityDO.ChildNodes = new List<RouteNodeDO>();
+            actionDO.ChildNodes = new List<RouteNodeDO>();
 
-            var connectToSqlActionDO = await CreateConnectToSqlAction(activityDO);
-            activityDO.ChildNodes.Add(connectToSqlActionDO);
+            var connectToSqlActionDO = await CreateConnectToSqlAction(actionDO);
+            actionDO.ChildNodes.Add(connectToSqlActionDO);
 
-            if (FindControl(Crate.GetStorage(activityDO), "QueryBuilder") != null)
+            if (FindControl(Crate.GetStorage(actionDO), "QueryBuilder") != null)
             {
-                var buildQueryActionDO = await CreateBuildQueryAction(activityDO);
-                activityDO.ChildNodes.Add(buildQueryActionDO);
+                var buildQueryActionDO = await CreateBuildQueryAction(actionDO);
+                actionDO.ChildNodes.Add(buildQueryActionDO);
 
-                var executeSqlActionDO = await CreateExecuteSqlAction(activityDO);
-                activityDO.ChildNodes.Add(executeSqlActionDO);
+                var executeSqlActionDO = await CreateExecuteSqlAction(actionDO);
+                actionDO.ChildNodes.Add(executeSqlActionDO);
             }
         }
 
@@ -417,9 +418,9 @@ namespace terminalFr8Core.Actions
 
         #region Execution
 
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            return Success(await GetPayload(curActivityDO, containerId));
+            return Success(await GetPayload(curActionDO, containerId));
         }
 
         #endregion

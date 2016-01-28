@@ -41,7 +41,7 @@ namespace terminalPapertrail.Tests.Controllers
             var actions = (result as JsonResult<StandardFr8TerminalCM>).Content.Actions;
             Assert.AreEqual(1, actions.Count, "Terminal paper trial has more than one actions.");
             Assert.AreEqual("Write_To_Log", actions[0].Name,
-                "Write to log activity for Papertrail terminal is not avaialble.");
+                "Write to log action for Papertrail terminal is not avaialble.");
         }
     }
 }

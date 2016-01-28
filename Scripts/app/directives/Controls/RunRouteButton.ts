@@ -5,8 +5,8 @@ module dockyard.directives {
     'use strict';
 
     export function RunRouteButton ($compile: ng.ICompileService): ng.IDirective {
-        var runContainer = function ($q, $http, planId): ng.IPromise<any> {
-            var url = '/api/routes/run?planId=' + planId;
+        var runContainer = function ($q, $http, routeId): ng.IPromise<any> {
+            var url = '/api/routes/run?routeId=' + routeId;
 
             return $q(function (resolve, reject) {
                 $http.post(url)
@@ -77,7 +77,7 @@ module dockyard.directives {
     }
 
     export interface IRunRouteButtonScope extends ng.IScope {
-        currentAction: model.ActivityDTO;
+        currentAction: model.ActionDTO;
         error: string;
         runNow: () => void;
     }

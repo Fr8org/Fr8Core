@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data.Entities;
-using Data.Infrastructure;
 using Data.Interfaces;
 using Microsoft.Azure.KeyVault;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
@@ -37,15 +36,11 @@ namespace Data.Repositories
         {
         }
         
-        protected override void ProcessChanges(
-            IEnumerable<AuthorizationTokenDO> adds,
-            IEnumerable<AuthorizationTokenDO> updates,
-            IEnumerable<AuthorizationTokenDO> deletes)
+        protected override void ProcessChanges(IEnumerable<AuthorizationTokenDO> adds, IEnumerable<AuthorizationTokenDO> updates, IEnumerable<AuthorizationTokenDO> deletes)
         {
            // using (WebMonitor.Tracer.Monitor.StartFrame("Processing changes"))
             {
                 var tasks = new List<Task>();
-                var taskInfo = new List<string>();
 
                 foreach (var token in adds)
                 {
@@ -54,17 +49,7 @@ namespace Data.Repositories
                         continue;
                     }
 
-                    var secretId = FormatSecretName(token.Id);
-
-                    tasks.Add(UpdateSecretAsync(secretId, token.Token));
-                    taskInfo.Add(
-                        string.Format(
-                            "Add new token: Id = {0}, ExternalAccountName = {1}, SecretId = {2}",
-                            token.Id.ToString(),
-                            token.ExternalAccountId,
-                            secretId
-                        )
-                    );
+                    tasks.Add(UpdateSecretAsync(FormatSecretName(token.Id), token.Token));
                 }
 
                 foreach (var token in updates)
@@ -74,42 +59,16 @@ namespace Data.Repositories
                     if (string.IsNullOrWhiteSpace(token.Token))
                     {
                         tasks.Add(DeleteSecretAsync(secretId));
-                        taskInfo.Add(
-                            string.Format(
-                                "Delete existing token: Id = {0}, ExternalAccountName = {1}, SecretId = {2}",
-                                token.Id.ToString(),
-                                token.ExternalAccountId,
-                                secretId
-                            )
-                        );
                     }
                     else
                     {
                         tasks.Add(UpdateSecretAsync(secretId, token.Token));
-                        taskInfo.Add(
-                            string.Format(
-                                "Update existing token: Id = {0}, ExternalAccountName = {1}, SecretId = {2}",
-                                token.Id.ToString(),
-                                token.ExternalAccountId,
-                                secretId
-                            )
-                        );
                     }
                 }
 
                 foreach (var token in deletes)
                 {
-                    var secretId = FormatSecretName(token.Id);
-
-                    tasks.Add(DeleteSecretAsync(secretId));
-                    taskInfo.Add(
-                        string.Format(
-                            "Delete existing token: Id = {0}, ExternalAccountName = {1}, SecretId = {2}",
-                            token.Id.ToString(),
-                            token.ExternalAccountId,
-                            secretId
-                        )
-                    );
+                    tasks.Add(DeleteSecretAsync(FormatSecretName(token.Id)));
                 }
 
                 if (tasks.Count == 0)
@@ -119,17 +78,7 @@ namespace Data.Repositories
 
                // using (WebMonitor.Tracer.Monitor.StartFrame("Commiting"))
                 {
-                    var allCompleted = Task.WaitAll(tasks.ToArray(), MaxWaitTimeout);
-                    if (!allCompleted)
-                    {
-                        for (var i = 0; i < tasks.Count; ++i)
-                        {
-                            if (!tasks[i].IsCompleted)
-                            {
-                                EventManager.KeyVaultFailed("ProcessChanges", new Exception(taskInfo[i]));
-                            }
-                        }
-                    }
+                    Task.WaitAll(tasks.ToArray(), MaxWaitTimeout);
                 }
             }
         }
@@ -159,9 +108,8 @@ namespace Data.Repositories
                 {
                     return (await Client.GetSecretAsync(KeyVaultUrl, secretId)).Value;
                 }
-                catch (Exception ex)
+                catch
                 {
-                    EventManager.KeyVaultFailed("GetSecretAsync", ex);
                     return null;
                 }
             });
@@ -175,9 +123,8 @@ namespace Data.Repositories
                 {
                     await Client.SetSecretAsync(KeyVaultUrl, secret, value);
                 }
-                catch (Exception ex)
+                catch
                 {
-                    EventManager.KeyVaultFailed("SetSecretAsync", ex);
                 }
             });
         }
@@ -190,9 +137,8 @@ namespace Data.Repositories
                 {
                     await Client.DeleteSecretAsync(KeyVaultUrl, secret);
                 }
-                catch (Exception ex)
+                catch
                 {
-                    EventManager.KeyVaultFailed("DeleteSecretAsync", ex);
                 }
             });
         }

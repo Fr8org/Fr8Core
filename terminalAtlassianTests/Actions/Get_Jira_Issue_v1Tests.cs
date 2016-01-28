@@ -38,10 +38,10 @@ namespace terminalDropboxTests.Actions
         public void Run_ReturnsPayloadDTO()
         {
             //Arrange
-            var curActivityDO = FixtureData.GetJiraIssueTestActionDO1();
+            var curActionDO = FixtureData.GetJiraIssueTestActionDO1();
             var container = FixtureData.TestContainer();
             //Act
-            var payloadDTOResult = _get_Jira_Issue_v1.Run(curActivityDO, container.Id, FixtureData.JiraAuthorizationToken()).Result;
+            var payloadDTOResult = _get_Jira_Issue_v1.Run(curActionDO, container.Id, FixtureData.JiraAuthorizationToken()).Result;
 
             //Assert
             var jiraIssue = JsonConvert.DeserializeObject<StandardPayloadDataCM>(payloadDTOResult.CrateStorage.Crates[1].Contents.ToString());

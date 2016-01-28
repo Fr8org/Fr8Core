@@ -12,12 +12,12 @@ namespace terminalFr8CoreTests.Integration
     [Explicit]
     public class Terminal_Discover_v1Tests : BaseHealthMonitorTest
     {
-        private const int Fr8CoreActionCount = 18;
+        private const int Fr8CoreActionCount = 16;
 
-        private const string TestIncomingDataName = "TestIncomingData";
+        private const string FilterUsingRunTimeDataName = "FilterUsingRunTimeData";
         private const string MapFieldsName = "MapFields";
         private const string AddPayloadManuallyName = "AddPayloadManually";
-        private const string SaveToFr8WarehouseName = "SaveToFr8Warehouse";
+        private const string StoreMTDataName = "StoreMTData";
         private const string Select_Fr8_ObjectName = "Select_Fr8_Object";
         private const string ConnectToSqlName = "ConnectToSql";
         private const string BuildQueryName = "BuildQuery";
@@ -30,8 +30,6 @@ namespace terminalFr8CoreTests.Integration
         private const string ConvertRelatedFieldsIntoTableName = "ConvertRelatedFieldsIntoTable";
         private const string QueryMTDatabaseName = "QueryMTDatabase";
         private const string ShowReportName = "Show_Report_Onscreen";
-        private const string StoreFileName = "StoreFile";
-        private const string MonitorFr8Events = "Monitor_Fr8_Events";
 
         public override string TerminalName
         {
@@ -47,10 +45,10 @@ namespace terminalFr8CoreTests.Integration
 
             Assert.NotNull(terminalDiscoverResponse);
             Assert.AreEqual(Fr8CoreActionCount, terminalDiscoverResponse.Actions.Count);
-            Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == TestIncomingDataName));
+            Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == FilterUsingRunTimeDataName));
             Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == MapFieldsName));
             Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == AddPayloadManuallyName));
-            Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == SaveToFr8WarehouseName));
+            Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == StoreMTDataName));
             Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == Select_Fr8_ObjectName));
             Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == ConnectToSqlName));
             Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == BuildQueryName));
@@ -63,9 +61,6 @@ namespace terminalFr8CoreTests.Integration
             Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == ConvertRelatedFieldsIntoTableName));
             Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == QueryMTDatabaseName));
             Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == ShowReportName));
-            Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == StoreFileName));
-            Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == MonitorFr8Events));
-            
         }
     }
 }

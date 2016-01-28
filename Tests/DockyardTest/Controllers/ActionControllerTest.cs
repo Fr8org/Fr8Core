@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Results;
@@ -25,7 +24,7 @@ namespace DockyardTest.Controllers
     public class ActionControllerTest : BaseTest
     {
 
-        private IActivity _activity;
+        private IAction _action;
 
         public ActionControllerTest()
         {
@@ -34,7 +33,7 @@ namespace DockyardTest.Controllers
         public override void SetUp()
         {
             base.SetUp();
-            _activity = ObjectFactory.GetInstance<IActivity>();
+            _action = ObjectFactory.GetInstance<IAction>();
             // DO-1214
             //CreateEmptyActionList();
             CreateActionTemplate();
@@ -46,8 +45,8 @@ namespace DockyardTest.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var plan = FixtureData.TestRoute1();
-                uow.PlanRepository.Add(plan);
+                var route = FixtureData.TestRoute1();
+                uow.RouteRepository.Add(route);
 
                 var subroute = FixtureData.TestSubrouteDO1();
                 uow.RouteNodeRepository.Add(subroute);
@@ -65,10 +64,10 @@ namespace DockyardTest.Controllers
                 controller.Save(actualAction);
 
                 //Assert
-                Assert.IsNotNull(uow.ActivityRepository);
-                Assert.IsTrue(uow.ActivityRepository.GetAll().Count() == 1);
+                Assert.IsNotNull(uow.ActionRepository);
+                Assert.IsTrue(uow.ActionRepository.GetAll().Count() == 1);
 
-                var expectedAction = uow.ActivityRepository.GetByKey(actualAction.Id);
+                var expectedAction = uow.ActionRepository.GetByKey(actualAction.Id);
                 Assert.IsNotNull(expectedAction);
                 Assert.AreEqual(actualAction.Name, expectedAction.Name);
             }
@@ -79,18 +78,18 @@ namespace DockyardTest.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var plan = FixtureData.TestRoute1();
-                uow.PlanRepository.Add(plan);
+                var route = FixtureData.TestRoute1();
+                uow.RouteRepository.Add(route);
 
                 var subroute = FixtureData.TestSubrouteDO1();
                 uow.RouteNodeRepository.Add(subroute);
 
                 //Arrange
                 //Add one test action
-                var activity = FixtureData.TestActivity1();
-                activity.ParentRouteNodeId = subroute.Id;
+                var action = FixtureData.TestAction1();
+                action.ParentRouteNodeId = subroute.Id;
                 
-                uow.ActivityRepository.Add(activity);
+                uow.ActionRepository.Add(action);
                 uow.SaveChanges();
 
                 //Act
@@ -102,11 +101,11 @@ namespace DockyardTest.Controllers
                 controller.Save(actualAction);
 
                 //Assert
-                Assert.IsNotNull(uow.ActivityRepository);
-                Assert.IsTrue(uow.ActivityRepository.GetAll().Count() == 2);
+                Assert.IsNotNull(uow.ActionRepository);
+                Assert.IsTrue(uow.ActionRepository.GetAll().Count() == 2);
 
                 //Still there is only one action as the update happened.
-                var expectedAction = uow.ActivityRepository.GetByKey(actualAction.Id);
+                var expectedAction = uow.ActionRepository.GetByKey(actualAction.Id);
                 Assert.IsNotNull(expectedAction);
                 Assert.AreEqual(actualAction.Name, expectedAction.Name);
             }
@@ -120,8 +119,8 @@ namespace DockyardTest.Controllers
             {
                 //Arrange
                 //Add one test action
-                var activity = FixtureData.TestActivity1();
-                uow.ActivityRepository.Add(activity);
+                var action = FixtureData.TestAction1();
+                uow.ActionRepository.Add(action);
                 uow.SaveChanges();
 
                 //Act
@@ -131,11 +130,11 @@ namespace DockyardTest.Controllers
                 controller.Save(actualAction);
 
                 //Assert
-                Assert.IsNotNull(uow.ActivityRepository);
-                Assert.IsTrue(uow.ActivityRepository.GetAll().Count() == 1);
+                Assert.IsNotNull(uow.ActionRepository);
+                Assert.IsTrue(uow.ActionRepository.GetAll().Count() == 1);
 
                 //Still there is only one action as the update happened.
-                var expectedAction = uow.ActivityRepository.GetByKey(actualAction.Id);
+                var expectedAction = uow.ActionRepository.GetByKey(actualAction.Id);
                 Assert.IsNotNull(expectedAction);
                 Assert.AreEqual(actualAction.Name, expectedAction.Name);
             }
@@ -264,12 +263,12 @@ namespace DockyardTest.Controllers
             {
                 var subRouteMock = new Mock<ISubroute>();
 
-                subRouteMock.Setup(a => a.DeleteActivity(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<bool>())).ReturnsAsync(true);
+                subRouteMock.Setup(a => a.DeleteAction(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<bool>())).ReturnsAsync(true);
 
-                ActivityDO activityDO = new FixtureData(uow).TestActivity3();
+                ActionDO actionDO = new FixtureData(uow).TestAction3();
                 var controller = new ActionsController(subRouteMock.Object);
-                await controller.Delete(activityDO.Id);
-                subRouteMock.Verify(a => a.DeleteActivity(null, activityDO.Id, false));
+                await controller.Delete(actionDO.Id);
+                subRouteMock.Verify(a => a.DeleteAction(null, actionDO.Id, false));
             }
         }
 
@@ -279,13 +278,13 @@ namespace DockyardTest.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                Mock<IActivity> actionMock = new Mock<IActivity>();
+                Mock<IAction> actionMock = new Mock<IAction>();
                 actionMock.Setup(a => a.GetById(It.IsAny<IUnitOfWork>(), It.IsAny<Guid>()));
 
-                ActivityDO activityDO = new FixtureData(uow).TestActivity3();
+                ActionDO actionDO = new FixtureData(uow).TestAction3();
                 var controller = new ActionsController(actionMock.Object);
-                controller.Get(activityDO.Id);
-                actionMock.Verify(a => a.GetById(It.IsAny<IUnitOfWork>(), activityDO.Id));
+                controller.Get(actionDO.Id);
+                actionMock.Verify(a => a.GetById(It.IsAny<IUnitOfWork>(), actionDO.Id));
             }
         }
 
@@ -298,12 +297,12 @@ namespace DockyardTest.Controllers
 //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 //            {
 //                // 
-//                var curPlan = FixtureData.TestRoute1();
-//                uow.RouteRepository.Add(curPlan);
+//                var curRoute = FixtureData.TestRoute1();
+//                uow.RouteRepository.Add(curRoute);
 //                uow.SaveChanges();
 //                //Add a processnodetemplate to processtemplate 
 //                var curSubroute = FixtureData.TestSubrouteDO1();
-//                curSubroute.ParentTemplateId = curPlan.Id;
+//                curSubroute.ParentTemplateId = curRoute.Id;
 //
 //                uow.SubrouteRepository.Add(curSubroute);
 //                uow.SaveChanges();
@@ -330,9 +329,9 @@ namespace DockyardTest.Controllers
         /// <summary>
         /// Creates a new Action with the given action ID
         /// </summary>
-        private ActivityDTO CreateActionWithId(Guid actionId)
+        private ActionDTO CreateActionWithId(Guid actionId)
         {
-            return new ActivityDTO
+            return new ActionDTO
             {
                 Id = actionId,
                 Name = "WriteToAzureSql",
@@ -343,16 +342,16 @@ namespace DockyardTest.Controllers
             };
         }
 
-        private ActivityDO CreateActionWithV2ActionTemplate(IUnitOfWork uow)
+        private ActionDO CreateActionWithV2ActionTemplate(IUnitOfWork uow)
         {
 
             var curActionTemplate = FixtureData.TestActivityTemplateV2();
             uow.ActivityTemplateRepository.Add(curActionTemplate);
 
-            var curAction = FixtureData.TestActivity1();
+            var curAction = FixtureData.TestAction1();
             curAction.ActivityTemplateId = curActionTemplate.Id;
             curAction.ActivityTemplate = curActionTemplate;
-            uow.ActivityRepository.Add(curAction);
+            uow.ActionRepository.Add(curAction);
 
             return curAction;
         }
@@ -365,11 +364,11 @@ namespace DockyardTest.Controllers
         public async void ActionController_GetConfigurationSettings_ValidActionDesignDTO()
         {
             var controller = new ActionsController();
-            ActivityDTO actionDesignDTO = CreateActionWithId(FixtureData.GetTestGuidById(2));
+            ActionDTO actionDesignDTO = CreateActionWithId(FixtureData.GetTestGuidById(2));
             actionDesignDTO.ActivityTemplate = FixtureData.TestActionTemplateDTOV2();
             var actionResult = await controller.Configure(actionDesignDTO);
 
-            var okResult = actionResult as OkNegotiatedContentResult<ActivityDO>;
+            var okResult = actionResult as OkNegotiatedContentResult<ActionDO>;
 
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(okResult.Content);
@@ -380,26 +379,26 @@ namespace DockyardTest.Controllers
         public async void ActionController_GetConfigurationSettings_IdIsMissing()
         {
             var controller = new ActionsController();
-            ActivityDTO actionDesignDTO = CreateActionWithId(FixtureData.GetTestGuidById(2));
+            ActionDTO actionDesignDTO = CreateActionWithId(FixtureData.GetTestGuidById(2));
             actionDesignDTO.Id = Guid.Empty;
             var actionResult = await controller.Configure(actionDesignDTO);
 
-            var okResult = actionResult as OkNegotiatedContentResult<ActivityDO>;
+            var okResult = actionResult as OkNegotiatedContentResult<ActionDO>;
 
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(okResult.Content);
         }
 
         [Test]
-        [ExpectedException(ExpectedException = typeof(KeyNotFoundException))]
+        [ExpectedException(ExpectedException = typeof(NullReferenceException))]
         public async void ActionController_GetConfigurationSettings_ActionTemplateIdIsMissing()
         {
             var controller = new ActionsController();
-            ActivityDTO actionDesignDTO = CreateActionWithId(FixtureData.GetTestGuidById(2));
+            ActionDTO actionDesignDTO = CreateActionWithId(FixtureData.GetTestGuidById(2));
             actionDesignDTO.ActivityTemplateId = 0;
             var actionResult = await controller.Configure(actionDesignDTO);
 
-            var okResult = actionResult as OkNegotiatedContentResult<ActivityDO>;
+            var okResult = actionResult as OkNegotiatedContentResult<ActionDO>;
 
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(okResult.Content);

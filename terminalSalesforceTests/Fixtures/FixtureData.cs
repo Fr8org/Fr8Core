@@ -32,11 +32,11 @@ namespace terminalSalesforceTests.Fixtures
             };
         }
 
-        public static ActivityDO GetFileListTestActionDO1()
+        public static ActionDO GetFileListTestActionDO1()
         {
             var actionTemplate = GetDataActivityTemplateDO();
 
-            var activityDO = new ActivityDO()
+            var actionDO = new ActionDO()
             {
                 Name = "testaction",
                 Id = new Guid("8339DC87-F011-4FB1-B47C-FEC406E4100A"),
@@ -45,7 +45,7 @@ namespace terminalSalesforceTests.Fixtures
                 CrateStorage = "",
 
             };
-            return activityDO;
+            return actionDO;
         }
     }
 }

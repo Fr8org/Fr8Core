@@ -22,27 +22,27 @@ namespace DockyardTest.Entities
                 
                 //SETUP
                 //create a customer from fixture data
-                var curActivityDO = FixtureData.TestActivity1();
+                var curActionDO = FixtureData.TestAction1();
 
                 //EXECUTE
-                uow.ActivityRepository.Add(curActivityDO);
+                uow.ActionRepository.Add(curActionDO);
                 uow.SaveChanges();
 
                 //VERIFY
                 //check that it was saved to the db
-                var savedActionDO = uow.ActivityRepository.GetQuery().FirstOrDefault(u => u.Id == curActivityDO.Id);
+                var savedActionDO = uow.ActionRepository.GetQuery().FirstOrDefault(u => u.Id == curActionDO.Id);
                 Assert.NotNull(savedActionDO);
-                Assert.AreEqual(curActivityDO.Name, savedActionDO.Name);
+                Assert.AreEqual(curActionDO.Name, savedActionDO.Name);
 
-                var curActionDO2 = FixtureData.TestActivity2();
+                var curActionDO2 = FixtureData.TestAction2();
 
                 //EXECUTE
-                uow.ActivityRepository.Add(curActionDO2);
+                uow.ActionRepository.Add(curActionDO2);
                 uow.SaveChanges();
 
                 //VERIFY
                 //check that it was saved to the db
-                var savedActionDO2 = uow.ActivityRepository.GetQuery().FirstOrDefault(u => u.Id == curActionDO2.Id);
+                var savedActionDO2 = uow.ActionRepository.GetQuery().FirstOrDefault(u => u.Id == curActionDO2.Id);
                 Assert.NotNull(savedActionDO2);
                 Assert.AreEqual(curActionDO2.Name, savedActionDO2.Name);
             }

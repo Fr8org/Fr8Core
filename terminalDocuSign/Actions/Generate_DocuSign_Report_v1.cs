@@ -26,11 +26,11 @@ using TerminalBase.Services;
 
 namespace terminalDocuSign.Actions
 {
-    public class Generate_DocuSign_Report_v1 : BaseTerminalActivity
+    public class Generate_DocuSign_Report_v1 : BaseTerminalAction
     {
         // Here in this action we have query builder control to build queries against docusign API and out mt database.
         // Docusign and MT DB have different set of fileds and we want to provide ability to search by any field.
-        // Our action should "plan" queries on the particular fields to the corresponding backend.
+        // Our action should "route" queries on the particular fields to the corresponding backend.
         // For example, we want to search by Status = Sent and Recipient = chucknorris@gmail.com
         // Both MT DB and Docusign can search by Status, but only MT DB can search by Recipient
         // We have to make two queries with the following criterias and union the results:
@@ -79,6 +79,7 @@ namespace terminalDocuSign.Actions
                 Controls.Add((QueryBuilder = new QueryBuilder
                 {
                     Name = "QueryBuilder",
+                    Events = new List<ControlEvent> {ControlEvent.RequestConfig},
                     Value = initialQuery,
                     Source = new FieldSourceDTO
                     {
@@ -106,13 +107,13 @@ namespace terminalDocuSign.Actions
             _docuSignFolder = ObjectFactory.GetInstance<IDocuSignFolder>();
         }
         
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var payload = await GetPayload(curActivityDO, containerId);
+            var payload = await GetPayload(curActionDO, containerId);
 
             CheckAuthentication(authTokenDO);
 
-            var configurationControls = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
+            var configurationControls = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
 
             if (configurationControls == null)
             {
@@ -233,7 +234,7 @@ namespace terminalDocuSign.Actions
                         // cache list of folders
                         if (folders == null)
                         {
-                             folders = _docuSignFolder.GetSearchFolders(authToken.Email, authToken.ApiPassword);
+                             folders = _docuSignFolder.GetFolders(authToken.Email, authToken.ApiPassword);
                         }
 
                         var value = condition.Value;
@@ -255,25 +256,25 @@ namespace terminalDocuSign.Actions
             return query;
         }
         
-        protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             if (NeedsAuthentication(authTokenDO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.Add(PackControls(new ActionUi()));
                 updater.CrateStorage.AddRange(PackDesignTimeData());
             }
             
-            return Task.FromResult(curActivityDO);
+            return Task.FromResult(curActionDO);
         }
 
-        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            return curActivityDO;
+            return curActionDO;
         }
 
         public static FieldDTO[] GetFieldListForQueryBuilder()
@@ -292,9 +293,9 @@ namespace terminalDocuSign.Actions
             }));
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (Crate.IsStorageEmpty(curActionDO))
             {
                 return ConfigurationRequestType.Initial;
             }

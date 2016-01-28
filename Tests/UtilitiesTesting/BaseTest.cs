@@ -82,8 +82,8 @@ namespace UtilitiesTesting
                   .ForMember(activityTemplateDO => activityTemplateDO.Name, opts => opts.ResolveUsing(e => e.Name))
                   .ForMember(activityTemplateDO => activityTemplateDO.Version, opts => opts.ResolveUsing(e => e.Version));
 
-            Mapper.CreateMap<RouteEmptyDTO, PlanDO>();
-            Mapper.CreateMap<PlanDO, RouteEmptyDTO>();
+            Mapper.CreateMap<RouteEmptyDTO, RouteDO>();
+            Mapper.CreateMap<RouteDO, RouteEmptyDTO>();
             Mapper.CreateMap<UserVM, EmailAddressDO>()
                 .ForMember(userDO => userDO.Address, opts => opts.ResolveUsing(e => e.EmailAddress));
             Mapper.CreateMap<UserVM, Fr8AccountDO>()
@@ -94,7 +94,7 @@ namespace UtilitiesTesting
                 .ForMember(userDO => userDO.EmailAddress, opts => opts.ResolveUsing(e => new EmailAddressDO { Address = e.EmailAddress }))
                 .ForMember(userDO => userDO.Roles, opts => opts.Ignore());
 
-            Mapper.CreateMap<ActivityDO, ActivityDTO>();
+            Mapper.CreateMap<ActionDO, ActionDTO>();
 
             Mapper.CreateMap<Fr8AccountDO, UserDTO>()
                 .ForMember(dto => dto.EmailAddress, opts => opts.ResolveUsing(e => e.EmailAddress.Address))

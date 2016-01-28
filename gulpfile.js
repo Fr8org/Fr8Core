@@ -88,7 +88,6 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/Controls/Duration.js',
         'Scripts/app/directives/Controls/UpstreamDataChooser.js',
         'Scripts/app/directives/Controls/UpstreamFieldChooser.js',
-        'Scripts/app/directives/Controls/UpstreamCrateChooser.js',
         'Scripts/app/directives/LongAjaxCursor.js',
         'Scripts/app/filters/ActionNameFormatter.js',
         'Scripts/app/filters/DateTimeFormatter.js',

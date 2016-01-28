@@ -9,7 +9,6 @@ namespace terminalDocuSignTests.Fixtures
         {
             return new AuthorizationTokenDTO()
             {
-                UserId = "testUser",
                 Token = @"{ ""Email"": ""freight.testing@gmail.com"", ""ApiPassword"": ""SnByDvZJ/fp9Oesd/a9Z84VucjU="" }"
             };
         }
@@ -54,11 +53,11 @@ namespace terminalDocuSignTests.Fixtures
             };
         }
 
-        public static ActivityDTO Monitor_DocuSign_v1_InitialConfiguration_ActionDTO()
+        public static ActionDTO Monitor_DocuSign_v1_InitialConfiguration_ActionDTO()
         {
             var activityTemplate = Monitor_DocuSign_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            return new ActionDTO()
             {
                 Id = Guid.NewGuid(),
                 Name = "Monitor_DocuSign_Envelope_Activity",
@@ -69,11 +68,11 @@ namespace terminalDocuSignTests.Fixtures
             };
         }
 
-        public static ActivityDTO Query_DocuSign_v1_InitialConfiguration_ActionDTO()
+        public static ActionDTO Query_DocuSign_v1_InitialConfiguration_ActionDTO()
         {
             var activityTemplate = Query_DocuSign_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            return new ActionDTO()
             {
                 Id = Guid.NewGuid(),
                 Name = "Query_DocuSign",
@@ -84,11 +83,11 @@ namespace terminalDocuSignTests.Fixtures
             };
         }
 
-        public static ActivityDTO Receive_DocuSign_Envelope_v1_Example_ActionDTO()
+        public static ActionDTO Receive_DocuSign_Envelope_v1_Example_ActionDTO()
         {
             var activityTemplate = Receive_DocuSign_Envelope_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            return new ActionDTO()
             {
                 Id = Guid.NewGuid(),
                 Name = "Receive_DocuSign",
@@ -99,11 +98,11 @@ namespace terminalDocuSignTests.Fixtures
             };
         }
 
-        public static ActivityDTO Record_Docusign_v1_InitialConfiguration_ActionDTO()
+        public static ActionDTO Record_Docusign_v1_InitialConfiguration_ActionDTO()
         {
             var activityTemplate = Record_DocuSign_Envelope_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            return new ActionDTO()
             {
                 Id = Guid.NewGuid(),
                 Name = "Record_DocuSign",
@@ -124,11 +123,11 @@ namespace terminalDocuSignTests.Fixtures
             };
         }        
 
-        public static ActivityDTO Send_DocuSign_Envelope_v1_Example_ActionDTO()
+        public static ActionDTO Send_DocuSign_Envelope_v1_Example_ActionDTO()
         {
             var activityTemplate = Send_DocuSign_Envelope_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            return new ActionDTO()
             {
                 Id = Guid.NewGuid(),
                 Name = "Send_DocuSign",
@@ -149,11 +148,11 @@ namespace terminalDocuSignTests.Fixtures
             };
         }
 
-        public static ActivityDTO Mail_Merge_Into_DocuSign_v1_InitialConfiguration_ActionDTO()
+        public static ActionDTO Mail_Merge_Into_DocuSign_v1_InitialConfiguration_ActionDTO()
         {
             var activityTemplate = Mail_Merge_Into_DocuSign_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            return new ActionDTO()
             {
                 Id = Guid.NewGuid(),
                 Name = "Mail_Merge_Into_DocuSign",
@@ -174,11 +173,11 @@ namespace terminalDocuSignTests.Fixtures
             };
         }
 
-        public static ActivityDTO Rich_Document_Notifications_v1_InitialConfiguration_ActionDTO()
+        public static ActionDTO Rich_Document_Notifications_v1_InitialConfiguration_ActionDTO()
         {
             var activityTemplate = Rich_Document_Notifications_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            return new ActionDTO()
             {
                 Id = Guid.NewGuid(),
                 Name = "Rich_Document_Notifications",
@@ -199,11 +198,11 @@ namespace terminalDocuSignTests.Fixtures
             };
         }
 
-        public static ActivityDTO Extract_Data_From_Envelopes_v1_InitialConfiguration_ActionDTO()
+        public static ActionDTO Extract_Data_From_Envelopes_v1_InitialConfiguration_ActionDTO()
         {
             var activityTemplate = Extract_Data_From_Envelopes_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            return new ActionDTO()
             {
                 Id = Guid.NewGuid(),
                 Name = "Extract_Data_From_Envelopes",

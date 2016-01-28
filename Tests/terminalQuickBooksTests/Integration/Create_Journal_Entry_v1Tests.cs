@@ -27,11 +27,11 @@ namespace terminalQuickBooksTests.Integration
             var curMessage =
                 "When this Action runs, it will be expecting to find a Crate of Standard Accounting Transactions. " +
                 "Right now, it doesn't detect any Upstream Actions that produce that kind of Crate. " +
-                "Please add an activity upstream (to the left) of this action that does so.";
+                "Please add an action upstream (to the left) of this action that does so.";
             var configureUrl = GetTerminalConfigureUrl();
             var requestActionDTO = HealthMonitor_FixtureData.Action_Create_Journal_Entry_v1_InitialConfiguration_ActionDTO();
             //Act
-            var responseActionDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(
+            var responseActionDTO = await HttpPostAsync<ActionDTO, ActionDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -54,7 +54,7 @@ namespace terminalQuickBooksTests.Integration
             var curStandAccTransCrate = HealthMonitor_FixtureData.GetAccountingTransactionCM();
             AddUpstreamCrate(requestActionDTO, curStandAccTransCrate);
             //Act
-            var responseActionDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(
+            var responseActionDTO = await HttpPostAsync<ActionDTO, ActionDTO>(
                     configureUrl,
                     requestActionDTO
                 );

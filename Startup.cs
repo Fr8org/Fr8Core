@@ -19,7 +19,6 @@ using Utilities.Logging;
 using Hub.Interfaces;
 using Hangfire;
 using Hub.Managers.APIManagers.Transmitters.Restful;
-using System.Web;
 
 [assembly: OwinStartup(typeof(HubWeb.Startup))]
 
@@ -27,23 +26,58 @@ namespace HubWeb
 {
     public partial class Startup
     {
-
         public async void Configuration(IAppBuilder app)
         {
             //ConfigureDaemons();
             ConfigureAuth(app);
-#if DEV || RELEASE
             ConfigureHangfire(app, "DockyardDB");
-#endif 
 
             await RegisterTerminalActions();
+
+            app.Use(async (context, next) =>
+            {
+                if (string.Equals(context.Request.Method, HttpMethod.Post.Method, StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(context.Request.Uri.AbsolutePath, "/api/DocuSignNotification", StringComparison.OrdinalIgnoreCase))
+                {
+                    var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+                    var notificationPortForwardsCsv = configRepository.Get<string>("DocuSignNotificationPortForwards", "");
+                    var notificationPortForwards = !string.IsNullOrEmpty(notificationPortForwardsCsv)
+                        ? notificationPortForwardsCsv.Split(',')
+                        : new string[0];
+
+                    if (notificationPortForwards.Any())
+                    {
+
+                            var forwarder = ObjectFactory.GetInstance<IRestfulServiceClient>();
+                            Uri url = null;
+                            foreach (var notificationPortForward in notificationPortForwards)
+                            {
+                                try
+                                {
+                                    url = new Uri(string.Concat("http://", notificationPortForward, context.Request.Uri.PathAndQuery));
+                                    var response = await forwarder.PostAsync(url, new StreamContent(context.Request.Body));
+                                    Logger.GetLogger().DebugFormat("Forwarding request {0} to {1}: {2}", context.Request.Uri.PathAndQuery, notificationPortForward, response);
+                                }
+                                catch (TaskCanceledException)
+                                {
+                                    //Timeout
+                                    throw new TimeoutException(
+                                        String.Format("Timeout while making HTTP request.  \r\nURL: {0},   \r\nMethod: {1}",
+                                       url.ToString(),
+                                        HttpMethod.Post.Method));
+                                }
+                            }
+                        
+                    }
+                }
+
+                await next();
+            });
         }
 
         public void ConfigureHangfire(IAppBuilder app, string connectionString)
         {
-            GlobalConfiguration.Configuration
-                .UseSqlServerStorage(connectionString);
-
+            GlobalConfiguration.Configuration.UseSqlServerStorage(connectionString);
             app.UseHangfireDashboard();
             app.UseHangfireServer();
         }
@@ -115,28 +149,32 @@ namespace HubWeb
 
         public async Task RegisterTerminalActions()
         {
+            var listRegisteredActivityTemplates = new List<ActivityTemplateDO>();
             var alertReporter = ObjectFactory.GetInstance<EventReporter>();
 
-            var terminalUrls = FileUtils.LoadFileHostList();
+            var activityTemplateHosts = Utilities.FileUtils.LoadFileHostList();
             int count = 0;
-            var activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
-            var terminalService = ObjectFactory.GetInstance<ITerminal>();
-
-            foreach (string url in terminalUrls)
+            var uri = string.Empty;
+            foreach (string url in activityTemplateHosts)
             {
                 try
                 {
-                    var activityTemplateList = await terminalService.GetAvailableActions(url);
+                    uri = url.StartsWith("http") ? url : "http://" + url;
+                    uri += "/terminals/discover";
 
+                    var terminalService = ObjectFactory.GetInstance<ITerminal>(); ;
+                    var activityTemplateList = await terminalService.GetAvailableActions(uri);
                     foreach (var curItem in activityTemplateList)
                     {
                         try
                         {
-                            activityTemplate.RegisterOrUpdate(curItem);
+                            new ActivityTemplate().Register(curItem);
+                            listRegisteredActivityTemplates.Add(curItem);
                             count++;
                         }
                         catch (Exception ex)
                         {
+                            alertReporter = ObjectFactory.GetInstance<EventReporter>();
                             alertReporter.ActivityTemplateTerminalRegistrationError(
                                 string.Format("Failed to register {0} terminal. Error Message: {1}", curItem.Terminal.Name, ex.Message),
                                 ex.GetType().Name);
@@ -146,19 +184,140 @@ namespace HubWeb
                 }
                 catch (Exception ex)
                 {
+                    alertReporter = ObjectFactory.GetInstance<EventReporter>();
                     alertReporter.ActivityTemplateTerminalRegistrationError(
-                        string.Format("Failed terminal service: {0}. Error Message: {1} ", url, ex.Message),
+                        string.Format("Failed terminal service: {0}. Error Message: {1} ", uri, ex.Message),
                         ex.GetType().Name);
+
                 }
             }
 
+            UpdateActivityTemplates(listRegisteredActivityTemplates);
             alertReporter.ActivityTemplatesSuccessfullyRegistered(count);
+        }
 
+
+        public bool CheckForActivityTemplate(string templateName)
+        {
+            bool found = true;
+            try
+            {
+                using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    ActivityTemplateRepository activityTemplateRepositary = uow.ActivityTemplateRepository;
+                    List<ActivityTemplateDO> activityTemplateRepositaryItems = activityTemplateRepositary.GetAll().ToList();
+
+                    if (!activityTemplateRepositaryItems.Any(item => item.Name == templateName))
+                    {
+                        found = false;
                     }
+
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.GetLogger().Error(String.Format("Error checking for activity template \"{0}\"", templateName), e);
+            }
+            return found;
+        }
 
         public static IDisposable CreateServer(string url)
         {
             return WebApp.Start<Startup>(url: url);
         }
+
+        private void UpdateActivityTemplates(List<ActivityTemplateDO> listRegisteredItems)
+        {
+            using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var needSave = false;
+                var repository = uow.ActivityTemplateRepository;
+                var listRepositaryItems = repository.GetAll().ToList();
+                foreach (var repositaryItem in listRepositaryItems)
+                {
+                    var registeredItem = listRegisteredItems.FirstOrDefault(x => x.Name.ToLower().Equals(repositaryItem.Name.ToLower()));
+                    if (!object.Equals(registeredItem, default(ActivityTemplateDO)))
+                    {
+                        if (repositaryItem.Label != repositaryItem.Label)
+                        {
+                            repositaryItem.Label = registeredItem.Label;
+                            needSave = true;
+                        }
+
+                        if (repositaryItem.MinPaneWidth != registeredItem.MinPaneWidth)
+                        {
+                            repositaryItem.MinPaneWidth = registeredItem.MinPaneWidth;
+                            needSave = true;
+                        }
+
+                        if (registeredItem.WebServiceId != null &&
+                            repositaryItem.WebServiceId != registeredItem.WebServiceId)
+                        {
+                            repositaryItem.WebServiceId = registeredItem.WebServiceId;
+                            needSave = true;
+                        }
+
+                        if (registeredItem.TerminalId > 0 &&
+                            repositaryItem.TerminalId != registeredItem.TerminalId)
+                        {
+                            repositaryItem.TerminalId = registeredItem.TerminalId;
+                            needSave = true;
+                        }
+
+                        if (repositaryItem.Version != registeredItem.Version)
+                        {
+                            repositaryItem.Version = registeredItem.Version;
+                            needSave = true;
+                        }
+
+                        if (repositaryItem.Category != registeredItem.Category)
+                        {
+                            repositaryItem.Category = registeredItem.Category;
+                            needSave = true;
+                        }
+
+                        // if (repositaryItem.AuthenticationType != registeredItem.AuthenticationType)
+                        // {
+                        //     repositaryItem.AuthenticationType = registeredItem.AuthenticationType;
+                        //     needSave = true;
+                        // }
+
+                        if (repositaryItem.ComponentActivities != registeredItem.ComponentActivities)
+                        {
+                            repositaryItem.ComponentActivities = registeredItem.ComponentActivities;
+                            needSave = true;
+                        }
+
+                        if (repositaryItem.Tags != registeredItem.Tags)
+                        {
+                            repositaryItem.Tags = registeredItem.Tags;
+                            needSave = true;
+                        }
+
+                        if (repositaryItem.Description != registeredItem.Description)
+                        {
+                            repositaryItem.Description = registeredItem.Description;
+                            needSave = true;
+                        }
+                    }
+                    else
+                    {
+                        repositaryItem.ActivityTemplateState = Data.States.ActivityTemplateState.Inactive;
+                        needSave = true;
+                        
+
+                        var alertReporter = ObjectFactory.GetInstance<EventReporter>();
+                        alertReporter.ActivityTemplateTerminalRegistrationError(
+                            string.Format("Failed to Find Terminal For ActivityTemplate {0}.", repositaryItem.Name), "Disabling");
+                    }
+                }
+
+                if (needSave)
+                {
+                    uow.SaveChanges();
+                }
             }
         }
+
+    }
+}

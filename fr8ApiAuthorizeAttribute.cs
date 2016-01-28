@@ -15,16 +15,8 @@ namespace HubWeb
 
         protected override void HandleUnauthorizedRequest(HttpActionContext actionContext)
         {
-            if (actionContext.RequestContext.Principal.IsInRole("Guest"))
-            {
-                actionContext.Response = actionContext.Request.CreateResponse(HttpStatusCode.Forbidden,
-                    ErrorDTO.AuthenticationError("You need to register before using this functionality.", null, "GuestFail"));
-            }
-            else
-            {
-                actionContext.Response = actionContext.Request.CreateResponse(HttpStatusCode.Forbidden,
-                    ErrorDTO.AuthenticationError("Authorization has been denied for this request."));
-            }
+            var response = actionContext.Request.CreateResponse(HttpStatusCode.Forbidden, ErrorDTO.AuthenticationError("Authorization has been denied for this request."));
+            actionContext.Response = response;
         }
     }
 }

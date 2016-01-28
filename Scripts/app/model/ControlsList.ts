@@ -22,7 +22,7 @@
     }
 
     export class CheckBox extends ControlDefinitionDTO {
-        selected: boolean;
+        checked: boolean;
     }
 
     export class Button extends ControlDefinitionDTO {
@@ -96,16 +96,6 @@
         listItems: Array<DropDownListItem>;
         source: FieldSource;
         selectedKey: string;
-    }
-
-    export class CrateDetails {
-        manifestType: model.DropDownList;
-        label: model.DropDownList;
-    }
-
-    export class UpstreamCrateChooser extends ControlDefinitionDTO {
-        selectedCrates: Array<CrateDetails>;
-        multiSelection: boolean;
     }
 
     export class TextSource extends DropDownList {

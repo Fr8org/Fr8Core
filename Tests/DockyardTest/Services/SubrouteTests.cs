@@ -26,12 +26,12 @@ namespace DockyardTest.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var plan = FixtureData.TestRoute2();
-                uow.PlanRepository.Add(plan);
+                var route = FixtureData.TestRoute2();
+                uow.RouteRepository.Add(route);
 
                 //add processnode to process
                 var sampleNodeTemplate = FixtureData.TestSubrouteDO2();
-                sampleNodeTemplate.ParentRouteNodeId = plan.Id;
+                sampleNodeTemplate.ParentRouteNodeId = route.Id;
 
                 // Create
                 _subroute.Store(uow, sampleNodeTemplate);
@@ -49,12 +49,12 @@ namespace DockyardTest.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var plan = FixtureData.TestRoute2();
-                uow.PlanRepository.Add(plan);
+                var route = FixtureData.TestRoute2();
+                uow.RouteRepository.Add(route);
 
                 //add processnode to process
                 var sampleNodeTemplate = FixtureData.TestSubrouteDO2();
-                sampleNodeTemplate.ParentRouteNodeId = plan.Id;
+                sampleNodeTemplate.ParentRouteNodeId = route.Id;
 
 
                 // Create
@@ -82,12 +82,12 @@ namespace DockyardTest.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var plan = FixtureData.TestRoute2();
-                uow.PlanRepository.Add(plan);
+                var route = FixtureData.TestRoute2();
+                uow.RouteRepository.Add(route);
 
                 //add processnode to process
                 var sampleNodeTemplate = FixtureData.TestSubrouteDO2();
-                sampleNodeTemplate.ParentRouteNodeId = plan.Id;
+                sampleNodeTemplate.ParentRouteNodeId = route.Id;
 
                 // Create
                 _subroute.Store(uow, sampleNodeTemplate);

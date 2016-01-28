@@ -19,13 +19,13 @@ namespace Hub.Services
     public class Field : IField
     {
         private readonly IRouteNode _routeNode;
-        private readonly IActivity _activity;
+        private readonly IAction _action;
         private readonly ICrateManager _crate;
 
         public Field()
         {
             _routeNode = ObjectFactory.GetInstance<IRouteNode>();
-            _activity = ObjectFactory.GetInstance<IActivity>();
+            _action = ObjectFactory.GetInstance<IAction>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
@@ -33,20 +33,20 @@ namespace Hub.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curAction = _activity.GetById(uow, data.CurrentActionId);
+                var curAction = _action.GetById(uow, data.CurrentActionId);
 
-                List<ActivityDO> routeNodes;
+                List<ActionDO> routeNodes;
                 switch (data.Direction)
                 {
                     case ActivityDirection.Up:
-                        routeNodes = _routeNode.GetUpstreamActivities(uow, curAction).OfType<ActivityDO>().ToList();
+                        routeNodes = _routeNode.GetUpstreamActivities(uow, curAction).OfType<ActionDO>().ToList();
                         break;
                     case ActivityDirection.Down:
-                        routeNodes = _routeNode.GetDownstreamActivities(uow, curAction).OfType<ActivityDO>().ToList();
+                        routeNodes = _routeNode.GetDownstreamActivities(uow, curAction).OfType<ActionDO>().ToList();
                     break;
                     case ActivityDirection.Both:
-                    routeNodes = _routeNode.GetUpstreamActivities(uow, curAction).OfType<ActivityDO>().ToList();
-                    routeNodes.AddRange(_routeNode.GetDownstreamActivities(uow, curAction).OfType<ActivityDO>().ToList());
+                    routeNodes = _routeNode.GetUpstreamActivities(uow, curAction).OfType<ActionDO>().ToList();
+                    routeNodes.AddRange(_routeNode.GetDownstreamActivities(uow, curAction).OfType<ActionDO>().ToList());
                     break;
                     default:
                     throw new InvalidEnumArgumentException("Unknown ActivityDirection type");

@@ -67,7 +67,7 @@ namespace terminalQuickBooks.Controllers
 
                 return new AuthorizationTokenDTO()
                 {
-                    Error = "An error occurred while trying to authorize, please try again later."
+                    Error = "An error occured while trying to authenticate, please try again later."
                 };
             }
         }

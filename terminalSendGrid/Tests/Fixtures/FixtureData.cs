@@ -15,11 +15,11 @@ namespace terminalSendGrid.Tests.Fixtures
             return new Guid("A0287C2A-28D3-48C5-8CAC-26FE27E8EA9B");
         }
 
-        public static ActivityDO ConfigureSendEmailViaSendGridAction()
+        public static ActionDO ConfigureSendEmailViaSendGridAction()
         {
             var actionTemplate = SendEmailViaSendGridActionTemplateDTO();
 
-            var activityDO = new ActivityDO()
+            var actionDO = new ActionDO()
             {
                 Name = "testaction",
                 Id = TestGuid_Id_333(),
@@ -28,7 +28,7 @@ namespace terminalSendGrid.Tests.Fixtures
                 CrateStorage = ""
             };
 
-            return activityDO;
+            return actionDO;
         }
 
         public static Guid TestContainerGuid()

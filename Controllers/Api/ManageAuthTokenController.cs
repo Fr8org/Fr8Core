@@ -15,16 +15,14 @@ namespace HubWeb.Controllers.Api
     [Fr8ApiAuthorize]
     public class ManageAuthTokenController : ApiController
     {
-        private readonly IActivityTemplate _activityTemplate;
-
-        public IActivity Activity { get; set; }
+        public IAction Action { get; set; }
         public IAuthorization Authorization { get; set; }
         public ITerminal Terminal { get; set; }
-        
+
+
         public ManageAuthTokenController()
         {
-            _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
-            Activity = ObjectFactory.GetInstance<IActivity>();
+            Action = ObjectFactory.GetInstance<IAction>();
             Authorization = ObjectFactory.GetInstance<IAuthorization>();
             Terminal = ObjectFactory.GetInstance<ITerminal>();
         }
@@ -45,13 +43,12 @@ namespace HubWeb.Controllers.Api
                     Id = x.Id,
                     Name = x.Name,
                     AuthTokens = authTokens
-                        .Where(y => y.TerminalID == x.Id && !string.IsNullOrEmpty(y.ExternalAccountId))
+                        .Where(y => y.TerminalID == x.Id)
                         .OrderBy(y => y.ExternalAccountId)
                         .Select(y => new ManageAuthToken_AuthToken()
                         {
                             Id = y.Id,
-                            ExternalAccountName = y.ExternalAccountId,
-                            IsMain = y.IsMain
+                            ExternalAccountName = y.ExternalAccountId
                         })
                         .ToList()
                 })
@@ -75,7 +72,7 @@ namespace HubWeb.Controllers.Api
         [HttpPost]
         public IHttpActionResult TerminalsByActions(IEnumerable<Guid> actionIds)
         {
-            var result = new List<ManageAuthToken_Terminal_Activity>();
+            var result = new List<ManageAuthToken_Terminal_Action>();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -84,26 +81,26 @@ namespace HubWeb.Controllers.Api
 
                 foreach (Guid actionId in actionIds)
                 {
-                    var activity = Activity.GetById(uow, actionId);
-                    var template = _activityTemplate.GetByKey(activity.ActivityTemplateId.Value);
+                    var action = Action.GetById(uow, actionId);
+
                     result.Add(
-                        new ManageAuthToken_Terminal_Activity()
+                        new ManageAuthToken_Terminal_Action()
                         {
-                            ActivityId = actionId,
+                            ActionId = actionId,
                             Terminal = new ManageAuthToken_Terminal()
                             {
-                                Id = template.Terminal.Id,
-                                Name = template.Terminal.Name,
-                                AuthenticationType = template.Terminal.AuthenticationType,
+                                Id = action.ActivityTemplate.Terminal.Id,
+                                Name = action.ActivityTemplate.Terminal.Name,
+                                AuthenticationType = action.ActivityTemplate.Terminal.AuthenticationType,
                                 AuthTokens = authTokens
-                                    .Where(x => x.TerminalID == template.Terminal.Id)
+                                    .Where(x => x.TerminalID == action.ActivityTemplate.Terminal.Id)
                                     .Where(x => !string.IsNullOrEmpty(x.ExternalAccountId))
                                     .Select(x => new ManageAuthToken_AuthToken()
                                     {
                                          Id = x.Id,
                                          ExternalAccountName = x.ExternalAccountId,
                                          IsMain = x.IsMain,
-                                         IsSelected = (x.Id == activity.AuthorizationTokenId)
+                                         IsSelected = (x.Id == action.AuthorizationTokenId)
                                     })
                                     .ToList()
                             }
@@ -124,7 +121,7 @@ namespace HubWeb.Controllers.Api
 
             foreach (var applyItem in apply)
             {
-                Authorization.GrantToken(applyItem.ActivityId, applyItem.AuthTokenId);
+                Authorization.GrantToken(applyItem.ActionId, applyItem.AuthTokenId);
 
                 if (applyItem.IsMain)
                 {

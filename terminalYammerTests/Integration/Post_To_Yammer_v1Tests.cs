@@ -26,13 +26,13 @@ namespace terminalYammerTests.Integration
             get { return "terminalYammer"; }
         }
 
-        private async Task<ActivityDTO> ConfigurationRequest()
+        private async Task<ActionDTO> ConfigurationRequest()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
             var requestActionDTO = HealthMonitor_FixtureData.Post_To_Yammer_v1_InitialConfiguration_ActionDTO();
 
-            var responseActionDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, requestActionDTO);
+            var responseActionDTO = await HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, requestActionDTO);
 
             var storage = Crate.GetStorage(responseActionDTO);
 
@@ -41,15 +41,15 @@ namespace terminalYammerTests.Integration
                 updater.CrateStorage = storage;
             }
 
-            return await HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, requestActionDTO);
+            return await HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, requestActionDTO);
         }
 
-        private async Task<ActivityDTO> ConfigureInitial(bool isAuthToken = true)
+        private async Task<ActionDTO> ConfigureInitial(bool isAuthToken = true)
         {
             var configureUrl = GetTerminalConfigureUrl();
 
             var requestActionDTO = HealthMonitor_FixtureData.Post_To_Yammer_v1_InitialConfiguration_ActionDTO(isAuthToken);
-            var responseActionDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, requestActionDTO);
+            var responseActionDTO = await HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, requestActionDTO);
 
             return responseActionDTO;
         }
@@ -109,20 +109,20 @@ namespace terminalYammerTests.Integration
         {
             //Arrange
             var runUrl = GetTerminalRunUrl();
-            var activityDTO = await ConfigurationRequest();
+            var actionDTO = await ConfigurationRequest();
 
             AddPayloadCrate(
-                activityDTO,
+                actionDTO,
                 new StandardPayloadDataCM(
                     new FieldDTO("message", "Hello")
                 ),
                 "Payload crate"
             );
 
-            activityDTO.AuthToken = HealthMonitor_FixtureData.Yammer_AuthToken();
+            actionDTO.AuthToken = HealthMonitor_FixtureData.Yammer_AuthToken();
             //Act
                 var responsePayloadDTO =
-             await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, activityDTO);
+             await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
 
             //Assert
             var crateStorage = Crate.FromDto(responsePayloadDTO.CrateStorage);

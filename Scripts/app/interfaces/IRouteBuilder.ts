@@ -9,7 +9,7 @@ module dockyard.interfaces {
     export interface IReportIncidentVM extends ng.resource.IResource<model.IncidentDTO>, model.IncidentDTO { }
 
     export interface ISubscribedDocuSignTemplates {
-        planId?: number;
+        routeId?: number;
         id: number;
         docuSignTemplateId: string;
     }
@@ -17,7 +17,7 @@ module dockyard.interfaces {
     export interface IExternalEventSubscription {
         id: number;
         externalEvent: number;
-        planId: number;
+        routeId: number;
     }
 
     export interface IExternalEvent {
@@ -27,7 +27,7 @@ module dockyard.interfaces {
 
     export interface ISubrouteVM extends ng.resource.IResource<model.SubrouteDTO>, model.SubrouteDTO { }
     export interface ICriteriaVM extends ng.resource.IResource<model.CriteriaDTO>, model.CriteriaDTO { }
-    export interface IActionVM extends ng.resource.IResource<model.ActivityDTO>, model.ActivityDTO { }
+    export interface IActionVM extends ng.resource.IResource<model.ActionDTO>, model.ActionDTO { }
     export interface IDocuSignTemplateVM extends ng.resource.IResource<IDocuSignTemplate> { }
     export interface IDocuSignExternalEventVM extends ng.resource.IResource<IDocuSignExternalEvent> { }
     export interface IExternalEventVM extends ng.resource.IResource<IExternalEvent> { }

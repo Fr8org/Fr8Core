@@ -20,7 +20,7 @@ namespace HubTests.Managers
         {
             base.SetUp();
 
-            _incidentReporter = ObjectFactory.GetInstance <IncidentReporter>();
+            _incidentReporter = new IncidentReporter();
         } 
 
         [Test]
@@ -29,12 +29,12 @@ namespace HubTests.Managers
             _incidentReporter.SubscribeToAlerts();
 
             var terminalUrl = "localhost:1234";
-            var activityDTO = "test_action"; 
+            var actionDTO = "test_action"; 
             var errorMessage = "error_message";
 
-            var data = terminalUrl + "      " + activityDTO + " " + errorMessage;
+            var data = terminalUrl + "      " + actionDTO + " " + errorMessage;
 
-            EventManager.TerminalRunFailed(terminalUrl, activityDTO, errorMessage, System.Guid.NewGuid().ToString());
+            EventManager.TerminalRunFailed(terminalUrl, actionDTO, errorMessage, System.Guid.NewGuid().ToString());
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {   

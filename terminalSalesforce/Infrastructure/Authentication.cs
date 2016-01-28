@@ -1,7 +1,4 @@
 ﻿using Data.Interfaces.DataTransferObjects;
-using Newtonsoft.Json.Linq;
-using Salesforce.Common.Models;
-using Salesforce.Force;
 using terminalSalesforce.Services;
 using Salesforce.Common;
 using System;
@@ -89,13 +86,10 @@ namespace terminalSalesforce.Infrastructure
 
             AuthenticationClient oauthToken = (AuthenticationClient)Task.Run(() => GetAuthToken(code)).Result;
 
-            //By Default, Salesforce returns the User ID of the currently logged in user which is not friendly one.
-            var friendlyUserName = GetFriendlyUserName(oauthToken);
-
             return new AuthorizationTokenDTO()
             {
                 Token = oauthToken.AccessToken,
-                ExternalAccountId = friendlyUserName,
+                ExternalAccountId = oauthToken.Id.Substring(oauthToken.Id.LastIndexOf("/") + 1, oauthToken.Id.Length - (oauthToken.Id.LastIndexOf("/") + 1)),
                 ExternalStateToken = state,
                 AdditionalAttributes = "refresh_token=" + oauthToken.RefreshToken + ";instance_url=" + oauthToken.InstanceUrl + ";api_version=" + oauthToken.ApiVersion
             };
@@ -133,35 +127,6 @@ namespace terminalSalesforce.Infrastructure
             curAuthTokenDO.Token = auth.AccessToken;
             curAuthTokenDO.AdditionalAttributes = "refresh_token=" + auth.RefreshToken + ";instance_url=" + auth.InstanceUrl + ";api_version=" + auth.ApiVersion;
             return curAuthTokenDO;
-        }
-
-        /// <summary>
-        /// Gets Salesforce Friendly Name for the Auth Token User ID.
-        /// </summary>
-        private string GetFriendlyUserName(AuthenticationClient oauthToken)
-        {
-            string userName = string.Empty;
-
-            var curUserInfo =
-                    Task.Run(
-                        () =>
-                            new ForceClient(oauthToken.InstanceUrl, oauthToken.AccessToken, oauthToken.ApiVersion)
-                                .UserInfo<object>(oauthToken.Id)).Result;
-
-            JToken propertyValue;
-
-            var jCurUserInfo = (JObject) curUserInfo; 
-            if (jCurUserInfo.TryGetValue("display_name", out propertyValue))
-            {
-                userName = propertyValue.Value<string>();
-            }
-
-            if (jCurUserInfo.TryGetValue("username", out propertyValue))
-            {
-                userName += string.Format(" [{0}]", propertyValue.Value<string>());
-            }
-
-            return userName;
         }
     }
 }

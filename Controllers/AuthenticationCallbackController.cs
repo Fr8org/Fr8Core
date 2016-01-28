@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -17,14 +16,12 @@ namespace HubWeb.Controllers
 {
     public class AuthenticationCallbackController : Controller
     {
-        private readonly IActivity _activity;
+        private readonly IAction _action;
         private readonly IAuthorization _authorization;
-        private readonly ITerminal _terminal;
 
         public AuthenticationCallbackController()
         {
-            _terminal = ObjectFactory.GetInstance<ITerminal>();
-            _activity = ObjectFactory.GetInstance<IActivity>();
+            _action = ObjectFactory.GetInstance<IAction>();
             _authorization = ObjectFactory.GetInstance<IAuthorization>();
         }
 
@@ -44,11 +41,16 @@ namespace HubWeb.Controllers
                 requestQueryString = requestQueryString.Substring(1);
             }
 
-            TerminalDO terminal = _terminal.GetAll().FirstOrDefault(x => x.Name == terminalName && x.Version == terminalVersion);
+            TerminalDO terminal;
 
-            if (terminal == null)
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                throw new ApplicationException("Could not find terminal.");
+                terminal = uow.TerminalRepository
+                    .FindOne(x => x.Name == terminalName && x.Version == terminalVersion);
+                if (terminal == null)
+                {
+                    throw new ApplicationException("Could not find terminal.");
+                }
             }
             
             var externalAuthenticationDTO = new ExternalAuthenticationDTO()

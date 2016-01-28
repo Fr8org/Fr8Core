@@ -55,14 +55,14 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
+            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (Crate.IsStorageEmpty(curActionDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -70,93 +70,91 @@ namespace terminalDocuSign.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivtyDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivtyDO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(PackControls(new ActionUi()));
-                updater.CrateStorage.AddRange(await PackSources(curActivtyDO));
+                updater.CrateStorage.AddRange(await PackSources(curActionDO));
             }
 
-            return curActivtyDO;
+            return curActionDO;
         }
 
-        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             var actionUi = new ActionUi();
 
-            actionUi.ClonePropertiesFrom(Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().First());
+            actionUi.ClonePropertiesFrom(Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().First());
             
             //don't add child actions until a selection is made
             if (string.IsNullOrEmpty(actionUi.FinalActionsList.Value)) 
             {
-                return curActivityDO;
+                return curActionDO;
             }
 
-            curActivityDO.ChildNodes = new List<RouteNodeDO>();
+            curActionDO.ChildNodes = new List<RouteNodeDO>();
 
             // Always use default template for solution
             const string firstTemplateName = "Monitor_DocuSign_Envelope_Activity";
-            var firstActionTemplate = (await FindTemplates(curActivityDO, x => x.Name == "Monitor_DocuSign_Envelope_Activity")).FirstOrDefault();
+            var firstActionTemplate = (await FindTemplates(curActionDO, x => x.Name == "Monitor_DocuSign_Envelope_Activity")).FirstOrDefault();
 
             if (firstActionTemplate == null)
             {
                 throw new Exception(string.Format("ActivityTemplate {0} was not found", firstTemplateName));
             }
 
-            var firstAction = new ActivityDO
+            var firstAction = new ActionDO
             {
                 IsTempId = true,
                 ActivityTemplateId = firstActionTemplate.Id,
                 CrateStorage = Crate.EmptyStorageAsStr(),
                 CreateDate = DateTime.UtcNow,
                 Ordering = 1,
-                Name = "First activity",
-                Label = firstActionTemplate.Label,
-                Fr8AccountId = authTokenDO.UserID
+                Name = "First action",
+                Label = firstActionTemplate.Label
             };
 
-            curActivityDO.ChildNodes.Add(firstAction);
+            curActionDO.ChildNodes.Add(firstAction);
 
             int finalActionTemplateId;
 
             if (int.TryParse(actionUi.FinalActionsList.Value, out finalActionTemplateId))
             {
-                var finalAction = new ActivityDO
+                var finalAction = new ActionDO
                 {
                     ActivityTemplateId = finalActionTemplateId,
                     IsTempId = true,
                     CrateStorage = Crate.EmptyStorageAsStr(),
                     CreateDate = DateTime.UtcNow,
                     Ordering = 2,
-                    Name = "Final activity",
-                    Label = actionUi.FinalActionsList.selectedKey,
-                    Fr8AccountId = authTokenDO.UserID
+                    Name = "Final action",
+                    Label = actionUi.FinalActionsList.selectedKey
                 };
 
-                curActivityDO.ChildNodes.Add(finalAction);
+                curActionDO.ChildNodes.Add(finalAction);
             }
 
-            return curActivityDO;
+            return curActionDO;
         }
 
-        public async Task<PayloadDTO> Run(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            return Success(await GetPayload(activityDO, containerId));
+            return Success(await GetPayload(actionDO, containerId));
         }
         
-        private async Task<IEnumerable<ActivityTemplateDO>> FindTemplates(ActivityDO activityDO, Predicate<ActivityTemplateDO> query)
+        private async Task<IEnumerable<ActivityTemplateDO>> FindTemplates(ActionDO actionDO, Predicate<ActivityTemplateDO> query)
         {
-            var templates = await HubCommunicator.GetActivityTemplates(activityDO,CurrentFr8UserId);
+            var templates = await HubCommunicator.GetActivityTemplates(actionDO);
             return templates.Select(x => Mapper.Map<ActivityTemplateDO>(x)).Where(x => query(x));
         }
         
-        private async Task<IEnumerable<Crate>> PackSources(ActivityDO activityDO)
+        private async Task<IEnumerable<Crate>> PackSources(ActionDO actionDO)
         {
             var sources = new List<Crate>();
 
-            var templates = await HubCommunicator.GetActivityTemplates(activityDO, ActivityCategory.Forwarders, CurrentFr8UserId);
+            var templates = await HubCommunicator.GetActivityTemplates(actionDO, ActivityCategory.Forwarders);
             sources.Add(
                 Crate.CreateDesignTimeFieldsCrate(
                     "AvailableActions",

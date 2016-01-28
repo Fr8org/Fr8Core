@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
 using System.Web.Http.Routing;
@@ -68,7 +67,7 @@ namespace terminalBaseTests.Fixtures
                     typeof(IHttpControllerTypeResolver),
                     new ActivitiesController_ControllerTypeResolver()
                 );
-                
+
                 app.UseWebApi(config);
             }
         }

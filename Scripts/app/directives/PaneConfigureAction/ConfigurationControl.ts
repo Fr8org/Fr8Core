@@ -82,6 +82,7 @@ module dockyard.directives.paneConfigureAction {
 
                     $scope.$emit("onClick", new ChangeEventArgs(field));
                 };
+
             };
         }
 
@@ -107,4 +108,5 @@ module dockyard.directives.paneConfigureAction {
             }
         };
     });
+
 }

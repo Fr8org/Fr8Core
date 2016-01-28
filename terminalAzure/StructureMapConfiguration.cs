@@ -18,8 +18,8 @@ namespace terminalAzure
         {
             public LiveMode()
             {
-                For<IActivity>().Use<Hub.Services.Activity>();
-                For<ITerminal>().Use<Terminal>().Singleton();
+                For<IAction>().Use<Hub.Services.Action>();
+                For<ITerminal>().Use<Terminal>();
                 For<ICrateManager>().Use<CrateManager>();
                 For<IDbProvider>().Use<SqlClientDbProvider>();
                 For<IRouteNode>().Use<RouteNode>();

@@ -23,11 +23,11 @@ namespace terminalExcelTests.Fixtures
             };
         }
 
-        public static ActivityDTO Load_Table_Data_v1_InitialConfiguration_ActionDTO(Guid guid)
+        public static ActionDTO Load_Table_Data_v1_InitialConfiguration_ActionDTO(Guid guid)
         {
             var activityTemplate = Load_Table_Data_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            return new ActionDTO()
             {
                 Id = guid,
                 Name = "Load_Table_Data",

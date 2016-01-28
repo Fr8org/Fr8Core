@@ -25,11 +25,11 @@ namespace terminalYammerTests.Fixtures
             };
         }
 
-        public static ActivityDTO Post_To_Yammer_v1_InitialConfiguration_ActionDTO(bool isAuthToken = true)
+        public static ActionDTO Post_To_Yammer_v1_InitialConfiguration_ActionDTO(bool isAuthToken = true)
         {
             var activityTemplate = Post_To_Yammer_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            return new ActionDTO()
             {
                 Id = Guid.NewGuid(),
                 Name = "Groups",

@@ -30,7 +30,7 @@ namespace terminalDocuSign.Tests.Actions
     [Category("terminalDocuSign")]
     public class Query_DocuSign_Tests : BaseTest
     {
-        Query_DocuSign_v1 _activity;
+        Query_DocuSign_v1 _action;
         private ICrateManager _crateManager;
 
         public override void SetUp()
@@ -39,7 +39,7 @@ namespace terminalDocuSign.Tests.Actions
 
             var docusignFolder = new Mock<IDocuSignFolder>();
 
-            docusignFolder.Setup(r => r.GetSearchFolders(It.IsAny<string>(), It.IsAny<string>())).Returns(TerminalFixtureData.GetFolders());
+            docusignFolder.Setup(r => r.GetFolders(It.IsAny<string>(), It.IsAny<string>())).Returns(TerminalFixtureData.GetFolders());
             docusignFolder.Setup(r => r.Search(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>()))
                 .Returns<string, string, string, string, string, DateTime?, DateTime?>(Search);
 
@@ -66,7 +66,7 @@ namespace terminalDocuSign.Tests.Actions
                 .Returns(Task.FromResult(payloadDto));
             ObjectFactory.Configure(cfg => cfg.For<IRestfulServiceClient>().Use(restfulServiceClient.Object));
 
-            _activity = new Query_DocuSign_v1();
+            _action = new Query_DocuSign_v1();
             
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
         }
@@ -95,7 +95,7 @@ namespace terminalDocuSign.Tests.Actions
         {
             var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(new AuthorizationTokenDTO() {Token = JsonConvert.SerializeObject(TerminalFixtureData.TestDocuSignAuthDTO1())});
 
-            var result = await _activity.Configure(new ActivityDO(), curAuthTokenDO);
+            var result = await _action.Configure(new ActionDO(), curAuthTokenDO);
             var storage = _crateManager.GetStorage(result);
 
             var foldersCrate = storage.CratesOfType<StandardDesignTimeFieldsCM>().Where(x => x.Label == "Folders").Select(x => x.Content).FirstOrDefault();
@@ -114,9 +114,9 @@ namespace terminalDocuSign.Tests.Actions
             
             var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(new AuthorizationTokenDTO() { Token = JsonConvert.SerializeObject(TerminalFixtureData.TestDocuSignAuthDTO1()) });
 
-            var activity = new ActivityDO();
+            var action = new ActionDO();
             
-            using (var updater = _crateManager.UpdateStorage(activity))
+            using (var updater = _crateManager.UpdateStorage(action))
             {
                 updater.CrateStorage.Add(Crate.FromContent("Config", new Query_DocuSign_v1.ActionUi
                 {
@@ -124,7 +124,7 @@ namespace terminalDocuSign.Tests.Actions
                 }));
             }
 
-            var result = await _activity.Run(activity, Guid.NewGuid(), curAuthTokenDO);
+            var result = await _action.Run(action, Guid.NewGuid(), curAuthTokenDO);
             var storage = _crateManager.GetStorage(result);
 
             var payload = storage.CrateContentsOfType<StandardPayloadDataCM>().FirstOrDefault();
@@ -145,9 +145,9 @@ namespace terminalDocuSign.Tests.Actions
         {
             var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(new AuthorizationTokenDTO() { Token = JsonConvert.SerializeObject(TerminalFixtureData.TestDocuSignAuthDTO1()) });
 
-            var activity = new ActivityDO();
+            var action = new ActionDO();
 
-            using (var updater = _crateManager.UpdateStorage(activity))
+            using (var updater = _crateManager.UpdateStorage(action))
             {
                 updater.CrateStorage.Add(Crate.FromContent("Config", new Query_DocuSign_v1.ActionUi
                 {
@@ -155,7 +155,7 @@ namespace terminalDocuSign.Tests.Actions
                 }));
             }
 
-            var result = await _activity.Run(activity, Guid.NewGuid(), curAuthTokenDO);
+            var result = await _action.Run(action, Guid.NewGuid(), curAuthTokenDO);
             var storage = _crateManager.GetStorage(result);
 
             var payload = storage.CrateContentsOfType<StandardPayloadDataCM>().FirstOrDefault();

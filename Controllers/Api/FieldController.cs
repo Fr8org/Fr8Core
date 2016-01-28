@@ -7,7 +7,6 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
 using Data.Constants;
-using HubWeb.Infrastructure;
 using Microsoft.AspNet.Identity;
 using Newtonsoft.Json;
 using StructureMap;
@@ -40,7 +39,6 @@ namespace HubWeb.Controllers
         [HttpPost]
         //[Fr8ApiAuthorize]
         [ResponseType(typeof(List<FieldValidationResult>))]
-        [Fr8HubWebHMACAuthenticate]
         public async Task<IHttpActionResult> Exists(List<FieldValidationDTO> fieldCheckList)
         {
             var result = new List<FieldValidationResult>();

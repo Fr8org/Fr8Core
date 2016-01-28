@@ -22,7 +22,7 @@ namespace terminalSendGridTests.Integration
     [Explicit]
     public class SendEmailViaSendGrid_v1Tests : BaseHealthMonitorTest
     {
-        ActivityDTO actionDTOInit = new ActivityDTO();
+        ActionDTO actionDTOInit = new ActionDTO();
 
         public override string TerminalName
         {
@@ -42,7 +42,7 @@ namespace terminalSendGridTests.Integration
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<ActionDTO, ActionDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -77,14 +77,14 @@ namespace terminalSendGridTests.Integration
             //Act
             //Call first time for the initial configuration
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<ActionDTO, ActionDTO>(
                     configureUrl,
                     requestActionDTO
                 );
 
             //Call second time for the follow up configuration
             responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<ActionDTO, ActionDTO>(
                     configureUrl,
                     responseActionDTO
                 );
@@ -105,24 +105,24 @@ namespace terminalSendGridTests.Integration
             //Arrange
             var runUrl = GetTerminalRunUrl();
 
-            var activityDTO = HealthMonitor_FixtureData.SendEmailViaSendGrid_v1_InitialConfiguration_ActionDTO();
+            var actionDTO = HealthMonitor_FixtureData.SendEmailViaSendGrid_v1_InitialConfiguration_ActionDTO();
 
 
-            using (var updater = Crate.UpdateStorage(activityDTO))
+            using (var updater = Crate.UpdateStorage(actionDTO))
             {
                 updater.CrateStorage.Add(CreateCrates());
             }
 
-            AddOperationalStateCrate(activityDTO, new OperationalStateCM());
+            AddOperationalStateCrate(actionDTO, new OperationalStateCM());
 
             AddPayloadCrate(
-               activityDTO,
+               actionDTO,
                new StandardPayloadDataCM() { }
             );
 
             //Act
             var responsePayloadDTO =
-                await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, activityDTO);
+                await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
 
             //Assert
             var crateStorage = Crate.FromDto(responsePayloadDTO.CrateStorage);
@@ -175,7 +175,7 @@ namespace terminalSendGridTests.Integration
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<ActionDTO, ActionDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -196,7 +196,7 @@ namespace terminalSendGridTests.Integration
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<ActionDTO, ActionDTO>(
                     configureUrl,
                     requestActionDTO
                 );

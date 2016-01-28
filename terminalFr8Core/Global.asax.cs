@@ -15,8 +15,8 @@ namespace terminalFr8Core
     {
         protected void Application_Start(object sender, EventArgs e)
         {
-            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE);
             GlobalConfiguration.Configure(RoutesConfig.Register);
+            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE);
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
             TerminalBootstrapper.ConfigureLive();
         }

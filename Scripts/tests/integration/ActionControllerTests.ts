@@ -4,7 +4,7 @@
 module dockyard.tests.controller {
     import fx = utils.fixtures; // just an alias
 
-    describe("Activity Controller ", function () {
+    describe("Action Controller ", function () {
         var testData = {};
 
         var errorHandler = function (response, done) {
@@ -71,10 +71,10 @@ module dockyard.tests.controller {
         beforeEach(function (done) {
             // First POST, create a dummy entry
 
-            var actions: interfaces.IActivityDTO =
+            var actions: interfaces.IActionDTO =
             {
                     name: "test action type",
-                    configurationControls: fx.ActivityDTO.configurationControls,
+                    configurationControls: fx.ActionDTO.configurationControls,
                     crateStorage: null,
                     parentRouteNodeId: '89EBF277-0CC4-4D6D-856B-52457F10C686',
                     activityTemplate: null,
@@ -97,10 +97,10 @@ module dockyard.tests.controller {
         describe("Action#GetConfigurationSettings", function () {
             var endpoint = "/actions";
 
-            var currentActionDesignDTO: interfaces.IActivityDTO =
+            var currentActionDesignDTO: interfaces.IActionDTO =
                     {
                         name: "test action type",
-                        configurationControls: fx.ActivityDTO.configurationControls,
+                        configurationControls: fx.ActionDTO.configurationControls,
                         crateStorage: null,
                         parentRouteNodeId: '89EBF277-0CC4-4D6D-856B-52457F10C686',
                         activityTemplate: null,

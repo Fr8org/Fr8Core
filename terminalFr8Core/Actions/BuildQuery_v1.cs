@@ -19,19 +19,19 @@ using Data.Control;
 
 namespace terminalFr8Core.Actions
 {
-    public class BuildQuery_v1 : BaseTerminalActivity
+    public class BuildQuery_v1 : BaseTerminalAction
     {
         #region Configuration.
 
         public override ConfigurationRequestType ConfigurationEvaluator(
-            ActivityDO curActivityDO)
+            ActionDO curActionDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (Crate.IsStorageEmpty(curActionDO))
             {
                 return ConfigurationRequestType.Initial;
             }
 
-            var controlsCrate = Crate.GetStorage(curActivityDO).CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var controlsCrate = Crate.GetStorage(curActionDO).CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (controlsCrate == null)
             {
@@ -49,14 +49,14 @@ namespace terminalFr8Core.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        protected override async Task<ActivityDO> InitialConfigurationResponse(
-            ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(
+            ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 RemoveControl(updater.CrateStorage, "UpstreamError");
 
-                var columnDefinitions = await ExtractColumnDefinitions(curActivityDO);
+                var columnDefinitions = await ExtractColumnDefinitions(curActionDO);
                 List<FieldDTO> tablesList = null;
 
                 if (columnDefinitions != null)
@@ -72,7 +72,7 @@ namespace terminalFr8Core.Actions
                         "Unexpected error",
                         "No upstream crates found to extract table definitions."
                     );
-                    return curActivityDO;
+                    return curActionDO;
                 }
 
                 var controlsCrate = EnsureControlsCrate(updater.CrateStorage);
@@ -83,12 +83,12 @@ namespace terminalFr8Core.Actions
                 updater.CrateStorage.RemoveByLabel("Available Tables");
                 updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("Available Tables", tablesList.ToArray()));
             }
-            return curActivityDO;
+            return curActionDO;
         }
 
-        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 RemoveControl(updater.CrateStorage, "SelectObjectError");
 
@@ -98,7 +98,7 @@ namespace terminalFr8Core.Actions
                     AddLabelControl(updater.CrateStorage, "SelectObjectError",
                     "No object selected", "Please select object from the list above.");
 
-                    return curActivityDO;
+                    return curActionDO;
                 }
                 else
                 {
@@ -108,7 +108,7 @@ namespace terminalFr8Core.Actions
                         RemoveControl(updater.CrateStorage, "SelectedQuery");
                         AddQueryBuilder(updater.CrateStorage);
 
-                        await UpdateQueryableCriteria(updater.CrateStorage,  curActivityDO, selectedObject);
+                        await UpdateQueryableCriteria(updater.CrateStorage,  curActionDO, selectedObject);
                     }
                 }
 
@@ -116,16 +116,16 @@ namespace terminalFr8Core.Actions
                 UpdateSelectedQueryCrate(updater.CrateStorage);
             }
 
-            return curActivityDO;
+            return curActionDO;
         }
 
         /// <summary>
         /// Returns list of FieldDTO from upper crate from ConnectToSql action.
         /// </summary>
-        private async Task<List<FieldDTO>> ExtractColumnDefinitions(ActivityDO activityDO)
+        private async Task<List<FieldDTO>> ExtractColumnDefinitions(ActionDO actionDO)
         {
             var upstreamCrates = await GetCratesByDirection<StandardDesignTimeFieldsCM>(
-                activityDO,
+                actionDO,
                 CrateDirection.Upstream
             );
 
@@ -315,12 +315,12 @@ namespace terminalFr8Core.Actions
         }
 
         private async Task<List<FieldDTO>> MatchColumnsForSelectedObject(
-            ActivityDO activityDO, string selectedObject)
+            ActionDO actionDO, string selectedObject)
         {
             var findObjectHelper = new FindObjectHelper();
 
-            var columnDefinitions = await ExtractColumnDefinitions(activityDO);
-            var columnTypeMap = await findObjectHelper.ExtractColumnTypes(this, activityDO);
+            var columnDefinitions = await ExtractColumnDefinitions(actionDO);
+            var columnTypeMap = await findObjectHelper.ExtractColumnTypes(this, actionDO);
 
             var matchedColumns = findObjectHelper.MatchColumnsForSelectedObject(
                 columnDefinitions, selectedObject, columnTypeMap);
@@ -331,9 +331,9 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Update queryable criteria list.
         /// </summary>
-        private async Task UpdateQueryableCriteria(CrateStorage storage, ActivityDO activityDO, string selectedObject)
+        private async Task UpdateQueryableCriteria(CrateStorage storage, ActionDO actionDO, string selectedObject)
         {
-            var matchedColumns = await MatchColumnsForSelectedObject(activityDO, selectedObject);
+            var matchedColumns = await MatchColumnsForSelectedObject(actionDO, selectedObject);
             UpdateDesignTimeCrateValue(storage, "Queryable Criteria", matchedColumns.ToArray());
         }
 
@@ -361,11 +361,11 @@ namespace terminalFr8Core.Actions
 
         #region Execution.
 
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var payloadCrates = await GetPayload(curActivityDO, containerId);
+            var payloadCrates = await GetPayload(curActionDO, containerId);
 
-            var actionCrateStorage = Crate.GetStorage(curActivityDO);
+            var actionCrateStorage = Crate.GetStorage(curActionDO);
             
             var sqlQueryCM = ExtractSelectedQueryFromCrate(actionCrateStorage);
             if (sqlQueryCM == null)

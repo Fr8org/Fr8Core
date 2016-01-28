@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
@@ -24,7 +23,7 @@ namespace terminalSalesforce.Services
         }
 
 
-        public Task<Crate> ProcessEvent(string curExternalEventPayload)
+        public Crate ProcessEvent(string curExternalEventPayload)
         {
             string leadId = string.Empty;
             string accountId = string.Empty;
@@ -36,11 +35,11 @@ namespace terminalSalesforce.Services
                 EventNames = "Lead Created",
                 ContainerDoId = "",
                 EventPayload = new CrateStorage(ExtractEventPayload(leadId, accountId)),
-                ExternalAccountId = accountId, 
-                Manufacturer = "Salesforce",
+                ExternalAccountId = accountId,
+                Source = "Salesforce"
             };
 
-            return Task.FromResult(Crate.FromContent("Lead Created", eventReportContent));
+            return Crate.FromContent("Lead Created", eventReportContent);
         }
 
         public void Parse(string xmlPayload, out string leadId, out string accountId)

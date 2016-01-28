@@ -13,7 +13,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Hub.Interfaces;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 
@@ -43,8 +42,7 @@ namespace DockyardTest.Controllers
                     Name = "terminalTest",
                     Version = "1",
                     TerminalStatus = 1,
-                    Endpoint = "localhost:39504",
-                    Secret = Guid.NewGuid().ToString()
+                    Endpoint = "localhost:39504"
                 };
 
                 uow.TerminalRepository.Add(terminalDO);
@@ -104,13 +102,13 @@ namespace DockyardTest.Controllers
             activityTemplateDO.Terminal = tokenDO.Terminal;
             activityTemplateDO.Terminal.AuthenticationType = AuthenticationType.Internal;
 
-            var activityDO = FixtureData.TestActivity1();
-            activityDO.ActivityTemplate = activityTemplateDO;
-            // activityDO.AuthorizationToken = tokenDO;
+            var actionDO = FixtureData.TestAction1();
+            actionDO.ActivityTemplate = activityTemplateDO;
+            // actionDO.AuthorizationToken = tokenDO;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.ActivityRepository.Add(activityDO);
+                uow.ActionRepository.Add(actionDO);
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
                 uow.SaveChanges();
             }

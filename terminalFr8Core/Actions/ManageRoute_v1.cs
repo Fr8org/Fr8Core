@@ -12,7 +12,7 @@ using terminalFr8Core.Infrastructure;
 namespace terminalFr8Core.Actions
 {
 
-    public class ManageRoute_v1 : BaseTerminalActivity
+    public class ManageRoute_v1 : BaseTerminalAction
 
     {
         private readonly FindObjectHelper _findObjectHelper = new FindObjectHelper();
@@ -20,9 +20,9 @@ namespace terminalFr8Core.Actions
 
         #region Configuration.
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (Crate.IsStorageEmpty(curActionDO))
 
             {
                 return ConfigurationRequestType.Initial;
@@ -33,16 +33,16 @@ namespace terminalFr8Core.Actions
             }
         }
 
-        protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
 
             {
                 var crateStorage = updater.CrateStorage;
                 AddRunNowButton(crateStorage);
             }
 
-            return Task.FromResult(curActivityDO);
+            return Task.FromResult(curActionDO);
 
         }
 
@@ -52,14 +52,14 @@ namespace terminalFr8Core.Actions
                 new RunRouteButton()
                 {
                     Name = "RunRoute",
-                    Label = "Run Plan",
+                    Label = "Run Route",
                 });
 
             AddControl(crateStorage,
                 new ControlDefinitionDTO(ControlTypes.ManageRoute)
                 {
                     Name = "ManageRoute",
-                    Label = "Manage Plan"
+                    Label = "Manage Route"
                 });
         }
 
@@ -68,7 +68,7 @@ namespace terminalFr8Core.Actions
 
         #region Execution.
 
-        public async Task<PayloadDTO> Run(ActivityDO curActionDTO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDTO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             return Success(await GetPayload(curActionDTO, containerId));
         }

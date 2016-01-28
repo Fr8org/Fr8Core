@@ -23,11 +23,11 @@ namespace terminalDropboxTests.Fixtures
             };
         }
 
-        public static ActivityDO GetFileListTestActionDO1()
+        public static ActionDO GetFileListTestActionDO1()
         {
             var actionTemplate = GetFileListTestActivityTemplateDO();
 
-            var activityDO = new ActivityDO()
+            var actionDO = new ActionDO()
             {
                 Name = "testaction",
                 Id = TestGuid_Id_333(),
@@ -36,7 +36,7 @@ namespace terminalDropboxTests.Fixtures
                 CrateStorage = "",
                 
             };
-            return activityDO;
+            return actionDO;
         }
 
         public static Guid TestContainerGuid()

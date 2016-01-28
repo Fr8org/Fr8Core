@@ -67,9 +67,9 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static ActivityDO TestConfigurationSettingsDTO1()
+        public static ActionDO TestConfigurationSettingsDTO1()
         {
-            ActivityDO curAction = FixtureData.TestActivity1();
+            ActionDO curAction = FixtureData.TestAction1();
             ICrateManager crate = ObjectFactory.GetInstance<ICrateManager>();
 
             //create connection string value crates with a vald connection string

@@ -11,7 +11,7 @@ namespace Data.Interfaces.DataTransferObjects
     {
         public Guid Id { get; set; }
 
-        public Guid? PlanId { get; set; }
+        public Guid? RouteId { get; set; }
 
         public string Name { get; set; }
 

@@ -15,14 +15,12 @@ namespace Data.Migrations
         private class RouteBuilder
         {
             private readonly string _name;
-            private readonly Fr8AccountDO _fr8AccountDO;
             private readonly List<Crate> _crates = new List<Crate>();
             private Guid _ptId;
 
-            public RouteBuilder(string name, Fr8AccountDO fr8AccountDO)
+            public RouteBuilder(string name)
             {
                 _name = name;
-                _fr8AccountDO = fr8AccountDO;
             }
 
             public RouteBuilder AddCrate(Crate crateDto)
@@ -59,35 +57,34 @@ namespace Data.Migrations
 
             private void StoreTemplate(IUnitOfWork uow)
             {
-                var plan = uow.PlanRepository.GetQuery().FirstOrDefault(x => x.Name == _name);
-                bool add = plan == null;
+                var route = uow.RouteRepository.GetQuery().FirstOrDefault(x => x.Name == _name);
+                bool add = route == null;
 
                 if (add)
                 {
-                    plan = new PlanDO();
-                    plan.Id = Guid.NewGuid();
+                    route = new RouteDO();
+                    route.Id = Guid.NewGuid();
                 }
 
-                plan.Fr8Account = _fr8AccountDO;
-                plan.Name = _name;
-                plan.Description = "Template for testing";
-				plan.CreateDate = DateTime.UtcNow;
-				plan.LastUpdated = DateTime.UtcNow;
-                plan.RouteState = RouteState.Inactive; // we don't want this process template can be executed ouside of tests
+                route.Name = _name;
+                route.Description = "Template for testing";
+				route.CreateDate = DateTime.UtcNow;
+				route.LastUpdated = DateTime.UtcNow;
+                route.RouteState = RouteState.Inactive; // we don't want this process template can be executed ouside of tests
 
                 if (add)
                 {
-                    uow.PlanRepository.Add(plan);
+                    uow.RouteRepository.Add(route);
                     uow.SaveChanges();
                 }
 
-                _ptId = plan.Id;
+                _ptId = route.Id;
             }
 
             private void ConfigureProcess(ContainerDO container)
             {
                 container.Name = _name;
-                container.PlanId = _ptId;
+                container.RouteId = _ptId;
                 container.ContainerState = ContainerState.Executing;
                 
                 container.CrateStorage = JsonConvert.SerializeObject(CrateStorageSerializer.Default.ConvertToDto(new CrateStorage(_crates)));

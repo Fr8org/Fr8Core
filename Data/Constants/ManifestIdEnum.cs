@@ -94,10 +94,7 @@ namespace Data.Constants
         DocuSignTemplate = 28,
 
         [Display(Name = "Chart Of Accounts")]
-        ChartOfAccounts = 29,
-
-        [Display(Name = "Manifest Description")]
-        ManifestDescription = 30
+        ChartOfAccounts = 29
     }
 }
 

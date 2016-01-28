@@ -17,8 +17,7 @@ var app = angular.module("app", [
     "frapontillo.bootstrap-switch",
     "ApplicationInsightsModule",
     "dndLists",
-    "ngTable",
-    "mb-scrollbar"
+    "ngTable"
 ]);
 
 /* For compatibility with older versions of script files. Can be safely deleted later. */

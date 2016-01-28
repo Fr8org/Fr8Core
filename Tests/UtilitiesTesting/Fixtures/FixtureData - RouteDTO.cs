@@ -9,7 +9,7 @@ namespace UtilitiesTesting.Fixtures
             return new RouteEmptyDTO()
             {
                 Name = "route1",
-                Description = "Description for test plan",
+                Description = "Description for test route",
                 RouteState = 1
                 //DockyardAccount = FixtureData.TestDockyardAccount1()
             };

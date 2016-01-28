@@ -22,29 +22,29 @@ using terminalAzure.Services;
 namespace terminalAzure.Actions
 {
 
-    public class Write_To_Sql_Server_v1 : BaseTerminalActivity
+    public class Write_To_Sql_Server_v1 : BaseTerminalAction
     {
 
         //================================================================================
         //General Methods (every Action class has these)
 
         //maybe want to return the full Action here
-        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            return await ProcessConfigurationRequest(curActivityDO, EvaluateReceivedRequest, authTokenDO);
+            return await ProcessConfigurationRequest(curActionDO, EvaluateReceivedRequest, authTokenDO);
         }
 
         //this entire function gets passed as a delegate to the main processing code in the base class
         //currently many actions have two stages of configuration, and this method determines which stage should be applied
-        private ConfigurationRequestType EvaluateReceivedRequest(ActivityDO curActivityDO)
+        private ConfigurationRequestType EvaluateReceivedRequest(ActionDO curActionDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (Crate.IsStorageEmpty(curActionDO))
                 return ConfigurationRequestType.Initial;
 
             //load configuration crates of manifest type Standard Control Crates
             //look for a text field name connection string with a value
 
-            var storage = Crate.GetStorage(curActivityDO);
+            var storage = Crate.GetStorage(curActionDO);
 
             var connectionStrings = storage.CratesOfType<StandardConfigurationControlsCM>().Select(x => x.Content.FindByName("connection_string")).Where(x => x != null && !string.IsNullOrWhiteSpace(x.Value)).ToArray();
 
@@ -52,27 +52,27 @@ namespace terminalAzure.Actions
             //if there are none or if there's one but it's value is "" the return initial else return followup
             var objCount = connectionStrings.Length;
             if (objCount > 1)
-                throw new ArgumentException("didn't expect to see more than one connectionStringObject with the name Connection String on this Action", "curActivityDO");
+                throw new ArgumentException("didn't expect to see more than one connectionStringObject with the name Connection String on this Action", "curActionDO");
             if (objCount == 0)
                 return ConfigurationRequestType.Initial;
             else
             {
                 //we should validate our data now
-                //CheckFields(curActivityDO, new List<ValidationDataTuple> { new ValidationDataTuple("connection_string", "test", GetCrateDirection.Upstream, CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME) });
+                //CheckFields(curActionDO, new List<ValidationDataTuple> { new ValidationDataTuple("connection_string", "test", GetCrateDirection.Upstream, CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME) });
                 return ConfigurationRequestType.Followup;
             }            
         }
 
         //If the user provides no Connection String value, provide an empty Connection String field for the user to populate
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(CreateControlsCrate());
             }
 
-            return await Task.FromResult<ActivityDO>(curActivityDO);
+            return await Task.FromResult<ActionDO>(curActionDO);
         }
 
         private Crate CreateControlsCrate()
@@ -89,26 +89,26 @@ namespace terminalAzure.Actions
         }
 
         //if the user provides a connection string, this action attempts to connect to the sql server and get its columns and tables
-        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             //In all followup calls, update data fields of the configuration store          
-            List<String> contentsList = GetFieldMappings(curActivityDO);
+            List<String> contentsList = GetFieldMappings(curActionDO);
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.RemoveByLabel("Sql Table Columns");
                 //this needs to be updated to hold Crates instead of FieldDefinitionDTO
                 updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("Sql Table Columns", contentsList.Select(col => new FieldDTO() {Key = col, Value = col}).ToArray()));
             }
 
-            return await Task.FromResult<ActivityDO>(curActivityDO);
+            return await Task.FromResult<ActionDO>(curActionDO);
         }
 
-        public async Task<PayloadDTO> Run(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var payloadCrates = await GetPayload(activityDO, containerId);
+            var payloadCrates = await GetPayload(actionDO, containerId);
 
-            var curCommandArgs = PrepareSQLWrite(activityDO, payloadCrates);
+            var curCommandArgs = PrepareSQLWrite(actionDO, payloadCrates);
 
             var dbService = new DbService();
             dbService.WriteCommand(curCommandArgs);
@@ -131,10 +131,10 @@ namespace terminalAzure.Actions
         //CONFIGURATION-Related Methods
         //-----------------------------------------
 
-        public List<string> GetFieldMappings(ActivityDO curActivityDO)
+        public List<string> GetFieldMappings(ActionDO curActionDO)
         {
 
-            var storage = Crate.GetStorage(curActivityDO);
+            var storage = Crate.GetStorage(curActionDO);
 
             if (storage.Count == 0)
             {
@@ -179,10 +179,10 @@ namespace terminalAzure.Actions
 
         //EXECUTION-Related Methods
         //-----------------------------------------
-        private WriteCommandArgs PrepareSQLWrite(ActivityDO curActivityDO, PayloadDTO payloadCrates)
+        private WriteCommandArgs PrepareSQLWrite(ActionDO curActionDO, PayloadDTO payloadCrates)
         {
             var parser = new DbServiceJsonParser();
-            var curConnStringObject = parser.ExtractConnectionString(curActivityDO);
+            var curConnStringObject = parser.ExtractConnectionString(curActionDO);
             var curSQLData = ConvertProcessPayloadToSqlInputs(payloadCrates);
 
             return new WriteCommandArgs(ProviderName, curConnStringObject, curSQLData);

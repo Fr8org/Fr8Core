@@ -102,7 +102,7 @@ namespace terminalFr8CoreTests.Integration
             var requestActionDTO = FixtureData.ConnectToSql_InitialConfiguration_ActionDTO();
 
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<ActionDTO, ActionDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -127,13 +127,13 @@ namespace terminalFr8CoreTests.Integration
             var requestActionDTO = FixtureData.ConnectToSql_InitialConfiguration_ActionDTO();
 
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<ActionDTO, ActionDTO>(
                     configureUrl,
                     requestActionDTO
                 );
 
             responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<ActionDTO, ActionDTO>(
                     configureUrl,
                     responseActionDTO
                 );
@@ -158,7 +158,7 @@ namespace terminalFr8CoreTests.Integration
             var requestActionDTO = FixtureData.ConnectToSql_InitialConfiguration_ActionDTO();
 
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<ActionDTO, ActionDTO>(
                     configureUrl,
                     requestActionDTO
                 );            
@@ -170,7 +170,7 @@ namespace terminalFr8CoreTests.Integration
             }
             
             responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<ActionDTO, ActionDTO>(
                     configureUrl,
                     responseActionDTO
                 );
@@ -197,7 +197,7 @@ namespace terminalFr8CoreTests.Integration
             var requestActionDTO = FixtureData.ConnectToSql_InitialConfiguration_ActionDTO();
 
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<ActionDTO, ActionDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -209,7 +209,7 @@ namespace terminalFr8CoreTests.Integration
             }
 
             responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<ActionDTO, ActionDTO>(
                     configureUrl,
                     responseActionDTO
                 );
@@ -231,17 +231,17 @@ namespace terminalFr8CoreTests.Integration
         {
             var runUrl = GetTerminalRunUrl();
 
-            var activityDTO = FixtureData.ConnectToSql_InitialConfiguration_ActionDTO();
+            var actionDTO = FixtureData.ConnectToSql_InitialConfiguration_ActionDTO();
 
-            AddOperationalStateCrate(activityDTO, new OperationalStateCM());
+            AddOperationalStateCrate(actionDTO, new OperationalStateCM());
 
             AddPayloadCrate(
-               activityDTO,
+               actionDTO,
                new EventReportCM()
            );
 
             var responsePayloadDTO =
-                await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, activityDTO);
+                await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
 
             Assert.NotNull(responsePayloadDTO);
 

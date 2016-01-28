@@ -29,40 +29,40 @@ namespace terminalTests.Fixtures
             };
         }
 
-        public static ActivityDTO terminalMockActionDTOTest()
+        public static ActionDTO terminalMockActionDTOTest()
         {
             var activityTemplate = ActivityTemplateTest();
 
-            var activity = new ActivityDTO()
+            var action = new ActionDTO()
             {
                 Id = Guid.NewGuid(),
                 Name = "terminalActionMock",
-                Label = "Activity Mock",
+                Label = "Action Mock",
                 AuthToken = new AuthorizationTokenDTO(),
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id,
                 ParentRouteNodeId = Guid.NewGuid(),
             };
 
-            return activity;
+            return action;
         }
 
-        public static ActivityDTO terminalMockActionDTO()
+        public static ActionDTO terminalMockActionDTO()
         {
             var activityTemplate = ActivityTemplate();
 
-            var activity = new ActivityDTO()
+            var action = new ActionDTO()
             {
                 Id = Guid.NewGuid(),
                 Name = "terminalActionMock",
-                Label = "Activity Mock",
+                Label = "Action Mock",
                 AuthToken = new AuthorizationTokenDTO(),
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id,
                 ParentRouteNodeId = Guid.NewGuid(),
             };
 
-            return activity;
+            return action;
         }
     }
 }

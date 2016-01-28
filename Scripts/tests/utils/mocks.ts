@@ -6,7 +6,7 @@
         //Creates a mock for RouteBuilderController $scope
         public static GetRouteBuilderScope(rootScope: interfaces.IAppRootScope): dockyard.controllers.IRouteBuilderScope {
             var scope = <dockyard.controllers.IRouteBuilderScope>rootScope.$new();
-            scope.planId = '0';
+            scope.routeId = '0';
             scope.subroutes = null;
             scope.fields = null;
 

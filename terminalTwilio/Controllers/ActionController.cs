@@ -3,7 +3,6 @@
 using System.Web.Http;
 using Data.Interfaces.DataTransferObjects;
 using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 
 namespace terminalTwilio.Controllers
 {    
@@ -13,9 +12,7 @@ namespace terminalTwilio.Controllers
         private const string curTerminal = "terminalTwilio";
 
         [HttpPost]
-        [fr8TerminalHMACAuthenticate(curTerminal)]
-        [Authorize]
-        public Task<object> Execute([FromUri] String actionType, [FromBody] ActivityDTO curActionDTO)
+        public Task<object> Execute([FromUri] String actionType, [FromBody] ActionDTO curActionDTO)
         {
             return HandleFr8Request(curTerminal, actionType, curActionDTO);
         }

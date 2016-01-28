@@ -174,11 +174,11 @@ namespace DockyardTest.Services
                 uow.ActivityTemplateRepository.Add(templateObj);
                 uow.SaveChanges();
 
-                var activity = FixtureData.TestActivity1();
-                uow.ActivityRepository.Add(activity);
+                var action = FixtureData.TestAction1();
+                uow.ActionRepository.Add(action);
                 uow.SaveChanges();
 
-                ActivityDO obj = FixtureData.TestActivityProcess();
+                ActionDO obj = FixtureData.TestActionProcess();
                 uow.RouteNodeRepository.Add(obj);
                 uow.SaveChanges();
 

@@ -26,13 +26,6 @@ namespace Hub.Managers
 {
     public class EventReporter
     {
-        private readonly IActivityTemplate _activityTemplate;
-
-        public EventReporter(IActivityTemplate activityTemplate)
-        {
-            _activityTemplate = activityTemplate;
-        }
-        
         //Register for interesting events
         public void SubscribeToAlerts()
         {
@@ -220,7 +213,7 @@ namespace Hub.Managers
             var fact = new FactDO
             {
                 //CustomerId = containerDO.Fr8AccountId,
-                CustomerId = containerDO.Plan.Fr8AccountId,
+                CustomerId = containerDO.Route.Fr8Account.Id,
                 Data = containerDO.Id.ToStr(),
                 ObjectId = containerDO.Id.ToStr(),
                 PrimaryCategory = "Process Access",
@@ -404,7 +397,7 @@ namespace Hub.Managers
         /// The method logs the fact of Process Template creation.      
         /// </summary>
         /// <param name="userId">UserId received from DocuSign.</param>
-        /// <param name="planId">EnvelopeId received from DocuSign.</param>
+        /// <param name="routeId">EnvelopeId received from DocuSign.</param>
         public void RouteCreated(string userId, string routeName)
         {
             FactDO fact = new FactDO
@@ -414,7 +407,7 @@ namespace Hub.Managers
                 Activity = "Created",
                 CustomerId = userId,
                 ObjectId = "0",
-                Data = string.Format("Plan Name: {0}.",
+                Data = string.Format("Route Name: {0}.",
                         routeName)
             };
             LogFactInformation(fact, "RouteCreated");
@@ -658,7 +651,7 @@ namespace Hub.Managers
         {
             var fact = new FactDO
             {
-                CustomerId = launchedContainer.Plan.Fr8AccountId,
+                CustomerId = launchedContainer.Route.Fr8Account.Id,
                 Data = launchedContainer.Id.ToStr(),
                 ObjectId = launchedContainer.Id.ToStr(),
                 PrimaryCategory = "Container Execution",
@@ -680,7 +673,7 @@ namespace Hub.Managers
 
                 fact = new FactDO
                 {
-                    CustomerId = containerInExecution != null ? containerInExecution.Plan.Fr8AccountId : "unknown",
+                    CustomerId = containerInExecution != null ? containerInExecution.Route.Fr8Account.Id : "unknown",
                     Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
                     ObjectId = processNode.Id.ToStr(),
                     PrimaryCategory = "Container Execution",
@@ -703,7 +696,7 @@ namespace Hub.Managers
 
                 fact = new FactDO
                 {
-                    CustomerId = containerInExecution != null ? containerInExecution.Plan.Fr8AccountId : "unknown",
+                    CustomerId = containerInExecution != null ? containerInExecution.Route.Fr8Account.Id : "unknown",
                     Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
                     ObjectId = null,
                     PrimaryCategory = "Process Execution",
@@ -726,7 +719,7 @@ namespace Hub.Managers
 
                 fact = new FactDO
                 {
-                    CustomerId = containerInExecution != null ? containerInExecution.Plan.Fr8AccountId : "unknown",
+                    CustomerId = containerInExecution != null ? containerInExecution.Route.Fr8Account.Id : "unknown",
                     Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
                     ObjectId = null,
                     PrimaryCategory = "Process Execution",
@@ -738,7 +731,7 @@ namespace Hub.Managers
             SaveAndLogFact(fact);
         }
 
-        private void LogEventActionStarted(ActivityDO curActivity)
+        private void LogEventActionStarted(ActionDO curAction)
         {
             ContainerDO containerInExecution;
             FactDO fact;
@@ -746,13 +739,13 @@ namespace Hub.Managers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 containerInExecution = uow.ContainerRepository.GetQuery()
-                    .FirstOrDefault(p => p.CurrentRouteNodeId.Value == curActivity.Id);
+                    .FirstOrDefault(p => p.CurrentRouteNodeId.Value == curAction.Id);
 
                 fact = new FactDO
                 {
-                    CustomerId = (containerInExecution != null) ? containerInExecution.Plan.Fr8AccountId : "unknown",
+                    CustomerId = (containerInExecution != null) ? containerInExecution.Route.Fr8Account.Id : "unknown",
                     Data = (containerInExecution != null) ? containerInExecution.Id.ToStr() : "unknown",
-                    ObjectId = curActivity.Id.ToStr(),
+                    ObjectId = curAction.Id.ToStr(),
                     PrimaryCategory = "Process Execution",
                     SecondaryCategory = "Action",
                     Activity = "Started"
@@ -763,7 +756,7 @@ namespace Hub.Managers
         }
 
         // Commented by Vladimir. DO-1214. If one action can have only one Process?
-        private void LogEventActionDispatched(ActivityDO curActivity, Guid processId)
+        private void LogEventActionDispatched(ActionDO curAction, Guid processId)
         {
             ContainerDO containerInExecution;
             FactDO fact;
@@ -774,9 +767,9 @@ namespace Hub.Managers
 
                 fact = new FactDO
                 {
-                    CustomerId = containerInExecution != null ? containerInExecution.Plan.Fr8AccountId : "unknown",
+                    CustomerId = containerInExecution != null ? containerInExecution.Route.Fr8Account.Id : "unknown",
                     Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
-                    ObjectId = curActivity.Id.ToStr(),
+                    ObjectId = curAction.Id.ToStr(),
                     PrimaryCategory = "Process Execution",
                     SecondaryCategory = "Action",
                     Activity = "Dispatched"
@@ -803,7 +796,7 @@ namespace Hub.Managers
         }
 
         // Commented by Vladimir. DO-1214. If one action can have only one Process?
-        private void TerminalActionActivated(ActivityDO curActivity)
+        private void TerminalActionActivated(ActionDO curAction)
         {
 //            ProcessDO processInExecution;
 //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -829,13 +822,13 @@ namespace Hub.Managers
         {
                 CreateContainerFact(containerDO, "Created");
         }
-        private void LogEventContainerSent(ContainerDO containerDO, ActivityDO activityDO)
+        private void LogEventContainerSent(ContainerDO containerDO, ActionDO actionDO)
         {
-                CreateContainerFact(containerDO, "Sent To Terminal", activityDO);
+                CreateContainerFact(containerDO, "Sent To Terminal", actionDO);
         }
-        private void LogEventContainerReceived(ContainerDO containerDO, ActivityDO activityDO)
+        private void LogEventContainerReceived(ContainerDO containerDO, ActionDO actionDO)
         {
-                CreateContainerFact(containerDO, "Received From Terminal", activityDO);
+                CreateContainerFact(containerDO, "Received From Terminal", actionDO);
         }
         private void LogEventContainerStateChanged(DbPropertyValues currentValues)
         {
@@ -855,22 +848,22 @@ namespace Hub.Managers
         }
 
 
-        private void CreateContainerFact(ContainerDO containerDO, string activity, ActivityDO activityDO = null)
+        private void CreateContainerFact(ContainerDO containerDO, string activity, ActionDO actionDO = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curFact = new FactDO
                 {
-                    CustomerId = containerDO.Plan.Fr8AccountId,
+                    CustomerId = containerDO.Route.Fr8Account != null ? containerDO.Route.Fr8Account.Id : "",
                     ObjectId = containerDO.Id.ToStr(),
                     PrimaryCategory = "Containers",
                     SecondaryCategory = "Operations",
                     Activity = activity
                 };
-                if (activityDO != null)
+                if (actionDO != null)
                 {
-                    var terminalName = _activityTemplate.GetByKey(activityDO.ActivityTemplateId.Value).Terminal.Name;
-                    curFact.Data = string.Format("Terminal: {0} - Action: {1}.", terminalName, activityDO.Name);
+                    var terminalName = actionDO.ActivityTemplate.Terminal.Name;
+                    curFact.Data = string.Format("Terminal: {0} - Action: {1}.", terminalName, actionDO.Name);
                 }
             
             LogFactInformation(curFact, curFact.Data);
@@ -879,12 +872,12 @@ namespace Hub.Managers
             }
         }
 
-        private static async Task PostToTerminalEventsEndPoint(string userId, TerminalDO authenticatedTerminal, AuthorizationTokenDTO authToken)
+        private static async Task PostToTerminalEventsEndPoint(string userId, TerminalDO authenticatedTerminal)
         {
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
             await
                 restClient.PostAsync<object>(
-                    new Uri("http://" + authenticatedTerminal.Endpoint + "/terminals/" + authenticatedTerminal.Name + "/events"), new {fr8_user_id = userId, auth_token = authToken});
+                    new Uri("http://" + authenticatedTerminal.Endpoint + "/terminals/" + authenticatedTerminal.Name + "/events"), new {fr8_user_id = userId});
         }
 
     }

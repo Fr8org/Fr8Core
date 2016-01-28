@@ -1,8 +1,5 @@
 ﻿@{
     Layout = null;
-    @Html.Raw(Styles.Render("~/bundles/css/bootstrap23").ToHtmlString())
-    @Html.Raw(Styles.Render("~/bundles/css/frontpage").ToHtmlString())
-    
 }
 @model HubWeb.ViewModels.AuthenticationErrorVM
 <!DOCTYPE html>
@@ -10,16 +7,10 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>Authorization failed</title>
+    <title>Authentication failed</title>
 </head>
-<body class="auth-error-page-body">
-    <div class="auth-error-page">
-        <div class="auth-error-header">
-            <h4 class="pull-left">Authorization failed due to following reason:</h4>
-        </div>
-        <div class="panel panel-default">
-            <div>@Model.Error</div>
-        </div>
-    </div>
+<body>
+    <div>Authentication failed due to following reason:</div>
+    <div>@Model.Error</div>
 </body>
 </html>

@@ -19,19 +19,11 @@ namespace Utilities
                 using (StreamReader sr = new StreamReader(path))
                 {
                     if (sr.Peek() < 0)
-                    {
                         throw new ApplicationException("fr8terminals.txt is empty.");
-                    }
-
                     urls = new List<string>();
-                    
                     while (sr.Peek() >= 0)
                     {
-                        var line = sr.ReadLine();
-                        
-                        var uri = line.StartsWith("http") ? line : "http://" + line;
-                        
-                        urls.Add(uri + "/terminals/discover");
+                        urls.Add(sr.ReadLine());
                     }
                 }
             }

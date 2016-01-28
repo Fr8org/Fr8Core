@@ -50,7 +50,7 @@ module dockyard.directives {
                 };
 
                 $scope.isActionValid = function (action: interfaces.IActionVM) {
-                    return model.ActivityDTO.isActionValid(action);
+                    return model.ActionDTO.isActionValid(action);
                 }
             }
         };

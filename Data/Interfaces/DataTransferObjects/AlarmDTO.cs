@@ -19,6 +19,6 @@ namespace Data.Interfaces.DataTransferObjects
         public string TerminalVersion { get; set; }
         //TODO: is this necessary
         [JsonProperty("actionDTO")]
-        public ActivityDTO ActivityDTO { get; set; }
+        public ActionDTO ActionDTO { get; set; }
     }
 }

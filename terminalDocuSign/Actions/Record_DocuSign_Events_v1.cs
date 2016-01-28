@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Configuration;
-using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -16,65 +15,59 @@ using terminalDocuSign.Infrastructure;
 using TerminalBase.BaseClasses;
 using Data.Entities;
 using Utilities.Configuration.Azure;
-using Data.Constants;
-using Data.States;
 
 namespace terminalDocuSign.Actions
 {
-    public class Record_DocuSign_Events_v1 : BaseTerminalActivity
+    public class Record_DocuSign_Events_v1 : BaseTerminalAction
     {
         /// <summary>
         /// //For this action, both Initial and Followup configuration requests are same. Hence it returns Initial config request type always.
         /// </summary>
-        /// <param name="curActivityDO"></param>
+        /// <param name="curActionDO"></param>
         /// <returns></returns>
-        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             CheckAuthentication(authTokenDO);
 
-            return await ProcessConfigurationRequest(curActivityDO, x => ConfigurationRequestType.Initial,authTokenDO);
+            return await ProcessConfigurationRequest(curActionDO, x => ConfigurationRequestType.Initial,authTokenDO);
         }
 
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             /*
              * Discussed with Alexei and it is required to have empty Standard UI Control in the crate.
              * So we create a text block which informs the user that this particular aciton does not require any configuration.
              */
-            var textBlock = GenerateTextBlock("Monitor All DocuSign events", "This Action doesn't require any configuration.", "well well-lg");
+            var textBlock = GenerateTextBlock("Monitor All DocuSign events",
+                "This Action doesn't require any configuration.", "well well-lg");
             var curControlsCrate = PackControlsCrate(textBlock);
 
             //create a Standard Event Subscription crate
-            var curEventSubscriptionsCrate = Crate.CreateStandardEventSubscriptionsCrate("Standard Event Subscription", "DocuSign", DocuSignEventNames.GetAllEventNames());
+            var curEventSubscriptionsCrate = Crate.CreateStandardEventSubscriptionsCrate("Standard Event Subscription", DocuSignEventNames.GetAllEventNames());
 
-            var envelopeCrate = Crate.CreateManifestDescriptionCrate("Available Run-Time Objects", MT.DocuSignEnvelope.ToString(), ((int)MT.DocuSignEnvelope).ToString(CultureInfo.InvariantCulture), AvailabilityType.RunTime);
-            var eventCrate = Crate.CreateManifestDescriptionCrate("Available Run-Time Objects", MT.DocuSignEvent.ToString(), ((int)MT.DocuSignEvent).ToString(CultureInfo.InvariantCulture), AvailabilityType.RunTime);
-            var recipientCrate = Crate.CreateManifestDescriptionCrate("Available Run-Time Objects", MT.DocuSignRecipient.ToString(), ((int)MT.DocuSignRecipient).ToString(CultureInfo.InvariantCulture), AvailabilityType.RunTime);
-            /*
             //create Standard Design Time Fields for Available Run-Time Objects
             var curAvailableRunTimeObjectsDesignTimeCrate =
                 Crate.CreateDesignTimeFieldsCrate("Available Run-Time Objects", new FieldDTO[]
                 {
-                    new FieldDTO {Key = "DocuSign Envelope", Value = "DocuSign Envelope"},
-                    new FieldDTO {Key = "DocuSign Event", Value = "DocuSign Event"},
-                    new FieldDTO {Key = "DocuSign Recipient", Value = "DocuSign Recipient"}
+                    new FieldDTO {Key = "DocuSign Envelope", Value = string.Empty},
+                    new FieldDTO {Key = "DocuSign Event", Value = string.Empty}
                 });
-            */
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
-                updater.CrateStorage = new CrateStorage(curControlsCrate, curEventSubscriptionsCrate, envelopeCrate, eventCrate, recipientCrate);
+                updater.CrateStorage = new CrateStorage(curControlsCrate, curEventSubscriptionsCrate, curAvailableRunTimeObjectsDesignTimeCrate);
             }
 
             /*
              * Note: We should not call Activate at the time of Configuration. For this action, it may be valid use case.
              * Because this particular action will be used internally, it would be easy to execute the Process directly.
              */
-            await Activate(curActivityDO, null);
+            await Activate(curActionDO, null);
 
-            return await Task.FromResult(curActivityDO);
+            return await Task.FromResult(curActionDO);
         }
 
-        public override Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        public override Task<ActionDO> Activate(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             DocuSignAccount curDocuSignAccount = new DocuSignAccount();
             var curConnectProfile = curDocuSignAccount.GetDocuSignConnectProfiles();
@@ -103,10 +96,10 @@ namespace terminalDocuSign.Actions
             {
 
             }
-            return Task.FromResult<ActivityDO>(curActivityDO);
+            return Task.FromResult<ActionDO>(curActionDO);
         }
 
-        public override Task<ActivityDO> Deactivate(ActivityDO curActivityDO)
+        public override Task<ActionDO> Deactivate(ActionDO curActionDO)
         {
             DocuSignAccount curDocuSignAccount = new DocuSignAccount();
             var curConnectProfile = curDocuSignAccount.GetDocuSignConnectProfiles();
@@ -120,12 +113,12 @@ namespace terminalDocuSign.Actions
                 }
             }
 
-            return Task.FromResult<ActivityDO>(curActivityDO);
+            return Task.FromResult<ActionDO>(curActionDO);
         }
 
-        public async Task<PayloadDTO> Run(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var curProcessPayload = await GetPayload(activityDO, containerId);
+            var curProcessPayload = await GetPayload(actionDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
             {
@@ -176,11 +169,11 @@ namespace terminalDocuSign.Actions
 
                 using (var updater = Crate.UpdateStorage(curProcessPayload))
                 {
-                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope", envelope));
-                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Event", events));
+                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Manifest", envelope));
+                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Event Manifest", events));
                     if (recipientCM != null)
                     {
-                        updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Recipient", recipientCM));
+                        updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Recipient Manifest", recipientCM));
                     }
                 }
             }

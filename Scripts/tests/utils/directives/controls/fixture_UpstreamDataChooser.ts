@@ -21,7 +21,7 @@
             selectedFieldType: 'Date'
         }
 
-        public static sampleAction = <model.ActivityDTO> {
+        public static sampleAction = <model.ActionDTO> {
             crateStorage: {
                 crates: [
                     <model.Crate> {
@@ -173,7 +173,7 @@
             },
         }
 
-        public static actionWithoutListCrates = <model.ActivityDTO> {
+        public static actionWithoutListCrates = <model.ActionDTO> {
             crateStorage: {
                 crates: [
                     <model.Crate> {

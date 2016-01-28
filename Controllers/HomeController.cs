@@ -26,6 +26,14 @@ namespace HubWeb.Controllers
             _email = ObjectFactory.GetInstance<Email>();
             _configRepository = ObjectFactory.GetInstance<IConfigRepository>();
         }
+
+
+
+        public ActionResult DocuSign()
+        {
+            return View();
+        }
+
         public ActionResult Index(string emailAddress)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

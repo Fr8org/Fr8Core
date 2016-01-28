@@ -42,7 +42,7 @@ namespace terminalDocuSignTests.Integration
 
             requestActionDTO.AuthToken = null;
 
-            await HttpPostAsync<ActivityDTO, ActivityDTO>(
+            await HttpPostAsync<ActionDTO, ActionDTO>(
                     configureUrl,
                     requestActionDTO
                );
@@ -65,7 +65,7 @@ namespace terminalDocuSignTests.Integration
             requestActionDTO.AuthToken = null;
             requestActionDTO.CrateStorage = Crate.ToDto(CreateConfiguredStorage());
 
-            await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, requestActionDTO);
+            await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, requestActionDTO);
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace terminalDocuSignTests.Integration
             var requestActionDTO = HealthMonitor_FixtureData.Query_DocuSign_v1_InitialConfiguration_ActionDTO();
             requestActionDTO.AuthToken = HealthMonitor_FixtureData.DocuSign_AuthToken();
 
-            await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, requestActionDTO);
+            await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, requestActionDTO);
         }
 
         [Test]
@@ -98,7 +98,7 @@ namespace terminalDocuSignTests.Integration
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<ActionDTO, ActionDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -119,7 +119,7 @@ namespace terminalDocuSignTests.Integration
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<ActionDTO, ActionDTO>(
                     configureUrl,
                     requestActionDTO
                 );

@@ -12,50 +12,86 @@ using terminalSalesforce.Services;
 
 namespace terminalSalesforce.Actions
 {
-    public class Create_Contact_v1 : BaseTerminalActivity
+    public class Create_Contact_v1 : BaseTerminalAction
     {
         ISalesforceManager _salesforce = new SalesforceManager();
 
-        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO,AuthorizationTokenDO authTokenDO)
+        public override async Task<ActionDO> Configure(ActionDO curActionDO,AuthorizationTokenDO authTokenDO)
         {
             CheckAuthentication(authTokenDO);
 
-            return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
+            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
             return ConfigurationRequestType.Initial;
         }
 
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO = null)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO = null)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            var firstNameCrate = new TextBox()
+            {
+                Label = "First Name",
+                Name = "firstName"
+
+            };
+            var lastName = new TextBox()
+            {
+                Label = "Last Name",
+                Name = "lastName",
+                Required = true
+            };
+
+            var mobileNumber = new TextBox()
+            {
+                Label = "Mobile Phone",
+                Name = "mobilePhone",
+                Required = true
+            };
+
+            var email = new TextBox()
+            {
+                Label = "Email",
+                Name = "email",
+                Required = true
+            };
+
+            var controls = PackControlsCrate(firstNameCrate, lastName, mobileNumber, email);
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.Clear();
-
-                AddTextSourceControlForDTO<ContactDTO>(updater.CrateStorage, "Upstream Terminal-Provided Fields", addRequestConfigEvent: false);
-
-                updater.CrateStorage.Add(await CreateAvailableFieldsCrate(curActivityDO));
+                updater.CrateStorage.Add(controls);
             }
 
-            return await Task.FromResult(curActivityDO);
+            return await Task.FromResult(curActionDO);
         }
 
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var payloadCrates = await GetPayload(curActivityDO, containerId);
+            var payloadCrates = await GetPayload(curActionDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
             {
                 return NeedsAuthenticationError(payloadCrates);
             }
 
-            var contact = _salesforce.CreateSalesforceDTO<ContactDTO>(curActivityDO, payloadCrates, ExtractSpecificOrUpstreamValue);
-            if (string.IsNullOrEmpty(contact.LastName))
+            var firstName = ExtractControlFieldValue(curActionDO, "firstName");
+            var lastName = ExtractControlFieldValue(curActionDO, "lastName");
+            var mobilePhone = ExtractControlFieldValue(curActionDO, "mobilePhone");
+            var email = ExtractControlFieldValue(curActionDO, "email");
+            if (string.IsNullOrEmpty(lastName))
             {
-                return Error(payloadCrates, "No last name found in activity.");
+                return Error(payloadCrates, "No last name found in action.");
             }
+
+            var contact = new ContactDTO
+            {
+                FirstName = firstName,
+                LastName = lastName,
+                MobilePhone = mobilePhone,
+                Email = email
+            };
 
             bool result = await _salesforce.CreateObject(contact, "Contact", _salesforce.CreateForceClient(authTokenDO));
 

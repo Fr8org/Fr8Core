@@ -43,7 +43,7 @@ namespace terminalQuickBooksTests.Integration
                 updater.CrateStorage.Add(Data.Crates.Crate.FromContent("ChartOfAccounts", curAccountsCrate));
             }
             //Act
-            var firstResponseActionDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(
+            var firstResponseActionDTO = await HttpPostAsync<ActionDTO, ActionDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -69,7 +69,7 @@ namespace terminalQuickBooksTests.Integration
                 updater.CrateStorage.Add(Data.Crates.Crate.FromContent("StandardConfigurationControlsCM", controls));
                 AddOperationalStateCrate(firstResponseActionDTO, new OperationalStateCM());
             }
-            var payloadDTO = await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl,firstResponseActionDTO);
+            var payloadDTO = await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl,firstResponseActionDTO);
             AssertControls(Crate.GetByManifest<StandardAccountingTransactionCM>(payloadDTO));
         }
 

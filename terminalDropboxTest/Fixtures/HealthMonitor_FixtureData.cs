@@ -14,11 +14,11 @@ namespace terminalDropboxTests.Fixtures
             return new Guid("8339DC87-F011-4FB1-B47C-FEC406E4100A");
         }
 
-        public static ActivityDTO GetFileListTestActionDTO()
+        public static ActionDTO GetFileListTestActionDTO()
         {
             var actionTemplate = GetFileListTestActivityTemplateDTO();
 
-            var activityDTO = new ActivityDTO()
+            var actionDTO = new ActionDTO()
             {
                 Name = "testaction",
                 Id = TestGuid_Id_333(),
@@ -28,7 +28,7 @@ namespace terminalDropboxTests.Fixtures
                 AuthToken = DropboxAuthorizationTokenDTO()
 
             };
-            return activityDTO;
+            return actionDTO;
         }
 
         public static ActivityTemplateDTO GetFileListTestActivityTemplateDTO()

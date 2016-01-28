@@ -2,30 +2,30 @@
     export class SubrouteDTO {
         public id: string;
         public isTempId: boolean;
-        public planId: string;
+        public routeId: string;
         public name: string;
         public criteria: CriteriaDTO;
-        public activities: Array<ActivityDTO>;
+        public actions: Array<ActionDTO>;
 
         constructor(
             id: string,
             isTempId: boolean,
-            planId: string,
+            routeId: string,
             name: string
         ) {
             this.id = id;
             this.isTempId = isTempId;
-            this.planId = planId;
+            this.routeId = routeId;
             this.name = name;
 
             this.criteria = null;
-            this.activities = [];
+            this.actions = [];
         }
 
         clone(): SubrouteDTO {
-            var result = new SubrouteDTO(this.id, this.isTempId, this.planId, this.name);
+            var result = new SubrouteDTO(this.id, this.isTempId, this.routeId, this.name);
             result.criteria = this.criteria !== null ? this.criteria.clone() : null;
-            angular.forEach(this.activities, function (it) { result.activities.push(it.clone()); });
+            angular.forEach(this.actions, function (it) { result.actions.push(it.clone()); });
 
             return result;
         }
@@ -33,7 +33,7 @@
         // Create and return empty ProcessNodeTemplate object,
         // if user selects just newly created Criteria diamond on WorkflowDesigner pane.
         static create(
-            planId,
+            routeId,
             subrouteId,
             criteriaId): model.SubrouteDTO {
 
@@ -41,9 +41,9 @@
             var subroute = new model.SubrouteDTO(
                 subrouteId,
                 true,
-                planId,
+                routeId,
                 'New criteria'
-            );
+                );
 
             // Create criteria with default conditions, and temporary criteria.id.
             var criteria = new model.CriteriaDTO(
@@ -51,7 +51,7 @@
                 true,
                 subroute.id,
                 model.CriteriaExecutionType.WithConditions
-            );
+                );
 
             subroute.criteria = criteria;
 

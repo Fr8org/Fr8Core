@@ -25,8 +25,7 @@
                     <tbody>
                         <tr ng-repeat="authToken in terminal.authTokens">
                             <td class="col-md-11">
-                                <span>{{authToken.externalAccountName}}</span>
-                                <span ng-if="authToken.isMain"> (Default)</span>
+                                {{authToken.externalAccountName}}
                             </td>
                             <td class="col-md-1">
                                 <button type="button" class="btn btn-danger btn-sm" ng-click="revokeToken(authToken)">Revoke</button>

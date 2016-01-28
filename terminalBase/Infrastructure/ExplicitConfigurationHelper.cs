@@ -28,10 +28,10 @@ namespace TerminalBase.Infrastructure
             return prefix + endPoint + "/actions/configure";
         }
 
-        private void AddHubCrate<T>(ActivityDO activityDO,
+        private void AddHubCrate<T>(ActionDO actionDO,
             T crateManifest, string label, string innerLabel)
         {
-            var crateStorage = Crate.GetStorage(activityDO.ExplicitData);
+            var crateStorage = Crate.GetStorage(actionDO.ExplicitData);
 
             var fullLabel = label;
             if (!string.IsNullOrEmpty(innerLabel))
@@ -42,49 +42,53 @@ namespace TerminalBase.Infrastructure
             var crate = Crate<T>.FromContent(fullLabel, crateManifest);
             crateStorage.Add(crate);
 
-            activityDO.ExplicitData = Crate.CrateStorageAsStr(crateStorage);
+            actionDO.ExplicitData = Crate.CrateStorageAsStr(crateStorage);
         }
 
-        public void AddCrate<T>(ActivityDO activityDO, T crateManifest, string label)
+        public void AddCrate<T>(ActionDO actionDO, T crateManifest, string label)
         {
-            var crateStorage = Crate.GetStorage(activityDO.ExplicitData);
+            var crateStorage = Crate.GetStorage(actionDO.ExplicitData);
 
             var crate = Crate<T>.FromContent(label, crateManifest);
             crateStorage.Add(crate);
 
-            activityDO.ExplicitData = Crate.CrateStorageAsStr(crateStorage);
+            actionDO.ExplicitData = Crate.CrateStorageAsStr(crateStorage);
         }
 
-        public void AddUpstreamCrate<T>(ActivityDO activityDO, T crateManifest, string crateLabel = "")
+        public void AddUpstreamCrate<T>(ActionDO actionDO, T crateManifest, string crateLabel = "")
         {
-            AddHubCrate(activityDO, crateManifest, "ExplicitData_UpstreamCrate", crateLabel);
+            AddHubCrate(actionDO, crateManifest, "ExplicitData_UpstreamCrate", crateLabel);
         }
 
-        public void AddDownstreamCrate<T>(ActivityDO activityDTO, T crateManifest, string crateLabel = "")
+        public void AddDownstreamCrate<T>(ActionDO actionDTO, T crateManifest, string crateLabel = "")
         {
-            AddHubCrate(activityDTO, crateManifest, "ExplicitData_DownstreamCrate", crateLabel);
+            AddHubCrate(actionDTO, crateManifest, "ExplicitData_DownstreamCrate", crateLabel);
         }
 
-        public async Task<ActivityDO> Configure(ActivityDO activityDO,ActivityTemplateDTO activityTemplate,AuthorizationTokenDO authTokenDO = null)
+        public async Task<ActionDO> Configure(
+            ActionDO actionDO,
+            ActivityTemplateDTO activityTemplate,
+            AuthorizationTokenDO authTokenDO = null)
         {
-            var activityDTO = Mapper.Map<ActivityDTO>(activityDO);
-            activityDTO.IsExplicitData = true;
-            activityDTO.ActivityTemplate = activityTemplate;
+            var actionDTO = Mapper.Map<ActionDTO>(actionDO);
+            actionDTO.IsExplicitData = true;
+            actionDTO.ActivityTemplate = activityTemplate;
 
             if (authTokenDO != null)
             {
-                activityDTO.AuthToken = new AuthorizationTokenDTO()
+                actionDTO.AuthToken = new AuthorizationTokenDTO()
                 {
                     Token = authTokenDO.Token,
                     AdditionalAttributes = authTokenDO.AdditionalAttributes
                 };
             }
 
-            var responseActionDTO = await RestfulServiceClient.PostAsync<ActivityDTO, ActivityDTO>(new Uri(GetTerminalConfigureUrl(activityTemplate.Terminal.Endpoint)),
-                activityDTO
+            var responseActionDTO = await RestfulServiceClient.PostAsync<ActionDTO, ActionDTO>(
+                new Uri(GetTerminalConfigureUrl(activityTemplate.Terminal.Endpoint)),
+                actionDTO
             );
 
-            var responseActionDO = Mapper.Map<ActivityDO>(responseActionDTO);
+            var responseActionDO = Mapper.Map<ActionDO>(responseActionDTO);
             return responseActionDO;
         }
     }

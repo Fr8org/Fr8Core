@@ -34,7 +34,7 @@ namespace terminalSendGrid.Tests.Actions
     {
         private SendEmailViaSendGrid_v1 _gridAction;
         private ICrateManager _crate;
-        private ActivityDTO activityDto;
+        private ActionDTO actionDto;
 
         public override void SetUp()
         {
@@ -48,18 +48,17 @@ namespace terminalSendGrid.Tests.Actions
             TerminalBootstrapper.ConfigureTest();
 
             _crate = ObjectFactory.GetInstance<ICrateManager>();
-            /*
+
             var routeNode = new Mock<IRouteNode>();
-            
             routeNode.Setup(c => c.GetCratesByDirection<StandardDesignTimeFieldsCM>(It.IsAny<Guid>(), It.IsAny<CrateDirection>()))
                     .Returns(Task.FromResult(new List<Crate<StandardDesignTimeFieldsCM>>()));
             routeNode.Setup(c => c.GetDesignTimeFieldsByDirectionTerminal(It.IsAny<Guid>(), It.IsAny<CrateDirection>(), It.IsAny<AvailabilityType>()))
                     .Returns(Task.FromResult(new StandardDesignTimeFieldsCM()));
             ObjectFactory.Configure(cfg => cfg.For<IRouteNode>().Use(routeNode.Object));
-            */
-            activityDto = GetActionResult();
+
+            actionDto = GetActionResult();
             var payLoadDto = FixtureData.CratePayloadDTOForSendEmailViaSendGridConfiguration;
-            payLoadDto.CrateStorage = activityDto.CrateStorage;
+            payLoadDto.CrateStorage = actionDto.CrateStorage;
 
             using (var updater = new CrateManager().UpdateStorage(payLoadDto))
             {
@@ -78,7 +77,7 @@ namespace terminalSendGrid.Tests.Actions
         public void Configure_ReturnsCrateDTO()
         {
             // Act
-            var controlsCrates = activityDto.CrateStorage.Crates;
+            var controlsCrates = actionDto.CrateStorage.Crates;
 
             // Assert
             Assert.IsNotNull(controlsCrates);
@@ -89,7 +88,7 @@ namespace terminalSendGrid.Tests.Actions
         public void Configure_ReturnsCrateDTOStandardConfigurationControlsMS()
         {
             // Act
-            var controlsCrate = _crate.FromDto(activityDto.CrateStorage).CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var controlsCrate = _crate.FromDto(actionDto.CrateStorage).CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             // Assert
             Assert.IsNotNull(controlsCrate);
@@ -102,7 +101,7 @@ namespace terminalSendGrid.Tests.Actions
         public void Configure_ReturnsEmailControls()
         {
             // Act && Assert
-            var standardControls = _crate.FromDto(activityDto.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var standardControls = _crate.FromDto(actionDto.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             Assert.IsNotNull(standardControls);
 
             var controls = standardControls.Controls.Where(a => a.Type == "TextSource").Count();
@@ -110,14 +109,14 @@ namespace terminalSendGrid.Tests.Actions
             Assert.AreEqual(3, controls);
         }
 
-        private ActivityDTO GetActionResult()
+        private ActionDTO GetActionResult()
         {
             _gridAction = new SendEmailViaSendGrid_v1();
-            var curActivityDO = FixtureData.ConfigureSendEmailViaSendGridAction();
-            ActivityDTO curActionDTO = Mapper.Map<ActivityDTO>(curActivityDO);
+            var curActionDO = FixtureData.ConfigureSendEmailViaSendGridAction();
+            ActionDTO curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
             var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
-            var actionResult = _gridAction.Configure(curActivityDO, curAuthTokenDO).Result;
-            return Mapper.Map<ActivityDTO>(actionResult);
+            var actionResult = _gridAction.Configure(curActionDO, curAuthTokenDO).Result;
+            return Mapper.Map<ActionDTO>(actionResult);
         }
 
         [Test]
@@ -126,15 +125,15 @@ namespace terminalSendGrid.Tests.Actions
             // Arrange
             ICrateManager Crate = ObjectFactory.GetInstance<ICrateManager>();
             _gridAction = new SendEmailViaSendGrid_v1();
-            var curActivityDO = FixtureData.ConfigureSendEmailViaSendGridAction();
+            var curActionDO = FixtureData.ConfigureSendEmailViaSendGridAction();
 
-            ActivityDTO curActionDTO = Mapper.Map<ActivityDTO>(curActivityDO);
-            curActionDTO.CrateStorage = activityDto.CrateStorage;
+            ActionDTO curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
+            curActionDTO.CrateStorage = actionDto.CrateStorage;
             var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
-            var activityDO = Mapper.Map<ActivityDO>(curActionDTO);
+            var actionDO = Mapper.Map<ActionDO>(curActionDTO);
 
             //updating controls
-            var standardControls = _crate.FromDto(activityDto.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var standardControls = _crate.FromDto(actionDto.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             foreach (TextSource control in standardControls.Controls)
             {
                 control.ValueSource = "specific";
@@ -142,14 +141,14 @@ namespace terminalSendGrid.Tests.Actions
             }
             var crate = Crate.CreateStandardConfigurationControlsCrate("SendGrid", standardControls.Controls.ToArray());
 
-            using (var updater = Crate.UpdateStorage(activityDO))
+            using (var updater = Crate.UpdateStorage(actionDO))
             {
                 updater.CrateStorage.RemoveByManifestId(6);
                 updater.CrateStorage.Add(crate);
             }
 
             // Act
-            var payloadDTOResult = _gridAction.Run(activityDO, curActionDTO.ContainerId, curAuthTokenDO).Result;
+            var payloadDTOResult = _gridAction.Run(actionDO, curActionDTO.ContainerId, curAuthTokenDO).Result;
 
             // Assert
             Assert.NotNull(payloadDTOResult);

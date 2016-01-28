@@ -18,7 +18,7 @@ using Data.Interfaces.DataTransferObjects;
 
 namespace terminalSalesforce.Actions
 {
-    public class Get_Data_v1 : BaseTerminalActivity
+    public class Get_Data_v1 : BaseTerminalAction
     {
         private ISalesforceManager _salesforce;
 
@@ -27,24 +27,24 @@ namespace terminalSalesforce.Actions
             _salesforce = ObjectFactory.GetInstance<ISalesforceManager>();
         }
 
-        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             CheckAuthentication(authTokenDO);
 
-            return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
+            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
         }
 
-        private ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
             //if empty crate storage, proceed with initial config
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (Crate.IsStorageEmpty(curActionDO))
             {
                 return ConfigurationRequestType.Initial;
             }
 
             //if no salesforce object is selected, proceed with initial config
             string selectedSalesForceObject =
-                ((DropDownList) GetControl(curActivityDO, "WhatKindOfData", ControlTypes.DropDownList)).selectedKey;
+                ((DropDownList) GetControl(curActionDO, "WhatKindOfData", ControlTypes.DropDownList)).selectedKey;
             if (string.IsNullOrEmpty(selectedSalesForceObject))
             {
                 return ConfigurationRequestType.Initial;
@@ -54,7 +54,7 @@ namespace terminalSalesforce.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             //create hard coded salesforce object names as design time fields.
             var availableSalesforceObjects = Crate.CreateDesignTimeFieldsCrate("AvailableSalesforceObjects",
@@ -70,25 +70,25 @@ namespace terminalSalesforce.Actions
 
             var configurationControlsCrate = CreateControlsCrate();
 
-            using (var updater = Crate.UpdateStorage(() => curActivityDO.CrateStorage))
+            using (var updater = Crate.UpdateStorage(() => curActionDO.CrateStorage))
             {
                 updater.CrateStorage = AssembleCrateStorage(availableSalesforceObjects, emptyFieldsSource, configurationControlsCrate);
             }
 
-            return await Task.FromResult(curActivityDO);
+            return await Task.FromResult(curActionDO);
         }
 
-        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO,
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO,
                                                                               AuthorizationTokenDO authTokenDO)
         {
             //get the current user selected salesforce object from the drop down list
             string curSelectedObject =
-                ((DropDownList) GetControl(curActivityDO, "WhatKindOfData", ControlTypes.DropDownList)).selectedKey;
+                ((DropDownList) GetControl(curActionDO, "WhatKindOfData", ControlTypes.DropDownList)).selectedKey;
 
             //if current selected object is empty , do not do anything
             if (string.IsNullOrEmpty(curSelectedObject))
             {
-                return await Task.FromResult(curActivityDO);
+                return await Task.FromResult(curActionDO);
             }
 
             //get fields of selected salesforce object
@@ -96,24 +96,24 @@ namespace terminalSalesforce.Actions
 
             //replace the object fields for the newly selected object name
             var queryableCriteriaFields = Crate.CreateDesignTimeFieldsCrate("Queryable Criteria", objectFieldsList.ToArray());
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.ReplaceByLabel(queryableCriteriaFields);
             }
 
-            return await Task.FromResult(curActivityDO);
+            return await Task.FromResult(curActionDO);
         }
 
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             CheckAuthentication(authTokenDO);
 
             //get payload data
-            var payloadCrates = await GetPayload(curActivityDO, containerId);
+            var payloadCrates = await GetPayload(curActionDO, containerId);
 
             //get currect selected Salesforce object
             string curSelectedSalesForceObject =
-                ((DropDownList)GetControl(curActivityDO, "WhatKindOfData", ControlTypes.DropDownList)).selectedKey;
+                ((DropDownList)GetControl(curActionDO, "WhatKindOfData", ControlTypes.DropDownList)).selectedKey;
 
             if (string.IsNullOrEmpty(curSelectedSalesForceObject))
             {
@@ -121,7 +121,7 @@ namespace terminalSalesforce.Actions
             }
 
             //get filters
-            var filterValue = ExtractControlFieldValue(curActivityDO, "SelectedFilter");
+            var filterValue = ExtractControlFieldValue(curActionDO, "SelectedFilter");
             var filterDataDTO = JsonConvert.DeserializeObject<FilterDataDTO>(filterValue);
 
             //if without filter, just get all selected objects

@@ -13,7 +13,7 @@ using Data.States;
 
 namespace terminalDocuSign.Actions
 {
-    public class BaseDocuSignAction : BaseTerminalActivity
+    public class BaseDocuSignAction : BaseTerminalAction
     {
         protected List<FieldDTO> CreateDocuSignEventFields()
         {
@@ -57,12 +57,12 @@ namespace terminalDocuSign.Actions
             return envelopeIdField.Value;
         }
 
-        public virtual async System.Threading.Tasks.Task<Data.Entities.ActivityDO> Activate(Data.Entities.ActivityDO curActivityDO, Data.Entities.AuthorizationTokenDO authTokenDO)
+        public virtual async System.Threading.Tasks.Task<Data.Entities.ActionDO> Activate(Data.Entities.ActionDO curActionDO, Data.Entities.AuthorizationTokenDO authTokenDO)
         {
             //create DocuSign account if there is no existing connect profile
             DocuSignAccount.CreateOrUpdateDefaultDocuSignConnectConfiguration(null);
 
-            return await Task.FromResult<ActivityDO>(curActivityDO);
+            return await Task.FromResult<ActionDO>(curActionDO);
         }
     }
 }
