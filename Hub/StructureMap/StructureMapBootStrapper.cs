@@ -109,17 +109,17 @@ namespace Hub.StructureMap
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
                 For<IRestfulServiceClient>().Singleton().Use<RestfulServiceClient>();
                 For<ITerminalTransmitter>().Use<TerminalTransmitter>();
-                For<IRoute>().Use<Route>();
+                For<IPlan>().Use<Hub.Services.Plan>();
                 For<InternalInterfaces.IContainer>().Use<InternalClass.Container>();
                 For<ICriteria>().Use<Criteria>();
-                For<IAction>().Use<InternalClass.Action>();
+                For<IActivity>().Use<InternalClass.Activity>();
 				For<IRouteNode>().Use<RouteNode>();
                 For<ISubscription>().Use<Subscription>();
                 For<IProcessNode>().Use<ProcessNode>();
                 For<ISubroute>().Use<Subroute>();
                 For<IField>().Use<Field>();
                 //For<IDocuSignTemplate>().Use<DocuSignTemplate>();
-                For<IEvent>().Use<Event>();
+                For<IEvent>().Use<Hub.Services.Event>();
                 For<IActivityTemplate>().Use<ActivityTemplate>().Singleton();
                 For<IFile>().Use<InternalClass.File>();
                 For<ITerminal>().Use<Terminal>().Singleton();
@@ -169,11 +169,11 @@ namespace Hub.StructureMap
                 For<InternalInterfaces.IContainer>().Use<InternalClass.Container>();
                 For<ICriteria>().Use<Criteria>();
                 For<ISubscription>().Use<Subscription>();
-                For<IAction>().Use<InternalClass.Action>();
+                For<IActivity>().Use<InternalClass.Activity>();
 					 For<IRouteNode>().Use<RouteNode>();
 
                 For<IProcessNode>().Use<ProcessNode>();
-                For<IRoute>().Use<Route>();
+                For<IPlan>().Use<Hub.Services.Plan>();
                 For<ISubroute>().Use<Subroute>();
                 For<IField>().Use<Field>();
                 //var mockProcess = new Mock<IProcessService>();
@@ -184,7 +184,7 @@ namespace Hub.StructureMap
                 var terminalTransmitterMock = new Mock<ITerminalTransmitter>();
                 For<ITerminalTransmitter>().Use(terminalTransmitterMock.Object).Singleton();
                 For<IActivityTemplate>().Use<ActivityTemplate>().Singleton();
-                For<IEvent>().Use<Event>();
+                For<IEvent>().Use<Hub.Services.Event>();
                 //For<ITemplate>().Use<Services.Template>();
                 For<IFile>().Use<InternalClass.File>();
                 

@@ -32,27 +32,27 @@ namespace HubWeb.Controllers
     [Fr8ApiAuthorize]
     public class ActionsController : ApiController
     {
-        private readonly IAction _action;
+        private readonly IActivity _activity;
         private readonly ISecurityServices _security;
         private readonly IActivityTemplate _activityTemplate;
         private readonly ISubroute _subRoute;
-        private readonly IRoute _route;
+        private readonly Hub.Interfaces.IPlan _plan;
 
         private readonly IAuthorization _authorization;
 
         public ActionsController()
         {
-            _action = ObjectFactory.GetInstance<IAction>();
+            _activity = ObjectFactory.GetInstance<IActivity>();
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
             _subRoute = ObjectFactory.GetInstance<ISubroute>();
-            _route = ObjectFactory.GetInstance<IRoute>();
+            _plan = ObjectFactory.GetInstance<IPlan>();
             _authorization = ObjectFactory.GetInstance<IAuthorization>();
         }
 
-        public ActionsController(IAction service)
+        public ActionsController(IActivity service)
         {
-            _action = service;
+            _activity = service;
         }
 
         public ActionsController(ISubroute service)
@@ -63,22 +63,22 @@ namespace HubWeb.Controllers
 
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
-        public async Task<IHttpActionResult> Create(int actionTemplateId, string name, string label = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null)
+        public async Task<IHttpActionResult> Create(int actionTemplateId, string name, string label = null, int? order = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var userId = User.Identity.GetUserId();
 
-                var result = await _action.CreateAndConfigure(uow, userId, actionTemplateId, name, label, parentNodeId, createRoute, authorizationTokenId);
+                var result = await _activity.CreateAndConfigure(uow, userId, actionTemplateId, name, label, order, parentNodeId, createRoute, authorizationTokenId);
 
-                if (result is ActionDO)
+                if (result is ActivityDO)
                 {
-                    return Ok(Mapper.Map<ActionDTO>(result));
+                    return Ok(Mapper.Map<ActivityDTO>(result));
                 }
 
-                if (result is RouteDO)
+                if (result is PlanDO)
                 {
-                    return Ok(RouteMappingHelper.MapRouteToDto(uow, (RouteDO)result));
+                    return Ok(RouteMappingHelper.MapRouteToDto(uow, (PlanDO)result));
                 }
 
                 throw new Exception("Unsupported type " + result.GetType());
@@ -98,9 +98,9 @@ namespace HubWeb.Controllers
                     throw new ArgumentException(String.Format("actionTemplate (solution) name {0} is not found in the database.", solutionName));
                 }
 
-                var result = await _action.CreateAndConfigure(uow, userId,
-                    activityTemplate.Id, activityTemplate.Name, activityTemplate.Label, null, true);
-                return Ok(RouteMappingHelper.MapRouteToDto(uow, (RouteDO)result));
+                var result = await _activity.CreateAndConfigure(uow, userId,
+                    activityTemplate.Id, activityTemplate.Name, activityTemplate.Label, null, null, true);
+                return Ok(RouteMappingHelper.MapRouteToDto(uow, (PlanDO)result));
             }
         }
 
@@ -109,24 +109,24 @@ namespace HubWeb.Controllers
 
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
-        public async Task<IHttpActionResult> Configure(ActionDTO curActionDesignDTO)
+        public async Task<IHttpActionResult> Configure(ActivityDTO curActionDesignDTO)
         {
             // WebMonitor.Tracer.Monitor.StartMonitoring("Configuring action " + curActionDesignDTO.Name);
             curActionDesignDTO.CurrentView = null;
-            ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
-            ActionDTO actionDTO = await _action.Configure(User.Identity.GetUserId(), curActionDO);
-            return Ok(actionDTO);
+            ActivityDO curActivityDO = Mapper.Map<ActivityDO>(curActionDesignDTO);
+            ActivityDTO activityDTO = await _activity.Configure(User.Identity.GetUserId(), curActivityDO);
+            return Ok(activityDTO);
         }
 
         /// <summary>
         /// GET : Returns an action with the specified id
         /// </summary>
         [HttpGet]
-        public ActionDTO Get(Guid id)
+        public ActivityDTO Get(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return Mapper.Map<ActionDTO>(_action.GetById(uow, id));
+                return Mapper.Map<ActivityDTO>(_activity.GetById(uow, id));
             }
         }
 
@@ -137,7 +137,7 @@ namespace HubWeb.Controllers
         //[Route("{id:guid}")]
         public async Task<IHttpActionResult> Delete(Guid id, bool confirmed = false)
         {
-            var isDeleted = await _subRoute.DeleteAction(User.Identity.GetUserId(), id, confirmed);
+            var isDeleted = await _subRoute.DeleteActivity(User.Identity.GetUserId(), id, confirmed);
             if (!isDeleted)
             {
                 return ResponseMessage(new HttpResponseMessage(System.Net.HttpStatusCode.PreconditionFailed));
@@ -149,14 +149,14 @@ namespace HubWeb.Controllers
         /// POST : Saves or updates the given action
         /// </summary>
         [HttpPost]
-        public IHttpActionResult Save(ActionDTO curActionDTO)
+        public IHttpActionResult Save(ActivityDTO curActionDTO)
         {
-            ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);
+            ActivityDO submittedActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var resultActionDO = _action.SaveOrUpdateAction(uow, submittedActionDO);
-                var resultActionDTO = Mapper.Map<ActionDTO>(resultActionDO);
+                var resultActionDO = _activity.SaveOrUpdateActivity(uow, submittedActivityDO);
+                var resultActionDTO = Mapper.Map<ActivityDTO>(resultActionDO);
 
                 return Ok(resultActionDTO);
             }

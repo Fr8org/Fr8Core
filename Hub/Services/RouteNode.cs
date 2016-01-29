@@ -112,9 +112,9 @@ namespace Hub.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                ActionDO actionDO = uow.ActionRepository.GetByKey(activityId);
-                var curCrates = GetActivitiesByDirection(uow, direction, actionDO)
-                    .OfType<ActionDO>()
+                ActivityDO activityDO = uow.ActivityRepository.GetByKey(activityId);
+                var curCrates = GetActivitiesByDirection(uow, direction, activityDO)
+                    .OfType<ActivityDO>()
                     .SelectMany(x => _crate.GetStorage(x).CratesOfType<StandardDesignTimeFieldsCM>().Where(cratePredicate))
                     .ToList();
 
@@ -383,10 +383,10 @@ namespace Hub.Services
                     throw new ArgumentException("Cannot find Activity with the supplied curActivityId");
                 }
 
-                if (curActivityDO is ActionDO)
+                if (curActivityDO is ActivityDO)
                 {
-                    IAction _action = ObjectFactory.GetInstance<IAction>();
-                    await _action.PrepareToExecute((ActionDO)curActivityDO, curActionState, curContainerDO, uow);
+                    IActivity _activity = ObjectFactory.GetInstance<IActivity>();
+                    await _activity.PrepareToExecute((ActivityDO)curActivityDO, curActionState, curContainerDO, uow);
                     //TODO inspect this
                     //why do we get container from db again???
                     containerDO.CrateStorage = curContainerDO.CrateStorage;

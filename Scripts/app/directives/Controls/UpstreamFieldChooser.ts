@@ -4,7 +4,7 @@ module dockyard.directives.upstreamDataChooser {
 
     export interface IUpstreamFieldChooser extends ng.IScope {
         field: model.UpstreamDataChooser;
-        currentAction: model.ActionDTO;
+        currentAction: model.ActivityDTO;
         upstreamFields: model.FieldDTO[];
         tableParams: any;
         selectField: (field: model.FieldDTO) => void;

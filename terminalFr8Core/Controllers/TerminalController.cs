@@ -86,8 +86,8 @@ namespace terminalFr8Core.Controllers
 
             result.Add(new ActivityTemplateDTO
             {
-                Name = "StoreMTData",
-                Label = "Store MT Data",
+                Name = "SaveToFr8Warehouse",
+                Label = "Save To Fr8 Warehouse",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 WebService = webService,
@@ -138,7 +138,7 @@ namespace terminalFr8Core.Controllers
             result.Add(new ActivityTemplateDTO
             {
                 Name = "ManageRoute",
-                Label = "Manage Route",
+                Label = "Manage Plan",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 WebService = webService,
@@ -209,6 +209,28 @@ namespace terminalFr8Core.Controllers
                 Terminal = terminal,
                 WebService = webService,
                 MinPaneWidth = 380
+            });
+
+            result.Add(new ActivityTemplateDTO
+            {
+                Name = "Monitor_Fr8_Events",
+                Label = "Monitor Fr8 Events",
+                Version = "1",
+                Category = ActivityCategory.Monitors,
+                NeedsAuthentication = false,
+                Terminal = terminal,
+                MinPaneWidth = 380
+            });
+
+            result.Add(new ActivityTemplateDTO()
+            {
+                Name = "StoreFile",
+                Label = "Store File",
+                Category = ActivityCategory.Processors,
+                Terminal = terminal,
+                WebService = webService,
+                Version = "1",
+                Type = ActivityType.Standard
             });
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()

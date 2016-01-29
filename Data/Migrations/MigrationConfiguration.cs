@@ -74,7 +74,9 @@ namespace Data.Migrations
 
 
             //AddAuthorizationTokens(uow);
-            AddContainerDOForTestingApi(uow);
+            uow.SaveChanges();
+            Fr8AccountDO fr8AccountDO = GetFr8Account(uow, "alex@edelstein.org");
+            AddContainerDOForTestingApi(uow, fr8AccountDO);
 
             AddWebServices(uow);
         }
@@ -121,47 +123,53 @@ namespace Data.Migrations
             return Crate.FromContent("Standard Event Report", docusignEventPayload);
         }
 
-        private static void AddContainerDOForTestingApi(IUnitOfWork uow)
+        private static void AddContainerDOForTestingApi(IUnitOfWork uow, Fr8AccountDO fr8AccountDO)
         {
-            new RouteBuilder("TestTemplate{0B6944E1-3CC5-45BA-AF78-728FFBE57358}").AddCrate(GenerateInitialEventCrate()).Store(uow);
-            new RouteBuilder("TestTemplate{77D78B4E-111F-4F62-8AC6-6B77459042CB}")
+            new RouteBuilder("TestTemplate{0B6944E1-3CC5-45BA-AF78-728FFBE57358}", fr8AccountDO).AddCrate(GenerateInitialEventCrate()).Store(uow);
+            new RouteBuilder("TestTemplate{77D78B4E-111F-4F62-8AC6-6B77459042CB}", fr8AccountDO)
                 .AddCrate(GenerateInitialEventCrate())
                 .AddCrate(Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(new FieldDTO("EnvelopeId", "38b8de65-d4c0-435d-ac1b-87d1b2dc5251")))).Store(uow);
 
             uow.SaveChanges();
         }
 
-//        private static void AddAuthorizationTokens(IUnitOfWork uow)
-//        {
-//            AddDocusignAuthToken(uow);
-//        }
-//
-//        private static void AddDocusignAuthToken(IUnitOfWork uow)
-//        {
-//            // Check that terminal does not exist yet.
-//            var docusignAuthToken = uow.AuthorizationTokenRepository.GetQuery()
-//                .Any(x => x.ExternalAccountId == "docusign_developer@dockyard.company");
-//
-//            // Add new terminal and subscription to repository, if terminal doesn't exist.
-//
-//            if (!docusignAuthToken)
-//            {
-//                var token = new AuthorizationTokenDO();
-//                token.ExternalAccountId = "docusign_developer@dockyard.company";
-//                token.Token = "";
-//                token.UserDO = uow.UserRepository.GetOrCreateUser("alex@edelstein.org");
-//
-//                var docuSignTerminal = uow.TerminalRepository.FindOne(p => p.Name == "terminalDocuSign");
-//                token.Terminal = docuSignTerminal;
-//                token.TerminalID = docuSignTerminal.Id;
-//
-//                token.ExpiresAt = DateTime.UtcNow.AddDays(10);
-//
-//                uow.AuthorizationTokenRepository.Add(token);
-//                uow.SaveChanges();
-//
-//            }
-//        }
+        private static Fr8AccountDO GetFr8Account(IUnitOfWork uow, string emailAddress)
+        {
+            return uow.UserRepository.FindOne(u => u.EmailAddress.Address == emailAddress);
+        }
+
+
+        //        private static void AddAuthorizationTokens(IUnitOfWork uow)
+        //        {
+        //            AddDocusignAuthToken(uow);
+        //        }
+        //
+        //        private static void AddDocusignAuthToken(IUnitOfWork uow)
+        //        {
+        //            // Check that terminal does not exist yet.
+        //            var docusignAuthToken = uow.AuthorizationTokenRepository.GetQuery()
+        //                .Any(x => x.ExternalAccountId == "docusign_developer@dockyard.company");
+        //
+        //            // Add new terminal and subscription to repository, if terminal doesn't exist.
+        //
+        //            if (!docusignAuthToken)
+        //            {
+        //                var token = new AuthorizationTokenDO();
+        //                token.ExternalAccountId = "docusign_developer@dockyard.company";
+        //                token.Token = "";
+        //                token.UserDO = uow.UserRepository.GetOrCreateUser("alex@edelstein.org");
+        //
+        //                var docuSignTerminal = uow.TerminalRepository.FindOne(p => p.Name == "terminalDocuSign");
+        //                token.Terminal = docuSignTerminal;
+        //                token.TerminalID = docuSignTerminal.Id;
+        //
+        //                token.ExpiresAt = DateTime.UtcNow.AddDays(10);
+        //
+        //                uow.AuthorizationTokenRepository.Add(token);
+        //                uow.SaveChanges();
+        //
+        //            }
+        //        }
 
         //This method will automatically seed any constants file
         //It looks for rows which implement IConstantRow<>

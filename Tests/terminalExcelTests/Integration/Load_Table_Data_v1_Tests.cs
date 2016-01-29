@@ -64,13 +64,13 @@ namespace terminalExcelTests.Integration
             Assert.AreEqual(controls.Controls[1].Name, null);
         }
 
-        private async Task<ActionDTO> ConfigureFollowUp()
+        private async Task<ActivityDTO> ConfigureFollowUp()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
             var requestActionDTO = HealthMonitor_FixtureData.Load_Table_Data_v1_InitialConfiguration_ActionDTO(Guid.NewGuid());
 
-            var responseActionDTO = await HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, requestActionDTO);
+            var responseActionDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, requestActionDTO);
 
             var storage = _crateManager.GetStorage(responseActionDTO);
 
@@ -79,7 +79,7 @@ namespace terminalExcelTests.Integration
                 updater.CrateStorage = storage;
             }
 
-            return await HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, requestActionDTO);
+            return await HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, requestActionDTO);
         }
 
         private void AssertFollowUpCrateTypes(CrateStorage crateStorage)
@@ -98,7 +98,7 @@ namespace terminalExcelTests.Integration
             var requestActionDTO = HealthMonitor_FixtureData.Load_Table_Data_v1_InitialConfiguration_ActionDTO(Guid.NewGuid());
 
             // Act
-            var responseActionDTO = await HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, requestActionDTO);
+            var responseActionDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, requestActionDTO);
 
             // Assert
             Assert.NotNull(responseActionDTO);
@@ -121,7 +121,7 @@ namespace terminalExcelTests.Integration
             var requestActionDTO = HealthMonitor_FixtureData.Load_Table_Data_v1_InitialConfiguration_ActionDTO(Guid.Empty);
 
             // Act
-            await HttpPostAsync<ActionDTO, JToken>(configureUrl, requestActionDTO);
+            await HttpPostAsync<ActivityDTO, JToken>(configureUrl, requestActionDTO);
         }
 
         /// <summary>
@@ -149,9 +149,9 @@ namespace terminalExcelTests.Integration
             // Arrange
             var runUrl = GetTerminalRunUrl();
 
-            var actionDTO = HealthMonitor_FixtureData.Load_Table_Data_v1_InitialConfiguration_ActionDTO(Guid.NewGuid());
+            var activityDTO = HealthMonitor_FixtureData.Load_Table_Data_v1_InitialConfiguration_ActionDTO(Guid.NewGuid());
             AddPayloadCrate(
-                actionDTO,
+                activityDTO,
                 new StandardTableDataCM()
                 {
                     FirstRowHeaders = true,
@@ -160,7 +160,7 @@ namespace terminalExcelTests.Integration
             );
 
             // Act
-            var responsePayloadDTO = await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+            var responsePayloadDTO = await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, activityDTO);
 
             // Assert
             var crateStorage = Crate.GetStorage(responsePayloadDTO);
@@ -178,7 +178,7 @@ namespace terminalExcelTests.Integration
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<ActivityDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -199,7 +199,7 @@ namespace terminalExcelTests.Integration
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<ActivityDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );

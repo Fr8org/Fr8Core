@@ -24,7 +24,7 @@ namespace Hub.Interfaces
         void HandleTerminalEvent(LoggingDataCm eventDataCm);
 
         Task ProcessInboundEvents(Crate curCrateStandardEventReport);
-        Task LaunchProcess(RouteDO curRoute, Crate curEventData = null);
-        Task LaunchProcesses(List<RouteDO> curRoutes, Crate curEventReport);
+        Task LaunchProcess(PlanDO curPlan, Crate curEventData = null);
+        Task LaunchProcesses(List<PlanDO> curPlans, Crate curEventReport);
     }
 }

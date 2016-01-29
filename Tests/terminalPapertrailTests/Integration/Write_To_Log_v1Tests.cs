@@ -42,7 +42,7 @@ namespace terminalPapertrailTests.Integration
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<ActivityDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -71,14 +71,14 @@ namespace terminalPapertrailTests.Integration
             //Act
             //Call first time for the initial configuration
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<ActivityDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
 
             //Call second time for the follow up configuration
             responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<ActivityDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -106,10 +106,10 @@ namespace terminalPapertrailTests.Integration
             var runUrl = GetTerminalRunUrl();
 
             //prepare action DTO with valid target URL
-            var actionDTO = await GetActionDTO_LogToPapertrailIntegrationTest();
+            var activityDTO = await GetActionDTO_LogToPapertrailIntegrationTest();
 
             //add the log message in upstream action
-            AddPayloadCrate(actionDTO,
+            AddPayloadCrate(activityDTO,
                 new StandardLoggingCM
                 {
                     Item =
@@ -119,11 +119,11 @@ namespace terminalPapertrailTests.Integration
                         }
                 });
 
-            AddOperationalStateCrate(actionDTO, new OperationalStateCM());
+            AddOperationalStateCrate(activityDTO, new OperationalStateCM());
 
             //Act
             var responsePayloadDTO =
-                await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+                await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, activityDTO);
 
             //Assert the returned paylod contains the log messages with IsLogged is set to True.
             var loggedMessageCrate = Crate.GetStorage(responsePayloadDTO).Single(x => x.Label.Equals("Log Messages"));
@@ -147,10 +147,10 @@ namespace terminalPapertrailTests.Integration
             var runUrl = GetTerminalRunUrl();
 
             //prepare the action DTO with valid target URL
-            var actionDTO = await GetActionDTO_LogToPapertrailIntegrationTest();
+            var activityDTO = await GetActionDTO_LogToPapertrailIntegrationTest();
 
             //make the target URL as invalid
-            using (var updater = Crate.UpdateStorage(actionDTO))
+            using (var updater = Crate.UpdateStorage(activityDTO))
             {
                 var controls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
 
@@ -159,7 +159,7 @@ namespace terminalPapertrailTests.Integration
             }
 
             //add the Log Message in upstream action
-            AddPayloadCrate(actionDTO,
+            AddPayloadCrate(activityDTO,
                 new StandardLoggingCM
                 {
                     Item =
@@ -169,16 +169,16 @@ namespace terminalPapertrailTests.Integration
                         }
                 });
 
-            AddOperationalStateCrate(actionDTO, new OperationalStateCM());
+            AddOperationalStateCrate(activityDTO, new OperationalStateCM());
 
             //Act
-            var payload = await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+            var payload = await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, activityDTO);
 
             var storage = Crate.GetStorage(payload);
             var operationalStateCM = storage.CrateContentsOfType<OperationalStateCM>().Single();
 
-            Assert.AreEqual(ActionResponse.Error, operationalStateCM.CurrentActionResponse);
-            Assert.AreEqual("Papertrail URL and PORT are not in the correct format. The given URL is InvalidUrl", operationalStateCM.CurrentActionErrorMessage);
+            Assert.AreEqual(ActivityResponse.Error, operationalStateCM.CurrentActivityResponse);
+            Assert.AreEqual("Papertrail URL and PORT are not in the correct format. The given URL is InvalidUrl", operationalStateCM.CurrentActivityErrorMessage);
         }
 
         /// <summary>
@@ -199,10 +199,10 @@ namespace terminalPapertrailTests.Integration
             var runUrl = GetTerminalRunUrl();
 
             //prepare action DTO with valid target URL
-            var actionDTO = await GetActionDTO_LogToPapertrailIntegrationTest();
+            var activityDTO = await GetActionDTO_LogToPapertrailIntegrationTest();
 
             //Act
-            var responsePayloadDTO = await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+            var responsePayloadDTO = await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, activityDTO);
         }
 
         private void AssertCrateTypes(CrateStorage crateStorage)
@@ -229,14 +229,14 @@ namespace terminalPapertrailTests.Integration
             //Assert.AreEqual("requestConfig", controls.Controls[0].Events[0].Handler, "requestConfig is not configured when onChange event.");
         }
 
-        private async Task<ActionDTO> GetActionDTO_LogToPapertrailIntegrationTest()
+        private async Task<ActivityDTO> GetActionDTO_LogToPapertrailIntegrationTest()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
             var requestActionDTO = HealthMonitor_FixtureData.Write_To_Log_v1_InitialConfiguration_ActionDTO();
 
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<ActivityDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -263,7 +263,7 @@ namespace terminalPapertrailTests.Integration
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<ActivityDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -284,7 +284,7 @@ namespace terminalPapertrailTests.Integration
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<ActivityDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );

@@ -44,17 +44,17 @@ namespace DockyardTest.Controllers
             {
 
                 //Add a template
-                var curRoute = FixtureData.TestRoute1();
-                uow.RouteRepository.Add(curRoute);
+                var curPlan = FixtureData.TestRoute1();
+                uow.PlanRepository.Add(curPlan);
                 uow.SaveChanges();
 
                 //Add a template
-                var route = FixtureData.TestRoute1();
-                uow.RouteRepository.Add(route);
+                var plan = FixtureData.TestRoute1();
+                uow.PlanRepository.Add(plan);
                 uow.SaveChanges();
-                //Add a processnodetemplate to route 
+                //Add a processnodetemplate to plan 
                 _curSubroute = FixtureData.TestSubrouteDO1();
-                _curSubroute.ParentRouteNodeId = route.Id;
+                _curSubroute.ParentRouteNodeId = plan.Id;
                 uow.SubrouteRepository.Add(_curSubroute);
                 uow.SaveChanges();
 

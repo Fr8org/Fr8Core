@@ -95,6 +95,7 @@
                 var modalScope = <any>$scope.$new(true);
                 modalScope.terminalId = terminal.id;
                 modalScope.mode = terminal.authenticationType;
+                modalScope.terminalName = terminal.name;
 
                 $modal.open({
                     animation: true,

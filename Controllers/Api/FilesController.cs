@@ -7,7 +7,9 @@ using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
+using HubWeb.Infrastructure;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 using Data.Entities;
@@ -22,7 +24,7 @@ using AutoMapper;
 
 namespace HubWeb.Controllers
 {
-    [Fr8ApiAuthorize]
+    //[Fr8ApiAuthorize]
     public class FilesController : ApiController
     {
         private readonly IFile _fileService;
@@ -40,13 +42,14 @@ namespace HubWeb.Controllers
 
         [HttpPost]
         [ActionName("files")]
+        [Fr8HubWebHMACAuthenticate]
         public async Task<IHttpActionResult> Post()
         {
             FileDO fileDO = null;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var account = _security.GetCurrentAccount(uow);
+                var currentUserId = _security.GetCurrentUser();
 
                 await Request.Content.ReadAsMultipartAsync<MultipartMemoryStreamProvider>(new MultipartMemoryStreamProvider()).ContinueWith((tsk) =>
                 {
@@ -58,7 +61,7 @@ namespace HubWeb.Controllers
                         var fileName = ctnt.Headers.ContentDisposition.FileName.Replace("\"", string.Empty);
                         fileDO = new FileDO
                         {
-                            DockyardAccountID = account.Id
+                            DockyardAccountID = currentUserId
                         };
 
                         _fileService.Store(uow, fileDO, stream, fileName);
