@@ -12,6 +12,7 @@ namespace terminalFr8Core.Managers
         public StandardLoggingCM RouteActivated(EventLoggingDTO eventLogging)
         {
             StandardLoggingCM standardLoggingCM = new StandardLoggingCM();
+            standardLoggingCM.LoggingMTkey = Guid.NewGuid().ToString();
 
             LogItemDTO logDTO = new LogItemDTO()
             {

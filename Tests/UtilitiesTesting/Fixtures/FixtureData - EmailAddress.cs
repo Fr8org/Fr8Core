@@ -32,7 +32,7 @@ namespace UtilitiesTesting.Fixtures
             emailAddressDO.Id = 3;
             return emailAddressDO;
         }
-      
+
         public static EmailAddressDO TestEmailAddress4()
         {
             var emailAddressDO = new EmailAddressDO("JackMaginot@gmail.com");
@@ -60,6 +60,12 @@ namespace UtilitiesTesting.Fixtures
             emailAddressDO.Id = 7;
             return emailAddressDO;
         }
+
+        public static EmailAddressDO TestEmailAddress8()
+        {
+            var emailAddressDO = new EmailAddressDO("testuser@fr8.co");
+            emailAddressDO.Id = 8;
+            return emailAddressDO;
+        }
     }
 }
-

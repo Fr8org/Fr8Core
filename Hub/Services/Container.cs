@@ -227,6 +227,17 @@ namespace Hub.Services
             while (curContainerDO.CurrentRouteNode != null)
             {
                 var actionResponse = await ProcessAction(uow, curContainerDO, actionState);
+
+                if (actionResponse == ActivityResponse.Success)
+                {
+                    //if its success and crate have responsemessagdto it is activated
+                    var response = _crate.GetContentType<OperationalStateCM>(curContainerDO.CrateStorage);
+                    if (response != null && (response.ResponseMessageDTO != null && !String.IsNullOrEmpty(response.ResponseMessageDTO.Message)))
+                    {
+                        break;
+                    }
+                }
+
                 await ProcessCurrentActionResponse(uow, curContainerDO, actionResponse);
                 if (curContainerDO.ContainerState != ContainerState.Executing)
                 {
