@@ -7,7 +7,7 @@ foreach($file in $files)
 {
 	[regex]$matchPattern = "(?<Name>\w+\.\w+)\s+pid:\s+(?<PID>\d+)\s+type:\s+(?<Type>\w+)\s+(?<User>\S+)\s+\w+:\s+(?<Path>.*)"
 
-	$data = &$handle -u $file
+	$data = &$handle -u $file -silent
 	$MyMatches = $matchPattern.Matches( $data )
 
 	if ($MyMatches.count) {
