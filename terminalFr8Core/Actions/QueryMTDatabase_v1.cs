@@ -144,7 +144,7 @@ namespace terminalFr8Core.Actions
             var objectList = GetObjects();
 
             var upstreamQueryCrateManifests = GetUpstreamCrateManifestListCrate();
-            var upstreamQueryCrateLabels = await GetUpstreamCrateLabelListCrate(curActivityDO);
+            var upstreamQueryCrateLabels = await ExtractUpstreamQueryCrates(curActivityDO);
 
             using (var updater = Crate.UpdateStorage(curActivityDO))
             {
@@ -175,8 +175,8 @@ namespace terminalFr8Core.Actions
             var fields = new List<FieldDTO>()
             {
                 new FieldDTO(
-                    MT.DocuSignEnvelope.ToString(),
-                    ((int)MT.DocuSignEnvelope).ToString(CultureInfo.InvariantCulture)
+                    MT.StandardQueryCrate.ToString(),
+                    ((int)MT.StandardQueryCrate).ToString(CultureInfo.InvariantCulture)
                 )
             };
 
