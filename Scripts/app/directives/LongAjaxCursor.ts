@@ -77,7 +77,7 @@ module dockyard.directives.longAjaxCursor {
     }
 
     app.config(['$httpProvider', ($httpProvider) => {
-        $httpProvider.interceptors.push(($q: ng.IQService, $window: ng.IWindowService) => {
+        $httpProvider.interceptors.push(['$q', '$window', ($q: ng.IQService, $window: ng.IWindowService) => {
             return {
                 request: function (config: ng.IRequestConfig) {
                     instances.forEach((instance) => {
@@ -98,7 +98,7 @@ module dockyard.directives.longAjaxCursor {
                     return $q.reject(config);
                 }
             }
-        });
+        }]);
     }]);
 
     app.directive('longAjaxCursor', LongAjaxCursor.Factory());

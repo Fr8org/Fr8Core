@@ -767,7 +767,10 @@
     <Content Include="_PowerShellScripts\MASTER-settings.job" />
     <Content Include="_PowerShellScripts\DeployAzureWebJob-HealthMonitor-MASTER.ps1" />
     <Content Include="_PowerShellScripts\KillProcess.ps1" />
+    <Content Include="_PowerShellScripts\SetCloudServiceSize.ps1" />
+    <Content Include="_PowerShellScripts\SetTerminalFr8CoreCS.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\ActionPicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamCrateChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamFieldChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\DateTimeFormatter.ts" />
@@ -875,6 +878,7 @@
     <Content Include="Views\AngularTemplate\FileDetails.cshtml" />
     <Content Include="Views\AngularTemplate\_Debug.cshtml" />
     <Content Include="Views\AngularTemplate\UpstreamCrateChooser.cshtml" />
+    <Content Include="Views\AngularTemplate\ActionPicker.cshtml" />
     <Content Include="Views\Services\HowItWorks.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>

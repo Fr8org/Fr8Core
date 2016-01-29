@@ -132,19 +132,19 @@ namespace terminalSalesforceTests.Intergration
         {
             var configurationControls = curActionCrateStorage.CratesOfType<StandardConfigurationControlsCM>().Single();
 
-            Assert.AreEqual(4, configurationControls.Content.Controls.Count,
+            Assert.AreEqual(20, configurationControls.Content.Controls.Count,
                 "Create Contact does not contain the required 3 fields.");
 
-            Assert.IsTrue(configurationControls.Content.Controls.Any(ctrl => ctrl.Name.Equals("firstName")),
+            Assert.IsTrue(configurationControls.Content.Controls.Any(ctrl => ctrl.Name.Equals("FirstName")),
                 "Create Contact activity does not have First Name control");
 
-            Assert.IsTrue(configurationControls.Content.Controls.Any(ctrl => ctrl.Name.Equals("lastName")),
+            Assert.IsTrue(configurationControls.Content.Controls.Any(ctrl => ctrl.Name.Equals("LastName")),
                 "Create Contact does not have Last Name control");
 
-            Assert.IsTrue(configurationControls.Content.Controls.Any(ctrl => ctrl.Name.Equals("mobilePhone")),
+            Assert.IsTrue(configurationControls.Content.Controls.Any(ctrl => ctrl.Name.Equals("MobilePhone")),
                 "Create Contact does not have Mobile Phone control");
 
-            Assert.IsTrue(configurationControls.Content.Controls.Any(ctrl => ctrl.Name.Equals("email")),
+            Assert.IsTrue(configurationControls.Content.Controls.Any(ctrl => ctrl.Name.Equals("Email")),
                 "Create Contact does not have Email control");
 
             //@AlexAvrutin: Commented this since the textbox here do not require requestConfig event. 

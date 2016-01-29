@@ -234,7 +234,7 @@ namespace Data.Control
             };
         }
 
-        public string GetValue(CrateStorage payloadCrateStorage)
+        public string GetValue(CrateStorage payloadCrateStorage, bool ignoreCase = false)
         {
             switch (ValueSource)
             {
@@ -242,7 +242,7 @@ namespace Data.Control
                     return TextValue;
 
                 case "upstream":
-                    return ExtractPayloadFieldValue(payloadCrateStorage);
+                    return ExtractPayloadFieldValue(payloadCrateStorage, ignoreCase);
 
                 default:
                     throw new ApplicationException("Could not extract recipient, unknown recipient mode.");
@@ -253,9 +253,9 @@ namespace Data.Control
         /// Extracts crate with specified label and ManifestType = Standard Design Time,
         /// then extracts field with specified fieldKey.
         /// </summary>
-        private string ExtractPayloadFieldValue(CrateStorage payloadCrateStorage)
+        private string ExtractPayloadFieldValue(CrateStorage payloadCrateStorage, bool ignoreCase)
         {
-            var fieldValues = payloadCrateStorage.CratesOfType<StandardPayloadDataCM>().SelectMany(x => x.Content.GetValues(selectedKey))
+            var fieldValues = payloadCrateStorage.CratesOfType<StandardPayloadDataCM>().SelectMany(x => x.Content.GetValues(selectedKey, ignoreCase))
                 .Where(s => !string.IsNullOrEmpty(s))
                 .ToArray();
 
