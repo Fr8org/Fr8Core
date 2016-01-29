@@ -20,7 +20,7 @@ namespace terminalSlackTests.Integration
     /// </summary>
     [Explicit]
     [Category("terminalSlack.Integration")]
-    public class Publish_To_Slack_v1_Tests : BaseHealthMonitorTest
+    public class Publish_To_Slack_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {

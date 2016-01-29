@@ -69,7 +69,7 @@ namespace Data.Migrations
             AddAdmins(uow);
             AddDockyardAccounts(uow);
             AddProfiles(uow);
-
+            AddTestAccounts(uow);
             //Addterminals(uow);
 
 
@@ -367,10 +367,19 @@ namespace Data.Migrations
             CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", unitOfWork);
             CreateDockyardAccount("fileupload@dockyard.company", "test123", unitOfWork);
             CreateDockyardAccount("sacre", "printf", unitOfWork);
+            CreateDockyardAccount("integration_test_runner@fr8.company", "fr8#s@lt!", unitOfWork);
+        }
+        /// <summary>
+        /// Add test user with 'Admin' role
+        /// </summary>
+        /// <param name="unitOfWork"></param>
+        private static void AddTestAccounts(IUnitOfWork unitOfWork)
+        {
+            CreateTestAccount("integration_test_runner@fr8.company", "fr8#s@lt!", unitOfWork);
         }
 
         /// <summary>
-        /// Craete a user with role 'Admin'
+        /// Create a user with role 'Admin'
         /// </summary>
         /// <param name="userEmail"></param>
         /// <param name="curPassword"></param>
@@ -386,6 +395,18 @@ namespace Data.Migrations
 
             user.TestAccount = false;
 
+            return user;
+        }
+
+        private static Fr8AccountDO CreateTestAccount(string userEmail, string curPassword, IUnitOfWork uow)
+        {
+            var user = uow.UserRepository.GetOrCreateUser(userEmail);
+            uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
+            uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, user.Id);
+            uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Booker, user.Id);
+            uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, user.Id);
+            user.UserName = "IntegrationTestRunner";
+            user.TestAccount = true;
             return user;
         }
 
