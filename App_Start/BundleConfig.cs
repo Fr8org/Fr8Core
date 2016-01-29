@@ -124,6 +124,41 @@ namespace HubWeb.App_Start
             bundles.Add(new ScriptBundle("~/bundles/fr8Main")
                 .Include("~/Scripts/app/_compiled.js"));
 
+            bundles.Add(new ScriptBundle("~/bundles/metronic")
+                .Include("~/Content/templates/metronic/assets/global/scripts/metronic.js")
+                .Include("~/Content/templates/metronic/assets/admin/layout3/scripts/layout.js")
+                .Include("~/Content/templates/metronic/assets/admin/layout3/scripts/demo.js")
+            );
+
+            bundles.Add(new ScriptBundle("~/bundles/bower")
+                .Include("~/bower_components/angular/angular.js")
+                .Include("~/bower_components/angular-resource/angular-resource.js")
+                .Include("~/bower_components/angular-animate/angular-animate.js")
+                .Include("~/bower_components/angular-sanitize/angular-sanitize.js")
+                .Include("~/bower_components/angular-ui-router/release/angular-ui-router.js")
+                .Include("~/bower_components/angular-mocks/angular-mocks.js")
+                .Include("~/bower_components/ocLazyLoad/dist/ocLazyLoad.js")
+                .Include("~/bower_components/angular-bootstrap/ui-bootstrap-tpls.js")
+                .Include("~/bower_components/underscore/underscore.js")
+                .Include("~/bower_components/datatables/media/js/jquery.dataTables.min.js")
+                .Include("~/bower_components/angular-datatables/dist/angular-datatables.js")
+                .Include("~/bower_components/ng-table/dist/ng-table.min.js")
+                .Include("~/bower_components/ng-file-upload/ng-file-upload-all.min.js")
+                .Include("~/bower_components/pusher/dist/pusher.js")
+                .Include("~/bower_components/pusher-angular/lib/pusher-angular.js")
+                .Include("~/Scripts/lib/jquery.blockui.min.js")
+                .Include("~/bower_components/ngToast/dist/ngToast.min.js")
+                .Include("~/bower_components/mb-scrollbar/mb-scrollbar.min.js")
+                .Include("~/bower_components/rangy/rangy-core.min.js")
+                .Include("~/bower_components/rangy/rangy-selectionsaverestore.min.js")
+                .Include("~/bower_components/textAngular/dist/textAngular-sanitize.min.js")
+                .Include("~/bower_components/textAngular/dist/textAngular.min.js")
+                .Include("~/bower_components/angular-bootstrap-switch/dist/angular-bootstrap-switch.js")
+                .Include("~/bower_components/angular-ui-select/dist/select.min.js")
+                .Include("~/bower_components/angular-applicationinsights/dist/angular-applicationinsights.min.js")
+                .Include("~/bower_components/dndLists/angular-drag-and-drop-lists.min.js")
+            );
+
 #if RELEASE || DEV
             BundleTable.EnableOptimizations = true;
 #endif
