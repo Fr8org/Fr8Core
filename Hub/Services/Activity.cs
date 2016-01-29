@@ -533,6 +533,7 @@ namespace Hub.Services
         // Maxim Kostyrkin: this should be refactored once the TO-DO snippet below is redesigned
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, ActionState curActionState, ContainerDO curContainerDO)
         {
+            var eventManager = ObjectFactory.GetInstance<Hub.Managers.Event>();
             if (curActivityDO == null)
             {
                 throw new ArgumentNullException("curActivityDO");
@@ -547,7 +548,7 @@ namespace Hub.Services
                 if (curContainerDO.Plan != null && curContainerDO.Plan.Name != "LogFr8InternalEvents")
                 {
                     var actionDTO = Mapper.Map<ActivityDTO>(curActivityDO);
-                    await Hub.Managers.Event.Publish("ActionExecuted", curActivityDO.Fr8Account.Id, curActivityDO.Id.ToString(), JsonConvert.SerializeObject(actionDTO).ToString(), "Success");
+                    await eventManager.Publish("ActionExecuted", curActivityDO.Fr8Account.Id, curActivityDO.Id.ToString(), JsonConvert.SerializeObject(actionDTO).ToString(), "Success");
                 }
 
                 return payloadDTO;
