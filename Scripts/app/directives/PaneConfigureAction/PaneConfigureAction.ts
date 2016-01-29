@@ -149,7 +149,7 @@ module dockyard.directives.paneConfigureAction {
 
                 //Link function goes here
             };
-
+            
             PaneConfigureAction.prototype.controller = function (
                 $scope: IPaneConfigureActionScope,
                 $element: ng.IAugmentedJQuery,
@@ -204,10 +204,10 @@ module dockyard.directives.paneConfigureAction {
 
                         var button = new model.Button('Authentication unsuccessful, try again');
                         button.name = 'AuthUnsuccessfulLabel';
-                        button.events = [ onClickEvent ];
+                        button.events = [onClickEvent];
 
                         $scope.currentAction.configurationControls = new model.ControlsList();
-                        $scope.currentAction.configurationControls.fields = [ button ];
+                        $scope.currentAction.configurationControls.fields = [button];
                     }
                 );
 
@@ -243,7 +243,7 @@ module dockyard.directives.paneConfigureAction {
                         throw Error("Control1 and control2 represent different controls.");
                     }
 
-                    if (control1.value != undefined 
+                    if (control1.value != undefined
                         && control1.value != control2.value)
                         return true;
 
@@ -264,7 +264,7 @@ module dockyard.directives.paneConfigureAction {
 
                 function onConfigurationChanged(newValue: model.ControlsList, oldValue: model.ControlsList) {
                     if (!newValue || !newValue.fields) {
-                         return;
+                        return;
                     }
 
                     if (this.ignoreConfigurationChange) {
@@ -273,8 +273,7 @@ module dockyard.directives.paneConfigureAction {
                     }
 
                     for (var i = 0; i < newValue.fields.length; i++) {
-                        if (!controlValuesChanged(newValue.fields[i], oldValue.fields[i]))
-                        {
+                        if (!controlValuesChanged(newValue.fields[i], oldValue.fields[i])) {
                             continue;
                         }
 
@@ -300,12 +299,12 @@ module dockyard.directives.paneConfigureAction {
                                     $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsReconfiguration], new ChildActionReconfigurationEventArgs($scope.currentAction.childrenActions));
                                 }
                             }
-                    });
+                        });
                 };
 
                 function getControlEventHandler(control: model.ControlDefinitionDTO, eventName: string) {
                     if (control.events === null) return;
-                    
+
                     var eventHandlerList = <Array<model.ControlEvent>>$filter('filter')(control.events, { name: eventName }, true);
                     if (typeof eventHandlerList === 'undefined' || eventHandlerList === null || eventHandlerList.length === 0) {
                         return null;
@@ -340,7 +339,7 @@ module dockyard.directives.paneConfigureAction {
                     var scope = <IPaneConfigureActionScope>event.currentScope;
 
                     // Find the onClick event object
-                    if (getControlEventHandler(eventArgs.field, 'onClick')){
+                    if (getControlEventHandler(eventArgs.field, 'onClick')) {
                         crateHelper.mergeControlListCrate(
                             scope.currentAction.configurationControls,
                             scope.currentAction.crateStorage
@@ -362,7 +361,7 @@ module dockyard.directives.paneConfigureAction {
                 function loadConfiguration() {
                     // Block pane and show pane-level 'loading' spinner
                     $scope.processing = true;
-                    
+
                     if ($scope.configurationWatchUnregisterer) {
                         $scope.configurationWatchUnregisterer();
                     }
@@ -442,7 +441,7 @@ module dockyard.directives.paneConfigureAction {
                     }
 
                     $scope.currentAction.configurationControls =
-                        crateHelper.createControlListFromCrateStorage($scope.currentAction.crateStorage);
+                    crateHelper.createControlListFromCrateStorage($scope.currentAction.crateStorage);
 
                     // Before setting up watcher on configuration change, make sure that the first invokation of the handler 
                     // is ignored: watcher always triggers after having been set up, and we don't want to handle that 
@@ -467,21 +466,23 @@ module dockyard.directives.paneConfigureAction {
                         controller: 'AuthenticationDialogController',
                         scope: modalScope
                     })
-                    .result
-                    .then(() => loadConfiguration())
-                    .catch((result) => {
-                        var errorText = 'Authentication unsuccessful. Click to try again.';
-                        var control = new model.TextBlock(errorText, 'well well-lg alert-danger');
-                        control.name = 'AuthUnsuccessfulLabel';
-                        $scope.currentAction.configurationControls = new model.ControlsList();
-                        $scope.currentAction.configurationControls.fields = [control];
-                    });
+                        .result
+                        .then(() => loadConfiguration())
+                        .catch((result) => {
+                            var errorText = 'Authentication unsuccessful. Click to try again.';
+                            var control = new model.TextBlock(errorText, 'well well-lg alert-danger');
+                            control.name = 'AuthUnsuccessfulLabel';
+                            $scope.currentAction.configurationControls = new model.ControlsList();
+                            $scope.currentAction.configurationControls.fields = [control];
+                        });
                 }
 
                 function setSolutionMode() {
                     $scope.$emit(MessageType[MessageType.PaneConfigureAction_SetSolutionMode]);
                 }
-            }
+            };
+
+            PaneConfigureAction.prototype.controller['$inject'] = ['$scope', '$element', '$attrs'];
         }    
 
         //The factory function returns Directive object as per Angular requirements
