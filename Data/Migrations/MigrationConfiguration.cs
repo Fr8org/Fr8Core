@@ -79,6 +79,7 @@ namespace Data.Migrations
             AddContainerDOForTestingApi(uow, fr8AccountDO);
 
             AddWebServices(uow);
+
         }
 
         //Method to let us seed into memory as well
@@ -417,7 +418,7 @@ namespace Data.Migrations
         /// <param name="curPassword"></param>
         /// <param name="uow"></param>
         /// <returns></returns>
-        private static Fr8AccountDO CreateDockyardAccount(string userEmail, string curPassword, IUnitOfWork uow)
+        internal static Fr8AccountDO CreateDockyardAccount(string userEmail, string curPassword, IUnitOfWork uow)
         {
             var user = uow.UserRepository.GetOrCreateUser(userEmail);
             uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
