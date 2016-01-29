@@ -297,6 +297,9 @@ namespace HubWeb.Controllers
         public async Task<IHttpActionResult> Deactivate(PlanDO curRoute)
         {
             string activityDTO = await _plan.Deactivate(curRoute.Id);
+            var routeDTO = Mapper.Map<RouteEmptyDTO>(curRoute);
+            await Event.Publish("RouteDeactivated", ObjectFactory.GetInstance<ISecurityServices>().GetCurrentUser(), curRoute.Id.ToString(), JsonConvert.SerializeObject(routeDTO).ToString(), "Success");
+
             return Ok(activityDTO);
         }
 
@@ -334,7 +337,10 @@ namespace HubWeb.Controllers
             if (inActive)
             {
                 await _plan.Activate(planId, false);
+                await Event.Publish("RouteActivated", ObjectFactory.GetInstance<ISecurityServices>().GetCurrentAccount
+                    (ObjectFactory.GetInstance<IUnitOfWork>()).Id.ToString(), planId.ToString(), JsonConvert.SerializeObject(planId).ToString(), "Success");
             }
+
 
             //RUN
 			CrateDTO curCrateDto;
@@ -369,9 +375,7 @@ namespace HubWeb.Controllers
 
                         var containerDO = await _plan.Run(planDO, curCrate);
 
-                        var response = _crate.GetStorage(containerDO.CrateStorage)
-                            .CrateContentsOfType<OperationalStateCM>()
-                            .SingleOrDefault();
+                        var response = _crate.GetContentType<OperationalStateCM>(containerDO.CrateStorage);
                         
                         string responseMsg = "";
 
@@ -384,7 +388,20 @@ namespace HubWeb.Controllers
 
                         _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, message);
 
-                        return Ok(Mapper.Map<ContainerDTO>(containerDO));
+                        var containerDTO = Mapper.Map<ContainerDTO>(containerDO);
+
+                        await Hub.Managers.Event.Publish("ContainerLaunched"
+                            , planDO.Fr8Account.Id
+                            , planDO.Id.ToString()
+                            , JsonConvert.SerializeObject(containerDTO).ToString(), "Success");
+
+                        await Hub.Managers.Event.Publish("ContainerExecutionComplete"
+                            , planDO.Fr8Account.Id
+                            , planDO.Id.ToString()
+                            , JsonConvert.SerializeObject(containerDTO).ToString(), "Success");
+
+
+                        return Ok(containerDTO);
                     }
 
                     return BadRequest();
