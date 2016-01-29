@@ -161,27 +161,11 @@ namespace terminalDocuSign.Actions
             // Update report crate.
             using (var updater = Crate.UpdateStorage(payload))
             {
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Report", searchResult));
+                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Sql Query Result", searchResult));
             }
 
             return ExecuteClientAction(payload, "ShowTableReport");
         }
-
-        // private static void SearchMtDataBase(AuthorizationTokenDO authTokenDO, List<FilterConditionDTO> criteria, HashSet<string> existingEnvelopes, StandardPayloadDataCM searchResult)
-        // {
-        //     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //     {
-        //         var envelopes = MTSearchHelper.CreateQueryProvider(typeof (DocuSignEnvelopeCM)).Query(uow, authTokenDO.UserID, criteria);
-        //         
-        //         foreach (DocuSignEnvelopeCM envelope in envelopes)
-        //         {
-        //             if (!existingEnvelopes.Contains(envelope.EnvelopeId))
-        //             {
-        //                 searchResult.PayloadObjects.Add(CreatePayloadObjectFromEnvelope(envelope));
-        //             }
-        //         }
-        //     }
-        // }
 
         private static void MergeMtQuery(
             StandardPayloadDataCM queryMtResult,

@@ -246,7 +246,9 @@ namespace terminalFr8Core.Actions
 
             if (config.QueryPicker.Radios[0].Selected)
             {
-                var queryCM = await ExtractUpstreamQuery(curActivityDO, config);
+                var queryPicker = (UpstreamCrateChooser)((RadioButtonGroup)ui.Controls[0]).Radios[0].Controls[0];
+
+                var queryCM = await ExtractUpstreamQuery(curActivityDO, queryPicker);
                 if (queryCM == null || queryCM.Queries == null || queryCM.Queries.Count == 0)
                 {
                     return Error(payload, "No upstream crate found");
@@ -316,9 +318,9 @@ namespace terminalFr8Core.Actions
 
         private async Task<StandardQueryCM> ExtractUpstreamQuery(
             ActivityDO activityDO,
-            ActionUi config)
+            UpstreamCrateChooser queryPicker)
         {
-            var upstreamQueryCrateLabel = config.UpstreamCrateChooser.SelectedCrates[0].Label.Value;
+            var upstreamQueryCrateLabel = queryPicker.SelectedCrates[0].Label.Value;
 
             if (string.IsNullOrEmpty(upstreamQueryCrateLabel))
             {
