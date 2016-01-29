@@ -24,13 +24,15 @@ namespace HealthMonitor.Utility
         public IHMACService HMACService { get; set; }
         private string terminalSecret;
         private string terminalId;
-        protected string TerminalSecret {
-            get 
+        protected string TerminalSecret
+        {
+            get
             {
                 return terminalSecret ?? (terminalSecret = ConfigurationManager.AppSettings[TerminalName + "TerminalSecret"]);
             }
         }
-        protected string TerminalId {
+        protected string TerminalId
+        {
             get
             {
                 return terminalId ?? (terminalId = ConfigurationManager.AppSettings[TerminalName + "TerminalId"]);
@@ -58,9 +60,9 @@ namespace HealthMonitor.Utility
             var storage = Crate.GetStorage(payload);
             var operationalStateCM = storage.CrateContentsOfType<OperationalStateCM>().Single();
 
-            Assert.AreEqual(ActionResponse.Error, operationalStateCM.CurrentActionResponse);
-            Assert.AreEqual(ActionErrorCode.NO_AUTH_TOKEN_PROVIDED, operationalStateCM.CurrentActionErrorCode);
-            Assert.AreEqual("No AuthToken provided.", operationalStateCM.CurrentActionErrorMessage);
+            Assert.AreEqual(ActivityResponse.Error, operationalStateCM.CurrentActivityResponse);
+            Assert.AreEqual(ActionErrorCode.NO_AUTH_TOKEN_PROVIDED, operationalStateCM.CurrentActivityErrorCode);
+            Assert.AreEqual("No AuthToken provided.", operationalStateCM.CurrentActivityErrorMessage);
 
         }
 
@@ -89,9 +91,9 @@ namespace HealthMonitor.Utility
             return GetTerminalUrl() + "/actions/run";
         }
 
-        private void AddHubCrate<T>(ActionDTO actionDTO, T crateManifest, string label, string innerLabel)
+        private void AddHubCrate<T>(ActivityDTO activityDTO, T crateManifest, string label, string innerLabel)
         {
-            var crateStorage = Crate.GetStorage(actionDTO.ExplicitData);            
+            var crateStorage = Crate.GetStorage(activityDTO.ExplicitData);
 
             var fullLabel = label;
             if (!string.IsNullOrEmpty(innerLabel))
@@ -102,23 +104,23 @@ namespace HealthMonitor.Utility
             var crate = Crate<T>.FromContent(fullLabel, crateManifest);
             crateStorage.Add(crate);
 
-            actionDTO.ExplicitData = Crate.CrateStorageAsStr(crateStorage);
+            activityDTO.ExplicitData = Crate.CrateStorageAsStr(crateStorage);
         }
 
-        public void AddCrate<T>(ActionDTO actionDTO, T crateManifest, string label)
+        public void AddCrate<T>(ActivityDTO activityDTO, T crateManifest, string label)
         {
-            var crateStorage = Crate.GetStorage(actionDTO.ExplicitData);            
+            var crateStorage = Crate.GetStorage(activityDTO.ExplicitData);
 
             var crate = Crate<T>.FromContent(label, crateManifest);
             crateStorage.Add(crate);
 
-            actionDTO.ExplicitData = Crate.CrateStorageAsStr(crateStorage);
+            activityDTO.ExplicitData = Crate.CrateStorageAsStr(crateStorage);
         }
 
-        public void AddActivityTemplate(ActionDTO actionDTO, ActivityTemplateDTO activityTemplate)
+        public void AddActivityTemplate(ActivityDTO activityDTO, ActivityTemplateDTO activityTemplate)
         {
             AddHubCrate(
-                actionDTO,
+                activityDTO,
                 new StandardDesignTimeFieldsCM(
                     new FieldDTO("ActivityTemplate", JsonConvert.SerializeObject(activityTemplate))
                 ),
@@ -127,24 +129,24 @@ namespace HealthMonitor.Utility
             );
         }
 
-        public void AddUpstreamCrate<T>(ActionDTO actionDTO, T crateManifest, string crateLabel = "")
+        public void AddUpstreamCrate<T>(ActivityDTO activityDTO, T crateManifest, string crateLabel = "")
         {
-            AddHubCrate(actionDTO, crateManifest, "HealthMonitor_UpstreamCrate", crateLabel);
+            AddHubCrate(activityDTO, crateManifest, "HealthMonitor_UpstreamCrate", crateLabel);
         }
 
-        public void AddDownstreamCrate<T>(ActionDTO actionDTO, T crateManifest, string crateLabel = "")
+        public void AddDownstreamCrate<T>(ActivityDTO activityDTO, T crateManifest, string crateLabel = "")
         {
-            AddHubCrate(actionDTO, crateManifest, "HealthMonitor_DownstreamCrate", crateLabel);
+            AddHubCrate(activityDTO, crateManifest, "HealthMonitor_DownstreamCrate", crateLabel);
         }
 
-        public void AddPayloadCrate<T>(ActionDTO actionDTO, T crateManifest, string crateLabel = "")
+        public void AddPayloadCrate<T>(ActivityDTO activityDTO, T crateManifest, string crateLabel = "")
         {
-            AddHubCrate(actionDTO, crateManifest, "HealthMonitor_PayloadCrate", crateLabel);
+            AddHubCrate(activityDTO, crateManifest, "HealthMonitor_PayloadCrate", crateLabel);
         }
 
-        public void AddOperationalStateCrate(ActionDTO actionDTO, OperationalStateCM operationalState)
+        public void AddOperationalStateCrate(ActivityDTO activityDTO, OperationalStateCM operationalState)
         {
-            AddPayloadCrate(actionDTO, operationalState, "Operational Status");
+            AddPayloadCrate(activityDTO, operationalState, "Operational Status");
         }
 
         private async Task<Dictionary<string, string>> GetHMACHeader<T>(Uri requestUri, string userId, T content)

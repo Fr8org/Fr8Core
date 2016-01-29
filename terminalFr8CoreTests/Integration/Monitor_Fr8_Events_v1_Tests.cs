@@ -20,7 +20,7 @@ namespace terminalTests.Integration
     /// </summary>
     [Explicit]
     [Category("Integration.terminalFr8CoreTests")]
-    class Monitor_Fr8_Events_v1_Tests : BaseHealthMonitorTest
+    class Monitor_Fr8_Events_v1_Tests : BaseTerminalIntegrationTest
     {
 
         public override string TerminalName

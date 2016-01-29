@@ -55,9 +55,9 @@ namespace HealthMonitor.Utility
             var storage = Crate.GetStorage(payload);
             var operationalStateCM = storage.CrateContentsOfType<OperationalStateCM>().Single();
 
-            Assert.AreEqual(ActionResponse.Error, operationalStateCM.CurrentActionResponse);
-            Assert.AreEqual(ActionErrorCode.NO_AUTH_TOKEN_PROVIDED, operationalStateCM.CurrentActionErrorCode);
-            Assert.AreEqual("No AuthToken provided.", operationalStateCM.CurrentActionErrorMessage);
+            Assert.AreEqual(ActivityResponse.Error, operationalStateCM.CurrentActivityResponse);
+            Assert.AreEqual(ActionErrorCode.NO_AUTH_TOKEN_PROVIDED, operationalStateCM.CurrentActivityErrorCode);
+            Assert.AreEqual("No AuthToken provided.", operationalStateCM.CurrentActivityErrorMessage);
 
         }
         private async Task<Dictionary<string, string>> GetHMACHeader<T>(Uri requestUri, string userId, T content)
