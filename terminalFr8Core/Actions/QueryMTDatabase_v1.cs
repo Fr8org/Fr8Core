@@ -15,7 +15,6 @@ using TerminalBase.BaseClasses;
 using Data.Entities;
 using StructureMap;
 using Hub.Managers;
-using Data.Constants;
 using Data.Control;
 using Data.Crates;
 using Data.States;
@@ -34,91 +33,32 @@ namespace terminalFr8Core.Actions
             [JsonIgnore]
             public FilterPane Filter { get; set; }
 
-            [JsonIgnore]
-            public RadioButtonGroup QueryPicker { get; set; }
-
-            public UpstreamCrateChooser UpstreamCrateChooser { get; set; }
-
             public ActionUi()
             {
                 Controls = new List<ControlDefinitionDTO>();
 
-                Controls.Add(QueryPicker = new RadioButtonGroup()
+                Controls.Add(AvailableObjects = new DropDownList
                 {
-                    Label = "Select query to use:",
-                    GroupName = "QueryPickerGroup",
-                    Name = "QueryPicker",
-                    Radios = new List<RadioButtonOption>()
+                    Label = "Object List",
+                    Name = "AvailableObjects",
+                    Value = null,
+                    Events = new List<ControlEvent> { ControlEvent.RequestConfig },
+                    Source = new FieldSourceDTO
                     {
-                        new RadioButtonOption()
-                        {
-                            Selected = true,
-                            Name = "ExistingQuery",
-                            Value = "Use existing Query",
-                            Controls = new List<ControlDefinitionDTO>()
-                            {
-                                (UpstreamCrateChooser = new UpstreamCrateChooser()
-                                {
-                                    Name = "UpstreamCrateChooser",
-                                    SelectedCrates = new List<CrateDetails>()
-                                    {
-                                        new CrateDetails()
-                                        {
-                                            ManifestType = new DropDownList()
-                                            {
-                                                Name = "UpstreamCrateManifestTypeDdl",
-                                                Source = new FieldSourceDTO(
-                                                    CrateManifestTypes.StandardDesignTimeFields,
-                                                    "Upstream Crate ManifestType List"
-                                                )
-                                            },
-                                            Label = new DropDownList()
-                                            {
-                                                Name = "UpstreamCrateLabelDdl",
-                                                Source = new FieldSourceDTO(
-                                                    CrateManifestTypes.StandardDesignTimeFields,
-                                                    "Upstream Crate Label List"
-                                                )
-                                            }
-                                        }
-                                    },
-                                    MultiSelection = false
-                                })
-                            }
-                        },
+                        Label = "Queryable Objects",
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
+                    }
+                });
 
-                        new RadioButtonOption()
-                        {
-                            Selected = false,
-                            Name = "NewQuery",
-                            Value = "Use new Query",
-                            Controls = new List<ControlDefinitionDTO>()
-                            {
-                                (AvailableObjects = new DropDownList
-                                {
-                                    Label = "Object List",
-                                    Name = "AvailableObjects",
-                                    Value = null,
-                                    Events = new List<ControlEvent> { ControlEvent.RequestConfig },
-                                    Source = new FieldSourceDTO
-                                    {
-                                        Label = "Queryable Objects",
-                                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                                    }
-                                }),
-                                (Filter = new FilterPane
-                                {
-                                    Label = "Find all Fields where:",
-                                    Name = "Filter",
-                                    Required = true,
-                                    Source = new FieldSourceDTO
-                                    {
-                                        Label = "Queryable Criteria",
-                                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                                    }
-                                })
-                            }
-                        }
+                Controls.Add(Filter = new FilterPane
+                {
+                    Label = "Find all Fields where:",
+                    Name = "Filter",
+                    Required = true,
+                    Source = new FieldSourceDTO
+                    {
+                        Label = "Queryable Criteria",
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
                     }
                 });
             }
@@ -139,67 +79,23 @@ namespace terminalFr8Core.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             var objectList = GetObjects();
-
-            var upstreamQueryCrateManifests = GetUpstreamCrateManifestListCrate();
-            var upstreamQueryCrateLabels = await ExtractUpstreamQueryCrates(curActivityDO);
 
             using (var updater = Crate.UpdateStorage(curActivityDO))
             {
                 updater.CrateStorage.Add(PackControls(new ActionUi()));
-                updater.CrateStorage.Add(upstreamQueryCrateManifests);
-                updater.CrateStorage.Add(upstreamQueryCrateLabels);
                 updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("Queryable Objects", objectList.ToArray()));
-                updater.CrateStorage.Add(
-                    Data.Crates.Crate.FromContent(
-                        "Found MT Objects",
-                        new StandardDesignTimeFieldsCM(
-                            new FieldDTO
-                            {
-                                Key = "Found MT Objects",
-                                Value = "Table",
-                                Availability = AvailabilityType.RunTime
-                            }
-                        )
-                    )
-                );
+                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Found MT Objects", new StandardDesignTimeFieldsCM(new FieldDTO
+                {
+                    Key = "Found MT Objects",
+                    Value = "Table",
+                    Availability = AvailabilityType.RunTime
+                })));
             }
 
-            return curActivityDO;
-        }
-
-        private Crate<StandardDesignTimeFieldsCM> GetUpstreamCrateManifestListCrate()
-        {
-            var fields = new List<FieldDTO>()
-            {
-                new FieldDTO(
-                    MT.StandardQueryCrate.ToString(),
-                    ((int)MT.StandardQueryCrate).ToString(CultureInfo.InvariantCulture)
-                )
-            };
-
-            var crate = Crate.CreateDesignTimeFieldsCrate("Upstream Crate ManifestType List", fields);
-
-            return crate;
-        }
-
-        private async Task<Crate<StandardDesignTimeFieldsCM>>
-            ExtractUpstreamQueryCrates(ActivityDO activityDO)
-        {
-            var upstreamCrates = await GetCratesByDirection<StandardQueryCM>(
-                activityDO,
-                CrateDirection.Upstream
-            );
-
-            var fields = upstreamCrates
-                .Select(x => new FieldDTO() { Key = x.Label, Value = x.Label })
-                .ToList();
-
-            var crate = Crate.CreateDesignTimeFieldsCrate("Upstream Crate Label List", fields);
-
-            return crate;
+            return Task.FromResult(curActivityDO);
         }
 
         protected override Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
@@ -239,43 +135,20 @@ namespace terminalFr8Core.Actions
             }
 
             var config = new ActionUi();
+
             config.ClonePropertiesFrom(ui);
 
-            List<FilterConditionDTO> conditions;
+            var criteria = JsonConvert.DeserializeObject<FilterDataDTO>(config.Filter.Value);
             int selectedObjectId;
 
-            if (config.QueryPicker.Radios[0].Selected)
+            if (!int.TryParse(config.AvailableObjects.Value, out selectedObjectId))
             {
-                var queryPicker = (UpstreamCrateChooser)((RadioButtonGroup)ui.Controls[0]).Radios[0].Controls[0];
-
-                var queryCM = await ExtractUpstreamQuery(curActivityDO, queryPicker);
-                if (queryCM == null || queryCM.Queries == null || queryCM.Queries.Count == 0)
-                {
-                    return Error(payload, "No upstream crate found");
-                }
-
-                var query = queryCM.Queries[0];
-
-                conditions = query.Criteria;
-                selectedObjectId = ExtractUpstreamObjectId(query);
-            }
-            else
-            {
-                var criteria = JsonConvert.DeserializeObject<FilterDataDTO>(config.Filter.Value);
-
-                if (!int.TryParse(config.AvailableObjects.Value, out selectedObjectId))
-                {
-                    return Error(payload, "Invalid object selected");
-                }
-
-                conditions = (criteria.ExecutionType == FilterExecutionType.WithoutFilter)
-                    ? new List<FilterConditionDTO>()
-                    : criteria.Conditions;
+                return Error(payload, "Invalid object selected");
             }
 
             //STARTING NASTY CODE
             //TODO discuss this with Alex (bahadir)
-            var envIdCondition = conditions.FirstOrDefault(c => c.Field == "EnvelopeId");
+            var envIdCondition = criteria.Conditions.FirstOrDefault(c => c.Field == "EnvelopeId");
             if (envIdCondition != null && envIdCondition.Value == "FromPayload")
             {
                 envIdCondition.Value = GetCurrentEnvelopeId(payloadCrateStorage);
@@ -298,7 +171,8 @@ namespace terminalFr8Core.Actions
 
                 var queryBuilder = MTSearchHelper.CreateQueryProvider(manifestType);
                 var converter = CrateManifestToRowConverter(manifestType);
-                var foundObjects = queryBuilder.Query(uow, authTokenDO.UserID, conditions).ToArray();
+                var foundObjects = queryBuilder.Query(uow, authTokenDO.UserID, 
+                    criteria.ExecutionType == FilterExecutionType.WithoutFilter ? new List<FilterConditionDTO>() : criteria.Conditions).ToArray();
 
                 var searchResult = new StandardPayloadDataCM();
 
@@ -314,45 +188,6 @@ namespace terminalFr8Core.Actions
             }
 
             return Success(payload);
-        }
-
-        private async Task<StandardQueryCM> ExtractUpstreamQuery(
-            ActivityDO activityDO,
-            UpstreamCrateChooser queryPicker)
-        {
-            var upstreamQueryCrateLabel = queryPicker.SelectedCrates[0].Label.Value;
-
-            if (string.IsNullOrEmpty(upstreamQueryCrateLabel))
-            {
-                return null;
-            }
-
-            var upstreamQueryCrate =
-                (await GetCratesByDirection<StandardQueryCM>(
-                    activityDO,
-                    CrateDirection.Upstream
-                ))
-                .FirstOrDefault(x => x.Label == upstreamQueryCrateLabel);
-
-            if (upstreamQueryCrate == null)
-            {
-                return null;
-            }
-
-            return upstreamQueryCrate.Content;
-        }
-
-        private int ExtractUpstreamObjectId(
-            QueryDTO query)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var obj = uow.MTObjectRepository
-                    .GetQuery()
-                    .FirstOrDefault(x => x.Name == query.Name);
-
-                return obj.Id;
-            }
         }
 
         private string GetCurrentEnvelopeId(CrateStorage storage)
