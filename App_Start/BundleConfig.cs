@@ -121,6 +121,13 @@ namespace HubWeb.App_Start
                 .IncludeDirectory("~/Scripts/tests/utils/", "*.js", true)
                 .IncludeDirectory("~/Scripts/tests/integration/", "*.js", true));
 
+            bundles.Add(new ScriptBundle("~/bundles/fr8Main")
+                .Include("~/Scripts/app/_compiled.js"));
+
+#if RELEASE || DEV
+            BundleTable.EnableOptimizations = true;
+#endif
+
             //bundles.Add(new StyleBundle("~/bundles/css/temp").Include(
             //   "~/Content/css/temp/temp.css", new CssRewriteUrlTransform()
             //   ));         
