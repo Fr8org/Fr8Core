@@ -27,8 +27,12 @@ namespace HubWeb
 {
     public partial class Startup
     {
+        public async void Configuration(IAppBuilder app)
+        {
+            Configuration(app, false);
+        }
 
-        public async void Configuration(IAppBuilder app, bool selfHostMode = false)
+        public async void Configuration(IAppBuilder app, bool selfHostMode)
         {
             //ConfigureDaemons();
             ConfigureAuth(app);
