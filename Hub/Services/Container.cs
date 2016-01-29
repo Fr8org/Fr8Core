@@ -100,7 +100,8 @@ namespace Hub.Services
                 case ActivityResponse.RequestTerminate:
                     //FR-2163 - If action response requests for termination, we make the container as Completed to avoid unwanted errors.
                     curContainerDo.ContainerState = ContainerState.Completed;
-                    await Managers.Event.Publish("ProcessingTerminatedPerActionResponse",
+                    var eventManager = ObjectFactory.GetInstance<Hub.Managers.Event>();
+                    await eventManager.Publish("ProcessingTerminatedPerActionResponse",
                             curContainerDo.Plan.Fr8Account.Id, curContainerDo.Id.ToString(),
                             JsonConvert.SerializeObject(Mapper.Map<ContainerDTO>(curContainerDo)), "Terminated");
                     break;
