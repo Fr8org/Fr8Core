@@ -109,6 +109,31 @@ namespace terminalFr8Core.Managers
             return standardLoggingCM;
         }
 
+        public StandardLoggingCM ProcessingTerminatedPerActionResponse(EventLoggingDTO eventLogging)
+        {
+            StandardLoggingCM standardLoggingCM = new StandardLoggingCM();
+            standardLoggingCM.LoggingMTkey = Guid.NewGuid().ToString();
+
+            LogItemDTO logDTO = new LogItemDTO()
+            {
+                CustomerId = eventLogging.CustomerId,
+                Manufacturer = "Fr8 Company",
+                Data = eventLogging.Data,
+                PrimaryCategory = "Container Execution",
+                SecondaryCategory = "Container",
+                Activity = "Terminated",
+                Status = eventLogging.Status,
+                CreateDate = new DateTime(),
+                Type = "FactDO",
+                Name = eventLogging.EventName,
+                ObjectId = eventLogging.ObjectId,
+                IsLogged = false
+            };
+            standardLoggingCM.Item.Add(logDTO);
+
+            return standardLoggingCM;
+        }
+
         public StandardLoggingCM ActionExecuted(EventLoggingDTO eventLogging)
         {
             StandardLoggingCM standardLoggingCM = new StandardLoggingCM();

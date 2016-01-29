@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Data.Constants;
 using Data.Crates;
 using Data.Interfaces.Manifests;
 using Hub.Exceptions;
+using Newtonsoft.Json;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
@@ -77,7 +79,7 @@ namespace Hub.Services
             uow.SaveChanges();
         }
 
-        private void ProcessCurrentActionResponse(IUnitOfWork uow, ContainerDO curContainerDo, ActivityResponse response)
+        private async Task ProcessCurrentActionResponse(IUnitOfWork uow, ContainerDO curContainerDo, ActivityResponse response)
         {
             switch (response)
             {
@@ -98,6 +100,9 @@ namespace Hub.Services
                 case ActivityResponse.RequestTerminate:
                     //FR-2163 - If action response requests for termination, we make the container as Completed to avoid unwanted errors.
                     curContainerDo.ContainerState = ContainerState.Completed;
+                    await Managers.Event.Publish("ProcessingTerminatedPerActionResponse",
+                            curContainerDo.Plan.Fr8Account.Id, curContainerDo.Id.ToString(),
+                            JsonConvert.SerializeObject(Mapper.Map<ContainerDTO>(curContainerDo)), "Terminated");
                     break;
                 default:
                     throw new Exception("Unknown activity state on activity with id " + curContainerDo.CurrentRouteNode.Id);
@@ -222,7 +227,7 @@ namespace Hub.Services
             while (curContainerDO.CurrentRouteNode != null)
             {
                 var actionResponse = await ProcessAction(uow, curContainerDO, actionState);
-                ProcessCurrentActionResponse(uow, curContainerDO, actionResponse);
+                await ProcessCurrentActionResponse(uow, curContainerDO, actionResponse);
                 if (curContainerDO.ContainerState != ContainerState.Executing)
                 {
                     //we should stop action processing here

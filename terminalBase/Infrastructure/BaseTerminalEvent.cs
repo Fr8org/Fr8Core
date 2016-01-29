@@ -157,7 +157,7 @@ namespace TerminalBase.Infrastructure
                 try
                 {
                     //TODO are we expecting a timeout??
-                    await client.PostAsync(url, eventReportCrateDTO);
+                    await Task.Run(() => client.PostAsync(url, eventReportCrateDTO));
                 }
                 catch (TaskCanceledException)
                 {
