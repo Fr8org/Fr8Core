@@ -18,7 +18,7 @@ namespace HubWeb
             public void Configuration(IAppBuilder app)
             {
                 var startup = new Startup();
-                startup.Configuration(app);
+                startup.Configuration(app, true);
             }
         }
         public static IDisposable CreateServer(string url)

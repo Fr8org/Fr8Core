@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using NUnit.Core;
 using HealthMonitor.Configuration;
+using System.Configuration;
 
 namespace HealthMonitor
 {
@@ -15,6 +16,7 @@ namespace HealthMonitor
             var appName = "Unspecified App";
             var ensureTerminalsStartup = false;
             var selfHosting = false;
+            string connectionString = string.Empty;
 
             if (args != null)
             {
@@ -32,10 +34,30 @@ namespace HealthMonitor
                     {
                         appName = args[i];
                     }
+                    else if (i > 0 && args[i - 1] == "--connectionString" && args[i] != null)
+                    {
+                        connectionString = args[i];
+                    }
                     if (args[i] == "--self-hosting")
                     {
                         selfHosting = true;
                     }
+                }
+
+                if (selfHosting)
+                {
+                    if (string.IsNullOrEmpty(connectionString))
+                    {
+                        throw new ArgumentException("You should specify '--connectionString {Name}={Value}' parameter when using self host mode.");
+                    }
+
+                    var regex = new System.Text.RegularExpressions.Regex("([\\w\\d]{1,})=([\\s\\S]+)");
+                    var match = regex.Match(connectionString);
+                    if (match == null || !match.Success || match.Groups.Count != 3)
+                    {
+                        throw new ArgumentException("Please specify connection string in the following format: \"{Name}={Value}\".");
+                    }
+                    UpdateConnectionString(match.Groups[1].Value, match.Groups[2].Value);
                 }
             }
 
@@ -56,6 +78,15 @@ namespace HealthMonitor
                     selfHostInitializer.Dispose();
                 }
             }
+        }
+
+        private static void UpdateConnectionString(string key, string value)
+        {
+            System.Configuration.Configuration configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            configuration.ConnectionStrings.ConnectionStrings[key].ConnectionString = value;
+            configuration.Save();
+
+            ConfigurationManager.RefreshSection("connectionStrings");
         }
 
         private void EnsureTerminalsStartUp()
