@@ -86,9 +86,9 @@ namespace terminalTwilioTests.Integration
             var runUrl = GetTerminalRunUrl();
             var curActionDTO = HealthMonitor_FixtureData.Send_Via_Twilio_v1_InitialConfiguration_ActionDTO();
             //Act
-            var responceActionDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, curActionDTO);
+            var responseActionDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, curActionDTO);
             var crateManager = new CrateManager();
-            using (var updater = crateManager.UpdateStorage(responceActionDTO))
+            using (var updater = crateManager.UpdateStorage(responseActionDTO))
             {
                 var curTextSource =
                     (TextSource)
@@ -100,14 +100,14 @@ namespace terminalTwilioTests.Integration
             }
             //OperationalStateCM crate is required to be added,
             //as upon return the Run method takes this crate and updates the status to "Success"
-            AddOperationalStateCrate(responceActionDTO, new OperationalStateCM());
-            var payloadDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(runUrl,responceActionDTO);
+            AddOperationalStateCrate(responseActionDTO, new OperationalStateCM());
+            var payloadDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(runUrl,responseActionDTO);
             //Assert
             //After Configure Test
-            Assert.NotNull(responceActionDTO);
-            Assert.NotNull(responceActionDTO.CrateStorage);
-            Assert.NotNull(responceActionDTO.CrateStorage.Crates);
-            var crateStorage = Crate.FromDto(responceActionDTO.CrateStorage);
+            Assert.NotNull(responseActionDTO);
+            Assert.NotNull(responseActionDTO.CrateStorage);
+            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
+            var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             var controls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
             Assert.NotNull(controls.Controls[0] is TextSource);
             Assert.NotNull(controls.Controls[1] is TextBox);
