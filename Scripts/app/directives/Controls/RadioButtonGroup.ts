@@ -13,7 +13,7 @@ module dockyard.directives.radioButtonGroup {
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
     export function RadioButtonGroup(): ng.IDirective {
         var uniqueDirectiveId = 1;
-        var template = '<div ng-repeat="radio in field.radios"><div class="radio-button-group-content"> <radio-button-option group-name="{{field.groupName+\'_rgb_\'+uniqueDirectiveId}}" change-selection="changeSelection(radio)" currentAction="currentAction" field="radio"></radio-button-option></div></div>';
+        var template = '<div ng-repeat="radio in field.radios"><div class="radio-button-group-content"> <radio-button-option group-name="{{field.groupName+\'_rgb_\'+uniqueDirectiveId}}" change-selection="changeSelection(radio)" current-action="currentAction" field="radio"></radio-button-option></div></div>';
         var controller = ($scope: IRadioButtonGroupScope, $element: ng.IAugmentedJQuery, $attrs: ng.IAttributes) => {
             $scope.uniqueDirectiveId = ++uniqueDirectiveId;
             $scope.changeSelection = (radio: model.RadioButtonOption) => {
