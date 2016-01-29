@@ -162,13 +162,13 @@ namespace HubWeb.Controllers
         public async Task<IHttpActionResult> Documentation(string solutionName)
         {
                 var solutionPageDTO = await _activity.GetSolutionDocumentation(solutionName);
-                return Json(solutionPageDTO);
+                return Ok(solutionPageDTO);
         }
         [HttpPost]
         public IHttpActionResult GetSolutionList(string terminalName)
         {
             var solutionNameList = _activity.GetSolutionList(terminalName);
-            return Json(solutionNameList);
+            return Ok(solutionNameList);
         }
         //        /// <summary>
         //        /// POST : updates the given action
