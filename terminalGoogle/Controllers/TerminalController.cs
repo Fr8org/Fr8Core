@@ -64,13 +64,27 @@ namespace terminalGoogle.Controllers
                 MinPaneWidth = 300
             };
 
+            var saveDataAction = new ActivityTemplateDTO
+            {
+                Name = "Save_In_Google_Sheet",
+                Label = "Save In Google Sheet",
+                Version = "1",
+                Description = "Save crates into google spreadsheet",
+                Category = ActivityCategory.Processors,
+                Terminal = terminal,
+                NeedsAuthentication = true,
+                MinPaneWidth = 300,
+                WebService = webService
+            };
+
             return Json(new StandardFr8TerminalCM()
             {
                 Definition = terminal,
                 Actions = new List<ActivityTemplateDTO>
                 {
                     extractDataAction,
-                    receiveGoogleForm
+                    receiveGoogleForm,
+                    saveDataAction
                 }
             });    
         }

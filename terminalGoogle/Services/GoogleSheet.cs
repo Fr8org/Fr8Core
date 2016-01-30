@@ -14,6 +14,7 @@ using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
 using Utilities;
 using Utilities.Configuration.Azure;
+using System.Threading.Tasks;
 
 namespace terminalGoogle.Services
 {
@@ -44,7 +45,7 @@ namespace terminalGoogle.Services
                 .ToDictionary(entry => entry.Id.AbsoluteUri, entry => entry.Title.Text);
         }
 
-        private SpreadsheetEntry FindSpreadsheet(string spreadsheetUri, GoogleAuthDTO authDTO)
+        public SpreadsheetEntry FindSpreadsheet(string spreadsheetUri, GoogleAuthDTO authDTO)
         {
             var spreadsheets = EnumerateSpreadsheets(authDTO);
             return spreadsheets.SingleOrDefault(ae => string.Equals(ae.Id.AbsoluteUri, spreadsheetUri));
@@ -68,7 +69,55 @@ namespace terminalGoogle.Services
             ListQuery listQuery = new ListQuery(listFeedLink.HRef.ToString());
             ListFeed listFeed = service.Query(listQuery);
             return listFeed.Entries.Cast<ListEntry>();
-        } 
+        }
+
+        public IDictionary<string, string> EnumerateWorksheet(string spreadsheetUri, GoogleAuthDTO authDTO)
+        {
+            Dictionary<string, string> worksheet = new Dictionary<string, string>();
+
+            SpreadsheetEntry spreadsheet = FindSpreadsheet(spreadsheetUri, authDTO);
+            if (spreadsheet == null)
+                throw new ArgumentException("Cannot find a spreadsheet", "spreadsheetUri");
+            SpreadsheetsService service = (SpreadsheetsService)spreadsheet.Service;
+
+            WorksheetFeed wsFeed = spreadsheet.Worksheets;
+
+            foreach (var item in wsFeed.Entries)
+            {
+                worksheet.Add(item.Id.ToString(), item.Title.Text);
+            }
+
+            return worksheet;
+        }
+
+        public void CreateWorksheet(string spreadsheetUri, GoogleAuthDTO authDTO, string worksheetname)
+        {
+            SpreadsheetEntry spreadsheet = FindSpreadsheet(spreadsheetUri, authDTO);
+            if (spreadsheet == null)
+                throw new ArgumentException("Cannot find a spreadsheet", "spreadsheetUri");
+            SpreadsheetsService service = (SpreadsheetsService)spreadsheet.Service;
+
+            WorksheetEntry newWorksheet = new WorksheetEntry(0, 0, worksheetname);
+
+            WorksheetFeed wfeed = spreadsheet.Worksheets;
+            service.Insert(wfeed, newWorksheet);
+        }
+
+        public async Task<string> CreateSpreadsheet(string spreadsheetname, GoogleAuthDTO authDTO)
+        {
+            GoogleDrive googleDrive = new GoogleDrive();
+            var driveService = await googleDrive.CreateDriveService(authDTO);
+
+            var file = new Google.Apis.Drive.v2.Data.File();
+            file.Title = "Test spreadsheet";
+            file.Description = string.Format("Created via Fr8 at {0}", DateTime.Now.ToString());
+            file.MimeType = "application/vnd.google-apps.spreadsheet";
+
+            var request = driveService.Files.Insert(file);
+            var result = request.Execute();
+
+            return result.Id;
+        }
 
         public IDictionary<string, string> EnumerateColumnHeaders(string spreadsheetUri, GoogleAuthDTO authDTO)
         {
