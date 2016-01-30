@@ -44,7 +44,7 @@ namespace Data.Interfaces
         UserStatusRepository UserStatusRepository { get; }
         //NegotiationAnswerEmailRepository NegotiationAnswerEmailRepository { get; }
         ExpectedResponseRepository ExpectedResponseRepository { get; }
-        IPlanRepository RouteRepository { get; }
+        IPlanRepository PlanRepository { get; }
         SlipRepository SlipRepository { get; }
         ActivityRepository ActivityRepository { get; }
         ActivityTemplateRepository ActivityTemplateRepository { get; }

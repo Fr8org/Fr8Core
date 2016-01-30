@@ -114,7 +114,7 @@ namespace Hub.Services
                Crate curCrateStandardEventReport, Fr8AccountDO curDockyardAccount = null)
         {
             //find this Account's Routes
-            var initialRoutesList = uow.RouteRepository
+            var initialRoutesList = uow.PlanRepository
                 .FindList(pt => pt.Fr8AccountId == curDockyardAccount.Id)
                 .Where(x => x.RouteState == RouteState.Active);
 

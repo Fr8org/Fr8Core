@@ -10,8 +10,8 @@ using NUnit.Framework;
 namespace terminalDropboxTests.Integration
 {
         [Explicit]
-        public class Terminal_Discover_v1Tests : BaseHealthMonitorTest
-        {
+        public class Terminal_Discover_v1Tests : BaseTerminalIntegrationTest
+    {
             private const int ActionCount = 1;
             private const string Get_File_List_Action_Name = "Get_File_List";
 

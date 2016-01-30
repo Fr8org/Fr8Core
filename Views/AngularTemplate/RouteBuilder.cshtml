@@ -54,40 +54,8 @@
                         <div class="action-arrow-right"></div>
                     </div>
                 </div>
-                <div ng-class="{'action-add': true, 'action-add--active': activeCategory >= 0}" ng-click="addAction(group)">
-                    <div style="display:flex">
-                        <div class="action-categories">
-                            <div data-ng-repeat="actionCategory in actionCategories" 
-                                 ng-class="{'action-category': true,'action-category--active': actionCategory.id === activeCategory}">
-                                <i class="fa fa-{{actionCategory.icon}} action-category-icon"
-                                   data-ng-click="setActive(actionCategory.id)"></i>
-                                <div class="action-category-name">{{actionCategory.name}}</div>
-                            </div>
-                        </div>
-                        <i class="fa fa-plus action-add-button"></i>
-                        <div ng-class="{'action-slider': true, 'action-slider--active': activeCategory > 0, 'action-terminal-active': activeTerminal >= 0}">
-                            <div class="slide">
-                                <div style="height:100%" mb-scrollbar="scrollbar('vertical', true)">
-                                    <div data-ng-repeat="webServiceAction in webServiceActionList"
-                                         data-ng-click="setActiveTerminal($index)"
-                                         class="web-service-action">
-                                        <img src="{{webServiceAction.webServiceIconPath}}" />
-                                        {{webServiceAction.webServiceName ? webServiceAction.webServiceName : 'Unknown Service'}}
-                                    </div>
-                                </div>
-                            </div><div class="slide">
-                                <div data-ng-click="deactivateTerminal()" class="action-action"><i class="fa fa-arrow-left"></i> Back</div>
-                                      <div style="height:100%" mb-scrollbar="scrollbar('vertical', true)">
-                                          <div data-ng-repeat="action in webServiceActionList[activeTerminal].actions"
-                                               data-ng-click="setActiveAction(action, group)"
-                                               class="action-action">
-                                              {{action.label}}
-                                          </div>
-                                      </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <action-Picker>
+                </action-Picker>
             </div>
         </div>
     </div>

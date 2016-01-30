@@ -11,7 +11,7 @@ namespace terminalSlackTests.Integration
     /// but allows to trigger that class from HealthMonitor.
     /// </summary>
     [Explicit]
-    public class Terminal_Discover_v1Tests : BaseHealthMonitorTest
+    public class Terminal_Discover_v1Tests : BaseTerminalIntegrationTest
     {
         private const int ActionCount = 2;
         private const string Monitor_Channel_Action_Name = "Monitor_Channel";

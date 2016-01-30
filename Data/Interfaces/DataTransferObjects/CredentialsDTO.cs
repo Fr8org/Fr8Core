@@ -8,5 +8,6 @@ namespace Data.Interfaces.DataTransferObjects
         public string Username { get; set; }
         public string Password { get; set; }
         public string Domain { get; set; }
+        public bool IsDemoAccount { get; set;  }
     }
 }
