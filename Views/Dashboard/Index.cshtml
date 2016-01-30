@@ -12,40 +12,10 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta content="width=device-width, initial-scale=1" name="viewport" />
-
-    <!-- BEGIN GLOBAL MANDATORY STYLES -->
+    
     <link href="//fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet" type="text/css" />
-    <link href="~/bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet" type="text/css" />
-    <link href="~/bower_components/font-awesome-min/css/font-awesome.min.css" type="text/css" rel="stylesheet" />
-    <link href="~/bower_components/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css" type="text/css" rel="stylesheet" />
-    <link href="~/bower_components/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.css" type="text/css" rel="stylesheet" />
-    <!-- END GLOBAL MANDATORY STYLES -->
-    <!-- BEGIN DYMANICLY LOADED CSS FILES(all plugin and page related styles must be loaded between GLOBAL and THEME css files ) -->
+    @Styles.Render("~/bundles/css/main")
     <link id="ng_load_plugins_before" />
-    <!-- END DYMANICLY LOADED CSS FILES -->
-    <!-- BEGIN THEME STYLES -->
-    <!-- DOC: To use 'rounded corners' style just load 'components-rounded.css' stylesheet instead of 'components.css' in the below style tag -->
-    <link href="/Content/templates/metronic/assets/global/css/components.css" id="style_components" rel="stylesheet" type="text/css" />
-    <link href="/Content/templates/metronic/assets/global/css/plugins.css" rel="stylesheet" type="text/css" />
-    <link href="/Content/templates/metronic/assets/admin/layout3/css/layout.css" rel="stylesheet" type="text/css" />
-    <link href="/Content/templates/metronic/assets/admin/layout3/css/themes/default.css" rel="stylesheet" type="text/css" id="style_color" />
-    <link href="/Content/templates/metronic/assets/admin/layout3/css/custom.css" rel="stylesheet" type="text/css" />
-    <link href="/Content/css/dockyard.css" rel="stylesheet" />
-    <!-- END THEME STYLES -->
-    <!-- BEGIN Datatables STYLES -->
-    <link href="~/bower_components/datatables/media/css/jquery.dataTables.css" rel="stylesheet" />
-    <link href="~/bower_components/datatables/media/css/dataTables.bootstrap.min.css" rel="stylesheet" />
-    <link href="~/bower_components/angular-datatables/dist/plugins/bootstrap/datatables.bootstrap.min.css" rel="stylesheet" />
-    <!-- END Datatables STYLES -->
-    <!-- BEGIN TEXTANGULAR STYLES -->
-    <link href="~/bower_components/textAngular/dist/textAngular.css" rel="stylesheet" />
-    <!-- END TEXTANGULAR STYLES -->
-    <!-- BEGIN TOAST STYLES-->
-    <link href="/bower_components/ngToast/dist/ngToast.min.css" rel="stylesheet">
-    <!-- END TOAST STYLES-->
-    <link href="~/bower_components/ng-table/dist/ng-table.min.css" rel="stylesheet" />
-
-    <link rel="stylesheet" href="/bower_components/angular-ui-select/dist/select.min.css" />
     <link rel='shortcut icon' type='image/x-icon' href='/Content/img/favicon.ico' />
 </head>
 <!-- END HEAD -->
@@ -97,13 +67,7 @@
     <script src="/Content/templates/metronic/assets/global/plugins/respond.min.js"></script>
     <script src="/Content/templates/metronic/assets/global/plugins/excanvas.min.js"></script>
     <![endif]-->
-    <script src="/bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
-    <script src="/bower_components/jquery-migrate/jquery-migrate.min.js" type="text/javascript"></script>
-    <script src="/bower_components/bootstrap/dist/js/bootstrap.js" type="text/javascript"></script>
-    <script src="/bower_components/bootstrap-hover-dropdown/bootstrap-hover-dropdown.js" type="text/javascript"></script>
-    <script src="~/bower_components/spin.js/spin.min.js"></script>
-    <script src="~/bower_components/bootstrap-switch/dist/js/bootstrap-switch.js"></script>
-
+    @Scripts.Render("~/bundles/js/jquery-bootstrap")
     @Html.Partial("_AngularAppScripts")
     <script type="text/javascript">
         /* Init Metronic's core jquery plugins and layout scripts */
