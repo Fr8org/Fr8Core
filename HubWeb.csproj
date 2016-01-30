@@ -376,7 +376,7 @@
     <Compile Include="Controllers\AuthenticationCallbackController.cs" />
     <Compile Include="Controllers\Api\FilesController.cs" />
     <Compile Include="Controllers\JsTestsController.cs" />
-    <Compile Include="Controllers\Api\SubrouteController.cs" />
+    <Compile Include="Controllers\Api\ProcessNodeTemplateController.cs" />
     <Compile Include="Controllers\Api\EventController.cs" />
     <Compile Include="Controllers\EnvelopeController.cs" />
     <Compile Include="Controllers\Api\ContainerController.cs" />
@@ -429,6 +429,7 @@
     <Compile Include="Infrastructure\Fr8HubWebHMACAuthenticateAttribute.cs" />
     <Compile Include="Infrastructure\Fr8Identity.cs" />
     <Compile Include="Infrastructure\Fr8Principle.cs" />
+    <Compile Include="SelfHostFactory.cs" />
     <Compile Include="ViewModels\AuthenticationErrorVM.cs" />
     <Compile Include="ViewModels\DocusignLoginVM.cs" />
     <Compile Include="ViewModels\ForgotPasswordVM.cs" />
@@ -569,8 +570,10 @@
     <Content Include="Content\img\site\kwasant-video-screen.png" />
     <Content Include="Content\img\site\site-logo.png" />
     <Content Include="Content\img\welcome\docusign.png" />
+    <Content Include="Content\img\welcome\fr8Terminals-howitworks.png" />
     <Content Include="Content\img\welcome\left-side-bg.jpg" />
     <Content Include="Content\img\welcome\logo.png" />
+    <Content Include="Content\img\welcome\plan_with_activities.png" />
     <Content Include="Content\img\welcome\right-side-bg.jpg" />
     <Content Include="Content\img\welcome\routeBuilder.png" />
     <Content Include="Content\img\welcome\DocuSign_Logo_Purple_Yellow.png" />
@@ -877,6 +880,7 @@
     <Content Include="Views\AngularTemplate\_Debug.cshtml" />
     <Content Include="Views\AngularTemplate\UpstreamCrateChooser.cshtml" />
     <Content Include="Views\AngularTemplate\ActionPicker.cshtml" />
+    <Content Include="Views\Services\HowItWorks.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

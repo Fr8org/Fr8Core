@@ -919,3 +919,32 @@ ul.bordered-list li:first-child {
     padding: 9px 15px;
     display:inline-block;
 }
+
+.howitworks-h2 {
+   padding: 0 0 1rem; 
+   margin: 0; 
+   font-size: 2.5rem;
+   color: #4db3a4;
+}
+.howitworks-steps {
+    text-align: left;
+    margin-left: 30px !important;   
+}
+
+.howitworks-margin-top {
+    margin-top: 30px !important;
+}
+
+.howitworks-h3 {
+   padding: 0 0 1rem; 
+   margin: 0; 
+   font-size: 1.8rem;
+   color: #4db3a4;
+}
+
+.howitworks-h4 {
+   padding: 0 0 1rem; 
+   margin: 0; 
+   font-size: 1.5rem;
+   color: #4db3a4;
+}
