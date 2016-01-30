@@ -294,8 +294,6 @@ namespace Hub.Services
 
         public ActivityDO Create(IUnitOfWork uow, int actionTemplateId, string name, string label, int? order, RouteNodeDO parentNode, Guid? AuthorizationTokenId = null)
         {
-            // calculate ordering or apply get passed value
-            ordering = (ordering == -1) ? (parentNode.ChildNodes.Count > 0 ? parentNode.ChildNodes.Max(x => x.Ordering) + 1 : 1) : ordering;
             var activity = new ActivityDO
             {
                 Id = Guid.NewGuid(),

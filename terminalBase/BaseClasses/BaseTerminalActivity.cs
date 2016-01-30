@@ -902,7 +902,7 @@ namespace TerminalBase.BaseClasses
             return await Task.FromResult<FieldDTO[]>(null);
         }
 
-        protected async Task<ActivityDO> AddAndConfigureChildActivity(ActivityDO parent, string templateName_Or_templateID, string name = null, string label = null, int order = -1)
+        protected async Task<ActivityDO> AddAndConfigureChildActivity(ActivityDO parent, string templateName_Or_templateID, string name = null, string label = null, int? order = null)
         {
 
             //search activity template by name or id
@@ -918,7 +918,7 @@ namespace TerminalBase.BaseClasses
             label = string.IsNullOrEmpty(label) ? activityTemplate.Label : label;
             name = string.IsNullOrEmpty(name) ? activityTemplate.Label : label;
 
-            var result = await HubCommunicator.CreateAndConfigureActivity(activityTemplate.Id, name, CurrentFr8UserId, label, parent.Id, order: order);
+            var result = await HubCommunicator.CreateAndConfigureActivity(activityTemplate.Id, name, CurrentFr8UserId, label, order, parent.Id);
             var resultDO = Mapper.Map<ActivityDO>(result);
 
             if (resultDO != null)
