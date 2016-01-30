@@ -16,7 +16,8 @@ namespace HealthMonitor
             var appName = "Unspecified App";
             var ensureTerminalsStartup = false;
             var selfHosting = false;
-            string connectionString = string.Empty;
+            var connectionString = string.Empty;
+            var specificTest = string.Empty;
 
             if (args != null)
             {
@@ -38,9 +39,13 @@ namespace HealthMonitor
                     {
                         connectionString = args[i];
                     }
-                    if (args[i] == "--self-hosting")
+                    else if (args[i] == "--self-hosting")
                     {
                         selfHosting = true;
+                    }
+                    else if (i > 0 && args[i - 1] == "--test" && args[i] != null)
+                    {
+                        specificTest = args[i];
                     }
                 }
 
@@ -69,7 +74,7 @@ namespace HealthMonitor
 
             try
             {
-                new Program().Run(ensureTerminalsStartup, sendEmailReport, appName);
+                new Program().Run(ensureTerminalsStartup, sendEmailReport, appName, specificTest);
             }
             finally
             {
@@ -130,7 +135,11 @@ namespace HealthMonitor
             }
         }
 
-        private void Run(bool ensureTerminalsStartup, bool sendEmailReport, string appName)
+        private void Run(
+            bool ensureTerminalsStartup,
+            bool sendEmailReport,
+            string appName,
+            string test)
         {
             CoreExtensions.Host.InitializeService();
 
@@ -140,7 +149,7 @@ namespace HealthMonitor
             }
 
             var testRunner = new NUnitTestRunner();
-            var report = testRunner.Run();
+            var report = testRunner.Run(test);
 
             if (sendEmailReport)
             {
@@ -155,6 +164,8 @@ namespace HealthMonitor
             }
 
             ReportToConsole(appName, report);
+
+            // Console.ReadLine();
 
             var errorCount = report.Tests.Count(x => !x.Success);
             Environment.Exit(errorCount);
