@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace terminalFr8CoreTests.Integration
 {
     [Explicit]
-    public class Terminal_Discover_v1Tests : BaseHealthMonitorTest
+    public class Terminal_Discover_v1Tests : BaseTerminalIntegrationTest
     {
         private const int Fr8CoreActionCount = 18;
 

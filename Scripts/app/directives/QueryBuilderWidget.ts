@@ -25,7 +25,7 @@ module dockyard.directives {
                 isDisabled: '='
             },
 
-            controller: ($scope: interfaces.IQueryBuilderWidgetScope): void => {
+            controller: ['$scope', ($scope: interfaces.IQueryBuilderWidgetScope): void => {
                 $scope.addRow = function () {
                     if ($scope.isDisabled)
                         return;
@@ -52,7 +52,7 @@ module dockyard.directives {
                 $scope.isActionValid = function (action: interfaces.IActionVM) {
                     return model.ActivityDTO.isActionValid(action);
                 }
-            }
+            }]
         };
     }
 }

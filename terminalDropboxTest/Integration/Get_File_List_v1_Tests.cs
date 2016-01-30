@@ -19,7 +19,7 @@ namespace terminalDropboxTests.Integration
     /// but allows to trigger that class from HealthMonitor.
     /// </summary>
     [Explicit]
-    public class Get_File_List_v1_Tests : BaseHealthMonitorTest
+    public class Get_File_List_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {

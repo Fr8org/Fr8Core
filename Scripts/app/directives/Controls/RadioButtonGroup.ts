@@ -14,7 +14,7 @@ module dockyard.directives.radioButtonGroup {
     export function RadioButtonGroup(): ng.IDirective {
         var uniqueDirectiveId = 1;
         var template = '<div ng-repeat="radio in field.radios"><div class="radio-button-group-content"> <radio-button-option group-name="{{field.groupName+\'_rgb_\'+uniqueDirectiveId}}" change-selection="changeSelection(radio)" current-action="currentAction" field="radio"></radio-button-option></div></div>';
-        var controller = ($scope: IRadioButtonGroupScope, $element: ng.IAugmentedJQuery, $attrs: ng.IAttributes) => {
+        var controller = ['$scope','$element','$attrs', ($scope: IRadioButtonGroupScope, $element: ng.IAugmentedJQuery, $attrs: ng.IAttributes) => {
             $scope.uniqueDirectiveId = ++uniqueDirectiveId;
             $scope.changeSelection = (radio: model.RadioButtonOption) => {
                 var radios = $scope.field.radios
@@ -31,7 +31,7 @@ module dockyard.directives.radioButtonGroup {
                     $scope.change()($scope.field);
                 }
             }
-        };
+        }];
 
         return {
             restrict: 'E',

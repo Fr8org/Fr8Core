@@ -1,0 +1,121 @@
+﻿@{
+    Layout = "~/Views/Shared/_HomePage.cshtml";
+}
+@{
+    ViewBag.Title = "How It Works";
+}
+
+<section id="services" class="text-block full-height-block" data-section="services">
+    <div class="inner-bg full-size-bg"></div>
+    <div class="container full-height-block">
+        <div class="inner-wrap cetered">
+            <div class="base-block-white content-block">
+                <h2 class="howitworks-h2">Introduction to Fr8</h2>
+                <p>
+                    Fr8 is an open-standard cloud workflow solution. It assumes that users have useful information in one or more web
+                    services, and makes it easy to move data from cloud to cloud. Workflows are represented by Fr8 Plans, which are
+                    assembled out of individual Activities. Fr8 Plans are hosted and processed by web services called Fr8 Hubs. When a
+                    Hub executes a Plan, it creates a Container to hold the user’s data and routes the Container from Activity to Activity.
+                </p>
+                <p>
+                    Hubs don’t carry out the Activity processing themselves. Activities are managed by web services called Terminals.
+                    Anyone can create a Terminal and have it publish Activities that it can support. Those Activities can then be registered
+                    with one or more Hubs, enabling the users of those Hubs to build Plans that include the new Terminal’s Activities.
+                </p>
+                <p>
+                    The Fr8 Company operates a major Hub at www.fr8.co, but anyone can run their own Hub by creating a web service
+                    that supports the Fr8 Hub specification.
+                </p>
+            </div>
+            <div class="base-block-white content-block">
+                <h3 class="howitworks-h3">Fr8 Is a Workflow Service</h3>
+                <p>
+                    Workflows are represented by Fr8 Plans, to which users add Activities. Each Activity provides its own configuration UI.
+                    Plans can be run manually or activated and set to monitor for an external event notification. In the example, below, this
+                    Plan gets launched when specified events happen in the user’s DocuSign account.
+                </p>
+                <p>
+                    <a href="@Url.Content("~/Content/img/welcome/plan_with_activities.png")">
+                        <img class="alignnone" src="@Url.Content("~/Content/img/welcome/plan_with_activities.png")" alt="Plan with Activities"width="663" height="272" sizes="(max-width: 663px) 85vw, 663px">
+                    </a>
+                </p>
+                <p>
+                    Hubs don’t carry out the Activity processing themselves. Activities are managed by web services called Terminals.
+                    Anyone can create a Terminal and have it publish Activities that it can support. Those Activities can then be registered
+                    with one or more Hubs, enabling the users of those Hubs to build Plans that include the new Terminal’s Activities.
+                </p>
+                <p>
+                    The Fr8 Company operates a major Hub at www.fr8.co, but anyone can run their own Hub by creating a web service
+                    that supports the Fr8 Hub specification.
+                </p>
+            </div>
+            <div class="base-block-white content-block">
+                <h4 class="howitworks-h4">Plans are executed by Fr8 Hubs</h4>
+                <p>
+                    Plans are created on or loaded into Fr8 Hubs, which are workflow processing services. The Fr8 Company operates a
+                    major Fr8 Hub at fr8.co, but anyone can spin up a Fr8 Hub of their own. When a Hub begins to execute a Plan, it
+                    creates a Container, a JSON structure, to hold the data or “payload” associated with that run of the Plan. This
+                    Container is routed from Terminal to Terminal in the course of Plan execution.
+                </p>
+            </div>
+            <div class="base-block-white content-block">
+                <h4 class="howitworks-h4">Terminals host individual Activities</h4>
+                <p>
+                    Terminals are web services that define and host a specific set of Activities that Fr8 Users can add to their Plans. For
+                    example, the DocuSign Terminal operated by The Fr8 Company communicates with the Fr8 Hub and makes available
+                    DocuSign-centric activities such as Send Envelope, Get Envelope, and Monitor for Envelope Events. Terminals
+                    generally focus on a single web service, such as DocuSign or Salesforce or Atlassian.
+                </p>
+                <p class="howitworks-steps howitworks-margin-top">
+                    Consider the 3-step Plan displayed above. It was implemented using three different Activities from three different Terminals:
+                </p>
+                <p class="howitworks-steps">
+                    1) Monitor DocuSign is an Activity that is hosted by a DocuSign Terminal
+                </p>
+                <p class="howitworks-steps">
+                    2) Filter is an Activity that’s hosted by an internally-oriented Terminal that’s focused on middleware utilities
+                </p>
+                <p class="howitworks-steps">
+                    3) Send Via Twilio is an Activity that’s hosted by a Twilio Terminal
+                </p>
+                <p>
+                    <a href="@Url.Content("~/Content/img/welcome/fr8Terminals-howitworks.png")">
+                        <img class="alignnone" src="@Url.Content("~/Content/img/welcome/fr8Terminals-howitworks.png")" alt="Fr8 Terminals" width="663" height="272">
+                    </a>
+                </p>
+                <p>
+                    When a Hub executes a Plan, it ships the current Container of data to the Terminal responsible for the next Activity.
+                    That Terminal executes the Activity, possibly modifying the contents of the Container, and then ships it back to the
+                    Hub. This continues until the Plan is completed.
+                </p>
+            </div>
+            <div class="base-block-white content-block">
+                <h4 class="howitworks-h4">Terminals Are Fully Distributed</h4>
+                <p>
+                    Anyone can build and run a Terminal of their own and hook it up to existing Hubs like the main Fr8 Hub
+                    at <a href="http://www.Fr8.company">www.Fr8.company</a>. The Fr8 Terminal currently only requires a handful of http endpoints, and implementations
+                    can be written in any language. Once a Terminal is up and running, the Actions that it exposes can be made public and it
+                    can be hooked into existing Hubs. This allows the Terminal builder to integrate their own Actions with the publicly
+                    available Actions. Put another way, if you expose some of your system’s API using a Fr8 Terminal, you get to automatically tie in everything that can be done on Fr8, ranging from sending notifications to carrying out middleware
+                    crunching of data, to more.
+                </p>
+                <p>
+                    This architecture also allows Terminals to be very nuanced. There might end up being, for example, 10 different open-source,
+                    publicly available Salesforce.com Fr8 Terminals. Some might focus their Activities on ease-of-use, while other Terminal
+                    builders might emphasize activities for power users. Each Fr8 Hub determines which Terminals it wants to coordinate with and make available to its Fr8 users.
+                </p>
+            </div>
+
+            <div class="base-block-white content-block">
+                <h4 class="howitworks-h4">Fr8 is Portable</h4>
+                <p>
+                    All of the data interfaces for Hubs and Terminals are specified in the JSON Fr8 Standard. So a Plan defined using the
+                    client tools available at www.Fr8.co can be downloaded as json, taken to another hub, loaded in, and it will just work
+                    (as long as that Hub has taken the trouble to connect to the appropriate Terminals). This also means that Plans and
+                    Activites can be easily created and modified programmatically or via comfortable browser-based UI.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
