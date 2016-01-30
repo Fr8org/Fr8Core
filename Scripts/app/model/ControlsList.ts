@@ -98,6 +98,16 @@
         selectedKey: string;
     }
 
+    export class CrateDetails {
+        manifestType: model.DropDownList;
+        label: model.DropDownList;
+    }
+
+    export class UpstreamCrateChooser extends ControlDefinitionDTO {
+        selectedCrates: Array<CrateDetails>;
+        multiSelection: boolean;
+    }
+
     export class TextSource extends DropDownList {
         initialLabel: string;
         valueSource: string;

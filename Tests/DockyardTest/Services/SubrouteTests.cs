@@ -27,7 +27,7 @@ namespace DockyardTest.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var plan = FixtureData.TestRoute2();
-                uow.RouteRepository.Add(plan);
+                uow.PlanRepository.Add(plan);
 
                 //add processnode to process
                 var sampleNodeTemplate = FixtureData.TestSubrouteDO2();
@@ -50,7 +50,7 @@ namespace DockyardTest.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var plan = FixtureData.TestRoute2();
-                uow.RouteRepository.Add(plan);
+                uow.PlanRepository.Add(plan);
 
                 //add processnode to process
                 var sampleNodeTemplate = FixtureData.TestSubrouteDO2();
@@ -83,7 +83,7 @@ namespace DockyardTest.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var plan = FixtureData.TestRoute2();
-                uow.RouteRepository.Add(plan);
+                uow.PlanRepository.Add(plan);
 
                 //add processnode to process
                 var sampleNodeTemplate = FixtureData.TestSubrouteDO2();

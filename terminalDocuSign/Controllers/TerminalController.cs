@@ -137,7 +137,7 @@ namespace terminalDocuSign.Controllers
                 Name = "Generate_DocuSign_Report",
                 Label = "Generate a DocuSign Report",
                 Version = "1",
-                Category = ActivityCategory.Processors,
+                Category = ActivityCategory.Solution,
                 NeedsAuthentication = true,
                 Terminal = terminal,
                 MinPaneWidth = 380
@@ -154,6 +154,17 @@ namespace terminalDocuSign.Controllers
                 MinPaneWidth = 380
             };
 
+            var archiveDocusignTemplate = new ActivityTemplateDTO
+            {
+                Name = "Archive_DocuSign_Template",
+                Label = "Archive DocuSign Template",
+                Version = "1",
+                NeedsAuthentication = true,
+                Category = ActivityCategory.Solution,
+                Terminal = terminal
+            };
+
+
             var actionList = new List<ActivityTemplateDTO>()
             {
                 waitForDocusignEventActionTemplate,
@@ -167,6 +178,7 @@ namespace terminalDocuSign.Controllers
                 generateDocusignReport,
                 searchDocusignHistory,
                 getDocuSignTemplateActionTemplate,
+                archiveDocusignTemplate
             };
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()

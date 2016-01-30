@@ -37,9 +37,9 @@ namespace terminalDocuSign.Tests.Services
             //Assert
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                Assert.AreEqual(1, uow.RouteRepository.GetAll().Count(), "Automatic plan is not created");
+                Assert.AreEqual(1, uow.PlanRepository.GetAll().Count(), "Automatic plan is not created");
 
-                var automaticRoute = uow.RouteRepository.GetQuery().First();
+                var automaticRoute = uow.PlanRepository.GetQuery().First();
 
                 Assert.AreEqual("MonitorAllDocuSignEvents", automaticRoute.Name, "Automatic plan name is wrong");
                 Assert.AreEqual(1, automaticRoute.Subroutes.Count(), "Automatic subroute is not created");
@@ -60,7 +60,7 @@ namespace terminalDocuSign.Tests.Services
             //Assert
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                Assert.IsFalse(uow.RouteRepository.GetAll().Count() > 1, "Automatic plan is created in following authentication success");
+                Assert.IsFalse(uow.PlanRepository.GetAll().Count() > 1, "Automatic plan is created in following authentication success");
             }
         }
 
@@ -97,7 +97,7 @@ namespace terminalDocuSign.Tests.Services
 
                 _actionMock.Setup(
                     a => a.CreateAndConfigure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<int>(),
-                        "Record_DocuSign_Events", It.IsAny<string>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>(), It.IsAny<int>())).Callback(() =>
+                        "Record_DocuSign_Events", It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>())).Callback(() =>
                         {
                             using (var uow1 = ObjectFactory.GetInstance<IUnitOfWork>())
                             {
@@ -112,7 +112,7 @@ namespace terminalDocuSign.Tests.Services
 
                 _actionMock.Setup(
                     a => a.CreateAndConfigure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<int>(),
-                        "StoreMTData", It.IsAny<string>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>(), It.IsAny<int>())).Callback(() =>
+                        "StoreMTData", It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>())).Callback(() =>
                         {
                             using (var uow1 = ObjectFactory.GetInstance<IUnitOfWork>())
                             {

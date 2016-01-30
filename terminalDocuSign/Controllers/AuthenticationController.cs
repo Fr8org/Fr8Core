@@ -27,8 +27,19 @@ namespace terminalDocuSign.Controllers
         {
             try
             {
+                // choose configuration either for demo or prod service 
+                string endpoint = string.Empty;
+                if (curCredentials.IsDemoAccount)
+                {
+                    endpoint = CloudConfigurationManager.GetSetting("endpoint");
+                }
+                else
+                {
+                    endpoint = CloudConfigurationManager.GetSetting("endpoint");
+                }
+                
                 // Auth sequence according to https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#OAuth2/OAuth2%20Token%20Request.htm
-                var oauthToken = await ObtainOAuthToken(curCredentials, CloudConfigurationManager.GetSetting("endpoint"));
+                var oauthToken = await ObtainOAuthToken(curCredentials, endpoint);
 
                 if (string.IsNullOrEmpty(oauthToken))
                 {
@@ -44,12 +55,30 @@ namespace terminalDocuSign.Controllers
                     ApiPassword = oauthToken
                 };
 
-                return new AuthorizationTokenDTO()
+                var authorizationTokenDTO = new AuthorizationTokenDTO()
+                    {
+                        Token = JsonConvert.SerializeObject(docuSignAuthDTO),
+                        ExternalAccountId = curCredentials.Username,
+                        AuthCompletedNotificationRequired = true
+                    };
+
+                string demoAccountStr = string.Empty;
+                if (curCredentials.IsDemoAccount)
                 {
-                    Token = JsonConvert.SerializeObject(docuSignAuthDTO),
-                    ExternalAccountId = curCredentials.Username,
-                    AuthCompletedNotificationRequired = true
-                };
+                    demoAccountStr = CloudConfigurationManager.GetSetting("DemoAccountAttributeString");
+                }
+
+                if (authorizationTokenDTO.AdditionalAttributes == null)
+                {
+                    authorizationTokenDTO.AdditionalAttributes = demoAccountStr;
+                }
+                else if (!authorizationTokenDTO.AdditionalAttributes.Contains(demoAccountStr))
+                {
+                    authorizationTokenDTO.AdditionalAttributes += demoAccountStr;
+                }
+
+                return authorizationTokenDTO;
+
             }
             catch (Exception ex)
             {

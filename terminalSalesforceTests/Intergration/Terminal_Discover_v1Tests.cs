@@ -15,7 +15,7 @@ namespace terminalSalesforceTests.Integration
     /// but allows to trigger that class from HealthMonitor.
     /// </summary>
     [Explicit]
-    public class Terminal_Discover_v1Tests : BaseHealthMonitorTest
+    public class Terminal_Discover_v1Tests : BaseTerminalIntegrationTest
     {
         private const int ActionCount = 4;
         private const string Create_Account_Action_Name = "Create_Account";

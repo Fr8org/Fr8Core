@@ -34,12 +34,7 @@ namespace terminalSalesforce.Actions
             {
                 updater.CrateStorage.Clear();
 
-                AddTextSourceControl(updater.CrateStorage, "Account Name", "accountName",
-                    "Upstream Terminal-Provided Fields", addRequestConfigEvent: false);
-                AddTextSourceControl(updater.CrateStorage, "Account Number", "accountNumber",
-                    "Upstream Terminal-Provided Fields", addRequestConfigEvent: false, required:true);
-                AddTextSourceControl(updater.CrateStorage, "Phone", "phone",
-                    "Upstream Terminal-Provided Fields", addRequestConfigEvent: false, required:true);
+                AddTextSourceControlForDTO<AccountDTO>(updater.CrateStorage, "Upstream Terminal-Provided Fields", addRequestConfigEvent: false);
 
                 updater.CrateStorage.Add(await CreateAvailableFieldsCrate(curActivityDO));
             }
@@ -57,14 +52,11 @@ namespace terminalSalesforce.Actions
                 return NeedsAuthenticationError(payloadCrates);
             }
 
-            var accountName = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "accountName");
-            var accountNumber = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "accountNumber");
-            var phone = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "phone");
-            if (string.IsNullOrEmpty(accountName))
+            var account = _salesforce.CreateSalesforceDTO<AccountDTO>(curActivityDO, payloadCrates, ExtractSpecificOrUpstreamValue);
+            if (string.IsNullOrEmpty(account.Name))
             {
                 return Error(payloadCrates, "No account name found in activity.");
             }
-            var account = new AccountDTO {AccountNumber = accountNumber, Name = accountName, Phone = phone};
 
             bool result = await _salesforce.CreateObject(account, "Account", _salesforce.CreateForceClient(authTokenDO));
 

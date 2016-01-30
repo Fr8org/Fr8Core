@@ -17,7 +17,7 @@ using terminalDocuSignTests.Fixtures;
 namespace terminalDocuSignTests.Integration
 {
     [Explicit]
-    public class Record_DocuSign_Events_v1_Tests : BaseHealthMonitorTest
+    public class Record_DocuSign_Events_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {
@@ -27,11 +27,11 @@ namespace terminalDocuSignTests.Integration
         private void AssertCrateTypes(CrateStorage crateStorage)
         {
 
-            Assert.AreEqual(3, crateStorage.Count);
+            Assert.AreEqual(5, crateStorage.Count);
 
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
             Assert.AreEqual(1, crateStorage.CratesOfType<EventSubscriptionCM>().Count());
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "Available Run-Time Objects"));
+            Assert.AreEqual(3, crateStorage.CratesOfType<ManifestDescriptionCM>().Count(x => x.Label == "Available Run-Time Objects"));
         }
 
         private void AssertControls(StandardConfigurationControlsCM control)

@@ -146,6 +146,7 @@ namespace terminalDocuSign.Actions
             using (var updater = Crate.UpdateStorage(curActivityDO))
             {
                 var configControls = GetConfigurationControls(updater.CrateStorage);
+                if (configControls == null) return;
                 var eventCheckBoxes = configControls.Controls.Where(c => c.Type == ControlTypes.CheckBox).ToList();
                 var anySelectedControl = eventCheckBoxes.Any(c => c.Selected);
 
@@ -271,9 +272,9 @@ namespace terminalDocuSign.Actions
             // Make sure that it exists
             if (string.IsNullOrEmpty(envelopeId))
             {
+                await Activate(curActivityDO, authTokenDO);
                 return Success(payloadCrates, "Route successfully activated. It will wait and respond to specified DocuSign Event messages");
             }
-
 
             //Create run-time fields
             var fields = CreateDocuSignEventFields();
@@ -363,7 +364,7 @@ namespace terminalDocuSign.Actions
                     .Select(checkBox => checkBox.Name.Substring("Event_".Length).Replace("_", ""));
 
             //create standard event subscription crate with user selected DocuSign events
-            var curEventSubscriptionCrate = Crate.CreateStandardEventSubscriptionsCrate("Standard Event Subscriptions",
+            var curEventSubscriptionCrate = Crate.CreateStandardEventSubscriptionsCrate("Standard Event Subscriptions", "DocuSign",
                 curSelectedDocuSignEvents.ToArray());
 
             storage.Remove<EventSubscriptionCM>();
@@ -387,6 +388,7 @@ namespace terminalDocuSign.Actions
 
             return Crate.CreateStandardEventSubscriptionsCrate(
                 "Standard Event Subscriptions",
+                "DocuSign",
                 subscriptions.ToArray()
                 );
         }

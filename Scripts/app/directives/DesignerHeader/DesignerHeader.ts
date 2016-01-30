@@ -7,6 +7,8 @@ module dockyard.directives.designerHeader {
         editing: boolean;
         editTitle(): void;
         onTitleChange(): void;
+        runRoute(): void;
+
         route: model.RouteDTO;
     }
 
@@ -14,7 +16,12 @@ module dockyard.directives.designerHeader {
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
     class DesignerHeader implements ng.IDirective {
         public link: (scope: IDesignerHeaderScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
-        public controller: ($scope: IDesignerHeaderScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
+        public controller: (
+            $scope: IDesignerHeaderScope,
+            element: ng.IAugmentedJQuery,
+            attrs: ng.IAttributes,
+            RouteService: services.IRouteService
+        ) => void;
 
         public templateUrl = '/AngularTemplate/DesignerHeader';
         public scope = {
@@ -34,7 +41,8 @@ module dockyard.directives.designerHeader {
             DesignerHeader.prototype.controller = (
                 $scope: IDesignerHeaderScope,
                 $element: ng.IAugmentedJQuery,
-                $attrs: ng.IAttributes) => {
+                $attrs: ng.IAttributes,
+                RouteService: services.IRouteService) => {
 
                 $scope.editTitle = () => {
                     $scope.editing = true;
@@ -45,7 +53,13 @@ module dockyard.directives.designerHeader {
                     var result = RouteService.update({ id: $scope.route.id, name: $scope.route.name });
                     result.$promise.then(() => { });
                 };
+
+                $scope.runRoute = () => {
+                    RouteService.runAndProcessClientAction($scope.route.id);
+                };
             };
+
+            DesignerHeader.prototype.controller['$inject'] = ['$scope', '$element', '$attrs', 'RouteService'];
         }
 
         //The factory function returns Directive object as per Angular requirements

@@ -22,7 +22,7 @@ namespace terminalPapertrailTests.Integration
     /// but allows to trigger that class from HealthMonitor.
     /// </summary>
     [Explicit]
-    public class Write_To_Log_v1Tests : BaseHealthMonitorTest
+    public class Write_To_Log_v1Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {

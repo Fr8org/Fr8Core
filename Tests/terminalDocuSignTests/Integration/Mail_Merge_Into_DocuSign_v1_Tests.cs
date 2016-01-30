@@ -22,7 +22,7 @@ namespace terminalDocuSignTests.Integration
     /// </summary>
     [Explicit]
     [Category("terminalDocuSignTests.Integration")]
-    public class Mail_Merge_Into_DocuSign_v1_Tests : BaseHealthMonitorTest
+    public class Mail_Merge_Into_DocuSign_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {

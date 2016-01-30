@@ -34,7 +34,8 @@ namespace HubWeb.Controllers
 
         [HttpGet]
         [Fr8HubWebHMACAuthenticate]
-        public IHttpActionResult Get(Guid id)
+        [ActionName("payload")]
+        public IHttpActionResult GetPayload(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

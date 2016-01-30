@@ -27,8 +27,8 @@ using HubWeb.Infrastructure;
 
 namespace HubWeb.Controllers
 {
-
-
+    
+    
     [Fr8ApiAuthorize]
     public class ActionsController : ApiController
     {
@@ -63,13 +63,13 @@ namespace HubWeb.Controllers
 
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
-        public async Task<IHttpActionResult> Create(int actionTemplateId, string name, string label = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null, int order = -1)
+        public async Task<IHttpActionResult> Create(int actionTemplateId, string name, string label = null, int? order = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var userId = User.Identity.GetUserId();
 
-                var result = await _activity.CreateAndConfigure(uow, userId, actionTemplateId, name, label, parentNodeId, createRoute, authorizationTokenId, order: order);
+                var result = await _activity.CreateAndConfigure(uow, userId, actionTemplateId, name, label, order, parentNodeId, createRoute, authorizationTokenId);
 
                 if (result is ActivityDO)
                 {
@@ -92,14 +92,14 @@ namespace HubWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var activityTemplate = _activityTemplate.GetQuery().FirstOrDefault(at => at.Name == solutionName);
-
+                
                 if (activityTemplate == null)
                 {
                     throw new ArgumentException(String.Format("actionTemplate (solution) name {0} is not found in the database.", solutionName));
                 }
 
                 var result = await _activity.CreateAndConfigure(uow, userId,
-                    activityTemplate.Id, activityTemplate.Name, activityTemplate.Label, null, true);
+                    activityTemplate.Id, activityTemplate.Name, activityTemplate.Label, null, null, true);
                 return Ok(RouteMappingHelper.MapRouteToDto(uow, (PlanDO)result));
             }
         }
@@ -162,21 +162,21 @@ namespace HubWeb.Controllers
             }
         }
 
-        //        /// <summary>
-        //        /// POST : updates the given action
-        //        /// </summary>
-        //        [HttpPost]
-        //        [Route("update")]
-        //        public IHttpActionResult Update(ActionDTO curActionDTO)
-        //        {
-        //            ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);
-        //
-        //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //            {
-        //                await _action.SaveUpdateAndConfigure(uow, submittedActionDO);
-        //            }
-        //
-        //            return Ok();
-        //        }    
-    }
+//        /// <summary>
+//        /// POST : updates the given action
+//        /// </summary>
+//        [HttpPost]
+//        [Route("update")]
+//        public IHttpActionResult Update(ActionDTO curActionDTO)
+//        {
+//            ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);
+//
+//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+//            {
+//                await _action.SaveUpdateAndConfigure(uow, submittedActionDO);
+//            }
+//
+//            return Ok();
+//        }    
+            }
 }

@@ -156,8 +156,8 @@ namespace UtilitiesTesting.Fixtures
         {
             return new ActivityTemplateDO()
             {
-                Name = "StoreMTData",
-                Label = "Store MT Data",
+                Name = "SaveToFr8Warehouse",
+                Label = "Save To Fr8 Warehouse",
                 Category = ActivityCategory.Processors,
                 Terminal = TestTerminal_Core(),
                 Version = "1"

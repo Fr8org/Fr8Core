@@ -1,13 +1,15 @@
 ﻿module dockyard.model {
-    export class ContainerDTO{
+    export class ContainerDTO {
         id: string;
         name: string;
-        routeId: number;
+        planId: number;
         containerState: number;
         currentRouteNodeId: string;
         nextRouteNodeId: string;
         lastUpdated: string;
         createDate: string;
+        currentActivityResponse: ActivityResponse;
+        currentClientActionName: string;
     }
 
     export enum ContainerState {
@@ -16,5 +18,16 @@
         WaitingForTerminal = 3,
         Completed = 4,
         Failed = 5
+    }
+
+    export enum ActivityResponse {
+        Null = 0,
+        Success = 1,
+        Error = 2,
+        RequestTerminate = 3,
+        RequestSuspend = 4,
+        SkipChildren = 5,
+        ReProcessChildren = 6,
+        ExecuteClientAction = 7
     }
 }

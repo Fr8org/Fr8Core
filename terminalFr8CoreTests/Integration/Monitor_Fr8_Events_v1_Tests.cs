@@ -20,7 +20,7 @@ namespace terminalTests.Integration
     /// </summary>
     [Explicit]
     [Category("Integration.terminalFr8CoreTests")]
-    class Monitor_Fr8_Events_v1_Tests : BaseHealthMonitorTest
+    class Monitor_Fr8_Events_v1_Tests : BaseTerminalIntegrationTest
     {
 
         public override string TerminalName
@@ -42,7 +42,7 @@ namespace terminalTests.Integration
             Assert.NotNull(responseActivityDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActivityDTO.CrateStorage);
-            Assert.AreEqual(3, crateStorage.Count);
+            Assert.AreEqual(7, crateStorage.Count);
         }
 
         [Test]

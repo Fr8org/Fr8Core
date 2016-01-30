@@ -72,7 +72,7 @@ module dockyard.controllers {
         }
 
         private activateRoute(route) {
-            this.RouteService.activate({ routeId: route.id, routeBuilderActivate: false }).$promise.then((result) => {
+            this.RouteService.activate({ planId: route.id, routeBuilderActivate: false }).$promise.then((result) => {
                 if (result != null && result.status === "validation_error" && result.redirectToRoute) {
                     this.goToRoutePage(route.id);
                 }
@@ -95,32 +95,34 @@ module dockyard.controllers {
                 //TODO show some kind of error message
             });
         }
-        private executeRoute(routeId, $event) {
+        private executeRoute(planId, $event) {
 			if ($event.ctrlKey) {
 				this.$modal.open({
 					animation: true,
 					templateUrl: '/AngularTemplate/_AddPayloadModal',
-					controller: 'PayloadFormController', resolve: { routeId: () => routeId }
+					controller: 'PayloadFormController', resolve: { planId: () => planId }
 				});
-        }
+            }
 			else {
-                this.RouteService.execute({ id: routeId }, null, null, (failResponse) => {
-                    if (failResponse.data.details === "GuestFail") {
-                        location.href = "DockyardAccount/RegisterGuestUser";
-                    }
-                });
+                this.RouteService
+                    .runAndProcessClientAction(planId)
+                    .catch((failResponse) => {
+                        if (failResponse.data.details === "GuestFail") {
+                            location.href = "DockyardAccount/RegisterGuestUser";
+                        }
+                    });
 			}
         }
 
-        private goToRoutePage(routeId) {
-            this.$state.go('routeBuilder', { id: routeId });
+        private goToRoutePage(planId) {
+            this.$state.go('routeBuilder', { id: planId });
         }
 
-        private goToRouteDetailsPage(routeId) {
-            this.$state.go('routeDetails', { id: routeId });
+        private goToRouteDetailsPage(planId) {
+            this.$state.go('routeDetails', { id: planId });
         }
 
-        private deleteRoute(routeId: string, isActive: number) {
+        private deleteRoute(planId: string, isActive: number) {
             //to save closure of our controller
             var self = this;
             this.$modal.open({
@@ -130,11 +132,11 @@ module dockyard.controllers {
 
             }).result.then(() => {
                 //Deletion confirmed
-                this.RouteService.delete({ id: routeId }).$promise.then(() => {
+                this.RouteService.delete({ id: planId }).$promise.then(() => {
                     var procTemplates = isActive === 2 ? self.$scope.activeRoutes : self.$scope.inActiveRoutes;
                     //now loop through our existing templates and remove from local memory
                     for (var i = 0; i < procTemplates.length; i++) {
-                        if (procTemplates[i].id === routeId) {
+                        if (procTemplates[i].id === planId) {
                             procTemplates.splice(i, 1);
                             break;
                         }

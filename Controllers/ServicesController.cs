@@ -12,5 +12,10 @@ namespace HubWeb.Controllers
         {
             return View();
         }
+
+        public ActionResult HowItWorks()
+        {
+            return View();
+        }
     }
 }

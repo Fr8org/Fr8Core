@@ -33,7 +33,6 @@ namespace terminalSlack.Actions
                 return NeedsAuthenticationError(payloadCrates);
             }
 
-
             List<FieldDTO> payloadFields;
             try
             {
@@ -41,14 +40,13 @@ namespace terminalSlack.Actions
             }
             catch (ArgumentException)
             {
-                return Success(payloadCrates, "Plan successfully activated. It will wait and respond to specified Slack postings");
+                return await ActivateAndReturnSuccess(activityDO, authTokenDO, payloadCrates);
             }
-            
 
             var payloadChannelIdField = payloadFields.FirstOrDefault(x => x.Key == "channel_id");
             if (payloadChannelIdField == null)
             {
-                return Success(payloadCrates, "Plan successfully activated. It will wait and respond to specified Slack postings");
+                return await ActivateAndReturnSuccess(activityDO, authTokenDO, payloadCrates);
             }
 
             var payloadChannelId = payloadChannelIdField.Value;
@@ -65,6 +63,12 @@ namespace terminalSlack.Actions
             }
 
             return Success(payloadCrates);
+        }
+
+        private async Task<PayloadDTO> ActivateAndReturnSuccess(ActivityDO activityDO, AuthorizationTokenDO authTokenDO, PayloadDTO payloadCrates)
+        {
+            await Activate(activityDO, authTokenDO);
+            return Success(payloadCrates, "Plan successfully activated. It will wait and respond to specified Slack postings");
         }
 
         private List<FieldDTO> ExtractPayloadFields(PayloadDTO payloadCrates)
@@ -192,6 +196,7 @@ namespace terminalSlack.Actions
 
             return Crate.CreateStandardEventSubscriptionsCrate(
                 "Standard Event Subscriptions",
+                "Slack",
                 subscriptions.ToArray()
                 );
         }
