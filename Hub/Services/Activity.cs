@@ -297,7 +297,7 @@ namespace Hub.Services
             var activity = new ActivityDO
             {
                 Id = Guid.NewGuid(),
-                ActivityTemplateId =  actionTemplateId,
+                ActivityTemplateId = actionTemplateId,
                 Name = name,
                 Label = label,
                 CrateStorage = _crate.EmptyStorageAsStr(),
