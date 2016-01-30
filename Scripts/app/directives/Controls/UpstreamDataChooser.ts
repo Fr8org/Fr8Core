@@ -62,6 +62,8 @@ module dockyard.directives.upstreamDataChooser {
 
             }
 
+            UpstreamDataChooser.prototype.controller['$inject'] = ['$scope', '$element', '$attrs'];
+
         };
 
         //The factory function returns Directive object as per Angular requirements
