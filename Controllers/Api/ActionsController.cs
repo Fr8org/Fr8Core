@@ -159,16 +159,15 @@ namespace HubWeb.Controllers
         }
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
-        public async Task<IHttpActionResult> Documentation(ActivityDTO curActivityDTO)
+        public async Task<IHttpActionResult> Documentation([FromBody] ActivityDTO curActivityDTO)
         {
             var curDocSupport = curActivityDTO.DocumentationSupport;
+            //check if the DocumentationSupport comma separated string has the correct form
             if (!ValidateDocumentationSupport(curDocSupport))
                 return BadRequest();
             var solutionPageDTO = await _activity.GetSolutionDocumentation(curActivityDTO);
             return Ok(solutionPageDTO);
-
         }
-
         private bool ValidateDocumentationSupport(string docSupport)
         {
             var curStringArray = docSupport.Split(',');

@@ -10,9 +10,9 @@ namespace Data.Interfaces.DataTransferObjects
         public Guid? ParentRouteNodeId { get; set; }
 
         public CrateStorageDTO CrateStorage { get; set; }
-        
+
         public int? ActivityTemplateId { get; set; }
-        
+
         public string Label { get; set; }
 
         [JsonProperty("activityTemplate")]
@@ -38,6 +38,7 @@ namespace Data.Interfaces.DataTransferObjects
 
         public ActivityDTO[] ChildrenActions { get; set; }
         public int Ordering { get; set; }
+        [JsonProperty("DocumentationSupport")]
         public string DocumentationSupport { get; set; }
     }
 }

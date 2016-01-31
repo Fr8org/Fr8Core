@@ -695,33 +695,30 @@ namespace Hub.Services
                 //IMPORTANT: this object will not be hold in the database
                 //It is used to transfer data
                 //as ActivityDTO is the first mean of communication between The Hub and Terminals
-                var curSolutionActivityDO = new ActivityDO
+                var curSolutionActivityDTO = new ActivityDTO
                 {
                     Id = Guid.NewGuid(),
                     ActivityTemplateId = curActivityTerminalDTO.Id,
                     Name = curActivityTerminalDTO.Name,
                     Label = curActivityTerminalDTO.Label,
-                    CrateStorage = _crate.EmptyStorageAsStr(),
-                    RootRouteNode = new RouteNodeDO(),
-                    Fr8Account = curAccount,
-                    AuthorizationToken = new AuthorizationTokenDO
+                    Fr8AccountId = curAccount.Id,
+                    AuthToken = new AuthorizationTokenDTO
                     {
-                        UserID = curAccount.Id
+                        UserId = curAccount.Id
                     }
                 };
-                solutionPageDTO = await GetDocumentation(curSolutionActivityDO);
+                solutionPageDTO = await GetDocumentation(curSolutionActivityDTO);
             }
             return solutionPageDTO;
         }
-        private Task<SolutionPageDTO> GetDocumentation(ActivityDO curActivityDO)
+        private Task<SolutionPageDTO> GetDocumentation(ActivityDTO curActivityDTO)
         {
             //Put a method name so that HandleFr8Request could find correct method in the terminal Action
             var actionName = "documentation";
-            var curActivityDTO = Mapper.Map<ActivityDTO>(curActivityDO);
             curActivityDTO.DocumentationSupport = "MainPage";
             var curContainderId = Guid.Empty;
             //Add log to the database
-            EventManager.ActionDispatched(curActivityDO, curContainderId);
+            EventManager.ActionDispatched(Mapper.Map<ActivityDO>(curActivityDTO), curContainderId);
             //Call the terminal
             return ObjectFactory.GetInstance<ITerminalTransmitter>()
                 .CallActionAsync<SolutionPageDTO>(actionName, curActivityDTO, curContainderId.ToString());
