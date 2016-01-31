@@ -76,9 +76,6 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
             requestUri = new Uri(new Uri(terminal.Endpoint.StartsWith("http") ? terminal.Endpoint : "http://" + terminal.Endpoint), requestUri);
             var hmacHeader =  await _hmacService.GenerateHMACHeader(requestUri, terminal.PublicIdentifier, terminal.Secret, activityDTO.AuthToken.UserId, activityDTO);
             return await PostAsync<ActivityDTO, TResponse>(requestUri, activityDTO, correlationId, hmacHeader);
-
-
-
         }
     }
 }

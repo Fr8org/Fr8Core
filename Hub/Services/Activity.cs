@@ -678,8 +678,11 @@ namespace Hub.Services
             return ObjectFactory.GetInstance<ITerminalTransmitter>().CallActionAsync<TResult>(activityName, dto, containerId.ToString());
         }
         //This method finds and returns single SolutionPageDTO that holds some documentation of Activities that is obtained from a solution by aame
-        public async Task<SolutionPageDTO> GetSolutionDocumentation(string solutionName)
+        public async Task<SolutionPageDTO> GetSolutionDocumentation(ActivityDTO activityDTO)
         {
+            //Check if a string with "MainPage" keyword is there to signal to Action to provide SolutionPageDTO
+            if (!activityDTO.DocumentationSupport.Split(',').Contains("MainPage"))
+                throw new Exception("No MainPage value found in DocumentationSupport field value of the ActionDTO");
             SolutionPageDTO solutionPageDTO;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -687,7 +690,7 @@ namespace Hub.Services
                 //Get the list of all actions that are solutions from database
                 var allActivityTemplates = _routeNode.GetSolutions(uow, curAccount);
                 //find the solution by the provided name
-                var curActivityTerminalDTO = allActivityTemplates.Single(a => a.Name == solutionName);
+                var curActivityTerminalDTO = allActivityTemplates.Single(a => a.Name == activityDTO.ActivityTemplate.Name);
                 //prepare an Activity object to be sent to Activity in a Terminal
                 //IMPORTANT: this object will not be hold in the database
                 //It is used to transfer data
@@ -710,28 +713,12 @@ namespace Hub.Services
             }
             return solutionPageDTO;
         }
-        //This method returns Solutions of a certain terminal by terminal name
-        public List<string> GetSolutionList(string terminalName)
-        {
-            var solutionNameList = new List<string>();
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curActivities = uow.ActivityTemplateRepository.GetAll()
-                    .Where(a => a.Terminal.Name == terminalName
-                        && a.Category == ActivityCategory.Solution)
-                        .ToList();
-                solutionNameList.AddRange(curActivities.Select(activity => activity.Name));
-            }
-            return solutionNameList;
-        }
         private Task<SolutionPageDTO> GetDocumentation(ActivityDO curActivityDO)
         {
-            //Prepare a string with "MainPage" keyword to be a signal to Action to proved SolutionPageDTO
-            var curDocumentationSupport = "MainPage";
             //Put a method name so that HandleFr8Request could find correct method in the terminal Action
             var actionName = "documentation";
             var curActivityDTO = Mapper.Map<ActivityDTO>(curActivityDO);
-            curActivityDTO.DocumentationSupport = curDocumentationSupport;
+            curActivityDTO.DocumentationSupport = "MainPage";
             var curContainderId = Guid.Empty;
             //Add log to the database
             EventManager.ActionDispatched(curActivityDO, curContainderId);

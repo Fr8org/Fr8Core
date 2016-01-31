@@ -159,16 +159,24 @@ namespace HubWeb.Controllers
         }
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
-        public async Task<IHttpActionResult> Documentation(string solutionName)
+        public async Task<IHttpActionResult> Documentation(ActivityDTO curActivityDTO)
         {
-                var solutionPageDTO = await _activity.GetSolutionDocumentation(solutionName);
-                return Ok(solutionPageDTO);
+            var curDocSupport = curActivityDTO.DocumentationSupport;
+            if (!ValidateDocumentationSupport(curDocSupport))
+                return BadRequest();
+            var solutionPageDTO = await _activity.GetSolutionDocumentation(curActivityDTO);
+            return Ok(solutionPageDTO);
+
         }
-        [HttpPost]
-        public IHttpActionResult GetSolutionList(string terminalName)
+
+        private bool ValidateDocumentationSupport(string docSupport)
         {
-            var solutionNameList = _activity.GetSolutionList(terminalName);
-            return Ok(solutionNameList);
+            var curStringArray = docSupport.Split(',');
+            if (curStringArray.Contains("MainPage") && curStringArray.Contains("HelpMenu"))
+                throw new Exception("ActionDTO cannot have both MainPage and HelpMenu in the Documentation Support field value");
+            if (curStringArray.Contains("MainPage") || curStringArray.Contains("HelpMenu"))
+                return true;
+            return false;
         }
         //        /// <summary>
         //        /// POST : updates the given action
