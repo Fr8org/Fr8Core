@@ -11,7 +11,7 @@ namespace terminalQuickBooksTests.Integration
     /// but allows to trigger that class from HealthMonitor.
     /// </summary>
     [Explicit]
-    public class Terminal_Discover_v1Tests : BaseHealthMonitorTest
+    public class Terminal_Discover_v1Tests : BaseTerminalIntegrationTest
     {
         private const int ActionCount = 2;
         private const string Create_Journal_Entry_Action_Name = "Create_Journal_Entry";

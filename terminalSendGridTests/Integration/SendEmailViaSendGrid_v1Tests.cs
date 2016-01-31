@@ -20,7 +20,7 @@ namespace terminalSendGridTests.Integration
     /// but allows to trigger that class from HealthMonitor.
     /// </summary>
     [Explicit]
-    public class SendEmailViaSendGrid_v1Tests : BaseHealthMonitorTest
+    public class SendEmailViaSendGrid_v1Tests : BaseTerminalIntegrationTest
     {
         ActivityDTO actionDTOInit = new ActivityDTO();
 

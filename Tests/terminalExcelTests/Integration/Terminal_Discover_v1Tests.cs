@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace terminalExcelTests.Integration
 {
     [Explicit]
-    public class Terminal_Discover_v1Tests : BaseHealthMonitorTest
+    public class Terminal_Discover_v1Tests : BaseTerminalIntegrationTest
     {
         private const int ActionCount = 1;
         private const string Load_Excel_File_Name = "Load_Excel_File";

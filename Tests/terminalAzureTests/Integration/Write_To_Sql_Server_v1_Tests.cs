@@ -15,7 +15,7 @@ using System.Collections.Generic;
 namespace terminalAzureTests.Integration
 {
     [Explicit]
-    public class Write_To_Sql_Server_v1_Tests : BaseHealthMonitorTest
+    public class Write_To_Sql_Server_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {

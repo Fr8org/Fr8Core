@@ -122,6 +122,7 @@ namespace UtilitiesTesting.Fixtures
                 Id = GetTestGuidById(3),
                 Name = "Send an Email",
                 ActivityTemplateId = actionTemplate.Id,
+                Fr8Account = FixtureData.TestDockyardAccount1(),
                 ActivityTemplate = actionTemplate
             };
             return curActivityDO;
@@ -312,7 +313,7 @@ namespace UtilitiesTesting.Fixtures
                 updater.CrateStorage.Add(GetEnvelopeIdCrate());
             }
 
-            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(()=>containerDO.CrateStorage))
+            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => containerDO.CrateStorage))
             {
                 updater.CrateStorage.Add(GetEnvelopeIdCrate());
             }
@@ -332,7 +333,7 @@ namespace UtilitiesTesting.Fixtures
 
             return Crate.FromJson("Event Data", JToken.FromObject(crateFields));
         }
-        
+
         public static ActivityDO TestActivityHealth1()
         {
             var actionDo = new ActivityDO
@@ -535,7 +536,7 @@ namespace UtilitiesTesting.Fixtures
                 ParentRouteNodeId = GetTestGuidById(54)
             };
 
-        }       
+        }
 
         public static ActivityDO TestActionTree()
         {
@@ -548,13 +549,13 @@ namespace UtilitiesTesting.Fixtures
             crateStorageDTO.AddRange(curCratesDTO3);
             var crateManager = ObjectFactory.GetInstance<ICrateManager>();
             string crateStorage = JsonConvert.SerializeObject(crateManager.ToDto(crateStorageDTO));
-            
+
             ActivityDO curAction = new ActivityDO()
             {
                 Id = GetTestGuidById(1),
                 Ordering = 1,
-                CrateStorage=  crateStorage,
-                 
+                CrateStorage = crateStorage,
+
                 ChildNodes = new List<RouteNodeDO>
                 {
                     new ActivityDO
@@ -721,7 +722,7 @@ namespace UtilitiesTesting.Fixtures
             crateStorageDTO.AddRange(curCratesDTO);
             var crateManager = ObjectFactory.GetInstance<ICrateManager>();
             string crateStorage = JsonConvert.SerializeObject(crateManager.ToDto(crateStorageDTO));
-            
+
 
 
             ActivityDO curAction = new ActivityDO()
@@ -942,31 +943,31 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-//        public static ActionDO ConfigureTestAction57()
-//        {
-//            var actionTemplate = ActionTemplate();
-//
-//            var containerDO = new ContainerDO()
-//            {
-//                Id = 1,
-//                CrateStorage = EnvelopeIdCrateJson(),
-//                RouteId = TestRoute2().Id,
-//                ContainerState = 1
-//            };
-//
-//            var actionDo = new ActionDO()
-//            {
-//                Name = "testaction",
-//                Id = 57,
-//                Ordering = 2,
-//                ParentRouteNodeId = 54,
-//                ActivityTemplateId = actionTemplate.Id,
-//                ActivityTemplate = actionTemplate,
-//                CrateStorage = EnvelopeIdCrateJson()
-//            };
-//
-//            return actionDo;
-//        }
+        //        public static ActionDO ConfigureTestAction57()
+        //        {
+        //            var actionTemplate = ActionTemplate();
+        //
+        //            var containerDO = new ContainerDO()
+        //            {
+        //                Id = 1,
+        //                CrateStorage = EnvelopeIdCrateJson(),
+        //                RouteId = TestRoute2().Id,
+        //                ContainerState = 1
+        //            };
+        //
+        //            var actionDo = new ActionDO()
+        //            {
+        //                Name = "testaction",
+        //                Id = 57,
+        //                Ordering = 2,
+        //                ParentRouteNodeId = 54,
+        //                ActivityTemplateId = actionTemplate.Id,
+        //                ActivityTemplate = actionTemplate,
+        //                CrateStorage = EnvelopeIdCrateJson()
+        //            };
+        //
+        //            return actionDo;
+        //        }
 
         public static ActivityDO ConfigureTestActivityTree()
         {
@@ -1141,7 +1142,7 @@ namespace UtilitiesTesting.Fixtures
         }
         public static ActivityDO TestActivityTreeWithActivityTemplates()
         {
-           var curCratesDTO = FixtureData.TestCrateDTO1();
+            var curCratesDTO = FixtureData.TestCrateDTO1();
             var crateStorageDTO = new CrateStorage();
             crateStorageDTO.AddRange(curCratesDTO);
             var crateManager = ObjectFactory.GetInstance<ICrateManager>();
@@ -1154,6 +1155,10 @@ namespace UtilitiesTesting.Fixtures
                 Ordering = 1,
                 CrateStorage = crateStorage,
                 ActivityTemplate = curActionTemplate,
+                Fr8Account = new Fr8AccountDO()
+                {
+                    EmailAddress = FixtureData.TestEmailAddress1()
+                },
                 ChildNodes = new List<RouteNodeDO>
                 {
                     new ActivityDO
@@ -1162,6 +1167,9 @@ namespace UtilitiesTesting.Fixtures
                         Ordering = 1,
                         ParentRouteNodeId = GetTestGuidById(1),
                         CrateStorage=  crateStorage,
+                        Fr8Account = new Fr8AccountDO(){
+                        EmailAddress = FixtureData.TestEmailAddress2()
+                        },
                          ActivityTemplate = curActionTemplate,
                     },
                     new ActivityDO
@@ -1171,6 +1179,10 @@ namespace UtilitiesTesting.Fixtures
                         Ordering = 2,
                         CrateStorage = crateStorage,
                         ActivityTemplate = curActionTemplate,
+                        Fr8Account = new Fr8AccountDO()
+                        {
+                            EmailAddress = FixtureData.TestEmailAddress3()
+                        },
                         ChildNodes = new List<RouteNodeDO>
                         {
                             new ActivityDO
@@ -1179,6 +1191,10 @@ namespace UtilitiesTesting.Fixtures
                                 Ordering = 1,
                                 ParentRouteNodeId = GetTestGuidById(43),
                                 CrateStorage = crateStorage,
+                                Fr8Account = new Fr8AccountDO()
+                                {
+                                    EmailAddress = FixtureData.TestEmailAddress4()
+                                },
                                 ActivityTemplate = curActionTemplate,
                             },
                             new ActivityDO
@@ -1186,7 +1202,11 @@ namespace UtilitiesTesting.Fixtures
                                 Id = GetTestGuidById(46),
                                 Ordering = 2,
                                 ParentRouteNodeId = GetTestGuidById(43),
-                               CrateStorage = crateStorage,
+                                CrateStorage = crateStorage,
+                                Fr8Account = new Fr8AccountDO()
+                                {
+                                    EmailAddress = FixtureData.TestEmailAddress5()
+                                },
                                 ActivityTemplate = curActionTemplate,
                             }
                         }
@@ -1204,6 +1224,10 @@ namespace UtilitiesTesting.Fixtures
                         ParentRouteNodeId = GetTestGuidById(1),
                         CrateStorage = crateStorage,
                         ActivityTemplate = curActionTemplate,
+                        Fr8Account = new Fr8AccountDO()
+                        {
+                            EmailAddress = FixtureData.TestEmailAddress6()
+                        },
                         ChildNodes = new List<RouteNodeDO>
                         {
                             new ActivityDO
@@ -1212,6 +1236,10 @@ namespace UtilitiesTesting.Fixtures
                                 ParentRouteNodeId = GetTestGuidById(59),
                                 Ordering = 1,
                                 CrateStorage = crateStorage,
+                                Fr8Account = new Fr8AccountDO()
+                                {
+                                    EmailAddress = FixtureData.TestEmailAddress7()
+                                },
                                 ActivityTemplate = curActionTemplate,
                             },
                             new ActivityDO
@@ -1220,6 +1248,10 @@ namespace UtilitiesTesting.Fixtures
                                 ParentRouteNodeId = GetTestGuidById(59),
                                 Ordering = 3,
                                 CrateStorage = crateStorage,
+                                Fr8Account = new Fr8AccountDO()
+                                {
+                                    EmailAddress = FixtureData.TestEmailAddress8()
+                                },
                                 ActivityTemplate = curActionTemplate,
                             }
                         }
@@ -1258,6 +1290,6 @@ namespace UtilitiesTesting.Fixtures
             };
 
             return activityDO;
-    }
+        }
     }
 }

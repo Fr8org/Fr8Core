@@ -17,8 +17,8 @@ namespace terminalFr8CoreTests.Integration
 	/// but allows to trigger that class from HealthMonitor.
 	/// </summary>
 	[Explicit]
-	public class Select_Fr8_Object_v1Tests : BaseHealthMonitorTest
-	{
+	public class Select_Fr8_Object_v1Tests : BaseTerminalIntegrationTest
+    {
 		public override string TerminalName
 		{
 			get { return "terminalFr8Core"; }
