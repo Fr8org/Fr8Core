@@ -58,6 +58,8 @@ module dockyard.directives.designerHeader {
                     RouteService.runAndProcessClientAction($scope.route.id);
                 };
             };
+
+            DesignerHeader.prototype.controller['$inject'] = ['$scope', '$element', '$attrs', 'RouteService'];
         }
 
         //The factory function returns Directive object as per Angular requirements

@@ -118,8 +118,13 @@ namespace Hub.Services
             }
         }
 
-        public async Task<AuthenticateResponse> AuthenticateInternal(Fr8AccountDO account, TerminalDO terminal, string domain, string username,
-            string password)
+        public async Task<AuthenticateResponse> AuthenticateInternal(
+            Fr8AccountDO account,
+            TerminalDO terminal,
+            string domain,
+            string username,
+            string password,
+            bool isDemoAccount = false)
         {
             if (terminal.AuthenticationType == AuthenticationType.None)
             {
@@ -132,7 +137,8 @@ namespace Hub.Services
             {
                 Domain = domain,
                 Username = username,
-                Password = password
+                Password = password,
+                IsDemoAccount = isDemoAccount
             };
 
             var terminalResponse = await restClient.PostAsync<CredentialsDTO>(
@@ -171,6 +177,7 @@ namespace Hub.Services
                         .FirstOrDefault(x => x.TerminalID == curTerminal.Id
                             && x.UserID == curAccount.Id
                             && x.ExternalAccountId == terminalResponseAuthTokenDTO.ExternalAccountId
+                            && x.AdditionalAttributes == terminalResponseAuthTokenDTO.AdditionalAttributes
                         );
                 }
 
@@ -182,6 +189,7 @@ namespace Hub.Services
                         ExternalAccountId = terminalResponseAuthTokenDTO.ExternalAccountId,
                         TerminalID = curTerminal.Id,
                         UserDO = curAccount,
+                        AdditionalAttributes = terminalResponseAuthTokenDTO.AdditionalAttributes,
                         ExpiresAt = DateTime.Today.AddMonths(1)
                     };
 

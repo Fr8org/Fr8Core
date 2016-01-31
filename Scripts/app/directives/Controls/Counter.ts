@@ -60,7 +60,9 @@ module dockyard.directives.counter {
                     if (!isFinite($scope.counterValue)) $scope.counterValue = prevValue;
                     if ($scope.counterValue < minValue) $scope.counterValue = minValue;
                 }
-            }
+            };
+
+            Counter.prototype.controller['$inject'] = ['$scope', '$element', '$attrs'];
 
         };
 

@@ -297,7 +297,7 @@ namespace Hub.Services
             var activity = new ActivityDO
             {
                 Id = Guid.NewGuid(),
-                ActivityTemplateId =  actionTemplateId,
+                ActivityTemplateId = actionTemplateId,
                 Name = name,
                 Label = label,
                 CrateStorage = _crate.EmptyStorageAsStr(),
@@ -533,6 +533,7 @@ namespace Hub.Services
         // Maxim Kostyrkin: this should be refactored once the TO-DO snippet below is redesigned
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, ActionState curActionState, ContainerDO curContainerDO)
         {
+            var eventManager = ObjectFactory.GetInstance<Hub.Managers.Event>();
             if (curActivityDO == null)
             {
                 throw new ArgumentNullException("curActivityDO");
@@ -542,6 +543,14 @@ namespace Hub.Services
             {
                 var actionName = curActionState == ActionState.InitialRun ? "Run" : "ChildrenExecuted";
                 var payloadDTO = await CallTerminalActionAsync<PayloadDTO>(actionName, curActivityDO, curContainerDO.Id);
+
+                // this will break the infinite loop created for logFr8InternalEvents...
+                if (curContainerDO.Plan != null && curContainerDO.Plan.Name != "LogFr8InternalEvents")
+                {
+                    var actionDTO = Mapper.Map<ActivityDTO>(curActivityDO);
+                    await eventManager.Publish("ActionExecuted", curActivityDO.Fr8Account.Id, curActivityDO.Id.ToString(), JsonConvert.SerializeObject(actionDTO).ToString(), "Success");
+                }
+
                 return payloadDTO;
 
             }

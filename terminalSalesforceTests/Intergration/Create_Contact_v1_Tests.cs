@@ -15,7 +15,7 @@ using System;
 namespace terminalSalesforceTests.Intergration
 {
     [Explicit]
-    public class Create_Contact_v1_Tests : BaseHealthMonitorTest
+    public class Create_Contact_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {

@@ -19,7 +19,7 @@ namespace terminalDocuSignTests.Integration
 {
     [Explicit]
     [Category("terminalDocuSignTests.Integration")]
-    public class Rich_Document_Notifications_v1_Tests : BaseHealthMonitorTest
+    public class Rich_Document_Notifications_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {

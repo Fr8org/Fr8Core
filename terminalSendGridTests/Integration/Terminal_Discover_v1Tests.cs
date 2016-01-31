@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace terminalSendGridTests.Integration
 {
     [Explicit]
-    public class Terminal_Discover_v1Tests : BaseHealthMonitorTest
+    public class Terminal_Discover_v1Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {

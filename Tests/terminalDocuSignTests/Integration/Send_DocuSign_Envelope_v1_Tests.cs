@@ -21,7 +21,7 @@ using UtilitiesTesting.Fixtures;
 namespace terminalDocuSignTests
 {
     [Explicit]
-    public class Send_DocuSign_Envelope_v1_Tests : BaseHealthMonitorTest
+    public class Send_DocuSign_Envelope_v1_Tests : BaseTerminalIntegrationTest
     {
 
         public ICrateManager _crateManager;
