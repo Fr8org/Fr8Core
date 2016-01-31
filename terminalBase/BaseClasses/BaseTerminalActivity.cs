@@ -150,7 +150,7 @@ namespace TerminalBase.BaseClasses
         /// <param name="errorMessage"></param>
         /// <param name="errorCode"></param>
         /// <returns></returns>
-        protected PayloadDTO Error(PayloadDTO payload, string errorMessage = null, ActionErrorCode? errorCode = null)
+        protected PayloadDTO Error(PayloadDTO payload, string errorMessage = null, ActionErrorCode? errorCode = null, string currentActivity = null, string currentTerminal = null)
         {
             using (var updater = Crate.UpdateStorage(payload))
             {
@@ -158,6 +158,7 @@ namespace TerminalBase.BaseClasses
                 operationalState.CurrentActivityResponse = ActivityResponse.Error;
                 operationalState.CurrentActivityErrorCode = errorCode;
                 operationalState.CurrentActivityErrorMessage = errorMessage;
+                operationalState.ResponseMessageDTO = ErrorDTO.InternalError(errorMessage, null, null, currentActivity, currentTerminal);
             }
 
             return payload;

@@ -24,6 +24,7 @@ using Data.Crates;
 using Utilities.Interfaces;
 using HubWeb.Infrastructure;
 using Data.Interfaces.Manifests;
+using System.Text;
 
 namespace HubWeb.Controllers
 {
@@ -411,9 +412,13 @@ namespace HubWeb.Controllers
                 }
                 catch (ErrorResponseException exception)
                 {
-                    string message = String.Format("Plan \"{0}\" failed. {1}", planDO.Name, exception.Message);
+                    var stringBuilder = new StringBuilder();
+                    stringBuilder.Append(string.Format("Plan \"{0}\" failed.", planDO.Name));
+                    stringBuilder.Append(string.Format("<br/> Activity: {0}", exception.CurrentActivityName));
+                    stringBuilder.Append(string.Format("<br/> Terminal: {0}", exception.CurrentTerminalName));
+                    stringBuilder.Append(string.Format("<br/> Message: {0}", exception.Message));
 
-                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, message);
+                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, stringBuilder.ToString());
                 }
                 catch (Exception)
                 {

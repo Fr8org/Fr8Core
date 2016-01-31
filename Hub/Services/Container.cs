@@ -55,11 +55,15 @@ namespace Hub.Services
             return operationalState.CurrentActivityResponse;
         }
 
-        private string GetCurrentActionErrorMessage(ContainerDO curContainerDO)
+        private ResponseMessageDTO GetCurrentActionErrorMessage(ContainerDO curContainerDO)
         {
             var storage = _crate.GetStorage(curContainerDO.CrateStorage);
             var operationalState = storage.CrateContentsOfType<OperationalStateCM>().Single();
-            return operationalState.CurrentActivityErrorMessage;
+
+            if (operationalState.ResponseMessageDTO != null)
+                return operationalState.ResponseMessageDTO;
+
+            else return null;
         }
 
         /// <summary>
@@ -96,7 +100,10 @@ namespace Hub.Services
                     break;
                 case ActivityResponse.Error:
                     //TODO retry activity execution until 3 errors??
-                    throw new ErrorResponseException(string.Format("Error on activity. {0}", GetCurrentActionErrorMessage(curContainerDo)));
+                    var errorResponseDTO = GetCurrentActionErrorMessage(curContainerDo);
+                    if(errorResponseDTO != null)
+                        throw new ErrorResponseException(errorResponseDTO.Message, errorResponseDTO.CurrentActivity, errorResponseDTO.CurrentTerminal);
+                    break;
                 case ActivityResponse.RequestTerminate:
                     //FR-2163 - If action response requests for termination, we make the container as Completed to avoid unwanted errors.
                     curContainerDo.ContainerState = ContainerState.Completed;

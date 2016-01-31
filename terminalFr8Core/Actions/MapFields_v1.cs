@@ -64,7 +64,7 @@ namespace terminalFr8Core.Actions
             catch (ApplicationException exception)
             {
                 //in case of problem with extract payload field values raise and Error alert to the user
-                return Error(processPayload, exception.Message);
+                return Error(processPayload, exception.Message, null, "Map Fields", "Fr8Core");
             }
         }
 

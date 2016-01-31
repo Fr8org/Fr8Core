@@ -27,6 +27,10 @@ namespace Data.Interfaces.DataTransferObjects
         public string Type { get; protected set; }
         [JsonProperty("details")]
         public object Details { get; set; }
+        [JsonProperty("currentActivity")]
+        public string CurrentActivity { get; set; }
+        [JsonProperty("currentTerminal")]
+        public string CurrentTerminal { get; set; }
 
         protected static string ErrorTypeToString(ErrorType errorType)
         {
@@ -64,9 +68,9 @@ namespace Data.Interfaces.DataTransferObjects
             Type = type;
         }
 
-        public static ErrorDTO InternalError(string message, string errorCode = null, object details = null)
+        public static ErrorDTO InternalError(string message, string errorCode = null, object details = null, string activity = null, string terminal = null)
         {
-            return Create(message, ErrorType.Generic, errorCode, details);
+            return Create(message, ErrorType.Generic, errorCode, details, activity, terminal);
         }
 
         public static ErrorDTO AuthenticationError()
@@ -81,21 +85,23 @@ namespace Data.Interfaces.DataTransferObjects
 
         public static ErrorDTO AuthenticationError(string message, string errorCode = null, object details = null)
         {
-            return Create(message, ErrorType.Authentication, errorCode, details);
+            return Create(message, ErrorType.Authentication, errorCode, details, null, null);
         }
 
         public static ErrorDTO CriticalError(string message, string errorCode = null, object details = null)
         {
-            return Create(message, ErrorType.Critical, errorCode, details);
+            return Create(message, ErrorType.Critical, errorCode, details, null, null);
         }
 
-        public static ErrorDTO Create(string message, ErrorType errorType, string errorCode, object details)
+        public static ErrorDTO Create(string message, ErrorType errorType, string errorCode, object details, string activity, string terminal)
         {
             return new ErrorDTO (ErrorTypeToString(errorType))
             {
                 Details = details,
                 Message = message,
-                ErrorCode = errorCode
+                ErrorCode = errorCode,
+                CurrentActivity = activity,
+                CurrentTerminal = terminal
             };
         }
     }
