@@ -50,13 +50,21 @@ namespace terminalFr8Core.Actions
             mappedFields = mappedFields.Where(x => x.Key != null && x.Value != null).ToList();
             var storage = Crate.FromDto(processPayload.CrateStorage);
 
-
-            var processedMappedFields = mappedFields.Select(a => { return new FieldDTO(a.Value, ExtractPayloadFieldValue(storage, a.Key, activityDO)); });
-
-            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => processPayload.CrateStorage))
+            IEnumerable<FieldDTO> processedMappedFields;
+            try
             {
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("MappedFields", new StandardPayloadDataCM(processedMappedFields)));
-                return Success(processPayload);
+                processedMappedFields = mappedFields.Select(a => { return new FieldDTO(a.Value, ExtractPayloadFieldValue(storage, a.Key, activityDO)); });
+
+                using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => processPayload.CrateStorage))
+                {
+                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("MappedFields", new StandardPayloadDataCM(processedMappedFields)));
+                    return Success(processPayload);
+                }
+            }
+            catch (ApplicationException exception)
+            {
+                //in case of problem with extract payload field values raise and Error alert to the user
+                return Error(processPayload, exception.Message);
             }
         }
 

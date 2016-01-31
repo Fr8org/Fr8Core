@@ -705,7 +705,7 @@ namespace TerminalBase.BaseClasses
             var exceptionMessage = string.Format("No field found with specified key: {0}.", fieldKey);
             baseEvent.SendTerminalErrorIncident(_actionName, exceptionMessage, _actionName);
 
-            throw new ApplicationException(exceptionMessage + " Detailed information has been written to log.");
+            throw new ApplicationException(exceptionMessage);
         }
 
         protected void AddLabelControl(CrateStorage storage, string name, string label, string text)
@@ -751,6 +751,8 @@ namespace TerminalBase.BaseClasses
                     .First().Controls;
 
                 var control = TraverseNestedControls(controls, controlFullName);
+                if (control == null) return;
+
                 switch (control.Type)
                 {
                     case "TextBlock":
