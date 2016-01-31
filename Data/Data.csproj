@@ -579,6 +579,10 @@
     <Compile Include="Migrations\201601211438483_Add_Test_User.Designer.cs">
       <DependentUpon>201601211438483_Add_Test_User.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201601310840404_RemoveSubscriptionRequired.cs" />
+    <Compile Include="Migrations\201601310840404_RemoveSubscriptionRequired.Designer.cs">
+      <DependentUpon>201601310840404_RemoveSubscriptionRequired.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryBase.cs" />
@@ -970,6 +974,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201601241443338_RenameRouteToPlan.resx">
       <DependentUpon>201601241443338_RenameRouteToPlan.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201601310840404_RemoveSubscriptionRequired.resx">
+      <DependentUpon>201601310840404_RemoveSubscriptionRequired.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
