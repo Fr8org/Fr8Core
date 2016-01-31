@@ -271,6 +271,8 @@
     <Compile Include="Entities\ActivityTemplateDO.cs" />
     <Compile Include="Infrastructure\AutoMapper\StringToJSONConverter.cs" />
     <Compile Include="Infrastructure\CloudFileManager.cs" />
+    <Compile Include="Infrastructure\JsonNet\ActivityTemplateActivityConverter.cs" />
+    <Compile Include="Infrastructure\JsonNet\TerminalActivityTemplateConverter.cs" />
     <Compile Include="Infrastructure\MultiTenant\IMT_Data.cs" />
     <Compile Include="Infrastructure\MultiTenant\IMT_Field.cs" />
     <Compile Include="Infrastructure\MultiTenant\IMT_FieldType.cs" />
@@ -815,7 +817,6 @@
   <ItemGroup>
     <Folder Include="Authentication\" />
     <Folder Include="Entities\Enumerations\" />
-    <Folder Include="Infrastructure\JsonNet\" />
     <Folder Include="Wrappers\" />
   </ItemGroup>
   <ItemGroup>
