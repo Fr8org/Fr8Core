@@ -256,10 +256,12 @@ namespace terminalGoogleTests.Integration
         {
             //Arrange
             var runUrl = GetTerminalRunUrl();
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
 
-            //prepare the action DTO
-            var activityDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
+            //prepare the action DTO with valid target URL
+            var activityDTO = fixture.Extract_Spreadsheet_Data_v1_Followup_Configuration_Request_ActionDTO_With_Crates();
             AddOperationalStateCrate(activityDTO, new OperationalStateCM());
+
             //Act
             await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, activityDTO);
         }
@@ -279,9 +281,10 @@ namespace terminalGoogleTests.Integration
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
 
             //prepare the action DTO with valid target URL
-            var activityDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
+            var activityDTO = fixture.Extract_Spreadsheet_Data_v1_Followup_Configuration_Request_ActionDTO_With_Crates();
             AddUpstreamCrate(activityDTO, fixture.GetUpstreamCrate(), "Upsteam Crate");
             AddOperationalStateCrate(activityDTO, new OperationalStateCM());
+
             //Act
             await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, activityDTO);
         }
@@ -301,10 +304,11 @@ namespace terminalGoogleTests.Integration
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
 
             //prepare the action DTO with valid target URL
-            var activityDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
+            var activityDTO = fixture.Extract_Spreadsheet_Data_v1_Followup_Configuration_Request_ActionDTO_With_Crates();
             AddUpstreamCrate(activityDTO, fixture.GetUpstreamCrate(), "Upsteam Crate");
             AddUpstreamCrate(activityDTO, fixture.GetUpstreamCrate(), "Upsteam Crate");
             AddOperationalStateCrate(activityDTO, new OperationalStateCM());
+
             //Act
             await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, activityDTO);
         }

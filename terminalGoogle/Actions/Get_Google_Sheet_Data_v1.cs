@@ -64,7 +64,7 @@ namespace terminalGoogle.Actions
         private async Task<PayloadDTO> CreateStandardPayloadDataFromStandardTableData(ActivityDO curActivityDO, Guid containerId, PayloadDTO payloadCrates, AuthorizationTokenDO authTokenDO)
         {
             //at run time pull the entire sheet and store it as payload
-            var spreadsheetControl = Activity.GetControlsManifest(curActivityDO).FindByName("select_spreadsheet");
+            var spreadsheetControl = FindControl(Crate.GetStorage(curActivityDO.CrateStorage), "select_spreadsheet");
             var spreadsheetsFromUserSelection = string.Empty;
             if (spreadsheetControl != null)
                 spreadsheetsFromUserSelection = spreadsheetControl.Value;
