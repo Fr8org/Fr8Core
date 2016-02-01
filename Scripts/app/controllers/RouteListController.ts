@@ -152,7 +152,7 @@ module dockyard.controllers {
         Note: here goes a simple (not really a TypeScript) way to define a controller. 
         Not as a class but as a lambda function.
     */
-    app.controller('RouteListController__DeleteConfirmation', ($scope: any, $modalInstance: any): void => {
+    app.controller('RouteListController__DeleteConfirmation', ['$scope','$modalInstance',($scope: any, $modalInstance: any): void => {
         $scope.ok = () => {
             $modalInstance.close();
         };
@@ -160,5 +160,5 @@ module dockyard.controllers {
         $scope.cancel = () => {
             $modalInstance.dismiss('cancel');
         };
-    });
+    }]);
 }

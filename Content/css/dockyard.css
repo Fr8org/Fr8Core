@@ -403,7 +403,7 @@ div.action-header {
     padding: 5px;
     height: auto;
     min-height: 224px;
-    max-height: 330px;
+    max-height: 500px;
     display: block;
     overflow: auto;
     width: 100%;
