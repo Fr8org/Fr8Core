@@ -242,7 +242,7 @@ namespace terminalFr8Core.Actions
             var queryPicker = ui.FindByName<RadioButtonGroup>("QueryPicker");
 
             List<FilterConditionDTO> conditions;
-            int selectedObjectId;
+            int? selectedObjectId = null;
 
             if (queryPicker.Radios[0].Selected)
             {
@@ -265,9 +265,10 @@ namespace terminalFr8Core.Actions
                 var availableObjects = (DropDownList)queryPicker.Radios[1].Controls[0];
                 var criteria = JsonConvert.DeserializeObject<FilterDataDTO>(filterPane.Value);
 
-                if (!int.TryParse(availableObjects.Value, out selectedObjectId))
+                int objectId;
+                if (!int.TryParse(availableObjects.Value, out objectId))
                 {
-                    return Error(payload, "Invalid object selected");
+                    selectedObjectId = objectId;
                 }
 
                 conditions = (criteria.ExecutionType == FilterExecutionType.WithoutFilter)
@@ -286,7 +287,9 @@ namespace terminalFr8Core.Actions
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var obj = uow.MTObjectRepository.GetQuery().FirstOrDefault(x => x.Id == selectedObjectId);
+                var objectId = selectedObjectId.GetValueOrDefault();
+                var obj = uow.MTObjectRepository.GetQuery().FirstOrDefault(x => x.Id == objectId);
+
                 if (obj == null)
                 {
                     return Error(payload, "Invalid object selected");
@@ -344,7 +347,7 @@ namespace terminalFr8Core.Actions
             return upstreamQueryCrate.Content;
         }
 
-        private int ExtractUpstreamObjectId(
+        private int? ExtractUpstreamObjectId(
             QueryDTO query)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -352,6 +355,11 @@ namespace terminalFr8Core.Actions
                 var obj = uow.MTObjectRepository
                     .GetQuery()
                     .FirstOrDefault(x => x.Name == query.Name);
+
+                if (obj == null)
+                {
+                    return null;
+                }
 
                 return obj.Id;
             }
