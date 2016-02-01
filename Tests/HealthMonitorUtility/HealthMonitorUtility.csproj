@@ -59,8 +59,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseHealthMonitorTest.cs" />
     <Compile Include="BaseHubIntegrationTest.cs" />
+    <Compile Include="BaseTerminalIntegrationTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

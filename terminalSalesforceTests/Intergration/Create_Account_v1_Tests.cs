@@ -15,7 +15,7 @@ using Data.Control;
 namespace terminalSalesforceTests.Intergration
 {
     [Explicit]
-    public class Create_Account_v1_Tests : BaseHealthMonitorTest
+    public class Create_Account_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {

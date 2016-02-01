@@ -4,7 +4,13 @@ module dockyard.directives {
     import pwd = dockyard.directives.paneWorkflowDesigner;
     'use strict';
 
-    export function RunRouteButton ($compile: ng.ICompileService): ng.IDirective {
+    export interface IRunRouteButtonScope extends ng.IScope {
+        currentAction: model.ActivityDTO;
+        error: string;
+        runNow: () => void;
+    }
+
+    export function RunRouteButton (): ng.IDirective {
         var runContainer = function ($q, $http, planId): ng.IPromise<any> {
             var url = '/api/routes/run?planId=' + planId;
 
@@ -74,12 +80,6 @@ module dockyard.directives {
                 }
             ]
         }
-    }
-
-    export interface IRunRouteButtonScope extends ng.IScope {
-        currentAction: model.ActivityDTO;
-        error: string;
-        runNow: () => void;
     }
 }
 
