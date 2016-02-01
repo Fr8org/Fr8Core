@@ -256,7 +256,7 @@ namespace terminalDocuSign.Actions
                         var curRecipientEmail = GetValueForKey(payloadCrates, "RecipientEmail");
 
                         //if the incoming envelope's recipient is user specified one, get the envelope ID
-                        if (curRecipientEmail.Equals(curSelectedValue))
+                        if (curRecipientEmail != null && curRecipientEmail.Equals(curSelectedValue))
                         {
                             envelopeId = GetValueForKey(payloadCrates, "EnvelopeId");
                         }

@@ -152,6 +152,7 @@
         days: number;
         hours: number;
         minutes: number;
+        innerLabel: string;
     }
 
     export class UpstreamDataChooser extends ControlDefinitionDTO {

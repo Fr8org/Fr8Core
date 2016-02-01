@@ -36,6 +36,8 @@ namespace TerminalBase.BaseClasses
         protected string CurrentFr8UserId { get; set; }
         protected string _actionName { get; set; }
 
+        private List<ActivityTemplateDTO> _activityTemplateCache = null;
+
         public IHubCommunicator HubCommunicator { get; set; }
         #endregion
 
@@ -906,7 +908,7 @@ namespace TerminalBase.BaseClasses
         {
 
             //search activity template by name or id
-            var allActivityTemplates = await HubCommunicator.GetActivityTemplates(parent, CurrentFr8UserId);
+            var allActivityTemplates = _activityTemplateCache != null ? _activityTemplateCache : _activityTemplateCache = await HubCommunicator.GetActivityTemplates(parent, CurrentFr8UserId);
             int templateId;
             var activityTemplate = Int32.TryParse(templateName_Or_templateID, out templateId) ?
                 allActivityTemplates.FirstOrDefault(a => a.Id == templateId)

@@ -231,24 +231,24 @@ namespace terminalFr8Core.Actions
         {
             var payload = await GetPayload(curActivityDO, containerId);
             var payloadCrateStorage = Crate.GetStorage(payload);
-            var ui = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
+
+            var ui = GetConfigurationControls(curActivityDO);
 
             if (ui == null)
             {
                 return Error(payload, "Action was not configured correctly");
             }
 
-            var config = new ActionUi();
-            config.ClonePropertiesFrom(ui);
+            var queryPicker = ui.FindByName<RadioButtonGroup>("QueryPicker");
 
             List<FilterConditionDTO> conditions;
             int selectedObjectId;
 
-            if (config.QueryPicker.Radios[0].Selected)
+            if (queryPicker.Radios[0].Selected)
             {
-                var queryPicker = (UpstreamCrateChooser)((RadioButtonGroup)ui.Controls[0]).Radios[0].Controls[0];
+                var upstreamCrateChooser = (UpstreamCrateChooser)(queryPicker).Radios[0].Controls[0];
 
-                var queryCM = await ExtractUpstreamQuery(curActivityDO, queryPicker);
+                var queryCM = await ExtractUpstreamQuery(curActivityDO, upstreamCrateChooser);
                 if (queryCM == null || queryCM.Queries == null || queryCM.Queries.Count == 0)
                 {
                     return Error(payload, "No upstream crate found");
@@ -261,9 +261,11 @@ namespace terminalFr8Core.Actions
             }
             else
             {
-                var criteria = JsonConvert.DeserializeObject<FilterDataDTO>(config.Filter.Value);
+                var filterPane = (FilterPane)queryPicker.Radios[1].Controls[1];
+                var availableObjects = (DropDownList)queryPicker.Radios[1].Controls[0];
+                var criteria = JsonConvert.DeserializeObject<FilterDataDTO>(filterPane.Value);
 
-                if (!int.TryParse(config.AvailableObjects.Value, out selectedObjectId))
+                if (!int.TryParse(availableObjects.Value, out selectedObjectId))
                 {
                     return Error(payload, "Invalid object selected");
                 }
