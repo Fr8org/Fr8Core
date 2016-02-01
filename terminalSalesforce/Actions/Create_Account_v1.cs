@@ -1,4 +1,5 @@
-﻿using Data.Entities;
+﻿using System.Linq;
+using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using terminalSalesforce.Infrastructure;
 using terminalSalesforce.Services;
+using Data.Interfaces.Manifests;
 
 namespace terminalSalesforce.Actions
 {
@@ -25,6 +27,21 @@ namespace terminalSalesforce.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
+            if (Crate.IsStorageEmpty(curActivityDO))
+            {
+                return ConfigurationRequestType.Initial;
+            }
+
+            var storage = Crate.GetStorage(curActivityDO);
+
+            var hasConfigurationControlsCrate = storage
+                .CratesOfType<StandardConfigurationControlsCM>(c => c.Label == "Configuration_Controls").FirstOrDefault() != null;
+
+            if (hasConfigurationControlsCrate)
+            {
+                return ConfigurationRequestType.Followup;
+            }
+
             return ConfigurationRequestType.Initial;
         }
 
@@ -34,11 +51,18 @@ namespace terminalSalesforce.Actions
             {
                 updater.CrateStorage.Clear();
 
-                AddTextSourceControlForDTO<AccountDTO>(updater.CrateStorage, "Upstream Terminal-Provided Fields", addRequestConfigEvent: false);
-
-                updater.CrateStorage.Add(await CreateAvailableFieldsCrate(curActivityDO));
+                AddTextSourceControlForDTO<Infrastructure.AccountDTO>(updater.CrateStorage, "Upstream Terminal-Provided Fields", addRequestConfigEvent: false);
             }
 
+            return await Task.FromResult(curActivityDO);
+        }
+
+        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        {
+            using (var updater = Crate.UpdateStorage(curActivityDO))
+            {
+                updater.CrateStorage.ReplaceByLabel(await CreateAvailableFieldsCrate(curActivityDO));
+            }
             return await Task.FromResult(curActivityDO);
         }
 
@@ -52,7 +76,7 @@ namespace terminalSalesforce.Actions
                 return NeedsAuthenticationError(payloadCrates);
             }
 
-            var account = _salesforce.CreateSalesforceDTO<AccountDTO>(curActivityDO, payloadCrates, ExtractSpecificOrUpstreamValue);
+            var account = _salesforce.CreateSalesforceDTO<Infrastructure.AccountDTO>(curActivityDO, payloadCrates, ExtractSpecificOrUpstreamValue);
             if (string.IsNullOrEmpty(account.Name))
             {
                 return Error(payloadCrates, "No account name found in activity.");
