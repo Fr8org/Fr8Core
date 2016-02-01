@@ -30,11 +30,10 @@ namespace terminalDocuSign.Controllers
         {
             return HandleFr8Request(curTerminal, actionType, curActionDTO);
         }
-
-        [HttpPost]
-        public HttpResponseMessage Documentation(string helpPath)
-        {
-            return GetActionDocumentation(helpPath);
-        }
+        //[HttpPost]
+        //public HttpResponseMessage Documentation(string helpPath)
+        //{
+        //    return GetActionDocumentation(helpPath);
+        //}
     }
 }

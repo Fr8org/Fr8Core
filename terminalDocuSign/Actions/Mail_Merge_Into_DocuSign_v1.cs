@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using StructureMap;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -20,6 +21,7 @@ using terminalDocuSign.Services;
 using Utilities.Configuration.Azure;
 using terminalDocuSign.Infrastructure;
 using Data.Constants;
+using UtilitiesTesting.Fixtures;
 
 namespace terminalDocuSign.Actions
 {
@@ -29,7 +31,13 @@ namespace terminalDocuSign.Actions
         string _dataSourceValue;
         DropDownList _docuSignTemplate;
 
-        public Mail_Merge_Into_DocuSign_v1() : base()
+        
+        string _docuSignTemplateValue;
+        private const string SolutionName = "Mail Merge Into DocuSign";
+        private const double SolutionVersion = 1.0;
+        private const string TerminalName = "DocuSign";
+        public Mail_Merge_Into_DocuSign_v1()
+            : base()
         {
             _docuSignManager = new DocuSignManager();
         }
@@ -260,9 +268,19 @@ namespace terminalDocuSign.Actions
             {
                 return null;
             }
-
-
             return await Task.FromResult(curActivityDO);
+        }
+        //This method provides some documentation for the DocuSign Solution Actions
+        public Task<SolutionPageDTO> Documentation(ActivityDO activityDO)
+        {
+            var curSolutionPage = new SolutionPageDTO
+            {
+                Name = SolutionName,
+                Version = SolutionVersion,
+                Terminal = TerminalName,
+                Body = @"<p>This is a solution action</p>"
+            };
+            return Task.FromResult(curSolutionPage);
         }
     }
 }

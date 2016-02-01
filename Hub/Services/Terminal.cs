@@ -265,7 +265,8 @@ namespace Hub.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var subscription = await uow.TerminalSubscriptionRepository.GetQuery().FirstOrDefaultAsync(s => s.Terminal.PublicIdentifier == terminalId && s.UserDO.Id == userId);
+                var subscription = await uow.TerminalSubscriptionRepository.GetQuery()
+                    .FirstOrDefaultAsync(s => s.Terminal.PublicIdentifier == terminalId && s.UserDO.Id == userId);
                 return subscription != null;
             }
             
