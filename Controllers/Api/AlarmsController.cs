@@ -26,7 +26,11 @@ namespace HubWeb.Controllers
             //TODO what happens to AlarmsController? does it stay in memory all this time?
             //TODO inspect this and change callback function to a static function if necessary
             Expression<Action> action = () => ExecuteTerminalWithLogging(alarmDTO);
+#if DEBUG
+            BackgroundJob.Schedule(action, DateTime.Now.AddSeconds(10));
+#else
             BackgroundJob.Schedule(action, alarmDTO.StartTime);
+#endif
 
             //TODO: Commented as part of DO - 1520. Need to rethink about this.
             //var eventController = new EventController();

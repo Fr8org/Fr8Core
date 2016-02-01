@@ -420,7 +420,7 @@ namespace HubWeb.Controllers
 
                     _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, stringBuilder.ToString());
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
                     string message = String.Format("Plan \"{0}\" failed", planDO.Name);
 
