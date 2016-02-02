@@ -218,6 +218,7 @@
     <Compile Include="Actions\TestIncomingData_v1.cs" />
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\TerminalController.cs" />
+    <Compile Include="Converters\StandardFileDescriptionToDocuSignTemplateConversion.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

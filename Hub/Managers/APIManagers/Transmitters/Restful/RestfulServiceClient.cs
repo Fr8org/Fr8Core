@@ -227,6 +227,8 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
                 var downloadedFile = await response.Content.ReadAsStreamAsync();
                 var copy = new MemoryStream();
                 await downloadedFile.CopyToAsync(copy);
+                //rewind stream
+                copy.Position = 0;
                 return copy;
             }
         }
