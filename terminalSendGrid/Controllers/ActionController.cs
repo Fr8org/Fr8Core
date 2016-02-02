@@ -19,9 +19,9 @@ namespace terminalSendGrid.Controllers
         [HttpPost]
         [fr8TerminalHMACAuthenticate(curTerminal)]
         [Authorize]
-        public Task<object> Execute([FromUri] String actionType, [FromBody] ActivityDTO curActionDTO)
+        public Task<object> Execute([FromUri] String actionType, [FromBody] Fr8DataDTO curDataDTO)
         {
-            return HandleFr8Request(curTerminal, actionType, curActionDTO);
+            return HandleFr8Request(curTerminal, actionType, curDataDTO);
         }
     }
 }

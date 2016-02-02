@@ -657,7 +657,13 @@ namespace Hub.Services
             if (curActivityDO == null) throw new ArgumentNullException("curActivityDO");
 
             var dto = Mapper.Map<ActivityDO, ActivityDTO>(curActivityDO);
-            dto.ContainerId = containerId;
+
+            var fr8DataDTO = new Fr8DataDTO
+            {
+                ContainerId = containerId,
+                ActivityDTO = dto
+            };
+
             if (curDocumentationSupport != null)
                 dto.DocumentationSupport = curDocumentationSupport;
             _authorizationToken.PrepareAuthToken(dto);
@@ -670,12 +676,12 @@ namespace Hub.Services
                 {
                     var containerDO = uow.ContainerRepository.GetByKey(containerId);
                     EventManager.ContainerSent(containerDO, curActivityDO);
-                    var reponse = ObjectFactory.GetInstance<ITerminalTransmitter>().CallActionAsync<TResult>(activityName, dto, containerId.ToString());
+                    var reponse = ObjectFactory.GetInstance<ITerminalTransmitter>().CallActionAsync<TResult>(activityName, fr8DataDTO, containerId.ToString());
                     EventManager.ContainerReceived(containerDO, curActivityDO);
                     return reponse;
                 }
             }
-            return ObjectFactory.GetInstance<ITerminalTransmitter>().CallActionAsync<TResult>(activityName, dto, containerId.ToString());
+            return ObjectFactory.GetInstance<ITerminalTransmitter>().CallActionAsync<TResult>(activityName, fr8DataDTO, containerId.ToString());
         }
         //This method finds and returns single SolutionPageDTO that holds some documentation of Activities that is obtained from a solution by aame
         public async Task<SolutionPageDTO> GetSolutionDocumentation(ActivityDTO activityDTO)
@@ -716,12 +722,15 @@ namespace Hub.Services
             //Put a method name so that HandleFr8Request could find correct method in the terminal Action
             var actionName = "documentation";
             curActivityDTO.DocumentationSupport = "MainPage";
-            var curContainderId = Guid.Empty;
+            var curContainerId = Guid.Empty;
             //Add log to the database
-            EventManager.ActionDispatched(Mapper.Map<ActivityDO>(curActivityDTO), curContainderId);
+            EventManager.ActionDispatched(Mapper.Map<ActivityDO>(curActivityDTO), curContainerId);
+            var fr8Data = new Fr8DataDTO
+            {
+                ActivityDTO = curActivityDTO
+            };
             //Call the terminal
-            return ObjectFactory.GetInstance<ITerminalTransmitter>()
-                .CallActionAsync<SolutionPageDTO>(actionName, curActivityDTO, curContainderId.ToString());
+            return ObjectFactory.GetInstance<ITerminalTransmitter>().CallActionAsync<SolutionPageDTO>(actionName, fr8Data, curContainerId.ToString());
         }
         //        public Task<IEnumerable<T>> FindCratesByManifestType<T>(ActionDO curActivityDO, GetCrateDirection direction = GetCrateDirection.None)
         //        {
