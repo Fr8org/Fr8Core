@@ -34,5 +34,7 @@ namespace TerminalBase.Infrastructure
         Task<PlanDO> ActivatePlan(PlanDO planDO, string userId);
         Task<IEnumerable<RouteFullDTO>> GetPlansByName(string name, string userId);
         Task<FileDO> SaveFile(string name, Stream stream, string userId);
+        Task<Stream> DownloadFile(int fileId, string userId);
+        Task<IEnumerable<FileDTO>> GetFiles(string userId);
     }
 }

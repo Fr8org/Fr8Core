@@ -24,7 +24,7 @@ using AutoMapper;
 
 namespace HubWeb.Controllers
 {
-    //[Fr8ApiAuthorize]
+    //
     public class FilesController : ApiController
     {
         private readonly IFile _fileService;
@@ -43,6 +43,7 @@ namespace HubWeb.Controllers
         [HttpPost]
         [ActionName("files")]
         [Fr8HubWebHMACAuthenticate]
+        [Fr8ApiAuthorize]
         public async Task<IHttpActionResult> Post()
         {
             FileDO fileDO = null;
@@ -100,6 +101,44 @@ namespace HubWeb.Controllers
             return Ok(fileDto);
         }
 
+        /// <summary>
+        /// Downloads user's given file
+        /// </summary>
+        /// <param name="id">id of requested file</param>
+        /// <returns>Filestream</returns>
+        [Fr8HubWebHMACAuthenticate]
+        [Fr8ApiAuthorize]
+        [HttpGet]
+        public IHttpActionResult Download(int id)
+        {
+            FileDO fileDO = null;
+            if (_security.IsCurrentUserHasRole(Roles.Admin))
+            {
+                fileDO = _fileService.GetFileByAdmin(id);
+            }
+            else
+            {
+                string userId;
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    userId = _security.GetCurrentAccount(uow).Id;
+                }
+                fileDO = _fileService.GetFile(id, userId);
+            }
+            if (fileDO == null)
+            {
+                return NotFound();
+            }
+            var file = _fileService.Retrieve(fileDO);
+            return new FileActionResult(file);
+        }
+
+        /// <summary>
+        /// Gets all files current user stored on Fr8
+        /// </summary>
+        /// <returns>List of FileDTO</returns>
+        [Fr8HubWebHMACAuthenticate]
+        [Fr8ApiAuthorize]
         public IHttpActionResult Get()
         {
             IList<FileDTO> fileList;
