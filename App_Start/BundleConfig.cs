@@ -101,9 +101,9 @@ namespace HubWeb.App_Start
                 "~/Content/css/frontcss/main.css", new CssRewriteUrlTransform()
                 ));
 
-            bundles.Add(new StyleBundle("~/bundles/css/backendcss").Include(
-                "~/Content/css/backendcss/default.css", new CssRewriteUrlTransform()
-                ));
+            bundles.Add(new StyleBundle("~/bundles/css/backendcss")
+                .Include("~/Content/css/backendcss/default.css", new CssRewriteUrlTransform())
+                );
 
             bundles.Add(new StyleBundle("~/bundles/css/fontawesome").Include(
                 "~/Content/css/additionalcss/font-awesome/font-awesome.css", new CssRewriteUrlTransform()
@@ -113,6 +113,27 @@ namespace HubWeb.App_Start
                "~/bower_components/select2/select2.css", new CssRewriteUrlTransform()
                ));
 
+            bundles.Add(new StyleBundle("~/Content/css/main")
+                .Include("~/bower_components/bootstrap/dist/css/bootstrap.css", new CssRewriteUrlTransform())
+                .Include("~/bower_components/font-awesome-min/css/font-awesome.min.css", new CssRewriteUrlTransform())
+                .Include("~/bower_components/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css", new CssRewriteUrlTransform())
+                .Include("~/bower_components/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.css", new CssRewriteUrlTransform())
+                .Include("~/bower_components/datatables/media/css/jquery.dataTables.css", new CssRewriteUrlTransform())
+                .Include("~/bower_components/datatables/media/css/dataTables.bootstrap.min.css", new CssRewriteUrlTransform())
+                .Include("~/bower_components/angular-datatables/dist/plugins/bootstrap/datatables.bootstrap.min.css", new CssRewriteUrlTransform())
+                .Include("~/bower_components/textAngular/dist/textAngular.css", new CssRewriteUrlTransform())
+                .Include("~/bower_components/ngToast/dist/ngToast.min.css", new CssRewriteUrlTransform())
+                .Include("~/bower_components/ng-table/dist/ng-table.min.css", new CssRewriteUrlTransform())
+                .Include("~/bower_components/angular-ui-select/dist/select.min.css", new CssRewriteUrlTransform())
+                //DOC: To use 'rounded corners' style just load 'components-rounded.css' stylesheet instead of 'components.css' in the below style tag
+                .Include("~/Content/templates/metronic/assets/global/css/components.css", new CssRewriteUrlTransform())
+                .Include("~/Content/templates/metronic/assets/global/css/plugins.css", new CssRewriteUrlTransform())
+                .Include("~/Content/templates/metronic/assets/admin/layout3/css/layout.css", new CssRewriteUrlTransform())
+                .Include("~/Content/templates/metronic/assets/admin/layout3/css/themes/default.css", new CssRewriteUrlTransform())
+                .Include("~/Content/templates/metronic/assets/admin/layout3/css/custom.css", new CssRewriteUrlTransform())
+                .Include("~/Content/css/dockyard.css", new CssRewriteUrlTransform())
+            );
+
             bundles.Add(new ScriptBundle("~/bundles/jsunittests")
                 .IncludeDirectory("~/Scripts/tests/utils/", "*.js", true)
                 .IncludeDirectory("~/Scripts/tests/unit/", "*.js", true));
@@ -121,22 +142,33 @@ namespace HubWeb.App_Start
                 .IncludeDirectory("~/Scripts/tests/utils/", "*.js", true)
                 .IncludeDirectory("~/Scripts/tests/integration/", "*.js", true));
 
-            bundles.Add(new ScriptBundle("~/bundles/fr8Main")
+            bundles.Add(new ScriptBundle("~/bundles/js/fr8Main")
                 .Include("~/Scripts/app/_compiled.js"));
 
-            bundles.Add(new ScriptBundle("~/bundles/metronic")
+            bundles.Add(new ScriptBundle("~/bundles/js/metronic")
                 .Include("~/Content/templates/metronic/assets/global/scripts/metronic.js")
                 .Include("~/Content/templates/metronic/assets/admin/layout3/scripts/layout.js")
                 .Include("~/Content/templates/metronic/assets/admin/layout3/scripts/demo.js")
             );
 
-            bundles.Add(new ScriptBundle("~/bundles/bower")
+            bundles.Add(new ScriptBundle("~/bundles/js/jquery-bootstrap")
+                .Include("~/bower_components/jquery/dist/jquery.js")
+                .Include("~/bower_components/jquery-migrate/jquery-migrate.js")
+                .Include("~/bower_components/bootstrap/dist/js/bootstrap.js")
+                .Include("~/bower_components/bootstrap-hover-dropdown/bootstrap-hover-dropdown.js")
+                .Include("~/bower_components/spin.js/spin.js")
+                .Include("~/bower_components/bootstrap-switch/dist/js/bootstrap-switch.js")
+            );
+
+            bundles.Add(new ScriptBundle("~/bundles/js/bower")
                 .Include("~/bower_components/angular/angular.js")
                 .Include("~/bower_components/angular-resource/angular-resource.js")
                 .Include("~/bower_components/angular-animate/angular-animate.js")
                 .Include("~/bower_components/angular-sanitize/angular-sanitize.js")
                 .Include("~/bower_components/angular-ui-router/release/angular-ui-router.js")
+#if DEBUG
                 .Include("~/bower_components/angular-mocks/angular-mocks.js")
+#endif
                 .Include("~/bower_components/ocLazyLoad/dist/ocLazyLoad.js")
                 .Include("~/bower_components/angular-bootstrap/ui-bootstrap-tpls.js")
                 .Include("~/bower_components/underscore/underscore.js")
