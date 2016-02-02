@@ -27,8 +27,6 @@ using HubWeb.Infrastructure;
 
 namespace HubWeb.Controllers
 {
-    
-    
     [Fr8ApiAuthorize]
     public class ActionsController : ApiController
     {
@@ -92,7 +90,7 @@ namespace HubWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var activityTemplate = _activityTemplate.GetQuery().FirstOrDefault(at => at.Name == solutionName);
-                
+
                 if (activityTemplate == null)
                 {
                     throw new ArgumentException(String.Format("actionTemplate (solution) name {0} is not found in the database.", solutionName));
@@ -152,31 +150,48 @@ namespace HubWeb.Controllers
         public IHttpActionResult Save(ActivityDTO curActionDTO)
         {
             ActivityDO submittedActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var resultActionDO = _activity.SaveOrUpdateActivity(uow, submittedActivityDO);
                 var resultActionDTO = Mapper.Map<ActivityDTO>(resultActionDO);
-
                 return Ok(resultActionDTO);
             }
         }
-
-//        /// <summary>
-//        /// POST : updates the given action
-//        /// </summary>
-//        [HttpPost]
-//        [Route("update")]
-//        public IHttpActionResult Update(ActionDTO curActionDTO)
-//        {
-//            ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);
-//
-//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-//            {
-//                await _action.SaveUpdateAndConfigure(uow, submittedActionDO);
-//            }
-//
-//            return Ok();
-//        }    
-            }
+        [HttpPost]
+        [Fr8HubWebHMACAuthenticate]
+        public async Task<IHttpActionResult> Documentation([FromBody] ActivityDTO curActivityDTO)
+        {
+            var curDocSupport = curActivityDTO.DocumentationSupport;
+            //check if the DocumentationSupport comma separated string has the correct form
+            if (!ValidateDocumentationSupport(curDocSupport))
+                return BadRequest();
+            var solutionPageDTO = await _activity.GetSolutionDocumentation(curActivityDTO);
+            return Ok(solutionPageDTO);
+        }
+        private bool ValidateDocumentationSupport(string docSupport)
+        {
+            var curStringArray = docSupport.Split(',');
+            if (curStringArray.Contains("MainPage") && curStringArray.Contains("HelpMenu"))
+                throw new Exception("ActionDTO cannot have both MainPage and HelpMenu in the Documentation Support field value");
+            if (curStringArray.Contains("MainPage") || curStringArray.Contains("HelpMenu"))
+                return true;
+            return false;
+        }
+        //        /// <summary>
+        //        /// POST : updates the given action
+        //        /// </summary>
+        //        [HttpPost]
+        //        [Route("update")]
+        //        public IHttpActionResult Update(ActionDTO curActionDTO)
+        //        {
+        //            ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);
+        //
+        //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //            {
+        //                await _action.SaveUpdateAndConfigure(uow, submittedActionDO);
+        //            }
+        //
+        //            return Ok();
+        //        }    
+    }
 }

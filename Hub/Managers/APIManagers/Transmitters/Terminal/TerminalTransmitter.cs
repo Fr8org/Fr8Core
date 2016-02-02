@@ -56,8 +56,6 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
                 var activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>().GetByKey(activityDTO.ActivityTemplateId.Value);
                 activityDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDO, ActivityTemplateDTO>(activityTemplate);
                 terminalId = activityTemplate.TerminalId;
-                _logger.DebugFormat("ActivityTemplate found: {0}", activityTemplate != null);
-                _logger.DebugFormat("Terminal id: {0}", terminalId);
             }
             else
             {
@@ -66,7 +64,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
 
             var terminal = ObjectFactory.GetInstance<ITerminal>().GetAll().FirstOrDefault(x => x.Id == terminalId);
 
-            
+
             var actionName = Regex.Replace(curActionType, @"[^-_\w\d]", "_");
             var requestUri = new Uri(string.Format("actions/{0}", actionName), UriKind.Relative);
             if (terminal == null || string.IsNullOrEmpty(terminal.Endpoint))
@@ -76,7 +74,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
             }
             //let's calculate absolute url, since our hmac mechanism needs it
             requestUri = new Uri(new Uri(terminal.Endpoint.StartsWith("http") ? terminal.Endpoint : "http://" + terminal.Endpoint), requestUri);
-            var hmacHeader = await _hmacService.GenerateHMACHeader(requestUri, terminal.PublicIdentifier, terminal.Secret, activityDTO.AuthToken.UserId, activityDTO);
+            var hmacHeader =  await _hmacService.GenerateHMACHeader(requestUri, terminal.PublicIdentifier, terminal.Secret, activityDTO.AuthToken.UserId, activityDTO);
             return await PostAsync<ActivityDTO, TResponse>(requestUri, activityDTO, correlationId, hmacHeader);
         }
     }
