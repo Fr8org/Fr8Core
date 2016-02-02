@@ -31,7 +31,7 @@ namespace terminalDocuSign.Actions
         string _dataSourceValue;
         DropDownList _docuSignTemplate;
 
-        
+
         string _docuSignTemplateValue;
         private const string SolutionName = "Mail Merge Into DocuSign";
         private const double SolutionVersion = 1.0;
@@ -258,11 +258,12 @@ namespace terminalDocuSign.Actions
 
                 //set docusign template
 
-                SetControlValue(sendDocuSignEnvActivity, "target_docusign_template", 
+                SetControlValue(sendDocuSignEnvActivity, "target_docusign_template",
                     _docuSignTemplate.ListItems.Where(a => a.Key == _docuSignTemplate.selectedKey).FirstOrDefault());
 
-                await HubCommunicator.ConfigureActivity(sendDocuSignEnvActivity, CurrentFr8UserId);
-                await HubCommunicator.ConfigureActivity(mapFieldActivity, CurrentFr8UserId);
+
+                await ConfigureChildActivity(curActivityDO, sendDocuSignEnvActivity);
+                await ConfigureChildActivity(curActivityDO, mapFieldActivity);
             }
             catch (Exception)
             {
