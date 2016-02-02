@@ -262,8 +262,9 @@ namespace terminalDocuSign.Actions
                 SetControlValue(sendDocuSignEnvActivity, "target_docusign_template",
                     _docuSignTemplate.ListItems.Where(a => a.Key == _docuSignTemplate.selectedKey).FirstOrDefault());
 
-                await HubCommunicator.ConfigureActivity(sendDocuSignEnvActivity, CurrentFr8UserId);
-                await HubCommunicator.ConfigureActivity(mapFieldActivity, CurrentFr8UserId);
+
+                await ConfigureChildActivity(curActivityDO, sendDocuSignEnvActivity);
+                await ConfigureChildActivity(curActivityDO, mapFieldActivity);
             }
             catch (Exception)
             {
