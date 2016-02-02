@@ -8,6 +8,7 @@ using NUnit.Framework;
 using Data.Control;
 using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.DataTransferObjects.Helpers;
 using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
 using Hub.Managers;
@@ -125,8 +126,11 @@ namespace terminalSlackTests.Integration
             var storage = Crate.GetStorage(responsePayloadDTO);
             var operationalStateCM = storage.CrateContentsOfType<OperationalStateCM>().Single();
 
+            ErrorDTO errorMessage;
+            operationalStateCM.CurrentActivityResponse.TryParseErrorDTO(out errorMessage);
+
             Assert.AreEqual(ActivityResponse.Error.ToString(), operationalStateCM.CurrentActivityResponse.Type);
-            Assert.AreEqual("Unexpected channel-id.", operationalStateCM.CurrentActivityErrorMessage);
+            Assert.AreEqual("Unexpected channel-id.", errorMessage.Message);
         }
 
         private async Task<ActivityDTO> GetConfiguredActionWithDDLBSelected(string selectedChannel)

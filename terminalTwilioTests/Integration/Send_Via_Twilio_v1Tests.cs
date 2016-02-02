@@ -5,6 +5,7 @@ using terminalTwilioTests.Fixture;
 using Data.Control;
 using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.DataTransferObjects.Helpers;
 using Data.Interfaces.Manifests;
 using Hub.Managers;
 using NUnit.Framework;
@@ -70,8 +71,11 @@ namespace terminalTwilioTests.Integration
                 );
             //Assert
             var operationalCrate = Crate.FromDto(payloadDTO.CrateStorage).CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
+            ErrorDTO errorMessage;
+            operationalCrate.CurrentActivityResponse.TryParseErrorDTO(out errorMessage);
+
             Assert.AreEqual(ActivityResponse.Error.ToString(), operationalCrate.CurrentActivityResponse.Type, "Run method of the Send_Via_Twilio did not set CurentActionResponce to Error");
-            Assert.AreEqual("No StandardConfigurationControlsCM crate provided", operationalCrate.CurrentActivityErrorMessage, "Run method of the Send_Via_Twilio did not set error message");
+            Assert.AreEqual("No StandardConfigurationControlsCM crate provided", errorMessage.Message, "Run method of the Send_Via_Twilio did not set error message");
 
         }
         /// <summary>
