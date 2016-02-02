@@ -1,6 +1,6 @@
 ﻿<!-- END CORE JQUERY PLUGINS -->
 <!-- BEGIN CORE ANGULARJS PLUGINS -->
-@Scripts.Render("~/bundles/bower")
+@Scripts.Render("~/bundles/js/bower")
 <!-- END CORE ANGULARJS PLUGINS -->
 <!-- BEGIN APP LEVEL ANGULARJS SCRIPTS -->
 <script src="~/Scripts/app/app.js" type="text/javascript"></script>
@@ -12,10 +12,10 @@
 
 <!-- BEGIN APP LEVEL JQUERY SCRIPTS -->
 
-@Scripts.Render("~/bundles/metronic")
+@Scripts.Render("~/bundles/js/metronic")
 <!-- END APP LEVEL JQUERY SCRIPTS -->
 
-@Scripts.Render("~/bundles/fr8Main")
+@Scripts.Render("~/bundles/js/fr8Main")
 
 <script>
     var appKey = "@Utilities.Configuration.Azure.CloudConfigurationManager.GetSetting("pusherAppKey")";

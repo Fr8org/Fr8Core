@@ -341,6 +341,14 @@ namespace Hub.Services
             else
             {
                 parentNode = uow.RouteNodeRepository.GetByKey(parentNodeId);
+                
+                //if Plan was specified as a parent, then swap it with a new Subroute
+                if (parentNode.Id == parentNode.RootRouteNodeId)
+                {
+                    plan = uow.PlanRepository.GetByKey(parentNode.Id);
+                    parentNode = ObjectFactory.GetInstance<ISubroute>().Create(uow, plan, name + " #1");
+                }
+
             }
 
             var activity = Create(uow, actionTemplateId, name, label, order, parentNode, authorizationTokenId);
