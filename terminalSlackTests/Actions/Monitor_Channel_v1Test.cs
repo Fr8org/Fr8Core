@@ -125,7 +125,7 @@ namespace terminalSlackTests.Integration
             var storage = Crate.GetStorage(responsePayloadDTO);
             var operationalStateCM = storage.CrateContentsOfType<OperationalStateCM>().Single();
 
-            Assert.AreEqual(ActivityResponse.Error, operationalStateCM.CurrentActivityResponse);
+            Assert.AreEqual(ActivityResponse.Error.ToString(), operationalStateCM.CurrentActivityResponse.Type);
             Assert.AreEqual("Unexpected channel-id.", operationalStateCM.CurrentActivityErrorMessage);
         }
 

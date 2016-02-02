@@ -177,7 +177,7 @@ namespace terminalPapertrailTests.Integration
             var storage = Crate.GetStorage(payload);
             var operationalStateCM = storage.CrateContentsOfType<OperationalStateCM>().Single();
 
-            Assert.AreEqual(ActivityResponse.Error, operationalStateCM.CurrentActivityResponse);
+            Assert.AreEqual(ActivityResponse.Error.ToString(), operationalStateCM.CurrentActivityResponse.Type);
             Assert.AreEqual("Papertrail URL and PORT are not in the correct format. The given URL is InvalidUrl", operationalStateCM.CurrentActivityErrorMessage);
         }
 

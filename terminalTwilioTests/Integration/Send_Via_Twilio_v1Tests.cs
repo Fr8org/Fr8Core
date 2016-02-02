@@ -70,7 +70,7 @@ namespace terminalTwilioTests.Integration
                 );
             //Assert
             var operationalCrate = Crate.FromDto(payloadDTO.CrateStorage).CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
-            Assert.AreEqual(ActivityResponse.Error, operationalCrate.CurrentActivityResponse, "Run method of the Send_Via_Twilio did not set CurentActionResponce to Error");
+            Assert.AreEqual(ActivityResponse.Error.ToString(), operationalCrate.CurrentActivityResponse.Type, "Run method of the Send_Via_Twilio did not set CurentActionResponce to Error");
             Assert.AreEqual("No StandardConfigurationControlsCM crate provided", operationalCrate.CurrentActivityErrorMessage, "Run method of the Send_Via_Twilio did not set error message");
 
         }
