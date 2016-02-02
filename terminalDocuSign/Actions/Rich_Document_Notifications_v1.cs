@@ -176,7 +176,19 @@ namespace terminalDocuSign.Actions
             }
 
             //DocuSign
-            var monitorDocuSignAction = await AddAndConfigureChildActivity(activityDO, "Monitor_DocuSign_Envelope_Activity");
+            var monitorDocuSignActionTask = AddAndConfigureChildActivity(activityDO, "Monitor_DocuSign_Envelope_Activity", "Monitor Docusign Envelope Activity", "Monitor Docusign Envelope Activity", 1);
+            var setDelayActionTask = AddAndConfigureChildActivity(activityDO, "SetDelay", "Set Delay", "Set Delay", 2);
+            var queryMTDatabaseActionTask = AddAndConfigureChildActivity(activityDO, "QueryMTDatabase", "Query MT Database", "Query MT Database", 3);
+            var filterActionTask = AddAndConfigureChildActivity(activityDO, "TestIncomingData", "Test Incoming Data", "Test Incoming Data", 4);
+            var notifierActivityTask = AddAndConfigureChildActivity(activityDO, howToBeNotifiedDdl.Value, howToBeNotifiedDdl.selectedKey, howToBeNotifiedDdl.selectedKey, 5);
+
+            await Task.WhenAll(monitorDocuSignActionTask, setDelayActionTask, queryMTDatabaseActionTask, filterActionTask, notifierActivityTask);
+
+            var monitorDocuSignAction = monitorDocuSignActionTask.Result;
+            var setDelayAction = setDelayActionTask.Result;
+            var queryMTDatabaseAction = queryMTDatabaseActionTask.Result;
+            var filterAction = filterActionTask.Result;
+            var notifierActivity = notifierActivityTask.Result;
 
             if (specificRecipientOption.Selected)
             {
@@ -193,28 +205,23 @@ namespace terminalDocuSign.Actions
 
             //let's make followup configuration for monitorDocuSignEventAction
             //followup call places EventSubscription crate in storage
-            monitorDocuSignAction = await HubCommunicator.ConfigureActivity(monitorDocuSignAction, CurrentFr8UserId);
-            activityDO.ChildNodes[0] = monitorDocuSignAction;
+            var configureMonitorDocusignTask = HubCommunicator.ConfigureActivity(monitorDocuSignAction, CurrentFr8UserId);
+            
 
             var durationControl = (Duration)controls.FindByName("TimePeriod");
-            var setDelayAction = await AddAndConfigureChildActivity(activityDO, "SetDelay");
             SetControlValue(setDelayAction, "Delay_Duration", durationControl.Value);
-
-            var queryMTDatabaseAction = await AddAndConfigureChildActivity(activityDO, "QueryMTDatabase");
             await SetQueryMTDatabaseActionFields(queryMTDatabaseAction, specificRecipientOption.Controls[0].Value);
             //let's make a followup configuration to fill criteria fields
-
-            queryMTDatabaseAction = await HubCommunicator.ConfigureActivity(queryMTDatabaseAction, CurrentFr8UserId);
-
+            var configureQueryMTTask = HubCommunicator.ConfigureActivity(queryMTDatabaseAction, CurrentFr8UserId);
             var recipientEventStatus = (DropDownList)controls.FindByName("RecipientEvent");
-
-            var filterAction = await AddAndConfigureChildActivity(activityDO, "TestIncomingData");
             SetFilterUsingRunTimeActionFields(filterAction, recipientEventStatus.Value);
 
+            await Task.WhenAll(configureMonitorDocusignTask, configureQueryMTTask);
 
-            var notifierActivity = await AddAndConfigureChildActivity(activityDO, howToBeNotifiedDdl.Value);
+            monitorDocuSignAction = configureMonitorDocusignTask.Result;
+            activityDO.ChildNodes = activityDO.ChildNodes.OrderBy(a => a.Ordering).ToList();
+            activityDO.ChildNodes[0] = monitorDocuSignAction;
 
-            //return null;
             return activityDO;
         }
 
