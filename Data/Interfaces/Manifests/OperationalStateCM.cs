@@ -21,7 +21,6 @@ namespace Data.Interfaces.Manifests
         //public ActivityResponse CurrentActivityResponse { get; set; }
         public ActionErrorCode? CurrentActivityErrorCode { get; set; }
         public string CurrentActivityErrorMessage { get; set; }
-        public ResponseMessageDTO ResponseMessageDTO { get; set; }
         public string CurrentClientActionName { get; set; }
 
         public ActivityResponseDTO CurrentActivityResponse { get; set; }

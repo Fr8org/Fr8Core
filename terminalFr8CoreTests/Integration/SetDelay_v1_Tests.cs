@@ -116,7 +116,7 @@ namespace terminalFr8CoreTests.Integration
             var runUrl = GetTerminalRunUrl();
             var operationalState = new OperationalStateCM
             {
-                CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.RequestSuspend.ToString())
+                CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.RequestSuspend)
             };
             AddOperationalStateCrate(responseActionDTO, operationalState);
 

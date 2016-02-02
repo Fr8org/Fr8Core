@@ -16,6 +16,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Hub.Interfaces;
 using Data.Infrastructure;
+using Data.Interfaces.DataTransferObjects.Helpers;
 using Hub.Managers;
 
 namespace Hub.Services
@@ -73,7 +74,7 @@ namespace Hub.Services
             using (var updater = _crate.UpdateStorage(() => curContainerDo.CrateStorage))
             {
                 var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Null.ToString());
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Null);
             }
 
             uow.SaveChanges();
@@ -82,8 +83,8 @@ namespace Hub.Services
         private async Task ProcessCurrentActionResponse(IUnitOfWork uow, ContainerDO curContainerDo, ActivityResponseDTO response)
         {
             //extract the type value from the activity response
-            ActivityResponse activityResponse;
-            Enum.TryParse(response.Type, out activityResponse);
+            ActivityResponse activityResponse = ActivityResponse.Null;
+            if (response != null) Enum.TryParse(response.Type, out activityResponse);
 
             switch (activityResponse)
             {
@@ -234,16 +235,22 @@ namespace Hub.Services
                 var activityResponseDTO = await ProcessAction(uow, curContainerDO, actionState);
 
                 //extract ActivityResponse type from result
-                ActivityResponse activityResponse;
-                Enum.TryParse(activityResponseDTO.Type, out activityResponse);
+                ActivityResponse activityResponse = ActivityResponse.Null;
+                if(activityResponseDTO != null)
+                    Enum.TryParse(activityResponseDTO.Type, out activityResponse);
 
                 if (activityResponse == ActivityResponse.Success)
                 {
                     //if its success and crate have responsemessagdto it is activated
                     var response = _crate.GetContentType<OperationalStateCM>(curContainerDO.CrateStorage);
-                    if (response != null && (response.ResponseMessageDTO != null && !String.IsNullOrEmpty(response.ResponseMessageDTO.Message)))
+
+                    ResponseMessageDTO responseMessage;
+                    if (response != null && activityResponseDTO.TryParseResponseMessageDTO(out responseMessage))
                     {
-                        break;
+                        if (responseMessage != null && !string.IsNullOrEmpty(responseMessage.Message))
+                        {
+                            break;
+                        }
                     }
                 }
 

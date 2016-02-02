@@ -18,6 +18,7 @@ using Hub.Managers;
 using Utilities.Configuration.Azure;
 using TerminalBase.Infrastructure;
 using AutoMapper;
+using Data.Interfaces.DataTransferObjects.Helpers;
 
 namespace TerminalBase.BaseClasses
 {
@@ -111,7 +112,7 @@ namespace TerminalBase.BaseClasses
             {
                 var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
                 operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Success); 
-                operationalState.ResponseMessageDTO = new ResponseMessageDTO() { Message = message };
+                operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Message = message });
             }
 
             return payload;
