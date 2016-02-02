@@ -276,6 +276,19 @@ namespace terminalFr8Core.Actions
                     : criteria.Conditions;
             }
 
+            // If no object is found in MT database, return empty result.
+            if (!selectedObjectId.HasValue)
+            {
+                var searchResult = new StandardPayloadDataCM();
+
+                using (var updater = Crate.UpdateStorage(payload))
+                {
+                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Found MT Objects", searchResult));
+                }
+
+                return Success(payload);
+            }
+
             //STARTING NASTY CODE
             //TODO discuss this with Alex (bahadir)
             var envIdCondition = conditions.FirstOrDefault(c => c.Field == "EnvelopeId");
