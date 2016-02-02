@@ -17,19 +17,19 @@ namespace Data.Infrastructure
         private readonly IDBContext _context;
         private readonly IContainer _container;
 
-        internal UnitOfWork(IDBContext context)
+        public UnitOfWork(IDBContext context, IContainer container)
         {
             _context = context;
             _context.UnitOfWork = this;
             
             // Create nested StructureMap container
-            _container = ObjectFactory.Container.GetNestedContainer();
+            _container = container.GetNestedContainer();
 
             // Register self in the nested container to allow constructor injection
             _container.Configure(expression =>
             {
                 expression.For<IUnitOfWork>().Use(this);
-                expression.For<IPlanRepository>().Use<PlanRepository>().Transient();
+                expression.For<PlanRepository>().Use<PlanRepository>().Transient();
             });
         }
 
@@ -519,7 +519,7 @@ namespace Data.Infrastructure
 
         public IPlanRepository PlanRepository
         {
-            get { return _container.GetInstance<IPlanRepository>(); }
+            get { return _container.GetInstance<PlanRepository>(); }
         }
 
         private MultiTenantObjectRepository _multiTenantObjectRepository;
@@ -631,6 +631,8 @@ namespace Data.Infrastructure
 
         public void SaveChanges()
         {
+            _container.GetInstance<PlanRepository>().SaveChanges();
+
             _context.DetectChanges();
             var addedEntities = _context.AddedEntities;
             var modifiedEntities = _context.ModifiedEntities;

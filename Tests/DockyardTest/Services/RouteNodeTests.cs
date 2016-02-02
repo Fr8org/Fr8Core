@@ -33,7 +33,8 @@ namespace DockyardTest.Services
         public void GetDesignTimeFieldsByDirection_ShouldReturnDesignTimeFieldsCrate()
         {
             var route = new PlanDO();
-
+            route.Name = "sdfasdfasdf";
+            route.RouteState = RouteState.Active;
             var testActionTree = FixtureData.TestActionTree();
             
             route.ChildNodes.Add(testActionTree);

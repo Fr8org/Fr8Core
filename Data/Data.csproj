@@ -594,9 +594,15 @@
     <Compile Include="Expressions\ReplaceParameterVisitor.cs" />
     <Compile Include="Repositories\MultiTenant\Queryable\MtWhere.cs" />
     <Compile Include="Interfaces\IPlanRepository.cs" />
+    <Compile Include="Repositories\Plan\Expiration.cs" />
+    <Compile Include="Repositories\Plan\IPlanCache.cs" />
+    <Compile Include="Repositories\Plan\IPlanStorage.cs" />
+    <Compile Include="Repositories\Plan\IPlanStorageProvider.cs" />
     <Compile Include="Repositories\Plan\LoadedRoute.cs" />
     <Compile Include="Repositories\Plan\PlanCache.cs" />
     <Compile Include="Repositories\Plan\PlanRepository.cs" />
+    <Compile Include="Repositories\Plan\PlanStorageProviderMockedDb.cs" />
+    <Compile Include="Repositories\Plan\PlanStorageProviderEf.cs" />
     <Compile Include="Repositories\Plan\RouteSnapshot.cs" />
     <Compile Include="Repositories\Plan\RouteTreeHelper.cs" />
     <Compile Include="Repositories\Plan\Nested\RouteNodeRepository.cs" />

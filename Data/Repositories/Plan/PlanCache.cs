@@ -2,26 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Data.Entities;
+using Data.States;
 
 namespace Data.Repositories.Plan
 {
-    public interface IExpirationToken
+    public class PlanCache : IPlanCache
     {
-        bool IsExpired();
-    }
+        /**********************************************************************************/
 
-    public interface IPlanCacheExpirationStrategy
-    {
-        void SetExpirationCallback(Action callback);
-        IExpirationToken NewExpirationToken();
-    }
-    
-    public class PlanCache
-    {
         private class CachedRoute
         {
             public RouteNodeDO Root { get; private set; }
-
             public IExpirationToken Expiration { get; set; }
 
             public CachedRoute(RouteNodeDO root, IExpirationToken expiration)
@@ -29,12 +20,9 @@ namespace Data.Repositories.Plan
                 Root = root;
                 Expiration = expiration;
             }
-
-            public List<RouteNodeDO> Linearize()
-            {
-                return PlanCache.Linearize(Root);
-            }
         }
+
+        /**********************************************************************************/
 
         private class CacheItem
         {
@@ -48,38 +36,28 @@ namespace Data.Repositories.Plan
             }
         }
 
+        /**********************************************************************************/
+        // Declarations
+        /**********************************************************************************/
+        
         private readonly Dictionary<Guid, CacheItem> _routeNodesLookup = new Dictionary<Guid, CacheItem>();
         private readonly Dictionary<Guid, CachedRoute> _routes = new Dictionary<Guid, CachedRoute>();
         private readonly object _sync = new object();
         private readonly IPlanCacheExpirationStrategy _expirationStrategy;
-        private readonly Func<Guid, RouteNodeDO> _cacheMissCallback;
+        
+        /**********************************************************************************/
+        // Functions
+        /**********************************************************************************/
 
-        public PlanCache(IPlanCacheExpirationStrategy expirationStrategy, Func<Guid, RouteNodeDO> cacheMissCallback)
+        public PlanCache(IPlanCacheExpirationStrategy expirationStrategy)
         {
             _expirationStrategy = expirationStrategy;
-            _cacheMissCallback = cacheMissCallback;
             expirationStrategy.SetExpirationCallback(RemoveExpiredRoutes);
         }
+        
+        /**********************************************************************************/
 
-        private static List<RouteNodeDO> Linearize(RouteNodeDO root)
-        {
-            var nodes = new List<RouteNodeDO>();
-            Linearize(root, nodes);
-
-            return nodes;
-        }
-
-        private static void Linearize(RouteNodeDO root, List<RouteNodeDO> nodes)
-        {
-            nodes.Add(root);
-
-            foreach (var routeNodeDo in root.ChildNodes)
-            {
-                Linearize(routeNodeDo, nodes);
-            }
-        }
-
-        public RouteNodeDO Get(Guid id)
+        public RouteNodeDO Get(Guid id, Func<Guid, RouteNodeDO> cacheMissCallback)
         {
             RouteNodeDO node;
 
@@ -89,7 +67,12 @@ namespace Data.Repositories.Plan
 
                 if (!_routeNodesLookup.TryGetValue(id, out cacheItem))
                 {
-                    node =  _cacheMissCallback(id);
+                    node = cacheMissCallback(id);
+
+                    if (node == null)
+                    {
+                        return null;
+                    }
 
                     // Get the root of RouteNode tree. 
                     while (node.ParentRouteNode != null)
@@ -98,7 +81,7 @@ namespace Data.Repositories.Plan
                     }
 
                     // Check cache integrity
-                    if (Linearize(node).Any(x => _routeNodesLookup.ContainsKey(x.Id)))
+                    if (RouteTreeHelper.Linearize(node).Any(x => _routeNodesLookup.ContainsKey(x.Id)))
                     {
                         DropCachedRoute(node);
                     }
@@ -108,13 +91,43 @@ namespace Data.Repositories.Plan
                 else
                 {
                     node = cacheItem.Route.Root;
-                    // update route sliding expiration
+                    // update route expiration
                     cacheItem.Route.Expiration = _expirationStrategy.NewExpirationToken();
                 }
             }
 
             return node;
         }
+
+        /**********************************************************************************/
+        
+        public void UpdateElements(Action<RouteNodeDO> updater)
+        {
+            lock (_sync)
+            {
+                foreach (var cacheItem in _routeNodesLookup.Values)
+                {
+                    updater(cacheItem.Node);
+                }
+            }
+        }
+
+        /**********************************************************************************/
+
+        public void UpdateElement(Guid id, Action<RouteNodeDO> updater)
+        {
+            lock (_sync)
+            {
+                CacheItem node;
+
+                if (_routeNodesLookup.TryGetValue(id, out node))
+                {
+                    updater(node.Node);
+                }
+            }
+        }
+
+        /**********************************************************************************/
 
         public void Update(RouteNodeDO node)
         {
@@ -124,21 +137,25 @@ namespace Data.Repositories.Plan
                 node = node.ParentRouteNode;
             }
 
-            DropCachedRoute(node);
-            AddToCache(node);
+            lock (_sync)
+            {
+                DropCachedRoute(node);
+                AddToCache(node);
+            }
         }
+
+        /**********************************************************************************/
 
         private void AddToCache(RouteNodeDO root)
         {
             var expirOn = _expirationStrategy.NewExpirationToken();
             var cachedRoute = new CachedRoute(root, expirOn);
             _routes.Add(root.Id, cachedRoute);
-            
-            foreach (var routeNodeDo in Linearize(root))
-            {
-                _routeNodesLookup.Add(routeNodeDo.Id, new CacheItem(routeNodeDo, cachedRoute));
-            }
+
+            RouteTreeHelper.Visit(root, x => _routeNodesLookup.Add(x.Id, new CacheItem(x, cachedRoute)));
         }
+
+        /**********************************************************************************/
 
         private void DropCachedRoute(RouteNodeDO root)
         {
@@ -149,13 +166,12 @@ namespace Data.Repositories.Plan
                 return;
             }
 
-            foreach (var node in cachedRoute.Linearize())
-            {
-                _routeNodesLookup.Remove(node.Id);
-            }
-
+            RouteTreeHelper.Visit(root, x => _routeNodesLookup.Remove(x.Id));
+            
             _routes.Remove(root.Id);
         }
+
+        /**********************************************************************************/
 
         private void RemoveExpiredRoutes()
         {
@@ -165,15 +181,13 @@ namespace Data.Repositories.Plan
                 {
                     if (routeExpiration.Value.Expiration.IsExpired())
                     {
-                        foreach (var node in routeExpiration.Value.Linearize())
-                        {
-                            _routeNodesLookup.Remove(node.Id);
-                        }
-                        
                         _routes.Remove(routeExpiration.Key);
+                        RouteTreeHelper.Visit(routeExpiration.Value.Root, x => _routeNodesLookup.Remove(x.Id));
                     }
                 }
             }
         }
+
+        /**********************************************************************************/
     }
 }

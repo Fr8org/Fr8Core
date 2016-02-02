@@ -93,8 +93,6 @@ namespace Data.Entities
             Label = activity.Label;
             CrateStorage = activity.CrateStorage;
             AuthorizationTokenId = activity.AuthorizationTokenId;
-            AuthorizationToken = activity.AuthorizationToken;
-            ActivityTemplate = activity.ActivityTemplate;
             ActivityTemplateId = activity.ActivityTemplateId;
             currentView = activity.currentView;
             ExplicitData = activity.ExplicitData;

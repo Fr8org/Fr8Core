@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Caching;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories.Authorization;
@@ -20,6 +21,7 @@ namespace Data.Repositories
         private readonly List<AuthorizationTokenDO> _adds = new List<AuthorizationTokenDO>();
         private readonly List<AuthorizationTokenDO> _deletes = new List<AuthorizationTokenDO>();
         protected readonly AuthRepositoryLogger Logger = new AuthRepositoryLogger();
+        private static readonly MemoryCache TokenCache = new MemoryCache("AuthTokenCache"); 
 
         /*********************************************************************************/
 
@@ -132,9 +134,36 @@ namespace Data.Repositories
 
         /*********************************************************************************/
 
+        public AuthorizationTokenDO FindTokenById(Guid? id)
+        {
+            if (id == null)
+            {
+                return null;
+            }
+
+            return FindTokenById(id.Value.ToString());
+        }
+
+        /*********************************************************************************/
+
         public AuthorizationTokenDO FindTokenById(string id)
         {
-            return EnrichAndTrack(GetQuery().FirstOrDefault(x => x.Id.ToString() == id));
+            lock (TokenCache)
+            {
+                var token = (AuthorizationTokenDO)TokenCache.Get(id);
+
+                if (token == null)
+                {
+                    token = EnrichAndTrack(GetQuery().FirstOrDefault(x => x.Id.ToString() == id));
+
+                    TokenCache.Add(new CacheItem(id, token), new CacheItemPolicy
+                    {
+                        SlidingExpiration = TimeSpan.FromMinutes(30)
+                    });
+                }
+
+                return token;
+            }
         }
 
         /*********************************************************************************/
@@ -232,6 +261,14 @@ namespace Data.Repositories
                 if (value.Value.HasChanges)
                 {
                     value.Value.ResetChanges();
+                }
+            }
+
+            lock (TokenCache)
+            {
+                foreach (var authorizationTokenDo in _deletes)
+                {
+                    TokenCache.Remove(authorizationTokenDo.Id.ToString("N"));
                 }
             }
 

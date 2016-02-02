@@ -8,6 +8,7 @@ using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Data.States;
 using HubWeb.Controllers;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
@@ -277,6 +278,24 @@ namespace DockyardTest.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 curPlanDO.Fr8Account = FixtureData.TestDeveloperAccount();
+                uow.ActivityTemplateRepository.Add(new ActivityTemplateDO
+                {
+                    TerminalId = 1,
+
+                    Id = 1,
+                    Name = "New template",
+                });
+
+               
+                uow.TerminalRepository.Add(new TerminalDO()
+                {
+                    Id = 1,
+                    TerminalStatus = TerminalStatus.Active,
+                    Name = "terminal",
+                    Version = "1"
+
+                });
+                uow.UserRepository.Add(curPlanDO.Fr8Account);
                 uow.PlanRepository.Add(curPlanDO);
                 uow.SaveChanges();
             }

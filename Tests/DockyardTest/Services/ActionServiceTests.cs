@@ -178,9 +178,13 @@ namespace DockyardTest.Services
             {
                 var plan = new PlanDO
                 {
+                    RouteState = RouteState.Active,
+                    Name = "name",
                     ChildNodes = { tree }
                 };
                 uow.PlanRepository.Add(plan);
+                uow.SaveChanges();
+
                 Visit(updatedTree, x => x.Name = string.Format("We were here {0}", x.Id));
 
                 _activity.SaveOrUpdateActivity(uow, updatedTree);
@@ -207,10 +211,12 @@ namespace DockyardTest.Services
             {
                 var plan = new PlanDO
                 {
+                    RouteState = RouteState.Active,
+                    Name = "name",
                     ChildNodes = { tree }
                 };
                 uow.PlanRepository.Add(plan);
-
+                uow.SaveChanges();
                 int removeCounter = 0;
 
                 Visit(updatedTree, a =>
@@ -223,6 +229,7 @@ namespace DockyardTest.Services
                     removeCounter++;
                 });
 
+                
                 _activity.SaveOrUpdateActivity(uow, updatedTree);
 
                 var result = uow.PlanRepository.GetById<ActivityDO>(tree.Id);
@@ -247,9 +254,13 @@ namespace DockyardTest.Services
             {
                 var plan = new PlanDO
                 {
+                    Name = "name",
+                    RouteState = RouteState.Active,
                     ChildNodes = { tree }
                 };
+               
                 uow.PlanRepository.Add(plan);
+                uow.SaveChanges();
 
                 int addCounter = 0;
 
@@ -259,13 +270,13 @@ namespace DockyardTest.Services
                     {
                         var newAction = new ActivityDO
                         {
+                            IsTempId =true,
                             Id = FixtureData.GetTestGuidById(addCounter + 666),
                             ParentRouteNode = a,
                             Name = "____New " + addCounter
                         };
 
                         a.ParentRouteNode.ChildNodes.Add(newAction);
-                        //uow.ActivityRepository.Add(newAction);
                     }
 
                     addCounter++;
@@ -280,18 +291,20 @@ namespace DockyardTest.Services
                         {
                             var newAction = new ActivityDO
                             {
+                                IsTempId = true,
                                 Id = FixtureData.GetTestGuidById(addCounter + 666),
                                 ParentRouteNode = a,
                                 Name = "____New " + addCounter
                             };
 
                             a.ParentRouteNode.ChildNodes.Add(newAction);
-                            //uow.ActivityRepository.Add(newAction);
                         }
 
                         addCounter++;
                     });
                 }
+
+                updatedTree.ParentRouteNodeId = plan.Id;
 
                 _activity.SaveOrUpdateActivity(uow, updatedTree);
 
@@ -476,6 +489,8 @@ namespace DockyardTest.Services
             {
                 uow.ActivityTemplateRepository.Add(activityDo.ActivityTemplate);
                 uow.PlanRepository.Add(new PlanDO(){
+                    Name="name",
+                    RouteState = RouteState.Active,
                     ChildNodes = {activityDo}});
                 uow.SaveChanges();
             }
@@ -563,6 +578,8 @@ namespace DockyardTest.Services
                 uow.ActivityTemplateRepository.Add(activityDo.ActivityTemplate);
                 uow.PlanRepository.Add(new PlanDO()
                 {
+                    Name="sdfsdf",
+                    RouteState = RouteState.Active,
                     ChildNodes = { activityDo }
                 });
                 uow.SaveChanges();
@@ -596,6 +613,8 @@ namespace DockyardTest.Services
                 uow.ActivityTemplateRepository.Add(activityDo.ActivityTemplate);
                 uow.PlanRepository.Add(new PlanDO()
                 {
+                    Name = "name",
+                    RouteState = RouteState.Active,
                     ChildNodes = { activityDo }
                 });
                 uow.SaveChanges();
@@ -636,6 +655,8 @@ namespace DockyardTest.Services
                 uow.ActivityTemplateRepository.Add(activityDo.ActivityTemplate);
                 uow.PlanRepository.Add(new PlanDO()
                 {
+                    Name="name",
+                    RouteState = RouteState.Active,
                     ChildNodes = { activityDo }
                 });
                 uow.SaveChanges();

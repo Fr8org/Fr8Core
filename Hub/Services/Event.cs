@@ -15,6 +15,7 @@ using Data.States;
 using Data.Entities;
 using System.Linq;
 using System.Collections.Generic;
+using System.Data.Entity;
 using Data.Exceptions;
 using Utilities;
 
@@ -93,11 +94,7 @@ namespace Hub.Services
                 else
                 {
                     //find the corresponding DockyardAccount
-                    var authTokenList = uow.AuthorizationTokenRepository.FindList(x => x.ExternalAccountId == eventReportMS.ExternalAccountId);
-                    if (authTokenList == null)
-                    {
-                        return;
-                    }
+                    var authTokenList = uow.AuthorizationTokenRepository.GetPublicDataQuery().Include(x => x.UserDO).Where(x => x.ExternalAccountId == eventReportMS.ExternalAccountId);
 
                     foreach (var authToken in authTokenList)
                     {

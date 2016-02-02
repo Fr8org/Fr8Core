@@ -85,7 +85,7 @@ namespace Hub.Services
                 if (activityTemplate.NeedsAuthentication &&
                     activityTemplate.Terminal.AuthenticationType != AuthenticationType.None)
                 {
-                    AuthorizationTokenDO authToken = activity.AuthorizationToken;
+                    AuthorizationTokenDO authToken = uow.AuthorizationTokenRepository.FindTokenById(activity.AuthorizationTokenId);
 
                     // If AuthToken is not empty, fill AuthToken property for ActionDTO.
                     if (authToken != null && !string.IsNullOrEmpty(authToken.Token))
@@ -93,7 +93,7 @@ namespace Hub.Services
                         activityDTO.AuthToken = new AuthorizationTokenDTO
                         {
                             Id = authToken.Id.ToString(),
-                            UserId = authToken.UserDO != null ? authToken.UserDO.Id : authToken.UserID,
+                            UserId = authToken.UserID,
                             Token = authToken.Token,
                             AdditionalAttributes = authToken.AdditionalAttributes
                         };
@@ -440,22 +440,30 @@ namespace Hub.Services
                         throw new NullReferenceException("Current activity was not found.");
                     }
 
-                    AuthorizationTokenDO authToken = activityDO.AuthorizationToken;
+                    AuthorizationTokenDO authToken = uow.AuthorizationTokenRepository.FindTokenById(activityDO.AuthorizationTokenId);
 
                     // If action does not have assigned auth-token,
                     // then look for AuthToken with IsMain == true,
                     // and assign that token to action.
                     if (authToken == null)
                     {
-                        activityDO.AuthorizationToken = authToken = uow.AuthorizationTokenRepository.
-                            GetPublicDataQuery().
-                            FirstOrDefault(x => x.UserID == userId
-                                                && x.TerminalID == activityTemplate.Terminal.Id
-                                                && x.IsMain);
+                        var mainAuthTokenId = uow.AuthorizationTokenRepository
+                            .GetPublicDataQuery()
+                            .Where(x => x.UserID == userId
+                                && x.TerminalID == activityTemplate.Terminal.Id
+                                && x.IsMain == true)
+                            .Select(x => (Guid?)x.Id)
+                            .FirstOrDefault();
 
-                        
-                        if (authToken != null)
+                        if (mainAuthTokenId.HasValue)
                         {
+                            authToken = uow.AuthorizationTokenRepository
+                                .FindTokenById(mainAuthTokenId);
+                        }
+
+                        if (authToken != null && !string.IsNullOrEmpty(authToken.Token))
+                        {
+                            activityDO.AuthorizationTokenId = authToken.Id;
                             uow.SaveChanges();
                         }
                     }
@@ -500,14 +508,13 @@ namespace Hub.Services
                         throw new NullReferenceException("Current activity was not found.");
                     }
 
-                    var token = activityDO.AuthorizationToken;
+                    var token = uow.AuthorizationTokenRepository.FindTokenById(activityDO.AuthorizationTokenId);
 
-                    // var token = uow.AuthorizationTokenRepository
-                    //     .FindOne(x => x.Terminal.Id == activityTemplate.Terminal.Id && x.UserDO.Id == account.Id);
+                     //var token = uow.AuthorizationTokenRepository.FindOne(x => x.Terminal.Id == activityTemplate.Terminal.Id && x.UserDO.Id == account.Id);
 
                     if (token != null)
                     {
-                        activityDO.AuthorizationToken = null;
+                        activityDO.AuthorizationTokenId = null;
                         uow.SaveChanges();
 
                         uow.AuthorizationTokenRepository.Remove(token);
@@ -556,13 +563,13 @@ namespace Hub.Services
                     throw new ApplicationException("Could not find specified Action.");
                 }
 
-                var authToken = uow.AuthorizationTokenRepository.FindTokenById(authTokenId.ToString());
+                var authToken = uow.AuthorizationTokenRepository.FindTokenById(authTokenId);
                 if (authToken == null)
                 {
                     throw new ApplicationException("Could not find specified AuthToken.");
                 }
 
-                activity.AuthorizationToken = authToken;
+                activity.AuthorizationTokenId = authToken.Id;
 
                 uow.SaveChanges();
             }
@@ -591,12 +598,12 @@ namespace Hub.Services
 
             foreach (var activity in activities)
             {
+                activity.ActivityTemplateId = null;
                 activity.AuthorizationToken = null;
                 uow.PlanRepository.RemoveAuthorizationTokenFromCache(activity);
             }
 
-            uow.SaveChanges();
-
+            authToken = uow.AuthorizationTokenRepository.GetPublicDataQuery().FirstOrDefault(x => x.Id == authToken.Id);
             uow.AuthorizationTokenRepository.Remove(authToken);
             uow.SaveChanges();
         }
@@ -606,7 +613,7 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var mainAuthToken = uow.AuthorizationTokenRepository
-                    .FindTokenById(authTokenId.ToString());
+                    .FindTokenById(authTokenId);
 
                 if (mainAuthToken == null)
                 {
@@ -622,7 +629,7 @@ namespace Hub.Services
                 foreach (var siblingId in siblingIds)
                 {
                     var siblingAuthToken = uow.AuthorizationTokenRepository
-                        .FindTokenById(siblingId.ToString());
+                        .FindTokenById(siblingId);
 
                     siblingAuthToken.IsMain = false;
                 }

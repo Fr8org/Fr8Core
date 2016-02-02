@@ -161,6 +161,8 @@ namespace DockyardTest.Services
 
                 uow.PlanRepository.Add(new PlanDO()
                 {
+                    Name = "name",
+                    RouteState = RouteState.Active,
                     ChildNodes = { currAction, nextAction }
                 });
 
@@ -186,9 +188,11 @@ namespace DockyardTest.Services
             {
                 var containerDO = FixtureData.TestContainerExecute();
                 var currActivity = FixtureData.TestActivityTreeWithActivityTemplates();
-
+                uow.ActivityTemplateRepository.Add(FixtureData.ActionTemplate());
                 uow.PlanRepository.Add(new PlanDO()
                 {
+                    Name = "name",
+                    RouteState = RouteState.Active,
                     ChildNodes = { currActivity }
                 });
 

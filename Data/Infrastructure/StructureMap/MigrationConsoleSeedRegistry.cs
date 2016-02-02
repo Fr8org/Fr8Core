@@ -13,7 +13,7 @@ namespace Data.Infrastructure
             For<DbContext>().Use<DockyardDbContext>();
             For<IDBContext>().Use<DockyardDbContext>();
             For<IAuthorizationTokenRepository>().Use<AuthorizationTokenRepositoryStub>();
-            For<IUnitOfWork>().Use(_ => new UnitOfWork(_.GetInstance<IDBContext>()));
+            For<IUnitOfWork>().Use<UnitOfWork>();
         }
     }
 }

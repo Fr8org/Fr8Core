@@ -8,13 +8,18 @@ namespace Data.Repositories.Plan
     {
         /**********************************************************************************/
         
-        public static RouteNodeDO CloneWithStructure(RouteNodeDO source)
+        public static RouteNodeDO CloneWithStructure(RouteNodeDO source, Action<RouteNodeDO> nodeCallback = null)
         {
             var clone = source.Clone();
 
+            if (nodeCallback != null)
+            {
+                nodeCallback(clone);
+            }
+
             foreach (var child in source.ChildNodes)
             {
-                var clonedChild = CloneWithStructure(child);
+                var clonedChild = CloneWithStructure(child, nodeCallback);
 
                 clonedChild.ParentRouteNode = clone;
                 clone.ChildNodes.Add(clonedChild);
@@ -74,6 +79,11 @@ namespace Data.Repositories.Plan
 
         private static void Visit(RouteNodeDO root, RouteNodeDO parent, Func<RouteNodeDO, RouteNodeDO, bool> vistor)
         {
+            if (root == null)
+            {
+                return;
+            }
+
             if (!vistor(root, parent))
             {
                 return;

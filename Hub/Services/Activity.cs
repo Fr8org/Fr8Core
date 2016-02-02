@@ -16,9 +16,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using System.Web.Routing;
 using Data.Control;
 using Data.Crates;
-
+using Data.Repositories.Plan;
 using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
@@ -53,75 +54,6 @@ namespace Hub.Services
             }
         }
 
-
-        private void AssignIds(ActivityDO submittedActivity, ActivityDO parent)
-        {
-            if (submittedActivity.IsTempId)
-            {
-                submittedActivity.Id = Guid.NewGuid();
-                submittedActivity.ParentRouteNode = parent;
-                submittedActivity.Ordering = parent.ChildNodes.Count > 0 ? parent.ChildNodes.Max(x => x.Ordering) + 1 : 1;
-            }
-
-            foreach (ActivityDO child in submittedActivity.ChildNodes)
-            {
-                AssignIds(child, submittedActivity);
-            }
-        }
-
-        public void SaveOrUpdateActivityNew(IUnitOfWork uow, ActivityDO submittedActivity)
-        {
-            var route = uow.PlanRepository.GetById<RouteNodeDO>(submittedActivity.ParentRouteNodeId);
-            // var editableRoute = submittedActivity.ToEditable();
-
-            AssignIds(submittedActivity, (ActivityDO)route);
-
-            /*
-            
-                var flatten = submittedActivity.Flatten ();
-                var flattenSubtree = route.Flatten();
-                
-               foreach (var node in flattenSubtree)
-               {
-                 if (!flatten.Contains (node.Id))
-                 {
-                      route.Remove(node.Id)
-                 }
-               }
-                
-               foreach (var node in flatten)
-               {
-                if (!route.Contains (node.Id)
-                {
-                    route.Add (node);
-                }
-                else
-                {
-                    CopyProperties (node, route[node.Id]);
-                }
-               }
-               
-               foreach (var node in flatten)
-             * {
-             *     route.AttachToParent (node, node.ParentRouteNodeId);
-             * }
-               
-               
-               
-               
-               
-               
-               
-               
-               
-               
-               
-               
-               
-            
-             */
-        }
-
         public ActivityDO SaveOrUpdateActivity(IUnitOfWork uow, ActivityDO submittedActivityData)
         {
             System.Diagnostics.Stopwatch stopwatch = null;
@@ -133,12 +65,9 @@ namespace Hub.Services
             try
             {
                 stopwatch = System.Diagnostics.Stopwatch.StartNew();
-            var activity = SaveAndUpdateRecursive(uow, submittedActivityData, null, new List<ActivityDO>());
-
-            activity.ParentRouteNode = submittedActivityData.ParentRouteNode;
-            activity.ParentRouteNodeId = submittedActivityData.ParentRouteNodeId;
-
-            uow.SaveChanges();
+                SaveAndUpdateActivity(uow, submittedActivityData, new List<ActivityDO>());
+                
+                uow.SaveChanges();
                 success = true;
             }
             catch
@@ -149,9 +78,9 @@ namespace Hub.Services
             {
                 stopwatch.Stop();
                 _telemetryClient.TrackDependency("Database", "Saving Action with subactions",
-                   startTime,
-                   stopwatch.Elapsed,
-                   success);
+                    startTime,
+                    stopwatch.Elapsed,
+                    success);
             }
 
             success = false;
@@ -171,9 +100,9 @@ namespace Hub.Services
             {
                 stopwatch.Stop();
                 _telemetryClient.TrackDependency("Database", "Getting Action by id after saving",
-                   startTime,
-                   stopwatch.Elapsed,
-                   success);
+                    startTime,
+                    stopwatch.Elapsed,
+                    success);
             }
         }
 
@@ -239,117 +168,67 @@ namespace Hub.Services
             existingActivity.Label = submittedActivity.Label;
             existingActivity.CrateStorage = submittedActivity.CrateStorage;
             existingActivity.Ordering = submittedActivity.Ordering;
-            //existingActivity.Fr8Account = submittedActivity.Fr8Account;
         }
 
-        private ActivityDO SaveAndUpdateRecursive(IUnitOfWork uow, ActivityDO submittedActiviy, ActivityDO parent, List<ActivityDO> pendingConfiguration)
+        private static void RestoreSystemProperties(ActivityDO existingActivity, ActivityDO submittedActivity)
         {
-            ActivityDO existingActivity;
+            submittedActivity.AuthorizationTokenId = existingActivity.AuthorizationTokenId;
+        }
 
-            if (submittedActiviy.ActivityTemplateId == 0)
+        private void SaveAndUpdateActivity(IUnitOfWork uow, ActivityDO submittedActiviy, List<ActivityDO> pendingConfiguration)
+        {
+            RouteTreeHelper.Visit(submittedActiviy, x =>
             {
-                submittedActiviy.ActivityTemplateId = null;
+                var activity = (ActivityDO) x;
+                
+                if (activity.IsTempId && activity.Id == Guid.Empty)
+                {
+                    activity.Id = Guid.NewGuid();
+                }
+            });
+
+            RouteNodeDO route;
+            RouteNodeDO originalAction;
+            if (submittedActiviy.ParentRouteNodeId != null)
+            {
+                route = uow.PlanRepository.GetById<RouteNodeDO>(submittedActiviy.ParentRouteNodeId);
+                originalAction = route.ChildNodes.FirstOrDefault(x => x.Id == submittedActiviy.Id);
             }
-
-            if (submittedActiviy.IsTempId)
+            else
             {
-                if (submittedActiviy.Id == Guid.Empty)
+                originalAction = uow.PlanRepository.GetById<RouteNodeDO>(submittedActiviy.Id);
+                route = originalAction.ParentRouteNode;
+            }
+           
+            
+            if (originalAction != null)
+            {
+                route.ChildNodes.Remove(originalAction);
+
+                var originalActions = RouteTreeHelper.Linearize(originalAction).ToDictionary(x => x.Id, x => (ActivityDO)x);
+                
+                foreach (var submitted in RouteTreeHelper.Linearize(submittedActiviy))
                 {
-                    submittedActiviy.Id = Guid.NewGuid();
-                }
+                    ActivityDO existingActivity;
 
-                existingActivity = submittedActiviy;
-                submittedActiviy.IsTempId = false;
-
-                RouteNodeDO subroute = null;
-
-                if (parent == null)
-                {
-                    if (submittedActiviy.ParentRouteNodeId != null)
+                    if (!originalActions.TryGetValue(submitted.Id, out existingActivity))
                     {
-                        subroute = uow.PlanRepository.GetById<ActivityDO>(submittedActiviy.ParentRouteNodeId);
+                        pendingConfiguration.Add((ActivityDO)submitted);
                     }
-                }
-                else
-                {
-                    subroute = parent;
-                }
-
-                if (subroute == null)
-                {
-                    throw new Exception(string.Format("Unable to find Subroute by id = {0}", submittedActiviy.ParentRouteNodeId));
-                }
-
-                subroute.AddChildWithDefaultOrdering(submittedActiviy);
-
-                // If we have created new action add it to pending configuration list.
-                pendingConfiguration.Add(submittedActiviy);
-
-                foreach (var newAction in submittedActiviy.ChildNodes.OfType<ActivityDO>())
-                {
-                    newAction.ParentRouteNodeId = null;
-                    newAction.ParentRouteNode = null;
-                    newAction.RootRouteNodeId = submittedActiviy.RootRouteNodeId;
-
-                    var newChild = SaveAndUpdateRecursive(uow, newAction, existingActivity, pendingConfiguration);
-                    existingActivity.ChildNodes.Add(newChild);
+                    else
+                    {
+                        RestoreSystemProperties(existingActivity, (ActivityDO) submitted);
+                    }
                 }
             }
             else
             {
-                existingActivity = uow.PlanRepository.GetById<ActivityDO>(submittedActiviy.Id);
-
-                if (existingActivity == null)
-                {
-                    throw new Exception("Action was not found");
-                }
-
-                // Update properties
-                UpdateActionProperties(existingActivity, submittedActiviy);
-
-                // Sync nested action structure
-                if (submittedActiviy.ChildNodes != null)
-                {
-                    // Dictionary is used to avoid O(action.ChildNodes.Count*existingAction.ChildNodes.Count) complexity when computing difference between sets. 
-                    // desired set of children. 
-                    var newChildren = submittedActiviy.ChildNodes.OfType<ActivityDO>().Where(x => !x.IsTempId).ToDictionary(x => x.Id, y => y);
-                    // current set of children
-                    var currentChildren = existingActivity.ChildNodes.OfType<ActivityDO>().ToDictionary(x => x.Id, y => y);
-
-                    // Now we must find what child must be added to existingAction
-                    // Chilren to be added are difference between set newChildren and currentChildren (those elements that exist in newChildren but do not exist in currentChildren).
-                    foreach (var newAction in submittedActiviy.ChildNodes.OfType<ActivityDO>().Where(x => x.IsTempId || !currentChildren.ContainsKey(x.Id)).ToArray())
-                    {
-                        newAction.ParentRouteNodeId = null;
-                        newAction.ParentRouteNode = null;
-                        newAction.RootRouteNodeId = existingActivity.RootRouteNodeId;
-
-                        var newChild = SaveAndUpdateRecursive(uow, newAction, existingActivity, pendingConfiguration);
-                        existingActivity.ChildNodes.Add(newChild);
-                    }
-
-
-
-                    // Now we must find what child must be removed from existingAction
-                    // Chilren to be removed are difference between set currentChildren and newChildren (those elements that exist in currentChildren but do not exist in newChildren).
-                    foreach (var actionToRemove in currentChildren.Where(x => !newChildren.ContainsKey(x.Key)).ToArray())
-                    {
-                        existingActivity.ChildNodes.Remove(actionToRemove.Value);
-                        //i (bahadir) commented out this line. currently our deletion mechanism already removes this action from it's parent
-                        //TODO talk to Vladimir about this
-                        //    _routeNode.Delete(uow, actionToRemove.Value);
-                    }
-                    // We just update those children that haven't changed (exists both in newChildren and currentChildren)
-                    foreach (var actionToUpdate in newChildren.Where(x => !x.Value.IsTempId && currentChildren.ContainsKey(x.Key)))
-                    {
-                        SaveAndUpdateRecursive(uow, actionToUpdate.Value, existingActivity, pendingConfiguration);
-                    }
-                }
+                pendingConfiguration.AddRange(RouteTreeHelper.Linearize(submittedActiviy).OfType<ActivityDO>());
             }
 
-            return existingActivity;
+            route.ChildNodes.Add(submittedActiviy);
         }
-
+        
         public ActivityDO GetById(IUnitOfWork uow, Guid id)
         {
             return uow.PlanRepository.GetById<ActivityDO>(id);
@@ -382,21 +261,9 @@ namespace Hub.Services
             }
             else
             {
-                parentNode = uow.PlanRepository.GetById<ActivityDO>(parentNodeId);
+                parentNode = uow.PlanRepository.GetById<RouteNodeDO>(parentNodeId);
             }
-
-            AuthorizationTokenDO authorizationToken = null;
-
-            if (authorizationTokenId != null)
-            {
-                authorizationToken = uow.AuthorizationTokenRepository.GetPublicDataQuery().FirstOrDefault(x => x.Id == authorizationTokenId);
-
-                if (authorizationToken == null)
-                {
-                    throw new ArgumentException("Supplied authorization token id is invalid", "authorizationTokenId");
-                }
-            }
-
+            
             var activity = new ActivityDO
             {
                 Id = Guid.NewGuid(),
@@ -404,7 +271,7 @@ namespace Hub.Services
                 Name = name,
                 Label = label,
                 CrateStorage = _crate.EmptyStorageAsStr(),
-                AuthorizationToken = authorizationToken
+                AuthorizationTokenId = authorizationTokenId
             };
             parentNode.AddChildWithDefaultOrdering(activity);
             

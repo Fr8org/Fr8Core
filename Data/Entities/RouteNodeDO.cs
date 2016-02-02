@@ -20,6 +20,8 @@ namespace Data.Entities
         [ForeignKey("RootRouteNode")]
         public Guid? RootRouteNodeId { get; set; }
 
+        public RouteNodeDO RootRouteNode { get; set; }
+
         [ForeignKey("ParentRouteNode")]
         public Guid? ParentRouteNodeId { get; set; }
 
@@ -31,7 +33,11 @@ namespace Data.Entities
         [ForeignKey("Fr8Account")]
         public string Fr8AccountId { get; set; }
 
-        public virtual Fr8AccountDO Fr8Account { get; set; }
+        public virtual Fr8AccountDO Fr8Account
+        {
+            get { return _fr8Account; }
+            set { _fr8Account = value; }
+        }
 
         public int Ordering { get; set; }
         
@@ -80,6 +86,8 @@ namespace Data.Entities
             typeof(RouteNodeDO).GetProperty("Fr8AccountId"),
             typeof(RouteNodeDO).GetProperty("Ordering"),
         };
+
+        private Fr8AccountDO _fr8Account;
 
         protected virtual IEnumerable<PropertyInfo> GetTrackingProperties()
         {

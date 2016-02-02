@@ -52,18 +52,21 @@ namespace Hub.Services
             do
             {
                 var currentNode = node;
-
-                routeNodes.Add(node);
                 
                 if (node.ParentRouteNode != null)
                 {
                     foreach (var predcessors in node.ParentRouteNode.ChildNodes.Where(x => x.Ordering < currentNode.Ordering && x != currentNode).OrderByDescending(x => x.Ordering))
                     {
-                        routeNodes.Add(predcessors);
+                        GetDownstreamRecusive(predcessors, routeNodes);
                     }
                 }
 
                 node = node.ParentRouteNode;
+    
+                if (node != null)
+                {
+                    routeNodes.Add(node);
+                }
 
             } while (node != null);
 
@@ -142,8 +145,25 @@ namespace Hub.Services
                 return new List<RouteNodeDO>();
 
             List<RouteNodeDO> nodes = new List<RouteNodeDO>();
+            
+            foreach (var routeNodeDo in curActivityDO.ChildNodes)
+            {
+                GetDownstreamRecusive(routeNodeDo, nodes);    
+            }
+            
 
-            GetDownstreamRecusive(curActivityDO, nodes);
+            while (curActivityDO != null)
+            {
+                if (curActivityDO.ParentRouteNode != null)
+                {
+                    foreach (var sibling in curActivityDO.ParentRouteNode.ChildNodes.Where(x => x.Ordering > curActivityDO.Ordering))
+                    {
+                        GetDownstreamRecusive(sibling, nodes);
+                    }
+                }
+
+                curActivityDO = curActivityDO.ParentRouteNode;
+            }
 
             return nodes;
         }
@@ -266,7 +286,7 @@ namespace Hub.Services
             {
                 //why do we get container from db again???
                 var curContainerDO = uow.ContainerRepository.GetByKey(containerDO.Id);
-                var curActivityDO = uow.PlanRepository.GetById<ActivityDO>(curActivityId);
+                var curActivityDO = uow.PlanRepository.GetById<RouteNodeDO>(curActivityId);
 
                 if (curActivityDO == null)
                 {

@@ -30,6 +30,11 @@ namespace Data.Repositories.Plan
             public readonly List<RouteNodeDO> Insert = new List<RouteNodeDO>();
             public readonly List<RouteNodeDO> Delete = new List<RouteNodeDO>();
             public readonly List<ChangedObject> Update = new List<ChangedObject>();
+
+            public bool HasChanges 
+            {
+                get { return Insert.Count > 0 || Delete.Count > 0 || Update.Count > 0; }
+            }
         }
 
         /**********************************************************************************/
@@ -40,6 +45,12 @@ namespace Data.Repositories.Plan
 
         /**********************************************************************************/
         // Functions
+        /**********************************************************************************/
+
+        public RouteSnapshot()
+        {
+        }
+
         /**********************************************************************************/
 
         public RouteSnapshot(RouteNodeDO node, bool cloneNodes)
@@ -107,7 +118,7 @@ namespace Data.Repositories.Plan
 
                     if (changedProperties.Count > 0)
                     {
-                        diff.Update.Add(new ChangedObject(node, changedProperties));
+                        diff.Update.Add(new ChangedObject(refNodeId.Value, changedProperties));
                         changedProperties = null;
                     }
                 }

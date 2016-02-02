@@ -133,9 +133,9 @@ namespace Hub.Services
 
                 //set ActivityTemplate and parentRouteNode of current action to null -> to simulate a delete
                 int? templateIdBackup = curAction.ActivityTemplateId;
-                Guid? parentRouteNodeIdBackup = curAction.ParentRouteNodeId;
+                RouteNodeDO parentRouteNodeIdBackup = curAction.ParentRouteNode;
                 curAction.ActivityTemplateId = null;
-                curAction.ParentRouteNodeId = null;
+                curAction.RemoveFromParent();
                 uow.SaveChanges();
 
 
@@ -166,7 +166,11 @@ namespace Hub.Services
                 {
                     //restore it
                     curAction.ActivityTemplateId = templateIdBackup;
-                    curAction.ParentRouteNodeId = parentRouteNodeIdBackup;
+                    if (parentRouteNodeIdBackup != null)
+                    {
+                        parentRouteNodeIdBackup.ChildNodes.Add(curAction);
+                    }
+
                     uow.SaveChanges();
                 }
                 else

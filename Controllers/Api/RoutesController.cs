@@ -100,7 +100,7 @@ namespace HubWeb.Controllers
                 _plan.CreateOrUpdate(uow, curPlanDO, updateRegistrations);
                 
                 uow.SaveChanges();
-                var result = RouteMappingHelper.MapRouteToDto(uow, curPlanDO);
+                var result = RouteMappingHelper.MapRouteToDto(uow, uow.PlanRepository.GetById<PlanDO>(curPlanDO.Id));
                 return Ok(result);
             }
         }

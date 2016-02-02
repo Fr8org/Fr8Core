@@ -11,6 +11,7 @@ using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Services;
@@ -44,27 +45,32 @@ namespace DockyardTest.Controllers
         [Test]
         public void ActionController_Save_WithEmptyActions_NewActionShouldBeCreated()
         {
+            var subroute = FixtureData.TestSubrouteDO1();
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var plan = FixtureData.TestRoute1();
-                
+
                 uow.PlanRepository.Add(plan);
 
-                var subroute = FixtureData.TestSubrouteDO1();
+
                 plan.ChildNodes.Add(subroute);
                 uow.SaveChanges();
+            }
+            //Arrange is done with empty action list
 
-                //Arrange is done with empty action list
+            //Act
+            var actualAction = CreateActionWithId(FixtureData.GetTestGuidById(1));
 
-                //Act
-                var actualAction = CreateActionWithId(FixtureData.GetTestGuidById(1));
+            actualAction.IsTempId = true;
+            actualAction.ParentRouteNodeId = subroute.Id;
 
-                actualAction.IsTempId = true;
-                actualAction.ParentRouteNodeId = subroute.Id;
-                
-                var controller = new ActionsController();
-                controller.Save(actualAction);
+            var controller = new ActionsController();
+            var result = (OkNegotiatedContentResult<ActivityDTO>) controller.Save(actualAction);
+            var savedAction = result.Content;
 
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
                 //Assert
                 Assert.IsNotNull(uow.PlanRepository);
                 Assert.IsTrue(uow.PlanRepository.GetActivityQueryUncached().Count() == 1);
@@ -78,13 +84,15 @@ namespace DockyardTest.Controllers
         [Test]
         public void ActionController_Save_WithActionNotExisting_NewActionShouldBeCreated()
         {
+            SubrouteDO subroute;
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var plan = FixtureData.TestRoute1();
 
                 uow.PlanRepository.Add(plan);
 
-                var subroute = FixtureData.TestSubrouteDO1();
+                subroute = FixtureData.TestSubrouteDO1();
                 plan.ChildNodes.Add(subroute);
 
                 //Arrange
@@ -92,18 +100,21 @@ namespace DockyardTest.Controllers
                 var activity = FixtureData.TestActivity1();
                 subroute.ChildNodes.Add(activity);
                 uow.SaveChanges();
+            }
+            //Act
+            var actualAction = CreateActionWithId(FixtureData.GetTestGuidById(2));
+            actualAction.IsTempId = true;
+            actualAction.ParentRouteNodeId = subroute.Id;
 
-                //Act
-                var actualAction = CreateActionWithId(FixtureData.GetTestGuidById(2));
-                actualAction.IsTempId = true;
-                actualAction.ParentRouteNodeId = subroute.Id;
+            var controller = new ActionsController();
+            var result = (OkNegotiatedContentResult<ActivityDTO>) controller.Save(actualAction);
+            var savedAction = result.Content;
 
-                var controller = new ActionsController();
-                controller.Save(actualAction);
-
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
                 //Assert
                 Assert.IsNotNull(uow.PlanRepository);
-                Assert.IsTrue(uow.PlanRepository.GetActivityQueryUncached().Count() == 2);
+                Assert.AreEqual(2, uow.PlanRepository.GetActivityQueryUncached().Count());
 
                 //Still there is only one action as the update happened.
                 var expectedAction = uow.PlanRepository.GetById<ActivityDO>(actualAction.Id);
@@ -116,26 +127,34 @@ namespace DockyardTest.Controllers
 
         public void ActionController_Save_WithActionExists_ExistingActionShouldBeUpdated()
         {
+            //Arrange
+            //Add one test action
+            var activity = FixtureData.TestActivity1();
+
+            var plan = new PlanDO
+            {
+                RouteState = RouteState.Active,
+                Name = "name",
+                ChildNodes = {activity}
+            };
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                //Arrange
-                //Add one test action
-                var activity = FixtureData.TestActivity1();
 
-                var plan = new PlanDO
-                {
-                    ChildNodes = {activity}
-                };
 
                 uow.PlanRepository.Add(plan);
                 uow.SaveChanges();
+            }
+            //Act
+            var actualAction = CreateActionWithId(FixtureData.GetTestGuidById(1));
 
-                //Act
-                var actualAction = CreateActionWithId(FixtureData.GetTestGuidById(1));
+            actualAction.ParentRouteNodeId = plan.Id;
 
-                var controller = new ActionsController();
-                controller.Save(actualAction);
+            var controller = new ActionsController();
+            controller.Save(actualAction);
 
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
                 //Assert
                 Assert.IsNotNull(uow.PlanRepository);
                 Assert.IsTrue(uow.PlanRepository.GetActivityQueryUncached().Count() == 1);
@@ -143,7 +162,7 @@ namespace DockyardTest.Controllers
                 //Still there is only one action as the update happened.
                 var expectedAction = uow.PlanRepository.GetById<ActivityDO>(actualAction.Id);
                 Assert.IsNotNull(expectedAction);
-                Assert.AreEqual(actualAction.Name, expectedAction.Name);
+                Assert.AreEqual(expectedAction.Name, actualAction.Name);
             }
         }
 
@@ -382,7 +401,7 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
-        [ExpectedException(ExpectedException = typeof(NullReferenceException))]
+        [ExpectedException(ExpectedException = typeof(ApplicationException), ExpectedMessage = "Could not find Action.")]
         public async void ActionController_GetConfigurationSettings_IdIsMissing()
         {
             var controller = new ActionsController();

@@ -81,15 +81,17 @@ namespace DockyardTest.Repositories.Plan
             var expiration = new ExpirationStrategyMock();
             var routeId = new Guid(1, (short) 0, (short) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0);
             int calledTimes = 0;
-            
-            var cache = new PlanCache(expiration, x =>
+
+            Func<Guid, RouteNodeDO> cacheMiss = x =>
             {
                 calledTimes++;
                 Assert.AreEqual(routeId, x);
                 return LoadRoute(x);
-            });
+            };
 
-            cache.Get(routeId);
+            var cache = new PlanCache(expiration);
+
+            cache.Get(routeId, cacheMiss);
 
             Assert.AreEqual(1, calledTimes);
         }
@@ -101,16 +103,19 @@ namespace DockyardTest.Repositories.Plan
             var routeId = new Guid(1, (short)0, (short)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0);
             int calledTimes = 0;
 
-            var cache = new PlanCache(expiration, x =>
+            Func<Guid, RouteNodeDO> cacheMiss = x =>
             {
                 calledTimes++;
                 Assert.AreEqual(routeId, x);
                 return LoadRoute(x);
-            });
+            };
 
-            cache.Get(routeId);
+            var cache = new PlanCache(expiration);
+
+
+            cache.Get(routeId, cacheMiss);
             expiration.InvokeExpirationCallback();
-            cache.Get(routeId);
+            cache.Get(routeId, cacheMiss);
 
             Assert.AreEqual(2, calledTimes);
         }
@@ -124,19 +129,21 @@ namespace DockyardTest.Repositories.Plan
 
             var route = LoadRoute(routeId);
 
-            var cache = new PlanCache(expiration, x =>
+            Func<Guid, RouteNodeDO> cacheMiss = x =>
             {
                 calledTimes++;
                 return route;
-            });
+            };
 
-            var route1 = cache.Get(routeId);
+            var cache = new PlanCache(expiration);
+
+            var route1 = cache.Get(routeId, cacheMiss);
           
             Assert.AreEqual(route1, route);
 
             foreach (var id in RouteTreeHelper.Linearize(route).Select(x=>x.Id))
             {
-                Assert.AreEqual(route, cache.Get(id));
+                Assert.AreEqual(route, cache.Get(id, cacheMiss));
             }
 
             Assert.AreEqual(1, calledTimes);
@@ -151,19 +158,21 @@ namespace DockyardTest.Repositories.Plan
 
             var route = LoadRoute(routeId);
 
-            var cache = new PlanCache(expiration, x =>
+            Func<Guid, RouteNodeDO> cacheMiss = x =>
             {
                 calledTimes++;
                 return route;
-            });
+            };
 
-            var route1 = cache.Get(new Guid(2, (short)0, (short)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0));
+            var cache = new PlanCache(expiration);
+
+            var route1 = cache.Get(new Guid(2, (short)0, (short)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0), cacheMiss);
 
             Assert.AreEqual(route1, route);
 
             foreach (var id in RouteTreeHelper.Linearize(route).Select(x => x.Id))
             {
-                Assert.AreEqual(route, cache.Get(id));
+                Assert.AreEqual(route, cache.Get(id, cacheMiss));
             }
 
             Assert.AreEqual(1, calledTimes);
@@ -179,17 +188,19 @@ namespace DockyardTest.Repositories.Plan
 
             var route = LoadRoute(routeId);
 
-            var cache = new PlanCache(expiration, x =>
+            Func<Guid, RouteNodeDO> cacheMiss = x =>
             {
                 calledTimes++;
                 Assert.AreEqual(routeId, x);
                 return route;
-            });
+            };
 
-            var route1 = cache.Get(routeId);
+            var cache = new PlanCache(expiration);
+
+            var route1 = cache.Get(routeId, cacheMiss);
             var updated = LoadRoute(routeId, "updated");
             cache.Update(updated);
-            var route2 = cache.Get(routeId);
+            var route2 = cache.Get(routeId, cacheMiss);
 
             Assert.AreEqual(1, calledTimes);
             Assert.AreEqual(route1, route);

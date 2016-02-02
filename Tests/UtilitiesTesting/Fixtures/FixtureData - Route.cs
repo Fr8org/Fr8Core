@@ -9,6 +9,7 @@ using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Utilities.Serializers.Json;
 
 namespace UtilitiesTesting.Fixtures
@@ -115,7 +116,7 @@ namespace UtilitiesTesting.Fixtures
                 
                 uow.ContainerRepository.Add(containerDO);
 
-
+                uow.ActivityTemplateRepository.Add(actionTemplate);
 
                 SubrouteDO subrouteDO = new SubrouteDO()
                 {
@@ -127,6 +128,7 @@ namespace UtilitiesTesting.Fixtures
                 planDO.ChildNodes = new List<RouteNodeDO> {subrouteDO};
                 planDO.StartingSubroute = subrouteDO;
 
+                uow.ActivityTemplateRepository.Add(actionTemplate);
 
                 var actionDo = new ActivityDO()
                 {
@@ -162,7 +164,7 @@ namespace UtilitiesTesting.Fixtures
             return planDO;
         }
 
-        public static PlanDO TestRouteWithSubscribeEvent(Fr8AccountDO user)
+        public static PlanDO TestRouteWithSubscribeEvent(Fr8AccountDO user, int idOffset = 0)
         {
             PlanDO planDO;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -171,7 +173,7 @@ namespace UtilitiesTesting.Fixtures
 
                 planDO = new PlanDO()
                 {
-                    Id = GetTestGuidById(23),
+                    Id = GetTestGuidById(23+idOffset),
                     Description = "HealthDemo Integration Test",
                     Name = "StandardEventTesting",
                     RouteState = RouteState.Active,
@@ -194,7 +196,7 @@ namespace UtilitiesTesting.Fixtures
                 }
 
                 uow.ContainerRepository.Add(containerDO);
-
+                uow.ActivityTemplateRepository.Add(actionTemplate);
 
 
                 SubrouteDO subrouteDO = new SubrouteDO()
@@ -210,11 +212,10 @@ namespace UtilitiesTesting.Fixtures
 
                 var actionDo = new ActivityDO()
                 {
-                    ParentRouteNode = planDO,
-                    ParentRouteNodeId = planDO.Id,
+                   
                     Name = "testaction",
 
-                    Id = GetTestGuidById(1),
+                    Id = GetTestGuidById(12+idOffset),
                     ActivityTemplateId = actionTemplate.Id,
                     ActivityTemplate = actionTemplate,
                     Ordering = 1
@@ -252,7 +253,7 @@ namespace UtilitiesTesting.Fixtures
                 RouteState = RouteState.Active,
             };
 
-            for (int i = 1; i <= 2; ++i)
+            for (int i = 2; i <= 3; ++i)
             {
                 var curSubrouteDO = new SubrouteDO()
                 {
@@ -260,7 +261,7 @@ namespace UtilitiesTesting.Fixtures
                     Name = string.Format("curSubrouteDO-{0}", i),
                     ParentRouteNode = curPlanDO,
                   //  RootRouteNode = curPlanDO,
-                    ChildNodes = FixtureData.TestActionList1(),
+                    ChildNodes = FixtureData.TestActionList1(i*3),
                 };
                 curPlanDO.ChildNodes.Add(curSubrouteDO);
             }
@@ -278,7 +279,7 @@ namespace UtilitiesTesting.Fixtures
                 RouteState = RouteState.Active,
             };
 
-            for (int i = 1; i <= 2; ++i)
+            for (int i = 2; i <= 3; ++i)
             {
                 var curSubrouteDO = new SubrouteDO()
                 {
@@ -332,7 +333,7 @@ namespace UtilitiesTesting.Fixtures
 
             var curSubrouteDO = new SubrouteDO()
             {
-                Id = GetTestGuidById(1),
+                Id = GetTestGuidById(2),
                 Name = string.Format("curSubrouteDO-{0}", 1),
                 ParentRouteNode = curPlanDO,
              //   RootRouteNode = curPlanDO,

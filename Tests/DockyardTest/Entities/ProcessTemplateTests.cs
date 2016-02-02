@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Data.Entities;
 using NUnit.Framework;
 using StructureMap;
 using Data.Interfaces;
@@ -29,7 +30,7 @@ namespace DockyardTest.Entities
 
                 uow.SaveChanges();
 
-                var result = uow.PlanRepository.GetPlanQueryUncached().SingleOrDefault(pt => pt.StartingSubrouteId == subroute.Id);
+                var result = uow.PlanRepository.GetById<PlanDO>(plan.Id);//.SingleOrDefault(pt => pt.StartingSubrouteId == subroute.Id);
 
                 Assert.AreEqual(subroute.Id, result.StartingSubroute.Id);
                 Assert.AreEqual(subroute.Name, result.StartingSubroute.Name);

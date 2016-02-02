@@ -1170,6 +1170,7 @@ namespace UtilitiesTesting.Fixtures
                 Ordering = 1,
                 CrateStorage = crateStorage,
                 ActivityTemplate = curActionTemplate,
+                ActivityTemplateId = curActionTemplate.Id,
                 ChildNodes = new List<RouteNodeDO>
                 {
                     new ActivityDO
@@ -1179,6 +1180,7 @@ namespace UtilitiesTesting.Fixtures
                         ParentRouteNodeId = GetTestGuidById(1),
                         CrateStorage=  crateStorage,
                          ActivityTemplate = curActionTemplate,
+                          ActivityTemplateId = curActionTemplate.Id,
                     },
                     new ActivityDO
                     {
@@ -1187,6 +1189,7 @@ namespace UtilitiesTesting.Fixtures
                         Ordering = 2,
                         CrateStorage = crateStorage,
                         ActivityTemplate = curActionTemplate,
+                         ActivityTemplateId = curActionTemplate.Id,
                         ChildNodes = new List<RouteNodeDO>
                         {
                             new ActivityDO
@@ -1196,6 +1199,7 @@ namespace UtilitiesTesting.Fixtures
                                 ParentRouteNodeId = GetTestGuidById(43),
                                 CrateStorage = crateStorage,
                                 ActivityTemplate = curActionTemplate,
+                                 ActivityTemplateId = curActionTemplate.Id,
                             },
                             new ActivityDO
                             {
@@ -1204,6 +1208,7 @@ namespace UtilitiesTesting.Fixtures
                                 ParentRouteNodeId = GetTestGuidById(43),
                                CrateStorage = crateStorage,
                                 ActivityTemplate = curActionTemplate,
+                                 ActivityTemplateId = curActionTemplate.Id,
                             }
                         }
                     },
@@ -1220,6 +1225,7 @@ namespace UtilitiesTesting.Fixtures
                         ParentRouteNodeId = GetTestGuidById(1),
                         CrateStorage = crateStorage,
                         ActivityTemplate = curActionTemplate,
+                         ActivityTemplateId = curActionTemplate.Id,
                         ChildNodes = new List<RouteNodeDO>
                         {
                             new ActivityDO
@@ -1229,6 +1235,7 @@ namespace UtilitiesTesting.Fixtures
                                 Ordering = 1,
                                 CrateStorage = crateStorage,
                                 ActivityTemplate = curActionTemplate,
+                                 ActivityTemplateId = curActionTemplate.Id,
                             },
                             new ActivityDO
                             {
@@ -1237,6 +1244,7 @@ namespace UtilitiesTesting.Fixtures
                                 Ordering = 3,
                                 CrateStorage = crateStorage,
                                 ActivityTemplate = curActionTemplate,
+                                 ActivityTemplateId = curActionTemplate.Id,
                             }
                         }
                     }

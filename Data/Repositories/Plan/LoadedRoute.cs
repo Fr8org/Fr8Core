@@ -7,12 +7,14 @@ namespace Data.Repositories.Plan
     {
         public readonly RouteNodeDO Root;
         public bool IsDeleted;
+        public bool IsNew;
         public RouteSnapshot Snapshot;
 
-        public LoadedRoute(RouteNodeDO root)
+        public LoadedRoute(RouteNodeDO root, bool isNew = false)
         {
+            IsNew = isNew;
             Root = root;
-            Snapshot = new RouteSnapshot(root, true);
+            Snapshot = isNew ? new RouteSnapshot() : new RouteSnapshot(root, true);
         }
 
         public RouteSnapshot.Changes GetChanges()

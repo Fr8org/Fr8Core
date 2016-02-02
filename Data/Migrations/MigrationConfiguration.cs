@@ -59,7 +59,7 @@ namespace Data.Migrations
                 ObjectFactory.Initialize(x => x.AddRegistry<MigrationConsoleSeedRegistry>());
             }
 
-            var uow = new UnitOfWork(context);
+            var uow = new UnitOfWork(context, ObjectFactory.Container);
 
             UpdateRootRouteNodeId(uow);
 

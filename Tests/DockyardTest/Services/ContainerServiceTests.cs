@@ -61,6 +61,7 @@ namespace DockyardTest.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var plan = FixtureData.TestRoute5();
+                uow.UserRepository.Add(plan.Fr8Account);
                 uow.PlanRepository.Add(plan);
                 foreach (var container in FixtureData.GetContainers())
                 {
