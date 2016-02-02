@@ -16,6 +16,8 @@ namespace Data.Interfaces.DataTransferObjects
 
         public string Description { get; set; }
 
+        public DateTimeOffset LastUpdated { get; set; }
+
         public int RouteState { get; set; }
 
         public Guid StartingSubrouteId { get; set; }
