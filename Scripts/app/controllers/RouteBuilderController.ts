@@ -33,17 +33,6 @@ module dockyard.controllers {
         onActionDrop: (group: model.ActionGroup, actionId: string, index: number) => void;
         mode: string;
         solutionName: string;
-
-        //ActionPicker exports
-        webServiceActionList: Array<model.WebServiceActionSetDTO>;
-        actionCategories: any;
-        activeCategory: any;
-        activeTerminal: any;
-        setActive: () => void;
-        setActiveTerminal: () => void; 
-        deactivateTerminal: () => void;
-        setActiveAction: () => void;
-
         curAggReloadingActions: Array<string>;
     }
 
@@ -75,8 +64,7 @@ module dockyard.controllers {
             'LayoutService',
             '$modal',
             'AuthService',
-            'ConfigureTrackerService',
-            'WebServiceService'
+            'ConfigureTrackerService'
         ];
 
         private _longRunningActionsCounter: number;
@@ -97,8 +85,7 @@ module dockyard.controllers {
             private LayoutService: services.ILayoutService,
             private $modal: any,
             private AuthService: services.AuthService,
-            private ConfigureTrackerService: services.ConfigureTrackerService,
-            private WebServiceService: services.IWebServiceService
+            private ConfigureTrackerService: services.ConfigureTrackerService
             ) {
 
             this.$scope.current = new model.RouteBuilderState();
@@ -201,38 +188,6 @@ module dockyard.controllers {
             });
 
             this.processState($state);
-
-            //ActionPicker constructs
-            $scope.setActive = <() => void>angular.bind(this, this.setActive);
-            $scope.setActiveTerminal = <() => void>angular.bind(this, this.setActiveTerminal);
-            $scope.deactivateTerminal = <() => void>angular.bind(this, this.deactivateTerminal);
-            $scope.setActiveAction = <() => void>angular.bind(this, this.setActiveAction);
-            $scope.actionCategories = [
-                { id: 1, name: "Monitor", description: "Learn when something happen", icon: "eye" },
-                { id: 2, name: "Get", description: "In-process Crates from a web service", icon: "download" },
-                { id: 3, name: "Process", description: "Carry out work on a Container", icon: "recycle" },
-                { id: 4, name: "Forward", description: "Send Crates to a web service", icon: "share" }];
-            $scope.activeCategory = NaN
-            $scope.activeTerminal = NaN
-        }
-        //ActionPicker
-        private setActive(actionCategoryId) {
-            this.$scope.activeCategory == actionCategoryId ? this.$scope.activeCategory = NaN : this.$scope.activeCategory = actionCategoryId;
-            this.$scope.webServiceActionList = this.WebServiceService.getActions([this.$scope.activeCategory]);
-            this.$scope.activeTerminal = NaN
-            console.log(this.$scope.webServiceActionList)
-        }
-        private setActiveTerminal(index) {
-            this.$scope.activeTerminal = index
-        }
-        private deactivateTerminal() {
-            this.$scope.activeTerminal = NaN
-        }
-        private setActiveAction(action, group) {
-            //TODO remove PaneSelectAction and consequently psa reference
-            this.$scope.activeCategory = NaN
-            var eventArgs = new psa.ActivityTypeSelectedEventArgs(action, group);
-            this.PaneSelectAction_ActivityTypeSelected(eventArgs)
         }
 
         private startLoader() {

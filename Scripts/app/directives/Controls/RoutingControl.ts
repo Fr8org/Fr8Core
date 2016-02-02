@@ -19,13 +19,13 @@ module dockyard.directives.paneConfigureAction {
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
     export function RoutingControl(): ng.IDirective {
         var uniqueDirectiveId = 1;
-        var controller = ($scope: IRoutingControlScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => {
+        var controller = ['$scope', '$element','$attrs', ($scope: IRoutingControlScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => {
             $scope.uniqueDirectiveId = ++uniqueDirectiveId;
             //var ChangeSelection = function (route: model.Route) {
             //    $scope.route.selection = route.selection;
             //    //route.selection
             //};
-        };
+        }];
 
         //The factory function returns Directive object as per Angular requirements
         return {

@@ -137,7 +137,7 @@ namespace terminalDocuSign.Controllers
                 Name = "Generate_DocuSign_Report",
                 Label = "Generate a DocuSign Report",
                 Version = "1",
-                Category = ActivityCategory.Processors,
+                Category = ActivityCategory.Solution,
                 NeedsAuthentication = true,
                 Terminal = terminal,
                 MinPaneWidth = 380

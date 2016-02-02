@@ -22,7 +22,7 @@ namespace terminalDocuSignTests.Integration
     /// </summary>
     [Explicit]
     [Category("terminalDocuSignTests.Integration")]
-    public class Mail_Merge_Into_DocuSign_v1_Tests : BaseHealthMonitorTest
+    public class Mail_Merge_Into_DocuSign_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {
@@ -148,47 +148,47 @@ namespace terminalDocuSignTests.Integration
         [Test]
         public async void Mail_Merge_Into_DocuSign_FollowUp_Configuration_Check_ChildAction_Load_Excel_File()
         {
-            string childAction = "Load Excel File";
-            var configureUrl = GetTerminalConfigureUrl();
+            //string childAction = "Load Excel File";
+            //var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_ActionDTO();
+            //var requestActionDTO = HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_ActionDTO();
 
-            var responseActionDTO = await GetActionDTO_WithDataStorage(childAction);
-             responseActionDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(
-                    configureUrl,
-                    responseActionDTO
-                );
+            //var responseActionDTO = await GetActionDTO_WithDataStorage(childAction);
+            // responseActionDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(
+            //        configureUrl,
+            //        responseActionDTO
+            //    );
           
-            Assert.NotNull(responseActionDTO);
-            Assert.NotNull(responseActionDTO.CrateStorage);
-            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
-            Assert.AreEqual(1, responseActionDTO.ChildrenActions.Length);
+            //Assert.NotNull(responseActionDTO);
+            //Assert.NotNull(responseActionDTO.CrateStorage);
+            //Assert.NotNull(responseActionDTO.CrateStorage.Crates);
+            //Assert.AreEqual(1, responseActionDTO.ChildrenActions.Length);
 
-            // Assert that Selected child Action is present
-            Assert.AreEqual(1, responseActionDTO.ChildrenActions.Count(x=> x.Label == "Load Excel File"));
+            //// Assert that Selected child Action is present
+            //Assert.AreEqual(1, responseActionDTO.ChildrenActions.Count(x=> x.Label == "Load Excel File"));
         }
 
         [Test]
         public async void Mail_Merge_Into_DocuSign_FollowUp_Configuration_Check_ChildAction_Extract_Spreadsheet_Data()
         {
-            string childAction = "Extract Spreadsheet Data";
-            var configureUrl = GetTerminalConfigureUrl();
+            //string childAction = "Extract Spreadsheet Data";
+            //var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_ActionDTO();
+            //var requestActionDTO = HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_ActionDTO();
 
-            var responseActionDTO = await GetActionDTO_WithDataStorage(childAction);
-            responseActionDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(
-                   configureUrl,
-                   responseActionDTO
-               );
+            //var responseActionDTO = await GetActionDTO_WithDataStorage(childAction);
+            //responseActionDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(
+            //       configureUrl,
+            //       responseActionDTO
+            //   );
 
-            Assert.NotNull(responseActionDTO);
-            Assert.NotNull(responseActionDTO.CrateStorage);
-            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
-            Assert.AreEqual(1, responseActionDTO.ChildrenActions.Length);
+            //Assert.NotNull(responseActionDTO);
+            //Assert.NotNull(responseActionDTO.CrateStorage);
+            //Assert.NotNull(responseActionDTO.CrateStorage.Crates);
+            //Assert.AreEqual(1, responseActionDTO.ChildrenActions.Length);
 
-            // Assert that Selected child Action is present
-            Assert.AreEqual(1, responseActionDTO.ChildrenActions.Count(x => x.Label == "Extract Spreadsheet Data"));
+            //// Assert that Selected child Action is present
+            //Assert.AreEqual(1, responseActionDTO.ChildrenActions.Count(x => x.Label == "Extract Spreadsheet Data"));
         }
 
         [Test]

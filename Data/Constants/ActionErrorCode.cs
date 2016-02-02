@@ -16,7 +16,6 @@ namespace Data.Constants
         PAYLOAD_DATA_MISSING,
         PAYLOAD_DATA_INVALID,
         NO_AUTH_TOKEN_PROVIDED,
-        DESIGN_TIME_DATA_MISSING,
-        OPERATION_FAILED
+        DESIGN_TIME_DATA_MISSING
     }
 }

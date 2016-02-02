@@ -289,6 +289,7 @@ namespace Data.Control
         public Duration()
         {
             Type = ControlTypes.Duration;
+            InnerLabel = "Choose duration:";
         }
 
         [JsonProperty("value")]
@@ -299,6 +300,9 @@ namespace Data.Control
                 return new TimeSpan(this.Days, this.Hours, this.Minutes, 0);
             }
         }
+
+        [JsonProperty("innerLabel")]
+        public string InnerLabel { get; set; }
 
         [JsonProperty("days")]
         public Int32 Days { get; set; }
