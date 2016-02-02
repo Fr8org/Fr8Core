@@ -113,7 +113,7 @@ namespace HubWeb.App_Start
                "~/bower_components/select2/select2.css", new CssRewriteUrlTransform()
                ));
 
-            bundles.Add(new StyleBundle("~/bundles/css/main")
+            bundles.Add(new StyleBundle("~/Content/css/main")
                 .Include("~/bower_components/bootstrap/dist/css/bootstrap.css", new CssRewriteUrlTransform())
                 .Include("~/bower_components/font-awesome-min/css/font-awesome.min.css", new CssRewriteUrlTransform())
                 .Include("~/bower_components/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css", new CssRewriteUrlTransform())
