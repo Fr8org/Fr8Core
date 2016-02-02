@@ -84,7 +84,7 @@ namespace terminalFr8Core.Actions
 
             if (file == null || file.Length < 1)
             {
-                return Error(curPayloadDTO, "Unable to download file from Hub", ActionErrorCode.OPERATION_FAILED);
+                return Error(curPayloadDTO, "Unable to download file from Hub");
             }
 
             string textRepresentation = string.Empty;

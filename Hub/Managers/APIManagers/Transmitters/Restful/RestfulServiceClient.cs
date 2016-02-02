@@ -212,7 +212,13 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
         }
 
         #region GenericRequestMethods
-
+        /// <summary>
+        /// Downloads file as a MemoryStream from given URL
+        /// </summary>
+        /// <param name="requestUri"></param>
+        /// <param name="CorrelationId"></param>
+        /// <param name="headers"></param>
+        /// <returns>MemoryStream</returns>
         public async Task<Stream> DownloadAsync(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null)
         {
             using (var response = await GetInternalAsync(requestUri, CorrelationId, headers))

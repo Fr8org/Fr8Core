@@ -101,6 +101,11 @@ namespace HubWeb.Controllers
             return Ok(fileDto);
         }
 
+        /// <summary>
+        /// Downloads user's given file
+        /// </summary>
+        /// <param name="id">id of requested file</param>
+        /// <returns>Filestream</returns>
         [Fr8HubWebHMACAuthenticate]
         [Fr8ApiAuthorize]
         [HttpGet]
@@ -128,6 +133,10 @@ namespace HubWeb.Controllers
             return new FileActionResult(file);
         }
 
+        /// <summary>
+        /// Gets all files current user stored on Fr8
+        /// </summary>
+        /// <returns>List of FileDTO</returns>
         [Fr8HubWebHMACAuthenticate]
         [Fr8ApiAuthorize]
         public IHttpActionResult Get()
