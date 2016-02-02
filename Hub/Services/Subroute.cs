@@ -67,11 +67,11 @@ namespace Hub.Services
 
             if (plan != null)
             {
-                if (!plan.Subroutes.Any())
-                {
+                //if (!plan.Subroutes.Any())
+                //{
                     plan.StartingSubroute = subroute;
                     subroute.StartingSubroute = true;
-                }
+                //}
             }
 
             subroute.Name = name;

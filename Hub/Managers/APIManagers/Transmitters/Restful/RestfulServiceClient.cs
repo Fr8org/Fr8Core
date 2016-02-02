@@ -12,6 +12,7 @@ using Utilities.Logging;
 using System.Diagnostics;
 using System.Net;
 using System.Globalization;
+using System.IO;
 
 namespace Hub.Managers.APIManagers.Transmitters.Restful
 {
@@ -52,7 +53,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             _innerClient = new HttpClient();
             _formatter = formatter;
             _formatterLogger = new FormatterLogger();
-            _innerClient.Timeout = new TimeSpan(0, 1, 0); //1 minute
+            _innerClient.Timeout = new TimeSpan(0, 2, 0); //2 minute
         }
 
         protected virtual async Task<HttpResponseMessage> SendInternalAsync(HttpRequestMessage request, string CorrelationId)
@@ -211,6 +212,26 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
         }
 
         #region GenericRequestMethods
+        /// <summary>
+        /// Downloads file as a MemoryStream from given URL
+        /// </summary>
+        /// <param name="requestUri"></param>
+        /// <param name="CorrelationId"></param>
+        /// <param name="headers"></param>
+        /// <returns>MemoryStream</returns>
+        public async Task<Stream> DownloadAsync(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null)
+        {
+            using (var response = await GetInternalAsync(requestUri, CorrelationId, headers))
+            {
+                //copy stream because response will be disposed on return
+                var downloadedFile = await response.Content.ReadAsStreamAsync();
+                var copy = new MemoryStream();
+                await downloadedFile.CopyToAsync(copy);
+                //rewind stream
+                copy.Position = 0;
+                return copy;
+            }
+        }
 
         public async Task<TResponse> GetAsync<TResponse>(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null)
         {

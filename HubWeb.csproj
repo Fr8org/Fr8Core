@@ -426,6 +426,7 @@
     <Compile Include="Controllers\Api\ReportController.cs" />
     <Compile Include="Controllers\TokenAuthController.cs" />
     <Compile Include="ExceptionHandling\MvcHandleErrorAttribute.cs" />
+    <Compile Include="Infrastructure\FileActionResult.cs" />
     <Compile Include="Infrastructure\Fr8HubWebHMACAuthenticateAttribute.cs" />
     <Compile Include="Infrastructure\Fr8Identity.cs" />
     <Compile Include="Infrastructure\Fr8Principle.cs" />
@@ -493,6 +494,7 @@
     <Content Include="Content\Databases\DO-823.sql" />
     <Content Include="Content\DO-823.sql" />
     <Content Include="Content\documents\Medical_Form_v2.xml" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\icons\web_services\aws-icon-64x64.png" />
     <Content Include="Content\icons\web_services\docusign-icon-64x64.png" />
     <Content Include="Content\icons\web_services\DocuSign-Logo.png" />
@@ -770,6 +772,7 @@
     <Content Include="_PowerShellScripts\KillProcess.ps1" />
     <Content Include="_PowerShellScripts\SetCloudServiceSize.ps1" />
     <Content Include="_PowerShellScripts\SetTerminalFr8CoreCS.ps1" />
+    <Content Include="_PowerShellScripts\SetTerminalDocuSignCS.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\ActionPicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamCrateChooser.ts" />
@@ -855,6 +858,10 @@
       <IsTransformFile>True</IsTransformFile>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Content Include="Content\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.woff2" />
     <None Include="Properties\PublishProfiles\dockyard - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\dockyard - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\fr8 - FTP.pubxml" />
@@ -4254,7 +4261,6 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="archive\" />
-    <Folder Include="Content\fonts\" />
     <Folder Include="Content\img\forms\" />
     <Folder Include="Content\templates\metronic\assets\global\plugins\angularjs\plugins\angular-file-upload\uploads\" />
     <Folder Include="Content\templates\metronic\demo\" />
