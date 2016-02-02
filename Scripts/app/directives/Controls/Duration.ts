@@ -64,6 +64,8 @@ module dockyard.directives.duration {
 
             }
 
+            Duration.prototype.controller['$inject'] = ['$scope', '$element', '$attrs'];
+
         };
 
         //The factory function returns Directive object as per Angular requirements

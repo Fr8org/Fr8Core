@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace terminalDocuSignTests.Integration
 {
     [Explicit]
-    public class Terminal_Discover_v1Tests : BaseHealthMonitorTest
+    public class Terminal_Discover_v1Tests : BaseTerminalIntegrationTest
     {
         private const int ActionCount = 12;
         private const string Extract_Data_From_Envelopes_Name = "Extract_Data_From_Envelopes";

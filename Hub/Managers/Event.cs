@@ -18,7 +18,7 @@ namespace Hub.Managers
 {
     public class Event
     {
-        public static async Task Publish(string eventName, string customerId, string objectId, string data, string status)
+        public virtual async Task Publish(string eventName, string customerId, string objectId, string data, string status)
         {
             var jsonObject = JsonConvert.SerializeObject(new { eventName, customerId, objectId, data, status }).ToString();
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();

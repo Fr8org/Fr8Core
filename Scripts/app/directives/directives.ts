@@ -7,7 +7,7 @@ Global Directives
 
 'use strict';
  
-app.directive('autoFocus', function ($timeout) {
+app.directive('autoFocus', ['$timeout',function ($timeout) {
     return {
         restrict: 'AC',
         link: function (_scope, _element) {
@@ -16,7 +16,7 @@ app.directive('autoFocus', function ($timeout) {
             }, 0);
         }
     };
-});
+}]);
 
 app.directive('blockIf', function () {
     return {

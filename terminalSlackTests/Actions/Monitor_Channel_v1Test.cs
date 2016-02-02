@@ -23,7 +23,7 @@ namespace terminalSlackTests.Integration
     //https://maginot.atlassian.net/wiki/display/DDW/Monitor_Channel_v1+test+case
 
     [Explicit]
-    public class Monitor_Channel_v1Test : BaseHealthMonitorTest
+    public class Monitor_Channel_v1Test : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {

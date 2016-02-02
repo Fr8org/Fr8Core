@@ -47,7 +47,9 @@ module dockyard.directives.upstreamDataChooser {
                 $scope.selectField = (field) => {
                     $scope.field.value = field.key;
                 };
-            }
+            };
+
+            UpstreamFieldChooser.prototype.controller['$inject'] = ['$scope', '$element', '$attrs'];
 
         };
 

@@ -20,7 +20,7 @@ namespace terminalGoogleTests.Integration
     /// but allows to trigger that class from HealthMonitor.
     /// </summary>
     [Explicit]
-    public class Extract_Spreadsheet_Data_v1Tests : BaseHealthMonitorTest
+    public class Extract_Spreadsheet_Data_v1Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {

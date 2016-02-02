@@ -55,11 +55,19 @@ namespace terminalSalesforce.Actions
             {
                 updater.CrateStorage.Clear();
 
-                AddTextSourceControlForDTO<LeadDTO>(updater.CrateStorage, "Upstream Terminal-Provided Fields",addRequestConfigEvent: false);
-
-                updater.CrateStorage.Add(await CreateAvailableFieldsCrate(curActivityDO));
+                AddTextSourceControlForDTO<LeadDTO>(updater.CrateStorage, "Upstream Terminal-Provided Fields");
             }
 
+            return await Task.FromResult(curActivityDO);
+        }
+
+        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO,
+                                                                                AuthorizationTokenDO authTokenDO)
+        {
+            using (var updater = Crate.UpdateStorage(curActivityDO))
+            {
+                updater.CrateStorage.ReplaceByLabel(await CreateAvailableFieldsCrate(curActivityDO));
+            }
             return await Task.FromResult(curActivityDO);
         }
 

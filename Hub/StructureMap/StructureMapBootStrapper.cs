@@ -136,6 +136,7 @@ namespace Hub.StructureMap
                 For<IHMACService>().Use<Fr8HMACService>();
 
                 For<TelemetryClient>().Use<TelemetryClient>();
+                For<Hub.Managers.Event>().Use<Hub.Managers.Event>().Singleton();
             }
         }
 
@@ -212,6 +213,7 @@ namespace Hub.StructureMap
                 For<IHMACService>().Use(fr8HMACService.Object);
                 For<TelemetryClient>().Use<TelemetryClient>();
                 For<ITerminal>().Use(new TerminalServiceForTests()).Singleton();
+                For<Hub.Managers.Event>().Use<Hub.Managers.Event>().Singleton();
             }
         }
 

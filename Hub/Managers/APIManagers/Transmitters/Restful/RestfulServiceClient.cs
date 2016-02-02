@@ -53,7 +53,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             _innerClient = new HttpClient();
             _formatter = formatter;
             _formatterLogger = new FormatterLogger();
-            _innerClient.Timeout = new TimeSpan(0, 1, 0); //1 minute
+            _innerClient.Timeout = new TimeSpan(0, 2, 0); //2 minute
         }
 
         protected virtual async Task<HttpResponseMessage> SendInternalAsync(HttpRequestMessage request, string CorrelationId)

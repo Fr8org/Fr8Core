@@ -27,8 +27,12 @@ namespace HubWeb
 {
     public partial class Startup
     {
-
         public async void Configuration(IAppBuilder app)
+        {
+            Configuration(app, false);
+        }
+
+        public async void Configuration(IAppBuilder app, bool selfHostMode)
         {
             //ConfigureDaemons();
             ConfigureAuth(app);
@@ -36,7 +40,10 @@ namespace HubWeb
             ConfigureHangfire(app, "DockyardDB");
 #endif 
 
-            await RegisterTerminalActions();
+            if (!selfHostMode)
+            {
+                await RegisterTerminalActions();
+            }
         }
 
         public void ConfigureHangfire(IAppBuilder app, string connectionString)
