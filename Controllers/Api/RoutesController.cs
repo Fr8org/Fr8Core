@@ -383,7 +383,7 @@ namespace HubWeb.Controllers
                         string responseMsg = "";
 
                         ResponseMessageDTO responseMessage;
-                        if (response.CurrentActivityResponse != null && response.CurrentActivityResponse.TryParseResponseMessageDTO(out responseMessage))
+                        if (response != null && response.CurrentActivityResponse != null && response.CurrentActivityResponse.TryParseResponseMessageDTO(out responseMessage))
                         {
                             if (responseMessage != null && !string.IsNullOrEmpty(responseMessage.Message))
                             {
