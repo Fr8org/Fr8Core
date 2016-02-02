@@ -231,24 +231,24 @@ namespace terminalFr8Core.Actions
         {
             var payload = await GetPayload(curActivityDO, containerId);
             var payloadCrateStorage = Crate.GetStorage(payload);
-            var ui = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
+
+            var ui = GetConfigurationControls(curActivityDO);
 
             if (ui == null)
             {
                 return Error(payload, "Action was not configured correctly");
             }
 
-            var config = new ActionUi();
-            config.ClonePropertiesFrom(ui);
+            var queryPicker = ui.FindByName<RadioButtonGroup>("QueryPicker");
 
             List<FilterConditionDTO> conditions;
-            int selectedObjectId;
+            int? selectedObjectId = null;
 
-            if (config.QueryPicker.Radios[0].Selected)
+            if (queryPicker.Radios[0].Selected)
             {
-                var queryPicker = (UpstreamCrateChooser)((RadioButtonGroup)ui.Controls[0]).Radios[0].Controls[0];
+                var upstreamCrateChooser = (UpstreamCrateChooser)(queryPicker).Radios[0].Controls[0];
 
-                var queryCM = await ExtractUpstreamQuery(curActivityDO, queryPicker);
+                var queryCM = await ExtractUpstreamQuery(curActivityDO, upstreamCrateChooser);
                 if (queryCM == null || queryCM.Queries == null || queryCM.Queries.Count == 0)
                 {
                     return Error(payload, "No upstream crate found");
@@ -261,16 +261,32 @@ namespace terminalFr8Core.Actions
             }
             else
             {
-                var criteria = JsonConvert.DeserializeObject<FilterDataDTO>(config.Filter.Value);
+                var filterPane = (FilterPane)queryPicker.Radios[1].Controls[1];
+                var availableObjects = (DropDownList)queryPicker.Radios[1].Controls[0];
+                var criteria = JsonConvert.DeserializeObject<FilterDataDTO>(filterPane.Value);
 
-                if (!int.TryParse(config.AvailableObjects.Value, out selectedObjectId))
+                int objectId;
+                if (!int.TryParse(availableObjects.Value, out objectId))
                 {
-                    return Error(payload, "Invalid object selected");
+                    selectedObjectId = objectId;
                 }
 
                 conditions = (criteria.ExecutionType == FilterExecutionType.WithoutFilter)
                     ? new List<FilterConditionDTO>()
                     : criteria.Conditions;
+            }
+
+            // If no object is found in MT database, return empty result.
+            if (!selectedObjectId.HasValue)
+            {
+                var searchResult = new StandardPayloadDataCM();
+
+                using (var updater = Crate.UpdateStorage(payload))
+                {
+                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Found MT Objects", searchResult));
+                }
+
+                return Success(payload);
             }
 
             //STARTING NASTY CODE
@@ -284,7 +300,9 @@ namespace terminalFr8Core.Actions
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var obj = uow.MTObjectRepository.GetQuery().FirstOrDefault(x => x.Id == selectedObjectId);
+                var objectId = selectedObjectId.GetValueOrDefault();
+                var obj = uow.MTObjectRepository.GetQuery().FirstOrDefault(x => x.Id == objectId);
+
                 if (obj == null)
                 {
                     return Error(payload, "Invalid object selected");
@@ -342,7 +360,7 @@ namespace terminalFr8Core.Actions
             return upstreamQueryCrate.Content;
         }
 
-        private int ExtractUpstreamObjectId(
+        private int? ExtractUpstreamObjectId(
             QueryDTO query)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -350,6 +368,11 @@ namespace terminalFr8Core.Actions
                 var obj = uow.MTObjectRepository
                     .GetQuery()
                     .FirstOrDefault(x => x.Name == query.Name);
+
+                if (obj == null)
+                {
+                    return null;
+                }
 
                 return obj.Id;
             }

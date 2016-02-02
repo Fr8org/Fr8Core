@@ -52,12 +52,12 @@ namespace terminalDocuSign.Actions
                 MtDbPropertyName = mtDbPropertyName;
             }
         }
-        
+
         public class ActionUi : StandardConfigurationControlsCM
         {
             [JsonIgnore]
             public QueryBuilder QueryBuilder { get; set; }
-         
+
             public ActionUi()
             {
                 Controls = new List<ControlDefinitionDTO>();
@@ -68,7 +68,7 @@ namespace terminalDocuSign.Actions
                     Label = "",
                     Value = "<p>Search for DocuSign Envelopes where the following are true:</p>"
                 });
-                
+
                 var queryFields = GetFieldListForQueryBuilder();
                 var filterConditions = new[]
                 {
@@ -76,9 +76,9 @@ namespace terminalDocuSign.Actions
                     new FilterConditionDTO { Field = queryFields[1].Key, Operator = "eq" },
                     new FilterConditionDTO { Field = queryFields[2].Key, Operator = "eq" }
                 };
-                
+
                 string initialQuery = JsonConvert.SerializeObject(filterConditions);
-                
+
                 Controls.Add((QueryBuilder = new QueryBuilder
                 {
                     Name = "QueryBuilder",
@@ -112,13 +112,13 @@ namespace terminalDocuSign.Actions
 
         private readonly DocuSignManager _docuSignManager;
         private readonly IDocuSignFolder _docuSignFolder;
-        
+
         public Generate_DocuSign_Report_v1()
         {
             _docuSignManager = ObjectFactory.GetInstance<DocuSignManager>();
             _docuSignFolder = ObjectFactory.GetInstance<IDocuSignFolder>();
         }
-        
+
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payload = await GetPayload(curActivityDO, containerId);
@@ -132,22 +132,22 @@ namespace terminalDocuSign.Actions
             var payload = await GetPayload(curActivityDO, containerId);
 
             var configurationControls = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
-            
+
             if (configurationControls == null)
             {
                 return Error(payload, "Action was not configured correctly");
             }
-            
+
             var actionUi = new ActionUi();
-            
+
             actionUi.ClonePropertiesFrom(configurationControls);
-            
+
             // Real-time search.
             var criteria = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(actionUi.QueryBuilder.Value);
             var existingEnvelopes = new HashSet<string>();
             var searchResult = new StandardPayloadDataCM();
             var docuSignAuthToken = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
-            
+
             SearchDocusignInRealTime(docuSignAuthToken, criteria, searchResult, existingEnvelopes);
 
             // Merge data from QueryMT action.
@@ -155,9 +155,9 @@ namespace terminalDocuSign.Actions
             var queryMTResult = payloadCrateStorage
                 .CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "Found MT Objects")
                 .FirstOrDefault();
-            
+
             MergeMtQuery(queryMTResult, existingEnvelopes, searchResult);
-            
+
             // Update report crate.
             using (var updater = Crate.UpdateStorage(payload))
             {
@@ -242,7 +242,7 @@ namespace terminalDocuSign.Actions
 
             return row;
         }
-        
+
         public DocusignQuery BuildDocusignQuery(DocuSignAuthTokenDTO authToken, List<FilterConditionDTO> conditions)
         {
             var query = new DocusignQuery();
@@ -252,7 +252,7 @@ namespace terminalDocuSign.Actions
             foreach (var condition in conditions.Where(x => x.Operator == "eq"))
             {
                 FieldBackedRoutingInfo fieldBackedRoutingInfo;
-                
+
                 if (!QueryBuilderFields.TryGetValue(condition.Field, out fieldBackedRoutingInfo) || fieldBackedRoutingInfo.DocusignQueryName == null)
                 {
                     continue;
@@ -265,7 +265,7 @@ namespace terminalDocuSign.Actions
                         // cache list of folders
                         if (folders == null)
                         {
-                             folders = _docuSignFolder.GetSearchFolders(authToken.Email, authToken.ApiPassword);
+                            folders = _docuSignFolder.GetSearchFolders(authToken.Email, authToken.ApiPassword);
                         }
 
                         var value = condition.Value;
@@ -277,7 +277,7 @@ namespace terminalDocuSign.Actions
                     case "Status":
                         query.Status = condition.Value;
                         break;
-                    
+
                     case "SearchText":
                         query.SearchText = condition.Value;
                         break;
@@ -286,7 +286,7 @@ namespace terminalDocuSign.Actions
 
             return query;
         }
-        
+
         protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             if (NeedsAuthentication(authTokenDO))
@@ -299,7 +299,7 @@ namespace terminalDocuSign.Actions
                 updater.CrateStorage.Add(PackControls(new ActionUi()));
                 updater.CrateStorage.AddRange(PackDesignTimeData());
             }
-            
+
             return Task.FromResult(curActivityDO);
         }
 
@@ -322,7 +322,7 @@ namespace terminalDocuSign.Actions
                 var queryMtDatabaseAction = activityTemplates
                     .FirstOrDefault(x => x.Name == "QueryMTDatabase");
                 if (queryMtDatabaseAction == null) { return activityDO; }
-
+                
                 activityDO.ChildNodes.Add(new ActivityDO()
                 {
                     ActivityTemplateId = queryMtDatabaseAction.Id,
@@ -333,6 +333,8 @@ namespace terminalDocuSign.Actions
                     ParentRouteNode = activityDO,
                     Ordering = 1
                 });
+
+                // await AddAndConfigureChildActivity(activityDO, "QueryMTDatabase");
             }
             catch (Exception)
             {
@@ -348,15 +350,15 @@ namespace terminalDocuSign.Actions
             var configurationControls = storage
                 .CrateContentsOfType<StandardConfigurationControlsCM>()
                 .SingleOrDefault();
-            
+
             if (configurationControls == null)
             {
                 throw new ApplicationException("Action was not configured correctly");
             }
-            
+
             var actionUi = new ActionUi();
             actionUi.ClonePropertiesFrom(configurationControls);
-            
+
             var criteria = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(
                 actionUi.QueryBuilder.Value
             );

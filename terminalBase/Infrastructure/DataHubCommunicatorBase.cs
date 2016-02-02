@@ -105,7 +105,7 @@ namespace TerminalBase.Infrastructure
                 Id = 0,
                 LastUpdated = DateTime.Now
             };
-            
+
             return Task.FromResult(fileDO);
         }
 
@@ -199,5 +199,6 @@ namespace TerminalBase.Infrastructure
         {
             throw new NotImplementedException();
         }
+
     }
 }

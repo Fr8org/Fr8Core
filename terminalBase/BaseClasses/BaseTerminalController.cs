@@ -15,6 +15,7 @@ using Utilities.Logging;
 using Utilities;
 using System.Net.Http;
 using System.IO;
+using System.Linq;
 using System.Web.Routing;
 using System.Net;
 using System.Net.Http.Formatting;
@@ -30,8 +31,10 @@ namespace TerminalBase.BaseClasses
         private readonly BaseTerminalEvent _baseTerminalEvent;
         private bool _integrationTestMode;
 
-        public bool IntegrationTestMode {
-            get {
+        public bool IntegrationTestMode
+        {
+            get
+            {
                 return _integrationTestMode;
             }
         }
@@ -182,13 +185,14 @@ namespace TerminalBase.BaseClasses
             {
                 BindExplicitDataHubCommunicator(curObject);
             }
-
             var curActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
-
+            //this is a comma separated string
+            var curDocumentation = curActionDTO.DocumentationSupport;
+            //Object to carry Documentation
+            SolutionPageDTO curSolutionPageDTO;
             var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
             var curContainerId = curActionDTO.ContainerId;
             Task<ActivityDO> response;
-
             var currentUserId = curAuthTokenDO != null ? curAuthTokenDO.UserID : null;
             //Set Current user of action
             SetCurrentUser(curObject, currentUserId);
@@ -227,7 +231,7 @@ namespace TerminalBase.BaseClasses
                             //activate is an optional method so it may be missing
                             if (curMethodInfo == null) return Mapper.Map<ActivityDTO>(curActivityDO);
 
-                            Task<ActivityDO>  resutlActionDO = (Task<ActivityDO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDO, curAuthTokenDO });
+                            Task<ActivityDO> resutlActionDO = (Task<ActivityDO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDO, curAuthTokenDO });
                             return await resutlActionDO.ContinueWith(x => Mapper.Map<ActivityDTO>(x.Result));
                         }
                     case "deactivate":
@@ -246,6 +250,16 @@ namespace TerminalBase.BaseClasses
                             }
 
                             return resutlActionDO.ContinueWith(x => Mapper.Map<ActivityDTO>(x.Result));
+                        }
+                    case "documentation":
+                        {
+                            curSolutionPageDTO = new SolutionPageDTO();
+                            if (!curDocumentation.IsNullOrEmpty() && curDocumentation.Split(',').Contains("MainPage"))
+                            {
+                                Task<SolutionPageDTO> resutlSolutionPageDTO = (Task<SolutionPageDTO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDO });
+                                return await resutlSolutionPageDTO;
+                            }
+                            return Task.FromResult(curSolutionPageDTO);
                         }
                     default:
                         response = (Task<ActivityDO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDO });
