@@ -282,7 +282,7 @@ namespace Hub.Services
 
                 plan.ChildNodes.Add(parentNode = new SubrouteDO
                 {
-                    Id = Guid.NewGuid(),
+                    StartingSubroute = true,
                     Name = name + " #1"
                 });
             }
