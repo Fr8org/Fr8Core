@@ -42,6 +42,7 @@ namespace Hub.Managers
             EventManager.IncidentMissingFieldInPayload += IncidentMissingFieldInPayload;
             EventManager.ExternalEventReceived += LogExternalEventReceivedIncident;
             EventManager.KeyVaultFailure += KeyVaultFailure;
+            EventManager.EventContainerFailed += ContainerFailed;
         }
 
         private void KeyVaultFailure(string keyVaultMethod, Exception ex)
@@ -49,11 +50,37 @@ namespace Hub.Managers
             var incident = new IncidentDO
             {
                 CustomerId = "unknown",
-                Data = string.Join(Environment.NewLine, "KeyVault method: " + keyVaultMethod, ex.Message, ex.StackTrace ?? ""),
+                Data = string.Join(
+                    Environment.NewLine,
+                    "KeyVault method: " + keyVaultMethod,
+                    ex.Message,
+                    ex.StackTrace ?? ""
+                ),
                 PrimaryCategory = "KeyVault",
                 SecondaryCategory = "QuerySecurePartAsync",
                 Component = "Hub",
                 Activity = "KeyVault Failed"
+            };
+
+            SaveAndLogIncident(incident);
+        }
+
+        private void ContainerFailed(PlanDO plan, Exception ex)
+        {
+            var incident = new IncidentDO
+            {
+                CustomerId = "unknown",
+                Data = string.Join(
+                    Environment.NewLine,
+                    "Container failure.",
+                    "Plan: " + plan != null ? plan.Name : "unknown",
+                    ex.Message,
+                    ex.StackTrace ?? ""
+                ),
+                PrimaryCategory = "Container",
+                SecondaryCategory = "Execution",
+                Component = "Hub",
+                Activity = "Container failure"
             };
 
             SaveAndLogIncident(incident);
@@ -490,20 +517,14 @@ namespace Hub.Managers
 
         public void IncidentMissingFieldInPayload(string fieldKey, ActivityDO activity, string curUserId)
         {
-            using (var _uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                IncidentDO incidentDO = new IncidentDO();
-                incidentDO.PrimaryCategory = "Process Execution";
-                incidentDO.SecondaryCategory = "Action";
-                incidentDO.ObjectId = activity.Id.ToString();
-                incidentDO.Activity = "Occured";
-                incidentDO.CustomerId = curUserId;
-                incidentDO.Data = String.Format("MissingFieldInPayload: ActionName: {0}, Field name: {1}, ActionId {2}", activity.Name, fieldKey, activity.Id);
-                _uow.IncidentRepository.Add(incidentDO);
-                Logger.GetLogger().Warn(incidentDO.Data);
-                _uow.SaveChanges();
-            }
+            IncidentDO incidentDO = new IncidentDO();
+            incidentDO.PrimaryCategory = "Process Execution";
+            incidentDO.SecondaryCategory = "Action";
+            incidentDO.ObjectId = activity.Id.ToString();
+            incidentDO.Activity = "Occured";
+            incidentDO.CustomerId = curUserId;
+            incidentDO.Data = String.Format("MissingFieldInPayload: ActionName: {0}, Field name: {1}, ActionId {2}", activity.Name, fieldKey, activity.Id);
+            LogIncident(incidentDO);
         }
-
     }
 }

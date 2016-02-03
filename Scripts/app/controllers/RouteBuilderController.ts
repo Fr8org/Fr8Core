@@ -13,7 +13,7 @@ module dockyard.controllers {
     }
 
     export interface IRouteBuilderScope extends ng.IScope {
-        routeId: string;
+        planId: string;
         subroutes: Array<model.SubrouteDTO>;
         fields: Array<model.Field>;
         currentSubroute: model.SubrouteDTO;
@@ -33,17 +33,6 @@ module dockyard.controllers {
         onActionDrop: (group: model.ActionGroup, actionId: string, index: number) => void;
         mode: string;
         solutionName: string;
-
-        //ActionPicker exports
-        webServiceActionList: Array<model.WebServiceActionSetDTO>;
-        actionCategories: any;
-        activeCategory: any;
-        activeTerminal: any;
-        setActive: () => void;
-        setActiveTerminal: () => void; 
-        deactivateTerminal: () => void;
-        setActiveAction: () => void;
-
         curAggReloadingActions: Array<string>;
     }
 
@@ -75,8 +64,7 @@ module dockyard.controllers {
             'LayoutService',
             '$modal',
             'AuthService',
-            'ConfigureTrackerService',
-            'WebServiceService'
+            'ConfigureTrackerService'
         ];
 
         private _longRunningActionsCounter: number;
@@ -97,8 +85,7 @@ module dockyard.controllers {
             private LayoutService: services.ILayoutService,
             private $modal: any,
             private AuthService: services.AuthService,
-            private ConfigureTrackerService: services.ConfigureTrackerService,
-            private WebServiceService: services.IWebServiceService
+            private ConfigureTrackerService: services.ConfigureTrackerService
             ) {
 
             this.$scope.current = new model.RouteBuilderState();
@@ -188,7 +175,7 @@ module dockyard.controllers {
                         if ($scope.current.route.routeState === model.RouteState.Inactive) {
                             RouteService.deactivate($scope.current.route);
                         } else if ($scope.current.route.routeState === model.RouteState.Active) {
-                                RouteService.activate(<any>{ routeId: $scope.current.route.id, routeBuilderActivate: true })
+                            RouteService.activate(<any>{ planId: $scope.current.route.id, routeBuilderActivate: true })
                                     .$promise.then((result) => {
                                     if (result != null && result.status === "validation_error") {
                                         this.renderActions(result.actionsCollection);
@@ -201,38 +188,6 @@ module dockyard.controllers {
             });
 
             this.processState($state);
-
-            //ActionPicker constructs
-            $scope.setActive = <() => void>angular.bind(this, this.setActive);
-            $scope.setActiveTerminal = <() => void>angular.bind(this, this.setActiveTerminal);
-            $scope.deactivateTerminal = <() => void>angular.bind(this, this.deactivateTerminal);
-            $scope.setActiveAction = <() => void>angular.bind(this, this.setActiveAction);
-            $scope.actionCategories = [
-                { id: 1, name: "Monitor", description: "Learn when something happen", icon: "eye" },
-                { id: 2, name: "Get", description: "In-process Crates from a web service", icon: "download" },
-                { id: 3, name: "Process", description: "Carry out work on a Container", icon: "recycle" },
-                { id: 4, name: "Forward", description: "Send Crates to a web service", icon: "share" }];
-            $scope.activeCategory = NaN
-            $scope.activeTerminal = NaN
-        }
-        //ActionPicker
-        private setActive(actionCategoryId) {
-            this.$scope.activeCategory == actionCategoryId ? this.$scope.activeCategory = NaN : this.$scope.activeCategory = actionCategoryId;
-            this.$scope.webServiceActionList = this.WebServiceService.getActions([this.$scope.activeCategory]);
-            this.$scope.activeTerminal = NaN
-            console.log(this.$scope.webServiceActionList)
-        }
-        private setActiveTerminal(index) {
-            this.$scope.activeTerminal = index
-        }
-        private deactivateTerminal() {
-            this.$scope.activeTerminal = NaN
-        }
-        private setActiveAction(action, group) {
-            //TODO remove PaneSelectAction and consequently psa reference
-            this.$scope.activeCategory = NaN
-            var eventArgs = new psa.ActivityTypeSelectedEventArgs(action, group);
-            this.PaneSelectAction_ActivityTypeSelected(eventArgs)
         }
 
         private startLoader() {
@@ -353,12 +308,12 @@ module dockyard.controllers {
             if ($state.params.solutionName) {
                 var isGuid = /\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/.test($state.params.solutionName);
                 if (isGuid) {
-                    this.$scope.routeId = $state.params.solutionName;
+                    this.$scope.planId = $state.params.solutionName;
                 } else {
                     return this.createNewSolution($state.params.solutionName);
                 }
             } else {
-                this.$scope.routeId = $state.params.id;
+                this.$scope.planId = $state.params.id;
             }
 
             this.loadRoute();
@@ -369,13 +324,13 @@ module dockyard.controllers {
                 solutionName: solutionName
             });
             route.$promise.then((curRoute: interfaces.IRouteVM) => {
-                this.$scope.routeId = curRoute.id;
+                this.$scope.planId = curRoute.id;
                 this.onRouteLoad('solution', curRoute);
             });
         }
 
         private loadRoute(mode = 'route') {
-            var routePromise = this.RouteService.getFull({ id: this.$scope.routeId });
+            var routePromise = this.RouteService.getFull({ id: this.$scope.planId });
             routePromise.$promise.then(this.onRouteLoad.bind(this, mode));
         }
 
@@ -539,7 +494,7 @@ module dockyard.controllers {
                 parentId = eventArgs.group.parentAction.id;
             }
             // Create new action object.
-            var action = new model.ActivityDTO(this.$scope.routeId, parentId, id, true);
+            var action = new model.ActivityDTO(this.$scope.planId, parentId, id, true);
             action.name = activityTemplate.name;
             action.label = activityTemplate.label;
             // Add action to Workflow Designer.

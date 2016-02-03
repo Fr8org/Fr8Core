@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data.Entities;
+using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 
 namespace Hub.Interfaces
@@ -11,7 +12,7 @@ namespace Hub.Interfaces
         void PrepareAuthToken(ActivityDTO activityDTO);
 
         Task<AuthenticateResponse> AuthenticateInternal(Fr8AccountDO account, TerminalDO terminal,
-            string domain, string username, string password);
+            string domain, string username, string password, bool isDemoAccount = false);
 
         Task<AuthenticateResponse> GetOAuthToken(TerminalDO terminal, ExternalAuthenticationDTO externalAuthDTO);
 

@@ -57,15 +57,15 @@ namespace DockyardTest.Controllers
                 plan.ChildNodes.Add(subroute);
                 uow.SaveChanges();
             }
-            //Arrange is done with empty action list
+                //Arrange is done with empty action list
 
-            //Act
-            var actualAction = CreateActionWithId(FixtureData.GetTestGuidById(1));
+                //Act
+                var actualAction = CreateActionWithId(FixtureData.GetTestGuidById(1));
 
-            actualAction.IsTempId = true;
-            actualAction.ParentRouteNodeId = subroute.Id;
-
-            var controller = new ActionsController();
+                actualAction.IsTempId = true;
+                actualAction.ParentRouteNodeId = subroute.Id;
+                
+                var controller = new ActionsController();
             var result = (OkNegotiatedContentResult<ActivityDTO>) controller.Save(actualAction);
             var savedAction = result.Content;
 
@@ -101,12 +101,12 @@ namespace DockyardTest.Controllers
                 subroute.ChildNodes.Add(activity);
                 uow.SaveChanges();
             }
-            //Act
-            var actualAction = CreateActionWithId(FixtureData.GetTestGuidById(2));
-            actualAction.IsTempId = true;
-            actualAction.ParentRouteNodeId = subroute.Id;
+                //Act
+                var actualAction = CreateActionWithId(FixtureData.GetTestGuidById(2));
+                actualAction.IsTempId = true;
+                actualAction.ParentRouteNodeId = subroute.Id;
 
-            var controller = new ActionsController();
+                var controller = new ActionsController();
             var result = (OkNegotiatedContentResult<ActivityDTO>) controller.Save(actualAction);
             var savedAction = result.Content;
 
@@ -127,9 +127,9 @@ namespace DockyardTest.Controllers
 
         public void ActionController_Save_WithActionExists_ExistingActionShouldBeUpdated()
         {
-            //Arrange
-            //Add one test action
-            var activity = FixtureData.TestActivity1();
+                //Arrange
+                //Add one test action
+                var activity = FixtureData.TestActivity1();
 
             var plan = new PlanDO
             {
@@ -145,13 +145,13 @@ namespace DockyardTest.Controllers
                 uow.PlanRepository.Add(plan);
                 uow.SaveChanges();
             }
-            //Act
-            var actualAction = CreateActionWithId(FixtureData.GetTestGuidById(1));
+                //Act
+                var actualAction = CreateActionWithId(FixtureData.GetTestGuidById(1));
 
             actualAction.ParentRouteNodeId = plan.Id;
 
-            var controller = new ActionsController();
-            controller.Save(actualAction);
+                var controller = new ActionsController();
+                controller.Save(actualAction);
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

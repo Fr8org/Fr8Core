@@ -75,7 +75,7 @@ namespace DockyardTest.Managers
 
                 _setupMock.Setup(
                     a => a.CreateAndConfigure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<int>(),
-                        "Monitor_Fr8_Events", It.IsAny<string>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>())).Callback(() =>
+                        "Monitor_Fr8_Events", It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>())).Callback(() =>
                         {
                             /*using (var uow1 = ObjectFactory.GetInstance<IUnitOfWork>())
                             {
@@ -85,7 +85,7 @@ namespace DockyardTest.Managers
                                     RouteState = RouteState.Active,
                                     ChildNodes = { monitorFr8Action }
                                 });
-                                
+
 //                                var subRoute = uow1.SubrouteRepository.GetQuery().Single();
 //                                subRoute.ChildNodes.Add(monitorFr8Action);
 
@@ -96,12 +96,12 @@ namespace DockyardTest.Managers
 
                 _setupMock.Setup(
                     a => a.CreateAndConfigure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<int>(),
-                        "StoreMTData", It.IsAny<string>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>())).Callback(() =>
+                        "SaveToFr8Warehouse", It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>())).Callback(() =>
                         {
                            /* using (var uow1 = ObjectFactory.GetInstance<IUnitOfWork>())
                             {
                                 uow1.PlanRepository.Add(new PlanDO()
-                                {
+                            {
                                     Name = "plan2",
                                     RouteState = RouteState.Active,
                                     ChildNodes = { storeMtDataAction }

@@ -403,7 +403,7 @@ div.action-header {
     padding: 5px;
     height: auto;
     min-height: 224px;
-    max-height: 330px;
+    max-height: 500px;
     display: block;
     overflow: auto;
     width: 100%;
@@ -774,4 +774,8 @@ div[dnd-list].dndDragover {
 .register-guest-user a:hover{
     color: #fff !important;
     background: #55616f !important;
+}
+
+.ui-select-match {
+    overflow: hidden;
 }

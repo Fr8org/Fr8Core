@@ -13,6 +13,8 @@ using NUnit.Framework;
 using StructureMap;
 using Utilities.Interfaces;
 using UtilitiesTesting;
+using System.Threading.Tasks;
+using UtilitiesTesting.Fixtures;
 
 namespace DockyardTest.Controllers
 {
@@ -24,10 +26,13 @@ namespace DockyardTest.Controllers
 		public void RouteController_RunCanBeExecutedWithoutPayload()
 		{
 			// Arrange
-            Mock<IPlanRepository> rrMock = new Mock<IPlanRepository>();
-            rrMock.Setup(x => x.GetById<PlanDO>(It.IsAny<Guid>())).Returns(new PlanDO());
+			Mock<IPlanRepository> rrMock = new Mock<IPlanRepository>();
+            rrMock.Setup(x => x.GetById<PlanDO>(It.IsAny<Guid>())).Returns(new PlanDO()
+            {
+                Fr8Account = FixtureData.TestDockyardAccount1()
+            });
 
-            Mock<IUnitOfWork> uowMock = new Mock<IUnitOfWork>();
+			Mock<IUnitOfWork> uowMock = new Mock<IUnitOfWork>();
             uowMock.Setup(x => x.PlanRepository).Returns(rrMock.Object);
 
 			Mock<IPlan> routeMock = new Mock<IPlan>();
@@ -36,9 +41,14 @@ namespace DockyardTest.Controllers
 			Mock<IPusherNotifier> pusherMock = new Mock<IPusherNotifier>();
 			pusherMock.Setup(x => x.Notify(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>()));
 
+            Mock<Hub.Managers.Event> eventMock = new Mock<Hub.Managers.Event>(MockBehavior.Default);
+            eventMock.Setup(ev => ev.Publish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
+                It.IsAny<string>(), It.IsAny<string>())).Returns(Task.Delay(1));
+
 			ObjectFactory.Container.Inject(typeof(IUnitOfWork), uowMock.Object);
 			ObjectFactory.Container.Inject(typeof(IPlan), routeMock.Object);
 			ObjectFactory.Container.Inject(typeof(IPusherNotifier), pusherMock.Object);
+            ObjectFactory.Container.Inject(typeof(Hub.Managers.Event), eventMock.Object);
 
 			var controller = new RoutesController();
 
@@ -58,7 +68,7 @@ namespace DockyardTest.Controllers
 			rrMock.Setup(x => x.GetById<PlanDO>(It.IsAny<Guid>())).Returns(new PlanDO());
 
 			Mock<IUnitOfWork> uowMock = new Mock<IUnitOfWork>();
-			uowMock.Setup(x => x.PlanRepository).Returns(rrMock.Object);
+            uowMock.Setup(x => x.PlanRepository).Returns(rrMock.Object);
 
 			Mock<IPlan> routeMock = new Mock<IPlan>();
 			routeMock.Setup(x => x.Run(It.IsAny<PlanDO>(), It.IsAny<Crate>())).ReturnsAsync(new ContainerDO());
@@ -85,9 +95,12 @@ namespace DockyardTest.Controllers
 		{
 			// Arrange
 			Mock<IPlanRepository> rrMock = new Mock<IPlanRepository>();
-            rrMock.Setup(x => x.GetById<PlanDO>(It.IsAny<Guid>())).Returns(new PlanDO());
+            rrMock.Setup(x => x.GetById<PlanDO>(It.IsAny<Guid>())).Returns(new PlanDO()
+            {
+                Fr8Account = FixtureData.TestDockyardAccount1()
+            });
 
-            Mock<IUnitOfWork> uowMock = new Mock<IUnitOfWork>();
+			Mock<IUnitOfWork> uowMock = new Mock<IUnitOfWork>();
             uowMock.Setup(x => x.PlanRepository).Returns(rrMock.Object);
 
 			Mock<IPlan> routeMock = new Mock<IPlan>();
@@ -96,9 +109,15 @@ namespace DockyardTest.Controllers
 			Mock<IPusherNotifier> pusherMock = new Mock<IPusherNotifier>();
 			pusherMock.Setup(x => x.Notify(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>()));
 
+            Mock<Hub.Managers.Event> eventMock = new Mock<Hub.Managers.Event>(MockBehavior.Default);
+            eventMock.Setup(ev => ev.Publish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
+                It.IsAny<string>(), It.IsAny<string>())).Returns(Task.Delay(1));
+
 			ObjectFactory.Container.Inject(typeof(IUnitOfWork), uowMock.Object);
 			ObjectFactory.Container.Inject(typeof(IPlan), routeMock.Object);
 			ObjectFactory.Container.Inject(typeof(IPusherNotifier), pusherMock.Object);
+
+            ObjectFactory.Container.Inject(typeof(Hub.Managers.Event), eventMock.Object);
 
 			var controller = new RoutesController();
 
@@ -126,7 +145,6 @@ namespace DockyardTest.Controllers
 			};
 
 			var result = controller.Run(Guid.NewGuid(), payload);
-
 			// Assert
 			Assert.NotNull(result.Result);													// Get not empty result
 			Assert.IsInstanceOf<OkNegotiatedContentResult<ContainerDTO>>(result.Result);	// Result of correct HTTP response type with correct payload

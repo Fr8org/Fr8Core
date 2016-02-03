@@ -43,7 +43,7 @@ namespace DockyardTest.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
 
-               
+
                 //Add a template
                 var plan = FixtureData.TestRoute1();
                 uow.PlanRepository.Add(plan);

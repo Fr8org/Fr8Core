@@ -6,6 +6,7 @@ using System.Web.Http.Results;
 using StructureMap;
 using Data.Infrastructure;
 using Data.Interfaces.DataTransferObjects;
+using Hub.Exceptions;
 using Hub.Interfaces;
 using System.Configuration;
 using Data.Crates;
@@ -138,7 +139,14 @@ namespace Hub.Services
 
             if (curPlan.RouteState != RouteState.Inactive)
             {
+                try
+                {
                 await _plan.Run(curPlan, curEventData);
+            }
+                catch (Exception ex)
+                {
+                    EventManager.ContainerFailed(curPlan, ex);
+                }
             }
         }
     }

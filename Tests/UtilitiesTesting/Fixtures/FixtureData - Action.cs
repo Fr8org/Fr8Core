@@ -122,6 +122,7 @@ namespace UtilitiesTesting.Fixtures
                 Id = GetTestGuidById(3),
                 Name = "Send an Email",
                 ActivityTemplateId = actionTemplate.Id,
+                Fr8Account = FixtureData.TestDockyardAccount1(),
                 ActivityTemplate = actionTemplate
             };
             return curActivityDO;
@@ -312,7 +313,7 @@ namespace UtilitiesTesting.Fixtures
                 updater.CrateStorage.Add(GetEnvelopeIdCrate());
             }
 
-            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(()=>containerDO.CrateStorage))
+            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => containerDO.CrateStorage))
             {
                 updater.CrateStorage.Add(GetEnvelopeIdCrate());
             }
@@ -569,7 +570,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = GetTestGuidById(1),
                 Ordering = 1,
-                CrateStorage=  crateStorage,
+                CrateStorage = crateStorage,
                  
                 ChildNodes = new List<RouteNodeDO>
                 {
@@ -1198,6 +1199,7 @@ namespace UtilitiesTesting.Fixtures
                                 Ordering = 1,
                                 ParentRouteNodeId = GetTestGuidById(43),
                                 CrateStorage = crateStorage,
+                              
                                 ActivityTemplate = curActionTemplate,
                                  ActivityTemplateId = curActionTemplate.Id,
                             },
@@ -1207,6 +1209,7 @@ namespace UtilitiesTesting.Fixtures
                                 Ordering = 2,
                                 ParentRouteNodeId = GetTestGuidById(43),
                                CrateStorage = crateStorage,
+                               
                                 ActivityTemplate = curActionTemplate,
                                  ActivityTemplateId = curActionTemplate.Id,
                             }
@@ -1234,6 +1237,7 @@ namespace UtilitiesTesting.Fixtures
                                 ParentRouteNodeId = GetTestGuidById(59),
                                 Ordering = 1,
                                 CrateStorage = crateStorage,
+                                
                                 ActivityTemplate = curActionTemplate,
                                  ActivityTemplateId = curActionTemplate.Id,
                             },
@@ -1243,6 +1247,7 @@ namespace UtilitiesTesting.Fixtures
                                 ParentRouteNodeId = GetTestGuidById(59),
                                 Ordering = 3,
                                 CrateStorage = crateStorage,
+                               
                                 ActivityTemplate = curActionTemplate,
                                  ActivityTemplateId = curActionTemplate.Id,
                             }

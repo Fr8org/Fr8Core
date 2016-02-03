@@ -435,7 +435,7 @@ namespace Data.Infrastructure
 			  return _routeNodeRepository ?? (_routeNodeRepository = new RouteNodeRepository(this));
 		  }
 	  }
-      
+
 		private ProcessNodeRepository _proeProcessNodeRepository;
 
         public ProcessNodeRepository ProcessNodeRepository

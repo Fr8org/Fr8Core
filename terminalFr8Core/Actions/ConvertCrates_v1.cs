@@ -41,7 +41,8 @@ namespace terminalFr8Core.Actions
 
         private static readonly Dictionary<ManifestTypeMatch, ICrateConversion> ConversionMap = new Dictionary<ManifestTypeMatch, ICrateConversion>
         {
-            { new ManifestTypeMatch(MT.DocuSignTemplate, MT.StandardFileHandle), new DocuSignTemplateToStandardFileDescriptionConversion() }
+            { new ManifestTypeMatch(MT.DocuSignTemplate, MT.StandardFileHandle), new DocuSignTemplateToStandardFileDescriptionConversion() },
+            { new ManifestTypeMatch(MT.StandardFileHandle, MT.DocuSignTemplate), new StandardFileDescriptionToDocuSignTemplateConversion() }
         };
 
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
@@ -112,7 +113,6 @@ namespace terminalFr8Core.Actions
 
             using (var updater = Crate.UpdateStorage(curActivityDO))
             {
-                updater.CrateStorage.RemoveUsingPredicate(c => c.IsOfType<StandardDesignTimeFieldsCM>() && c.Label == "Available From Manifests");
                 updater.CrateStorage.RemoveUsingPredicate(c => c.IsOfType<StandardDesignTimeFieldsCM>() && c.Label == "Available To Manifests");
                 if (manifestTypeDropdown.Value != null)
                 {

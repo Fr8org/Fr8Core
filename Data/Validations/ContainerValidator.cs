@@ -24,7 +24,7 @@ namespace Data.Validations
                         return uow.PlanRepository.GetById<RouteNodeDO>(id) != null;
                     }
                 })
-                .WithMessage("RouteId must be a required foreign key for Plan");
+                .WithMessage("PlanId must be a required foreign key for Plan");
         }
     }
 }

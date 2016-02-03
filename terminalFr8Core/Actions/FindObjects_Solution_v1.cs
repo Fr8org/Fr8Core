@@ -278,31 +278,12 @@ namespace terminalFr8Core.Actions
 
         #region Child action management.
 
-        private async Task<ActivityTemplateDTO> ExtractActivityTemplate(ActivityDO activityDO, string name)
-        {
-            var activityTemplate = (await HubCommunicator.GetActivityTemplates(activityDO, CurrentFr8UserId))
-                .FirstOrDefault(x => x.Name == name);
-
-            return activityTemplate;
-        }
-
-        private async Task<ActivityDO> CreateConnectToSqlAction(ActivityDO activityDO)
+        private async Task<ActivityDO> CreateConnectToSqlActivity(ActivityDO activityDO)
         {
             var connectionString = GetConnectionString();
+            var connectToSqlActionDO = await AddAndConfigureChildActivity(activityDO, "ConnectToSql");
 
-            var activityTemplateName = "ConnectToSql";
-            var activityTemplateDTO = await ExtractActivityTemplate(activityDO, activityTemplateName);
-
-            if (activityTemplateDTO == null)
-            {
-                throw new Exception(string.Format("ActivityTemplate {0} was not found", activityTemplateName));
-            }
-
-            var connectToSqlActionDO = new ActivityDO()
-            {
-                IsTempId = true,
-                ActivityTemplateId = activityTemplateDTO.Id,
-                CrateStorage = Crate.CrateStorageAsStr(
+            connectToSqlActionDO.CrateStorage = Crate.CrateStorageAsStr(
                     new CrateStorage()
                     {
                         Crate<StandardDesignTimeFieldsCM>.FromContent(
@@ -323,36 +304,19 @@ namespace terminalFr8Core.Actions
                                 FindObjectHelper.RetrieveColumnTypes(connectionString)
                             )
                         )
-                    }
-                ),
-                CreateDate = DateTime.Now,
-                Ordering = 1,
-                Name = "Connect To Sql",
-                Label = "Connect To Sql"
-            };
+                    });
 
             return connectToSqlActionDO;
         }
 
-        private async Task<ActivityDO> CreateBuildQueryAction(ActivityDO activityDO)
+        private async Task<ActivityDO> CreateBuildQueryActivity(ActivityDO activityDO)
         {
             var crateStorage = Crate.GetStorage(activityDO);
             var selectedObject = GetCurrentSelectedObject(crateStorage);
             var selectedConditions = GetCurrentSelectedConditions(crateStorage);
 
-            var activityTemplateName = "BuildQuery";
-            var activityTemplateDTO = await ExtractActivityTemplate(activityDO, activityTemplateName);
-
-            if (activityTemplateDTO == null)
-            {
-                throw new Exception(string.Format("ActivityTemplate {0} was not found", activityTemplateName));
-            }
-
-            var buildQueryActionDO = new ActivityDO()
-            {
-                IsTempId = true,
-                ActivityTemplateId = activityTemplateDTO.Id,
-                CrateStorage = Crate.CrateStorageAsStr(
+            var buildQueryActivityDO = await AddAndConfigureChildActivity(activityDO, "BuildQuery");
+            buildQueryActivityDO.CrateStorage = Crate.CrateStorageAsStr(
                     new CrateStorage()
                     {
                         Crate<StandardQueryCM>.FromContent(
@@ -362,54 +326,25 @@ namespace terminalFr8Core.Actions
                             )
                         )
                     }
-                ),
-                CreateDate = DateTime.Now,
-                Ordering = 2,
-                Name = "Build Query",
-                Label = "Build Query"
-            };
-
-            return buildQueryActionDO;
+                );
+            
+            return buildQueryActivityDO;
         }
 
         private async Task<ActivityDO> CreateExecuteSqlAction(ActivityDO activityDO)
         {
-            var activityTemplateName = "ExecuteSql";
-            var activityTemplateDTO = await ExtractActivityTemplate(activityDO, activityTemplateName);
-
-            if (activityTemplateDTO == null)
-            {
-                throw new Exception(string.Format("ActivityTemplate {0} was not found", activityTemplateName));
-            }
-
-            var executeSqlActionDO = new ActivityDO()
-            {
-                IsTempId = true,
-                ActivityTemplateId = activityTemplateDTO.Id,
-                CrateStorage = Crate.EmptyStorageAsStr(),
-                CreateDate = DateTime.Now,
-                Ordering = 3,
-                Name = "Execute Sql",
-                Label = "Execute Sql"
-            };
-
-            return executeSqlActionDO;
+            return await AddAndConfigureChildActivity(activityDO, "ExecuteSql");
         }
 
         private async Task UpdateChildActions(ActivityDO activityDO)
         {
-            activityDO.ChildNodes = new List<RouteNodeDO>();
-
-            var connectToSqlActionDO = await CreateConnectToSqlAction(activityDO);
-            activityDO.ChildNodes.Add(connectToSqlActionDO);
+            var connectToSqlActionDO = await CreateConnectToSqlActivity(activityDO);
 
             if (FindControl(Crate.GetStorage(activityDO), "QueryBuilder") != null)
             {
-                var buildQueryActionDO = await CreateBuildQueryAction(activityDO);
-                activityDO.ChildNodes.Add(buildQueryActionDO);
+                var buildQueryActionDO = await CreateBuildQueryActivity(activityDO);
 
                 var executeSqlActionDO = await CreateExecuteSqlAction(activityDO);
-                activityDO.ChildNodes.Add(executeSqlActionDO);
             }
         }
 

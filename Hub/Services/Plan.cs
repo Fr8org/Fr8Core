@@ -81,7 +81,7 @@ namespace Hub.Services
                 {
                     Id = Guid.NewGuid()
                 });
-                
+
                 uow.PlanRepository.Add(ptdo);
             }
             else
@@ -130,9 +130,33 @@ namespace Hub.Services
             //Route deletion will only update its RouteState = Deleted
             foreach (var container in _container.LoadContainers(uow, plan))
             {
-                container.ContainerState = ContainerState.Deleted;
+                    container.ContainerState = ContainerState.Deleted;
+                }
             }
-        }
+
+//        public IList<SubrouteDO> GetSubroutes(PlanDO curPlanDO)
+//        {
+//            using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
+//            {
+//                //var queryableRepo = unitOfWork.SubrouteRepository
+//                //.GetQuery()
+//                //.Include(x => x.ChildNodes)
+//                //.Where(x => x.ParentRouteNodeId == curPlanDO.Id)
+//                //.OrderBy(x => x.Id)
+//                //.ToList();
+//
+//                //return queryableRepo;
+//
+//                var queryableRepo = unitOfWork.PlanRepository.GetQuery()
+//                    .Include("Subroutes")
+//                    .Where(x => x.Id == curPlanDO.Id);
+//
+//                return queryableRepo.SelectMany<PlanDO, SubrouteDO>(x => x.Subroutes)
+//                    .ToList();
+//            }
+//        }
+
+
 
         private IEnumerable<TActivity> EnumerateActivities<TActivity>(PlanDO curPlan, bool allowOnlyOneNoteTemplate = true)
         {
@@ -227,7 +251,7 @@ namespace Hub.Services
                                 result.RedirectToRouteBuilder = true;
 
                                 return result;
-                            }
+                        }
                         }
                         catch (Exception ex)
                         {
@@ -239,8 +263,8 @@ namespace Hub.Services
                 if (result.Status != "validation_error")
                 {
                     plan.RouteState = RouteState.Active;
-                    uow.SaveChanges();
-                }
+                uow.SaveChanges();
+            }
             }
 
             return result;
@@ -339,7 +363,26 @@ namespace Hub.Services
         //
         //        }
 
-        
+//
+//        /// <summary>
+//        /// Returns all actions created within a Process Template.
+//        /// </summary>
+//        /// <param name="id">Process Template id.</param>
+//        /// <returns></returns>
+//        public IEnumerable<ActivityDO> GetActivities(int id)
+//        {
+//            if (id <= 0)
+//            {
+//                throw new ArgumentException("id");
+//            }
+//
+//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+//            {
+//                return EnumerateActivities<ActivityDO>(uow.PlanRepository.GetByKey(id), false).ToArray();
+//            }
+//        }
+
+
 
         public IList<PlanDO> GetMatchingPlans(string userId, EventReportCM curEventReport)
         {
@@ -376,9 +419,17 @@ namespace Hub.Services
 
                     foreach (var subscriptionsList in storage.CrateContentsOfType<EventSubscriptionCM>())
                     {
-                        bool hasEvents = subscriptionsList.Subscriptions
-                            .Where(events => curEventReport.EventNames.ToUpper().Trim().Replace(" ", "").Contains(events.ToUpper().Trim().Replace(" ", "")))
-                            .Any();
+                        var manufacturer = subscriptionsList.Manufacturer;
+                        bool hasEvents;
+                        if (string.IsNullOrEmpty(manufacturer) || string.IsNullOrEmpty(curEventReport.Manufacturer))
+                        {
+                            hasEvents = subscriptionsList.Subscriptions.Any(events => curEventReport.EventNames.ToUpper().Trim().Replace(" ", "").Contains(events.ToUpper().Trim().Replace(" ", "")));
+                        }
+                        else
+                        {
+                            hasEvents = subscriptionsList.Subscriptions.Any(events => curEventReport.Manufacturer == manufacturer &&
+                                curEventReport.EventNames.ToUpper().Trim().Replace(" ", "").Contains(events.ToUpper().Trim().Replace(" ", "")));
+                        }
 
                         if (hasEvents)
                         {
@@ -548,7 +599,8 @@ namespace Hub.Services
 
         private async Task<ContainerDO> Run(IUnitOfWork uow, ContainerDO curContainerDO)
         {
-            if (curContainerDO.ContainerState == ContainerState.Failed || curContainerDO.ContainerState == ContainerState.Completed)
+            if (curContainerDO.ContainerState == ContainerState.Failed
+                || curContainerDO.ContainerState == ContainerState.Completed)
             {
                 throw new ApplicationException("Attempted to Launch a Process that was Failed or Completed");
             }

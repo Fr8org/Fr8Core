@@ -173,7 +173,7 @@ namespace DockyardTest.Services
         {
             var tree = FixtureData.CreateTestActivityTreeWithOnlyActivityDo();
             var updatedTree = FixtureData.CreateTestActivityTreeWithOnlyActivityDo();
-            
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var plan = new PlanDO
@@ -258,7 +258,7 @@ namespace DockyardTest.Services
                     RouteState = RouteState.Active,
                     ChildNodes = { tree }
                 };
-               
+
                 uow.PlanRepository.Add(plan);
                 uow.SaveChanges();
 

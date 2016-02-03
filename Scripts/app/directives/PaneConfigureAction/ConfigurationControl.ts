@@ -45,7 +45,7 @@ module dockyard.directives.paneConfigureAction {
                 $element: ng.IAugmentedJQuery,
                 $attrs: ng.IAttributes) => {
             };
-
+            
             ConfigurationControl.prototype.controller = (
                 $scope: IConfigurationControlScope,
                 $element: ng.IAugmentedJQuery,
@@ -82,8 +82,9 @@ module dockyard.directives.paneConfigureAction {
 
                     $scope.$emit("onClick", new ChangeEventArgs(field));
                 };
-
             };
+
+            ConfigurationControl.prototype.controller['$inject'] = ['$scope', '$element', '$attrs'];
         }
 
         //The factory function returns Directive object as per Angular requirements
@@ -108,5 +109,4 @@ module dockyard.directives.paneConfigureAction {
             }
         };
     });
-
 }

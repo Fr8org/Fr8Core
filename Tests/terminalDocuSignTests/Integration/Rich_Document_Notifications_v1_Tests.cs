@@ -19,7 +19,7 @@ namespace terminalDocuSignTests.Integration
 {
     [Explicit]
     [Category("terminalDocuSignTests.Integration")]
-    public class Rich_Document_Notifications_v1_Tests : BaseHealthMonitorTest
+    public class Rich_Document_Notifications_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {
@@ -39,10 +39,14 @@ namespace terminalDocuSignTests.Integration
 
         private void AssertControls(StandardConfigurationControlsCM controls)
         {
-            Assert.AreEqual(3, controls.Controls.Count());
-            Assert.AreEqual(2, controls.Controls.Count(x => x.Type == "RadioButtonGroup"));
-            //Assert.AreEqual(1, controls.Controls.Count(x => x.Name == "SpecificEvent"));
+            Assert.AreEqual(5, controls.Controls.Count());
+
+            Assert.AreEqual(1, controls.Controls.Count(x => x.Name == "Track_Which_Envelopes"));
             Assert.AreEqual(1, controls.Controls.Count(x => x.Name == "NotificationHandler"));
+            Assert.AreEqual(1, controls.Controls.Count(x => x.Name == "TimePeriod"));
+            Assert.AreEqual(1, controls.Controls.Count(x => x.Name == "RecipientEvent"));
+            Assert.AreEqual(1, controls.Controls.Count(x => x.Name == "EventInfo"));
+            
         }
 
         private void AddHubActivityTemplate(ActivityDTO activityDTO)

@@ -60,6 +60,12 @@ namespace Data.Entities
             ChildNodes.Add(child);
         }
 
+        public void AddChild(RouteNodeDO child, int? ordering)
+        {
+            child.Ordering = ordering ?? (ChildNodes.Count > 0 ? ChildNodes.Max(x => x.Ordering) + 1 : 1);
+            ChildNodes.Add(child);
+        }
+
         public virtual RouteNodeDO Clone()
         {
             var clone = CreateNewInstance();

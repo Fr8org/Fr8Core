@@ -16,8 +16,6 @@ using StructureMap;
 
 namespace HubWeb.Controllers
 {
-    
-    
     [Fr8ApiAuthorize]
     public class ActionsController : ApiController
     {
@@ -45,12 +43,13 @@ namespace HubWeb.Controllers
 
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
-        public async Task<IHttpActionResult> Create(int actionTemplateId, string name, string label = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null)
+        public async Task<IHttpActionResult> Create(int actionTemplateId, string name, string label = null, int? order = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var userId = User.Identity.GetUserId();
-                var result = await _activity.CreateAndConfigure(uow, userId, actionTemplateId, name, label, parentNodeId, createRoute, authorizationTokenId);
+
+                var result = await _activity.CreateAndConfigure(uow, userId, actionTemplateId, name, label, order, parentNodeId, createRoute, authorizationTokenId);
 
                 if (result is ActivityDO)
                 {
@@ -80,7 +79,7 @@ namespace HubWeb.Controllers
                 }
 
                 var result = await _activity.CreateAndConfigure(uow, userId,
-                    activityTemplate.Id, activityTemplate.Name, activityTemplate.Label, null, true);
+                    activityTemplate.Id, activityTemplate.Name, activityTemplate.Label, null, null, true);
                 return Ok(RouteMappingHelper.MapRouteToDto(uow, (PlanDO)result));
             }
         }
@@ -133,16 +132,33 @@ namespace HubWeb.Controllers
         public IHttpActionResult Save(ActivityDTO curActionDTO)
         {
             ActivityDO submittedActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var resultActionDO = _activity.SaveOrUpdateActivity(uow, submittedActivityDO);
                 var resultActionDTO = Mapper.Map<ActivityDTO>(resultActionDO);
-
                 return Ok(resultActionDTO);
             }
         }
-
+        [HttpPost]
+        [Fr8HubWebHMACAuthenticate]
+        public async Task<IHttpActionResult> Documentation([FromBody] ActivityDTO curActivityDTO)
+        {
+            var curDocSupport = curActivityDTO.DocumentationSupport;
+            //check if the DocumentationSupport comma separated string has the correct form
+            if (!ValidateDocumentationSupport(curDocSupport))
+                return BadRequest();
+            var solutionPageDTO = await _activity.GetSolutionDocumentation(curActivityDTO);
+            return Ok(solutionPageDTO);
+        }
+        private bool ValidateDocumentationSupport(string docSupport)
+        {
+            var curStringArray = docSupport.Split(',');
+            if (curStringArray.Contains("MainPage") && curStringArray.Contains("HelpMenu"))
+                throw new Exception("ActionDTO cannot have both MainPage and HelpMenu in the Documentation Support field value");
+            if (curStringArray.Contains("MainPage") || curStringArray.Contains("HelpMenu"))
+                return true;
+            return false;
+        }
 //        /// <summary>
 //        /// POST : updates the given action
 //        /// </summary>

@@ -142,7 +142,7 @@
             controlListCrate.contents = { Controls: fieldsToSyncWithCrate };
         }
 
-        private populateListItemsFromDataSource(fields: Array<model.ControlDefinitionDTO>, crateStorage: model.CrateStorage) {
+        public populateListItemsFromDataSource(fields: Array<model.ControlDefinitionDTO>, crateStorage: model.CrateStorage) {
             //now we should look for crates with manifestType Standard Design Time Fields
             //to set or override our DropdownListBox items
             for (var i = 0; i < fields.length; i++) {

@@ -30,7 +30,7 @@ namespace terminalIntegrationTests
             {
                 var plan = new PlanDO()
                 {
-                    Id = UtilitiesTesting.Fixtures.FixtureData.TestParentRouteID(),
+                    Id = UtilitiesTesting.Fixtures.FixtureData.TestParentPlanID(),
                     Name = "1",
                     RouteState = RouteState.Active
                 };
@@ -62,7 +62,7 @@ namespace terminalIntegrationTests
             var curActionDTO = new ActivityDTO()
             {
                 ContainerId = UtilitiesTesting.Fixtures.FixtureData.TestContainer_Id_1(),
-                ParentRouteNodeId =  UtilitiesTesting.Fixtures.FixtureData.TestParentRouteID()
+                ParentRouteNodeId =  UtilitiesTesting.Fixtures.FixtureData.TestParentPlanID()
             };
 
             using (var updater = _crateManager.UpdateStorage(curActionDTO))

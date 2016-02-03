@@ -36,13 +36,15 @@ namespace Hub.Managers
         string CrateStorageAsStr(CrateStorage storage);
         void AddLogMessage(string label, List<LogItemDTO> logItemList, ContainerDO containerDO);
         Crate CreateAuthenticationCrate(string label, AuthenticationMode mode);
+
+        Crate<ManifestDescriptionCM> CreateManifestDescriptionCrate(string label, string name, string id, AvailabilityType availability);
         Crate<StandardDesignTimeFieldsCM> CreateDesignTimeFieldsCrate(string label, params FieldDTO[] fields);
         Crate<StandardDesignTimeFieldsCM> CreateDesignTimeFieldsCrate(string label, List<FieldDTO> fields);
         Crate<StandardDesignTimeFieldsCM> CreateDesignTimeFieldsCrate(string label, List<FieldDTO> fields, AvailabilityType availability);
         Crate<StandardDesignTimeFieldsCM> CreateDesignTimeFieldsCrate(string label, AvailabilityType availability, params FieldDTO[] fields);
         Crate<StandardConfigurationControlsCM> CreateStandardConfigurationControlsCrate(string label, params ControlDefinitionDTO[] controls);
         Crate CreateStandardEventReportCrate(string label, EventReportCM eventReport);
-        Crate CreateStandardEventSubscriptionsCrate(string label, params string[] subscriptions);
+        Crate CreateStandardEventSubscriptionsCrate(string label, string manufacturer, params string[] subscriptions);
         Crate CreateStandardTableDataCrate(string label, bool firstRowHeaders, params TableRowDTO[] table);
         Crate CreatePayloadDataCrate(string payloadDataObjectType, string crateLabel, StandardTableDataCM tableDataMS);
         Crate CreateOperationalStatusCrate(string label, OperationalStateCM eventReport);
@@ -53,6 +55,6 @@ namespace Hub.Managers
         IEnumerable<FieldDTO> GetFields(IEnumerable<Crate> crates);
         IEnumerable<string> GetLabelsByManifestType(IEnumerable<Crate> crates, string manifestType);
         StandardDesignTimeFieldsCM MergeContentFields(List<Crate<StandardDesignTimeFieldsCM>> curCrates);
-
+        T GetContentType<T>(string crate) where T : class;
     }
 }

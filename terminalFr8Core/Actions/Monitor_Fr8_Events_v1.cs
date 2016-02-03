@@ -14,6 +14,8 @@ using Data.Entities;
 using StructureMap;
 using Hub.Managers;
 using Data.Control;
+using Data.States;
+using System.Globalization;
 
 namespace terminalFr8Core.Actions
 {
@@ -27,17 +29,26 @@ namespace terminalFr8Core.Actions
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             //build a controls crate to render the pane
-            var eventFields = Crate.CreateDesignTimeFieldsCrate("Monitor Fr8 Event Fields", CreateMonitorFr8EventFields().ToArray());
             var eventSubscription = PackCrate_EventSubscriptions();
 
             var textBlock = GenerateTextBlock("Monitor Fr8 Events",
                 "This Activity doesn't require any configuration.", "well well-lg");
             var curControlsCrate = PackControlsCrate(textBlock);
 
+            var routeActivatedCrate = Crate.CreateManifestDescriptionCrate("Available Run-Time Objects", "RouteActivated", "13", AvailabilityType.RunTime);
+            var routeDeactivatedCrate = Crate.CreateManifestDescriptionCrate("Available Run-Time Objects", "RouteDeactivated", "13", AvailabilityType.RunTime);
+            var containerLaunched = Crate.CreateManifestDescriptionCrate("Available Run-Time Objects", "ContainerLaunched", "13", AvailabilityType.RunTime);
+            var containerExecutionComplete = Crate.CreateManifestDescriptionCrate("Available Run-Time Objects", "ContainerExecutionComplete", "13", AvailabilityType.RunTime);
+            var actionExecuted = Crate.CreateManifestDescriptionCrate("Available Run-Time Objects", "ActionExecuted", "13", AvailabilityType.RunTime);
+
             using (var updater = Crate.UpdateStorage(curActivityDO))
             {
                 updater.CrateStorage.Add(curControlsCrate);
-                updater.CrateStorage.Add(eventFields);
+                updater.CrateStorage.Add(routeActivatedCrate);
+                updater.CrateStorage.Add(routeDeactivatedCrate);
+                updater.CrateStorage.Add(containerLaunched);
+                updater.CrateStorage.Add(containerExecutionComplete);
+                updater.CrateStorage.Add(actionExecuted);
                 updater.CrateStorage.Add(eventSubscription);
             }
 
@@ -81,19 +92,9 @@ namespace terminalFr8Core.Actions
 
             return Crate.CreateStandardEventSubscriptionsCrate(
                 "Standard Event Subscriptions",
+                "Fr8Core",
                 subscriptions.ToArray()
                 );
-        }
-
-        private List<FieldDTO> CreateMonitorFr8EventFields()
-        {
-            return new List<FieldDTO>(){
-                new FieldDTO("RouteActivated",string.Empty),
-                new FieldDTO("RouteDeactivated",string.Empty),
-                new FieldDTO("ContainerLaunched",string.Empty),
-                new FieldDTO("ContainerExecutionComplete",string.Empty),
-                new FieldDTO("ActionExecuted",string.Empty),
-            };
         }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)

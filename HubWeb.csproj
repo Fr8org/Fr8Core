@@ -118,10 +118,6 @@
       <HintPath>packages\Hangfire.SqlServer.1.5.3\lib\net45\Hangfire.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Hangfire.SqlServer.Msmq, Version=1.5.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Hangfire.SqlServer.MSMQ.1.5.3\lib\net45\Hangfire.SqlServer.Msmq.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
       <Private>True</Private>
@@ -380,7 +376,7 @@
     <Compile Include="Controllers\AuthenticationCallbackController.cs" />
     <Compile Include="Controllers\Api\FilesController.cs" />
     <Compile Include="Controllers\JsTestsController.cs" />
-    <Compile Include="Controllers\Api\SubrouteController.cs" />
+    <Compile Include="Controllers\Api\ProcessNodeTemplateController.cs" />
     <Compile Include="Controllers\Api\EventController.cs" />
     <Compile Include="Controllers\EnvelopeController.cs" />
     <Compile Include="Controllers\Api\ContainerController.cs" />
@@ -430,9 +426,11 @@
     <Compile Include="Controllers\Api\ReportController.cs" />
     <Compile Include="Controllers\TokenAuthController.cs" />
     <Compile Include="ExceptionHandling\MvcHandleErrorAttribute.cs" />
+    <Compile Include="Infrastructure\FileActionResult.cs" />
     <Compile Include="Infrastructure\Fr8HubWebHMACAuthenticateAttribute.cs" />
     <Compile Include="Infrastructure\Fr8Identity.cs" />
     <Compile Include="Infrastructure\Fr8Principle.cs" />
+    <Compile Include="SelfHostFactory.cs" />
     <Compile Include="ViewModels\AuthenticationErrorVM.cs" />
     <Compile Include="ViewModels\DocusignLoginVM.cs" />
     <Compile Include="ViewModels\ForgotPasswordVM.cs" />
@@ -496,6 +494,7 @@
     <Content Include="Content\Databases\DO-823.sql" />
     <Content Include="Content\DO-823.sql" />
     <Content Include="Content\documents\Medical_Form_v2.xml" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\icons\web_services\aws-icon-64x64.png" />
     <Content Include="Content\icons\web_services\docusign-icon-64x64.png" />
     <Content Include="Content\icons\web_services\DocuSign-Logo.png" />
@@ -573,8 +572,10 @@
     <Content Include="Content\img\site\kwasant-video-screen.png" />
     <Content Include="Content\img\site\site-logo.png" />
     <Content Include="Content\img\welcome\docusign.png" />
+    <Content Include="Content\img\welcome\fr8Terminals-howitworks.png" />
     <Content Include="Content\img\welcome\left-side-bg.jpg" />
     <Content Include="Content\img\welcome\logo.png" />
+    <Content Include="Content\img\welcome\plan_with_activities.png" />
     <Content Include="Content\img\welcome\right-side-bg.jpg" />
     <Content Include="Content\img\welcome\routeBuilder.png" />
     <Content Include="Content\img\welcome\DocuSign_Logo_Purple_Yellow.png" />
@@ -769,7 +770,12 @@
     <Content Include="_PowerShellScripts\MASTER-settings.job" />
     <Content Include="_PowerShellScripts\DeployAzureWebJob-HealthMonitor-MASTER.ps1" />
     <Content Include="_PowerShellScripts\KillProcess.ps1" />
+    <Content Include="_PowerShellScripts\SetCloudServiceSize.ps1" />
+    <Content Include="_PowerShellScripts\SetTerminalFr8CoreCS.ps1" />
+    <Content Include="_PowerShellScripts\SetTerminalDocuSignCS.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\ActionPicker.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamCrateChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamFieldChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\DateTimeFormatter.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\FilterByTag.ts" />
@@ -852,6 +858,10 @@
       <IsTransformFile>True</IsTransformFile>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Content Include="Content\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.woff2" />
     <None Include="Properties\PublishProfiles\dockyard - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\dockyard - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\fr8 - FTP.pubxml" />
@@ -875,6 +885,9 @@
     <Content Include="Views\AngularTemplate\UsersEmailList.cshtml" />
     <Content Include="Views\AngularTemplate\FileDetails.cshtml" />
     <Content Include="Views\AngularTemplate\_Debug.cshtml" />
+    <Content Include="Views\AngularTemplate\UpstreamCrateChooser.cshtml" />
+    <Content Include="Views\AngularTemplate\ActionPicker.cshtml" />
+    <Content Include="Views\Services\HowItWorks.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -4248,7 +4261,6 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="archive\" />
-    <Folder Include="Content\fonts\" />
     <Folder Include="Content\img\forms\" />
     <Folder Include="Content\templates\metronic\assets\global\plugins\angularjs\plugins\angular-file-upload\uploads\" />
     <Folder Include="Content\templates\metronic\demo\" />

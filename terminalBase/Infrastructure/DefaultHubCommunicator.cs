@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Formatting;
@@ -57,15 +58,20 @@ namespace TerminalBase.Infrastructure
             return await _hmacService.GenerateHMACHeader(requestUri, TerminalId, TerminalSecret, userId, content);
         }
 
+        private async Task<Dictionary<string, string>> GetHMACHeader(Uri requestUri, string userId, HttpContent content)
+        {
+            return await _hmacService.GenerateHMACHeader(requestUri, TerminalId, TerminalSecret, userId, content);
+        }
+
         #endregion
 
         public async Task<PayloadDTO> GetPayload(ActivityDO activityDO, Guid containerId, string userId)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/containers?id="
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/containers/payload?id="
                 + containerId.ToString("D");
             var uri = new Uri(url, UriKind.Absolute);
-            var payloadDTOTask = await _restfulServiceClient.GetAsync<PayloadDTO>(new Uri(url, UriKind.Absolute), containerId.ToString(), await GetHMACHeader(uri ,userId));
+            var payloadDTOTask = await _restfulServiceClient.GetAsync<PayloadDTO>(new Uri(url, UriKind.Absolute), containerId.ToString(), await GetHMACHeader(uri, userId));
 
             return payloadDTOTask;
         }
@@ -77,7 +83,7 @@ namespace TerminalBase.Infrastructure
                 : "downstream_actions/";
 
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                +"api/"+ CloudConfigurationManager.GetSetting("HubApiVersion") + "/routenodes/"
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routenodes/"
                 + directionSuffix
                 + "?id=" + activityDO.Id;
             var uri = new Uri(url, UriKind.Absolute);
@@ -200,7 +206,7 @@ namespace TerminalBase.Infrastructure
             return await _restfulServiceClient.PostAsync<ActivityDTO, ActivityDTO>(uri, activityDTO, null, await GetHMACHeader(uri, userId, activityDTO));
         }
 
-        public async Task<ActivityDTO> CreateAndConfigureActivity(int templateId, string name, string userId, string label = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null)
+        public async Task<ActivityDTO> CreateAndConfigureActivity(int templateId, string name, string userId, string label = null, int? order = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                       + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/actions/create";
@@ -219,7 +225,11 @@ namespace TerminalBase.Infrastructure
             }
             if (authorizationTokenId != null)
             {
-                formattedPostUrl += "&authorizationTokenId=" + authorizationTokenId.ToString();
+                formattedPostUrl += "&authorizationTokenId=" + authorizationTokenId;
+            }
+            if (order != null)
+            {
+                formattedPostUrl += "&order=" + order;
             }
             
             var uri = new Uri(url + formattedPostUrl);
@@ -244,19 +254,60 @@ namespace TerminalBase.Infrastructure
         public async Task<PlanDO> ActivatePlan(PlanDO planDO, string userId)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                      + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routes/activate";
+                      + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routes/activate?planId=" + planDO.Id;
             var uri = new Uri(url);
 
-            return await _restfulServiceClient.PostAsync<PlanDO, PlanDO>(uri, planDO, null, await GetHMACHeader(uri, userId, planDO));
+            return await _restfulServiceClient.PostAsync<PlanDO>(uri, null, await GetHMACHeader(uri, userId));
         }
 
         public async Task<IEnumerable<RouteFullDTO>> GetPlansByName(string name, string userId)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                      + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routes/getbyname?name="+name;
+                      + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routes/getbyname?name=" + name;
             var uri = new Uri(url);
 
             return await _restfulServiceClient.GetAsync<IEnumerable<RouteFullDTO>>(uri, null, await GetHMACHeader(uri, userId));
+        }
+
+        public static byte[] ReadFully(Stream input)
+        {
+            var buffer = new byte[16 * 1024];
+            using (var ms = new MemoryStream())
+            {
+                int read;
+                while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    ms.Write(buffer, 0, read);
+                }
+                return ms.ToArray();
+            }
+        }
+
+        public async Task<FileDO> SaveFile(string name, Stream stream, string userId)
+        {
+            var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/files/files";
+            var multiPartData = new MultipartFormDataContent();
+            var byteData = ReadFully(stream);
+            multiPartData.Add(new ByteArrayContent(byteData), name, name);
+            var uri = new Uri(hubUrl);
+            return await _restfulServiceClient.PostAsync<FileDO>(uri, multiPartData, null, await GetHMACHeader(uri, userId, (HttpContent)multiPartData));
+        }
+
+        public async Task<IEnumerable<FileDTO>> GetFiles(string userId)
+        {
+            var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/files";
+            var uri = new Uri(hubUrl);
+            return await _restfulServiceClient.GetAsync<IEnumerable<FileDTO>>(uri, null, await GetHMACHeader(uri, userId));
+        }
+
+        public async Task<Stream> DownloadFile(int fileId, string userId)
+        {
+            var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/files/download?id="+fileId;
+            var uri = new Uri(hubUrl);
+            return await _restfulServiceClient.DownloadAsync(uri, null, await GetHMACHeader(uri, userId));
         }
     }
 }

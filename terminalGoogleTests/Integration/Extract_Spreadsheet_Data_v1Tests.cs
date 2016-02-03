@@ -20,7 +20,7 @@ namespace terminalGoogleTests.Integration
     /// but allows to trigger that class from HealthMonitor.
     /// </summary>
     [Explicit]
-    public class Extract_Spreadsheet_Data_v1Tests : BaseHealthMonitorTest
+    public class Extract_Spreadsheet_Data_v1Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {
@@ -187,7 +187,7 @@ namespace terminalGoogleTests.Integration
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardTableDataCM>().Count());
             Assert.IsFalse(crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.FirstRowHeaders);
-            Assert.AreEqual(0, crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.Table.Count);
+            Assert.AreEqual(1, crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.Table.Count);
         }
         /////////////
         /// Followup Configuration End

@@ -17,6 +17,7 @@ using Hub.Interfaces;
 using Hub.Managers;
 using Utilities.Configuration.Azure;
 using TerminalBase.Infrastructure;
+using AutoMapper;
 
 namespace TerminalBase.BaseClasses
 {
@@ -33,6 +34,9 @@ namespace TerminalBase.BaseClasses
         private readonly ITerminal _terminal;
         protected static readonly string ConfigurationControlsLabel = "Configuration_Controls";
         protected string CurrentFr8UserId { get; set; }
+        protected string _actionName { get; set; }
+
+        private List<ActivityTemplateDTO> _activityTemplateCache = null;
 
         public IHubCommunicator HubCommunicator { get; set; }
         #endregion
@@ -43,12 +47,18 @@ namespace TerminalBase.BaseClasses
             ManifestDiscovery.Default.GetManifestType<EventSubscriptionCM>()
         };
 
-        public BaseTerminalActivity()
+        public BaseTerminalActivity() : this("Unknown")
+        {
+
+        }
+
+        public BaseTerminalActivity(string actionName)
         {
             Crate = new CrateManager();
             Activity = ObjectFactory.GetInstance<IActivity>();
             _terminal = ObjectFactory.GetInstance<ITerminal>();
             HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
+            _actionName = actionName;
         }
 
         public void SetCurrentUser(string userId)
@@ -253,7 +263,7 @@ namespace TerminalBase.BaseClasses
             {
                 return Crate.CreateDesignTimeFieldsCrate("Validation Errors", validationErrorList.ToArray());
             }
-            
+
             return null;
         }
 
@@ -492,7 +502,7 @@ namespace TerminalBase.BaseClasses
         /// </summary>
         /// <param name="activityDO">ActionDO.</param>
         /// <returns></returns>
-        protected async Task<Crate> CreateAvailableFieldsCrate(ActivityDO activityDO,string crateLabel = "Upstream Terminal-Provided Fields")
+        protected async Task<Crate> CreateAvailableFieldsCrate(ActivityDO activityDO, string crateLabel = "Upstream Terminal-Provided Fields")
         {
             var curUpstreamFields = await HubCommunicator.GetDesignTimeFieldsByDirection(activityDO, CrateDirection.Upstream, AvailabilityType.RunTime, CurrentFr8UserId);
 
@@ -546,6 +556,22 @@ namespace TerminalBase.BaseClasses
         }
 
         /// <summary>
+        /// Adds Text Source for the DTO type. 
+        /// </summary>
+        /// <remarks>The (T), DTO's Proerty Names will be used to name and label the new Text Source Controls</remarks>
+        protected void AddTextSourceControlForDTO<T>(CrateStorage storage, string upstreamSourceLabel,
+                                                     string filterByTag = "",
+                                                     bool addRequestConfigEvent = true, bool required = false)
+        {
+            typeof(T).GetProperties()
+                .Where(property => !property.Name.Equals("Id")).ToList().ForEach(property =>
+                {
+                    AddTextSourceControl(storage, property.Name, property.Name, upstreamSourceLabel, filterByTag,
+                        addRequestConfigEvent, required);
+                });
+        }
+
+        /// <summary>
         /// Creates RadioButtonGroup to enter specific value or choose value from upstream crate.
         /// </summary>
         protected ControlDefinitionDTO CreateSpecificOrUpstreamValueChooser(
@@ -567,6 +593,24 @@ namespace TerminalBase.BaseClasses
 
             return control;
         }
+
+        protected UpstreamCrateChooser CreateUpstreamCrateChooser(string name, string label, bool isMultiSelection = true)
+        {
+
+            var manifestDdlb = new DropDownList { Name = name + "_mnfst_dropdown_0", Source = new FieldSourceDTO(CrateManifestTypes.StandardDesignTimeFields, "AvailableUpstreamManifests") };
+            var labelDdlb = new DropDownList { Name = name + "_lbl_dropdown_0", Source = new FieldSourceDTO(CrateManifestTypes.StandardDesignTimeFields, "AvailableUpstreamLabels") };
+
+            var ctrl = new UpstreamCrateChooser
+            {
+                Name = name,
+                Label = label,
+                SelectedCrates = new List<CrateDetails> { new CrateDetails { Label = labelDdlb, ManifestType = manifestDdlb } },
+                MultiSelection = isMultiSelection
+            };
+
+            return ctrl;
+        }
+
 
 
         /// <summary>
@@ -659,10 +703,11 @@ namespace TerminalBase.BaseClasses
             if (fieldValues.Length > 0)
                 return fieldValues[0];
 
-            IncidentReporter reporter = ObjectFactory.GetInstance<IncidentReporter>();
-            reporter.IncidentMissingFieldInPayload(fieldKey, curActivity, "");
+            var baseEvent = new BaseTerminalEvent();
+            var exceptionMessage = string.Format("No field found with specified key: {0}.", fieldKey);
+            baseEvent.SendTerminalErrorIncident(_actionName, exceptionMessage, _actionName);
 
-            throw new ApplicationException(string.Format("No field found with specified key: {0}.", fieldKey));
+            throw new ApplicationException(exceptionMessage + " Detailed information has been written to log.");
         }
 
         protected void AddLabelControl(CrateStorage storage, string name, string label, string text)
@@ -692,6 +737,69 @@ namespace TerminalBase.BaseClasses
                 .FirstOrDefault(x => x.Name == name);
 
             return control;
+        }
+
+
+        /// <summary>
+        /// specify selected FieldDO for DropDownList
+        /// specify Value (TimeSpan) for Duration
+        /// </summary>
+        protected void SetControlValue(ActivityDO activity, string controlFullName, object value)
+        {
+            using (var updater = Crate.UpdateStorage(activity))
+            {
+                var controls = updater.CrateStorage
+                    .CrateContentsOfType<StandardConfigurationControlsCM>()
+                    .First().Controls;
+
+                var control = TraverseNestedControls(controls, controlFullName);
+                switch (control.Type)
+                {
+                    case "TextBlock":
+                    case "TextBox":
+                        control.Value = (string)value;
+                        break;
+                    case "CheckBox":
+                        control.Selected = true;
+                        break;
+                    case "DropDownList":
+                        var ddlb = control as DropDownList;
+                        var val = value as ListItem;
+                        ddlb.selectedKey = val.Key;
+                        ddlb.Value = val.Value;
+                        //ddlb.ListItems are not loaded yet
+                        break;
+                    case "Duration":
+                        var duration = control as Duration;
+                        var timespan = (TimeSpan)value;
+                        duration.Days = timespan.Days;
+                        duration.Hours = timespan.Hours;
+                        duration.Minutes = timespan.Minutes;
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
+        }
+
+        private ControlDefinitionDTO TraverseNestedControls(List<ControlDefinitionDTO> controls, string childControl)
+        {
+            var controlNames = childControl.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+            var control = controls.Where(a => a.Name == controlNames[0]).FirstOrDefault();
+            if (controlNames.Count() == 1) return control;
+
+            List<ControlDefinitionDTO> nestedControls = null;
+
+            if (control.Type == "RadioButtonGroup")
+            {
+                var radio = (control as RadioButtonGroup).Radios.Where(a => a.Name == controlNames[1]).FirstOrDefault();
+                radio.Selected = true;
+                nestedControls = radio.Controls.ToList();
+                return TraverseNestedControls(nestedControls, string.Join(".", controlNames.Skip(2)));
+            }
+            //TODO: Add support for future controls with nested child controls
+            else
+                throw new NotImplementedException("Can't search for controls inside of " + control.Type);
         }
 
         protected void RemoveControl(CrateStorage storage, string name)
@@ -794,7 +902,48 @@ namespace TerminalBase.BaseClasses
             }
 
             return await Task.FromResult<FieldDTO[]>(null);
-        } 
+        }
+
+        protected async Task<ActivityDO> AddAndConfigureChildActivity(ActivityDO parent, string templateName_Or_templateID, string name = null, string label = null, int? order = null)
+        {
+
+            //search activity template by name or id
+            var allActivityTemplates = _activityTemplateCache != null ? _activityTemplateCache : _activityTemplateCache = await HubCommunicator.GetActivityTemplates(parent, CurrentFr8UserId);
+            int templateId;
+            var activityTemplate = Int32.TryParse(templateName_Or_templateID, out templateId) ?
+                allActivityTemplates.FirstOrDefault(a => a.Id == templateId)
+                : allActivityTemplates.FirstOrDefault(a => a.Name == templateName_Or_templateID);
+
+            if (activityTemplate == null) throw new Exception(string.Format("ActivityTemplate {0} was not found", templateName_Or_templateID));
+
+            //assign missing properties
+            label = string.IsNullOrEmpty(label) ? activityTemplate.Label : label;
+            name = string.IsNullOrEmpty(name) ? activityTemplate.Label : label;
+
+            //parent must be a Subroute
+            //If Route is specified as a parent, then a new subroute will be created
+            Guid parentId = (parent.ChildNodes.Count > 0) ? parent.ChildNodes[0].ParentRouteNodeId.Value : parent.RootRouteNodeId.Value;
+
+            var result = await HubCommunicator.CreateAndConfigureActivity(activityTemplate.Id, name, CurrentFr8UserId, label, order, parentId);
+            var resultDO = Mapper.Map<ActivityDO>(result);
+
+            if (resultDO != null)
+            {
+                parent.ChildNodes.Add(resultDO);
+                return resultDO;
+            }
+
+            return null;
+        }
+
+
+        protected async Task<ActivityDO> ConfigureChildActivity(ActivityDO parent, ActivityDO child)
+        {
+            var result = await HubCommunicator.ConfigureActivity(child, CurrentFr8UserId);
+            parent.ChildNodes.Remove(child);
+            parent.ChildNodes.Add(result);
+            return result;
+        }
 
         protected virtual Crate MergeUpstreamFields<TManifest>(ActivityDO curActivityDO, string label, FieldDTO[] upstreamFields)
         {

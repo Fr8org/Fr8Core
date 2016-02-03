@@ -55,7 +55,34 @@ namespace Hub.Services
             //we don't want to save changes here, to enable upstream transactions
         }
 
-      
+//        // <summary>
+//        /// Creates noew Subroute entity and add it to RouteDO. If RouteDO has no child subroute created plan becomes starting subroute.
+//        /// </summary>
+//        public SubrouteDO Create(IUnitOfWork uow, PlanDO plan, string name)
+//        {
+//            var subroute = new SubrouteDO();
+//            subroute.Id = Guid.NewGuid();
+//            subroute.RootRouteNode = plan;
+//            subroute.Fr8Account = plan.Fr8Account;
+//
+//            uow.SubrouteRepository.Add(subroute);
+//
+//            if (plan != null)
+//            {
+//                //if (!plan.Subroutes.Any())
+//                //{
+//                    plan.StartingSubroute = subroute;
+//                    subroute.StartingSubroute = true;
+//                //}
+//            }
+//
+//            subroute.Name = name;
+//
+//
+//
+//            return subroute;
+//        }
+
         /// <summary>
         /// Update Subroute entity.
         /// </summary>
@@ -106,7 +133,7 @@ namespace Hub.Services
             }
 
             subroute.AddChildWithDefaultOrdering(curActivityDO);
-            
+
             uow.SaveChanges();
         }
 

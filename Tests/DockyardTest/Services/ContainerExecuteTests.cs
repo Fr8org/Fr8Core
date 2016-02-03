@@ -15,13 +15,15 @@ using Hub.Managers;
 using Hub.Services;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
+using Moq;
+using System.Threading.Tasks;
 
 namespace DockyardTest.Services
 {
     
     [TestFixture]
     [Category("ContainerExecute")]
-    public class ContainerExecuteTests: BaseTest
+    public class ContainerExecuteTests : BaseTest
     {
         private InternalInterface.IContainer _container;
 
@@ -146,6 +148,11 @@ namespace DockyardTest.Services
         {
             string crateStorage = GetCrateStorageAsString();
 
+            Mock<Hub.Managers.Event> eventMock = new Mock<Hub.Managers.Event>(MockBehavior.Default);
+            eventMock.Setup(ev => ev.Publish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
+                It.IsAny<string>(), It.IsAny<string>())).Returns(Task.Delay(1));
+            ObjectFactory.Container.Inject(typeof(Hub.Managers.Event), eventMock.Object);
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var containerDO = FixtureData.TestContainerExecute();
@@ -159,15 +166,18 @@ namespace DockyardTest.Services
                 containerDO.CurrentRouteNode = currAction;
                 containerDO.NextRouteNode = nextAction;
 
+                //uow.UserRepository.Add(FixtureData.TestDockyardAccount1());
+
                 uow.PlanRepository.Add(new PlanDO()
                 {
+                    Fr8Account = FixtureData.TestDeveloperAccount(),
                     Name = "name",
                     RouteState = RouteState.Active,
                     ChildNodes = { currAction, nextAction }
                 });
 
                 uow.ContainerRepository.Add(containerDO);
-                
+
                 uow.SaveChanges();
             }
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -183,6 +193,10 @@ namespace DockyardTest.Services
         public async void Execute_ManyActivities_ShouldBeOk()
         {
             string crateStorage = GetCrateStorageAsString();
+            Mock<Hub.Managers.Event> eventMock = new Mock<Hub.Managers.Event>(MockBehavior.Default);
+            eventMock.Setup(ev => ev.Publish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
+                It.IsAny<string>(), It.IsAny<string>())).Returns(Task.Delay(1));
+            ObjectFactory.Container.Inject(typeof(Hub.Managers.Event), eventMock.Object);
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -191,11 +205,12 @@ namespace DockyardTest.Services
                 uow.ActivityTemplateRepository.Add(FixtureData.ActionTemplate());
                 uow.PlanRepository.Add(new PlanDO()
                 {
+                    Fr8Account = FixtureData.TestDeveloperAccount(),
                     Name = "name",
                     RouteState = RouteState.Active,
                     ChildNodes = { currActivity }
                 });
-
+                
                 containerDO.CurrentRouteNode = currActivity;
                 uow.ContainerRepository.Add(containerDO);
                 
@@ -211,7 +226,7 @@ namespace DockyardTest.Services
             }
         }
 
-       
+
 
         private static string GetCrateStorageAsString()
         {
@@ -231,4 +246,3 @@ namespace DockyardTest.Services
     }
 
 }
-
