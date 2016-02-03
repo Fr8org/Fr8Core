@@ -30,6 +30,7 @@ namespace terminalFr8Core.Controllers
         public Task<object> Execute([FromUri] String actionType, [FromBody] Fr8DataDTO curDataDTO)
         {
             return HandleFr8Request(curTerminal, actionType, curDataDTO);
+
         }
     }
 }
