@@ -60,6 +60,17 @@ namespace terminalDocuSignTests.Integration
                     Tags = "Table Data Generator"
                 }
             );
+
+            AddActivityTemplate(
+               activityDTO,
+               new ActivityTemplateDTO()
+               {
+                   Id = 3,
+                   Name = "Get Google Sheet Data",
+                   Label = "Get Google Sheet Data",
+                   Tags = "Table Data Generator"
+               }
+           );
         }
 
         private void AssertControls(StandardConfigurationControlsCM controls)
@@ -70,11 +81,10 @@ namespace terminalDocuSignTests.Integration
             Assert.AreEqual(1, controls.Controls.Count(x => x.Name == "DocuSignTemplate"));
             Assert.AreEqual(1, controls.Controls.Count(x => x.Type == "Button"));
 
-            // Assert that DataSource dropdown contains two source
+            // Assert that DataSource dropdown contains sources and it should be only "Get"
             var dataSourceDropdown = (DropDownList)controls.Controls[0];
-            Assert.AreEqual(2, dataSourceDropdown.ListItems.Count());
-            Assert.AreEqual(1, dataSourceDropdown.ListItems.Count(l => l.Key == "Load Excel File"));
-            Assert.AreEqual(1, dataSourceDropdown.ListItems.Count(l => l.Key == "Extract Spreadsheet Data"));
+            Assert.AreEqual(1, dataSourceDropdown.ListItems.Count());
+            Assert.IsFalse(dataSourceDropdown.ListItems.Any(x => !x.Key.StartsWith("Get", StringComparison.InvariantCultureIgnoreCase)));
 
             // Assert that Dropdownlist  with source labeled "Available Templates".
             var templateDropdown = (DropDownList)controls.Controls[1];
