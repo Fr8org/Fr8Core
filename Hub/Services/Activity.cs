@@ -290,14 +290,20 @@ namespace Hub.Services
             {
                 parentNode = uow.PlanRepository.GetById<RouteNodeDO>(parentNodeId);
 
-                if (parentNode.Id == parentNode.RootRouteNodeId)
+                if (parentNode is PlanDO)
                 {
-                    parentNode.ChildNodes.Clear();
-                    parentNode.ChildNodes.Add(parentNode = new SubrouteDO
+                    if (((PlanDO) parentNode).StartingSubroute == null)
                     {
-                        StartingSubroute = true,
-                        Name = name + " #1"
-                    });
+                        parentNode.ChildNodes.Add(parentNode = new SubrouteDO
+                        {
+                            StartingSubroute = true,
+                            Name = name + " #1"
+                        });
+                    }
+                    else
+                    {
+                        parentNode = ((PlanDO) parentNode).StartingSubroute;
+                    }
                 }
             }
 
