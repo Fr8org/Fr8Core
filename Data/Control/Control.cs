@@ -445,7 +445,7 @@ namespace Data.Control
 
         [JsonProperty("multiSelection")]
         public bool MultiSelection { get; set; }
-        
+
     }
 
     public class UpstreamFieldChooser : ControlDefinitionDTO
@@ -456,18 +456,29 @@ namespace Data.Control
         }
     }
 
-    public class HelpControlDTO
+    public class DocumentationDTO
     {
-        public HelpControlDTO(string helpPath, string documentationSupport)
+        public DocumentationDTO(string displayMechanism, string contentPath)
         {
-            this.HelpPath = helpPath;
-            this.DocumentationSupport = documentationSupport;
+            this.DisplayMechanism = displayMechanism;
+            this.ContentPath = contentPath;
         }
 
-        [JsonProperty("helpPath")]
-        public string HelpPath { get; set; }
+        [JsonProperty("displayMechanism")]
+        public string DisplayMechanism { get; set; }
 
-        [JsonProperty("documentationSupport")]
-        public string DocumentationSupport { get; set; }
+        [JsonProperty("contentPath")]
+        public string ContentPath { get; set; }
+
+        [JsonProperty("url")]
+        public string URL
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(ContentPath))
+                    return "/actions/documentation";
+                return string.Format("/actions/documentation/{0}", ContentPath);
+            }
+        }
     }
 }
