@@ -31,10 +31,10 @@ namespace terminalTwilioTests.Integration
         {
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
-            var requestActionDTO = HealthMonitor_FixtureData.Send_Via_Twilio_v1_InitialConfiguration_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Send_Via_Twilio_v1_InitialConfiguration_Fr8DataDTO();
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -59,14 +59,14 @@ namespace terminalTwilioTests.Integration
         {
             //Arrange
             var runUrl = GetTerminalRunUrl();
-            var curActionDTO = HealthMonitor_FixtureData.Send_Via_Twilio_v1_InitialConfiguration_ActionDTO();
+            var dataDTO = HealthMonitor_FixtureData.Send_Via_Twilio_v1_InitialConfiguration_Fr8DataDTO();
             //Act
             //OperationalStateCM crate is required to be added,
             //as upon return the Run method takes this crate and updates the status to "Success"
-            AddOperationalStateCrate(curActionDTO, new OperationalStateCM());
-            var payloadDTO = await HttpPostAsync<ActivityDTO, PayloadDTO>(
+            AddOperationalStateCrate(dataDTO.ActivityDTO, new OperationalStateCM());
+            var payloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(
                 runUrl,
-                curActionDTO
+                dataDTO
                 );
             //Assert
             var operationalCrate = Crate.FromDto(payloadDTO.CrateStorage).CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
@@ -84,9 +84,9 @@ namespace terminalTwilioTests.Integration
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
             var runUrl = GetTerminalRunUrl();
-            var curActionDTO = HealthMonitor_FixtureData.Send_Via_Twilio_v1_InitialConfiguration_ActionDTO();
+            var dataDTO = HealthMonitor_FixtureData.Send_Via_Twilio_v1_InitialConfiguration_Fr8DataDTO();
             //Act
-            var responseActionDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, curActionDTO);
+            var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
             var crateManager = new CrateManager();
             using (var updater = crateManager.UpdateStorage(responseActionDTO))
             {
@@ -101,7 +101,8 @@ namespace terminalTwilioTests.Integration
             //OperationalStateCM crate is required to be added,
             //as upon return the Run method takes this crate and updates the status to "Success"
             AddOperationalStateCrate(responseActionDTO, new OperationalStateCM());
-            var payloadDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(runUrl,responseActionDTO);
+            dataDTO.ActivityDTO = responseActionDTO;
+            var payloadDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(runUrl, dataDTO);
             //Assert
             //After Configure Test
             Assert.NotNull(responseActionDTO);
@@ -129,11 +130,11 @@ namespace terminalTwilioTests.Integration
             var configureUrl = GetTerminalActivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = HealthMonitor_FixtureData.Send_Via_Twilio_v1_InitialConfiguration_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Send_Via_Twilio_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -150,11 +151,11 @@ namespace terminalTwilioTests.Integration
             var configureUrl = GetTerminalDeactivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = HealthMonitor_FixtureData.Send_Via_Twilio_v1_InitialConfiguration_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Send_Via_Twilio_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );

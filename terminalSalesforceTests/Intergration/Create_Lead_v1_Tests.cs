@@ -43,12 +43,12 @@ namespace terminalSalesforceTests.Intergration
             string terminalConfigureUrl = GetTerminalConfigureUrl();
 
             //prepare the create lead action DTO
-            var requestActionDTO = HealthMonitor_FixtureData.Create_Lead_v1_InitialConfiguration_ActionDTO();
-            requestActionDTO.AuthToken = null;
+            var dataDTO = HealthMonitor_FixtureData.Create_Lead_v1_InitialConfiguration_Fr8DataDTO();
+            dataDTO.ActivityDTO.AuthToken = null;
 
             //Act
             //perform post request to terminal and return the result
-            await HttpPostAsync<ActivityDTO, ActivityDTO>(terminalConfigureUrl, requestActionDTO);
+            await HttpPostAsync<Fr8DataDTO, ActivityDTO>(terminalConfigureUrl, dataDTO);
         }
 
         [Test, Category("intergration.terminalSalesforce")]
@@ -58,9 +58,9 @@ namespace terminalSalesforceTests.Intergration
             var initialConfigActionDto = await PerformInitialConfiguration();
             initialConfigActionDto = SetSpecificValues(initialConfigActionDto);
             AddOperationalStateCrate(initialConfigActionDto, new OperationalStateCM());
-
+            var dataDTO = new Fr8DataDTO { ActivityDTO = initialConfigActionDto };
             //Act
-            var responseOperationalState = await HttpPostAsync<ActivityDTO, PayloadDTO>(GetTerminalRunUrl(), initialConfigActionDto);
+            var responseOperationalState = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(GetTerminalRunUrl(), dataDTO);
 
             //Assert
             Assert.IsNotNull(responseOperationalState);
@@ -78,9 +78,9 @@ namespace terminalSalesforceTests.Intergration
             initialConfigActionDto = ExcludeValue(initialConfigActionDto, "LastName");
             initialConfigActionDto.AuthToken = HealthMonitor_FixtureData.Salesforce_AuthToken();
             AddOperationalStateCrate(initialConfigActionDto, new OperationalStateCM());
-
+            var dataDTO = new Fr8DataDTO { ActivityDTO = initialConfigActionDto };
             //Act
-            var responseOperationalState = await HttpPostAsync<ActivityDTO, PayloadDTO>(GetTerminalRunUrl(), initialConfigActionDto);
+            var responseOperationalState = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(GetTerminalRunUrl(), dataDTO);
 
             //Assert
             Assert.IsNotNull(responseOperationalState);
@@ -98,9 +98,9 @@ namespace terminalSalesforceTests.Intergration
             initialConfigActionDto = ExcludeValue(initialConfigActionDto, "Company");
             initialConfigActionDto.AuthToken = HealthMonitor_FixtureData.Salesforce_AuthToken();
             AddOperationalStateCrate(initialConfigActionDto, new OperationalStateCM());
-
+            var dataDTO = new Fr8DataDTO { ActivityDTO = initialConfigActionDto };
             //Act
-            var responseOperationalState = await HttpPostAsync<ActivityDTO, PayloadDTO>(GetTerminalRunUrl(), initialConfigActionDto);
+            var responseOperationalState = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(GetTerminalRunUrl(), dataDTO);
 
             //Assert
             Assert.IsNotNull(responseOperationalState);
@@ -117,9 +117,9 @@ namespace terminalSalesforceTests.Intergration
             initialConfigActionDto = SetSpecificValues(initialConfigActionDto);
             initialConfigActionDto.AuthToken = HealthMonitor_FixtureData.Salesforce_AuthToken();
             AddOperationalStateCrate(initialConfigActionDto, new OperationalStateCM());
-
+            var dataDTO = new Fr8DataDTO { ActivityDTO = initialConfigActionDto };
             //Act
-            var responseOperationalState = await HttpPostAsync<ActivityDTO, PayloadDTO>(GetTerminalRunUrl(), initialConfigActionDto);
+            var responseOperationalState = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(GetTerminalRunUrl(), dataDTO);
 
             //Assert
             Assert.IsNotNull(responseOperationalState);
@@ -134,10 +134,10 @@ namespace terminalSalesforceTests.Intergration
             string terminalConfigureUrl = GetTerminalConfigureUrl();
 
             //prepare the create account action DTO
-            var requestActionDTO = HealthMonitor_FixtureData.Create_Lead_v1_InitialConfiguration_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Create_Lead_v1_InitialConfiguration_Fr8DataDTO();
 
             //perform post request to terminal and return the result
-            var resultActionDto = await HttpPostAsync<ActivityDTO, ActivityDTO>(terminalConfigureUrl, requestActionDTO);
+            var resultActionDto = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(terminalConfigureUrl, requestActionDTO);
 
             using (var updater = Crate.UpdateStorage(resultActionDto))
             {

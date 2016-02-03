@@ -95,14 +95,14 @@ namespace terminalDocuSignTests.Integration
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_ActionDTO();
+            var requestDataDTO = HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_Fr8DataDTO();
 
-            AddHubActivityTemplate(requestActionDTO);
+            AddHubActivityTemplate(requestDataDTO.ActivityDTO);
             
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    requestActionDTO
+                    requestDataDTO
                 );
             
             responseActionDTO.AuthToken = HealthMonitor_FixtureData.DocuSign_AuthToken();
@@ -136,14 +136,14 @@ namespace terminalDocuSignTests.Integration
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_ActionDTO();
+            var requestDataDTO = HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_Fr8DataDTO();
 
-            AddHubActivityTemplate(requestActionDTO);
+            AddHubActivityTemplate(requestDataDTO.ActivityDTO);
 
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    requestActionDTO
+                    requestDataDTO
                 );
 
             Assert.NotNull(responseActionDTO);
@@ -164,7 +164,7 @@ namespace terminalDocuSignTests.Integration
             //var requestActionDTO = HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_ActionDTO();
 
             //var responseActionDTO = await GetActionDTO_WithDataStorage(childAction);
-            // responseActionDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(
+            // responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
             //        configureUrl,
             //        responseActionDTO
             //    );
@@ -187,7 +187,7 @@ namespace terminalDocuSignTests.Integration
             //var requestActionDTO = HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_ActionDTO();
 
             //var responseActionDTO = await GetActionDTO_WithDataStorage(childAction);
-            //responseActionDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(
+            //responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
             //       configureUrl,
             //       responseActionDTO
             //   );
@@ -208,11 +208,11 @@ namespace terminalDocuSignTests.Integration
             var configureUrl = GetTerminalActivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -229,11 +229,11 @@ namespace terminalDocuSignTests.Integration
             var configureUrl = GetTerminalDeactivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );

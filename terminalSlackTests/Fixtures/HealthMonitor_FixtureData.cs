@@ -6,11 +6,11 @@ namespace terminalSlackTests.Fixtures
 {
     public class HealthMonitor_FixtureData
     {
-        public static ActivityDTO Monitor_Channel_v1_InitialConfiguration_ActionDTO()
+        public static Fr8DataDTO Monitor_Channel_v1_InitialConfiguration_Fr8DataDTO()
         {
             var activityTemplate = Monitor_Channel_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
                 Name = "Monitor_Channel",
@@ -19,6 +19,8 @@ namespace terminalSlackTests.Fixtures
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id
             };
+
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
 
         public static ActivityTemplateDTO Monitor_Channel_v1_ActivityTemplate()
@@ -57,11 +59,11 @@ namespace terminalSlackTests.Fixtures
            };
         }
 
-        public static ActivityDTO Publish_To_Slack_v1_InitialConfiguration_ActionDTO(bool isAuthToken = true)
+        public static Fr8DataDTO Publish_To_Slack_v1_InitialConfiguration_Fr8DataDTO(bool isAuthToken = true)
         {
             var activityTemplate = Monitor_Channel_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
                 Name = "Select Slack Channel",
@@ -70,6 +72,7 @@ namespace terminalSlackTests.Fixtures
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id
             };
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
     }
 }
