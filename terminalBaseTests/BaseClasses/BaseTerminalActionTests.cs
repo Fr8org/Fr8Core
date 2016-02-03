@@ -113,7 +113,12 @@ namespace terminalBaseTests.BaseClasses
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.RouteNodeRepository.Add(FixtureData.TestActionTree());
+                uow.PlanRepository.Add(new PlanDO
+                {
+                    Name="Test route",
+                    RouteState = RouteState.Active,
+                    ChildNodes = { FixtureData.TestActionTree()}
+                });
                 uow.SaveChanges();
 
                 ActivityDO curAction = FixtureData.TestAction57();
@@ -129,7 +134,12 @@ namespace terminalBaseTests.BaseClasses
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.RouteNodeRepository.Add(FixtureData.TestActionTree());
+                uow.PlanRepository.Add(new PlanDO
+                {
+                    Name = "Test route",
+                    RouteState = RouteState.Active,
+                    ChildNodes = { FixtureData.TestActionTree() }
+                });
                 uow.SaveChanges();
 
                 ActivityDO curAction = FixtureData.TestAction57();
@@ -151,7 +161,12 @@ namespace terminalBaseTests.BaseClasses
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.RouteNodeRepository.Add(FixtureData.TestActionTree());
+                uow.PlanRepository.Add(new PlanDO
+                {
+                    Name = "Test route",
+                    RouteState = RouteState.Active,
+                    ChildNodes = { FixtureData.TestActionTree() }
+                });
                 uow.SaveChanges();
 
                 ActivityDO curAction = FixtureData.TestAction57();
@@ -177,7 +192,12 @@ namespace terminalBaseTests.BaseClasses
             var test = ObjectFactory.GetInstance<IRestfulServiceClient>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.RouteNodeRepository.Add(FixtureData.TestActionTree());
+                uow.PlanRepository.Add(new PlanDO
+                {
+                    Name = "Test route",
+                    RouteState = RouteState.Active,
+                    ChildNodes = { FixtureData.TestActionTree() }
+                });
                 uow.SaveChanges();
 
                 ActivityDO curAction = FixtureData.TestAction57();

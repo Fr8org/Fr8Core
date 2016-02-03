@@ -35,7 +35,7 @@ namespace terminalIntegrationTests
                     RouteState = RouteState.Active
                 };
 
-                uow.RouteRepository.Add(plan);
+                uow.PlanRepository.Add(plan);
 
                 uow.ContainerRepository.Add(new ContainerDO()
                 {

@@ -111,11 +111,12 @@ namespace terminalIntegrationTests
                 uow.UserRepository.Add(_testUserAccount);
                 uow.AuthorizationTokenRepository.Add(_authToken);
 
-                uow.RouteRepository.Add(_planDO);
-                uow.SubrouteRepository.Add(_subrouteDO);
+                uow.PlanRepository.Add(_planDO);
+               // uow.RouteRepository.Add(_planDO);
+               // uow.SubrouteRepository.Add(_subrouteDO);
                 // This fix inability of MockDB to correctly resolve requests to collections of derived entites
-                uow.RouteNodeRepository.Add(_subrouteDO);
-                uow.RouteNodeRepository.Add(_planDO);
+               // uow.RouteNodeRepository.Add(_subrouteDO);
+                //uow.RouteNodeRepository.Add(_planDO);
                 uow.SaveChanges();
             }
 
@@ -276,22 +277,22 @@ namespace terminalIntegrationTests
             Assert.True((storage.CratesOfType<StandardConfigurationControlsCM>().Any()));
             Assert.True(storage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "Available Templates"));
 
-            FixActionNavProps(activityDTO.Content.Id);
+           // FixActionNavProps(activityDTO.Content.Id);
 
             return storage;
         }
 
         // navigational properties in MockDB are not so navigational... 
-        private void FixActionNavProps(Guid id)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var activity = uow.ActivityRepository.GetByKey(id);
-
-                activity.ParentRouteNode = (RouteNodeDO)uow.SubrouteRepository.GetByKey(activity.ParentRouteNodeId) ?? uow.ActivityRepository.GetByKey(activity.ParentRouteNodeId);
-                uow.SaveChanges();
-            }
-        }
+//        private void FixActionNavProps(Guid id)
+//        {
+//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+//            {
+//                var activity = uow.ActivityRepository.GetByKey(id);
+//
+//                activity.ParentRouteNode = (RouteNodeDO)uow.SubrouteRepository.GetByKey(activity.ParentRouteNodeId) ?? uow.ActivityRepository.GetByKey(activity.ParentRouteNodeId);
+//                uow.SaveChanges();
+//            }
+//        }
 
         private void WaitForDocuSignEvent_SelectFirstTemplate(CrateStorage curCrateStorage)
         {
@@ -465,17 +466,17 @@ namespace terminalIntegrationTests
                 updater.CrateStorage = initWaitForDocuSignEventCS;
             }
 
-            FixActionNavProps(waitForDocuSignEventAction.Id);
+            //FixActionNavProps(waitForDocuSignEventAction.Id);
 
             // Call Configure FollowUp for WaitForDocuSignEvent action.
             await WaitForDocuSignEvent_ConfigureFollowUp(waitForDocuSignEventAction);
 
-            FixActionNavProps(waitForDocuSignEventAction.Id);
+         //   FixActionNavProps(waitForDocuSignEventAction.Id);
 
             // Save WaitForDocuSignEvent action.
             SaveAction(waitForDocuSignEventAction);
 
-            FixActionNavProps(waitForDocuSignEventAction.Id);
+        //    FixActionNavProps(waitForDocuSignEventAction.Id);
 
             // Create blank TestIncomingData action.
             var filterAction = CreateEmptyAction(_testIncomingDataActivityTemplate);
@@ -484,7 +485,7 @@ namespace terminalIntegrationTests
             // Call Configure Initial for TestIncomingData action.
             await TestIncomingData_ConfigureInitial(filterAction);
 
-            FixActionNavProps(filterAction.Id);
+           // FixActionNavProps(filterAction.Id);
         }
 
         /// <summary>
@@ -521,7 +522,7 @@ namespace terminalIntegrationTests
                 updater.CrateStorage = initCrateStorageDTO;
             }
 
-            FixActionNavProps(savedActionDTO.Id);
+          //  FixActionNavProps(savedActionDTO.Id);
 
             // Call Configure FollowUp for WaitForDocuSignEvent action.
             await WriteToSqlServer_ConfigureFollowUp(savedActionDTO);
