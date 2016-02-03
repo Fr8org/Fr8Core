@@ -67,7 +67,7 @@ namespace HealthMonitor.Utility
 
             Assert.AreEqual(ActivityResponse.Error.ToString(), operationalStateCM.CurrentActivityResponse.Type);
             Assert.AreEqual(ActionErrorCode.NO_AUTH_TOKEN_PROVIDED, operationalStateCM.CurrentActivityErrorCode);
-            Assert.AreEqual("No AuthToken provided.", errorMessage.ErrorCode);
+            Assert.AreEqual("No AuthToken provided.", errorMessage.Message);
         }
 
         public string GetTerminalDiscoverUrl()

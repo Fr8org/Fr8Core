@@ -57,7 +57,7 @@ namespace Data.Interfaces.DataTransferObjects.Helpers
                 parsedObject = JsonConvert.DeserializeObject<T>(tokenObj.ToString());
                 return true;
             }
-            catch (Exception)
+            catch (Exception exception)
             {
                 return false;
             }
