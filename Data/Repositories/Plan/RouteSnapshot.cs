@@ -47,12 +47,6 @@ namespace Data.Repositories.Plan
         // Functions
         /**********************************************************************************/
 
-        public RouteSnapshot()
-        {
-        }
-
-        /**********************************************************************************/
-
         public RouteSnapshot(RouteNodeDO node, bool cloneNodes)
         {
             RouteTreeHelper.Visit(node, (x, y) =>
@@ -60,36 +54,9 @@ namespace Data.Repositories.Plan
                 var clone = cloneNodes ? x.Clone() : x;
 
                 _nodes[x.Id] = clone;
-
-                UpdateForeignKeys(clone);
                 
                 clone.ParentRouteNodeId = y != null ? y.Id : (Guid?)null;    
             });
-        }
-
-        /**********************************************************************************/
-        // update Ids of foreign keys.
-        private void UpdateForeignKeys(RouteNodeDO clone)
-        {
-            if (clone.Fr8Account != null)
-            {
-                clone.Fr8AccountId = clone.Fr8Account.Id;
-            }
-
-            if (clone is ActivityDO)
-            {
-                UpdateForeignKeys((ActivityDO)clone);
-            } 
-        }
-
-        /**********************************************************************************/
-
-        private void UpdateForeignKeys(ActivityDO activity)
-        {
-            if (activity.AuthorizationToken != null)
-            {
-                activity.AuthorizationTokenId = activity.AuthorizationToken.Id;
-            }
         }
 
         /**********************************************************************************/

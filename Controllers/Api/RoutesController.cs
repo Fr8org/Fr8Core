@@ -130,8 +130,7 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var activity = uow.PlanRepository.GetById<ActivityDO>(id);
-                var plan = _plan.GetPlan(activity);
+                var plan = _plan.GetPlanByActivityId(uow, id);
                 var result = RouteMappingHelper.MapRouteToDto(uow, plan);
 
                 return Ok(result);

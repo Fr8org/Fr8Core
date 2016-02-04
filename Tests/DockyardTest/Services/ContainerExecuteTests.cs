@@ -163,10 +163,13 @@ namespace DockyardTest.Services
                 var nextAction = FixtureData.TestActivity5();
                 nextAction.CrateStorage = crateStorage;
                 
-                containerDO.CurrentRouteNode = currAction;
-                containerDO.NextRouteNode = nextAction;
+                containerDO.CurrentRouteNodeId = currAction.Id;
+                containerDO.NextRouteNodeId = nextAction.Id;
 
-                //uow.UserRepository.Add(FixtureData.TestDockyardAccount1());
+                uow.UserRepository.Add(FixtureData.TestDeveloperAccount());
+                uow.ActivityTemplateRepository.Add(currAction.ActivityTemplate);
+                uow.ActivityTemplateRepository.Add(nextAction.ActivityTemplate);
+
 
                 uow.PlanRepository.Add(new PlanDO()
                 {
@@ -185,7 +188,7 @@ namespace DockyardTest.Services
                 var containerDO = uow.ContainerRepository.GetByKey(FixtureData.TestContainer_Id_49());
                 await _container.Run(uow, containerDO);
 
-                Assert.IsNull(containerDO.CurrentRouteNode);
+                Assert.IsNull(containerDO.CurrentRouteNodeId);
                // Assert.IsNull(containerDO.NextActivity);
             }
         }
@@ -203,6 +206,7 @@ namespace DockyardTest.Services
                 var containerDO = FixtureData.TestContainerExecute();
                 var currActivity = FixtureData.TestActivityTreeWithActivityTemplates();
                 uow.ActivityTemplateRepository.Add(FixtureData.ActionTemplate());
+
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Fr8Account = FixtureData.TestDeveloperAccount(),
@@ -210,8 +214,11 @@ namespace DockyardTest.Services
                     RouteState = RouteState.Active,
                     ChildNodes = { currActivity }
                 });
-                
-                containerDO.CurrentRouteNode = currActivity;
+
+                uow.UserRepository.Add(FixtureData.TestDeveloperAccount());
+                uow.ActivityTemplateRepository.Add(currActivity.ActivityTemplate);
+
+                containerDO.CurrentRouteNodeId = currActivity.Id;
                 uow.ContainerRepository.Add(containerDO);
                 
                 uow.SaveChanges();
@@ -221,7 +228,7 @@ namespace DockyardTest.Services
                 var containerDO = uow.ContainerRepository.GetByKey(FixtureData.TestContainer_Id_49());
                 await _container.Run(uow, containerDO);
 
-                Assert.IsNull(containerDO.CurrentRouteNode);
+                Assert.IsNull(containerDO.CurrentRouteNodeId);
                // Assert.IsNull(processDO.NextActivity);
             }
         }

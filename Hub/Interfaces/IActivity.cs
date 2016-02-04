@@ -28,7 +28,7 @@ namespace Hub.Interfaces
                                              string label = null, int? order = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null);
 
         Task PrepareToExecute(ActivityDO curActivity, ActionState curActionState, ContainerDO curContainerDO, IUnitOfWork uow);
-        Task<PayloadDTO> Run(ActivityDO curActivityDO, ActionState curActionState, ContainerDO curContainerDO);
+        Task<PayloadDTO> Run(IUnitOfWork uow, ActivityDO curActivityDO, ActionState curActionState, ContainerDO curContainerDO);
        // string Authenticate(ActionDO curActivityDO);
         
         Task<ActivityDTO> Activate(ActivityDO curActivityDO);

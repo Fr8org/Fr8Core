@@ -1,26 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
-using Data.States;
-using Data.States.Templates;
-using Data.Validations;
 
-using FluentValidation;
 namespace Data.Entities
 {
     public class SubrouteDO : RouteNodeDO
     {
-        public SubrouteDO()
+        private static readonly PropertyInfo[] TrackingProperties =
         {
-           // this.Criteria = new List<CriteriaDO>();
-           // this.ProcessNode = new List<ProcessNodeDO>();
-        }
+            typeof (SubrouteDO).GetProperty("Name"),
+            typeof (SubrouteDO).GetProperty("StartingSubroute"),
+            typeof (SubrouteDO).GetProperty("NodeTransitions"),
+        };
 
         public SubrouteDO(bool startingSubroute)
         {
-            this.StartingSubroute = true;
+            StartingSubroute = startingSubroute;
+        }
+
+        public SubrouteDO()
+            : this(false)
+        {
         }
 
         public string Name { get; set; }
@@ -56,12 +56,7 @@ namespace Data.Entities
             // curValidator.ValidateAndThrow(this);
         }
 
-        private static readonly PropertyInfo[] TrackingProperties = 
-        {
-            typeof(SubrouteDO).GetProperty("Name"),
-            typeof(SubrouteDO).GetProperty("StartingSubroute"),
-            typeof(SubrouteDO).GetProperty("NodeTransitions"),
-        };
+      
 
         protected override IEnumerable<PropertyInfo> GetTrackingProperties()
         {
@@ -74,16 +69,6 @@ namespace Data.Entities
             {
                 yield return trackingProperty;
             }
-        }
-
-        public override bool AreContentPropertiesEquals(RouteNodeDO other)
-        {
-            var subroute = (SubrouteDO)other;
-
-            return base.AreContentPropertiesEquals(other) &&
-                   Name == subroute.Name &&
-                   StartingSubroute == subroute.StartingSubroute &&
-                   NodeTransitions == subroute.NodeTransitions;
         }
 
         protected override RouteNodeDO CreateNewInstance()

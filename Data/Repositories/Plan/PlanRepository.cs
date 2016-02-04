@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web.UI.WebControls;
 using Data.Entities;
 using Data.Interfaces;
 
@@ -16,8 +15,6 @@ namespace Data.Repositories.Plan
 
         private readonly List<LoadedRoute>  _loadedRoutes = new List<LoadedRoute>();
         private readonly Dictionary<Guid, LoadedRoute> _loadedNodes = new Dictionary<Guid, LoadedRoute>();
-        private readonly IPlanCache _cache;
-        private readonly IPlanStorageProvider _storageProvider;
 
         /**********************************************************************************/
         // Functions
@@ -26,8 +23,6 @@ namespace Data.Repositories.Plan
         public PlanRepository(PlanStorage planStorage)
         {
             _planStorage = planStorage;
-            //_cache = cache; 
-           // _storageProvider = storageProvider;
         }
 
         /**********************************************************************************/
@@ -208,7 +203,7 @@ namespace Data.Repositories.Plan
                     });
 
                     var parentPlan = loadedRoute.Root as PlanDO;
-                    Action<RouteNodeDO> updateCallback = null;
+                    Action<RouteNodeDO> updateCallback;
 
                     if (parentPlan != null)
                     {
@@ -217,25 +212,45 @@ namespace Data.Repositories.Plan
                             x.Fr8AccountId = parentPlan.Fr8AccountId;
                             x.Fr8Account = parentPlan.Fr8Account;
                             x.RootRouteNodeId = parentPlan.Id;
+                            UpdateForeignKeys(x);
                         };
+                    }
+                    else
+                    {
+                        updateCallback = UpdateForeignKeys;
                     }
 
                     var clonedRoute = RouteTreeHelper.CloneWithStructure(loadedRoute.Root, updateCallback);
                     _planStorage.Update(clonedRoute);
-//                    var currentSnapshot = new RouteSnapshot(clonedRoute, true);
-//                    
-//                    var changes = currentSnapshot.Compare(loadedRoute.Snapshot);
-//
-//                    if (changes.HasChanges)
-//                    {
-//                        _storageProvider.Update(changes);
-//                        _cache.Update(clonedRoute);
-//                        loadedRoute.Snapshot = currentSnapshot;
-//                    }
                 }
             }
         }
-        
+
+        /**********************************************************************************/
+        // update Ids of foreign keys.
+        private void UpdateForeignKeys(RouteNodeDO node)
+        {
+            if (node.Fr8Account != null)
+            {
+                node.Fr8AccountId = node.Fr8Account.Id;
+            }
+
+            if (node is ActivityDO)
+            {
+                UpdateForeignKeys((ActivityDO)node);
+            }
+        }
+
+        /**********************************************************************************/
+
+        private void UpdateForeignKeys(ActivityDO activity)
+        {
+            if (activity.AuthorizationToken != null)
+            {
+                activity.AuthorizationTokenId = activity.AuthorizationToken.Id;
+            }
+        }
+
         /**********************************************************************************/
 
         private RouteNodeDO GetRouteByMemberId(Guid id)

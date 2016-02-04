@@ -589,7 +589,7 @@ namespace DockyardTest.Services
             ContainerDO containerDO = FixtureData.TestContainer1();
             EventManager.EventActionStarted += EventManager_EventActionStarted;
             var executeActionMock = new Mock<IActivity>();
-            executeActionMock.Setup(s => s.Run(activityDo, It.IsAny<ActionState>(), containerDO)).Returns<Task<PayloadDTO>>(null);
+            executeActionMock.Setup(s => s.Run(It.IsAny<IUnitOfWork>(), activityDo, It.IsAny<ActionState>(), containerDO)).Returns<Task<PayloadDTO>>(null);
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

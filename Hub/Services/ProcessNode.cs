@@ -46,7 +46,6 @@ namespace Hub.Services
             };
 
             processNode.SubrouteId = subrouteId;
-            processNode.Subroute = uow.PlanRepository.GetById<SubrouteDO>(subrouteId);
 
             uow.ProcessNodeRepository.Add(processNode);
             EventManager.ProcessNodeCreated(processNode);
@@ -62,6 +61,7 @@ namespace Hub.Services
         /// <param name="targetPNode">ProcessNodeDO</param>
         public void CreateTruthTransition(ProcessNodeDO sourcePNode, ProcessNodeDO targetPNode)
         {
+           
             var keys =
                 JsonConvert.DeserializeObject<List<ProcessNodeTransition>>(sourcePNode.Subroute.NodeTransitions);
 

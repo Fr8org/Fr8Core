@@ -34,19 +34,21 @@ namespace Hub.Services
         private readonly ISecurityServices _security;
         private readonly IProcessNode _processNode;
 
-        public Plan()
+        public Plan(InternalInterface.IContainer container, Fr8Account dockyardAccount, IActivity activity,
+            ICrateManager crate, ISecurityServices security, IProcessNode processNode)
         {
-            _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
-            _dockyardAccount = ObjectFactory.GetInstance<Fr8Account>();
-            _activity = ObjectFactory.GetInstance<IActivity>();
-            _crate = ObjectFactory.GetInstance<ICrateManager>();
-            _security = ObjectFactory.GetInstance<ISecurityServices>();
-            _processNode = ObjectFactory.GetInstance<IProcessNode>();
+            _container = container;
+            _dockyardAccount = dockyardAccount;
+            _activity = activity;
+            _crate = crate;
+            _security = security;
+            _processNode = processNode;
         }
 
-        public IList<PlanDO> GetForUser(IUnitOfWork unitOfWork, Fr8AccountDO account, bool isAdmin = false, Guid? id = null, int? status = null)
+        public IList<PlanDO> GetForUser(IUnitOfWork unitOfWork, Fr8AccountDO account, bool isAdmin = false,
+            Guid? id = null, int? status = null)
         {
-            var queryableRepo = unitOfWork.PlanRepository.GetPlanQueryUncached(); 
+            var queryableRepo = unitOfWork.PlanRepository.GetPlanQueryUncached();
 
             if (isAdmin)
             {
@@ -58,47 +60,46 @@ namespace Hub.Services
                 ? queryableRepo.Where(pt => pt.Fr8Account.Id == account.Id)
                 : queryableRepo.Where(pt => pt.Id == id && pt.Fr8Account.Id == account.Id));
             return (status == null
-                ? queryableRepo : queryableRepo.Where(pt => pt.RouteState == status)).ToList();
+                ? queryableRepo
+                : queryableRepo.Where(pt => pt.RouteState == status)).ToList();
 
         }
 
         public IList<PlanDO> GetByName(IUnitOfWork uow, Fr8AccountDO account, string name)
         {
-            return uow.PlanRepository.GetPlanQueryUncached().Where(r => r.Fr8Account.Id == account.Id && r.Name == name).ToList();
+            return
+                uow.PlanRepository.GetPlanQueryUncached()
+                    .Where(r => r.Fr8Account.Id == account.Id && r.Name == name)
+                    .ToList();
         }
 
-        public void CreateOrUpdate(IUnitOfWork uow, PlanDO ptdo, bool updateChildEntities)
+        public void CreateOrUpdate(IUnitOfWork uow, PlanDO submittedPlan, bool updateChildEntities)
         {
-            var creating = ptdo.Id == Guid.Empty;
-            
-            if (creating)
+            if (submittedPlan.Id == Guid.Empty)
             {
-                ptdo.Id = Guid.NewGuid();
-                ptdo.RouteState = RouteState.Inactive;
-                ptdo.Fr8Account = _security.GetCurrentAccount(uow);
+                submittedPlan.Id = Guid.NewGuid();
+                submittedPlan.RouteState = RouteState.Inactive;
+                submittedPlan.Fr8Account = _security.GetCurrentAccount(uow);
 
-                ptdo.ChildNodes.Add(new SubrouteDO(true)
+                submittedPlan.ChildNodes.Add(new SubrouteDO(true)
                 {
                     Id = Guid.NewGuid()
                 });
 
-                uow.PlanRepository.Add(ptdo);
+                uow.PlanRepository.Add(submittedPlan);
             }
             else
             {
-                var curPlan = uow.PlanRepository.GetById<PlanDO>(ptdo.Id);
-                
+                var curPlan = uow.PlanRepository.GetById<PlanDO>(submittedPlan.Id);
+
                 if (curPlan == null)
                 {
                     throw new EntityNotFoundException();
                 }
 
-                curPlan.Name = ptdo.Name;
-                curPlan.Description = ptdo.Description;
-                // ChildEntities update code has been deleted by demel 09/28/2015
+                curPlan.Name = submittedPlan.Name;
+                curPlan.Description = submittedPlan.Description;
             }
-            //uow.SaveChanges(); we don't want to save changes here. we want the calling method to get to decide when this uow should be saved as a group
-            // return ptdo.Id;
         }
 
         public PlanDO Create(IUnitOfWork uow, string name)
@@ -130,81 +131,9 @@ namespace Hub.Services
             //Route deletion will only update its RouteState = Deleted
             foreach (var container in _container.LoadContainers(uow, plan))
             {
-                    container.ContainerState = ContainerState.Deleted;
-                }
-            }
-
-//        public IList<SubrouteDO> GetSubroutes(PlanDO curPlanDO)
-//        {
-//            using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
-//            {
-//                //var queryableRepo = unitOfWork.SubrouteRepository
-//                //.GetQuery()
-//                //.Include(x => x.ChildNodes)
-//                //.Where(x => x.ParentRouteNodeId == curPlanDO.Id)
-//                //.OrderBy(x => x.Id)
-//                //.ToList();
-//
-//                //return queryableRepo;
-//
-//                var queryableRepo = unitOfWork.PlanRepository.GetQuery()
-//                    .Include("Subroutes")
-//                    .Where(x => x.Id == curPlanDO.Id);
-//
-//                return queryableRepo.SelectMany<PlanDO, SubrouteDO>(x => x.Subroutes)
-//                    .ToList();
-//            }
-//        }
-
-
-
-        private IEnumerable<TActivity> EnumerateActivities<TActivity>(PlanDO curPlan, bool allowOnlyOneNoteTemplate = true)
-        {
-            bool firstNodeTemplate = true;
-
-            foreach (SubrouteDO template in curPlan.Subroutes)
-            {
-                if (allowOnlyOneNoteTemplate && !firstNodeTemplate)
-                {
-                    throw new Exception("More than one process node template with non empty list of action exsists in the process");
-                }
-
-                firstNodeTemplate = false;
-
-                if (template.ChildNodes != null)
-                {
-                    foreach (var activityDo in template.ChildNodes.OfType<TActivity>())
-                    {
-                        yield return activityDo;
-                    }
-                }
+                container.ContainerState = ContainerState.Deleted;
             }
         }
-
-        /// <summary>
-        /// Iterates all RouteNode tree by traversing through children
-        /// </summary>
-        /// <typeparam name="TActivity"></typeparam>
-        /// <param name="rootNode"></param>
-        /// <returns></returns>
-        private IEnumerable<TActivity> EnumerateActivityTree<TActivity>(RouteNodeDO rootNode) where TActivity : RouteNodeDO
-        {
-            var routeNodeQueue = new Queue<RouteNodeDO>();
-            routeNodeQueue.Enqueue(rootNode);
-
-            while (routeNodeQueue.Count > 0)
-            {
-                var result = routeNodeQueue.Dequeue();
-                if (result is TActivity)
-                {
-                    yield return result as TActivity;
-                }
-
-                foreach (var activityDo in result.ChildNodes.OfType<TActivity>())
-                    routeNodeQueue.Enqueue(activityDo);
-            }
-        }
-
 
 
         public async Task<ActivateActionsDTO> Activate(Guid curPlanId, bool routeBuilderActivate)
@@ -219,46 +148,43 @@ namespace Hub.Services
             {
                 var plan = uow.PlanRepository.GetById<PlanDO>(curPlanId);
 
-                foreach (SubrouteDO template in plan.Subroutes)
+                foreach (var curActionDO in plan.GetDescendants().OfType<ActivityDO>())
                 {
-                    var activities = EnumerateActivityTree<ActivityDO>(template);
-
-                    foreach (var curActionDO in activities)
+                    try
                     {
-                        try
+                        var resultActivate = await _activity.Activate(curActionDO);
+
+                        string errorMessage;
+                        result.Status = "success";
+
+                        var validationErrorChecker = CheckForExistingValidationErrors(resultActivate, out errorMessage);
+                        if (validationErrorChecker)
                         {
-                            var resultActivate = await _activity.Activate(curActionDO);
-
-                            string errorMessage;
-                            result.Status = "success";
-
-                            var validationErrorChecker = CheckForExistingValidationErrors(resultActivate, out errorMessage);
-                            if (validationErrorChecker)
-                            {
-                                result.Status = "validation_error";
-                                result.ErrorMessage = errorMessage;
-                            }
-
-                            //if the activate call is comming from the Route Builder just render again the action group with the errors
-                            if (routeBuilderActivate)
-                            {
-                                result.ActionsCollections.Add(resultActivate);
-                            }
-                            else if (validationErrorChecker)
-                            {
-                                //if the activate call is comming from the Routes List then show the first error message and redirect to plan builder 
-                                //so the user could fix the configuration
-                                result.RedirectToRouteBuilder = true;
-
-                                return result;
+                            result.Status = "validation_error";
+                            result.ErrorMessage = errorMessage;
                         }
-                        }
-                        catch (Exception ex)
+
+                        //if the activate call is comming from the Route Builder just render again the action group with the errors
+                        if (routeBuilderActivate)
                         {
-                            throw new ApplicationException(string.Format("Process template activation failed for action {0}.", curActionDO.Name), ex);
+                            result.ActionsCollections.Add(resultActivate);
+                        }
+                        else if (validationErrorChecker)
+                        {
+                            //if the activate call is comming from the Routes List then show the first error message and redirect to plan builder 
+                            //so the user could fix the configuration
+                            result.RedirectToRouteBuilder = true;
+
+                            return result;
                         }
                     }
+                    catch (Exception ex)
+                    {
+                        throw new ApplicationException(
+                            string.Format("Process template activation failed for action {0}.", curActionDO.Name), ex);
+                    }
                 }
+
 
                 if (result.Status != "validation_error")
                 {
@@ -307,23 +233,20 @@ namespace Hub.Services
             {
                 var plan = uow.PlanRepository.GetById<PlanDO>(curPlanId);
 
-                foreach (SubrouteDO template in plan.Subroutes)
-                {
-                    var activities = EnumerateActivityTree<ActivityDO>(template);
-                    foreach (var curActionDO in activities)
-                    {
-                        try
-                        {
-                            var resultD = await _activity.Deactivate(curActionDO);
 
-                            result = "success";
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new ApplicationException("Process template activation failed.", ex);
-                        }
+                foreach (var curActionDO in plan.GetDescendants().OfType<ActivityDO>())
+                {
+                    try
+                    {
+                        await _activity.Deactivate(curActionDO);
+                        result = "success";
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new ApplicationException("Process template activation failed.", ex);
                     }
                 }
+
 
                 plan.RouteState = RouteState.Inactive;
                 uow.SaveChanges();
@@ -331,57 +254,6 @@ namespace Hub.Services
 
             return result;
         }
-
-
-        // TODO: like some other methods, this assumes that there is only 1 action list in use. This is dangerous 
-        //because the database allows N Activities.
-        //we're waiting to reconcile this until we get some visibility into how the product is used by users
-        //        public ActionListDO GetActionList(IUnitOfWork uow, int id)
-        //        {
-        //            // Get action list by process template first 
-        //            var currentRoute = uow.RouteRepository.GetQuery().Where(pt => pt.Id == id).ToArray();
-        //
-        //            if (currentRoute.Length == 0)
-        //            {
-        //                return null;
-        //            }
-        //
-        //            if (currentRoute.Length > 1)
-        //            {
-        //                throw new Exception(string.Format("More than one action list exists in processtemplate {0}", id));
-        //            }
-        //
-        //            var startingRoute = currentRoute[0].StartingSubroute;
-        //            if (startingRoute == null)
-        //            {
-        //                return null;
-        //            }
-        //
-        //            // Get Activities related to the Route
-        //            var curActionList = startingRoute.Activities.SingleOrDefault(al => al.ActionListType == ActionListType.Immediate);
-        //            return curActionList;
-        //
-        //        }
-
-//
-//        /// <summary>
-//        /// Returns all actions created within a Process Template.
-//        /// </summary>
-//        /// <param name="id">Process Template id.</param>
-//        /// <returns></returns>
-//        public IEnumerable<ActivityDO> GetActivities(int id)
-//        {
-//            if (id <= 0)
-//            {
-//                throw new ArgumentException("id");
-//            }
-//
-//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-//            {
-//                return EnumerateActivities<ActivityDO>(uow.PlanRepository.GetByKey(id), false).ToArray();
-//            }
-//        }
-
 
 
         public IList<PlanDO> GetMatchingPlans(string userId, EventReportCM curEventReport)
@@ -447,72 +319,19 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var root = uow.PlanRepository.GetById<PlanDO>(id);
-
-                
-                var queue = new Queue<RouteNodeDO>();
-                queue.Enqueue(root);
-
-                while (queue.Count > 0)
-                {
-                    var routeNode = queue.Dequeue();
-                    var activity = routeNode as ActivityDO;
-
-                    if (activity != null)
+                return root.GetDescendantsOrdered().OfType<ActivityDO>().FirstOrDefault(
+                    x =>
                     {
-                        var storage = _crate.GetStorage(activity.CrateStorage);
-                        if (storage.CratesOfType<EventSubscriptionCM>().Count() > 0)
-                        {
-                            return activity;
-                        }
-                    }
+                        var storage = _crate.GetStorage(x.CrateStorage);
+                        return storage.CratesOfType<EventSubscriptionCM>().Any();
+                    });
 
-                    if (routeNode.ChildNodes != null)
-                    {
-                        foreach (var childNode in routeNode.ChildNodes)
-                        {
-                            queue.Enqueue(childNode);
-                        }
-                    }
-                }
-
-                return null;
             }
         }
-
-        public RouteNodeDO GetFirstActivity(Guid curPlanId)
+        
+        public PlanDO GetPlanByActivityId(IUnitOfWork uow, Guid id)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                return GetInitialActivity(uow, uow.PlanRepository.GetById<PlanDO>(curPlanId));
-            }
-        }
-
-        public RouteNodeDO GetInitialActivity(IUnitOfWork uow, PlanDO curPlan)
-        {
-            return EnumerateActivities<RouteNodeDO>(curPlan, false).OrderBy(a => a.Ordering).FirstOrDefault();
-        }
-
-        public RouteNodeDO GetRootActivity(IUnitOfWork uow, PlanDO curPlan)
-        {
-            return curPlan.StartingSubroute as RouteNodeDO;
-            //return EnumerateActivities<RouteNodeDO>(curPlan, false).OrderBy(a => a.Ordering).FirstOrDefault();
-        }
-
-        public PlanDO GetPlan(ActivityDO activity)
-        {
-            var root = activity.ParentRouteNode;
-
-            while (root != null)
-            {
-                if (root is PlanDO)
-                {
-                    return (PlanDO)root;
-                }
-
-                root = root.ParentRouteNode;
-            }
-
-            return null;
+            return (PlanDO)uow.PlanRepository.GetById<RouteNodeDO>(id).GetTreeRoot();
         }
 
         public PlanDO Copy(IUnitOfWork uow, PlanDO plan, string name)
@@ -567,8 +386,8 @@ namespace Hub.Services
             var curPlan = uow.PlanRepository.GetById<PlanDO>(planId);
             if (curPlan == null)
                 throw new ArgumentNullException("planId");
-            containerDO.Plan = curPlan;
 
+            containerDO.PlanId = curPlan.Id;
             containerDO.Name = curPlan.Name;
             containerDO.ContainerState = ContainerState.Unstarted;
 
@@ -580,15 +399,12 @@ namespace Hub.Services
                 }
             }
 
-            containerDO.CurrentRouteNode = GetRootActivity(uow, curPlan);
+            containerDO.CurrentRouteNodeId = curPlan.StartingSubrouteId;
 
             uow.ContainerRepository.Add(containerDO);
-            uow.SaveChanges();
 
             //then create process node
-            var subrouteId = containerDO.Plan.StartingSubroute.Id;
-
-            var curProcessNode = _processNode.Create(uow, containerDO.Id, subrouteId, "process node");
+            var curProcessNode = _processNode.Create(uow, containerDO.Id, curPlan.StartingSubrouteId, "process node");
             containerDO.ProcessNodes.Add(curProcessNode);
 
             uow.SaveChanges();
@@ -648,62 +464,5 @@ namespace Hub.Services
                 return await Run(uow, curContainerDO);
             }
         }
-
-        /// <summary>
-        /// The function add/removes items on the current collection 
-        /// so that they match the items on the new collection.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="collectionToUpdate"></param>
-        /// <param name="sourceCollection"></param>
-        /* public void MakeCollectionEqual<T>(IUnitOfWork uow, IList<T> collectionToUpdate, IList<T> sourceCollection) where T : class
-        {
-            List<T> itemsToAdd = new List<T>();
-            List<T> itemsToRemove = new List<T>();
-            bool found;
-
-            foreach (T entity in collectionToUpdate)
-            {
-                found = false;
-                foreach (T entityToCompare in sourceCollection)
-                {
-                    if (((IEquatable<T>)entity).Equals(entityToCompare))
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found)
-                {
-                    itemsToRemove.Add(entity);
-                }
-            }
-            itemsToRemove.ForEach(e => uow.Db.Entry(e).State = EntityState.Deleted);
-
-            foreach (T entity in sourceCollection)
-            {
-                found = false;
-                foreach (T entityToCompare in collectionToUpdate)
-                {
-                    if (((IEquatable<T>)entity).Equals(entityToCompare))
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found)
-                {
-                    itemsToAdd.Add(entity);
-                }
-            }
-            itemsToAdd.ForEach(i => collectionToUpdate.Add(i));
-
-
-            //identify deleted items and remove them from the collection
-            //collectionToUpdate.Except(sourceCollection).ToList().ForEach(s => collectionToUpdate.Remove(s));
-            //identify added items and add them to the collection
-            //sourceCollection.Except(collectionToUpdate).ToList().ForEach(s => collectionToUpdate.Add(s));
-        }
-        */
     }
 }

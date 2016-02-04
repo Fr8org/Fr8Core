@@ -106,12 +106,14 @@ namespace Hub.Services
                     //FR-2163 - If action response requests for termination, we make the container as Completed to avoid unwanted errors.
                     curContainerDo.ContainerState = ContainerState.Completed;
                     var eventManager = ObjectFactory.GetInstance<Hub.Managers.Event>();
+                    var plan = uow.PlanRepository.GetById<PlanDO>(curContainerDo.PlanId);
+
                     await eventManager.Publish("ProcessingTerminatedPerActionResponse",
-                            curContainerDo.Plan.Fr8Account.Id, curContainerDo.Id.ToString(),
+                            plan.Fr8Account.Id, curContainerDo.Id.ToString(),
                             JsonConvert.SerializeObject(Mapper.Map<ContainerDTO>(curContainerDo)), "Terminated");
                     break;
                 default:
-                    throw new Exception("Unknown activity state on activity with id " + curContainerDo.CurrentRouteNode.Id);
+                    throw new Exception("Unknown activity state on activity with id " + curContainerDo.CurrentRouteNodeId);
             }
         }
 
@@ -133,30 +135,35 @@ namespace Hub.Services
         private ActionState MoveToNextRoute(IUnitOfWork uow, ContainerDO curContainerDO, bool skipChildren)
         {
             var state = ActionState.InitialRun;
-            
-            if (skipChildren || !_activity.HasChildren(curContainerDO.CurrentRouteNode))
+            var currentNode = uow.PlanRepository.GetById<RouteNodeDO>(curContainerDO.CurrentRouteNodeId);
+
+            // we need this to make tests wokring. If we leave currentroutenode not null, MockDB will restore CurrentRouteNodeId. 
+            // EF should just igone navigational porperty null value if corresponding foreign key is not null.
+            curContainerDO.CurrentRouteNode = null;
+
+            if (skipChildren || currentNode.ChildNodes.Count == 0)
             {
-                var nextSibling = _activity.GetNextSibling(curContainerDO.CurrentRouteNode);
+                var nextSibling = _activity.GetNextSibling(currentNode);
                 if (nextSibling == null)
                 {
-                    var parent = _activity.GetParent(curContainerDO.CurrentRouteNode);
-                    curContainerDO.CurrentRouteNode = parent;
-                    curContainerDO.CurrentRouteNodeId = parent != null ? parent.Id : (Guid?)null;
+                    curContainerDO.CurrentRouteNodeId = currentNode.ParentRouteNode != null ? currentNode.ParentRouteNode.Id : (Guid?)null;
+
+                   
+
                     state = ActionState.ReturnFromChildren;
                 }
                 else
                 {
-                    curContainerDO.CurrentRouteNode = nextSibling;
                     curContainerDO.CurrentRouteNodeId = nextSibling.Id;
                 }
                 
             }
             else
             {
-                var firstChild = _activity.GetFirstChild(curContainerDO.CurrentRouteNode);
-                curContainerDO.CurrentRouteNode = firstChild;
-                curContainerDO.CurrentRouteNodeId = curContainerDO.CurrentRouteNode.Id;
+                var firstChild = _activity.GetFirstChild(currentNode);
+                curContainerDO.CurrentRouteNodeId = firstChild.Id;
             }
+
             uow.SaveChanges();
 
             return state;
@@ -171,7 +178,7 @@ namespace Hub.Services
         /// <returns></returns>
         private async Task<ActivityResponse> ProcessAction(IUnitOfWork uow, ContainerDO curContainerDO, ActionState state)
         {
-            await _activity.Process(curContainerDO.CurrentRouteNode.Id, state, curContainerDO);
+            await _activity.Process(curContainerDO.CurrentRouteNodeId.Value, state, curContainerDO);
             return GetCurrentActionResponse(curContainerDO);
         }
 
@@ -224,13 +231,13 @@ namespace Hub.Services
             uow.SaveChanges();
             
 
-            if (curContainerDO.CurrentRouteNode == null)
+            if (curContainerDO.CurrentRouteNodeId == null)
             {
                 throw new ArgumentNullException("CurrentActivity is null. Cannot execute CurrentActivity");
             }
 
             var actionState = ActionState.InitialRun;
-            while (curContainerDO.CurrentRouteNode != null)
+            while (curContainerDO.CurrentRouteNodeId != null)
             {
                 var actionResponse = await ProcessAction(uow, curContainerDO, actionState);
 

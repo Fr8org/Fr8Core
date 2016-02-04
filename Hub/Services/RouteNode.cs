@@ -182,9 +182,7 @@ namespace Hub.Services
                 return null;
             }
 
-            return currentActivity.ParentRouteNode.ChildNodes
-                .OrderBy(x => x.Ordering)
-                .FirstOrDefault(x => x.Ordering > currentActivity.Ordering);
+            return currentActivity.ParentRouteNode.GetOrderedChildren().FirstOrDefault(x => x.Ordering > currentActivity.Ordering);
         }
 
         public RouteNodeDO GetFirstChild(RouteNodeDO currentActivity)

@@ -42,20 +42,6 @@ namespace Data.Entities
             return Id.ToString();
         }
 
-        public override bool AreContentPropertiesEquals(RouteNodeDO other)
-        {
-            var activity = (ActivityDO)other;
-            
-            return base.AreContentPropertiesEquals(other) &&
-                   Name == activity.Name &&
-                   Label == activity.Label &&
-                   AuthorizationTokenId == activity.AuthorizationTokenId &&
-                   CrateStorage == activity.CrateStorage &&
-                   ActivityTemplateId == activity.ActivityTemplateId &&
-                   currentView == activity.currentView &&
-                   ExplicitData == activity.ExplicitData;
-        }
-
         protected override RouteNodeDO CreateNewInstance()
         {
             return new ActivityDO();

@@ -307,6 +307,7 @@
     <Compile Include="Tests\Infrastructure\DocusignConnectParserTests.cs" />
     <Compile Include="Tests\Infrastructure\DocuSignTemplateTests.cs" />
     <Compile Include="Tests\Infrastructure\IndexManagerTests.cs" />
+    <Compile Include="Tests\Services\DocuSignRouteTests.cs" />
     <Compile Include="Tests\Services\EnvelopeServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>

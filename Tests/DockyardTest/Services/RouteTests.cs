@@ -126,7 +126,7 @@ namespace DockyardTest.Services
                 ObjectFactory.Container.Inject(typeof(IRouteNode), activityMock.Object);
 
                 //Act
-                _planService = new InternalClasses.Plan();
+                _planService = ObjectFactory.GetInstance<IPlan>();// new InternalClasses.Plan();
                 _planService.Run(curPlan, FixtureData.TestDocuSignEventCrate());
 
                 //Assert

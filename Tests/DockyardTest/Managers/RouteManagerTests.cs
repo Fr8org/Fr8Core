@@ -107,7 +107,7 @@ namespace DockyardTest.Managers
                                     ChildNodes = { storeMtDataAction }
                                 });
 
-                                //uow1.PlanRepository.Add(FixtureData.GetPlan(storeMtDataAction));
+                                //uow1.PlanRepository.Add(FixtureData.GetPlanByActivityId(storeMtDataAction));
 //                                uow1.ActivityRepository.Add(storeMtDataAction);
 //
 //                                var subRoute = uow1.SubrouteRepository.GetQuery().Single();

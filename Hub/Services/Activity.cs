@@ -181,9 +181,9 @@ namespace Hub.Services
             }
 
         private void SaveAndUpdateActivity(IUnitOfWork uow, ActivityDO submittedActiviy, List<ActivityDO> pendingConfiguration)
-            {
+        {
             RouteTreeHelper.Visit(submittedActiviy, x =>
-                {
+            {
                 var activity = (ActivityDO) x;
 
                 if (activity.IsTempId && activity.Id == Guid.Empty)
@@ -194,23 +194,24 @@ namespace Hub.Services
 
             RouteNodeDO route;
             RouteNodeDO originalAction;
-                    if (submittedActiviy.ParentRouteNodeId != null)
-                    {
+            if (submittedActiviy.ParentRouteNodeId != null)
+            {
                 route = uow.PlanRepository.GetById<RouteNodeDO>(submittedActiviy.ParentRouteNodeId);
                 originalAction = route.ChildNodes.FirstOrDefault(x => x.Id == submittedActiviy.Id);
-                    }
-                else
-                {
+            }
+            else
+            {
                 originalAction = uow.PlanRepository.GetById<RouteNodeDO>(submittedActiviy.Id);
                 route = originalAction.ParentRouteNode;
-                }
+            }
 
-            
+
             if (originalAction != null)
-                {
+            {
                 route.ChildNodes.Remove(originalAction);
 
-                var originalActions = RouteTreeHelper.Linearize(originalAction).ToDictionary(x => x.Id, x => (ActivityDO)x);
+                var originalActions = RouteTreeHelper.Linearize(originalAction)
+                    .ToDictionary(x => x.Id, x => (ActivityDO) x);
 
                 foreach (var submitted in RouteTreeHelper.Linearize(submittedActiviy))
                 {
@@ -218,48 +219,33 @@ namespace Hub.Services
 
                     if (!originalActions.TryGetValue(submitted.Id, out existingActivity))
                     {
-                        pendingConfiguration.Add((ActivityDO)submitted);
+                        pendingConfiguration.Add((ActivityDO) submitted);
+                    }
+                    else
+                    {
+                        RestoreSystemProperties(existingActivity, (ActivityDO) submitted);
+                    }
                 }
+            }
             else
             {
-                        RestoreSystemProperties(existingActivity, (ActivityDO) submitted);
-                }
-                    }
-                    }
-            else
-                    {
                 pendingConfiguration.AddRange(RouteTreeHelper.Linearize(submittedActiviy).OfType<ActivityDO>());
             }
 
-            route.ChildNodes.Add(submittedActiviy);
+            if (submittedActiviy.Ordering <= 0)
+            {
+                route.AddChildWithDefaultOrdering(submittedActiviy);
+            }
+            else
+            {
+                route.AddChild(submittedActiviy, null);
+            }
         }
 
         public ActivityDO GetById(IUnitOfWork uow, Guid id)
         {
             return uow.PlanRepository.GetById<ActivityDO>(id);
         }
-
-//        public ActivityDO Create(IUnitOfWork uow, int actionTemplateId, string name, string label, int? order, RouteNodeDO parentNode, Guid? AuthorizationTokenId = null)
-//        {
-//            var activity = new ActivityDO
-//            {
-//                Id = Guid.NewGuid(),
-//                ActivityTemplateId = actionTemplateId,
-//                Name = name,
-//                Label = label,
-//                CrateStorage = _crate.EmptyStorageAsStr(),
-//                Ordering = order ?? (parentNode.ChildNodes.Count > 0 ? parentNode.ChildNodes.Max(x => x.Ordering) + 1 : 1),
-//                RootRouteNode = parentNode.RootRouteNode,
-//                Fr8Account = (parentNode.RootRouteNode != null) ? parentNode.RootRouteNode.Fr8Account : null,
-//                AuthorizationTokenId = AuthorizationTokenId
-//            };
-//
-//            uow.ActivityRepository.Add(activity);
-//
-//            parentNode.ChildNodes.Add(activity);
-//
-//            return activity;
-//        }
 
         public async Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, string name, string label = null, int? order = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null)
         {
@@ -493,7 +479,7 @@ namespace Hub.Services
         {
             EventManager.ActionStarted(curActivity);
 
-            var payload = await Run(curActivity, curActionState, curContainerDO);
+            var payload = await Run(uow, curActivity, curActionState, curContainerDO);
 
             if (payload != null)
             {
@@ -508,7 +494,7 @@ namespace Hub.Services
         }
 
         // Maxim Kostyrkin: this should be refactored once the TO-DO snippet below is redesigned
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, ActionState curActionState, ContainerDO curContainerDO)
+        public async Task<PayloadDTO> Run(IUnitOfWork uow, ActivityDO curActivityDO, ActionState curActionState, ContainerDO curContainerDO)
         {
             var eventManager = ObjectFactory.GetInstance<Hub.Managers.Event>();
             if (curActivityDO == null)
@@ -522,7 +508,10 @@ namespace Hub.Services
                 var payloadDTO = await CallTerminalActionAsync<PayloadDTO>(actionName, curActivityDO, curContainerDO.Id);
 
                 // this will break the infinite loop created for logFr8InternalEvents...
-                if (curContainerDO.Plan != null && curContainerDO.Plan.Name != "LogFr8InternalEvents")
+
+                var plan = uow.PlanRepository.GetById<PlanDO>(curContainerDO.PlanId);
+
+                if (plan != null && plan.Name != "LogFr8InternalEvents")
                 {
                     var actionDTO = Mapper.Map<ActivityDTO>(curActivityDO);
                     await eventManager.Publish("ActionExecuted", curActivityDO.Fr8Account.Id, curActivityDO.Id.ToString(), JsonConvert.SerializeObject(actionDTO).ToString(), "Success");

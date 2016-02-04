@@ -620,25 +620,20 @@ namespace Hub.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var mainAuthToken = uow.AuthorizationTokenRepository
-                    .FindTokenById(authTokenId);
+                var mainAuthToken = uow.AuthorizationTokenRepository.GetPublicDataQuery().FirstOrDefault(x=>x.Id == authTokenId);
 
                 if (mainAuthToken == null)
                 {
                     throw new ApplicationException("Unable to find specified Auth-Token.");
                 }
 
-                var siblingIds = uow.AuthorizationTokenRepository
+                var siblings = uow.AuthorizationTokenRepository
                     .GetPublicDataQuery()
-                    .Where(x => x.UserID == userId && x.TerminalID == mainAuthToken.TerminalID)
-                    .Select(x => x.Id)
-                    .ToList();
+                    .Where(x => x.UserID == userId && x.TerminalID == mainAuthToken.TerminalID);
+                    
 
-                foreach (var siblingId in siblingIds)
+                foreach (var siblingAuthToken in siblings)
                 {
-                    var siblingAuthToken = uow.AuthorizationTokenRepository
-                        .FindTokenById(siblingId);
-
                     siblingAuthToken.IsMain = false;
                 }
 

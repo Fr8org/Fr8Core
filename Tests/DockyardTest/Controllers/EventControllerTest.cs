@@ -156,12 +156,14 @@ namespace DockyardTest.Controllers
         {
             public int Processed;
             private readonly Dictionary<Guid, PlanDO> _planNodes = new Dictionary<Guid, PlanDO>(); 
-            private readonly HashSet<Guid> _plans = new HashSet<Guid>(); 
+            private readonly HashSet<Guid> _plans = new HashSet<Guid>();
+            private readonly ICrateManager _crate;
 
             public RouteNodeMock(params PlanDO[] plans)
             {
                 foreach (var planDo in plans)
                 {
+                    _crate = ObjectFactory.GetInstance<ICrateManager>();
                     _plans.Add(planDo.Id);
                     var plan = planDo;
                     RouteTreeHelper.Visit(planDo, x=>_planNodes[x.Id] = plan);
@@ -188,6 +190,12 @@ namespace DockyardTest.Controllers
                 if (RouteTreeHelper.Linearize(_planNodes[curActivityId]).OfType<ActivityDO>().Any(x=>x.Id == curActivityId))
                 {
                     Processed++;
+
+//                    using (var storage = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
+//                    {
+//                        var operationalState = storage.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+//                        operationalState.CurrentActivityResponse = ActivityResponse.Success;
+//                    }
                 }
 
                 return Task.Delay(1);

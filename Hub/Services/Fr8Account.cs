@@ -190,7 +190,7 @@ namespace Hub.Services
             {
                 return uow.ContainerRepository.GetQuery().Where
                     (r => r.ContainerState == ContainerState.Executing
-                          & r.Plan.Fr8Account.Id == userId).ToList();
+                          && r.Plan.Fr8Account.Id == userId).ToList();
             }
         }
 

@@ -4,16 +4,19 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Reflection;
-using Newtonsoft.Json;
-using StructureMap;
-using Data.Interfaces;
-using Data.Infrastructure;
-using Data.Interfaces.DataTransferObjects;
+using Data.Repositories.Plan;
 
 namespace Data.Entities
 {
     public class RouteNodeDO : BaseObject
     {
+        private static readonly PropertyInfo[] TrackingProperties =
+        {
+            typeof (RouteNodeDO).GetProperty("ParentRouteNodeId"),
+            typeof (RouteNodeDO).GetProperty("Fr8AccountId"),
+            typeof (RouteNodeDO).GetProperty("Ordering"),
+        };
+
         [Key]
         public Guid Id { get; set; }
 
@@ -33,11 +36,7 @@ namespace Data.Entities
         [ForeignKey("Fr8Account")]
         public string Fr8AccountId { get; set; }
 
-        public virtual Fr8AccountDO Fr8Account
-        {
-            get { return _fr8Account; }
-            set { _fr8Account = value; }
-        }
+        public virtual Fr8AccountDO Fr8Account { get; set; }
 
         public int Ordering { get; set; }
         
@@ -81,19 +80,37 @@ namespace Data.Entities
                    Ordering == other.Ordering;
         }
 
+        public List<RouteNodeDO> GetDescendants()
+        {
+            return RouteTreeHelper.Linearize(this);
+        }
+
+        public List<RouteNodeDO> GetOrderedChildren()
+        {
+            return ChildNodes.OrderBy(x => x.Ordering).ToList();
+        }
+
+        public RouteNodeDO GetTreeRoot()
+        {
+            var node = this;
+
+            while (node.ParentRouteNode != null)
+            {
+                node = node.ParentRouteNode;
+            }
+
+            return node;
+        }
+
+        public List<RouteNodeDO> GetDescendantsOrdered()
+        {
+            return RouteTreeHelper.LinearizeOrdered(this);
+        }
+
         protected virtual RouteNodeDO CreateNewInstance()
         {
             return new RouteNodeDO();
         }
-
-        private static readonly PropertyInfo[] TrackingProperties = 
-        {
-            typeof(RouteNodeDO).GetProperty("ParentRouteNodeId"),
-            typeof(RouteNodeDO).GetProperty("Fr8AccountId"),
-            typeof(RouteNodeDO).GetProperty("Ordering"),
-        };
-
-        private Fr8AccountDO _fr8Account;
 
         protected virtual IEnumerable<PropertyInfo> GetTrackingProperties()
         {
