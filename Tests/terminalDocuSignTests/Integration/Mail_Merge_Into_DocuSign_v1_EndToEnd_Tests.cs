@@ -5,6 +5,9 @@ using HealthMonitor.Utility;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Text;
+using System.Net;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -36,35 +39,42 @@ namespace terminalDocuSignTests.Integration
         {
             var httpClient = new HttpClient();
 
-            var hubApiBaseUrl = new Uri(GetHubApiBaseUrl());
-            var hubBaseUrl = new Uri(hubApiBaseUrl.Scheme + "://" + hubApiBaseUrl.Host + ":" + hubApiBaseUrl.Port);
+            Uri hubBaseUrl = GetHubBaseUrl();
             httpClient.BaseAddress = hubBaseUrl;
 
             // Get login page and extract request validation token
-            string verificationToken = await GetVerificationToken(httpClient);
+            var antiFogeryToken = await GetVerificationToken(httpClient);
 
             // Login user
-            string authTicket = await Authenticate(email, password, verificationToken);
+            string authTicket = await Authenticate(email, password, antiFogeryToken, httpClient);
         }
 
-        private static async Task<string> Authenticate(string email, string password, string verificationToken)
+        private Uri GetHubBaseUrl()
+        {
+            var hubApiBaseUrl = new Uri(GetHubApiBaseUrl());
+            var hubBaseUrl = new Uri(hubApiBaseUrl.Scheme + "://" + hubApiBaseUrl.Host + ":" + hubApiBaseUrl.Port);
+            return hubBaseUrl;
+        }
+
+        private async Task<string> Authenticate(string email, string password, string verificationToken, HttpClient httpClient)
         {
             var authenticationEndpointUrl = "/dockyardaccount/login";
 
-            var postParams = new StringBuilder();
-            postParams.Append("__RequestVerificationToken=");
-            postParams.Append(verificationToken);
-            postParams.Append("&Email=");
-            postParams.Append(email);
-            postParams.Append("&Password=");
-            postParams.Append(password);
+            var formContent = new FormUrlEncodedContent(new[]
+                {
+                    new KeyValuePair<string, string>("__RequestVerificationToken", verificationToken),
+                    new KeyValuePair<string, string>("Email", email),
+                    new KeyValuePair<string, string>("Password", password),
 
-            var postContent = new StringContent(postParams.ToString());
-            //var response = await httpClient.PostAsync(authenticationEndpointUrl, postContent);
+                });
+
+            var response = await httpClient.PostAsync(authenticationEndpointUrl, formContent);
             response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync();
+            return "token";
         }
 
-        private static async Task<string> GetVerificationToken(HttpClient httpClient)
+        private async Task<string> GetVerificationToken(HttpClient httpClient)
         {
             var loginFormUrl = "/dockyardaccount";
             var response = await httpClient.GetAsync(loginFormUrl);
@@ -76,7 +86,14 @@ namespace terminalDocuSignTests.Integration
             {
                 throw new Exception("Unable to find verification token in the login page HTML code.");
             }
-            return matches.Groups[1].Value;
+            string formToken = matches.Groups[1].Value;
+            return formToken;
         }
+    }
+
+    public class AntiFogeryTokens
+    {
+        public string CookieToken { get; set; }
+        public string FormToken { get; set; }
     }
 }

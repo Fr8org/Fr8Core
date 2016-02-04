@@ -576,10 +576,6 @@
     <Compile Include="Migrations\201601241443338_RenameRouteToPlan.Designer.cs">
       <DependentUpon>201601241443338_RenameRouteToPlan.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201601211438483_Add_Test_User.cs" />
-    <Compile Include="Migrations\201601211438483_Add_Test_User.Designer.cs">
-      <DependentUpon>201601211438483_Add_Test_User.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryBase.cs" />
