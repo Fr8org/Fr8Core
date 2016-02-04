@@ -113,9 +113,12 @@ namespace HubWeb.App_Start
                "~/bower_components/select2/select2.css", new CssRewriteUrlTransform()
                ));
 
+            bundles.Add(new StyleBundle("~/Content/css/font-awesome")
+                .Include("~/bower_components/font-awesome-min/css/font-awesome.min.css", new CssRewriteUrlTransform())
+            );
+
             bundles.Add(new StyleBundle("~/Content/css/main")
                 .Include("~/bower_components/bootstrap/dist/css/bootstrap.css", new CssRewriteUrlTransform())
-                .Include("~/bower_components/font-awesome-min/css/font-awesome.min.css", new CssRewriteUrlTransform())
                 .Include("~/bower_components/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css", new CssRewriteUrlTransform())
                 .Include("~/bower_components/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.css", new CssRewriteUrlTransform())
                 .Include("~/bower_components/datatables/media/css/jquery.dataTables.css", new CssRewriteUrlTransform())
