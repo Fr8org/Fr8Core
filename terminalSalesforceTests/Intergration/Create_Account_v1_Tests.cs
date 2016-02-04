@@ -11,6 +11,7 @@ using Hub.Managers.APIManagers.Transmitters.Restful;
 using NUnit.Framework;
 using terminalSalesforceTests.Fixtures;
 using Data.Control;
+using Data.Interfaces.DataTransferObjects.Helpers;
 
 namespace terminalSalesforceTests.Intergration
 {
@@ -68,7 +69,10 @@ namespace terminalSalesforceTests.Intergration
             Assert.IsNotNull(responseOperationalState);
             var curOperationalState =
                 Crate.FromDto(responseOperationalState.CrateStorage).CratesOfType<OperationalStateCM>().Single().Content;
-            Assert.AreEqual("No AuthToken provided.", curOperationalState.CurrentActivityErrorMessage, "Authentication is mishandled at activity side."); 
+            ErrorDTO errorMessage;
+            curOperationalState.CurrentActivityResponse.TryParseErrorDTO(out errorMessage);
+
+            Assert.AreEqual("No AuthToken provided.", errorMessage.Message, "Authentication is mishandled at activity side."); 
         }
 
         [Test, Category("intergration.terminalSalesforce")]
@@ -86,7 +90,9 @@ namespace terminalSalesforceTests.Intergration
             Assert.IsNotNull(responseOperationalState);
             var curOperationalState =
                 Crate.FromDto(responseOperationalState.CrateStorage).CratesOfType<OperationalStateCM>().Single().Content;
-            Assert.AreEqual("No account name found in activity.", curOperationalState.CurrentActivityErrorMessage, "Action works without account name");
+            ErrorDTO errorMessage;
+            curOperationalState.CurrentActivityResponse.TryParseErrorDTO(out errorMessage);
+            Assert.AreEqual("No account name found in activity.", errorMessage.Message, "Action works without account name");
         }
 
         [Test, Category("intergration.terminalSalesforce")]

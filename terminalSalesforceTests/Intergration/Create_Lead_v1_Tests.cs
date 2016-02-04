@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Data.Control;
 using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.DataTransferObjects.Helpers;
 using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
 using Hub.Managers;
@@ -66,7 +67,9 @@ namespace terminalSalesforceTests.Intergration
             Assert.IsNotNull(responseOperationalState);
             var curOperationalState =
                 Crate.FromDto(responseOperationalState.CrateStorage).CratesOfType<OperationalStateCM>().Single().Content;
-            Assert.AreEqual("No AuthToken provided.", curOperationalState.CurrentActivityErrorMessage, "Authentication is mishandled at activity side.");
+            ErrorDTO errorMessage;
+            curOperationalState.CurrentActivityResponse.TryParseErrorDTO(out errorMessage);
+            Assert.AreEqual("No AuthToken provided.", errorMessage.Message, "Authentication is mishandled at activity side.");
         }
 
         [Test, Category("intergration.terminalSalesforce")]
@@ -86,7 +89,9 @@ namespace terminalSalesforceTests.Intergration
             Assert.IsNotNull(responseOperationalState);
             var curOperationalState =
                 Crate.FromDto(responseOperationalState.CrateStorage).CratesOfType<OperationalStateCM>().Single().Content;
-            Assert.AreEqual("No last name found in activity.", curOperationalState.CurrentActivityErrorMessage, "Action works without last name");
+            ErrorDTO errorMessage;
+            curOperationalState.CurrentActivityResponse.TryParseErrorDTO(out errorMessage);
+            Assert.AreEqual("No last name found in activity.", errorMessage.Message, "Action works without last name");
         }
 
         [Test, Category("intergration.terminalSalesforce")]
@@ -106,7 +111,9 @@ namespace terminalSalesforceTests.Intergration
             Assert.IsNotNull(responseOperationalState);
             var curOperationalState =
                 Crate.FromDto(responseOperationalState.CrateStorage).CratesOfType<OperationalStateCM>().Single().Content;
-            Assert.AreEqual("No company name found in activity.", curOperationalState.CurrentActivityErrorMessage, "Action works without company name");
+            ErrorDTO errorMessage;
+            curOperationalState.CurrentActivityResponse.TryParseErrorDTO(out errorMessage);
+            Assert.AreEqual("No company name found in activity.", errorMessage.Message, "Action works without company name");
         }
 
         [Test, Category("intergration.terminalSalesforce")]
