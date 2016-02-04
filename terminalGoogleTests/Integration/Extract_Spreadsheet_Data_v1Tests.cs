@@ -38,11 +38,11 @@ namespace terminalGoogleTests.Integration
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
-            requestActionDTO.AuthToken = HealthMonitor_FixtureData.Google_AuthToken1();
+            var dataDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_Fr8DataDTO();
+            dataDTO.ActivityDTO.AuthToken = HealthMonitor_FixtureData.Google_AuthToken1();
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
-                    configureUrl, requestActionDTO
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
+                    configureUrl, dataDTO
                 );
 
             Assert.NotNull(responseActionDTO);
@@ -96,12 +96,12 @@ namespace terminalGoogleTests.Integration
 
             ////Act
             fixture.Extract_Spreadsheet_Data_v1_AddPayload(requestActionDTO, "Row_And_Column");
-
+            var dataDTO = new Fr8DataDTO { ActivityDTO = requestActionDTO };
             //As the ActionDTO is preconfigured configure url actually calls the follow up configuration
             var responseActionDTO =
-               await HttpPostAsync<ActivityDTO, ActivityDTO>(
+               await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                    configureUrl,
-                   requestActionDTO
+                   dataDTO
                );
 
             //Assert
@@ -133,12 +133,12 @@ namespace terminalGoogleTests.Integration
 
             ////Act
             fixture.Extract_Spreadsheet_Data_v1_AddPayload(requestActionDTO, "Column_Only");
-
+            var dataDTO = new Fr8DataDTO { ActivityDTO = requestActionDTO };
             //As the ActionDTO is preconfigured configure url actually calls the follow up configuration
             var responseActionDTO =
-               await HttpPostAsync<ActivityDTO, ActivityDTO>(
+               await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                    configureUrl,
-                   requestActionDTO
+                   dataDTO
                );
 
             //Assert
@@ -169,12 +169,12 @@ namespace terminalGoogleTests.Integration
 
             ////Act
             fixture.Extract_Spreadsheet_Data_v1_AddPayload(requestActionDTO, "Row_Only");
-
+            var dataDTO = new Fr8DataDTO { ActivityDTO = requestActionDTO };
             //As the ActionDTO is preconfigured configure url actually calls the follow up configuration
             var responseActionDTO =
-               await HttpPostAsync<ActivityDTO, ActivityDTO>(
+               await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                    configureUrl,
-                   requestActionDTO
+                   dataDTO
                );
 
             //Assert
@@ -235,12 +235,12 @@ namespace terminalGoogleTests.Integration
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
 
             //prepare the action DTO with valid target URL
-            var activityDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
-            activityDTO.AuthToken = null;
+            var dataDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_Fr8DataDTO();
+            dataDTO.ActivityDTO.AuthToken = null;
 
-            AddOperationalStateCrate(activityDTO, new OperationalStateCM());
+            AddOperationalStateCrate(dataDTO.ActivityDTO, new OperationalStateCM());
             //Act
-            var payload = await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, activityDTO);
+            var payload = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
             CheckIfPayloadHasNeedsAuthenticationError(payload);
         }
         /// <summary>
@@ -258,12 +258,12 @@ namespace terminalGoogleTests.Integration
             var runUrl = GetTerminalRunUrl();
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
 
-            //prepare the action DTO with valid target URL
-            var activityDTO = fixture.Extract_Spreadsheet_Data_v1_Followup_Configuration_Request_ActionDTO_With_Crates();
-            AddOperationalStateCrate(activityDTO, new OperationalStateCM());
+            //prepare the action DTO
+            var dataDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_Fr8DataDTO();
+            AddOperationalStateCrate(dataDTO.ActivityDTO, new OperationalStateCM());
 
             //Act
-            await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, activityDTO);
+            await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
         }
         /// <summary>
         /// One Upstream Crate throws NonImplementedException.
@@ -281,12 +281,12 @@ namespace terminalGoogleTests.Integration
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
 
             //prepare the action DTO with valid target URL
-            var activityDTO = fixture.Extract_Spreadsheet_Data_v1_Followup_Configuration_Request_ActionDTO_With_Crates();
-            AddUpstreamCrate(activityDTO, fixture.GetUpstreamCrate(), "Upsteam Crate");
-            AddOperationalStateCrate(activityDTO, new OperationalStateCM());
+            var dataDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_Fr8DataDTO();
+            AddUpstreamCrate(dataDTO.ActivityDTO, fixture.GetUpstreamCrate(), "Upsteam Crate");
+            AddOperationalStateCrate(dataDTO.ActivityDTO, new OperationalStateCM());
 
             //Act
-            await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, activityDTO);
+            await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
         }
         /// <summary>
         /// Two Upstream Crate throw exception.
@@ -304,13 +304,13 @@ namespace terminalGoogleTests.Integration
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
 
             //prepare the action DTO with valid target URL
-            var activityDTO = fixture.Extract_Spreadsheet_Data_v1_Followup_Configuration_Request_ActionDTO_With_Crates();
-            AddUpstreamCrate(activityDTO, fixture.GetUpstreamCrate(), "Upsteam Crate");
-            AddUpstreamCrate(activityDTO, fixture.GetUpstreamCrate(), "Upsteam Crate");
-            AddOperationalStateCrate(activityDTO, new OperationalStateCM());
+            var dataDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_Fr8DataDTO();
+            AddUpstreamCrate(dataDTO.ActivityDTO, fixture.GetUpstreamCrate(), "Upsteam Crate");
+            AddUpstreamCrate(dataDTO.ActivityDTO, fixture.GetUpstreamCrate(), "Upsteam Crate");
+            AddOperationalStateCrate(dataDTO.ActivityDTO, new OperationalStateCM());
 
             //Act
-            await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, activityDTO);
+            await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
         }
         /// <summary>
         /// Test run-time without Auth-Token.
@@ -320,10 +320,10 @@ namespace terminalGoogleTests.Integration
         {
             var runUrl = GetTerminalRunUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
-            requestActionDTO.AuthToken = null;
-            AddOperationalStateCrate(requestActionDTO, new OperationalStateCM());
-            var payload = await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, requestActionDTO);
+            var dataDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_Fr8DataDTO();
+            dataDTO.ActivityDTO.AuthToken = null;
+            AddOperationalStateCrate(dataDTO.ActivityDTO, new OperationalStateCM());
+            var payload = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
             CheckIfPayloadHasNeedsAuthenticationError(payload);
         }
         /////////////

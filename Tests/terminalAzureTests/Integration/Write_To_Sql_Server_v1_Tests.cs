@@ -64,10 +64,10 @@ namespace terminalAzureTests.Integration
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Write_To_Sql_Server_v1_InitialConfiguration_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Write_To_Sql_Server_v1_InitialConfiguration_Fr8DataDTO();
 
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -88,12 +88,12 @@ namespace terminalAzureTests.Integration
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Write_To_Sql_Server_v1_InitialConfiguration_ActionDTO();
+            var fr8DataDTO = HealthMonitor_FixtureData.Write_To_Sql_Server_v1_InitialConfiguration_Fr8DataDTO();
 
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    requestActionDTO
+                    fr8DataDTO
                 );
             
 
@@ -109,11 +109,11 @@ namespace terminalAzureTests.Integration
             {
                 updater.CrateStorage = storage;
             }
-
+            fr8DataDTO.ActivityDTO = responseActionDTO;
             responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    responseActionDTO
+                    fr8DataDTO
                 );
 
             Assert.NotNull(responseActionDTO);
@@ -139,17 +139,17 @@ namespace terminalAzureTests.Integration
         {
             var runUrl = GetTerminalRunUrl();
 
-            var activityDTO = HealthMonitor_FixtureData.Write_To_Sql_Server_v1_InitialConfiguration_ActionDTO();
+            var fr8DataDTO = HealthMonitor_FixtureData.Write_To_Sql_Server_v1_InitialConfiguration_Fr8DataDTO();
             
-            using (var updater = Crate.UpdateStorage(activityDTO))
+            using (var updater = Crate.UpdateStorage(fr8DataDTO.ActivityDTO))
             {
                 updater.CrateStorage.Add(CreateConnectionStringCrate());
             }
 
-            AddOperationalStateCrate(activityDTO, new OperationalStateCM());
+            AddOperationalStateCrate(fr8DataDTO.ActivityDTO, new OperationalStateCM());
 
             AddPayloadCrate(
-               activityDTO,
+               fr8DataDTO.ActivityDTO,
                new StandardPayloadDataCM(
                     new FieldDTO("Field1", "[Customer].[Physician]"),
                     new FieldDTO("Field2", "[Customer].[CurrentMedicalCondition]")
@@ -158,7 +158,7 @@ namespace terminalAzureTests.Integration
             );
 
             AddPayloadCrate(
-                activityDTO,
+                fr8DataDTO.ActivityDTO,
                 new StandardPayloadDataCM(
                     new FieldDTO("Field1", "test physician"),
                     new FieldDTO("Field2", "teststring")
@@ -166,7 +166,7 @@ namespace terminalAzureTests.Integration
                "DocuSign Envelope Data"
             );
 
-            var responsePayloadDTO = await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, activityDTO);
+            var responsePayloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, fr8DataDTO);
 
             Assert.NotNull(responsePayloadDTO);
             Assert.NotNull(responsePayloadDTO.CrateStorage);
@@ -180,13 +180,13 @@ namespace terminalAzureTests.Integration
             var configureUrl = GetTerminalActivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = HealthMonitor_FixtureData.Write_To_Sql_Server_v1_InitialConfiguration_ActionDTO();
+            var fr8DataDTO = HealthMonitor_FixtureData.Write_To_Sql_Server_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    requestActionDTO
+                    fr8DataDTO
                 );
 
             //Assert
@@ -201,13 +201,13 @@ namespace terminalAzureTests.Integration
             var configureUrl = GetTerminalDeactivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = HealthMonitor_FixtureData.Write_To_Sql_Server_v1_InitialConfiguration_ActionDTO();
+            var fr8DataDTO = HealthMonitor_FixtureData.Write_To_Sql_Server_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    requestActionDTO
+                    fr8DataDTO
                 );
 
             //Assert

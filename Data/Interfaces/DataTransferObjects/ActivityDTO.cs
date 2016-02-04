@@ -10,9 +10,9 @@ namespace Data.Interfaces.DataTransferObjects
         public Guid? ParentRouteNodeId { get; set; }
 
         public CrateStorageDTO CrateStorage { get; set; }
-        
+
         public int? ActivityTemplateId { get; set; }
-        
+
         public string Label { get; set; }
 
         [JsonProperty("activityTemplate")]
@@ -30,15 +30,13 @@ namespace Data.Interfaces.DataTransferObjects
 
         public string CurrentView { get; set; }
 
-        public Guid ContainerId { get; set; }
-
         public AuthorizationTokenDTO AuthToken { get; set; }
 
         public string Fr8AccountId { get; set; }
 
         public ActivityDTO[] ChildrenActions { get; set; }
         public int Ordering { get; set; }
-
-        
+        [JsonProperty("DocumentationSupport")]
+        public string DocumentationSupport { get; set; }
     }
 }

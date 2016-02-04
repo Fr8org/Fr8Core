@@ -25,11 +25,11 @@ namespace terminalYammerTests.Fixtures
             };
         }
 
-        public static ActivityDTO Post_To_Yammer_v1_InitialConfiguration_ActionDTO(bool isAuthToken = true)
+        public static Fr8DataDTO Post_To_Yammer_v1_InitialConfiguration_Fr8DataDTO(bool isAuthToken = true)
         {
             var activityTemplate = Post_To_Yammer_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
                 Name = "Groups",
@@ -38,6 +38,8 @@ namespace terminalYammerTests.Fixtures
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id
             };
+
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
     }
 }

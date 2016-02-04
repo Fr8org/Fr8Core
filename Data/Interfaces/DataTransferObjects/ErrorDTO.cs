@@ -63,6 +63,8 @@ namespace Data.Interfaces.DataTransferObjects
 
     public class ErrorDTO : ResponseMessageDTO
     {
+        protected ErrorDTO() {  }
+
         protected ErrorDTO(string type)
         {
             Type = type;
