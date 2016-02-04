@@ -1,6 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Data.Control;
 
 namespace Data.Interfaces.DataTransferObjects.Helpers
 {
@@ -12,6 +13,7 @@ namespace Data.Interfaces.DataTransferObjects.Helpers
         public const string PayloadPropertyName = "payload";
         public const string ResponseMessagePropertyName = "responseMessage";
         public const string ActivityPropertyName = "activity";
+        public const string DocumentationPropertyName = "documentation";
 
         #endregion
 
@@ -113,6 +115,20 @@ namespace Data.Interfaces.DataTransferObjects.Helpers
         public static bool TryParseActivityDTO(this ActivityResponseDTO activityResponse, out ActivityDTO activityDTO)
         {
             return TryParseBaseDTO<ActivityDTO>(activityResponse, ActivityPropertyName, out activityDTO);
+        }
+
+        #endregion
+
+        #region DocumentationDTO Response Methods
+
+        public static ActivityResponseDTO AddDocumentationDTO(this ActivityResponseDTO activityResponse, DocumentationDTO documentationDTO)
+        {
+            return AddBaseDTO<DocumentationDTO>(activityResponse, DocumentationPropertyName, documentationDTO);
+        }
+
+        public static bool TryParseDocumentationDTO(this ActivityResponseDTO activityResponse, out DocumentationDTO documentationDTO)
+        {
+            return TryParseBaseDTO<DocumentationDTO>(activityResponse, DocumentationPropertyName, out documentationDTO);
         }
 
         #endregion
