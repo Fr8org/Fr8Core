@@ -148,15 +148,17 @@ namespace TerminalBase.BaseClasses
         }
 
         // For /Configure and /Activate actions that accept ActionDTO
-        public async Task<object> HandleFr8Request(string curTerminal, string curActionPath, ActivityDTO curActionDTO)
+        public async Task<object> HandleFr8Request(string curTerminal, string curActionPath, Fr8DataDTO curDataDTO)
         {
-            if (curActionDTO == null)
-                throw new ArgumentNullException("curActionDTO");
-            if (curActionDTO.ActivityTemplate == null)
-                throw new ArgumentException("ActivityTemplate is null", "curActionDTO");
+            if (curDataDTO?.ActivityDTO == null)
+                throw new ArgumentNullException(nameof(curDataDTO.ActivityDTO));
+
+            if (curDataDTO.ActivityDTO.ActivityTemplate == null)
+                throw new ArgumentException("ActivityTemplate is null", nameof(curDataDTO.ActivityDTO));
 
             _integrationTestMode = false;
 
+            var curActionDTO = curDataDTO.ActivityDTO;
             var activityTemplateName = curActionDTO.ActivityTemplate.Name;
             if (activityTemplateName.EndsWith("_TEST"))
             {
@@ -191,7 +193,7 @@ namespace TerminalBase.BaseClasses
             //Object to carry Documentation
             SolutionPageDTO curSolutionPageDTO;
             var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
-            var curContainerId = curActionDTO.ContainerId;
+            
             Task<ActivityDO> response;
             var currentUserId = curAuthTokenDO != null ? curAuthTokenDO.UserID : null;
             //Set Current user of action
@@ -211,7 +213,7 @@ namespace TerminalBase.BaseClasses
                         {
                             OnStartAction(curTerminal, activityTemplateName, IntegrationTestMode);
                             var resultPayloadDTO = await (Task<PayloadDTO>)curMethodInfo
-                                .Invoke(curObject, new Object[] { curActivityDO, curContainerId, curAuthTokenDO });
+                                .Invoke(curObject, new Object[] { curActivityDO, curDataDTO.ContainerId, curAuthTokenDO });
                             await OnCompletedAction(curTerminal, IntegrationTestMode);
 
                             return resultPayloadDTO;

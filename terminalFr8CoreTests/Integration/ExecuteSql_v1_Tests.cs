@@ -42,10 +42,10 @@ namespace terminalFr8CoreTests.Integration
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = FixtureData.ExecuteSql_InitialConfiguration_ActionDTO();
+            var requestActionDTO = FixtureData.ExecuteSql_InitialConfiguration_Fr8DataDTO();
 
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -70,10 +70,10 @@ namespace terminalFr8CoreTests.Integration
 
             var runUrl = GetTerminalRunUrl();
 
-            var activityDTO = FixtureData.ExecuteSql_InitialConfiguration_ActionDTO();
+            var dataDTO = FixtureData.ExecuteSql_InitialConfiguration_Fr8DataDTO();
             
             AddPayloadCrate(
-               activityDTO,
+               dataDTO.ActivityDTO,
                new StandardQueryCM()
                {
                    Queries = new List<QueryDTO>() { new QueryDTO() { Name = "Customer" } }
@@ -86,7 +86,7 @@ namespace terminalFr8CoreTests.Integration
             lstFields.Add(new FieldDTO() { Key = "Customer.Physician", Value = "String" });
             lstFields.Add(new FieldDTO() { Key = "Customer.CurrentMedicalCondition", Value = "String" });
             AddUpstreamCrate(
-                activityDTO,
+                dataDTO.ActivityDTO,
                 new StandardDesignTimeFieldsCM(lstFields),
                 "Sql Column Types"
             );
@@ -94,15 +94,15 @@ namespace terminalFr8CoreTests.Integration
             lstFields.Clear();
             lstFields.Add(new FieldDTO() { Key = UtilitiesTesting.Fixtures.FixtureData.TestConnectionString2().Value, Value = "value" });
             AddUpstreamCrate(
-                activityDTO,
+                dataDTO.ActivityDTO,
                 new StandardDesignTimeFieldsCM(lstFields),
                 "Sql Connection String"
             );
 
-            AddOperationalStateCrate(activityDTO, new OperationalStateCM());
+            AddOperationalStateCrate(dataDTO.ActivityDTO, new OperationalStateCM());
 
             var responsePayloadDTO =
-                await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, activityDTO);
+                await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
 
             Assert.NotNull(responsePayloadDTO);
             Assert.NotNull(responsePayloadDTO.CrateStorage);

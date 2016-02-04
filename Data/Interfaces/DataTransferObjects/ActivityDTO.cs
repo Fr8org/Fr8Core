@@ -30,8 +30,6 @@ namespace Data.Interfaces.DataTransferObjects
 
         public string CurrentView { get; set; }
 
-        public Guid ContainerId { get; set; }
-
         public AuthorizationTokenDTO AuthToken { get; set; }
 
         public string Fr8AccountId { get; set; }
