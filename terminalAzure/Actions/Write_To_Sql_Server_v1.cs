@@ -18,6 +18,7 @@ using TerminalBase.Infrastructure;
 using TerminalSqlUtilities;
 using terminalAzure.Infrastructure;
 using terminalAzure.Services;
+using Utilities;
 
 namespace terminalAzure.Actions
 {
@@ -104,19 +105,26 @@ namespace terminalAzure.Actions
         //if the user provides a connection string, this action attempts to connect to the sql server and get its columns and tables
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
+            //Verify controls, make sure that TextBox with value exists
+            ValidateControls(curActivityDO);
             //In all followup calls, update data fields of the configuration store          
-            List<String> contentsList = GetFieldMappings(curActivityDO);
-
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            List<String> contentsList;
+            try
             {
-                updater.CrateStorage.RemoveByLabel("Sql Table Columns");
-                //this needs to be updated to hold Crates instead of FieldDefinitionDTO
-                updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("Sql Table Columns", contentsList.Select(col => new FieldDTO() { Key = col, Value = col }).ToArray()));
+                contentsList = GetFieldMappings(curActivityDO);
+                using (var updater = Crate.UpdateStorage(curActivityDO))
+                {
+                    updater.CrateStorage.RemoveByLabel("Sql Table Columns");
+                    //this needs to be updated to hold Crates instead of FieldDefinitionDTO
+                    updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("Sql Table Columns", contentsList.Select(col => new FieldDTO() { Key = col, Value = col }).ToArray()));
+                }
             }
-
+            catch
+            {
+                AddErrorToControl(curActivityDO);
+            }
             return await Task.FromResult<ActivityDO>(curActivityDO);
         }
-
         public async Task<PayloadDTO> Run(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payloadCrates = await GetPayload(activityDO, containerId);
@@ -146,27 +154,8 @@ namespace terminalAzure.Actions
 
         public List<string> GetFieldMappings(ActivityDO curActivityDO)
         {
-
-            var storage = Crate.GetStorage(curActivityDO);
-
-            if (storage.Count == 0)
-            {
-                throw new TerminalCodedException(TerminalErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
-            }
-
-            var confControls = storage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-
-            if (confControls == null)
-            {
-                throw new TerminalCodedException(TerminalErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
-            }
-
+            var confControls = GetConfigurationControls(curActivityDO);
             var connStringField = confControls.Controls.First();
-            if (connStringField == null || String.IsNullOrEmpty(connStringField.Value))
-            {
-                throw new TerminalCodedException(TerminalErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
-            }
-
             var curProvider = ObjectFactory.GetInstance<IDbProvider>();
 
             return (List<string>)curProvider.ConnectToSql(connStringField.Value, (command) =>
@@ -188,6 +177,38 @@ namespace terminalAzure.Actions
                 //Serialize and return
                 return tableMetaData;
             });
+        }
+
+        private void ValidateControls(ActivityDO activityDO)
+        {
+            var storage = Crate.GetStorage(activityDO);
+
+            if (storage.Count == 0)
+            {
+                throw new TerminalCodedException(TerminalErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
+            }
+
+            var confControls = storage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+
+            if (confControls == null)
+            {
+                throw new TerminalCodedException(TerminalErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
+            }
+
+            var connStringField = confControls.Controls.First();
+            if (connStringField == null || String.IsNullOrEmpty(connStringField.Value))
+            {
+                throw new TerminalCodedException(TerminalErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
+            }
+        }
+        private void AddErrorToControl(ActivityDO activityDO)
+        {
+            using (var updater = Crate.UpdateStorage(activityDO))
+            {
+                var controls = GetConfigurationControls(updater.CrateStorage);
+                var connStringTextBox = GetControl(controls, "connection_string", ControlTypes.TextBox);
+                connStringTextBox.Value = "Incorrect Connection String";
+            }
         }
 
         //EXECUTION-Related Methods
