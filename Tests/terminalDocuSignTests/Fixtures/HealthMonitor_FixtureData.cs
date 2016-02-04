@@ -61,7 +61,6 @@ namespace terminalDocuSignTests.Fixtures
             return new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Monitor_DocuSign_Envelope_Activity",
                 Label = "Monitor DocuSign Envelope Activity",
                 AuthToken = DocuSign_AuthToken(),
                 ActivityTemplate = activityTemplate,
@@ -76,7 +75,6 @@ namespace terminalDocuSignTests.Fixtures
             return new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Query_DocuSign",
                 Label = "Query DocuSign",
                 AuthToken = DocuSign_AuthToken(),
                 ActivityTemplate = activityTemplate,
@@ -91,7 +89,6 @@ namespace terminalDocuSignTests.Fixtures
             return new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Receive_DocuSign",
                 Label = "Receive DocuSign",
                 AuthToken = DocuSign_AuthToken(),
                 ActivityTemplate = activityTemplate,
@@ -106,7 +103,6 @@ namespace terminalDocuSignTests.Fixtures
             return new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Record_DocuSign",
                 Label = "Record DocuSign",
                 AuthToken = DocuSign_AuthToken(),
                 ActivityTemplate = activityTemplate,
@@ -131,7 +127,6 @@ namespace terminalDocuSignTests.Fixtures
             return new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Send_DocuSign",
                 Label = "Send DocuSign",
                 AuthToken = DocuSign_AuthToken(),
                 ActivityTemplate = activityTemplate,
@@ -156,7 +151,6 @@ namespace terminalDocuSignTests.Fixtures
             return new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Mail_Merge_Into_DocuSign",
                 Label = "Mail Merge Into DocuSign",
                 AuthToken = DocuSign_AuthToken(),
                 ActivityTemplate = activityTemplate,
@@ -181,7 +175,6 @@ namespace terminalDocuSignTests.Fixtures
             return new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Rich_Document_Notifications",
                 Label = "Rich Document Notifications",
                 AuthToken = DocuSign_AuthToken(),
                 ActivityTemplate = activityTemplate,
@@ -206,7 +199,6 @@ namespace terminalDocuSignTests.Fixtures
             return new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Extract_Data_From_Envelopes",
                 Label = "Extract Data From Envelopes",
                 AuthToken = DocuSign_AuthToken(),
                 ActivityTemplate = activityTemplate,

@@ -39,7 +39,6 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<JToken, string>().ConvertUsing<JTokenToStringConverter>();
 
             Mapper.CreateMap<ActivityDO, ActivityDTO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
-                .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
                 .ForMember(a => a.RootRouteNodeId, opts => opts.ResolveUsing(ad => ad.RootRouteNodeId))
                 .ForMember(a => a.ParentRouteNodeId, opts => opts.ResolveUsing(ad => ad.ParentRouteNodeId))
                 //.ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => ad.CrateStorage == null ? null : JsonConvert.DeserializeObject(ad.CrateStorage)))
@@ -53,7 +52,6 @@ namespace Data.Infrastructure.AutoMapper
 
 
             Mapper.CreateMap<ActivityDTO, ActivityDO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
-                .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
                 .ForMember(a => a.RootRouteNodeId, opts => opts.ResolveUsing(ad => ad.RootRouteNodeId))
                 .ForMember(a => a.ParentRouteNodeId, opts => opts.ResolveUsing(ad => ad.ParentRouteNodeId))
                 .ForMember(a => a.ActivityTemplateId, opts => opts.ResolveUsing(ad => ad.ActivityTemplateId))

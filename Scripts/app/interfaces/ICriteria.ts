@@ -15,7 +15,6 @@ module dockyard.interfaces {
         id: string;
         isTempId: boolean;
         parentRouteNodeId: string;
-        name: string;
         label?: string;
         crateStorage: model.CrateStorage;
         configurationControls: model.ControlsList;

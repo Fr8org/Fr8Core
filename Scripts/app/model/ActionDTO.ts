@@ -4,7 +4,6 @@
         parentRouteNodeId: string;
         id: string;
         isTempId: boolean;
-        name: string;
         label: string;
         crateStorage: model.CrateStorage;
         configurationControls: model.ControlsList;
@@ -40,8 +39,6 @@
                 this.id,
                 this.isTempId
             );
-            result.name = this.name;
-            result.name = this.label;
             result.ordering = this.ordering;
             return result;
         }
@@ -58,7 +55,6 @@
             result.configurationControls = dataObject.configurationControls;
             result.id = dataObject.id;
             result.isTempId = dataObject.isTempId;
-            result.name = dataObject.name;
             result.label = dataObject.label;
             result.parentRouteNodeId = dataObject.parentRouteNodeId;
             result.ordering = dataObject.ordering;

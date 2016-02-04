@@ -22,7 +22,6 @@ namespace terminalTests.Fixtures
             return new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "MapFields",
                 Label = "Map Fields",
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id

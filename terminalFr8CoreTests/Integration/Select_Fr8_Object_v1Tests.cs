@@ -272,7 +272,6 @@ namespace terminalFr8CoreTests.Integration
 			var requestActionDTO = new ActivityDTO
 			{
 				Id = Guid.NewGuid(),
-				Name = "Select_Fr8_Object",
 				Label = "Select Fr8 Object",
 				ActivityTemplate = activityTemplate,
 				ActivityTemplateId = activityTemplate.Id,

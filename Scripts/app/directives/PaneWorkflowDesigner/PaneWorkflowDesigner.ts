@@ -43,10 +43,6 @@ module dockyard.directives.paneWorkflowDesigner {
             scope.widget.replaceActionTempId(eventArgs.tempId, eventArgs.id);
         };
 
-        var onActionRenamed = function (eventArgs: ActionNameUpdatedEventArgs, scope: IPaneWorkflowDesignerScope) {
-            scope.widget.renameAction(eventArgs.id, eventArgs.name);
-        };
-
         var onUpdateActivityTemplateIdForAction = function (eventArgs: UpdateActivityTemplateIdEventArgs, scope: IPaneWorkflowDesignerScope) {
             scope.widget.updateActivityTemplateId(eventArgs.id, eventArgs.activityTemplateId);
         };
@@ -98,9 +94,6 @@ module dockyard.directives.paneWorkflowDesigner {
 
                 scope.$on(MessageType[MessageType.PaneWorkflowDesigner_UpdateProcessNodeTemplateName],
                     (event: ng.IAngularEvent, eventArgs: UpdateProcessNodeTemplateNameEventArgs) => onProcessNodeTemplateRenamed(eventArgs, scope));
-
-                scope.$on(MessageType[MessageType.PaneWorkflowDesigner_ActionNameUpdated],
-                    (event: ng.IAngularEvent, eventArgs: ActionNameUpdatedEventArgs) => onActionRenamed(eventArgs, scope));
 
                 scope.$on(MessageType[MessageType.PaneWorkflowDesigner_UpdateActivityTemplateId],
                     (event: ng.IAngularEvent, eventArgs: UpdateActivityTemplateIdEventArgs) => onUpdateActivityTemplateIdForAction(eventArgs, scope));

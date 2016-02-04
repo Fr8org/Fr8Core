@@ -306,7 +306,7 @@ namespace Hub.Services
                 {
                     //here show only the first error as an issue to redirect back the user to the plan builder
                     errorMessage = string.Format("There was a problem with the configuration of the action '{0}': {1}",
-                        curActivityDTO.Name, control.ErrorMessage);
+                        curActivityDTO.ActivityTemplate.Name, control.ErrorMessage);
                     return true;
                 }
             }

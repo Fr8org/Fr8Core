@@ -30,7 +30,6 @@ namespace terminalExcelTests.Fixtures
             return new ActivityDTO()
             {
                 Id = guid,
-                Name = "Load_Table_Data",
                 Label = "Load Table Data",
                 AuthToken = DocuSign_AuthToken(),
                 ActivityTemplate = activityTemplate,

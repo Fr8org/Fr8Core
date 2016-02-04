@@ -24,7 +24,6 @@ namespace terminalPapertrailTests.Fixtures
             return new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Write_To_Log",
                 Label = "Write To Log",
                 AuthToken = null,
                 ActivityTemplate = activityTemplate,

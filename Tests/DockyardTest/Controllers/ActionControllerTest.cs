@@ -70,7 +70,7 @@ namespace DockyardTest.Controllers
 
                 var expectedAction = uow.ActivityRepository.GetByKey(actualAction.Id);
                 Assert.IsNotNull(expectedAction);
-                Assert.AreEqual(actualAction.Name, expectedAction.Name);
+                Assert.AreEqual(actualAction.ActivityTemplate.Name, expectedAction.ActivityTemplate.Name);
             }
         }
 
@@ -108,7 +108,7 @@ namespace DockyardTest.Controllers
                 //Still there is only one action as the update happened.
                 var expectedAction = uow.ActivityRepository.GetByKey(actualAction.Id);
                 Assert.IsNotNull(expectedAction);
-                Assert.AreEqual(actualAction.Name, expectedAction.Name);
+                Assert.AreEqual(actualAction.ActivityTemplate.Name, expectedAction.ActivityTemplate.Name);
             }
         }
 
@@ -137,7 +137,7 @@ namespace DockyardTest.Controllers
                 //Still there is only one action as the update happened.
                 var expectedAction = uow.ActivityRepository.GetByKey(actualAction.Id);
                 Assert.IsNotNull(expectedAction);
-                Assert.AreEqual(actualAction.Name, expectedAction.Name);
+               
             }
         }
 
@@ -335,7 +335,6 @@ namespace DockyardTest.Controllers
             return new ActivityDTO
             {
                 Id = actionId,
-                Name = "WriteToAzureSql",
                 CrateStorage = new CrateStorageDTO(),
                 ActivityTemplateId = 1,
                 ActivityTemplate = FixtureData.TestActionTemplateDTOV2()
