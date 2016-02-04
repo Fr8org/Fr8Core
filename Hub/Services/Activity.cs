@@ -731,6 +731,19 @@ namespace Hub.Services
             return ObjectFactory.GetInstance<ITerminalTransmitter>()
                 .CallActionAsync<SolutionPageDTO>(actionName, curActivityDTO, curContainderId.ToString());
         }
+        public List<string> GetSolutionList(string terminalName)
+        {
+            var solutionNameList = new List<string>();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curActivities = uow.ActivityTemplateRepository.GetAll()
+                    .Where(a => a.Terminal.Name == terminalName
+                        && a.Category == ActivityCategory.Solution)
+                        .ToList();
+                solutionNameList.AddRange(curActivities.Select(activity => activity.Name));
+            }
+            return solutionNameList;
+        }
         //        public Task<IEnumerable<T>> FindCratesByManifestType<T>(ActionDO curActivityDO, GetCrateDirection direction = GetCrateDirection.None)
         //        {
         //
