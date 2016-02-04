@@ -23,11 +23,11 @@ namespace terminalExcelTests.Fixtures
             };
         }
 
-        public static ActivityDTO Load_Table_Data_v1_InitialConfiguration_ActionDTO(Guid guid)
+        public static Fr8DataDTO Load_Table_Data_v1_InitialConfiguration_Fr8DataDTO(Guid guid)
         {
             var activityTemplate = Load_Table_Data_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = guid,
                 Name = "Load_Table_Data",
@@ -36,6 +36,8 @@ namespace terminalExcelTests.Fixtures
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id
             };
+
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
     }
 }

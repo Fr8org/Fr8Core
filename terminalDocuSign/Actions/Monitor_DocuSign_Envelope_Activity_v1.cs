@@ -20,6 +20,7 @@ using terminalDocuSign.Services;
 using TerminalBase.BaseClasses;
 using Utilities.Configuration.Azure;
 using Data.States;
+using Data.Interfaces.DataTransferObjects.Helpers;
 
 namespace terminalDocuSign.Actions
 {
@@ -151,7 +152,7 @@ namespace terminalDocuSign.Actions
                 var anySelectedControl = eventCheckBoxes.Any(c => c.Selected);
 
                 var checkBoxControl = eventCheckBoxes.FirstOrDefault(x => x.Name == "Event_Recipient_Signed");
-                if(checkBoxControl != null) checkBoxControl.ErrorMessage = string.Empty; 
+                if (checkBoxControl != null) checkBoxControl.ErrorMessage = string.Empty;
                 if (!anySelectedControl && checkBoxControl != null)
                 {
                     //show the error under the third checkbox because checkboxes are rendered like separate controls
@@ -227,7 +228,7 @@ namespace terminalDocuSign.Actions
             //get currently selected option and its value
             string curSelectedOption, curSelectedValue;
             GetTemplateRecipientPickerValue(curActivityDO, out curSelectedOption, out curSelectedValue);
-            
+
             string envelopeId = string.Empty;
 
             //retrieve envelope ID based on the selected option and its value
@@ -244,7 +245,7 @@ namespace terminalDocuSign.Actions
                         {
                             envelopeId = GetValueForKey(payloadCrates, "EnvelopeId");
                         }
-                        else if(incommingTemplate != null)//possible Run is comming from unify activate/run
+                        else if (incommingTemplate != null)//possible Run is comming from unify activate/run
                         {
                             //this event isn't about us let's stop execution
                             return TerminateHubExecution(payloadCrates);
@@ -260,7 +261,7 @@ namespace terminalDocuSign.Actions
                         {
                             envelopeId = GetValueForKey(payloadCrates, "EnvelopeId");
                         }
-                        else if(curSelectedValue != null)
+                        else if (curSelectedValue != null)
                         {
                             //this event isn't about us let's stop execution
                             return TerminateHubExecution(payloadCrates);
@@ -494,7 +495,7 @@ namespace terminalDocuSign.Actions
                                     ManifestType = CrateManifestTypes.StandardDesignTimeFields
                                 },
                                 Events = new List<ControlEvent> {new ControlEvent("onChange", "requestConfig")},
-                                Help = new HelpControlDTO("Monitor_DocuSign_Envelope_DocuSignTemplateHelp", "Minicon")
+                                ShowDocumentation = ActivityResponseDTO.CreateDocumentationResponse("Minicon", "ExplainMonitoring")
                             }
                         }
                     }
@@ -503,7 +504,5 @@ namespace terminalDocuSign.Actions
 
             return templateRecipientPicker;
         }
-        
-        
     }
 }
