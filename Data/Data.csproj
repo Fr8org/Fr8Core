@@ -289,7 +289,6 @@
     <Compile Include="Interfaces\DataTransferObjects\FactDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldValidationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActivityDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ActivityDTOBase.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionPayloadDTO.cs" />
     <Compile Include="Entities\ActivityDO.cs" />
     <Compile Include="Entities\AuthorizationTokenDO.cs" />

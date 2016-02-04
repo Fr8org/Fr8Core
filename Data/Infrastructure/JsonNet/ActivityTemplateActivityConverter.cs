@@ -45,8 +45,8 @@ namespace Data.Infrastructure.JsonNet
             writer.WriteValue(item.MinPaneWidth);
             writer.WritePropertyName("needsAuthentication");
             writer.WriteValue(item.NeedsAuthentication);
-           // writer.WritePropertyName("type");
-           // writer.WriteValue(item.Type);
+            writer.WritePropertyName("terminalId");
+            writer.WriteValue(item.TerminalId);
             writer.WriteEndObject();
             writer.Flush();
         }
