@@ -3,7 +3,8 @@
 @Scripts.Render("~/bundles/js/bower")
 <!-- END CORE ANGULARJS PLUGINS -->
 <!-- BEGIN APP LEVEL ANGULARJS SCRIPTS -->
-<script src="~/Scripts/app/app.js" type="text/javascript"></script>
+@Scripts.Render("~/bundles/js/app")
+
 @if (Request.Url.PathAndQuery.IndexOf("JsTests/") > 0)
 {
 <script src="~/Scripts/app/e2ehttpBackend.js" type="text/javascript"></script>

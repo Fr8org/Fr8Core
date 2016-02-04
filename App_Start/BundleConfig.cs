@@ -145,6 +145,10 @@ namespace HubWeb.App_Start
                 .IncludeDirectory("~/Scripts/tests/utils/", "*.js", true)
                 .IncludeDirectory("~/Scripts/tests/integration/", "*.js", true));
 
+            
+            bundles.Add(new ScriptBundle("~/bundles/js/app")
+                .Include("~/Scripts/app/app.js"));
+
             bundles.Add(new ScriptBundle("~/bundles/js/fr8Main")
                 .Include("~/Scripts/app/_compiled.js"));
 
