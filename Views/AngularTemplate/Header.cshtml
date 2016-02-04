@@ -58,15 +58,15 @@
                           
 
 				        </li>
-                    if (@User.IsInRole("Guest"))
-                    {
-                        <li class="have-account-login-guest visible-lg visible-md visible-sm">
-                            <a href="/DockyardAccount/Logoff">
-                                <span>Have an Account? Login</span>
-                            </a>
-                        </li>
-                    }
-				<!-- END USER LOGIN DROPDOWN -->
+                        <!-- END USER LOGIN DROPDOWN -->
+                        if (@User.IsInRole("Guest"))
+                        {
+                            <li class="have-account-login-guest visible-lg visible-md visible-sm">
+                                <a href="/DockyardAccount/Logoff">
+                                    <span>Have an Account? Login</span>
+                                </a>
+                            </li>
+                        }
                 }
 			</ul>
 		</div>
