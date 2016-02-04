@@ -158,7 +158,7 @@ namespace HubWeb.Controllers
             }
         }
         [HttpPost]
-        [Fr8HubWebHMACAuthenticate]
+        [AllowAnonymous]
         public async Task<IHttpActionResult> Documentation([FromBody] ActivityDTO curActivityDTO)
         {
             var curDocSupport = curActivityDTO.DocumentationSupport;
