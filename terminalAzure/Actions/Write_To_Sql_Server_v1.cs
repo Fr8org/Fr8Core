@@ -46,7 +46,10 @@ namespace terminalAzure.Actions
 
             var storage = Crate.GetStorage(curActivityDO);
 
-            var connectionStrings = storage.CratesOfType<StandardConfigurationControlsCM>().Select(x => x.Content.FindByName("connection_string")).Where(x => x != null && !string.IsNullOrWhiteSpace(x.Value)).ToArray();
+            var connectionStrings = storage.CratesOfType<StandardConfigurationControlsCM>()
+                .Select(x => x.Content.FindByName("connection_string"))
+                .Where(x => x != null && !string.IsNullOrWhiteSpace(x.Value))
+                .ToArray();
 
             //if there are more than 2 return connection strings, something is wrong
             //if there are none or if there's one but it's value is "" the return initial else return followup
@@ -60,7 +63,7 @@ namespace terminalAzure.Actions
                 //we should validate our data now
                 //CheckFields(curActivityDO, new List<ValidationDataTuple> { new ValidationDataTuple("connection_string", "test", GetCrateDirection.Upstream, CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME) });
                 return ConfigurationRequestType.Followup;
-            }            
+            }
         }
 
         //If the user provides no Connection String value, provide an empty Connection String field for the user to populate
@@ -76,16 +79,26 @@ namespace terminalAzure.Actions
         }
 
         private Crate CreateControlsCrate()
-        { 
+        {
             // "[{ type: 'textField', name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }]"
-            var control = new TextBox()
-            {
-                Label = "SQL Connection String",
-                Name = "connection_string",
-                Required = true,
-                Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
+            var controls = new ControlDefinitionDTO[]{
+                new TextBox
+                {
+                    Label = "SQL Connection String",
+                    Name = "connection_string",
+                    Required = true
+                },
+                new Button
+                {
+                    Label = "Continue",
+                    Name = "Continue",
+                    Events = new List<ControlEvent>()
+                    {
+                        new ControlEvent("onClick", "requestConfig")
+                    }
+                }
             };
-            return PackControlsCrate(control);
+            return PackControlsCrate(controls);
         }
 
         //if the user provides a connection string, this action attempts to connect to the sql server and get its columns and tables
@@ -98,7 +111,7 @@ namespace terminalAzure.Actions
             {
                 updater.CrateStorage.RemoveByLabel("Sql Table Columns");
                 //this needs to be updated to hold Crates instead of FieldDefinitionDTO
-                updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("Sql Table Columns", contentsList.Select(col => new FieldDTO() {Key = col, Value = col}).ToArray()));
+                updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("Sql Table Columns", contentsList.Select(col => new FieldDTO() { Key = col, Value = col }).ToArray()));
             }
 
             return await Task.FromResult<ActivityDO>(curActivityDO);
@@ -192,11 +205,11 @@ namespace terminalAzure.Actions
         {
             var mappedFieldsCrate = Crate.GetStorage(payloadCrates).CratesOfType<StandardPayloadDataCM>().FirstOrDefault(x => x.Label == "MappedFields");
 
-//            var mappedFieldsCrate = processPayload.CrateStorageDTO()
-//                .CrateDTO
-//                .Where(x => x.Label == "MappedFields"
-//                    && x.ManifestType == CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME)
-//                .FirstOrDefault();
+            //            var mappedFieldsCrate = processPayload.CrateStorageDTO()
+            //                .CrateDTO
+            //                .Where(x => x.Label == "MappedFields"
+            //                    && x.ManifestType == CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME)
+            //                .FirstOrDefault();
 
             if (mappedFieldsCrate == null)
             {
@@ -204,20 +217,20 @@ namespace terminalAzure.Actions
             }
 
             var valuesCrate = Crate.GetStorage(payloadCrates).CratesOfType<StandardPayloadDataCM>().FirstOrDefault(x => x.Label == "DocuSign Envelope Data");
-//
-//            var valuesCrate = processPayload.CrateStorageDTO()
-//                .CrateDTO
-//                .Where(x => x.ManifestType == CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME
-//                    && x.Label == "DocuSign Envelope Data")
-//                .FirstOrDefault();
+            //
+            //            var valuesCrate = processPayload.CrateStorageDTO()
+            //                .CrateDTO
+            //                .Where(x => x.ManifestType == CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME
+            //                    && x.Label == "DocuSign Envelope Data")
+            //                .FirstOrDefault();
 
             if (valuesCrate == null)
             {
                 throw new ApplicationException("No payload crate found with Label == DocuSign Envelope Data");
             }
 
-//            var mappedFields = mappedFieldsCrate.Value.AllValues();// JsonConvert.DeserializeObject<List<FieldDTO>>(mappedFieldsCrate.Contents);
-//            var values = JsonConvert.DeserializeObject<List<FieldDTO>>(valuesCrate.Contents);
+            //            var mappedFields = mappedFieldsCrate.Value.AllValues();// JsonConvert.DeserializeObject<List<FieldDTO>>(mappedFieldsCrate.Contents);
+            //            var values = JsonConvert.DeserializeObject<List<FieldDTO>>(valuesCrate.Contents);
 
             return CreateTables(mappedFieldsCrate.Content.AllValues().ToList(), valuesCrate.Content.AllValues().ToList());
         }
