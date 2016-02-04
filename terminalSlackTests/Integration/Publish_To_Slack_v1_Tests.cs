@@ -41,18 +41,18 @@ namespace terminalSlackTests.Integration
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Publish_To_Slack_v1_InitialConfiguration_ActionDTO();
+            var requestDataDTO = HealthMonitor_FixtureData.Publish_To_Slack_v1_InitialConfiguration_Fr8DataDTO();
 
-            var responseActionDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, requestActionDTO);
+            var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, requestDataDTO);
 
             var storage = Crate.GetStorage(responseActionDTO);
 
-            using (var updater = Crate.UpdateStorage(requestActionDTO))
+            using (var updater = Crate.UpdateStorage(requestDataDTO.ActivityDTO))
             {
                 updater.CrateStorage = storage;
             }
 
-            return await HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, requestActionDTO);
+            return await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, requestDataDTO);
         }
 
         [Test]
@@ -85,8 +85,8 @@ namespace terminalSlackTests.Integration
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Publish_To_Slack_v1_InitialConfiguration_ActionDTO(isAuthToken);
-            var responseActionDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, requestActionDTO);
+            var requestActionDTO = HealthMonitor_FixtureData.Publish_To_Slack_v1_InitialConfiguration_Fr8DataDTO(isAuthToken);
+            var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, requestActionDTO);
 
             return responseActionDTO;
         }

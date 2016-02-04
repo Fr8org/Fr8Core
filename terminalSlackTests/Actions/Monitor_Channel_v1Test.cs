@@ -36,10 +36,10 @@ namespace terminalSlackTests.Integration
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Monitor_Channel_v1_InitialConfiguration_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Monitor_Channel_v1_InitialConfiguration_Fr8DataDTO();
 
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -85,12 +85,12 @@ namespace terminalSlackTests.Integration
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Monitor_Channel_v1_InitialConfiguration_ActionDTO();
-            requestActionDTO.AuthToken = null;
+            var requestDataDTO = HealthMonitor_FixtureData.Monitor_Channel_v1_InitialConfiguration_Fr8DataDTO();
+            requestDataDTO.ActivityDTO.AuthToken = null;
 
-            await HttpPostAsync<ActivityDTO, Newtonsoft.Json.Linq.JToken>(
+            await HttpPostAsync<Fr8DataDTO, Newtonsoft.Json.Linq.JToken>(
                 configureUrl,
-                requestActionDTO
+                requestDataDTO
             );
         }
 
@@ -101,8 +101,8 @@ namespace terminalSlackTests.Integration
 
             ActivityDTO activityDTO = await GetConfiguredActionWithDDLBSelected("general");
             AddOperationalStateCrate(activityDTO, new OperationalStateCM());
-            var responsePayloadDTO =
-             await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, activityDTO);
+            var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
+            var responsePayloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
 
             var crateStorage = Crate.GetStorage(responsePayloadDTO);
 
@@ -120,8 +120,9 @@ namespace terminalSlackTests.Integration
             var runUrl = GetTerminalRunUrl();
             var activityDTO = await GetConfiguredActionWithDDLBSelected("random");
             AddOperationalStateCrate(activityDTO, new OperationalStateCM());
+            var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
             var responsePayloadDTO =
-               await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, activityDTO);
+               await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
 
             var storage = Crate.GetStorage(responsePayloadDTO);
             var operationalStateCM = storage.CrateContentsOfType<OperationalStateCM>().Single();
@@ -136,9 +137,9 @@ namespace terminalSlackTests.Integration
         private async Task<ActivityDTO> GetConfiguredActionWithDDLBSelected(string selectedChannel)
         { 
             var configureUrl = GetTerminalConfigureUrl();
-            var requestActionDTO = HealthMonitor_FixtureData.Monitor_Channel_v1_InitialConfiguration_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Monitor_Channel_v1_InitialConfiguration_Fr8DataDTO();
             var activityDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -183,11 +184,11 @@ namespace terminalSlackTests.Integration
             var configureUrl = GetTerminalActivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = HealthMonitor_FixtureData.Monitor_Channel_v1_InitialConfiguration_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Monitor_Channel_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -204,11 +205,11 @@ namespace terminalSlackTests.Integration
             var configureUrl = GetTerminalDeactivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = HealthMonitor_FixtureData.Monitor_Channel_v1_InitialConfiguration_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Monitor_Channel_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );

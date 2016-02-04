@@ -63,26 +63,25 @@ namespace terminalFr8CoreTests.Integration
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var activityDTO = HealthMonitor_FixtureData
-                .MapFields_v1_InitialConfiguration_ActionDTO();
+            var dataDTO = HealthMonitor_FixtureData.MapFields_v1_InitialConfiguration_Fr8DataDTO();
 
             AddUpstreamCrate(
-                activityDTO,
+                dataDTO.ActivityDTO,
                 new StandardDesignTimeFieldsCM(
                     new FieldDTO("A", "B")
                 )
             );
 
             AddDownstreamCrate(
-                activityDTO,
+                dataDTO.ActivityDTO,
                 new StandardDesignTimeFieldsCM(
                     new FieldDTO("C", "D")
                 )
             );
 
-            activityDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, activityDTO);
+            var responseActivityDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
 
-            return activityDTO;
+            return responseActivityDTO;
         }
 
         private async Task<ActivityDTO> ConfigureWithUpstreamDownstreamControlData()
@@ -104,7 +103,8 @@ namespace terminalFr8CoreTests.Integration
             }
 
             var configureUrl = GetTerminalConfigureUrl();
-            activityDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, activityDTO);
+            var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
+            activityDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
 
             return activityDTO;
         }
@@ -114,11 +114,11 @@ namespace terminalFr8CoreTests.Integration
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var activityDTO = HealthMonitor_FixtureData
-                .MapFields_v1_InitialConfiguration_ActionDTO();
+            var dataDTO = HealthMonitor_FixtureData
+                .MapFields_v1_InitialConfiguration_Fr8DataDTO();
 
-            activityDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, activityDTO);
-            var crateStorage = Crate.GetStorage(activityDTO);
+            dataDTO.ActivityDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
+            var crateStorage = Crate.GetStorage(dataDTO.ActivityDTO);
 
             AssertCrateStructure(crateStorage);
             AssertCrateContent_Initial(crateStorage);
@@ -140,7 +140,8 @@ namespace terminalFr8CoreTests.Integration
             var activityDTO = await ConfigureWithUpstreamDownstreamControlData();
 
             var configureUrl = GetTerminalConfigureUrl();
-            activityDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, activityDTO);
+            var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
+            activityDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
 
             var crateStorage = Crate.GetStorage(activityDTO);
             AssertCrateStructure(crateStorage);
