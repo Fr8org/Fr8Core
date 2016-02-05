@@ -238,7 +238,7 @@ namespace Hub.Services
             }
             else
             {
-                route.AddChild(submittedActiviy, null);
+                route.AddChild(submittedActiviy, submittedActiviy.Ordering);
             }
         }
 
@@ -336,7 +336,7 @@ namespace Hub.Services
                 }
                 catch (ArgumentException e)
                 {
-                    EventManager.TerminalConfigureFailed("<no terminal url>", JsonConvert.SerializeObject(curActivityDO), e.Message, curActivityDO.Id.ToString());
+                    EventManager.TerminalConfigureFailed("<no terminal url>", JsonConvert.SerializeObject(Mapper.Map<ActivityDTO>(curActivityDO)), e.Message, curActivityDO.Id.ToString());
                     throw;
                 }
                 catch (RestfulServiceException e)
@@ -353,7 +353,7 @@ namespace Hub.Services
                             PreserveReferencesHandling = PreserveReferencesHandling.Objects
                         };
                         var endpoint = _activityTemplate.GetTerminalUrl(curActivityDO.ActivityTemplateId) ?? "<no terminal url>";
-                        EventManager.TerminalConfigureFailed(endpoint, JsonConvert.SerializeObject(curActivityDO, settings), e.Message, curActivityDO.Id.ToString());
+                        EventManager.TerminalConfigureFailed(endpoint, JsonConvert.SerializeObject(Mapper.Map<ActivityDTO>(curActivityDO), settings), e.Message, curActivityDO.Id.ToString());
                         throw;
                     }
                 }
@@ -365,7 +365,7 @@ namespace Hub.Services
                     };
 
                     var endpoint = _activityTemplate.GetTerminalUrl(curActivityDO.ActivityTemplateId) ?? "<no terminal url>";
-                    EventManager.TerminalConfigureFailed(endpoint, JsonConvert.SerializeObject(curActivityDO, settings), e.Message, curActivityDO.Id.ToString());
+                    EventManager.TerminalConfigureFailed(endpoint, JsonConvert.SerializeObject(Mapper.Map<ActivityDTO>(curActivityDO), settings), e.Message, curActivityDO.Id.ToString());
                     throw;
                 }
             }
@@ -514,7 +514,7 @@ namespace Hub.Services
                 if (plan != null && plan.Name != "LogFr8InternalEvents")
                 {
                     var actionDTO = Mapper.Map<ActivityDTO>(curActivityDO);
-                    await eventManager.Publish("ActionExecuted", curActivityDO.Fr8Account.Id, curActivityDO.Id.ToString(), JsonConvert.SerializeObject(actionDTO).ToString(), "Success");
+                    await eventManager.Publish("ActionExecuted", curActivityDO.Fr8AccountId, curActivityDO.Id.ToString(), JsonConvert.SerializeObject(actionDTO).ToString(), "Success");
                 }
 
                 return payloadDTO;
@@ -522,7 +522,7 @@ namespace Hub.Services
             }
             catch (ArgumentException e)
             {
-                EventManager.TerminalRunFailed("<no terminal url>", JsonConvert.SerializeObject(curActivityDO), e.Message, curActivityDO.Id.ToString());
+                EventManager.TerminalRunFailed("<no terminal url>", JsonConvert.SerializeObject(Mapper.Map<ActivityDTO>(curActivityDO)), e.Message, curActivityDO.Id.ToString());
                 throw;
             }
             catch (Exception e)
@@ -533,7 +533,7 @@ namespace Hub.Services
                 };
 
                 var endpoint = _activityTemplate.GetTerminalUrl(curActivityDO.ActivityTemplateId) ?? "<no terminal url>";
-                EventManager.TerminalRunFailed(endpoint, JsonConvert.SerializeObject(curActivityDO, settings), e.Message, curActivityDO.Id.ToString());
+                EventManager.TerminalRunFailed(endpoint, JsonConvert.SerializeObject(Mapper.Map<ActivityDTO>(curActivityDO), settings), e.Message, curActivityDO.Id.ToString());
                 throw;
             }
         }
@@ -564,8 +564,9 @@ namespace Hub.Services
             {
                 //if this action contains nested actions, do not pass them to avoid 
                 // circular reference error during JSON serialization (FR-1769)
-                curActivityDO = Mapper.Map<ActivityDO>(curActivityDO);
-                curActivityDO.ChildNodes = new List<RouteNodeDO>();
+                //curActivityDO = Mapper.Map<ActivityDO>(curActivityDO); // this doesn't clone activity
+
+                curActivityDO = (ActivityDO)curActivityDO.Clone();
 
                 var result = await CallTerminalActionAsync<ActivityDTO>("activate", curActivityDO, Guid.Empty);
                 EventManager.ActionActivated(curActivityDO);
@@ -573,12 +574,12 @@ namespace Hub.Services
             }
             catch (ArgumentException)
             {
-                EventManager.TerminalActionActivationFailed("<no terminal url>", JsonConvert.SerializeObject(curActivityDO), curActivityDO.Id.ToString());
+                EventManager.TerminalActionActivationFailed("<no terminal url>", JsonConvert.SerializeObject(Mapper.Map<ActivityDTO>(curActivityDO)), curActivityDO.Id.ToString());
                 throw;
             }
             catch
             {
-                EventManager.TerminalActionActivationFailed(_activityTemplate.GetTerminalUrl(curActivityDO.ActivityTemplateId) ?? "<no terminal url>", JsonConvert.SerializeObject(curActivityDO), curActivityDO.Id.ToString());
+                EventManager.TerminalActionActivationFailed(_activityTemplate.GetTerminalUrl(curActivityDO.ActivityTemplateId) ?? "<no terminal url>", JsonConvert.SerializeObject(Mapper.Map<ActivityDTO>(curActivityDO)), curActivityDO.Id.ToString());
                 throw;
             }
         }

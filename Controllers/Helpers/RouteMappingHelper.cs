@@ -33,7 +33,7 @@ namespace HubWeb.Controllers.Helpers
                 RouteState = curPlanDO.RouteState,
                 StartingSubrouteId = curPlanDO.StartingSubrouteId,
                 Subroutes = subrouteDTOList,
-                Fr8UserId = curPlanDO.Fr8Account.Id,
+                Fr8UserId = curPlanDO.Fr8AccountId,
                 Tag = curPlanDO.Tag
             };
 

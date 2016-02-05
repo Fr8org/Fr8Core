@@ -102,11 +102,11 @@ namespace Hub.Services
 
                 if (activityDTO.AuthToken == null)
                 {
-                    if (activity.Fr8Account != null)
+                    if (activity.Fr8AccountId != null)
                     {
                         activityDTO.AuthToken = new AuthorizationTokenDTO
                         {
-                            UserId = activity.Fr8Account.Id,
+                            UserId = activity.Fr8AccountId,
                         };
                     }
                 }

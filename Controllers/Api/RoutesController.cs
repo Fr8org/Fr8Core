@@ -395,12 +395,12 @@ namespace HubWeb.Controllers
 
 
                         await eventManager.Publish("ContainerLaunched"
-                            , planDO.Fr8Account.Id
+                            , planDO.Fr8AccountId
                             , planDO.Id.ToString()
                             , JsonConvert.SerializeObject(containerDTO).ToString(), "Success");
 
                         await eventManager.Publish("ContainerExecutionComplete"
-                            , planDO.Fr8Account.Id
+                            , planDO.Fr8AccountId
                             , planDO.Id.ToString()
                             , JsonConvert.SerializeObject(containerDTO).ToString(), "Success");
 

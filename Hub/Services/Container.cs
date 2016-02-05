@@ -109,7 +109,7 @@ namespace Hub.Services
                     var plan = uow.PlanRepository.GetById<PlanDO>(curContainerDo.PlanId);
 
                     await eventManager.Publish("ProcessingTerminatedPerActionResponse",
-                            plan.Fr8Account.Id, curContainerDo.Id.ToString(),
+                            plan.Fr8AccountId, curContainerDo.Id.ToString(),
                             JsonConvert.SerializeObject(Mapper.Map<ContainerDTO>(curContainerDo)), "Terminated");
                     break;
                 default:
