@@ -238,7 +238,7 @@ namespace Hub.Services
             }
             else
             {
-                route.AddChild(submittedActiviy, submittedActiviy.Ordering);
+                route.ChildNodes.Add(submittedActiviy);
             }
         }
 
