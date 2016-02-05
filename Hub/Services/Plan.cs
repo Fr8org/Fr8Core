@@ -270,7 +270,7 @@ namespace Hub.Services
                         }
                         catch (Exception ex)
                         {
-                            throw new ApplicationException(string.Format("Process template activation failed for action {0}.", curActionDO.Name), ex);
+                            throw new ApplicationException(string.Format("Process template activation failed for action {0}.", curActionDO.ActivityTemplate.Name), ex);
                         }
                     }
                 }

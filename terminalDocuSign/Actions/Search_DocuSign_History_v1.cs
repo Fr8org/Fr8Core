@@ -165,7 +165,6 @@ namespace terminalDocuSign.Actions
                     ActivityTemplate = template,
                     IsTempId = true,
                     CreateDate = DateTime.UtcNow,
-                    Name = "Query DocuSign",
                     Label = template.Label,
                     Ordering = 1,
                     ActivityTemplateId = template.Id,

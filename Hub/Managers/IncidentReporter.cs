@@ -496,7 +496,7 @@ namespace Hub.Managers
             incidentDO.ObjectId = activity.Id.ToString();
             incidentDO.Activity = "Occured";
             incidentDO.CustomerId = curUserId;
-            incidentDO.Data = String.Format("MissingFieldInPayload: ActionName: {0}, Field name: {1}, ActionId {2}", activity.Name, fieldKey, activity.Id);
+            incidentDO.Data = String.Format("MissingFieldInPayload: ActionName: {0}, Field name: {1}, ActionId {2}", activity.ActivityTemplate.Name, fieldKey, activity.Id);
             LogIncident(incidentDO);
         }
     }

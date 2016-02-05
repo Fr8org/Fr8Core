@@ -24,7 +24,6 @@ namespace UtilitiesTesting.Fixtures
             var curActivityDO = new ActivityDO
             {
                 Id = GetTestGuidById(54),
-                Name = "Write to Sql Server",
                 CrateStorage = "",
                 Ordering = 1,
                 ActivityTemplateId = actionTemplate.Id,
@@ -76,7 +75,6 @@ namespace UtilitiesTesting.Fixtures
             var curActivityDO = new ActivityDO
             {
                 Id = GetTestGuidById(1),
-                Name = "Action 1",
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate,
             };
@@ -89,7 +87,6 @@ namespace UtilitiesTesting.Fixtures
             var curActivityDO = new ActivityDO
             {
                 Id = GetTestGuidById(2),
-                Name = "Action 2",
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate
             };
@@ -102,7 +99,6 @@ namespace UtilitiesTesting.Fixtures
             var origActionDO = new ActivityDO()
             {
                 ParentRouteNodeId = null,
-                Name = "type 1",
                 Id = GetTestGuidById(34),
                 CrateStorage = "config settings",
 
@@ -120,7 +116,6 @@ namespace UtilitiesTesting.Fixtures
             var curActivityDO = new ActivityDO
             {
                 Id = GetTestGuidById(3),
-                Name = "Send an Email",
                 ActivityTemplateId = actionTemplate.Id,
                 Fr8Account = FixtureData.TestDockyardAccount1(),
                 ActivityTemplate = actionTemplate
@@ -134,7 +129,6 @@ namespace UtilitiesTesting.Fixtures
             var curActivityDO = new ActivityDO
             {
                 Id = GetTestGuidById(4),
-                Name = "Send a Text (SMS) Message",
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate
             };
@@ -162,7 +156,6 @@ namespace UtilitiesTesting.Fixtures
             return new ActivityDO
             {
                 Id = GetTestGuidById(7),
-                Name = "Action 7",
                 ParentRouteNodeId = GetTestGuidById(1),
                 Ordering = 3,
                 ActivityTemplateId = actionTemplate.Id,
@@ -176,7 +169,6 @@ namespace UtilitiesTesting.Fixtures
             return new ActivityDO
             {
                 Id = GetTestGuidById(8),
-                Name = "Action 8",
                 ParentRouteNodeId = GetTestGuidById(1),
                 Ordering = 4,
                 ParentRouteNode = parentActivity,
@@ -192,7 +184,6 @@ namespace UtilitiesTesting.Fixtures
             return new ActivityDO
             {
                 Id = GetTestGuidById(5),
-                Name = "Action 5",
                 ParentRouteNodeId = GetTestGuidById(1),
                 Ordering = 1,
                 ActivityTemplateId = actionTemplate.Id,
@@ -217,7 +208,6 @@ namespace UtilitiesTesting.Fixtures
             return new ActivityDO
             {
                 Id = GetTestGuidById(1),
-                Name = "Action 1",
                 ParentRouteNodeId = GetTestGuidById(1),
                 Ordering = 1,
                 ActivityTemplateId = actionTemplate.Id,
@@ -231,7 +221,6 @@ namespace UtilitiesTesting.Fixtures
             return new ActivityDO
             {
                 Id = GetTestGuidById(2),
-                Name = "Action 2",
                 ParentRouteNodeId = GetTestGuidById(1),
                 Ordering = 2,
                 ActivityTemplateId = actionTemplate.Id,
@@ -246,7 +235,6 @@ namespace UtilitiesTesting.Fixtures
             return new ActivityDO
             {
                 Id = GetTestGuidById(10),
-                Name = "WriteToAzureSql",
                 ParentRouteNodeId = GetTestGuidById(1),
                 CrateStorage = "JSON Config Settings",
 
@@ -263,7 +251,6 @@ namespace UtilitiesTesting.Fixtures
             return new ActivityDO
             {
                 Id = GetTestGuidById(2),
-                Name = "Action 2",
                 Ordering = 2,
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate
@@ -301,8 +288,6 @@ namespace UtilitiesTesting.Fixtures
             {
                 ParentRouteNode = subrouteDo,
                 ParentRouteNodeId = GetTestGuidById(1),
-                Name = "testaction",
-
                 Id = GetTestGuidById(1),
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate,
@@ -340,7 +325,6 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = GetTestGuidById(1),
 
-                Name = "testaction",
                 CrateStorage = "config settings",
                 ParentRouteNodeId = GetTestGuidById(88),
                 ActivityTemplateId = FixtureData.TestActivityTemplate1().Id
@@ -387,7 +371,6 @@ namespace UtilitiesTesting.Fixtures
             return new ActivityDO
             {
                 Id = GetTestGuidById(1),
-                Name = "testaction",
                 ParentRouteNode = routeDo,
 
                 ActivityTemplateId = actionTemplate.Id,
@@ -450,8 +433,7 @@ namespace UtilitiesTesting.Fixtures
             curActivityDO.ParentRouteNodeId = subroute.Id;
             curActivityDO.ActivityTemplateId = 1;
             curActivityDO.ActivityTemplate = curActivityTemplateDO;
-            curActivityDO.Name = "testaction";
-
+            
             subroute.ChildNodes.Add(curActivityDO);
 
             //  curActivityDO.ConfigurationSettings = "config settings";
@@ -486,9 +468,7 @@ namespace UtilitiesTesting.Fixtures
 
             var actionDo = new ActivityDO()
             {
-
-                Name = "testaction",
-
+                
                 Id = GetTestGuidById(1),
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate
@@ -897,7 +877,6 @@ namespace UtilitiesTesting.Fixtures
             return new ActivityDO
             {
                 Id = GetTestGuidById(2),
-                Name = "Action with state active",
                 Ordering = 2,
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate,
@@ -910,7 +889,6 @@ namespace UtilitiesTesting.Fixtures
             return new ActivityDO
             {
                 Id = GetTestGuidById(2),
-                Name = "Action with state deactive",
                 Ordering = 2,
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate,
@@ -923,7 +901,6 @@ namespace UtilitiesTesting.Fixtures
             return new ActivityDO
             {
                 Id = GetTestGuidById(2),
-                Name = "Action with state error",
                 Ordering = 2,
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate,
@@ -936,7 +913,6 @@ namespace UtilitiesTesting.Fixtures
             return new ActivityDO
             {
                 Id = GetTestGuidById(2),
-                Name = "Action with state in-process",
                 Ordering = 2,
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate,
@@ -1268,7 +1244,6 @@ namespace UtilitiesTesting.Fixtures
             var actionDo = new ActivityDO
             {
                 Id = GetTestGuidById(1),
-                Name = "Action 1",
                 CrateStorage = "config settings",
                 ParentRouteNodeId = GetTestGuidById(1),
                 ActivityTemplateId = FixtureData.TestActivityTemplate1().Id
@@ -1282,7 +1257,6 @@ namespace UtilitiesTesting.Fixtures
 
             var activityDO = new ActivityDO()
             {
-                Name = "testaction",
                 Id = GetTestGuidById(57),
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate,

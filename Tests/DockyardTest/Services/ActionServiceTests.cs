@@ -157,7 +157,7 @@ namespace DockyardTest.Services
 
             //Get
             var activityDO = activity.GetById(origActivityDO.Id);
-            Assert.AreEqual(origActivityDO.Name, activityDO.Name);
+            Assert.AreEqual(origActivityDO.ActivityTemplate.Name, activityDO.ActivityTemplate.Name);
             Assert.AreEqual(origActivityDO.Id, activityDO.Id);
             Assert.AreEqual(origActivityDO.CrateStorage, activityDO.CrateStorage);
 
@@ -177,14 +177,14 @@ namespace DockyardTest.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 Visit(tree, x => uow.ActivityRepository.Add(x));
-                Visit(updatedTree, x => x.Name = string.Format("We were here {0}", x.Id));
+                Visit(updatedTree, x => x.Label = string.Format("We were here {0}", x.Id));
 
                 _activity.SaveOrUpdateActivity(uow, updatedTree);
 
                 var result = uow.ActivityRepository.GetByKey(tree.Id);
                 Compare(updatedTree, result, (r, a) =>
                 {
-                    if (r.Name != a.Name)
+                    if (r.Label != a.Label)
                     {
                         throw new Exception("Update failed");
                     }
@@ -249,7 +249,6 @@ namespace DockyardTest.Services
                         {
                             Id = FixtureData.GetTestGuidById(addCounter + 666),
                             ParentRouteNode = a,
-                            Name = "____New " + addCounter
                         };
 
                         a.ParentRouteNode.ChildNodes.Add(newAction);
@@ -270,7 +269,6 @@ namespace DockyardTest.Services
                             {
                                 Id = FixtureData.GetTestGuidById(addCounter + 666),
                                 ParentRouteNode = a,
-                                Name = "____New " + addCounter
                             };
 
                             a.ParentRouteNode.ChildNodes.Add(newAction);
@@ -319,12 +317,10 @@ namespace DockyardTest.Services
 
                 uow.SaveChanges();
 
-                const string actionName = "TestAction";
-                var response = _activity.Create(uow, template.Id, actionName, null, null, parent);
+                var response = _activity.Create(uow, template.Id, null, null, parent);
 
                 Assert.AreEqual(parent.ChildNodes.Count, 1);
                 Assert.AreEqual(parent.ChildNodes[0], response);
-                Assert.AreEqual(response.Name, actionName);
             }
         }
 

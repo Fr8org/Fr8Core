@@ -870,7 +870,7 @@ namespace Hub.Managers
                 if (activityDO != null)
                 {
                     var terminalName = _activityTemplate.GetByKey(activityDO.ActivityTemplateId.Value).Terminal.Name;
-                    curFact.Data = string.Format("Terminal: {0} - Action: {1}.", terminalName, activityDO.Name);
+                    curFact.Data = string.Format("Terminal: {0} - Action: {1}.", terminalName, activityDO.ActivityTemplate.Name);
                 }
             
             LogFactInformation(curFact, curFact.Data);

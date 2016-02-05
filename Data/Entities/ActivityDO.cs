@@ -13,8 +13,6 @@ namespace Data.Entities
 {
     public class ActivityDO : RouteNodeDO
 	{
-        public string Name { get; set; }
-
         public string CrateStorage { get; set; }
         public string Label { get; set; }
 
@@ -36,7 +34,6 @@ namespace Data.Entities
             return new ActivityDO()
             {
                 Ordering = this.Ordering,
-                Name = this.Name,
                 CrateStorage = this.CrateStorage,
                 Label = this.Label,
                 ActivityTemplateId = this.ActivityTemplateId,

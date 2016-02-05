@@ -166,7 +166,6 @@ namespace Hub.Services
         private static void UpdateActionProperties(ActivityDO existingActivity, ActivityDO submittedActivity)
         {
             existingActivity.ActivityTemplateId = submittedActivity.ActivityTemplateId;
-            existingActivity.Name = submittedActivity.Name;
             existingActivity.Label = submittedActivity.Label;
             existingActivity.CrateStorage = submittedActivity.CrateStorage;
             existingActivity.Ordering = submittedActivity.Ordering;
@@ -292,13 +291,12 @@ namespace Hub.Services
             return uow.ActivityRepository.GetQuery().FirstOrDefault(i => i.Id == id);
         }
 
-        public ActivityDO Create(IUnitOfWork uow, int actionTemplateId, string name, string label, int? order, RouteNodeDO parentNode, Guid? AuthorizationTokenId = null)
+        public ActivityDO Create(IUnitOfWork uow, int actionTemplateId, string label, int? order, RouteNodeDO parentNode, Guid? AuthorizationTokenId = null)
         {
             var activity = new ActivityDO
             {
                 Id = Guid.NewGuid(),
                 ActivityTemplateId = actionTemplateId,
-                Name = name,
                 Label = label,
                 CrateStorage = _crate.EmptyStorageAsStr(),
                 Ordering = order ?? (parentNode.ChildNodes.Count > 0 ? parentNode.ChildNodes.Max(x => x.Ordering) + 1 : 1),
@@ -314,7 +312,7 @@ namespace Hub.Services
             return activity;
         }
 
-        public async Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, string name, string label = null, int? order = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null)
+        public async Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, string label = null, int? order = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null)
         {
             if (parentNodeId != null && createRoute)
             {
@@ -332,14 +330,14 @@ namespace Hub.Services
             if (createRoute)
             {
                 plan = ObjectFactory.GetInstance<IPlan>().Create(uow, label);
-                parentNode = ObjectFactory.GetInstance<ISubroute>().Create(uow, plan, name + " #1");
+                parentNode = ObjectFactory.GetInstance<ISubroute>().Create(uow, plan, label + " #1");
             }
             else
             {
                 parentNode = uow.RouteNodeRepository.GetByKey(parentNodeId);
             }
 
-            var activity = Create(uow, actionTemplateId, name, label, order, parentNode, authorizationTokenId);
+            var activity = Create(uow, actionTemplateId, label, order, parentNode, authorizationTokenId);
 
             uow.SaveChanges();
 
