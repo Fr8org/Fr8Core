@@ -178,15 +178,15 @@ namespace terminalDocuSign.Actions
             //DocuSign
             var monitorDocuSignActionTask = AddAndConfigureChildActivity(activityDO, "Monitor_DocuSign_Envelope_Activity", "Monitor Docusign Envelope Activity", "Monitor Docusign Envelope Activity", 1);
             var setDelayActionTask = AddAndConfigureChildActivity(activityDO, "SetDelay", "Set Delay", "Set Delay", 2);
-            var queryMTDatabaseActionTask = AddAndConfigureChildActivity(activityDO, "QueryMTDatabase", "Query MT Database", "Query MT Database", 3);
+            var queryFr8WarehouseActionTask = AddAndConfigureChildActivity(activityDO, "QueryFr8Warehouse", "Query Fr8 Warehouse", "Query Fr8 Warehouse", 3);
             var filterActionTask = AddAndConfigureChildActivity(activityDO, "TestIncomingData", "Test Incoming Data", "Test Incoming Data", 4);
             var notifierActivityTask = AddAndConfigureChildActivity(activityDO, howToBeNotifiedDdl.Value, howToBeNotifiedDdl.selectedKey, howToBeNotifiedDdl.selectedKey, 5);
 
-            await Task.WhenAll(monitorDocuSignActionTask, setDelayActionTask, queryMTDatabaseActionTask, filterActionTask, notifierActivityTask);
+            await Task.WhenAll(monitorDocuSignActionTask, setDelayActionTask, queryFr8WarehouseActionTask, filterActionTask, notifierActivityTask);
 
             var monitorDocuSignAction = monitorDocuSignActionTask.Result;
             var setDelayAction = setDelayActionTask.Result;
-            var queryMTDatabaseAction = queryMTDatabaseActionTask.Result;
+            var queryFr8WarehouseAction = queryFr8WarehouseActionTask.Result;
             var filterAction = filterActionTask.Result;
             var notifierActivity = notifierActivityTask.Result;
 
@@ -210,9 +210,9 @@ namespace terminalDocuSign.Actions
 
             var durationControl = (Duration)controls.FindByName("TimePeriod");
             SetControlValue(setDelayAction, "Delay_Duration", durationControl.Value);
-            await SetQueryMTDatabaseActionFields(queryMTDatabaseAction, specificRecipientOption.Controls[0].Value);
+            await SetQueryFr8WarehouseActionFields(queryFr8WarehouseAction, specificRecipientOption.Controls[0].Value);
             //let's make a followup configuration to fill criteria fields
-            var configureQueryMTTask = HubCommunicator.ConfigureActivity(queryMTDatabaseAction, CurrentFr8UserId);
+            var configureQueryMTTask = HubCommunicator.ConfigureActivity(queryFr8WarehouseAction, CurrentFr8UserId);
             var recipientEventStatus = (DropDownList)controls.FindByName("RecipientEvent");
             SetFilterUsingRunTimeActionFields(filterAction, recipientEventStatus.Value);
 
@@ -252,10 +252,10 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        private async Task SetQueryMTDatabaseActionFields(ActivityDO queryMTDatabase, string recipientEmail)
+        private async Task SetQueryFr8WarehouseActionFields(ActivityDO queryFr8Warehouse, string recipientEmail)
         {
             //update action's duration value
-            using (var updater = Crate.UpdateStorage(queryMTDatabase))
+            using (var updater = Crate.UpdateStorage(queryFr8Warehouse))
             {
                 var configControlCM = GetConfigurationControls(updater.CrateStorage);
                 var radioButtonGroup = (configControlCM.Controls.First() as RadioButtonGroup);

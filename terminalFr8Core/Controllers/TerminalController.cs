@@ -191,8 +191,8 @@ namespace terminalFr8Core.Controllers
 
             result.Add(new ActivityTemplateDTO()
             {
-                Name = "QueryMTDatabase",
-                Label = "Query MT Database",
+                Name = "QueryFr8Warehouse",
+                Label = "Query Fr8 Warehouse",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 WebService = webService,
