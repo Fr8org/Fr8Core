@@ -72,32 +72,8 @@ namespace Hub.Infrastructure
             }
 
             Success(context, terminalId, userId);
-            //context.ErrorResult = new UnauthorizedResult(new AuthenticationHeaderValue[0], context.Request);
         }
-        /*
-        private async Task<bool> IsValidRequest(HttpRequestMessage request, out string terminalId, out string userId)
-        {
-            terminalId = null;
-            userId = null;
 
-            _hmacAuthenticator.ExtractTokenParts(request, out terminalId, out userId);
-            var terminalSecret = await GetTerminalSecret(terminalId);
-            var isValid = await _hmacAuthenticator.IsValidRequest(request, terminalSecret);
-
-            if (!isValid)
-            {
-                return false;
-            }
-
-            isValid = await CheckPermission(terminalId, userId);
-            if (!isValid)
-            {
-                return false;
-                
-            }
-            return true;
-        }
-        */
         public Task ChallengeAsync(HttpAuthenticationChallengeContext context, CancellationToken cancellationToken)
         {
             context.Result = new ResultWithChallenge(context.Result);
