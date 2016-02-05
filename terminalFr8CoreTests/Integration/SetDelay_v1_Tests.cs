@@ -103,7 +103,7 @@ namespace terminalFr8CoreTests.Integration
 			Assert.NotNull(runResponse);
 		    var crateStorage = Crate.GetStorage(runResponse);
             var operationalStateCrate = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-            Assert.AreEqual(ActivityResponse.RequestSuspend, operationalStateCrate.CurrentActivityResponse);
+            Assert.AreEqual(ActivityResponse.RequestSuspend.ToString(), operationalStateCrate.CurrentActivityResponse.Type);
 		}
 
         [Test]
@@ -116,7 +116,7 @@ namespace terminalFr8CoreTests.Integration
             var runUrl = GetTerminalRunUrl();
             var operationalState = new OperationalStateCM
             {
-                CurrentActivityResponse = ActivityResponse.RequestSuspend
+                CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.RequestSuspend)
             };
             AddOperationalStateCrate(responseActionDTO, operationalState);
 
@@ -124,7 +124,7 @@ namespace terminalFr8CoreTests.Integration
             Assert.NotNull(runResponse);
             var crateStorage = Crate.GetStorage(runResponse);
             var operationalStateCrate = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-            Assert.AreEqual(ActivityResponse.Success, operationalStateCrate.CurrentActivityResponse);
+            Assert.AreEqual(ActivityResponse.Success.ToString(), operationalStateCrate.CurrentActivityResponse.Type);
         }
         
 		private ActivityTemplateDTO CreateActivityTemplateFixture()

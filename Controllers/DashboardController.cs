@@ -17,6 +17,9 @@ namespace HubWeb.Controllers
     {
         //
         // GET: /Dashboard/
+#if RELEASE
+        [OutputCache(Duration = 43200, Location = System.Web.UI.OutputCacheLocation.Client)]
+#endif
         public ActionResult Index(int id = 0)
         {
             return View();

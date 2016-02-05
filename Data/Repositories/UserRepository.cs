@@ -45,12 +45,12 @@ namespace Data.Repositories
         }
 
 
-        public Fr8AccountDO GetOrCreateUser(String emailAddress)
+        public Fr8AccountDO GetOrCreateUser(String emailAddress, string userRole = Roles.Customer)
         {
-            return GetOrCreateUser(UnitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(emailAddress));
+            return GetOrCreateUser(UnitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(emailAddress), userRole);
         }
 
-        public Fr8AccountDO GetOrCreateUser(EmailAddressDO emailAddressDO)
+        public Fr8AccountDO GetOrCreateUser(EmailAddressDO emailAddressDO, string userRole = Roles.Customer)
         {
             var matchingUser = UnitOfWork.UserRepository.DBSet.Local.FirstOrDefault(u => u.EmailAddress.Address == emailAddressDO.Address);
             if (matchingUser == null)
@@ -69,7 +69,11 @@ namespace Data.Repositories
                     };
                 UnitOfWork.UserRepository.Add(matchingUser);
 
-                UnitOfWork.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, matchingUser.Id);
+                if (!userRole.Equals(Roles.Guest))
+                {
+                    // Assign Customer role only if creation of Guest user is not intended
+                    UnitOfWork.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, matchingUser.Id);
+                }
             }
             
             return matchingUser;

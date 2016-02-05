@@ -21,6 +21,7 @@ using HubWeb.ViewModels;
 using Newtonsoft.Json;
 using Hub.Managers;
 using Data.Crates;
+using Data.Interfaces.DataTransferObjects.Helpers;
 using Utilities.Interfaces;
 using HubWeb.Infrastructure;
 using Data.Interfaces.Manifests;
@@ -381,9 +382,13 @@ namespace HubWeb.Controllers
 
                         string responseMsg = "";
 
-                        if (response != null && (response.ResponseMessageDTO != null && !String.IsNullOrEmpty(response.ResponseMessageDTO.Message)))
+                        ResponseMessageDTO responseMessage;
+                        if (response != null && response.CurrentActivityResponse != null && response.CurrentActivityResponse.TryParseResponseMessageDTO(out responseMessage))
                         {
-                            responseMsg = "\n" + response.ResponseMessageDTO.Message;
+                            if (responseMessage != null && !string.IsNullOrEmpty(responseMessage.Message))
+                            {
+                                responseMsg = "\n" + responseMessage.Message;
+                            }
                         }
 
                         string message = String.Format("Complete processing for Plan \"{0}\".{1}", planDO.Name, responseMsg);
@@ -391,9 +396,7 @@ namespace HubWeb.Controllers
                         _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, message);
 
                         var containerDTO = Mapper.Map<ContainerDTO>(containerDO);
-
-
-
+                        
                         await eventManager.Publish("ContainerLaunched"
                             , planDO.Fr8AccountId
                             , planDO.Id.ToString()

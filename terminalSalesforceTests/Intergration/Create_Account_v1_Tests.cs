@@ -11,6 +11,7 @@ using Hub.Managers.APIManagers.Transmitters.Restful;
 using NUnit.Framework;
 using terminalSalesforceTests.Fixtures;
 using Data.Control;
+using Data.Interfaces.DataTransferObjects.Helpers;
 
 namespace terminalSalesforceTests.Intergration
 {
@@ -45,12 +46,12 @@ namespace terminalSalesforceTests.Intergration
             string terminalConfigureUrl = GetTerminalConfigureUrl();
 
             //prepare the create account action DTO
-            var requestActionDTO = HealthMonitor_FixtureData.Create_Account_v1_InitialConfiguration_ActionDTO();
-            requestActionDTO.AuthToken = null;
+            var dataDTO = HealthMonitor_FixtureData.Create_Account_v1_InitialConfiguration_Fr8DataDTO();
+            dataDTO.ActivityDTO.AuthToken = null;
 
             //Act
             //perform post request to terminal and return the result
-            await HttpPostAsync<ActivityDTO, ActivityDTO>(terminalConfigureUrl, requestActionDTO);
+            await HttpPostAsync<Fr8DataDTO, ActivityDTO>(terminalConfigureUrl, dataDTO);
         }
 
         [Test, Category("intergration.terminalSalesforce")]
@@ -60,15 +61,18 @@ namespace terminalSalesforceTests.Intergration
             var initialConfigActionDto = await PerformInitialConfiguration();
             initialConfigActionDto = SetAccountName(initialConfigActionDto);
             AddOperationalStateCrate(initialConfigActionDto, new OperationalStateCM());
-
+            var dataDTO = new Fr8DataDTO { ActivityDTO = initialConfigActionDto };
             //Act
-            var responseOperationalState = await HttpPostAsync<ActivityDTO, PayloadDTO>(GetTerminalRunUrl(), initialConfigActionDto);
+            var responseOperationalState = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(GetTerminalRunUrl(), dataDTO);
 
             //Assert
             Assert.IsNotNull(responseOperationalState);
             var curOperationalState =
                 Crate.FromDto(responseOperationalState.CrateStorage).CratesOfType<OperationalStateCM>().Single().Content;
-            Assert.AreEqual("No AuthToken provided.", curOperationalState.CurrentActivityErrorMessage, "Authentication is mishandled at activity side."); 
+            ErrorDTO errorMessage;
+            curOperationalState.CurrentActivityResponse.TryParseErrorDTO(out errorMessage);
+
+            Assert.AreEqual("No AuthToken provided.", errorMessage.Message, "Authentication is mishandled at activity side."); 
         }
 
         [Test, Category("intergration.terminalSalesforce")]
@@ -78,15 +82,17 @@ namespace terminalSalesforceTests.Intergration
             var initialConfigActionDto = await PerformInitialConfiguration();
             initialConfigActionDto.AuthToken = HealthMonitor_FixtureData.Salesforce_AuthToken();
             AddOperationalStateCrate(initialConfigActionDto, new OperationalStateCM());
-
+            var dataDTO = new Fr8DataDTO { ActivityDTO = initialConfigActionDto };
             //Act
-            var responseOperationalState = await HttpPostAsync<ActivityDTO, PayloadDTO>(GetTerminalRunUrl(), initialConfigActionDto);
+            var responseOperationalState = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(GetTerminalRunUrl(), dataDTO);
 
             //Assert
             Assert.IsNotNull(responseOperationalState);
             var curOperationalState =
                 Crate.FromDto(responseOperationalState.CrateStorage).CratesOfType<OperationalStateCM>().Single().Content;
-            Assert.AreEqual("No account name found in activity.", curOperationalState.CurrentActivityErrorMessage, "Action works without account name");
+            ErrorDTO errorMessage;
+            curOperationalState.CurrentActivityResponse.TryParseErrorDTO(out errorMessage);
+            Assert.AreEqual("No account name found in activity.", errorMessage.Message, "Action works without account name");
         }
 
         [Test, Category("intergration.terminalSalesforce")]
@@ -97,9 +103,9 @@ namespace terminalSalesforceTests.Intergration
             initialConfigActionDto = SetAccountName(initialConfigActionDto);
             initialConfigActionDto.AuthToken = HealthMonitor_FixtureData.Salesforce_AuthToken();
             AddOperationalStateCrate(initialConfigActionDto, new OperationalStateCM());
-
+            var dataDTO = new Fr8DataDTO { ActivityDTO = initialConfigActionDto };
             //Act
-            var responseOperationalState = await HttpPostAsync<ActivityDTO, PayloadDTO>(GetTerminalRunUrl(), initialConfigActionDto);
+            var responseOperationalState = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(GetTerminalRunUrl(), dataDTO);
 
             //Assert
             Assert.IsNotNull(responseOperationalState);
@@ -114,10 +120,10 @@ namespace terminalSalesforceTests.Intergration
             string terminalConfigureUrl = GetTerminalConfigureUrl();
 
             //prepare the create account action DTO
-            var requestActionDTO = HealthMonitor_FixtureData.Create_Account_v1_InitialConfiguration_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Create_Account_v1_InitialConfiguration_Fr8DataDTO();
 
             //perform post request to terminal and return the result
-            var resultActionDto = await HttpPostAsync<ActivityDTO, ActivityDTO>(terminalConfigureUrl, requestActionDTO);
+            var resultActionDto = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(terminalConfigureUrl, requestActionDTO);
 
             using (var updater = Crate.UpdateStorage(resultActionDto))
             {

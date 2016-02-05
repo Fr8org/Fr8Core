@@ -18,6 +18,7 @@ using Hub.Managers;
 using Utilities.Configuration.Azure;
 using TerminalBase.Infrastructure;
 using AutoMapper;
+using Data.Interfaces.DataTransferObjects.Helpers;
 
 namespace TerminalBase.BaseClasses
 {
@@ -76,7 +77,7 @@ namespace TerminalBase.BaseClasses
             using (var updater = Crate.UpdateStorage(payload))
             {
                 var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActivityResponse = ActivityResponse.RequestSuspend;
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.RequestSuspend);
             }
 
             return payload;
@@ -94,7 +95,7 @@ namespace TerminalBase.BaseClasses
             using (var updater = Crate.UpdateStorage(payload))
             {
                 var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActivityResponse = ActivityResponse.RequestTerminate;
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.RequestTerminate);
             }
 
             return payload;
@@ -110,8 +111,8 @@ namespace TerminalBase.BaseClasses
             using (var updater = Crate.UpdateStorage(payload))
             {
                 var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActivityResponse = ActivityResponse.Success;
-                operationalState.ResponseMessageDTO = new ResponseMessageDTO() { Message = message };
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Success); 
+                operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Message = message });
             }
 
             return payload;
@@ -122,7 +123,7 @@ namespace TerminalBase.BaseClasses
             using (var updater = Crate.UpdateStorage(payload))
             {
                 var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActivityResponse = ActivityResponse.ExecuteClientAction;
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.ExecuteClientAction);
                 operationalState.CurrentClientActionName = clientActionName;
             }
 
@@ -139,7 +140,7 @@ namespace TerminalBase.BaseClasses
             using (var updater = Crate.UpdateStorage(payload))
             {
                 var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActivityResponse = ActivityResponse.SkipChildren;
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.SkipChildren);
             }
 
             return payload;
@@ -157,9 +158,9 @@ namespace TerminalBase.BaseClasses
             using (var updater = Crate.UpdateStorage(payload))
             {
                 var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActivityResponse = ActivityResponse.Error;
                 operationalState.CurrentActivityErrorCode = errorCode;
-                operationalState.CurrentActivityErrorMessage = errorMessage;
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Error);
+                operationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(errorMessage,ErrorType.Generic, errorCode.ToString(),null)); 
             }
 
             return payload;
@@ -185,7 +186,7 @@ namespace TerminalBase.BaseClasses
             using (var updater = Crate.UpdateStorage(payload))
             {
                 var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActivityResponse = ActivityResponse.ReProcessChildren;
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.ReProcessChildren);
             }
 
             return payload;
