@@ -267,6 +267,7 @@
     <Compile Include="Entities\UserTests.cs" />
     <Compile Include="ExcelUtilsTests.cs" />
     <Compile Include="Infrastructure\DatabaseTests.cs" />
+    <Compile Include="Infrastructure\Fr8HubWebHMACAuthenticateAttributeTests.cs" />
     <Compile Include="Infrastructure\MultiTenantTests.cs" />
     <Compile Include="Integration\RunTimeTests.cs" />
     <Compile Include="Integration\AccountITests.cs" />
