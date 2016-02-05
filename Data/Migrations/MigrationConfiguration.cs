@@ -376,7 +376,7 @@ namespace Data.Migrations
         /// <param name="unitOfWork"></param>
         private static void AddTestAccounts(IUnitOfWork unitOfWork)
         {
-            CreateTestAccount("integration_test_runner@fr8.company", "fr8#s@lt!", unitOfWork);
+            CreateTestAccount("integration_test_runner@fr8.company", "fr8#s@lt!", "IntegrationTestRunner", unitOfWork);
         }
 
         /// <summary>
@@ -399,15 +399,17 @@ namespace Data.Migrations
             return user;
         }
 
-        private static Fr8AccountDO CreateTestAccount(string userEmail, string curPassword, IUnitOfWork uow)
+        private static Fr8AccountDO CreateTestAccount(string userEmail, string curPassword, string userName, IUnitOfWork uow)
         {
             var user = uow.UserRepository.GetOrCreateUser(userEmail);
-            uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
-            uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, user.Id);
-            uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Booker, user.Id);
-            uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, user.Id);
-            user.UserName = "IntegrationTestRunner";
-            user.TestAccount = true;
+            if (user == null)
+            {
+                uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
+                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, user.Id);
+                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Booker, user.Id);
+                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, user.Id);
+                user.TestAccount = true;
+            }
             return user;
         }
 
@@ -418,7 +420,7 @@ namespace Data.Migrations
         /// <param name="curPassword"></param>
         /// <param name="uow"></param>
         /// <returns></returns>
-        internal static Fr8AccountDO CreateDockyardAccount(string userEmail, string curPassword, IUnitOfWork uow)
+        public static Fr8AccountDO CreateDockyardAccount(string userEmail, string curPassword, IUnitOfWork uow)
         {
             var user = uow.UserRepository.GetOrCreateUser(userEmail);
             uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
