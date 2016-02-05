@@ -362,7 +362,17 @@ namespace terminalDocuSign.Actions
             var curSelectedDocuSignEvents =
                 curConfigControlsCrate.Controls
                     .Where(configControl => configControl.Type.Equals(ControlTypes.CheckBox) && configControl.Selected && configControl.Name.StartsWith("Event_"))
-                    .Select(checkBox => checkBox.Name.Substring("Event_".Length).Replace("_", ""));
+                    .Select(checkBox => checkBox.Name.Substring("Event_".Length).Replace("_", "")).ToList();
+
+            if (curSelectedDocuSignEvents.Any(e => e == "RecipientSigned"))
+            {
+                if (curSelectedDocuSignEvents.Any(e => e != "RecipientCompleted"))
+                {
+                    curSelectedDocuSignEvents.Add("RecipientCompleted");
+                }
+            }
+            else
+                curSelectedDocuSignEvents.Remove("RecipientCompleted");
 
             //create standard event subscription crate with user selected DocuSign events
             var curEventSubscriptionCrate = Crate.CreateStandardEventSubscriptionsCrate("Standard Event Subscriptions", "DocuSign",
@@ -384,6 +394,10 @@ namespace terminalDocuSign.Actions
                 if (eventCheckBox.Selected)
                 {
                     subscriptions.Add(eventCheckBox.Name.Substring("Event_".Length).Replace("_", ""));
+                    if (eventCheckBox.Name.Equals("Event_Recipient_Signed", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        subscriptions.Add("RecipientCompleted");
+                    }
                 }
             }
 
