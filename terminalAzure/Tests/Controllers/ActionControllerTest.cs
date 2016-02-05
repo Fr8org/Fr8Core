@@ -45,8 +45,8 @@ namespace terminalAzure.Tests.Controllers
             string curActionPath = "Configure";
 
             ActivityDTO curActionDTO = FixtureData.TestActionDTO1();
-
-            object response = await _baseTerminalController.HandleFr8Request(curTerminal, curActionPath, curActionDTO);
+            var fr8Data = new Fr8DataDTO { ActivityDTO = curActionDTO };
+            object response = await _baseTerminalController.HandleFr8Request(curTerminal, curActionPath, fr8Data);
             ActivityDTO activityDTO = (ActivityDTO) response;
             Assert.AreEqual("Standard UI Controls", _crateManager.FromDto(activityDTO.CrateStorage).First().ManifestType.Type);
         }

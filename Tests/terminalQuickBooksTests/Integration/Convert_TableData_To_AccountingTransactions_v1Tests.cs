@@ -33,19 +33,19 @@ namespace terminalQuickBooksTests.Integration
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
             var runUrl = GetTerminalRunUrl();
-            var requestActionDTO =
-                HealthMonitor_FixtureData.Convert_TableData_To_AccountingTransactions_v1_InitialConfiguration_ActionDTO();
+            var dataDTO =
+                HealthMonitor_FixtureData.Convert_TableData_To_AccountingTransactions_v1_InitialConfiguration_Fr8DataDTO();
             var curAccountsCrate = HealthMonitor_FixtureData.ChartOfAccounts_Test1();
             var curTableDataCrate = HealthMonitor_FixtureData.StandardTableData_Test1();
-            AddUpstreamCrate(requestActionDTO, curTableDataCrate, "DocuSignTableDataMappedToQuickbooks");
-            using (var updater = Crate.UpdateStorage(requestActionDTO))
+            AddUpstreamCrate(dataDTO.ActivityDTO, curTableDataCrate, "DocuSignTableDataMappedToQuickbooks");
+            using (var updater = Crate.UpdateStorage(dataDTO.ActivityDTO))
             {
                 updater.CrateStorage.Add(Data.Crates.Crate.FromContent("ChartOfAccounts", curAccountsCrate));
             }
             //Act
-            var firstResponseActionDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(
+            var firstResponseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    requestActionDTO
+                    dataDTO
                 );
             using (var updater = Crate.UpdateStorage(firstResponseActionDTO))
             {
@@ -69,7 +69,8 @@ namespace terminalQuickBooksTests.Integration
                 updater.CrateStorage.Add(Data.Crates.Crate.FromContent("StandardConfigurationControlsCM", controls));
                 AddOperationalStateCrate(firstResponseActionDTO, new OperationalStateCM());
             }
-            var payloadDTO = await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl,firstResponseActionDTO);
+            dataDTO.ActivityDTO = firstResponseActionDTO;
+            var payloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
             AssertControls(Crate.GetByManifest<StandardAccountingTransactionCM>(payloadDTO));
         }
 

@@ -13,6 +13,7 @@ using Hub.Managers.APIManagers.Transmitters.Restful;
 using System.Linq;
 using NUnit.Framework;
 using Data.Constants;
+using Data.Interfaces.DataTransferObjects.Helpers;
 using StructureMap;
 
 namespace HealthMonitor.Utility
@@ -60,10 +61,13 @@ namespace HealthMonitor.Utility
             var storage = Crate.GetStorage(payload);
             var operationalStateCM = storage.CrateContentsOfType<OperationalStateCM>().Single();
 
-            Assert.AreEqual(ActivityResponse.Error, operationalStateCM.CurrentActivityResponse);
-            Assert.AreEqual(ActionErrorCode.NO_AUTH_TOKEN_PROVIDED, operationalStateCM.CurrentActivityErrorCode);
-            Assert.AreEqual("No AuthToken provided.", operationalStateCM.CurrentActivityErrorMessage);
+            //extract current error message from current activity response
+            ErrorDTO errorMessage;
+            operationalStateCM.CurrentActivityResponse.TryParseErrorDTO(out errorMessage);
 
+            Assert.AreEqual(ActivityResponse.Error.ToString(), operationalStateCM.CurrentActivityResponse.Type);
+            Assert.AreEqual(ActionErrorCode.NO_AUTH_TOKEN_PROVIDED, operationalStateCM.CurrentActivityErrorCode);
+            Assert.AreEqual("No AuthToken provided.", errorMessage.Message);
         }
 
         public string GetTerminalDiscoverUrl()

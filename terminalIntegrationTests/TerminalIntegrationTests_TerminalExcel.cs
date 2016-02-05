@@ -61,7 +61,6 @@ namespace terminalIntegrationTests
 
             var curActionDTO = new ActivityDTO()
             {
-                ContainerId = UtilitiesTesting.Fixtures.FixtureData.TestContainer_Id_1(),
                 ParentRouteNodeId =  UtilitiesTesting.Fixtures.FixtureData.TestParentPlanID()
             };
 
@@ -77,7 +76,7 @@ namespace terminalIntegrationTests
 
 
             var curActivityDO = AutoMapper.Mapper.Map<ActivityDO>(curActionDTO);
-            var result = await new Load_Excel_File_v1().Run(curActivityDO, curActionDTO.ContainerId, null);
+            var result = await new Load_Excel_File_v1().Run(curActivityDO, UtilitiesTesting.Fixtures.FixtureData.TestContainer_Id_1(), null);
 
             var payloadCrates = _crateManager.GetStorage(result).CratesOfType<StandardPayloadDataCM>();
             var payloadDataMS = payloadCrates.First().Content;

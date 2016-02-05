@@ -14,7 +14,7 @@ namespace Data.Interfaces.DataTransferObjects
             Events = new List<ControlEvent>();
         }
 
-        public ControlDefinitionDTO(string type) : base ()
+        public ControlDefinitionDTO(string type) : base()
         {
             Type = type;
         }
@@ -43,8 +43,8 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("source")]
         public FieldSourceDTO Source { get; set; }
 
-        [JsonProperty("help")]
-        public HelpControlDTO Help { get; set; }
+        [JsonProperty("showDocumentation")]
+        public ActivityResponseDTO ShowDocumentation { get; set; }
 
         [JsonProperty("errorMessage")]
         public string ErrorMessage { get; set; }

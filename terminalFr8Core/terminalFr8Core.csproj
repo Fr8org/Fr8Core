@@ -201,6 +201,7 @@
     <Compile Include="Actions\AddPayloadManually_v1.cs" />
     <Compile Include="Actions\BuildQuery_v1.cs" />
     <Compile Include="Actions\ConnectToSql_v1.cs" />
+    <Compile Include="Actions\GetFileFromFr8Store_v1.cs" />
     <Compile Include="Actions\StoreFile_v1.cs" />
     <Compile Include="Actions\ConvertCrates_v1.cs" />
     <Compile Include="Actions\SetDelay_v1.cs" />
@@ -217,6 +218,7 @@
     <Compile Include="Actions\TestIncomingData_v1.cs" />
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\TerminalController.cs" />
+    <Compile Include="Converters\StandardFileDescriptionToDocuSignTemplateConversion.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
