@@ -73,7 +73,6 @@ module dockyard.tests.controller {
 
             var actions: interfaces.IActivityDTO =
             {
-                    name: "test action type",
                     configurationControls: fx.ActivityDTO.configurationControls,
                     crateStorage: null,
                     parentRouteNodeId: '89EBF277-0CC4-4D6D-856B-52457F10C686',
@@ -99,7 +98,6 @@ module dockyard.tests.controller {
 
             var currentActionDesignDTO: interfaces.IActivityDTO =
                     {
-                        name: "test action type",
                         configurationControls: fx.ActivityDTO.configurationControls,
                         crateStorage: null,
                         parentRouteNodeId: '89EBF277-0CC4-4D6D-856B-52457F10C686',
