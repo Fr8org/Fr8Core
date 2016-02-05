@@ -10,7 +10,6 @@ namespace Data.Repositories.Authorization
 
         public AuthRepositoryLogger()
         {
-
             _connectionSstring = CloudConfigurationManager.GetSetting("AuthRepositoryLoggerConnectionString");
         }
 
