@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using Utilities.Configuration.Azure;
 
 namespace Data.Repositories.Plan
 {
@@ -31,7 +32,7 @@ namespace Data.Repositories.Plan
             _timer = new Timer(InvokeExpirationCallback, null, refreshInterval, refreshInterval);
             _slidingExpiration = slidingExpiration;
         }
-
+        
         private void InvokeExpirationCallback(object state)
         {
             var callback = _expirationCallback;

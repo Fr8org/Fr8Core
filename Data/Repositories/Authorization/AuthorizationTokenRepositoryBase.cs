@@ -8,6 +8,7 @@ using Data.Repositories.Authorization;
 using Data.States;
 using Newtonsoft.Json;
 using Utilities;
+using Utilities.Configuration.Azure;
 
 namespace Data.Repositories
 {
@@ -21,7 +22,8 @@ namespace Data.Repositories
         private readonly List<AuthorizationTokenDO> _adds = new List<AuthorizationTokenDO>();
         private readonly List<AuthorizationTokenDO> _deletes = new List<AuthorizationTokenDO>();
         protected readonly AuthRepositoryLogger Logger = new AuthRepositoryLogger();
-        private static readonly MemoryCache TokenCache = new MemoryCache("AuthTokenCache"); 
+        private static readonly MemoryCache TokenCache = new MemoryCache("AuthTokenCache");
+        private static TimeSpan _expiration = TimeSpan.FromMinutes(10);
 
         /*********************************************************************************/
 
@@ -32,6 +34,20 @@ namespace Data.Repositories
 
         /*********************************************************************************/
         // Functions
+        /*********************************************************************************/
+
+        static AuthorizationTokenRepositoryBase()
+        {
+            int exp;
+
+            var expStr = CloudConfigurationManager.GetSetting("Cache.AuthorizationTokenRepository.Expiration");
+
+            if (!string.IsNullOrWhiteSpace(expStr) && int.TryParse(expStr, out exp))
+            {
+                _expiration = TimeSpan.FromMinutes(exp);
+            }
+        }
+
         /*********************************************************************************/
         
         protected AuthorizationTokenRepositoryBase(IUnitOfWork uow)
@@ -158,7 +174,7 @@ namespace Data.Repositories
 
                     TokenCache.Add(new CacheItem(id, token), new CacheItemPolicy
                     {
-                        SlidingExpiration = TimeSpan.FromMinutes(30)
+                        SlidingExpiration = _expiration
                     });
                 }
 

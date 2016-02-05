@@ -20,6 +20,16 @@ namespace Data.Infrastructure.StructureMap
         {
             public CoreRegistry()
             {
+                int exp;
+                TimeSpan planCacheExpiration = TimeSpan.FromMinutes(10);
+
+                var expStr = CloudConfigurationManager.GetSetting("Cache.PlanRepository.Expiration");
+
+                if (!string.IsNullOrWhiteSpace(expStr) && int.TryParse(expStr, out exp))
+                {
+                    planCacheExpiration = TimeSpan.FromMinutes(exp);
+                }
+
                 For<IAttachmentDO>().Use<AttachmentDO>();
                 For<IEmailDO>().Use<EmailDO>();
                 For<IEmailAddressDO>().Use<EmailAddressDO>();
@@ -27,7 +37,7 @@ namespace Data.Infrastructure.StructureMap
                 For<IAspNetRolesDO>().Use<AspNetRolesDO>();
                 For<IAspNetUserRolesDO>().Use<AspNetUserRolesDO>();
                 For<IUnitOfWork>().Use<UnitOfWork>();
-                For<IPlanCacheExpirationStrategy>().Use(_ => new SlidingExpirationStrategy(TimeSpan.FromMinutes(1))).Singleton();
+                For<IPlanCacheExpirationStrategy>().Use(_ => new SlidingExpirationStrategy(planCacheExpiration)).Singleton();
                 For<IPlanCache>().Use<PlanCache>().Singleton();
                 For<PlanStorage>().Use<PlanStorage>();
                 // For<IMT_Field>().Use<MT_FieldService>();
