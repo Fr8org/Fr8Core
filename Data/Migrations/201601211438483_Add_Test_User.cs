@@ -14,9 +14,9 @@ namespace Data.Migrations
     {
         private string email = "integration_test_runner@fr8.company";
         private string name = "IntegrationTestRunner";
-        private string id = Guid.NewGuid().ToString();
+        //private string id = Guid.NewGuid().ToString();
         private const string password = "fr8#s@lt!";
-        private readonly string SECURITY_STAMP = Guid.NewGuid().ToString();
+        //private readonly string SECURITY_STAMP = Guid.NewGuid().ToString();
         public override void Up()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

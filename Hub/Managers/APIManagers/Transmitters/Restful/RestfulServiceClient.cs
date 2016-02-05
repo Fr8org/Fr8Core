@@ -41,19 +41,29 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
         /// Creates an instance with JSON formatter for requests and responses
         /// </summary>
         public RestfulServiceClient()
-            : this(new JsonMediaTypeFormatter())
+            : this(new JsonMediaTypeFormatter(), null)
         {
         }
 
+          public RestfulServiceClient(HttpClient _client)
+            : this(new JsonMediaTypeFormatter(), _client)
+        {
+        }      
+        
         /// <summary>
         /// Creates an instance with specified formatter for requests and responses
         /// </summary>
-        public RestfulServiceClient(MediaTypeFormatter formatter)
+        public RestfulServiceClient(MediaTypeFormatter formatter, HttpClient client)
         {
-            _innerClient = new HttpClient();
+            if (client == null)
+            {
+                client = new HttpClient();
+                client.Timeout = new TimeSpan(0, 2, 0); //2 minute
+            }
+
+            _innerClient = client; 
             _formatter = formatter;
             _formatterLogger = new FormatterLogger();
-            _innerClient.Timeout = new TimeSpan(0, 2, 0); //2 minute
         }
 
         protected virtual async Task<HttpResponseMessage> SendInternalAsync(HttpRequestMessage request, string CorrelationId)
