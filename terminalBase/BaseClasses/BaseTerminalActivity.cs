@@ -18,6 +18,7 @@ using Hub.Managers;
 using Utilities.Configuration.Azure;
 using TerminalBase.Infrastructure;
 using AutoMapper;
+using Data.Interfaces.DataTransferObjects.Helpers;
 
 namespace TerminalBase.BaseClasses
 {
@@ -35,6 +36,8 @@ namespace TerminalBase.BaseClasses
         protected static readonly string ConfigurationControlsLabel = "Configuration_Controls";
         protected string CurrentFr8UserId { get; set; }
         protected string _actionName { get; set; }
+
+        private List<ActivityTemplateDTO> _activityTemplateCache = null;
 
         public IHubCommunicator HubCommunicator { get; set; }
         #endregion
@@ -74,7 +77,7 @@ namespace TerminalBase.BaseClasses
             using (var updater = Crate.UpdateStorage(payload))
             {
                 var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActivityResponse = ActivityResponse.RequestSuspend;
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.RequestSuspend);
             }
 
             return payload;
@@ -92,7 +95,7 @@ namespace TerminalBase.BaseClasses
             using (var updater = Crate.UpdateStorage(payload))
             {
                 var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActivityResponse = ActivityResponse.RequestTerminate;
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.RequestTerminate);
             }
 
             return payload;
@@ -108,8 +111,8 @@ namespace TerminalBase.BaseClasses
             using (var updater = Crate.UpdateStorage(payload))
             {
                 var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActivityResponse = ActivityResponse.Success;
-                operationalState.ResponseMessageDTO = new ResponseMessageDTO() { Message = message };
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Success); 
+                operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Message = message });
             }
 
             return payload;
@@ -120,7 +123,7 @@ namespace TerminalBase.BaseClasses
             using (var updater = Crate.UpdateStorage(payload))
             {
                 var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActivityResponse = ActivityResponse.ExecuteClientAction;
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.ExecuteClientAction);
                 operationalState.CurrentClientActionName = clientActionName;
             }
 
@@ -137,7 +140,7 @@ namespace TerminalBase.BaseClasses
             using (var updater = Crate.UpdateStorage(payload))
             {
                 var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActivityResponse = ActivityResponse.SkipChildren;
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.SkipChildren);
             }
 
             return payload;
@@ -155,9 +158,9 @@ namespace TerminalBase.BaseClasses
             using (var updater = Crate.UpdateStorage(payload))
             {
                 var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActivityResponse = ActivityResponse.Error;
                 operationalState.CurrentActivityErrorCode = errorCode;
-                operationalState.CurrentActivityErrorMessage = errorMessage;
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Error);
+                operationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(errorMessage,ErrorType.Generic, errorCode.ToString(),null)); 
             }
 
             return payload;
@@ -183,7 +186,7 @@ namespace TerminalBase.BaseClasses
             using (var updater = Crate.UpdateStorage(payload))
             {
                 var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActivityResponse = ActivityResponse.ReProcessChildren;
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.ReProcessChildren);
             }
 
             return payload;
@@ -561,7 +564,7 @@ namespace TerminalBase.BaseClasses
                                                      string filterByTag = "",
                                                      bool addRequestConfigEvent = true, bool required = false)
         {
-            typeof (T).GetProperties()
+            typeof(T).GetProperties()
                 .Where(property => !property.Name.Equals("Id")).ToList().ForEach(property =>
                 {
                     AddTextSourceControl(storage, property.Name, property.Name, upstreamSourceLabel, filterByTag,
@@ -594,8 +597,8 @@ namespace TerminalBase.BaseClasses
 
         protected UpstreamCrateChooser CreateUpstreamCrateChooser(string name, string label, bool isMultiSelection = true)
         {
-            
-            var manifestDdlb = new DropDownList { Name = name+"_mnfst_dropdown_0", Source = new FieldSourceDTO(CrateManifestTypes.StandardDesignTimeFields, "AvailableUpstreamManifests") };
+
+            var manifestDdlb = new DropDownList { Name = name + "_mnfst_dropdown_0", Source = new FieldSourceDTO(CrateManifestTypes.StandardDesignTimeFields, "AvailableUpstreamManifests") };
             var labelDdlb = new DropDownList { Name = name + "_lbl_dropdown_0", Source = new FieldSourceDTO(CrateManifestTypes.StandardDesignTimeFields, "AvailableUpstreamLabels") };
 
             var ctrl = new UpstreamCrateChooser
@@ -906,7 +909,7 @@ namespace TerminalBase.BaseClasses
         {
 
             //search activity template by name or id
-            var allActivityTemplates = await HubCommunicator.GetActivityTemplates(parent, CurrentFr8UserId);
+            var allActivityTemplates = _activityTemplateCache != null ? _activityTemplateCache : _activityTemplateCache = await HubCommunicator.GetActivityTemplates(parent, CurrentFr8UserId);
             int templateId;
             var activityTemplate = Int32.TryParse(templateName_Or_templateID, out templateId) ?
                 allActivityTemplates.FirstOrDefault(a => a.Id == templateId)
@@ -918,7 +921,11 @@ namespace TerminalBase.BaseClasses
             label = string.IsNullOrEmpty(label) ? activityTemplate.Label : label;
             name = string.IsNullOrEmpty(name) ? activityTemplate.Label : label;
 
-            var result = await HubCommunicator.CreateAndConfigureActivity(activityTemplate.Id, name, CurrentFr8UserId, label, order, parent.Id);
+            //parent must be a Subroute
+            //If Route is specified as a parent, then a new subroute will be created
+            Guid parentId = (parent.ChildNodes.Count > 0) ? parent.ChildNodes[0].ParentRouteNodeId.Value : parent.RootRouteNodeId.Value;
+
+            var result = await HubCommunicator.CreateAndConfigureActivity(activityTemplate.Id, name, CurrentFr8UserId, label, order, parentId);
             var resultDO = Mapper.Map<ActivityDO>(result);
 
             if (resultDO != null)
@@ -928,6 +935,15 @@ namespace TerminalBase.BaseClasses
             }
 
             return null;
+        }
+
+
+        protected async Task<ActivityDO> ConfigureChildActivity(ActivityDO parent, ActivityDO child)
+        {
+            var result = await HubCommunicator.ConfigureActivity(child, CurrentFr8UserId);
+            parent.ChildNodes.Remove(child);
+            parent.ChildNodes.Add(result);
+            return result;
         }
 
         protected virtual Crate MergeUpstreamFields<TManifest>(ActivityDO curActivityDO, string label, FieldDTO[] upstreamFields)

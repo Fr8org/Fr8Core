@@ -25,6 +25,9 @@ namespace terminalDocuSign.Actions
 {
     public class Rich_Document_Notifications_v1 : BaseDocuSignAction
     {
+        private const string SolutionName = "Rich Document Notifications";
+        private const double SolutionVersion = 1.0;
+        private const string TerminalName = "DocuSign";
         private class ActionUi : StandardConfigurationControlsCM
         {
             public ActionUi()
@@ -87,7 +90,8 @@ namespace terminalDocuSign.Actions
 
                 Controls.Add(new Duration
                 {
-                    Label = "After you send a Tracked Envelope, Fr8 will wait this long",
+                    Label = "After you send a Tracked Envelope, Fr8 will wait.",
+                    InnerLabel = "Wait how long:",
                     Name = "TimePeriod"
                 });
                 Controls.Add(new DropDownList
@@ -148,7 +152,7 @@ namespace terminalDocuSign.Actions
                 updater.CrateStorage.Add(PackAvailableTemplates(authTokenDO));
                 updater.CrateStorage.Add(PackAvailableEvents());
                 updater.CrateStorage.Add(await PackAvailableHandlers(activityDO));
-                updater.CrateStorage.Add(await PackAvailableRecipientEvents(activityDO));
+                updater.CrateStorage.Add(PackAvailableRecipientEvents(activityDO));
             }
 
             return activityDO;
@@ -172,7 +176,19 @@ namespace terminalDocuSign.Actions
             }
 
             //DocuSign
-            var monitorDocuSignAction = await AddAndConfigureChildActivity(activityDO, "Monitor_DocuSign_Envelope_Activity");
+            var monitorDocuSignActionTask = AddAndConfigureChildActivity(activityDO, "Monitor_DocuSign_Envelope_Activity", "Monitor Docusign Envelope Activity", "Monitor Docusign Envelope Activity", 1);
+            var setDelayActionTask = AddAndConfigureChildActivity(activityDO, "SetDelay", "Set Delay", "Set Delay", 2);
+            var queryMTDatabaseActionTask = AddAndConfigureChildActivity(activityDO, "QueryMTDatabase", "Query MT Database", "Query MT Database", 3);
+            var filterActionTask = AddAndConfigureChildActivity(activityDO, "TestIncomingData", "Test Incoming Data", "Test Incoming Data", 4);
+            var notifierActivityTask = AddAndConfigureChildActivity(activityDO, howToBeNotifiedDdl.Value, howToBeNotifiedDdl.selectedKey, howToBeNotifiedDdl.selectedKey, 5);
+
+            await Task.WhenAll(monitorDocuSignActionTask, setDelayActionTask, queryMTDatabaseActionTask, filterActionTask, notifierActivityTask);
+
+            var monitorDocuSignAction = monitorDocuSignActionTask.Result;
+            var setDelayAction = setDelayActionTask.Result;
+            var queryMTDatabaseAction = queryMTDatabaseActionTask.Result;
+            var filterAction = filterActionTask.Result;
+            var notifierActivity = notifierActivityTask.Result;
 
             if (specificRecipientOption.Selected)
             {
@@ -189,28 +205,23 @@ namespace terminalDocuSign.Actions
 
             //let's make followup configuration for monitorDocuSignEventAction
             //followup call places EventSubscription crate in storage
-            monitorDocuSignAction = await HubCommunicator.ConfigureActivity(monitorDocuSignAction, CurrentFr8UserId);
-
+            var configureMonitorDocusignTask = HubCommunicator.ConfigureActivity(monitorDocuSignAction, CurrentFr8UserId);
+            
 
             var durationControl = (Duration)controls.FindByName("TimePeriod");
-            var setDelayAction = await AddAndConfigureChildActivity(activityDO, "SetDelay");
             SetControlValue(setDelayAction, "Delay_Duration", durationControl.Value);
-
-            var queryMTDatabaseAction = await AddAndConfigureChildActivity(activityDO, "QueryMTDatabase");
             await SetQueryMTDatabaseActionFields(queryMTDatabaseAction, specificRecipientOption.Controls[0].Value);
             //let's make a followup configuration to fill criteria fields
-
-            queryMTDatabaseAction = await HubCommunicator.ConfigureActivity(queryMTDatabaseAction, CurrentFr8UserId);
-
+            var configureQueryMTTask = HubCommunicator.ConfigureActivity(queryMTDatabaseAction, CurrentFr8UserId);
             var recipientEventStatus = (DropDownList)controls.FindByName("RecipientEvent");
-
-            var filterAction = await AddAndConfigureChildActivity(activityDO, "TestIncomingData");
             SetFilterUsingRunTimeActionFields(filterAction, recipientEventStatus.Value);
 
+            await Task.WhenAll(configureMonitorDocusignTask, configureQueryMTTask);
 
-            var notifierActivity = await AddAndConfigureChildActivity(activityDO, howToBeNotifiedDdl.Value);
+            monitorDocuSignAction = configureMonitorDocusignTask.Result;
+            activityDO.ChildNodes = activityDO.ChildNodes.OrderBy(a => a.Ordering).ToList();
+            activityDO.ChildNodes[0] = monitorDocuSignAction;
 
-            //return null;
             return activityDO;
         }
 
@@ -246,13 +257,13 @@ namespace terminalDocuSign.Actions
             //update action's duration value
             using (var updater = Crate.UpdateStorage(queryMTDatabase))
             {
-                var configControlCM = updater.CrateStorage
-                    .CrateContentsOfType<StandardConfigurationControlsCM>()
-                    .First();
-
-                var objectList = (DropDownList)((configControlCM.Controls.First() as RadioButtonGroup).Radios[1].Controls.Where(c => c.Name == "AvailableObjects").FirstOrDefault());
+                var configControlCM = GetConfigurationControls(updater.CrateStorage);
+                var radioButtonGroup = (configControlCM.Controls.First() as RadioButtonGroup);
+                radioButtonGroup.Radios[0].Selected = false;
+                radioButtonGroup.Radios[1].Selected = true;
+                var objectList = (DropDownList)(radioButtonGroup.Radios[1].Controls.Where(c => c.Name == "AvailableObjects").FirstOrDefault());
                 MT_Object selectedObject;
-                if (recipientEmail == null)
+                if (string.IsNullOrEmpty(recipientEmail))
                 {
                     selectedObject = await GetMTObject(MT.DocuSignEvent);
                 }
@@ -269,7 +280,7 @@ namespace terminalDocuSign.Actions
                 objectList.Value = selectedObject.Id.ToString(CultureInfo.InvariantCulture);
                 objectList.selectedKey = selectedObject.Name;
 
-                var filterPane = (FilterPane)configControlCM.Controls.First(c => c.Name == "Filter");
+                var filterPane = (FilterPane)radioButtonGroup.Radios[1].Controls.First(c => c.Name == "Filter");
 
                 var conditions = new List<FilterConditionDTO>
                                 {
@@ -286,7 +297,37 @@ namespace terminalDocuSign.Actions
                     ExecutionType = FilterExecutionType.WithFilter,
                     Conditions = conditions
                 });
+
+                updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("Queryable Criteria", GetFieldsByObjectId(selectedObject.Id).ToArray()));
             }
+        }
+
+        private IEnumerable<FieldDTO> GetFieldsByObjectId(int objectId)
+        {
+            var fields = new Dictionary<string, string>();
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                foreach (var field in uow.MTFieldRepository.GetQuery().Where(x => x.MT_ObjectId == objectId))
+                {
+                    var alias = "Value" + field.FieldColumnOffset;
+                    string existingAlias;
+
+                    if (fields.TryGetValue(field.Name, out existingAlias))
+                    {
+                        if (existingAlias != alias)
+                        {
+                            throw new InvalidOperationException(string.Format("Duplicate field definition. MT object type: {0}. Field {1} is mapped to {2} and {3}", objectId, field.Name, existingAlias, alias));
+                        }
+                    }
+                    else
+                    {
+                        fields[field.Name] = alias;
+                    }
+                }
+            }
+
+            return fields.OrderBy(x => x.Key).Select(x => new FieldDTO(x.Key, x.Key));
         }
 
 
@@ -323,9 +364,9 @@ namespace terminalDocuSign.Actions
             return crate;
         }
 
-        private async Task<Crate> PackAvailableRecipientEvents(ActivityDO activityDO)
+        private Crate PackAvailableRecipientEvents(ActivityDO activityDO)
         {
-            var events = new[] { "Created", "Sent", "Delivered", "Signed", "Declined", "FaxPending", "AutoResponded" };
+            var events = new[] { "Delivered", "Signed", "Declined", "AutoResponded" };
 
             var availableRecipientEventsCrate =
                 Crate.CreateDesignTimeFieldsCrate(
@@ -354,6 +395,18 @@ namespace terminalDocuSign.Actions
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             return Success(await GetPayload(curActivityDO, containerId));
+        }
+        //This method provides some documentation for the DocuSign Solution Actions
+        public Task<SolutionPageDTO> Documentation(ActivityDO activityDO)
+        {
+            var curSolutionPage = new SolutionPageDTO
+            {
+                Name = SolutionName,
+                Version = SolutionVersion,
+                Terminal = TerminalName,
+                Body = @"<p>This is a solution action</p>"
+            };
+            return Task.FromResult(curSolutionPage);
         }
     }
 }

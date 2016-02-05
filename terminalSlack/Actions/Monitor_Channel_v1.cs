@@ -40,7 +40,7 @@ namespace terminalSlack.Actions
             }
             catch (ArgumentException)
             {
-                return await ActivateAndReturnSuccess(activityDO, authTokenDO, payloadCrates);
+                return  ActivateAndReturnSuccess(activityDO, authTokenDO, payloadCrates).Result;
             }
 
             var payloadChannelIdField = payloadFields.FirstOrDefault(x => x.Key == "channel_id");

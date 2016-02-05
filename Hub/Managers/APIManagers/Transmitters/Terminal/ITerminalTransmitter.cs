@@ -19,6 +19,6 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
         /// <param name="terminalId"></param>
         /// <param name="terminalSecret"></param>
         /// <returns></returns>
-        Task<TResponse> CallActionAsync<TResponse>(string actionType, ActivityDTO activityDTO, string correlationId);
+        Task<TResponse> CallActionAsync<TResponse>(string actionType, Fr8DataDTO dataDTO, string correlationId);
     }
 }
