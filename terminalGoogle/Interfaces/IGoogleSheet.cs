@@ -19,8 +19,9 @@ namespace terminalGoogle.Interfaces
         /// <returns>Returns a link to CSV file on storage</returns>
         string ExtractData(string spreadsheetUri, GoogleAuthDTO authDTO);
         IDictionary<string, string> EnumerateWorksheet(string spreadsheetUri, GoogleAuthDTO authDTO);
-        void CreateWorksheet(string spreadsheetUri, GoogleAuthDTO authDTO, string worksheetname);
+        string CreateWorksheet(string spreadsheetUri, GoogleAuthDTO authDTO, string worksheetname);
         SpreadsheetEntry FindSpreadsheet(string spreadsheetUri, GoogleAuthDTO authDTO);
         Task<string> CreateSpreadsheet(string spreadsheetname, GoogleAuthDTO authDTO);
+        bool WriteData(string spreadsheetUri, string worksheetUri, StandardTableDataCM data, GoogleAuthDTO authDTO);
     }
 }

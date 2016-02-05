@@ -390,17 +390,17 @@ namespace TerminalBase.BaseClasses
         public async virtual Task<Crate<StandardDesignTimeFieldsCM>> GetUpstreamManifestListCrate(ActivityDO activityDO)
         {
             var manifestList = (await BuildUpstreamManifestList(activityDO));
-            var fields = manifestList.Select(f => new FieldDTO(f.Id.ToString(), f.Type)).ToArray();
+            var fields = manifestList.Select(f => new FieldDTO(f.Type, f.Id.ToString())).ToArray();
 
-            return Crate.CreateDesignTimeFieldsCrate("Upstream Manifest Type List", fields);
+            return Crate.CreateDesignTimeFieldsCrate("AvailableUpstreamManifests", fields);
         }
 
         public async virtual Task<Crate<StandardDesignTimeFieldsCM>> GetUpstreamCrateLabelListCrate(ActivityDO activityDO)
         {
             var labelList = (await BuildUpstreamCrateLabelList(activityDO));
-            var fields = labelList.Select(f => new FieldDTO(null, f)).ToArray();
+            var fields = labelList.Select(f => new FieldDTO(f, f)).ToArray();
 
-            return Crate.CreateDesignTimeFieldsCrate("Upstream Crate Label List", fields);
+            return Crate.CreateDesignTimeFieldsCrate("AvailableUpstreamLabels", fields);
         }
 
         protected CrateStorage AssembleCrateStorage(params Crate[] curCrates)
@@ -995,6 +995,47 @@ namespace TerminalBase.BaseClasses
         {
             var curElement = enumerableObject.ElementAt(objectIndex);
             return curElement;
+        }
+
+
+
+        protected async Task<StandardTableDataCM> ExtractUpstreamCratesControl(ActivityDO curActivityDO, PayloadDTO payloadDTO)
+        {
+            // get the selected event from the drop down
+            var controls = GetConfigurationControls(curActivityDO);
+            var crateChooser = controls.FindByName<UpstreamCrateChooser>("UpstreamCrateChooser");
+
+            var getUpstreamCrates = (await GetCratesByDirection(curActivityDO, CrateDirection.Upstream)).ToArray();
+
+            var manifestType = crateChooser.SelectedCrates.Select(c => c.ManifestType.Value);
+            var labelControl = crateChooser.SelectedCrates.Select(c => c.Label.Value);
+
+            //get label from payloaddto
+            //get manifest from activitydo.crates
+            Func<Crate, bool> whereClause = null;
+            if (!String.IsNullOrEmpty(manifestType.FirstOrDefault()) && !String.IsNullOrEmpty(labelControl.FirstOrDefault()))
+                whereClause = (crate => manifestType.Contains(crate.ManifestType.Id.ToString()) && labelControl.Contains(crate.Label));
+            else if (!String.IsNullOrEmpty(manifestType.FirstOrDefault()))
+                whereClause = (crate => manifestType.Contains(crate.ManifestType.Id.ToString()));
+            else if (!String.IsNullOrEmpty(labelControl.FirstOrDefault()))
+                whereClause = (crate => labelControl.Contains(crate.Label));
+
+
+            StandardTableDataCM resultTable = null;
+            var selectedUpcrateControl = getUpstreamCrates.Where(whereClause).Select(s => s).FirstOrDefault();
+
+            if (selectedUpcrateControl != null)
+            {
+                //for standard table data CM return directly the result - the rest of CM will be converted to TableDataCM
+                if (selectedUpcrateControl.IsOfType<StandardTableDataCM>())
+                {
+                    var contentTableCM = selectedUpcrateControl.Get<StandardTableDataCM>();
+                    resultTable = contentTableCM;
+                }
+                else
+                    throw new NotSupportedException("Manifest type is not yet implemented in extracting the data.");
+            }
+            return resultTable;
         }
 
     }

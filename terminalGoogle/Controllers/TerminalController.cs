@@ -70,7 +70,7 @@ namespace terminalGoogle.Controllers
                 Label = "Save In Google Sheet",
                 Version = "1",
                 Description = "Save crates into google spreadsheet",
-                Category = ActivityCategory.Processors,
+                Category = ActivityCategory.Forwarders,
                 Terminal = terminal,
                 NeedsAuthentication = true,
                 MinPaneWidth = 300,
