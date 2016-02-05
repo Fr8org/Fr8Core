@@ -129,14 +129,14 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<ContainerDO, ContainerDTO>()
                 .ForMember(
                     x => x.CurrentActivityResponse,
-                    x => x.ResolveUsing(y => ExtractOperationStateData(y, z => z.CurrentActivityResponse))
+                    x => x.ResolveUsing(y => ExtractOperationStateData(y, z => Enum.Parse(typeof(Data.Constants.ActivityResponse), z.CurrentActivityResponse.Type)))
                 )
                 .ForMember(
                     x => x.CurrentClientActionName,
                     x => x.ResolveUsing(y => ExtractOperationStateData(y, z => z.CurrentClientActionName))
                 );
             Mapper.CreateMap<AuthorizationTokenDTO, AuthorizationTokenDO>()
-                .ForMember(x => x.UserID, x => x.ResolveUsing(y => y.UserId))
+                .ForMember(x => x.UserID,    x => x.ResolveUsing(y => y.UserId))
                 .ForMember(x => x.Id, x => x.ResolveUsing(y => y.Id != null ? new Guid(y.Id) : (Guid?)null));
             Mapper.CreateMap<AuthorizationTokenDO, AuthorizationTokenDTO>()
                 .ForMember(x => x.UserId, x => x.ResolveUsing(y => y.UserID))

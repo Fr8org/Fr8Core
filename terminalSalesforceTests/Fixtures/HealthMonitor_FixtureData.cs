@@ -61,11 +61,11 @@ namespace terminalSalesforceTests.Fixtures
             };
         }
 
-        public static ActivityDTO Create_Account_v1_InitialConfiguration_ActionDTO()
+        public static Fr8DataDTO Create_Account_v1_InitialConfiguration_Fr8DataDTO()
         {
             var activityTemplate = Create_Account_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
                 Label = "Create Account",
@@ -73,13 +73,15 @@ namespace terminalSalesforceTests.Fixtures
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id
             };
+
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
 
-        public static ActivityDTO Create_Contact_v1_InitialConfiguration_ActionDTO()
+        public static Fr8DataDTO Create_Contact_v1_InitialConfiguration_Fr8DataDTO()
         {
             var activityTemplate = Create_Contact_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
                 Label = "Create Contact",
@@ -87,13 +89,15 @@ namespace terminalSalesforceTests.Fixtures
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id
             };
+
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
 
-        public static ActivityDTO Create_Lead_v1_InitialConfiguration_ActionDTO()
+        public static Fr8DataDTO Create_Lead_v1_InitialConfiguration_Fr8DataDTO()
         {
             var activityTemplate = Create_Lead_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
                 Label = "Create Lead",
@@ -101,6 +105,7 @@ namespace terminalSalesforceTests.Fixtures
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id
             };
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
 
         public static ActivityDTO Get_Data_v1_InitialConfiguration_ActionDTO()

@@ -36,13 +36,11 @@ namespace terminalDocuSignTests.Integration
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Receive_DocuSign_Envelope_v1_Example_ActionDTO();
-
+            var dataDTO = HealthMonitor_FixtureData.Receive_DocuSign_Envelope_v1_Example_Fr8DataDTO();
             //Act
-            var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+            var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    requestActionDTO
+                    dataDTO
                 );
 
             //Assert
@@ -67,20 +65,20 @@ namespace terminalDocuSignTests.Integration
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Receive_DocuSign_Envelope_v1_Example_ActionDTO();
+            var dataDTO = HealthMonitor_FixtureData.Receive_DocuSign_Envelope_v1_Example_Fr8DataDTO();
             
             List<FieldDTO> fieldDTO = new List<FieldDTO>();
             fieldDTO.Add(new FieldDTO() { Key = "TemplateId", Value = "6ef29903-e405-4a24-8b92-a3a3ae8d1824" });
             StandardDesignTimeFieldsCM standardDesignFieldsCM = new StandardDesignTimeFieldsCM();
             standardDesignFieldsCM.Fields = fieldDTO;
 
-            base.AddUpstreamCrate<StandardDesignTimeFieldsCM>(requestActionDTO, standardDesignFieldsCM);
+            base.AddUpstreamCrate<StandardDesignTimeFieldsCM>(dataDTO.ActivityDTO, standardDesignFieldsCM);
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    requestActionDTO
+                    dataDTO
                 );
 
             //Assert
@@ -110,13 +108,10 @@ namespace terminalDocuSignTests.Integration
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Receive_DocuSign_Envelope_v1_Example_ActionDTO();
-            requestActionDTO.AuthToken = null;
+            var dataDTO = HealthMonitor_FixtureData.Receive_DocuSign_Envelope_v1_Example_Fr8DataDTO();
+            dataDTO.ActivityDTO.AuthToken = null;
 
-            await HttpPostAsync<ActivityDTO, JToken>(
-                configureUrl,
-                requestActionDTO
-            );
+            await HttpPostAsync<Fr8DataDTO, JToken>(configureUrl, dataDTO);
         }
 
         /// <summary>
@@ -146,9 +141,9 @@ namespace terminalDocuSignTests.Integration
                     }
                 }
             );
-
+            var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
             var responsePayloadDTO =
-                await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, activityDTO);
+                await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
 
             //Assert
             var crateStorage = Crate.GetStorage(responsePayloadDTO);
@@ -164,11 +159,11 @@ namespace terminalDocuSignTests.Integration
             var configureUrl = GetTerminalActivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = HealthMonitor_FixtureData.Receive_DocuSign_Envelope_v1_Example_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Receive_DocuSign_Envelope_v1_Example_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -185,11 +180,11 @@ namespace terminalDocuSignTests.Integration
             var configureUrl = GetTerminalDeactivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = HealthMonitor_FixtureData.Receive_DocuSign_Envelope_v1_Example_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Receive_DocuSign_Envelope_v1_Example_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );

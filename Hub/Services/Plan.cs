@@ -612,7 +612,8 @@ namespace Hub.Services
 
         private async Task<ContainerDO> Run(IUnitOfWork uow, ContainerDO curContainerDO)
         {
-            if (curContainerDO.ContainerState == ContainerState.Failed || curContainerDO.ContainerState == ContainerState.Completed)
+            if (curContainerDO.ContainerState == ContainerState.Failed
+                || curContainerDO.ContainerState == ContainerState.Completed)
             {
                 throw new ApplicationException("Attempted to Launch a Process that was Failed or Completed");
             }

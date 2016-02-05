@@ -23,11 +23,11 @@ namespace terminalSendGridTests.Fixtures
             };
         }
 
-        public static ActivityDTO SendEmailViaSendGrid_v1_InitialConfiguration_ActionDTO()
+        public static Fr8DataDTO SendEmailViaSendGrid_v1_InitialConfiguration_Fr8DataDTO()
         {
             var activityTemplate = SendEmailViaSendGrid_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
                 Label = "Send Email using SendGrid",
@@ -35,6 +35,8 @@ namespace terminalSendGridTests.Fixtures
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id
             };
+
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
 
     }

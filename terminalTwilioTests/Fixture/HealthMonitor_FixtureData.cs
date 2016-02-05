@@ -30,11 +30,11 @@ namespace terminalTwilioTests.Fixture
                 Version = "1"
             };
         }
-        public static ActivityDTO Send_Via_Twilio_v1_InitialConfiguration_ActionDTO()
+        public static Fr8DataDTO Send_Via_Twilio_v1_InitialConfiguration_Fr8DataDTO()
         {
             var activityTemplate = Send_Via_Twilio_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
                 Label = "Send Via Twilio",
@@ -42,16 +42,18 @@ namespace terminalTwilioTests.Fixture
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id
             };
+
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
         public ActivityDTO Send_Via_Twilio_v1_Preconfigured_Crate_With_No_SMS_Number()
         {
-            var curActionDTO = Send_Via_Twilio_v1_InitialConfiguration_ActionDTO();
-            using (var updater = CrateManager.UpdateStorage(curActionDTO))
+            var dataDTO = Send_Via_Twilio_v1_InitialConfiguration_Fr8DataDTO();
+            using (var updater = CrateManager.UpdateStorage(dataDTO.ActivityDTO))
             {
                 var curCrate = No_SMS_Number_Controls();
                 updater.CrateStorage.Add(curCrate);
             }
-            return curActionDTO;
+            return dataDTO.ActivityDTO;
         }
         public Crate No_SMS_Number_Controls()
         {

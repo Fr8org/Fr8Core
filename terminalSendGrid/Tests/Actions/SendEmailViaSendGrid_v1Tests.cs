@@ -148,8 +148,9 @@ namespace terminalSendGrid.Tests.Actions
                 updater.CrateStorage.Add(crate);
             }
 
+            var container = FixtureData.TestContainer();
             // Act
-            var payloadDTOResult = _gridAction.Run(activityDO, curActionDTO.ContainerId, curAuthTokenDO).Result;
+            var payloadDTOResult = _gridAction.Run(activityDO, container.Id, curAuthTokenDO).Result;
 
             // Assert
             Assert.NotNull(payloadDTOResult);

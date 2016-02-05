@@ -35,11 +35,11 @@ namespace terminalQuickBooksTests.Fixtures
                 Version = "1"
             };
         }
-        public static ActivityDTO Action_Create_Journal_Entry_v1_InitialConfiguration_ActionDTO()
+        public static Fr8DataDTO Action_Create_Journal_Entry_v1_InitialConfiguration_Fr8DataDTO()
         {
             var activityTemplate = Action_Create_Journal_Entry_ActivityTemplate();
 
-            return new ActivityDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
                 Label = "Create Journal Entry",
@@ -47,6 +47,8 @@ namespace terminalQuickBooksTests.Fixtures
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id
             };
+
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
         public static ActivityTemplateDTO Convert_TableData_To_AccountingTransactions_ActivityTemplate()
         {
@@ -57,11 +59,11 @@ namespace terminalQuickBooksTests.Fixtures
                 Version = "1"
             };
         }
-        public static ActivityDTO Convert_TableData_To_AccountingTransactions_v1_InitialConfiguration_ActionDTO()
+        public static Fr8DataDTO Convert_TableData_To_AccountingTransactions_v1_InitialConfiguration_Fr8DataDTO()
         {
             var activityTemplate = Convert_TableData_To_AccountingTransactions_ActivityTemplate();
 
-            return new ActivityDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
                 Label = "Convert TableData To AccountingTransactions",
@@ -69,6 +71,8 @@ namespace terminalQuickBooksTests.Fixtures
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id
             };
+
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
         public static StandardAccountingTransactionCM GetAccountingTransactionCM()
         {

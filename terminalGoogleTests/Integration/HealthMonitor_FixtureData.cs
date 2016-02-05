@@ -112,11 +112,11 @@ namespace terminalGoogleTests.Unit
             }
         }
 
-        public static ActivityDTO Receive_Google_Form_v1_InitialConfiguration_ActionDTO()
+        public static Fr8DataDTO Receive_Google_Form_v1_InitialConfiguration_Fr8DataDTO()
         {
             var activityTemplate = Receive_Google_Form_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
                 Label = "Receive Google Form Response",
@@ -124,9 +124,10 @@ namespace terminalGoogleTests.Unit
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id
             };
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
 
-        public ActivityDTO Receive_Google_Form_v1_ActivateDeactivate_ActionDTO()
+        public Fr8DataDTO Receive_Google_Form_v1_ActivateDeactivate_Fr8DataDTO()
         {
             var activityTemplate = Receive_Google_Form_v1_ActivityTemplate();
 
@@ -141,7 +142,7 @@ namespace terminalGoogleTests.Unit
             };
 
             ActivateCrateStorage(activity);
-            return activity;
+            return new Fr8DataDTO { ActivityDTO = activity };
         }
 
         private CrateStorage WrapPayloadDataCrate(List<FieldDTO> payloadFields)
@@ -232,11 +233,11 @@ namespace terminalGoogleTests.Unit
                 Version = "1"
             };
         }
-        public static ActivityDTO Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO()
+        public static Fr8DataDTO Extract_Spreadsheet_Data_v1_InitialConfiguration_Fr8DataDTO()
         {
             var activityTemplate = Extract_Spreadsheet_Data_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
                 Label = "Get Google Sheet Data",
@@ -244,6 +245,8 @@ namespace terminalGoogleTests.Unit
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id
             };
+
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
 
         public ActivityDTO Extract_Spreadsheet_Data_v1_Followup_Configuration_Request_ActionDTO_With_Crates()

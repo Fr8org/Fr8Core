@@ -42,6 +42,7 @@ namespace Hub.Managers
             EventManager.IncidentMissingFieldInPayload += IncidentMissingFieldInPayload;
             EventManager.ExternalEventReceived += LogExternalEventReceivedIncident;
             EventManager.KeyVaultFailure += KeyVaultFailure;
+            EventManager.EventContainerFailed += ContainerFailed;
         }
 
         private void KeyVaultFailure(string keyVaultMethod, Exception ex)
@@ -49,11 +50,37 @@ namespace Hub.Managers
             var incident = new IncidentDO
             {
                 CustomerId = "unknown",
-                Data = string.Join(Environment.NewLine, "KeyVault method: " + keyVaultMethod, ex.Message, ex.StackTrace ?? ""),
+                Data = string.Join(
+                    Environment.NewLine,
+                    "KeyVault method: " + keyVaultMethod,
+                    ex.Message,
+                    ex.StackTrace ?? ""
+                ),
                 PrimaryCategory = "KeyVault",
                 SecondaryCategory = "QuerySecurePartAsync",
                 Component = "Hub",
                 Activity = "KeyVault Failed"
+            };
+
+            SaveAndLogIncident(incident);
+        }
+
+        private void ContainerFailed(PlanDO plan, Exception ex)
+        {
+            var incident = new IncidentDO
+            {
+                CustomerId = "unknown",
+                Data = string.Join(
+                    Environment.NewLine,
+                    "Container failure.",
+                    "Plan: " + plan != null ? plan.Name : "unknown",
+                    ex.Message,
+                    ex.StackTrace ?? ""
+                ),
+                PrimaryCategory = "Container",
+                SecondaryCategory = "Execution",
+                Component = "Hub",
+                Activity = "Container failure"
             };
 
             SaveAndLogIncident(incident);

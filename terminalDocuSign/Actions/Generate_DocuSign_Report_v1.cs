@@ -305,6 +305,9 @@ namespace terminalDocuSign.Actions
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO activityDO, AuthorizationTokenDO authTokenDO)
         {
+            var activityTemplates = (await HubCommunicator.GetActivityTemplates(activityDO, null))
+                .Select(x => Mapper.Map<ActivityTemplateDO>(x))
+                .ToList();
 
             try
             {
@@ -316,7 +319,21 @@ namespace terminalDocuSign.Actions
                     updater.CrateStorage.Add(queryCrate);
                 }
 
-                await AddAndConfigureChildActivity(activityDO, "QueryMTDatabase");
+                var queryMtDatabaseAction = activityTemplates
+                    .FirstOrDefault(x => x.Name == "QueryMTDatabase");
+                if (queryMtDatabaseAction == null) { return activityDO; }
+                
+                activityDO.ChildNodes.Add(new ActivityDO()
+                {
+                    ActivityTemplateId = queryMtDatabaseAction.Id,
+                    IsTempId = true,
+                    Label = queryMtDatabaseAction.Label,
+                    CrateStorage = Crate.EmptyStorageAsStr(),
+                    ParentRouteNode = activityDO,
+                    Ordering = 1
+                });
+
+                // await AddAndConfigureChildActivity(activityDO, "QueryMTDatabase");
             }
             catch (Exception)
             {

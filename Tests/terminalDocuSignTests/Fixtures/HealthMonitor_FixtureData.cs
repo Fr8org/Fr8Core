@@ -54,11 +54,11 @@ namespace terminalDocuSignTests.Fixtures
             };
         }
 
-        public static ActivityDTO Monitor_DocuSign_v1_InitialConfiguration_ActionDTO()
+        public static Fr8DataDTO Monitor_DocuSign_v1_InitialConfiguration_Fr8DataDTO()
         {
             var activityTemplate = Monitor_DocuSign_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            var activity = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
                 Label = "Monitor DocuSign Envelope Activity",
@@ -66,13 +66,15 @@ namespace terminalDocuSignTests.Fixtures
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id
             };
+
+            return ConvertToFr8Data(activity);
         }
 
-        public static ActivityDTO Query_DocuSign_v1_InitialConfiguration_ActionDTO()
+        public static Fr8DataDTO Query_DocuSign_v1_InitialConfiguration_Fr8DataDTO()
         {
             var activityTemplate = Query_DocuSign_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
                 Label = "Query DocuSign",
@@ -80,13 +82,15 @@ namespace terminalDocuSignTests.Fixtures
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id
             };
+
+            return ConvertToFr8Data(activityDTO);
         }
 
-        public static ActivityDTO Receive_DocuSign_Envelope_v1_Example_ActionDTO()
+        public static Fr8DataDTO Receive_DocuSign_Envelope_v1_Example_Fr8DataDTO()
         {
             var activityTemplate = Receive_DocuSign_Envelope_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
                 Label = "Receive DocuSign",
@@ -94,13 +98,15 @@ namespace terminalDocuSignTests.Fixtures
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id
             };
+
+            return ConvertToFr8Data(activityDTO);
         }
 
-        public static ActivityDTO Record_Docusign_v1_InitialConfiguration_ActionDTO()
+        public static Fr8DataDTO Record_Docusign_v1_InitialConfiguration_Fr8DataDTO()
         {
             var activityTemplate = Record_DocuSign_Envelope_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
                 Label = "Record DocuSign",
@@ -108,6 +114,7 @@ namespace terminalDocuSignTests.Fixtures
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id
             };
+            return ConvertToFr8Data(activityDTO);
         }
 
         public static ActivityTemplateDTO Record_DocuSign_Envelope_v1_ActivityTemplate()
@@ -120,11 +127,11 @@ namespace terminalDocuSignTests.Fixtures
             };
         }        
 
-        public static ActivityDTO Send_DocuSign_Envelope_v1_Example_ActionDTO()
+        public static Fr8DataDTO Send_DocuSign_Envelope_v1_Example_Fr8DataDTO()
         {
             var activityTemplate = Send_DocuSign_Envelope_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
                 Label = "Send DocuSign",
@@ -132,6 +139,8 @@ namespace terminalDocuSignTests.Fixtures
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id
             };
+
+            return ConvertToFr8Data(activityDTO);
         }
 
         public static ActivityTemplateDTO Mail_Merge_Into_DocuSign_v1_ActivityTemplate()
@@ -144,11 +153,11 @@ namespace terminalDocuSignTests.Fixtures
             };
         }
 
-        public static ActivityDTO Mail_Merge_Into_DocuSign_v1_InitialConfiguration_ActionDTO()
+        public static Fr8DataDTO Mail_Merge_Into_DocuSign_v1_InitialConfiguration_Fr8DataDTO()
         {
             var activityTemplate = Mail_Merge_Into_DocuSign_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
                 Label = "Mail Merge Into DocuSign",
@@ -156,6 +165,7 @@ namespace terminalDocuSignTests.Fixtures
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id
             };
+            return ConvertToFr8Data(activityDTO);
         }
 
         public static ActivityTemplateDTO Rich_Document_Notifications_v1_ActivityTemplate()
@@ -168,11 +178,11 @@ namespace terminalDocuSignTests.Fixtures
             };
         }
 
-        public static ActivityDTO Rich_Document_Notifications_v1_InitialConfiguration_ActionDTO()
+        public static Fr8DataDTO Rich_Document_Notifications_v1_InitialConfiguration_Fr8DataDTO()
         {
             var activityTemplate = Rich_Document_Notifications_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
                 Label = "Rich Document Notifications",
@@ -180,6 +190,8 @@ namespace terminalDocuSignTests.Fixtures
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id
             };
+
+            return ConvertToFr8Data(activityDTO);
         }
 
         public static ActivityTemplateDTO Extract_Data_From_Envelopes_v1_ActivityTemplate()
@@ -192,11 +204,11 @@ namespace terminalDocuSignTests.Fixtures
             };
         }
 
-        public static ActivityDTO Extract_Data_From_Envelopes_v1_InitialConfiguration_ActionDTO()
+        public static Fr8DataDTO Extract_Data_From_Envelopes_v1_InitialConfiguration_Fr8DataDTO()
         {
             var activityTemplate = Extract_Data_From_Envelopes_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
                 Label = "Extract Data From Envelopes",
@@ -204,6 +216,7 @@ namespace terminalDocuSignTests.Fixtures
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id
             };
+            return ConvertToFr8Data(activityDTO);
         }
 
         public static ActivityTemplateDTO Monitor_DocuSign_v1_ActivityTemplate_For_Solution()
@@ -228,6 +241,11 @@ namespace terminalDocuSignTests.Fixtures
                 Version = "1",
                 Category = Data.States.ActivityCategory.Forwarders
             };
+        }
+
+        private static Fr8DataDTO ConvertToFr8Data(ActivityDTO activityDTO)
+        {
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
     }
 }

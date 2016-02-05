@@ -44,5 +44,8 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonIgnore]
         public string Fr8AccountId { get; set; }
                 
+        [JsonProperty("DocumentationSupport")]
+        public string DocumentationSupport { get; set; }
+
     }
 }

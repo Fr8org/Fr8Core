@@ -16,16 +16,21 @@ namespace terminalAzureTests.Fixtures
         }
         
 
-        public static ActivityDTO Write_To_Sql_Server_v1_InitialConfiguration_ActionDTO()
+        public static Fr8DataDTO Write_To_Sql_Server_v1_InitialConfiguration_Fr8DataDTO()
         {
             var activityTemplate = Write_To_Sql_Server_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
                 Label = "Write To Sql Server",
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id
+            };
+
+            return new Fr8DataDTO
+            {
+                ActivityDTO = activityDTO
             };
         }
     }
