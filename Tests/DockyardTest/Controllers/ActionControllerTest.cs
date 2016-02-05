@@ -51,7 +51,7 @@ namespace DockyardTest.Controllers
         [Test]
         public void ActionController_ShouldHaveHMACOnCreateMethod()
         {
-            var createMethod = typeof (ActionsController).GetMethod("Create", new Type[] { typeof(int), typeof(string), typeof(string), typeof(int ?), typeof(Guid ?), typeof(bool), typeof(Guid ?)});
+            var createMethod = typeof (ActionsController).GetMethod("Create", new Type[] { typeof(int), typeof(string), typeof(int ?), typeof(Guid ?), typeof(bool), typeof(Guid ?)});
             ShouldHaveFr8HMACAuthorizeOnFunction(createMethod);
         }
 
