@@ -431,7 +431,7 @@ namespace Hub.Services
                 .ToList();
         }
 
-        public IEnumerable<ActivityTemplateDTO> GetSolutions(IUnitOfWork uow, IFr8AccountDO curAccount)
+        public IEnumerable<ActivityTemplateDTO> GetSolutions(IUnitOfWork uow)
         {
             IEnumerable<ActivityTemplateDTO> curActivityTemplates;
             curActivityTemplates = _activityTemplate
@@ -453,6 +453,7 @@ namespace Hub.Services
 
             return curActivityTemplates;
         }
+
 
         public IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivitiyGroups()
         {

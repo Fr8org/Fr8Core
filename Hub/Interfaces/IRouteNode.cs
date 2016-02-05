@@ -34,6 +34,6 @@ namespace Hub.Interfaces
 
         IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivitiyGroups();
 	    
-        IEnumerable<ActivityTemplateDTO> GetSolutions(IUnitOfWork uow, IFr8AccountDO curAccount);
+        IEnumerable<ActivityTemplateDTO> GetSolutions(IUnitOfWork uow);
     }
 }

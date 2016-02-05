@@ -693,10 +693,9 @@ namespace Hub.Services
                 throw new Exception("No MainPage value found in DocumentationSupport field value of the ActionDTO");
             SolutionPageDTO solutionPageDTO;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curAccount = _security.GetCurrentAccount(uow);
+            {  
                 //Get the list of all actions that are solutions from database
-                var allActivityTemplates = _routeNode.GetSolutions(uow, curAccount);
+                var allActivityTemplates = _routeNode.GetSolutions(uow);
                 //find the solution by the provided name
                 var curActivityTerminalDTO = allActivityTemplates.Single(a => a.Name == activityDTO.ActivityTemplate.Name);
                 //prepare an Activity object to be sent to Activity in a Terminal
@@ -709,10 +708,9 @@ namespace Hub.Services
                     ActivityTemplateId = curActivityTerminalDTO.Id,
                     Name = curActivityTerminalDTO.Name,
                     Label = curActivityTerminalDTO.Label,
-                    Fr8AccountId = curAccount.Id,
                     AuthToken = new AuthorizationTokenDTO
                     {
-                        UserId = curAccount.Id
+                        UserId = null
                     }
                 };
                 solutionPageDTO = await GetDocumentation(curSolutionActivityDTO);
