@@ -12,8 +12,10 @@ namespace HubWeb.Infrastructure
 
         public AngularTemplateCacheAttribute()
         {
-            Duration = 3600;
+            //cache 12 hours
+            Duration = 43200;
             VaryByParam = "nocache,template";
+            Location = System.Web.UI.OutputCacheLocation.Client;
         }
 
         private bool IsExcludedTemplate(ControllerContext filterContext)
