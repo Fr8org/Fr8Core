@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Runtime.Caching;
 using Data.Entities;
@@ -12,13 +13,16 @@ using Utilities.Configuration.Azure;
 
 namespace Data.Repositories
 {
-    public abstract class AuthorizationTokenRepositoryBase : GenericRepository<AuthorizationTokenDO>, IAuthorizationTokenRepository, ITrackingChangesRepository
+    public abstract class AuthorizationTokenRepositoryBase : GenericRepository<AuthorizationTokenDO>,
+        IAuthorizationTokenRepository, ITrackingChangesRepository
     {
         /*********************************************************************************/
         // Declarations
         /*********************************************************************************/
 
-        private readonly Dictionary<Guid, AuthorizationTokenChangeTracker> _changesTackers = new Dictionary<Guid, AuthorizationTokenChangeTracker>();
+        private readonly Dictionary<Guid, AuthorizationTokenChangeTracker> _changesTackers =
+            new Dictionary<Guid, AuthorizationTokenChangeTracker>();
+
         private readonly List<AuthorizationTokenDO> _adds = new List<AuthorizationTokenDO>();
         private readonly List<AuthorizationTokenDO> _deletes = new List<AuthorizationTokenDO>();
         protected readonly AuthRepositoryLogger Logger = new AuthRepositoryLogger();
@@ -29,7 +33,7 @@ namespace Data.Repositories
 
         public Type EntityType
         {
-            get {return typeof (AuthorizationTokenDO); }
+            get { return typeof (AuthorizationTokenDO); }
         }
 
         /*********************************************************************************/
@@ -49,59 +53,11 @@ namespace Data.Repositories
         }
 
         /*********************************************************************************/
-        
+
         protected AuthorizationTokenRepositoryBase(IUnitOfWork uow)
             : base(uow)
         {
         }
-
-//        These methods are quite weird and are used only in tests
-//        /*********************************************************************************/
-//
-//        public String GetAuthorizationTokenURL(String url, Fr8AccountDO dockyardAccountDO, String segmentEventName = null, Dictionary<String, Object> segmentTrackingProperties = null)
-//        {
-//            return GetAuthorizationTokenURL(url, dockyardAccountDO.Id, segmentEventName, segmentTrackingProperties);
-//        }
-//
-//        /*********************************************************************************/
-//
-//        public String GetAuthorizationTokenURL(String url, String userID, String segmentEventName = null, Dictionary<String, Object> segmentTrackingProperties = null)
-//        {
-//            var token = GetAuthorizationToken(url, userID, segmentEventName, segmentTrackingProperties);
-//
-//            var responseUrl = String.Format("{0}tokenAuth?token={1}",
-//                Server.ServerUrl,
-//                token);
-//
-//            return responseUrl;
-//        }
-//
-//        /*********************************************************************************/
-//
-//        private String GetAuthorizationToken(String url, String userID, String segmentEventName = null, Dictionary<String, Object> segmentTrackingProperties = null)
-//        {
-//            var newTokenLink = new AuthorizationTokenDO
-//            {
-//                RedirectURL = url,
-//                UserID = userID,
-//                ExpiresAt = DateTime.UtcNow.AddDays(10),
-//                SegmentTrackingEventName = segmentEventName,
-//                Terminal = new TerminalDO()
-//                {
-//                    Id = 0,
-//                    Name = "",
-//                    Endpoint = "",
-//                    Version = "1",
-//                    TerminalStatus = TerminalStatus.Active
-//                }
-//            };
-//
-//            if (segmentTrackingProperties != null)
-//                newTokenLink.SegmentTrackingProperties = JsonConvert.SerializeObject(segmentTrackingProperties);
-//
-//            UnitOfWork.AuthorizationTokenRepository.Add(newTokenLink);
-//            return newTokenLink.Id.ToString();
-//        }
 
         /*********************************************************************************/
 
@@ -122,9 +78,12 @@ namespace Data.Repositories
             }
             else
             {
-                token = GetQuery().FirstOrDefault(x => x.UserID == userId && x.TerminalID == terminalId && x.AuthorizationTokenState == state);
+                token =
+                    GetQuery()
+                        .FirstOrDefault(
+                            x => x.UserID == userId && x.TerminalID == terminalId && x.AuthorizationTokenState == state);
             }
-            
+
             return EnrichAndTrack(token);
         }
 
@@ -142,10 +101,10 @@ namespace Data.Repositories
             return EnrichAndTrack(
                 GetQuery()
                     .FirstOrDefault(x => x.ExternalAccountId == externalAccountId
-                        && x.TerminalID == terminalId
-                        && x.UserID == userId
+                                         && x.TerminalID == terminalId
+                                         && x.UserID == userId
                     )
-            );
+                );
         }
 
         /*********************************************************************************/
@@ -164,22 +123,30 @@ namespace Data.Repositories
 
         public AuthorizationTokenDO FindTokenById(string id)
         {
+            AuthorizationTokenDO token;
+
             lock (TokenCache)
             {
-                var token = (AuthorizationTokenDO)TokenCache.Get(id);
-
-                if (token == null)
+                token = (AuthorizationTokenDO) TokenCache.Get(id);
+                if (token != null)
                 {
-                    token = EnrichAndTrack(GetQuery().FirstOrDefault(x => x.Id.ToString() == id));
-
-                    TokenCache.Add(new CacheItem(id, token), new CacheItemPolicy
-                    {
-                        SlidingExpiration = _expiration
-                    });
+                    return token;
                 }
-
-                return token;
             }
+
+            token = EnrichAndTrack(GetQuery().FirstOrDefault(x => x.Id.ToString() == id));
+
+            lock (TokenCache)
+            {
+                TokenCache.Remove(id);
+                TokenCache.Add(new CacheItem(id, token), new CacheItemPolicy
+                {
+                    SlidingExpiration = _expiration
+                });
+            }
+
+            return token;
+
         }
 
         /*********************************************************************************/
