@@ -105,6 +105,7 @@
     <Compile Include="Errors\AuthorizationTokenExpiredException.cs" />
     <Compile Include="Errors\TerminalErrorCode.cs" />
     <Compile Include="Infrastructure\BaseTerminalEvent.cs" />
+    <Compile Include="Infrastructure\Behaviors\TextSourceMappingBehavior.cs" />
     <Compile Include="Infrastructure\DefaultHubCommunicator.cs" />
     <Compile Include="Infrastructure\DataHubCommunicatorBase.cs" />
     <Compile Include="Infrastructure\ExplicitConfigurationHelper.cs" />

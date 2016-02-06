@@ -13,6 +13,7 @@ using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
+using DockyardTest.Controllers.Api;
 using Hub.Interfaces;
 using HubWeb.Controllers;
 using UtilitiesTesting;
@@ -23,7 +24,7 @@ namespace DockyardTest.Controllers
 {
     [TestFixture]
     [Category("ContainerControllerTests")]
-    class ContainerControllerTests : BaseTest
+    class ContainerControllerTests : ApiControllerTestBase
     {
         private Fr8AccountDO _testUserAccount;
 
@@ -64,6 +65,30 @@ namespace DockyardTest.Controllers
                 uow.UserRepository.Remove(curUser);
                 uow.SaveChanges();
             }
+        }
+
+        [Test]
+        public void ContainerController_ShouldHaveHMACOnGetPayloadMethod()
+        {
+            ShouldHaveFr8HMACAuthorizeOnFunction(typeof(ContainersController), "GetPayload");
+        }
+
+        [Test]
+        public void ContainerController_ShouldHaveFr8ApiAuthorizeOnGetPayloadMethod()
+        {
+            ShouldHaveFr8ApiAuthorizeOnFunction(typeof(ContainersController), "GetPayload");
+        }
+
+        [Test]
+        public void ContainerController_ShouldHaveFr8ApiAuthorizeOnGetIdsByNameMethod()
+        {
+            ShouldHaveFr8ApiAuthorizeOnFunction(typeof(ContainersController), "GetIdsByName");
+        }
+
+        [Test]
+        public void ContainerController_ShouldHaveFr8ApiAuthorizeOnGetMethod()
+        {
+            ShouldHaveFr8ApiAuthorizeOnFunction(typeof(ContainersController), "Get");
         }
 
         [Test]

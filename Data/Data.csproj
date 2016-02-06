@@ -331,7 +331,7 @@
     <Compile Include="Interfaces\DataTransferObjects\ContainerDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\QueryDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\SubrouteDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\SolutionPageDTO.cs" />
+	<Compile Include="Interfaces\DataTransferObjects\SolutionPageDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\RouteEmptyDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\SlackPayloadDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\TerminalDTO.cs" />
@@ -567,6 +567,7 @@
     <Compile Include="Migrations\201601201734569_Removed_Fr8Account_From_Route.Designer.cs">
       <DependentUpon>201601201734569_Removed_Fr8Account_From_Route.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201601211438483_Add_Test_User.cs" />
     <Compile Include="Migrations\201601240842409_EmptyMigration.cs" />
     <Compile Include="Migrations\201601240842409_EmptyMigration.Designer.cs">
       <DependentUpon>201601240842409_EmptyMigration.cs</DependentUpon>
@@ -579,9 +580,9 @@
     <Compile Include="Migrations\201601241443338_RenameRouteToPlan.Designer.cs">
       <DependentUpon>201601241443338_RenameRouteToPlan.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201601211438483_Add_Test_User.cs" />
-    <Compile Include="Migrations\201601211438483_Add_Test_User.Designer.cs">
-      <DependentUpon>201601211438483_Add_Test_User.cs</DependentUpon>
+    <Compile Include="Migrations\201602051229214_Add_Test_User_2.cs" />
+    <Compile Include="Migrations\201602051229214_Add_Test_User_2.Designer.cs">
+      <DependentUpon>201602051229214_Add_Test_User_2.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201602031204174_MergeMigration.cs" />
     <Compile Include="Migrations\201602031204174_MergeMigration.Designer.cs">
@@ -995,6 +996,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201602031204174_MergeMigration.resx">
       <DependentUpon>201602031204174_MergeMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602051229214_Add_Test_User_2.resx">
+      <DependentUpon>201602051229214_Add_Test_User_2.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

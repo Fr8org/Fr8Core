@@ -254,7 +254,7 @@ namespace terminalDocuSign.Actions
             try
             {
                 ActivityDO dataSourceActivity = await AddAndConfigureChildActivity(curActivityDO, _dataSourceValue, order: 1);
-                ActivityDO mapFieldActivity = await AddAndConfigureChildActivity(curActivityDO, "MapFields", order: 2);
+                // ActivityDO mapFieldActivity = await AddAndConfigureChildActivity(curActivityDO, "MapFields", order: 2);
                 ActivityDO sendDocuSignEnvActivity = await AddAndConfigureChildActivity(curActivityDO, "Send_DocuSign_Envelope", order: 3);
 
                 //set docusign template
@@ -264,12 +264,13 @@ namespace terminalDocuSign.Actions
 
 
                 await ConfigureChildActivity(curActivityDO, sendDocuSignEnvActivity);
-                await ConfigureChildActivity(curActivityDO, mapFieldActivity);
+                // await ConfigureChildActivity(curActivityDO, mapFieldActivity);
             }
             catch (Exception)
             {
                 return null;
             }
+
             return await Task.FromResult(curActivityDO);
         }
         //This method provides some documentation for the DocuSign Solution Actions

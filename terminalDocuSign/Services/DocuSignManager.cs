@@ -104,7 +104,7 @@ namespace terminalDocuSign.Services
         public Crate PackCrate_DocuSignTemplateNames(DocuSignAuthTokenDTO authToken)
         {
             var template = new DocuSignTemplate();
-            var templates = template.GetTemplates(authToken.Email, authToken.ApiPassword);
+            var templates = template.GetTemplateNames(authToken.Email, authToken.ApiPassword);
             var fields = templates.Select(x => new FieldDTO() { Key = x.Name, Value = x.Id, Availability = AvailabilityType.Configuration }).ToArray();
             var createDesignTimeFields = Crate.CreateDesignTimeFieldsCrate(
                 "Available Templates",

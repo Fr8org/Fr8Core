@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DockyardTest.Controllers.Api;
 using Hub.Interfaces;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
@@ -21,7 +22,7 @@ namespace DockyardTest.Controllers
 {
     [TestFixture]
     [Category("AuthenticationController")]
-    public class AuthenticationControllerTest : BaseTest
+    public class AuthenticationControllerTest : ApiControllerTestBase
     {
         private AuthenticationController _authenticationController;
 
@@ -32,6 +33,18 @@ namespace DockyardTest.Controllers
             base.SetUp();
 
             _authenticationController = CreateController<AuthenticationController>();
+        }
+
+        [Test]
+        public void AuthenticationController_ShouldHaveFr8ApiAuthorizeOnAuthenticateMethod()
+        {
+            ShouldHaveFr8ApiAuthorizeOnFunction(typeof(AuthenticationController), "Authenticate");
+        }
+
+        [Test]
+        public void AuthenticationController_ShouldHaveFr8ApiAuthorizeOnGetOAuthInitiationURLMethod()
+        {
+            ShouldHaveFr8ApiAuthorizeOnFunction(typeof(AuthenticationController), "GetOAuthInitiationURL");
         }
 
         private TerminalDO CreateAndAddTerminalDO()

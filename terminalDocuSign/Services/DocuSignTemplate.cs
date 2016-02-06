@@ -13,9 +13,21 @@ using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Infrastructure;
 using System.Configuration;
 using System.Diagnostics;
+using System.Collections.Concurrent;
 
 namespace terminalDocuSign.Services
 {
+    //cache for DocuSign templates and template fields
+    //invalidation logic is not yet implemented
+    public static class TemplatesStorage
+    {
+        //standard thread-safe dictionaies
+        public static ConcurrentDictionary<string, List<TemplateInfo>> UserTemplates = new ConcurrentDictionary<string, List<TemplateInfo>>();
+
+        public static ConcurrentDictionary<string, List<EnvelopeDataDTO>> TemplateEnvelopeData = new ConcurrentDictionary<string, List<EnvelopeDataDTO>>();
+    }
+
+
     public class DocuSignTemplate : Template, IDocuSignTemplate
     {
         private DocuSignEnvelope _docusignEnvelope;
@@ -34,16 +46,19 @@ namespace terminalDocuSign.Services
             return submissionData;
         }
 
-        public IEnumerable<TemplateInfo> GetTemplates(Fr8AccountDO curDockyardAccount)
-        {
-            Login = _docusignPackager.Login();
-            return GetTemplates();
-        }
 
-        public IEnumerable<TemplateInfo> GetTemplates(string email, string apiPassword)
+        public IEnumerable<TemplateInfo> GetTemplateNames(string email, string apiPassword)
         {
-            Login = _docusignPackager.Login(email, apiPassword);
-            return GetTemplates();
+            List<TemplateInfo> templates = null;
+            if (!TemplatesStorage.UserTemplates.TryGetValue(email, out templates))
+            {
+                //no templates cached for this email
+                Login = _docusignPackager.Login(email, apiPassword);
+                templates = GetTemplates();
+                TemplatesStorage.UserTemplates.TryAdd(email, templates);
+            }
+
+            return templates;
         }
 
 

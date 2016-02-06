@@ -14,13 +14,14 @@ using Data.Interfaces.Manifests;
 using Data.States;
 
 using Hub.Managers;
-using TerminalBase.Infrastructure;
 using Utilities;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Interfaces;
 using terminalDocuSign.Services;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
+using TerminalBase.Infrastructure.Behaviors;
 
 namespace terminalDocuSign.Actions
 {
@@ -56,6 +57,33 @@ namespace terminalDocuSign.Actions
             curEnvelope = AddTemplateData(curActivityDO, payloadCrates, curEnvelope);
             curEnvelope.EmailSubject = "Test Message from Fr8";
             curEnvelope.Status = "sent";
+
+            using (var updater = Crate.UpdateStorage(curActivityDO))
+            {
+                var mappingBehavior = new TextSourceMappingBehavior(
+                    updater.CrateStorage,
+                    "Mapping"
+                );
+
+                var payloadCrateStorage = Crate.FromDto(payloadCrates.CrateStorage);
+                var values = mappingBehavior.GetValues(payloadCrateStorage);
+
+                var valuesToAdd = new List<TextCustomField>();                
+                foreach (var pair in values.Where(x => !string.IsNullOrEmpty(x.Value)))
+                {
+                    valuesToAdd.Add(new TextCustomField()
+                    {
+                        name = pair.Key,
+                        value = pair.Value
+                    });
+                }
+
+                // curEnvelope.AddCustomFields(valuesToAdd);
+                curEnvelope.CustomFields = new CustomFields()
+                {
+                    textCustomFields = valuesToAdd.ToArray()
+                };
+            }
 
             var result = curEnvelope.Create();
 
@@ -217,6 +245,16 @@ namespace terminalDocuSign.Actions
                 updater.CrateStorage.Add(crateUserDefinedDTO);
                 updater.CrateStorage.Add(crateStandardDTO);
 
+                var allFields = new List<string>();
+                allFields.AddRange(userDefinedFields.Select(x => x.Key));
+                allFields.AddRange(standartFields.Select(x => x.Key));
+                
+                var mappingBehavior = new TextSourceMappingBehavior(
+                    updater.CrateStorage,
+                    "Mapping"
+                );
+                mappingBehavior.Clear();
+                mappingBehavior.Append(allFields, "Upstream Terminal-Provided Fields");
             }
 
             return await Task.FromResult(curActivityDO);
@@ -270,7 +308,8 @@ namespace terminalDocuSign.Actions
             }
 
             var curUpstreamFields = (await GetDesignTimeFields(curActivityDO.Id, CrateDirection.Upstream))
-                .Fields.Where(a => a.Availability == AvailabilityType.RunTime)
+                .Fields
+                .Where(a => a.Availability == AvailabilityType.RunTime)
                 .ToArray();
 
             //make fields inaccessible to up/downstanding actions
@@ -279,6 +318,5 @@ namespace terminalDocuSign.Actions
             curUpstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided Fields", curUpstreamFields);
             updater.CrateStorage.Add(curUpstreamFieldsCrate);
         }
-
     }
 }

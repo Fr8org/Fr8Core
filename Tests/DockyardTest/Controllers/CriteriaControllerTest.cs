@@ -22,6 +22,12 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
+        public void CriteriaController_ShouldHaveFr8ApiAuthorize()
+        {
+            ShouldHaveFr8ApiAuthorize(typeof(CriteriaController));
+        }
+
+        [Test]
         public void CriteriaController_GetBySubrouteId()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

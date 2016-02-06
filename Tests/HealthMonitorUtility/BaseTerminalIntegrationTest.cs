@@ -153,7 +153,7 @@ namespace HealthMonitor.Utility
             AddPayloadCrate(activityDTO, operationalState, "Operational Status");
         }
 
-        private async Task<Dictionary<string, string>> GetHMACHeader<T>(Uri requestUri, string userId, T content)
+        protected async Task<Dictionary<string, string>> GetHMACHeader<T>(Uri requestUri, string userId, T content)
         {
             return await HMACService.GenerateHMACHeader(requestUri, TerminalId, TerminalSecret, userId, content);
         }
