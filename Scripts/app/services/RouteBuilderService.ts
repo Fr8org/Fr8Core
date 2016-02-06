@@ -180,10 +180,11 @@ module dockyard.services {
                             }
 
                             if (container && container.error != null) {
-                                var messageToShow = "Action: " + container.error.currentActivity + "<br/>";
+                                var messageToShow = "Plan " + container.name + " failed." + "<br/>";
+                                messageToShow += "Action: " + container.error.currentActivity + "<br/>";
                                 messageToShow += "Terminal: " + container.error.currentTerminal + "<br/>";
                                 messageToShow += "Message: " + container.error.message;
-                                ngToast.error(messageToShow, "Plan " + container.name + " failed.");
+                                ngToast.danger(messageToShow);
                             }
 
                             d.resolve(container);
