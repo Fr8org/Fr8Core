@@ -11,8 +11,8 @@ namespace TerminalBase.Infrastructure.Behaviors
 {
     public class TextSourceMappingBehavior
     {
-        private const string ConfigurationControlsLabel = "Configuration_Controls";
-        private const string BehaviorPrefix = "TextSourceMappingBehavior-";
+        public const string ConfigurationControlsLabel = "Configuration_Controls";
+        public const string BehaviorPrefix = "TextSourceMappingBehavior-";
 
 
         private ICrateManager _crateManager;
@@ -26,6 +26,11 @@ namespace TerminalBase.Infrastructure.Behaviors
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
             _crateStorage = crateStorage;
             _behaviorName = behaviorName;
+        }
+
+        public CrateStorage CrateStorage
+        {
+            get { return _crateStorage; }
         }
 
         private StandardConfigurationControlsCM GetOrCreateStandardConfigurationControlsCM()
