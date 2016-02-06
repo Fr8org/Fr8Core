@@ -50,6 +50,7 @@ namespace terminalDocuSign.Controllers
                 Name = "Send_DocuSign_Envelope",
                 Label = "Send DocuSign Envelope",
                 Category = ActivityCategory.Forwarders,
+                Tags = "AggressiveReload",
                 Terminal = terminal,
                 NeedsAuthentication = true,
                 MinPaneWidth = 330

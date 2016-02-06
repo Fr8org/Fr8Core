@@ -8,6 +8,7 @@ using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using DockyardTest.Controllers.Api;
 using HubWeb.Controllers;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
@@ -16,7 +17,7 @@ namespace DockyardTest.Controllers
 {
     [TestFixture]
     [Category("RouteControllerTests")]
-    public class RouteControllerTests : BaseTest
+    public class RouteControllerTests : ApiControllerTestBase
     {
         private Fr8AccountDO _testUserAccount;
 
@@ -49,6 +50,32 @@ namespace DockyardTest.Controllers
                 uow.UserRepository.Remove(curUser);
                 uow.SaveChanges();
             }
+        }
+
+        [Test]
+        public void RoutesController_ShouldHaveFr8ApiAuthorize()
+        {
+            ShouldHaveFr8ApiAuthorize(typeof(RoutesController));
+        }
+
+        [Test]
+        public void RoutesController_ShouldHaveHMACOnPostMethod()
+        {
+
+            ShouldHaveFr8HMACAuthorizeOnFunction(typeof(RoutesController), "Post");
+        }
+
+        [Test]
+        public void RoutesController_ShouldHaveHMACOnGetByNameMethod()
+        {
+            
+            ShouldHaveFr8HMACAuthorizeOnFunction(typeof(RoutesController), "GetByName");
+        }
+
+        [Test]
+        public void RoutesController_ShouldHaveHMACOnActivateMethod()
+        {
+            ShouldHaveFr8HMACAuthorizeOnFunction(typeof(RoutesController), "Activate");
         }
 
         [Test]
