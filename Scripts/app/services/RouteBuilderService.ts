@@ -68,11 +68,13 @@ module dockyard.services {
         '$http',
         '$q',
         '$location',
+        'ngToast',
         function (
             $resource: ng.resource.IResourceService,
             $http: ng.IHttpService,
             $q: ng.IQService,
-            $location: ng.ILocationService
+            $location: ng.ILocationService,
+            ngToast: any
         ): IRouteService {
 
             var resource = <IRouteService>$resource(
@@ -175,6 +177,13 @@ module dockyard.services {
                                     default:
                                         break;
                                 }
+                            }
+
+                            if (container && container.error != null) {
+                                var messageToShow = "Action: " + container.error.currentActivity + "<br/>";
+                                messageToShow += "Terminal: " + container.error.currentTerminal + "<br/>";
+                                messageToShow += "Message: " + container.error.message;
+                                ngToast.error(messageToShow, "Plan " + container.name + " failed.");
                             }
 
                             d.resolve(container);

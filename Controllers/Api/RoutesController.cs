@@ -415,13 +415,8 @@ namespace HubWeb.Controllers
                 }
                 catch (ErrorResponseException exception)
                 {
-                    var stringBuilder = new StringBuilder();
-                    stringBuilder.Append(string.Format("Plan \"{0}\" failed.", planDO.Name));
-                    stringBuilder.Append(string.Format("<br/> Activity: {0}", exception.CurrentActivityName));
-                    stringBuilder.Append(string.Format("<br/> Terminal: {0}", exception.CurrentTerminalName));
-                    stringBuilder.Append(string.Format("<br/> Message: {0}", exception.Message));
-
-                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, stringBuilder.ToString());
+                    //this response contains details about the error that happened on some terminal and need to be shown to client
+                    return Ok(exception.ContainerDTO);
                 }
                 catch (Exception e)
                 {
