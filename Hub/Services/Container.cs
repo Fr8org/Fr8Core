@@ -223,7 +223,6 @@ namespace Hub.Services
             curContainerDO.ContainerState = ContainerState.Executing;
             uow.SaveChanges();
 
-
             if (curContainerDO.CurrentRouteNode == null)
             {
                 throw new ArgumentNullException("CurrentActivity is null. Cannot execute CurrentActivity");
