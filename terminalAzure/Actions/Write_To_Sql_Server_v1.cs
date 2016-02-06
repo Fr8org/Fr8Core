@@ -141,12 +141,12 @@ namespace terminalAzure.Actions
         //Specialized Methods (Only found in this Action class)
 
         private const string ProviderName = "System.Data.SqlClient";
-        private const string FieldMappingQuery = @"SELECT CONCAT('[', r.NAME, '].', r.COLUMN_NAME) as tblcols " +
+        private const string FieldMappingQuery = @"SELECT CONCAT('[', r.TABLE_NAME, '].', r.COLUMN_NAME) as tblcols " +
                                                  @"FROM ( " +
-                                                    @"SELECT DISTINCT tbls.NAME, cols.COLUMN_NAME " +
-                                                    @"FROM sys.Tables tbls, INFORMATION_SCHEMA.COLUMNS cols " +
+                                                    @"SELECT DISTINCT tbls.TABLE_NAME, cols.COLUMN_NAME " +
+                                                    @"FROM INFORMATION_SCHEMA.Tables tbls INNER JOIN INFORMATION_SCHEMA.COLUMNS cols ON tbls.TABLE_NAME = cols.TABLE_NAME " +
                                                  @") r " +
-                                                 @"ORDER BY r.NAME, r.COLUMN_NAME";
+                                                 @"ORDER BY r.TABLE_NAME, r.COLUMN_NAME";
 
 
         //CONFIGURATION-Related Methods
