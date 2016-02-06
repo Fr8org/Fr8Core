@@ -108,6 +108,7 @@
   <ItemGroup>
     <Compile Include="Actions\Get_Jira_Issue_v1Tests.cs" />
     <Compile Include="Fixtures\FixtureData.cs" />
+    <Compile Include="Integration\Terminal_Authentication_v1_Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -126,6 +127,14 @@
     <ProjectReference Include="..\terminalBase\TerminalBase.csproj">
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
       <Name>TerminalBase</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tests\HealthMonitorUtility\HealthMonitorUtility.csproj">
+      <Project>{459FE39A-A5CC-41D8-B06E-8FAE3A1A623B}</Project>
+      <Name>HealthMonitorUtility</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tests\HealthMonitor\HealthMonitor.csproj">
+      <Project>{83231577-13a5-419f-8269-02ae59d8951a}</Project>
+      <Name>HealthMonitor</Name>
     </ProjectReference>
     <ProjectReference Include="..\Tests\UtilitiesTesting\UtilitiesTesting.csproj">
       <Project>{6b855c3f-07a9-4787-9fde-29fa567c43e2}</Project>
