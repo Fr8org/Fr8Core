@@ -15,6 +15,7 @@ namespace Data.Entities
             typeof(PlanDO).GetProperty("Name"),
             typeof(PlanDO).GetProperty("Tag"),
             typeof(PlanDO).GetProperty("Description"),
+            typeof(PlanDO).GetProperty("RouteState"),
         };
      
         [Required]
