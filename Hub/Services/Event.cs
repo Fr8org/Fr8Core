@@ -97,7 +97,7 @@ namespace Hub.Services
                     //find the corresponding DockyardAccount
                     var authTokenList = uow.AuthorizationTokenRepository.GetPublicDataQuery().Include(x => x.UserDO).Where(x => x.ExternalAccountId == eventReportMS.ExternalAccountId);
 
-                    foreach (var authToken in authTokenList)
+                    foreach (var authToken in authTokenList.ToArray())
                     {
                         var curDockyardAccount = authToken.UserDO;
 
@@ -141,8 +141,8 @@ namespace Hub.Services
             {
                 try
                 {
-                await _plan.Run(curPlan, curEventData);
-            }
+                    await _plan.Run(curPlan, curEventData);
+                }
                 catch (Exception ex)
                 {
                     EventManager.ContainerFailed(curPlan, ex);

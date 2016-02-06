@@ -606,7 +606,6 @@ namespace Hub.Services
 
             foreach (var activity in activities)
             {
-                activity.ActivityTemplateId = null;
                 activity.AuthorizationToken = null;
                 uow.PlanRepository.RemoveAuthorizationTokenFromCache(activity);
             }

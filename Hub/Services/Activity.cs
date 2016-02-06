@@ -168,7 +168,8 @@ namespace Hub.Services
 
         private static void UpdateActionProperties(ActivityDO existingActivity, ActivityDO submittedActivity)
         {
-            existingActivity.ActivityTemplateId = submittedActivity.ActivityTemplateId;
+            // it is unlikely that we have scenarios when activity template can be changed after activity was created
+            //existingActivity.ActivityTemplateId = submittedActivity.ActivityTemplateId;
             existingActivity.Name = submittedActivity.Name;
             existingActivity.Label = submittedActivity.Label;
             existingActivity.CrateStorage = submittedActivity.CrateStorage;

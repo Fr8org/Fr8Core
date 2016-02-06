@@ -159,9 +159,9 @@ namespace Hub.Services
                 var downstreamActions = _routeNode.GetDownstreamActivities(uow, curAction).OfType<ActivityDO>();
 
                 //set ActivityTemplate and parentRouteNode of current action to null -> to simulate a delete
-                int? templateIdBackup = curAction.ActivityTemplateId;
+                //int? templateIdBackup = curAction.ActivityTemplateId;
                 RouteNodeDO parentRouteNodeIdBackup = curAction.ParentRouteNode;
-                curAction.ActivityTemplateId = null;
+                //curAction.ActivityTemplateId = null;
                 curAction.RemoveFromParent();
                 uow.SaveChanges();
 
@@ -192,7 +192,7 @@ namespace Hub.Services
                 if (validationErrors.Count > 0)
                 {
                     //restore it
-                    curAction.ActivityTemplateId = templateIdBackup;
+                   // curAction.ActivityTemplateId = templateIdBackup;
                     if (parentRouteNodeIdBackup != null)
                     {
                         parentRouteNodeIdBackup.ChildNodes.Add(curAction);
