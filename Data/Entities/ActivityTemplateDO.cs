@@ -18,6 +18,7 @@ namespace Data.Entities
             this.ActivityTemplateState = States.ActivityTemplateState.Active;
             this.Type = ActivityType.Standard;
             this.NeedsAuthentication = false;
+            this.ClientVisibility = true;
         }
 
         public ActivityTemplateDO(string name, string label, string version, string description, int terminalId, ActivityType type = ActivityType.Standard) : this()
@@ -100,5 +101,7 @@ namespace Data.Entities
 		public int? WebServiceId { get; set; }
 
 		public virtual WebServiceDO WebService { get; set; }
+
+        public bool ClientVisibility { get; set; }
     }
 }

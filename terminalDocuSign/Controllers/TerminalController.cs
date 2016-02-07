@@ -48,7 +48,8 @@ namespace terminalDocuSign.Controllers
                 NeedsAuthentication = true,
                 MinPaneWidth = 330,
                 WebService = webService,
-                ShowDocumentation = ActivityResponseDTO.CreateDocumentationResponse("MenuItem", "Monitor_DocuSign_Envelope_Activity_SampleHelp1")
+                ShowDocumentation = ActivityResponseDTO.CreateDocumentationResponse("MenuItem", "Monitor_DocuSign_Envelope_Activity_SampleHelp1"),
+                ClientVisibility = false
             };
 
             var sendDocuSignEnvelopeActionTemplate = new ActivityTemplateDTO()

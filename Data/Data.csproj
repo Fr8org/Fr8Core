@@ -584,6 +584,10 @@
     <Compile Include="Migrations\201602051229214_Add_Test_User_2.Designer.cs">
       <DependentUpon>201602051229214_Add_Test_User_2.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201602071040503_ActivityClientVisibility.cs" />
+    <Compile Include="Migrations\201602071040503_ActivityClientVisibility.Designer.cs">
+      <DependentUpon>201602071040503_ActivityClientVisibility.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryBase.cs" />
@@ -978,6 +982,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201602051229214_Add_Test_User_2.resx">
       <DependentUpon>201602051229214_Add_Test_User_2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602071040503_ActivityClientVisibility.resx">
+      <DependentUpon>201602071040503_ActivityClientVisibility.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
