@@ -68,7 +68,8 @@ namespace terminalDocuSignTests.Integration
                    Id = 3,
                    Name = "Get Google Sheet Data",
                    Label = "Get Google Sheet Data",
-                   Tags = "Table Data Generator"
+                   Tags = "Table Data Generator",
+                   Category = Data.States.ActivityCategory.Receivers
                }
            );
         }
