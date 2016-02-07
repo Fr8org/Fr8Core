@@ -11,9 +11,11 @@ using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using DockyardTest.Controllers.Api;
 using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Services;
+using HubWeb;
 using HubWeb.Controllers;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
@@ -22,7 +24,7 @@ namespace DockyardTest.Controllers
 {
     [TestFixture]
     [Category("ActionController")]
-    public class ActionControllerTest : BaseTest
+    public class ActionControllerTest : ApiControllerTestBase
     {
 
         private IActivity _activity;
@@ -40,6 +42,30 @@ namespace DockyardTest.Controllers
             CreateActionTemplate();
         }
 
+        [Test]
+        public void ActionController_ShouldHaveFr8ApiAuthorize()
+        {
+            ShouldHaveFr8ApiAuthorize(typeof(ActionsController));
+        }
+
+        [Test]
+        public void ActionController_ShouldHaveHMACOnCreateMethod()
+        {
+            var createMethod = typeof (ActionsController).GetMethod("Create", new Type[] { typeof(int), typeof(string), typeof(string), typeof(int ?), typeof(Guid ?), typeof(bool), typeof(Guid ?)});
+            ShouldHaveFr8HMACAuthorizeOnFunction(createMethod);
+        }
+
+        [Test]
+        public void ActionController_ShouldHaveHMACOnConfigureMethod()
+        {
+            ShouldHaveFr8HMACAuthorizeOnFunction(typeof(ActionsController), "Configure");
+        }
+
+        [Test]
+        public void ActionController_ShouldHaveHMACOnDocumentationMethod()
+        {
+            ShouldHaveFr8HMACAuthorizeOnFunction(typeof(ActionsController), "Documentation");
+        }
 
         [Test]
         public void ActionController_Save_WithEmptyActions_NewActionShouldBeCreated()

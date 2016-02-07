@@ -105,7 +105,7 @@ namespace TerminalBase.Infrastructure
                 Id = 0,
                 LastUpdated = DateTime.Now
             };
-
+            
             return Task.FromResult(fileDO);
         }
 
@@ -200,5 +200,14 @@ namespace TerminalBase.Infrastructure
             throw new NotImplementedException();
         }
 
+        public Task<IEnumerable<FileDTO>> GetFiles(string userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Stream> DownloadFile(int fileId, string userId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

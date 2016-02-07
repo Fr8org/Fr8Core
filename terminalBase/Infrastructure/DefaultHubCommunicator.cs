@@ -58,6 +58,11 @@ namespace TerminalBase.Infrastructure
             return await _hmacService.GenerateHMACHeader(requestUri, TerminalId, TerminalSecret, userId, content);
         }
 
+        private async Task<Dictionary<string, string>> GetHMACHeader(Uri requestUri, string userId, HttpContent content)
+        {
+            return await _hmacService.GenerateHMACHeader(requestUri, TerminalId, TerminalSecret, userId, content);
+        }
+
         #endregion
 
         public async Task<PayloadDTO> GetPayload(ActivityDO activityDO, Guid containerId, string userId)
@@ -287,6 +292,22 @@ namespace TerminalBase.Infrastructure
             multiPartData.Add(new ByteArrayContent(byteData), name, name);
             var uri = new Uri(hubUrl);
             return await _restfulServiceClient.PostAsync<FileDO>(uri, multiPartData, null, await GetHMACHeader(uri, userId, (HttpContent)multiPartData));
+        }
+
+        public async Task<IEnumerable<FileDTO>> GetFiles(string userId)
+        {
+            var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/files";
+            var uri = new Uri(hubUrl);
+            return await _restfulServiceClient.GetAsync<IEnumerable<FileDTO>>(uri, null, await GetHMACHeader(uri, userId));
+        }
+
+        public async Task<Stream> DownloadFile(int fileId, string userId)
+        {
+            var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/files/download?id="+fileId;
+            var uri = new Uri(hubUrl);
+            return await _restfulServiceClient.DownloadAsync(uri, null, await GetHMACHeader(uri, userId));
         }
     }
 }

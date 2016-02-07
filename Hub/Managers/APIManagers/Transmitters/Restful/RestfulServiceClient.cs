@@ -12,6 +12,7 @@ using Utilities.Logging;
 using System.Diagnostics;
 using System.Net;
 using System.Globalization;
+using System.IO;
 
 namespace Hub.Managers.APIManagers.Transmitters.Restful
 {
@@ -40,19 +41,29 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
         /// Creates an instance with JSON formatter for requests and responses
         /// </summary>
         public RestfulServiceClient()
-            : this(new JsonMediaTypeFormatter())
+            : this(new JsonMediaTypeFormatter(), null)
         {
         }
 
+          public RestfulServiceClient(HttpClient _client)
+            : this(new JsonMediaTypeFormatter(), _client)
+        {
+        }      
+        
         /// <summary>
         /// Creates an instance with specified formatter for requests and responses
         /// </summary>
-        public RestfulServiceClient(MediaTypeFormatter formatter)
+        public RestfulServiceClient(MediaTypeFormatter formatter, HttpClient client)
         {
-            _innerClient = new HttpClient();
+            if (client == null)
+            {
+                client = new HttpClient();
+                client.Timeout = new TimeSpan(0, 2, 0); //2 minute
+            }
+
+            _innerClient = client; 
             _formatter = formatter;
             _formatterLogger = new FormatterLogger();
-            _innerClient.Timeout = new TimeSpan(0, 1, 0); //1 minute
         }
 
         protected virtual async Task<HttpResponseMessage> SendInternalAsync(HttpRequestMessage request, string CorrelationId)
@@ -211,6 +222,26 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
         }
 
         #region GenericRequestMethods
+        /// <summary>
+        /// Downloads file as a MemoryStream from given URL
+        /// </summary>
+        /// <param name="requestUri"></param>
+        /// <param name="CorrelationId"></param>
+        /// <param name="headers"></param>
+        /// <returns>MemoryStream</returns>
+        public async Task<Stream> DownloadAsync(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null)
+        {
+            using (var response = await GetInternalAsync(requestUri, CorrelationId, headers))
+            {
+                //copy stream because response will be disposed on return
+                var downloadedFile = await response.Content.ReadAsStreamAsync();
+                var copy = new MemoryStream();
+                await downloadedFile.CopyToAsync(copy);
+                //rewind stream
+                copy.Position = 0;
+                return copy;
+            }
+        }
 
         public async Task<TResponse> GetAsync<TResponse>(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null)
         {

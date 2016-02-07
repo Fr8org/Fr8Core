@@ -50,24 +50,34 @@ module dockyard.controllers {
             });
 
             //Load Process Templates view model
-            $scope.dtOptionsBuilder = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withDisplayLength(10);   
-            $scope.dtColumnDefs = this.getColumnDefs(); 
-            $scope.activeRoutes = RouteService.getbystatus({ id: null, status: 2 });   
+            $scope.dtOptionsBuilder = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withDisplayLength(10);
+            $scope.dtColumnDefs = this.getColumnDefs();
+            $scope.activeRoutes = RouteService.getbystatus({ id: null, status: 2 });
             $scope.inActiveRoutes = RouteService.getbystatus({ id: null, status: 1 });
-            $scope.executeRoute = <(route: interfaces.IRouteVM) => void> angular.bind(this, this.executeRoute);
-            $scope.goToRoutePage = <(route: interfaces.IRouteVM) => void> angular.bind(this, this.goToRoutePage);
+            $scope.executeRoute = <(route: interfaces.IRouteVM) => void>angular.bind(this, this.executeRoute);
+            $scope.goToRoutePage = <(route: interfaces.IRouteVM) => void>angular.bind(this, this.goToRoutePage);
             $scope.goToRouteDetailsPage = <(route: interfaces.IRouteVM) => void>angular.bind(this, this.goToRouteDetailsPage);
-            $scope.deleteRoute = <(route: interfaces.IRouteVM) => void> angular.bind(this, this.deleteRoute);
-            $scope.activateRoute = <(route: interfaces.IRouteVM) => void> angular.bind(this, this.activateRoute);
-            $scope.deactivateRoute = <(route: interfaces.IRouteVM) => void> angular.bind(this, this.deactivateRoute);
+            $scope.deleteRoute = <(route: interfaces.IRouteVM) => void>angular.bind(this, this.deleteRoute);
+            $scope.activateRoute = <(route: interfaces.IRouteVM) => void>angular.bind(this, this.activateRoute);
+            $scope.deactivateRoute = <(route: interfaces.IRouteVM) => void>angular.bind(this, this.deactivateRoute);
         }
 
         private getColumnDefs() {
             return [
                 this.DTColumnDefBuilder.newColumnDef(0),
                 this.DTColumnDefBuilder.newColumnDef(1),
-                this.DTColumnDefBuilder.newColumnDef(2).notSortable(),
-                this.DTColumnDefBuilder.newColumnDef(3).notSortable()
+                this.DTColumnDefBuilder.newColumnDef(2)
+                    .renderWith(function (data, type, full, meta) {
+                        if (data != null || data != undefined) {
+                            var dateValue = new Date(data);
+                            if (dateValue.getFullYear() == 1)
+                                return "";
+                            var date = dateValue.toLocaleDateString() + ' ' + dateValue.toLocaleTimeString();
+                            return date;
+                        }
+                    }),               
+                this.DTColumnDefBuilder.newColumnDef(3).notSortable(),
+                this.DTColumnDefBuilder.newColumnDef(4).notSortable()
             ];
         }
 
@@ -85,7 +95,7 @@ module dockyard.controllers {
                     location.href = "DockyardAccount/RegisterGuestUser";
                 }
             });
-            
+
         }
         private deactivateRoute(route) {
             this.RouteService.deactivate(route).$promise.then((result) => {
@@ -96,14 +106,14 @@ module dockyard.controllers {
             });
         }
         private executeRoute(planId, $event) {
-			if ($event.ctrlKey) {
-				this.$modal.open({
-					animation: true,
-					templateUrl: '/AngularTemplate/_AddPayloadModal',
-					controller: 'PayloadFormController', resolve: { planId: () => planId }
-				});
+            if ($event.ctrlKey) {
+                this.$modal.open({
+                    animation: true,
+                    templateUrl: '/AngularTemplate/_AddPayloadModal',
+                    controller: 'PayloadFormController', resolve: { planId: () => planId }
+                });
             }
-			else {
+            else {
                 this.RouteService
                     .runAndProcessClientAction(planId)
                     .catch((failResponse) => {
@@ -111,7 +121,7 @@ module dockyard.controllers {
                             location.href = "DockyardAccount/RegisterGuestUser";
                         }
                     });
-			}
+            }
         }
 
         private goToRoutePage(planId) {
@@ -152,7 +162,7 @@ module dockyard.controllers {
         Note: here goes a simple (not really a TypeScript) way to define a controller. 
         Not as a class but as a lambda function.
     */
-    app.controller('RouteListController__DeleteConfirmation', ($scope: any, $modalInstance: any): void => {
+    app.controller('RouteListController__DeleteConfirmation', ['$scope', '$modalInstance', ($scope: any, $modalInstance: any): void => {
         $scope.ok = () => {
             $modalInstance.close();
         };
@@ -160,5 +170,5 @@ module dockyard.controllers {
         $scope.cancel = () => {
             $modalInstance.dismiss('cancel');
         };
-    });
+    }]);
 }

@@ -24,7 +24,7 @@ using TerminalBase.Services;
 
 namespace terminalFr8Core.Actions
 {
-    public class QueryMTDatabase_v1 : BaseTerminalActivity
+    public class QueryFr8Warehouse_v1 : BaseTerminalActivity
     {
         public class ActionUi : StandardConfigurationControlsCM
         {
@@ -231,24 +231,24 @@ namespace terminalFr8Core.Actions
         {
             var payload = await GetPayload(curActivityDO, containerId);
             var payloadCrateStorage = Crate.GetStorage(payload);
-            var ui = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
+
+            var ui = GetConfigurationControls(curActivityDO);
 
             if (ui == null)
             {
                 return Error(payload, "Action was not configured correctly");
             }
 
-            var config = new ActionUi();
-            config.ClonePropertiesFrom(ui);
+            var queryPicker = ui.FindByName<RadioButtonGroup>("QueryPicker");
 
             List<FilterConditionDTO> conditions;
-            int selectedObjectId;
+            int? selectedObjectId = null;
 
-            if (config.QueryPicker.Radios[0].Selected)
+            if (queryPicker.Radios[0].Selected)
             {
-                var queryPicker = (UpstreamCrateChooser)((RadioButtonGroup)ui.Controls[0]).Radios[0].Controls[0];
+                var upstreamCrateChooser = (UpstreamCrateChooser)(queryPicker).Radios[0].Controls[0];
 
-                var queryCM = await ExtractUpstreamQuery(curActivityDO, queryPicker);
+                var queryCM = await ExtractUpstreamQuery(curActivityDO, upstreamCrateChooser);
                 if (queryCM == null || queryCM.Queries == null || queryCM.Queries.Count == 0)
                 {
                     return Error(payload, "No upstream crate found");
@@ -261,16 +261,37 @@ namespace terminalFr8Core.Actions
             }
             else
             {
-                var criteria = JsonConvert.DeserializeObject<FilterDataDTO>(config.Filter.Value);
+                var filterPane = (FilterPane)queryPicker.Radios[1].Controls[1];
+                var availableObjects = (DropDownList)queryPicker.Radios[1].Controls[0];
+                var criteria = JsonConvert.DeserializeObject<FilterDataDTO>(filterPane.Value);
 
-                if (!int.TryParse(config.AvailableObjects.Value, out selectedObjectId))
+                if (availableObjects.Value == null)
                 {
-                    return Error(payload, "Invalid object selected");
+                    return Error(payload, "This action is designed to query the Fr8 Warehouse for you, but you don't currently have any objects stored there.");
+                }
+
+                int objectId;
+                if (!int.TryParse(availableObjects.Value, out objectId))
+                {
+                    selectedObjectId = objectId;
                 }
 
                 conditions = (criteria.ExecutionType == FilterExecutionType.WithoutFilter)
                     ? new List<FilterConditionDTO>()
                     : criteria.Conditions;
+            }
+
+            // If no object is found in MT database, return empty result.
+            if (!selectedObjectId.HasValue)
+            {
+                var searchResult = new StandardPayloadDataCM();
+
+                using (var updater = Crate.UpdateStorage(payload))
+                {
+                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Found MT Objects", searchResult));
+                }
+
+                return Success(payload);
             }
 
             //STARTING NASTY CODE
@@ -284,7 +305,9 @@ namespace terminalFr8Core.Actions
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var obj = uow.MTObjectRepository.GetQuery().FirstOrDefault(x => x.Id == selectedObjectId);
+                var objectId = selectedObjectId.GetValueOrDefault();
+                var obj = uow.MTObjectRepository.GetQuery().FirstOrDefault(x => x.Id == objectId);
+
                 if (obj == null)
                 {
                     return Error(payload, "Invalid object selected");
@@ -306,7 +329,7 @@ namespace terminalFr8Core.Actions
                 {
                     searchResult.PayloadObjects.Add(converter(foundObject));
                 }
-                
+
                 using (var updater = Crate.UpdateStorage(payload))
                 {
                     updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Found MT Objects", searchResult));
@@ -342,7 +365,7 @@ namespace terminalFr8Core.Actions
             return upstreamQueryCrate.Content;
         }
 
-        private int ExtractUpstreamObjectId(
+        private int? ExtractUpstreamObjectId(
             QueryDTO query)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -350,6 +373,11 @@ namespace terminalFr8Core.Actions
                 var obj = uow.MTObjectRepository
                     .GetQuery()
                     .FirstOrDefault(x => x.Name == query.Name);
+
+                if (obj == null)
+                {
+                    return null;
+                }
 
                 return obj.Id;
             }
@@ -372,7 +400,7 @@ namespace terminalFr8Core.Actions
 
                 if (member is FieldInfo)
                 {
-                    accessor = ((FieldInfo) member).ToMemberAccessor();
+                    accessor = ((FieldInfo)member).ToMemberAccessor();
                 }
                 else if (member is PropertyInfo && !((PropertyInfo)member).IsSpecialName)
                 {
@@ -383,7 +411,7 @@ namespace terminalFr8Core.Actions
                     continue;
                 }
 
-                accessors.Add(new KeyValuePair<string, IMemberAccessor>(member.Name, accessor));    
+                accessors.Add(new KeyValuePair<string, IMemberAccessor>(member.Name, accessor));
             }
 
             return x =>
@@ -426,7 +454,7 @@ namespace terminalFr8Core.Actions
 
             return fields.OrderBy(x => x.Key).Select(x => new FieldDTO(x.Key, x.Key));
         }
-        
+
         private IEnumerable<FieldDTO> GetObjects()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

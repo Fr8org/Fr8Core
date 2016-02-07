@@ -41,7 +41,7 @@ namespace terminalDocuSign.Controllers
                 Terminal = terminal,
                 NeedsAuthentication = true,
                 MinPaneWidth = 330,
-                Help = new Data.Control.HelpControlDTO("Monitor_DocuSign_Envelope_Activity_SampleHelp1", "MenuItem")
+                ShowDocumentation = ActivityResponseDTO.CreateDocumentationResponse("MenuItem", "Monitor_DocuSign_Envelope_Activity_SampleHelp1")
             };
 
             var sendDocuSignEnvelopeActionTemplate = new ActivityTemplateDTO()
@@ -50,6 +50,7 @@ namespace terminalDocuSign.Controllers
                 Name = "Send_DocuSign_Envelope",
                 Label = "Send DocuSign Envelope",
                 Category = ActivityCategory.Forwarders,
+                Tags = "AggressiveReload",
                 Terminal = terminal,
                 NeedsAuthentication = true,
                 MinPaneWidth = 330
