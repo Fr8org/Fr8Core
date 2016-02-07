@@ -113,7 +113,7 @@ namespace terminalDocuSign.Actions
         private async Task<List<ListItem>> GetDataSourceListItems(ActivityDO activityDO, string tag)
         {
             var curActivityTemplates = await HubCommunicator.GetActivityTemplates(activityDO, tag)
-                .ContinueWith(x => x.Result.Where(y => y.Name.StartsWith("Get", StringComparison.InvariantCultureIgnoreCase)));
+                .ContinueWith(x => x.Result.Where(y => y.Name.StartsWith("Get", StringComparison.InvariantCultureIgnoreCase) && y.Category == Data.States.ActivityCategory.Receivers));
             return curActivityTemplates.Select(at => new ListItem() { Key = at.Label, Value = at.Name }).ToList();
         }
 
