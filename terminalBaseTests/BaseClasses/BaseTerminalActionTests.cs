@@ -38,7 +38,7 @@ namespace terminalBaseTests.BaseClasses
         {
             base.SetUp();
             TerminalBootstrapper.ConfigureTest();
-            ObjectFactory.Configure(x => x.For<IRestfulServiceClient>().Use<RestfulServiceClient>());
+            ObjectFactory.Configure(x => x.For<IRestfulServiceClient>().Use<RestfulServiceClient>().SelectConstructor(() => new RestfulServiceClient()));
             _baseTerminalAction = new BaseTerminalActivity();
             _coreServer = terminalBaseTests.Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
@@ -173,7 +173,7 @@ namespace terminalBaseTests.BaseClasses
         public async void BuildUpstreamCrateLabelList_ReturnsListOfUpstreamCrateLabels()
         {
             ObjectFactory.Configure(x => x.Forward<IRestfulServiceClient, RestfulServiceClient>());
-            ObjectFactory.Configure(x => x.For<IRestfulServiceClient>().Use<RestfulServiceClient>());
+            ObjectFactory.Configure(x => x.For<IRestfulServiceClient>().Use<RestfulServiceClient>().SelectConstructor(() => new RestfulServiceClient()));
             var test = ObjectFactory.GetInstance<IRestfulServiceClient>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

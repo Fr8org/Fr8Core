@@ -42,6 +42,15 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
+        public static ControlDefinitionDTO TestConnectionString3()
+        {
+            return new TextBlock()
+            {
+                Name = "Connection_String",
+                Value = @"This is incorrect database connection string!"
+            };
+        }
+
         public static CrateStorage TestCrateStorage()
         {
             ICrateManager crate = ObjectFactory.GetInstance<ICrateManager>();

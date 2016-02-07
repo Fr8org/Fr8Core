@@ -113,7 +113,7 @@ namespace terminalDocuSign.Actions
         private async Task<List<ListItem>> GetDataSourceListItems(ActivityDO activityDO, string tag)
         {
             var curActivityTemplates = await HubCommunicator.GetActivityTemplates(activityDO, tag)
-                .ContinueWith(x => x.Result.Where(y => y.Name.StartsWith("Get", StringComparison.InvariantCultureIgnoreCase)));
+                .ContinueWith(x => x.Result.Where(y => y.Name.StartsWith("Get", StringComparison.InvariantCultureIgnoreCase) && y.Category == Data.States.ActivityCategory.Receivers));
             return curActivityTemplates.Select(at => new ListItem() { Key = at.Label, Value = at.Name }).ToList();
         }
 
@@ -254,7 +254,7 @@ namespace terminalDocuSign.Actions
             try
             {
                 ActivityDO dataSourceActivity = await AddAndConfigureChildActivity(curActivityDO, _dataSourceValue, order: 1);
-                ActivityDO mapFieldActivity = await AddAndConfigureChildActivity(curActivityDO, "MapFields", order: 2);
+                // ActivityDO mapFieldActivity = await AddAndConfigureChildActivity(curActivityDO, "MapFields", order: 2);
                 ActivityDO sendDocuSignEnvActivity = await AddAndConfigureChildActivity(curActivityDO, "Send_DocuSign_Envelope", order: 3);
 
                 //set docusign template
@@ -264,12 +264,13 @@ namespace terminalDocuSign.Actions
 
 
                 await ConfigureChildActivity(curActivityDO, sendDocuSignEnvActivity);
-                await ConfigureChildActivity(curActivityDO, mapFieldActivity);
+                // await ConfigureChildActivity(curActivityDO, mapFieldActivity);
             }
             catch (Exception)
             {
                 return null;
             }
+
             return await Task.FromResult(curActivityDO);
         }
         //This method provides some documentation for the DocuSign Solution Actions

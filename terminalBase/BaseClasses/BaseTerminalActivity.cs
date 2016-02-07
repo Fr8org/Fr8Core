@@ -393,17 +393,17 @@ namespace TerminalBase.BaseClasses
         public async virtual Task<Crate<StandardDesignTimeFieldsCM>> GetUpstreamManifestListCrate(ActivityDO activityDO)
         {
             var manifestList = (await BuildUpstreamManifestList(activityDO));
-            var fields = manifestList.Select(f => new FieldDTO(f.Id.ToString(), f.Type)).ToArray();
+            var fields = manifestList.Select(f => new FieldDTO(f.Type, f.Id.ToString())).ToArray();
 
-            return Crate.CreateDesignTimeFieldsCrate("Upstream Manifest Type List", fields);
+            return Crate.CreateDesignTimeFieldsCrate("AvailableUpstreamManifests", fields);
         }
 
         public async virtual Task<Crate<StandardDesignTimeFieldsCM>> GetUpstreamCrateLabelListCrate(ActivityDO activityDO)
         {
             var labelList = (await BuildUpstreamCrateLabelList(activityDO));
-            var fields = labelList.Select(f => new FieldDTO(null, f)).ToArray();
+            var fields = labelList.Select(f => new FieldDTO(f, f)).ToArray();
 
-            return Crate.CreateDesignTimeFieldsCrate("Upstream Crate Label List", fields);
+            return Crate.CreateDesignTimeFieldsCrate("AvailableUpstreamLabels", fields);
         }
 
         protected CrateStorage AssembleCrateStorage(params Crate[] curCrates)
@@ -1011,6 +1011,55 @@ namespace TerminalBase.BaseClasses
         {
             var curElement = enumerableObject.ElementAt(objectIndex);
             return curElement;
+        }
+
+
+        /// <summary>
+        /// Extract upstream data based on Upstream Crate Chooser Control's selected manifest and label 
+        /// </summary>
+        /// <param name="upstreamCrateChooserName">Upstream Crate Chooser Control's name</param>
+        /// <param name="curActivityDO"></param>
+        /// <returns>StandardTableDataCM. StandardTableDataCM.Table.Count = 0 if its empty</returns>
+        protected async Task<StandardTableDataCM> ExtractDataFromUpstreamCrates(string upstreamCrateChooserName, ActivityDO curActivityDO)
+        {
+            var controls = GetConfigurationControls(curActivityDO);
+            var crateChooser = controls.FindByName<UpstreamCrateChooser>(upstreamCrateChooserName);
+
+            //Get selected manifest and label from crate chooser
+            var manifestType = crateChooser.SelectedCrates.Where(w => !String.IsNullOrEmpty(w.ManifestType.Value)).Select(c => c.ManifestType.Value);
+            var labelControl = crateChooser.SelectedCrates.Where(w => !String.IsNullOrEmpty(w.Label.Value)).Select(c => c.Label.Value);
+
+            //filter by manifest or label based on selected crate chooser control
+            Func<Crate, bool> whereClause = null;
+            if (manifestType.Count() > 0 && labelControl.Count() > 0)
+                whereClause = (crate => manifestType.Contains(crate.ManifestType.Id.ToString()) && labelControl.Contains(crate.Label));
+            else if (manifestType.Count() > 0)
+                whereClause = (crate => manifestType.Contains(crate.ManifestType.Id.ToString()));
+            else if (labelControl.Count() > 0)
+                whereClause = (crate => labelControl.Contains(crate.Label));
+
+
+            //get upstream controls to extract the data based on the selected manifest or label
+            var getUpstreamCrates = (await GetCratesByDirection(curActivityDO, CrateDirection.Upstream)).ToArray();
+            var selectedUpcrateControls = getUpstreamCrates.Where(whereClause).Select(s => s);//filter upstream controls
+
+            StandardTableDataCM resultTable = new StandardTableDataCM();
+            foreach (var selectedUpcrateControl in selectedUpcrateControls)
+            {
+                if (selectedUpcrateControl != null)
+                {
+                    //for standard table data CM return directly the result - the rest of CM will be converted to TableDataCM
+                    if (selectedUpcrateControl.IsOfType<StandardTableDataCM>())
+                    {
+                        var contentTableCM = selectedUpcrateControl.Get<StandardTableDataCM>();
+                        resultTable.Table.AddRange(contentTableCM.Table);//add rows into results StandardTableDataCM
+                    }
+                    else
+                        throw new NotSupportedException("Manifest type is not yet implemented in extracting the data.");
+                }
+            }
+
+            return resultTable;
         }
 
     }

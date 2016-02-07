@@ -32,6 +32,12 @@ namespace terminalDocuSign.Controllers
                 AuthenticationType = AuthenticationType.Internal
             };
 
+            var webService = new WebServiceDTO
+            {
+                Name = "DocuSign",
+                IconPath = "/Content/icons/web_services/docusign-icon-64x64.png"
+            };
+
             var waitForDocusignEventActionTemplate = new ActivityTemplateDTO()
             {
                 Version = "1",
@@ -41,6 +47,7 @@ namespace terminalDocuSign.Controllers
                 Terminal = terminal,
                 NeedsAuthentication = true,
                 MinPaneWidth = 330,
+                WebService = webService,
                 ShowDocumentation = ActivityResponseDTO.CreateDocumentationResponse("MenuItem", "Monitor_DocuSign_Envelope_Activity_SampleHelp1")
             };
 
@@ -50,8 +57,10 @@ namespace terminalDocuSign.Controllers
                 Name = "Send_DocuSign_Envelope",
                 Label = "Send DocuSign Envelope",
                 Category = ActivityCategory.Forwarders,
+                Tags = "AggressiveReload",
                 Terminal = terminal,
                 NeedsAuthentication = true,
+                WebService = webService,
                 MinPaneWidth = 330
             };
 
@@ -63,6 +72,7 @@ namespace terminalDocuSign.Controllers
                 Category = ActivityCategory.Receivers,
                 Terminal = terminal,
                 NeedsAuthentication = true,
+                WebService = webService,
                 MinPaneWidth = 330
             };
 
@@ -74,6 +84,7 @@ namespace terminalDocuSign.Controllers
                 Category = ActivityCategory.Receivers,
                 Terminal = terminal,
                 NeedsAuthentication = true,
+                WebService = webService,
                 MinPaneWidth = 330
             };
 
@@ -85,6 +96,7 @@ namespace terminalDocuSign.Controllers
                 Category = ActivityCategory.Forwarders,
                 Terminal = terminal,
                 NeedsAuthentication = true,
+                WebService = webService,
                 MinPaneWidth = 330
             };
 
@@ -96,6 +108,7 @@ namespace terminalDocuSign.Controllers
                 NeedsAuthentication = true,
                 Category = ActivityCategory.Solution,
                 Terminal = terminal,
+                WebService = webService,
                 MinPaneWidth = 500
             };
 
@@ -106,6 +119,7 @@ namespace terminalDocuSign.Controllers
                 Version = "1",
                 Category = ActivityCategory.Solution,
                 Terminal = terminal,
+                WebService = webService,
                 MinPaneWidth = 380
             };
 
@@ -117,6 +131,7 @@ namespace terminalDocuSign.Controllers
                 Category = ActivityCategory.Solution,
                 NeedsAuthentication = true,
                 Terminal = terminal,
+                WebService = webService,
                 MinPaneWidth = 380
             };
             
@@ -129,6 +144,7 @@ namespace terminalDocuSign.Controllers
                 Category = ActivityCategory.Receivers,
                 NeedsAuthentication = true,
                 Terminal = terminal,
+                WebService = webService,
                 MinPaneWidth = 380
             };
 
@@ -140,6 +156,7 @@ namespace terminalDocuSign.Controllers
                 Category = ActivityCategory.Solution,
                 NeedsAuthentication = true,
                 Terminal = terminal,
+                WebService = webService,
                 MinPaneWidth = 380
             };
 
@@ -151,6 +168,7 @@ namespace terminalDocuSign.Controllers
                 Category = ActivityCategory.Receivers,
                 NeedsAuthentication = true,
                 Terminal = terminal,
+                WebService = webService,
                 MinPaneWidth = 380
             };
 
@@ -161,6 +179,7 @@ namespace terminalDocuSign.Controllers
                 Version = "1",
                 NeedsAuthentication = true,
                 Category = ActivityCategory.Solution,
+                WebService = webService,
                 Terminal = terminal
             };
 
