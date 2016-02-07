@@ -271,7 +271,7 @@ namespace terminalGoogle.Services
                     if (entry.BatchData.Status.Code != 200)
                     {
                         GDataBatchStatus status = entry.BatchData.Status;
-                        throw new Exception($"{batchId} failed ({status.Reason})");
+                        throw new Exception(string.Format("{0} failed ({1})", batchId, status.Reason));
                     }
                 }
             }

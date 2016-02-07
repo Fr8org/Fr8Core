@@ -83,8 +83,8 @@ namespace terminalGoogle.Actions
             }
 
             //get payload crates for data
-            StandardTableDataCM standardTableCM = await ExtractUpstreamCratesControl(curActivityDO, payloadCrates);
-            if(standardTableCM != null)
+            StandardTableDataCM standardTableCM = await ExtractDataFromUpstreamCrates("UpstreamCrateChooser", curActivityDO);
+            if(standardTableCM.Table.Count > 0)
             {
                 try
                 {
@@ -151,7 +151,7 @@ namespace terminalGoogle.Actions
                             new TextBox()
                             {
                                 Label = "",
-                                Value = $"NewFr8Data{DateTime.Now.Date:dd-MM-yyyy}",
+                                Value = string.Format("NewFr8Data{0:dd-MM-yyyy}", DateTime.Now.Date),
                                 Name = "NewSpreadsheetText"
                             }
                         }

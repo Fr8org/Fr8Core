@@ -1014,43 +1014,51 @@ namespace TerminalBase.BaseClasses
         }
 
 
-
-        protected async Task<StandardTableDataCM> ExtractUpstreamCratesControl(ActivityDO curActivityDO, PayloadDTO payloadDTO)
+        /// <summary>
+        /// Extract upstream data based on Upstream Crate Chooser Control's selected manifest and label 
+        /// </summary>
+        /// <param name="upstreamCrateChooserName">Upstream Crate Chooser Control's name</param>
+        /// <param name="curActivityDO"></param>
+        /// <returns>StandardTableDataCM. StandardTableDataCM.Table.Count = 0 if its empty</returns>
+        protected async Task<StandardTableDataCM> ExtractDataFromUpstreamCrates(string upstreamCrateChooserName, ActivityDO curActivityDO)
         {
-            // get the selected event from the drop down
             var controls = GetConfigurationControls(curActivityDO);
-            var crateChooser = controls.FindByName<UpstreamCrateChooser>("UpstreamCrateChooser");
+            var crateChooser = controls.FindByName<UpstreamCrateChooser>(upstreamCrateChooserName);
 
-            var getUpstreamCrates = (await GetCratesByDirection(curActivityDO, CrateDirection.Upstream)).ToArray();
+            //Get selected manifest and label from crate chooser
+            var manifestType = crateChooser.SelectedCrates.Where(w => !String.IsNullOrEmpty(w.ManifestType.Value)).Select(c => c.ManifestType.Value);
+            var labelControl = crateChooser.SelectedCrates.Where(w => !String.IsNullOrEmpty(w.Label.Value)).Select(c => c.Label.Value);
 
-            var manifestType = crateChooser.SelectedCrates.Select(c => c.ManifestType.Value);
-            var labelControl = crateChooser.SelectedCrates.Select(c => c.Label.Value);
-
-            //get label from payloaddto
-            //get manifest from activitydo.crates
+            //filter by manifest or label based on selected crate chooser control
             Func<Crate, bool> whereClause = null;
-            if (!String.IsNullOrEmpty(manifestType.FirstOrDefault()) && !String.IsNullOrEmpty(labelControl.FirstOrDefault()))
+            if (manifestType.Count() > 0 && labelControl.Count() > 0)
                 whereClause = (crate => manifestType.Contains(crate.ManifestType.Id.ToString()) && labelControl.Contains(crate.Label));
-            else if (!String.IsNullOrEmpty(manifestType.FirstOrDefault()))
+            else if (manifestType.Count() > 0)
                 whereClause = (crate => manifestType.Contains(crate.ManifestType.Id.ToString()));
-            else if (!String.IsNullOrEmpty(labelControl.FirstOrDefault()))
+            else if (labelControl.Count() > 0)
                 whereClause = (crate => labelControl.Contains(crate.Label));
 
 
-            StandardTableDataCM resultTable = null;
-            var selectedUpcrateControl = getUpstreamCrates.Where(whereClause).Select(s => s).FirstOrDefault();
+            //get upstream controls to extract the data based on the selected manifest or label
+            var getUpstreamCrates = (await GetCratesByDirection(curActivityDO, CrateDirection.Upstream)).ToArray();
+            var selectedUpcrateControls = getUpstreamCrates.Where(whereClause).Select(s => s);//filter upstream controls
 
-            if (selectedUpcrateControl != null)
+            StandardTableDataCM resultTable = new StandardTableDataCM();
+            foreach (var selectedUpcrateControl in selectedUpcrateControls)
             {
-                //for standard table data CM return directly the result - the rest of CM will be converted to TableDataCM
-                if (selectedUpcrateControl.IsOfType<StandardTableDataCM>())
+                if (selectedUpcrateControl != null)
                 {
-                    var contentTableCM = selectedUpcrateControl.Get<StandardTableDataCM>();
-                    resultTable = contentTableCM;
+                    //for standard table data CM return directly the result - the rest of CM will be converted to TableDataCM
+                    if (selectedUpcrateControl.IsOfType<StandardTableDataCM>())
+                    {
+                        var contentTableCM = selectedUpcrateControl.Get<StandardTableDataCM>();
+                        resultTable.Table.AddRange(contentTableCM.Table);//add rows into results StandardTableDataCM
+                    }
+                    else
+                        throw new NotSupportedException("Manifest type is not yet implemented in extracting the data.");
                 }
-                else
-                    throw new NotSupportedException("Manifest type is not yet implemented in extracting the data.");
             }
+
             return resultTable;
         }
 
