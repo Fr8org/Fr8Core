@@ -118,7 +118,7 @@ namespace HealthMonitor.Utility
         public async Task<TResponse> HttpPostAsync<TRequest, TResponse>(string url, TRequest request)
         {
             var uri = new Uri(url);
-            return await _restfulServiceClient.PostAsync<TRequest, TResponse>(uri, request, null, await GetHMACHeader(uri, "testUser", request));
+            return await _restfulServiceClient.PostAsync<TRequest, TResponse>(uri, request, null, null);
         }
         public async Task<TResponse> HttpGetAsync<TResponse>(string url)
         {
