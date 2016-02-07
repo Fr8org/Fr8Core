@@ -35,7 +35,7 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonIgnore]
         public bool IsExplicitData { get; set; }
 
-        [JsonIgnore]
+        //[JsonIgnore]
         public string ExplicitData { get; set; }
 
         [JsonIgnore]

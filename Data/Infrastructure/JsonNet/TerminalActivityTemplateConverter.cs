@@ -1,5 +1,6 @@
 ﻿using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,10 @@ namespace Data.Infrastructure.JsonNet
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            throw new NotImplementedException();
+            var jsonObject = JObject.Load(reader);
+            var instance = (ActivityTemplateDTO)Activator.CreateInstance(objectType);
+            serializer.Populate(jsonObject.CreateReader(), instance);
+            return instance;
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
