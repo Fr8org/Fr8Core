@@ -75,7 +75,7 @@ namespace Hub.Managers
                     Environment.NewLine,
                     "AuthToken method: Silent Revoke",
                     "User Id: " + authToken.UserID.ToString(),
-                    "Terminal name: " + authToken.Terminal != null ? authToken.Terminal.Name : authToken.TerminalID.ToString(),
+                    "Terminal name: " + (authToken.Terminal != null ? authToken.Terminal.Name : authToken.TerminalID.ToString()),
                     "External AccountId: " + authToken.ExternalAccountId
                 ),
                 PrimaryCategory = "AuthToken",
@@ -95,7 +95,7 @@ namespace Hub.Managers
                 Data = string.Join(
                     Environment.NewLine,
                     "Container failure.",
-                    "Plan: " + plan != null ? plan.Name : "unknown",
+                    "Plan: " + (plan != null ? plan.Name : "unknown"),
                     ex.Message,
                     ex.StackTrace ?? ""
                 ),
