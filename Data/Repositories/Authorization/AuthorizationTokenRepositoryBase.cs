@@ -1,14 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Runtime.Caching;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Repositories.Authorization;
-using Data.States;
-using Newtonsoft.Json;
-using Utilities;
 using Utilities.Configuration.Azure;
 
 namespace Data.Repositories
