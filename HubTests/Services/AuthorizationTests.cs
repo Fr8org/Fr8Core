@@ -72,7 +72,7 @@ namespace HubTests.Services
                 await authorization.AuthenticateInternal(developerAccount, terminal, credentialsDTO.Domain, credentialsDTO.Username, credentialsDTO.Password);
 
                 //Assert
-                int actualResult = uow.AuthorizationTokenRepository.FindList(x => x.ExternalAccountId == authorizationToken.ExternalAccountId).Count();
+                int actualResult = uow.AuthorizationTokenRepository.GetPublicDataQuery().Count(x => x.ExternalAccountId == authorizationToken.ExternalAccountId);
                 Assert.AreEqual(2, actualResult);
             }
         }

@@ -81,7 +81,6 @@ namespace HubWeb.Infrastructure
             if (HttpContext.Current != null)
             {
                 HttpContext.Current.User = principle;
-                
             }
 
         }

@@ -14,21 +14,19 @@ namespace Hub.Interfaces
     public interface IActivity
     {
         IEnumerable<TViewModel> GetAllActivities<TViewModel>();
-        ActivityDO SaveOrUpdateActivity(ActivityDO currentActivityDo);
         ActivityDO SaveOrUpdateActivity(IUnitOfWork uow, ActivityDO currentActivityDo);
-        Task<ActivityDTO> Configure(string userId, ActivityDO curActivityDO, bool saveResult = true);
+        Task<ActivityDTO> Configure(IUnitOfWork uow, string userId, ActivityDO curActivityDO, bool saveResult = true);
         //Task<ActionDO> SaveUpdateAndConfigure(IUnitOfWork uow, ActionDO submittedActionDo);
-        ActivityDO GetById(Guid id);
         ActivityDO GetById(IUnitOfWork uow, Guid id);
         //void Delete(int id); -> Delete is moved to ProcessNodeTemplate
         ActivityDO MapFromDTO(ActivityDTO curActivityDTO);
-        ActivityDO Create(IUnitOfWork uow, int actionTemplateId, string name, string label, int? order, RouteNodeDO parentNode, Guid? authorizationTokenId = null);
+//        ActivityDO Create(IUnitOfWork uow, int actionTemplateId, string name, string label, int? order, RouteNodeDO parentNode, Guid? authorizationTokenId = null);
 
         Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, string name,
                                              string label = null, int? order = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null);
 
         Task PrepareToExecute(ActivityDO curActivity, ActionState curActionState, ContainerDO curContainerDO, IUnitOfWork uow);
-        Task<PayloadDTO> Run(ActivityDO curActivityDO, ActionState curActionState, ContainerDO curContainerDO);
+        Task<PayloadDTO> Run(IUnitOfWork uow, ActivityDO curActivityDO, ActionState curActionState, ContainerDO curContainerDO);
        // string Authenticate(ActionDO curActivityDO);
         
         Task<ActivityDTO> Activate(ActivityDO curActivityDO);

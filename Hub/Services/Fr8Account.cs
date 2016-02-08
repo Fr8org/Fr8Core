@@ -190,7 +190,7 @@ namespace Hub.Services
             {
                 return uow.ContainerRepository.GetQuery().Where
                     (r => r.ContainerState == ContainerState.Executing
-                          & r.Plan.Fr8Account.Id == userId).ToList();
+                          && r.Plan.Fr8Account.Id == userId).ToList();
             }
         }
 
@@ -387,7 +387,7 @@ namespace Hub.Services
             IEnumerable<PlanDO> activeRoutes;
             using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var routeQuery = unitOfWork.PlanRepository.GetQuery().Include(i => i.Fr8Account);
+                var routeQuery = unitOfWork.PlanRepository.GetPlanQueryUncached().Include(i => i.Fr8Account);
 
                 routeQuery
                     .Where(pt => pt.RouteState == RouteState.Active)//1.

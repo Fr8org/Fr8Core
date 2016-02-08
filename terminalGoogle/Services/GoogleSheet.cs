@@ -14,6 +14,7 @@ using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
 using Utilities;
 using Utilities.Configuration.Azure;
+using System.Threading.Tasks;
 
 namespace terminalGoogle.Services
 {
@@ -44,10 +45,13 @@ namespace terminalGoogle.Services
                 .ToDictionary(entry => entry.Id.AbsoluteUri, entry => entry.Title.Text);
         }
 
-        private SpreadsheetEntry FindSpreadsheet(string spreadsheetUri, GoogleAuthDTO authDTO)
+        public SpreadsheetEntry FindSpreadsheet(string spreadsheetUri, GoogleAuthDTO authDTO)
         {
             var spreadsheets = EnumerateSpreadsheets(authDTO);
-            return spreadsheets.SingleOrDefault(ae => string.Equals(ae.Id.AbsoluteUri, spreadsheetUri));
+            if(spreadsheetUri.ToLower().Contains("http"))
+                return spreadsheets.SingleOrDefault(ae => string.Equals(ae.Id.AbsoluteUri, spreadsheetUri));
+            else
+                return spreadsheets.SingleOrDefault(ae => ae.Id.AbsoluteUri.Contains(spreadsheetUri));
         }
 
         private IEnumerable<ListEntry> EnumerateRows(string spreadsheetUri, GoogleAuthDTO authDTO)
@@ -68,7 +72,57 @@ namespace terminalGoogle.Services
             ListQuery listQuery = new ListQuery(listFeedLink.HRef.ToString());
             ListFeed listFeed = service.Query(listQuery);
             return listFeed.Entries.Cast<ListEntry>();
-        } 
+        }
+
+        public IDictionary<string, string> EnumerateWorksheet(string spreadsheetUri, GoogleAuthDTO authDTO)
+        {
+            Dictionary<string, string> worksheet = new Dictionary<string, string>();
+
+            SpreadsheetEntry spreadsheet = FindSpreadsheet(spreadsheetUri, authDTO);
+            if (spreadsheet == null)
+                throw new ArgumentException("Cannot find a spreadsheet", "spreadsheetUri");
+            SpreadsheetsService service = (SpreadsheetsService)spreadsheet.Service;
+
+            WorksheetFeed wsFeed = spreadsheet.Worksheets;
+
+            foreach (var item in wsFeed.Entries)
+            {
+                worksheet.Add(item.Id.AbsoluteUri, item.Title.Text);
+            }
+
+            return worksheet;
+        }
+
+        public string CreateWorksheet(string spreadsheetUri, GoogleAuthDTO authDTO, string worksheetname)
+        {
+            SpreadsheetEntry spreadsheet = FindSpreadsheet(spreadsheetUri, authDTO);
+            if (spreadsheet == null)
+                throw new ArgumentException("Cannot find a spreadsheet", "spreadsheetUri");
+            SpreadsheetsService service = (SpreadsheetsService)spreadsheet.Service;
+
+            WorksheetEntry newWorksheet = new WorksheetEntry(2000,100, worksheetname);
+
+            WorksheetFeed wfeed = spreadsheet.Worksheets;
+            newWorksheet = service.Insert(wfeed, newWorksheet);
+
+            return newWorksheet.Id.AbsoluteUri;
+        }
+
+        public async Task<string> CreateSpreadsheet(string spreadsheetname, GoogleAuthDTO authDTO)
+        {
+            GoogleDrive googleDrive = new GoogleDrive();
+            var driveService = await googleDrive.CreateDriveService(authDTO);
+
+            var file = new Google.Apis.Drive.v2.Data.File();
+            file.Title = spreadsheetname;
+            file.Description = string.Format("Created via Fr8 at {0}", DateTime.Now.ToString());
+            file.MimeType = "application/vnd.google-apps.spreadsheet";
+
+            var request = driveService.Files.Insert(file);
+            var result = request.Execute();
+
+            return result.Id;
+        }
 
         public IDictionary<string, string> EnumerateColumnHeaders(string spreadsheetUri, GoogleAuthDTO authDTO)
         {
@@ -156,6 +210,132 @@ namespace terminalGoogle.Services
                         throw;
                     }
                 }
+            }
+        }
+
+        public bool WriteData(string spreadsheetUri, string worksheetUri, StandardTableDataCM data, GoogleAuthDTO authDTO)
+        {
+            if (String.IsNullOrEmpty(spreadsheetUri))
+                throw new ArgumentNullException("Spreadsheet Uri parameter is required.");
+            if (string.IsNullOrEmpty(worksheetUri))
+                throw new ArgumentNullException("Worksheet Uri parameter is required.");
+
+            if (data != null && data.Table.Count > 0)
+            {
+                int MAX_ROWS = data.Table.Count;
+                int MAX_COLS = data.Table[0].Row.Count;
+
+                SpreadsheetEntry spreadsheet = FindSpreadsheet(spreadsheetUri, authDTO);
+                if (spreadsheet == null)
+                    throw new ArgumentException("Cannot find a spreadsheet", "spreadsheetUri");
+                SpreadsheetsService service = (SpreadsheetsService)spreadsheet.Service;
+
+                string worksheetId = worksheetUri.Substring(worksheetUri.LastIndexOf('/') + 1, worksheetUri.Length - (worksheetUri.LastIndexOf('/') + 1));
+                string spreadSheetId = spreadsheetUri;
+                if(spreadSheetId.ToLower().Contains("http"))//remove http url
+                    spreadSheetId = spreadSheetId.Substring(spreadSheetId.LastIndexOf('/') + 1, spreadSheetId.Length - (spreadSheetId.LastIndexOf('/') + 1));
+
+                CellQuery cellQuery = new CellQuery(spreadSheetId, worksheetId, "private", "full");
+                CellFeed cellFeed = service.Query(cellQuery);
+
+                // Build list of cell addresses to be filled in
+                List<CellAddress> cellAddrs = new List<CellAddress>();
+                for (int row = 0; row < MAX_ROWS; row++)
+                {
+                    for (int col = 0; col < MAX_COLS; col++)
+                    {
+                        cellAddrs.Add(new CellAddress(row+1, col+1, data.Table[row].Row[col].Cell.Value));
+                    }
+                }
+
+                // Prepare the update
+                // GetCellEntryMap is what makes the update fast.
+                Dictionary<String, CellEntry> cellEntries = GetCellEntryMap(service, cellFeed, cellAddrs);
+
+                CellFeed batchRequest = new CellFeed(cellQuery.Uri, service);
+                foreach (CellAddress cellAddr in cellAddrs)
+                {
+                    CellEntry batchEntry = cellEntries[cellAddr.IdString];
+                    batchEntry.InputValue = cellAddr.InputValue;
+                    batchEntry.BatchData = new GDataBatchEntryData(cellAddr.IdString, GDataBatchOperationType.update);
+                    batchRequest.Entries.Add(batchEntry);
+                }
+
+                // Submit the update
+                CellFeed batchResponse = (CellFeed)service.Batch(batchRequest, new Uri(cellFeed.Batch));
+
+                // Check the results
+                foreach (CellEntry entry in batchResponse.Entries)
+                {
+                    string batchId = entry.BatchData.Id;
+                    if (entry.BatchData.Status.Code != 200)
+                    {
+                        GDataBatchStatus status = entry.BatchData.Status;
+                        throw new Exception(string.Format("{0} failed ({1})", batchId, status.Reason));
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        /**
+     * Connects to the specified {@link SpreadsheetsService} and uses a batch
+     * request to retrieve a {@link CellEntry} for each cell enumerated in {@code
+     * cellAddrs}. Each cell entry is placed into a map keyed by its RnCn
+     * identifier.
+     *
+     * @param service the spreadsheet service to use.
+     * @param cellFeed the cell feed to use.
+     * @param cellAddrs list of cell addresses to be retrieved.
+     * @return a dictionary consisting of one {@link CellEntry} for each address in {@code
+     *         cellAddrs}
+     */
+        private static Dictionary<String, CellEntry> GetCellEntryMap(
+            SpreadsheetsService service, CellFeed cellFeed, List<CellAddress> cellAddrs)
+        {
+            CellFeed batchRequest = new CellFeed(new Uri(cellFeed.Self), service);
+            foreach (CellAddress cellId in cellAddrs)
+            {
+                CellEntry batchEntry = new CellEntry((uint)cellId.Row, (uint)cellId.Col, cellId.InputValue);
+                batchEntry.Id = new AtomId(string.Format("{0}/{1}", cellFeed.Self, cellId.IdString));
+                batchEntry.BatchData = new GDataBatchEntryData(cellId.IdString, GDataBatchOperationType.query);
+                batchRequest.Entries.Add(batchEntry);
+            }
+
+            CellFeed queryBatchResponse = (CellFeed)service.Batch(batchRequest, new Uri(cellFeed.Batch));
+
+            Dictionary<String, CellEntry> cellEntryMap = new Dictionary<String, CellEntry>();
+            foreach (CellEntry entry in queryBatchResponse.Entries)
+            {
+                cellEntryMap.Add(entry.BatchData.Id, entry);
+                Console.WriteLine("batch {0} (CellEntry: id={1} editLink={2} inputValue={3})",
+                    entry.BatchData.Id, entry.Id, entry.EditUri,
+                    entry.InputValue);
+            }
+
+            return cellEntryMap;
+        }
+
+
+
+        class CellAddress
+        {
+            public int Row;
+            public int Col;
+            public string InputValue;
+            public string IdString;
+
+            /**
+             * Constructs a CellAddress representing the specified {@code row} and
+             * {@code col}. The IdString will be set in 'RnCn' notation.
+             */
+            public CellAddress(int row, int col, string inputValue)
+            {
+                this.Row = row;
+                this.Col = col;
+                this.InputValue = inputValue;
+                this.IdString = string.Format("R{0}C{1}", row, col);
             }
         }
     }
