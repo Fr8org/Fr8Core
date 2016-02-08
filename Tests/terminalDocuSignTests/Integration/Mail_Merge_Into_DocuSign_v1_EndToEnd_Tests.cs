@@ -35,7 +35,7 @@ namespace terminalDocuSignTests.Integration
         ActivityDTO solution;
         CrateStorage crateStorage;
 
-        [Test]
+        [Test, Ignore]
         [ExpectedException(typeof(AssertionException))]
         public async Task TestEmail_ShouldBeMissing()
         {
@@ -50,7 +50,6 @@ namespace terminalDocuSignTests.Integration
         [Test]
         public async void Mail_Merge_Into_DocuSign_EndToEnd()
         {
-            throw new Exception();
             string baseUrl = GetHubApiBaseUrl();
             var solutionCreateUrl = baseUrl + "actions/create?solutionName=Mail_Merge_Into_DocuSign";
 
