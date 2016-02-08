@@ -58,6 +58,7 @@ namespace HealthMonitor.Utility
             _hmacService = new Fr8HMACService();
 
             LoginUser(TestUserEmail, TestUserPassword).Wait();
+
             _restfulServiceClient = new RestfulServiceClient(_httpClient);
 
             // Initailize EmailAssert utility.

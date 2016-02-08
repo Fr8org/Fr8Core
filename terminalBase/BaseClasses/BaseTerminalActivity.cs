@@ -754,6 +754,9 @@ namespace TerminalBase.BaseClasses
                     .First().Controls;
 
                 var control = TraverseNestedControls(controls, controlFullName);
+
+                if (control == null) return;
+
                 switch (control.Type)
                 {
                     case "TextBlock":
