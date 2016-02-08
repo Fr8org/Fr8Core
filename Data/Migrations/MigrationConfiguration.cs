@@ -59,7 +59,7 @@ namespace Data.Migrations
                 ObjectFactory.Initialize(x => x.AddRegistry<MigrationConsoleSeedRegistry>());
             }
 
-            var uow = new UnitOfWork(context);
+            var uow = new UnitOfWork(context, ObjectFactory.Container);
 
             UpdateRootRouteNodeId(uow);
 
@@ -612,16 +612,14 @@ namespace Data.Migrations
 
         private void UpdateRootRouteNodeId(IUnitOfWork uow)
         {
-            var anyRootIdFlag = uow.RouteNodeRepository
-                .GetAll()
-                .Any(x => x.RootRouteNodeId != null);
+            var anyRootIdFlag = uow.PlanRepository.GetNodesQueryUncached().Any(x => x.RootRouteNodeId != null);
 
             if (anyRootIdFlag)
             {
                 return;
             }
 
-            var fullTree = uow.RouteNodeRepository.GetAll().ToList();
+            var fullTree = uow.PlanRepository.GetNodesQueryUncached().ToList();
 
             var parentChildMap = new Dictionary<Guid, List<RouteNodeDO>>();
             foreach (var routeNode in fullTree.Where(x => x.ParentRouteNodeId.HasValue))

@@ -329,7 +329,7 @@ namespace UtilitiesTesting.Fixtures
 //			  return actionLists;
 //		  }
 //
-        public static List<RouteNodeDO> TestActionList1()
+        public static List<RouteNodeDO> TestActionList1(int offset)
         {
             List<ActionListDO> actionLists = new List<ActionListDO>();
 //
@@ -346,7 +346,7 @@ namespace UtilitiesTesting.Fixtures
             };
             ActivityDO a_23 = new ActivityDO()
             {
-                Id = GetTestGuidById(23), 
+                Id = GetTestGuidById(23+offset), 
                 ActivityTemplate = activityTempate, 
                 ActivityTemplateId = activityTempate.Id,
                 Name = "a_23", 
