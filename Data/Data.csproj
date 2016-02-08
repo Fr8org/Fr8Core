@@ -331,7 +331,7 @@
     <Compile Include="Interfaces\DataTransferObjects\ContainerDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\QueryDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\SubrouteDTO.cs" />
-	<Compile Include="Interfaces\DataTransferObjects\SolutionPageDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\SolutionPageDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\RouteEmptyDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\SlackPayloadDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\TerminalDTO.cs" />
@@ -594,7 +594,6 @@
     <Compile Include="Repositories\Authorization\AuthorizationTokenChangeTracker.cs" />
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryForTests.cs" />
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryStub.cs" />
-    <Compile Include="Repositories\Authorization\AuthRepositoryLogger.cs" />
     <Compile Include="Repositories\Authorization\IAuthorizationTokenRepository.cs" />
     <Compile Include="Repositories\Authorization\KeyVaultAuthorizationTokenRepository.cs" />
     <Compile Include="Repositories\FileTagsRepository.cs" />

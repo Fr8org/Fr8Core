@@ -8,19 +8,18 @@ namespace Data.Repositories.Plan
 {
     public class PlanRepository : IPlanRepository
     {
-        private readonly PlanStorage _planStorage;
         /**********************************************************************************/
         // Declarations
         /**********************************************************************************/
 
         private readonly List<LoadedRoute>  _loadedRoutes = new List<LoadedRoute>();
         private readonly Dictionary<Guid, LoadedRoute> _loadedNodes = new Dictionary<Guid, LoadedRoute>();
-        private readonly object _sync = new object();
+        private readonly PlanStorage _planStorage;
 
         /**********************************************************************************/
         // Functions
         /**********************************************************************************/
-        
+
         public PlanRepository(PlanStorage planStorage)
         {
             _planStorage = planStorage;
@@ -109,27 +108,9 @@ namespace Data.Repositories.Plan
                     }
                 }
 
-                CheckStructure(loadedRoute.Root, new HashSet<Guid>());
-
                 return (TRouteNode)loadedRoute.Find(id);
             }
         }
-
-        /**********************************************************************************/
-
-        private void CheckStructure(RouteNodeDO node, HashSet<Guid> visited)
-        {
-            if (!visited.Add(node.Id))
-            {
-                throw new Exception("Cycle detected");
-            }
-
-            foreach (var routeNodeDo in node.ChildNodes)
-            {
-                CheckStructure(routeNodeDo, visited);
-            }
-        }
-
 
         /**********************************************************************************/
 

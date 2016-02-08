@@ -159,12 +159,10 @@ namespace Data.Repositories
                 try
                 {
                     var val = (await Client.GetSecretAsync(KeyVaultUrl, secretId)).Value;
-                    Logger.WriteSuccess(id.ToString(), val, "query");
                     return val;
                 }
                 catch (Exception ex)
                 {
-                    Logger.WriteFailure(id.ToString(), ex.ToString(), "query");
                     EventManager.KeyVaultFailed("GetSecretAsync", ex);
                     return null;
                 }
@@ -178,11 +176,9 @@ namespace Data.Repositories
                 try
                 {
                     await Client.SetSecretAsync(KeyVaultUrl, secret, value);
-                    Logger.WriteSuccess(secret, value, "update");
                 }
                 catch (Exception ex)
                 {
-                    Logger.WriteFailure(secret, ex.ToString(), "update");
                     EventManager.KeyVaultFailed("SetSecretAsync", ex);
                 }
             });
@@ -195,11 +191,9 @@ namespace Data.Repositories
                 try
                 {
                     await Client.DeleteSecretAsync(KeyVaultUrl, secret);
-                    Logger.WriteSuccess(secret, null, "delete");
                 }
                 catch (Exception ex)
                 {
-                    Logger.WriteFailure(secret, null, "delete");
                     EventManager.KeyVaultFailed("DeleteSecretAsync", ex);
                 }
             });

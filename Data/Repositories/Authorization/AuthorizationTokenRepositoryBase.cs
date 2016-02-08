@@ -25,7 +25,6 @@ namespace Data.Repositories
 
         private readonly List<AuthorizationTokenDO> _adds = new List<AuthorizationTokenDO>();
         private readonly List<AuthorizationTokenDO> _deletes = new List<AuthorizationTokenDO>();
-        protected readonly AuthRepositoryLogger Logger = new AuthRepositoryLogger();
         private static readonly MemoryCache TokenCache = new MemoryCache("AuthTokenCache");
         private static TimeSpan _expiration = TimeSpan.FromMinutes(10);
 
@@ -174,15 +173,6 @@ namespace Data.Repositories
             if (!_changesTackers.TryGetValue(token.Id, out changeTracker))
             {
                 token.Token = QuerySecurePart(token.Id);
-
-                if (token.Token == null)
-                {
-                    Logger.WriteFailure(token.Id.ToString("N"), "Token is null", "read");
-                }
-                else
-                {
-                    Logger.WriteSuccess(token.Id.ToString("N"), token.Token, "read");
-                }
 
                 _changesTackers[token.Id] = new AuthorizationTokenChangeTracker(token.Token, token);
             }
