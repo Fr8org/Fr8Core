@@ -36,6 +36,18 @@ namespace terminalDocuSignTests.Integration
         CrateStorage crateStorage;
 
         [Test]
+        [ExpectedException(typeof(AssertionException))]
+        public async Task TestEmail_ShouldBeMissing()
+        {
+            await Task.Delay(EmailAssert.RecentMsgThreshold); //to avoid false positives from any earlier tests
+
+            // Verify that test email has been received
+            // Actually it should not be received and AssertionException 
+            // should be thrown
+            EmailAssert.EmailReceived("dse_demo@docusign.net", "Test Message from Fr8");
+        }
+
+        [Test]
         public async void Mail_Merge_Into_DocuSign_EndToEnd()
         {
             string baseUrl = GetHubApiBaseUrl();
@@ -179,11 +191,11 @@ namespace terminalDocuSignTests.Integration
             docuSignTemplate.Value = "9a4d2154-5b18-4316-9824-09432e62f458";
             docuSignTemplate.selectedKey = "Medical_Form_v1";
             docuSignTemplate.ListItems.Add(new ListItem() { Value = "9a4d2154-5b18-4316-9824-09432e62f458", Key = "Medical_Form_v1" });
-            
+
             var emailField = controlsCrate.Content.Controls.OfType<TextSource>().First();
             emailField.ValueSource = "specific";
-            emailField.Value = "alexavrutin@gmail.com";
-            emailField.TextValue = "alexavrutin@gmail.com";
+            emailField.Value = "freight.testing@gmail.com";
+            emailField.TextValue = "freight.testing@gmail.com";
 
             using (var updater = _crate.UpdateStorage(sendEnvelopeAction))
             {
@@ -200,14 +212,14 @@ namespace terminalDocuSignTests.Integration
 
             // Reconfigure Map Fields to have it pick up upstream fields
             var mapFieldsAction = this.solution.ChildrenActions.Single(a => a.Name == "Map Fields");
-                mapFieldsAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure", mapFieldsAction);
+            mapFieldsAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure", mapFieldsAction);
 
             // Configure mappings
             crateStorage = _crate.FromDto(mapFieldsAction.CrateStorage);
             controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
             var mapping = controlsCrate.Content.Controls.OfType<MappingPane>().First();
             mapping.Value = @"[{""Key"":""Doctor"",""Value"":""Doctor""},{""Key"":""Condition"",""Value"":""Condition""}]";
-            
+
             using (var updater = _crate.UpdateStorage(mapFieldsAction))
             {
                 updater.CrateStorage.Remove<StandardConfigurationControlsCM>();
@@ -223,12 +235,15 @@ namespace terminalDocuSignTests.Integration
             //
             // Deactivate plan
             //
-            await HttpPostAsync<string, string>(baseUrl + "routes/deactivate?id=" + plan.Id, null);
+            //await HttpPostAsync<string, string>(baseUrl + "routes/deactivate?id=" + plan.Id, plan);
 
             //
             // Delete plan
             //
-            await HttpDeleteAsync(baseUrl + "actions?id=" + plan.Id);
+            await HttpDeleteAsync(baseUrl + "routes?id=" + plan.Id);
+
+            // Verify that test email has been received
+            EmailAssert.EmailReceived("dse_demo@docusign.net", "Test Message from Fr8");
         }
     }
 }
