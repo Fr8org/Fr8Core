@@ -120,6 +120,11 @@ namespace HealthMonitor.Utility
             var uri = new Uri(url);
             return await _restfulServiceClient.PostAsync<TRequest, TResponse>(uri, request, null, null);
         }
+        public async Task HttpDeleteAsync(string url)
+        {
+            var uri = new Uri(url);
+            await _restfulServiceClient.DeleteAsync(uri, null, null);
+        }
         public async Task<TResponse> HttpGetAsync<TResponse>(string url)
         {
             var uri = new Uri(url);

@@ -432,7 +432,14 @@ namespace Hub.Services
 
         public async Task<ActivityDTO> Configure(string userId, ActivityDO curActivityDO, bool saveResult = true)
         {
-            curActivityDO = await CallActionConfigure(userId, curActivityDO);
+            try {
+                curActivityDO = await CallActionConfigure(userId, curActivityDO);
+            }
+            catch (Exception ex)
+            {
+
+            }
+
             if (saveResult)
             {
                 //save the received action as quickly as possible

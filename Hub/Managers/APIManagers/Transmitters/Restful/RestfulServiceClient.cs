@@ -181,7 +181,15 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
                 return await SendInternalAsync(request, CorrelationId);
             }
         }
-
+        private async Task DeleteInternalAsync(Uri requestUri, string CorrelationId, Dictionary<string, string> headers)
+        {
+            using (var request = new HttpRequestMessage(HttpMethod.Delete, requestUri))
+            {
+                AddHeaders(request, headers);
+                var response = await SendInternalAsync(request, CorrelationId);
+                response.Dispose();
+            }
+        }
         private async Task<HttpResponseMessage> PutInternalAsync(Uri requestUri, HttpContent content, string CorrelationId, Dictionary<string, string> headers)
         {
             using (var request = new HttpRequestMessage(HttpMethod.Put, requestUri) { Content = content })
@@ -284,12 +292,10 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
         {
             return await PostAsync<TResponse>(requestUri, new ObjectContent(typeof(TContent), content, _formatter), CorrelationId, headers);
         }
-
         public async Task<TResponse> PutAsync<TContent, TResponse>(Uri requestUri, TContent content, string CorrelationId = null, Dictionary<string, string> headers = null)
         {
             return await PutAsync<TResponse>(requestUri, new ObjectContent(typeof(TContent), content, _formatter), CorrelationId, headers);
         }
-
         public async Task<string> PutAsync<TContent>(Uri requestUri, TContent content, string CorrelationId = null, Dictionary<string, string> headers = null)
         {
             return await PutAsync(requestUri, (HttpContent)new ObjectContent(typeof(TContent), content, _formatter), CorrelationId, headers);
@@ -311,6 +317,10 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             {
                 return await DeserializeResponseAsync<TResponse>(response);
             }
+        }
+        public async Task DeleteAsync(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null)
+        {
+            await DeleteInternalAsync(requestUri, CorrelationId, headers);
         }
         public async Task<TResponse> PutAsync<TResponse>(Uri requestUri, HttpContent content, string CorrelationId = null, Dictionary<string, string> headers = null)
         {
