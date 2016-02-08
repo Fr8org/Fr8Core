@@ -50,6 +50,7 @@ namespace terminalDocuSignTests.Integration
         [Test]
         public async void Mail_Merge_Into_DocuSign_EndToEnd()
         {
+            throw new Exception();
             string baseUrl = GetHubApiBaseUrl();
             var solutionCreateUrl = baseUrl + "actions/create?solutionName=Mail_Merge_Into_DocuSign";
 
