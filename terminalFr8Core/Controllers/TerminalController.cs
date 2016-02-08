@@ -36,7 +36,7 @@ namespace terminalFr8Core.Controllers
 
             var webService = new WebServiceDTO
             {
-                Name = "fr8 Core"
+                Name = "Built-In Services"
             };
 
             result.Add(new ActivityTemplateDTO

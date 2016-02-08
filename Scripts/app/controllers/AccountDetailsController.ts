@@ -23,7 +23,6 @@ module dockyard.controllers {
             private UserService: services.IUserService,
             private $state: ng.ui.IState) {
 
-            alert("constructor");
             UserService.get({ id: $state.params.id }).$promise.then(function (data) {
                 $scope.user = data;
             });
