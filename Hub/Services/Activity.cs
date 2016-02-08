@@ -83,9 +83,9 @@ namespace Hub.Services
             {
                 stopwatch.Stop();
                 _telemetryClient.TrackDependency("Database", "Saving Action with subactions",
-                    startTime,
-                    stopwatch.Elapsed,
-                    success);
+                   startTime,
+                   stopwatch.Elapsed,
+                   success);
             }
 
             success = false;
@@ -105,9 +105,9 @@ namespace Hub.Services
             {
                 stopwatch.Stop();
                 _telemetryClient.TrackDependency("Database", "Getting Action by id after saving",
-                    startTime,
-                    stopwatch.Elapsed,
-                    success);
+                   startTime,
+                   stopwatch.Elapsed,
+                   success);
             }
         }
 
@@ -180,20 +180,20 @@ namespace Hub.Services
 
             RouteNodeDO route;
             RouteNodeDO originalAction;
-            if (submittedActiviy.ParentRouteNodeId != null)
-            {
+                    if (submittedActiviy.ParentRouteNodeId != null)
+                    {
                 route = uow.PlanRepository.Reload<RouteNodeDO>(submittedActiviy.ParentRouteNodeId);
                 originalAction = route.ChildNodes.FirstOrDefault(x => x.Id == submittedActiviy.Id);
-            }
-            else
-            {
+                }
+                else
+                {
                 originalAction = uow.PlanRepository.Reload<RouteNodeDO>(submittedActiviy.Id);
                 route = originalAction.ParentRouteNode;
-            }
+                }
 
 
             if (originalAction != null)
-            {
+                {
                 route.ChildNodes.Remove(originalAction);
 
                 var originalActions = RouteTreeHelper.Linearize(originalAction)
@@ -206,24 +206,24 @@ namespace Hub.Services
                     if (!originalActions.TryGetValue(submitted.Id, out existingActivity))
                     {
                         pendingConfiguration.Add((ActivityDO) submitted);
-                    }
-                    else
-                    {
+                }
+            else
+            {
                         RestoreSystemProperties(existingActivity, (ActivityDO) submitted);
-                    }
+                }
                 }
             }
             else
-            {
+                    {
                 pendingConfiguration.AddRange(RouteTreeHelper.Linearize(submittedActiviy).OfType<ActivityDO>());
-            }
+                    }
 
             if (submittedActiviy.Ordering <= 0)
-            {
+                    {
                 route.AddChildWithDefaultOrdering(submittedActiviy);
-            }
+                    }
             else
-            {
+                    {
                 route.ChildNodes.Add(submittedActiviy);
             }
         }
@@ -261,7 +261,7 @@ namespace Hub.Services
             else
             {
                 parentNode = uow.PlanRepository.GetById<RouteNodeDO>(parentNodeId);
-
+                
                 if (parentNode is PlanDO)
                 {
                     if (((PlanDO) parentNode).StartingSubroute == null)
@@ -271,11 +271,11 @@ namespace Hub.Services
                             StartingSubroute = true,
                             Name = name + " #1"
                         });
-                    }
+                }
                     else
                     {
                         parentNode = ((PlanDO) parentNode).StartingSubroute;
-                    }
+            }
                 }
             }
 
@@ -288,7 +288,7 @@ namespace Hub.Services
                 CrateStorage = _crate.EmptyStorageAsStr(),
                 AuthorizationTokenId = authorizationTokenId
             };
-            
+
             parentNode.AddChild(activity, order);
             
             uow.SaveChanges();
@@ -375,9 +375,9 @@ namespace Hub.Services
             if (saveResult)
             {
                 //save the received action as quickly as possible
-                curActivityDO = SaveOrUpdateActivity(uow, curActivityDO);
-                return Mapper.Map<ActivityDTO>(curActivityDO);
-            }
+                    curActivityDO = SaveOrUpdateActivity(uow, curActivityDO);
+                    return Mapper.Map<ActivityDTO>(curActivityDO);
+                }
 
             return Mapper.Map<ActivityDTO>(curActivityDO);
         }
@@ -557,9 +557,9 @@ namespace Hub.Services
                 {
                     var result = await CallTerminalActionAsync<ActivityDTO>(uow, "activate", curActivityDO, Guid.Empty);
 
-                    EventManager.ActionActivated(curActivityDO);
-                    return result;
-                }
+                EventManager.ActionActivated(curActivityDO);
+                return result;
+            }
             }
             catch (ArgumentException)
             {
@@ -630,13 +630,13 @@ namespace Hub.Services
 
             if (containerId != Guid.Empty)
             {
-                var containerDO = uow.ContainerRepository.GetByKey(containerId);
-                EventManager.ContainerSent(containerDO, curActivityDO);
+                    var containerDO = uow.ContainerRepository.GetByKey(containerId);
+                    EventManager.ContainerSent(containerDO, curActivityDO);
                 var reponse = ObjectFactory.GetInstance<ITerminalTransmitter>()
                     .CallActionAsync<TResult>(activityName, fr8DataDTO, containerId.ToString());
-                EventManager.ContainerReceived(containerDO, curActivityDO);
-                return reponse;
-            }
+                    EventManager.ContainerReceived(containerDO, curActivityDO);
+                    return reponse;
+                }
             return ObjectFactory.GetInstance<ITerminalTransmitter>().CallActionAsync<TResult>(activityName, fr8DataDTO, containerId.ToString());
         }
         //This method finds and returns single SolutionPageDTO that holds some documentation of Activities that is obtained from a solution by aame

@@ -40,6 +40,7 @@ namespace HealthMonitor.Utility
                 return terminalId ?? (terminalId = ConfigurationManager.AppSettings[TerminalName + "TerminalId"]);
             }
         }
+
         protected string TestUserEmail = "integration_test_runner@fr8.company";
         protected string TestUserPassword = "fr8#s@lt!";
 
@@ -58,7 +59,16 @@ namespace HealthMonitor.Utility
 
             LoginUser(TestUserEmail, TestUserPassword).Wait();
             _restfulServiceClient = new RestfulServiceClient(_httpClient);
-        }   
+
+            // Initailize EmailAssert utility.
+            string testEmail = ConfigurationManager.AppSettings["TestEmail"];
+            string hostname = ConfigurationManager.AppSettings["TestEmail_Pop3Server"];
+            int port = int.Parse(ConfigurationManager.AppSettings["TestEmail_Port"]);
+            bool useSsl = ConfigurationManager.AppSettings["TestEmail_UseSsl"] == "true" ? true : false;
+            string username = ConfigurationManager.AppSettings["TestEmail_Username"];
+            string password = ConfigurationManager.AppSettings["TestEmail_Password"];
+            EmailAssert.InitEmailAssert(testEmail, hostname, port, useSsl, username, password);
+        }
         public abstract string TerminalName { get; }
 
 
@@ -118,7 +128,12 @@ namespace HealthMonitor.Utility
         public async Task<TResponse> HttpPostAsync<TRequest, TResponse>(string url, TRequest request)
         {
             var uri = new Uri(url);
-            return await _restfulServiceClient.PostAsync<TRequest, TResponse>(uri, request, null, await GetHMACHeader(uri, "testUser", request));
+            return await _restfulServiceClient.PostAsync<TRequest, TResponse>(uri, request, null, null);
+        }
+        public async Task HttpDeleteAsync(string url)
+        {
+            var uri = new Uri(url);
+            await _restfulServiceClient.DeleteAsync(uri, null, null);
         }
         public async Task<TResponse> HttpGetAsync<TResponse>(string url)
         {

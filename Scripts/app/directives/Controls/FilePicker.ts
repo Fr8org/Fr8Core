@@ -35,7 +35,7 @@ module dockyard.directives.filePicker {
             $scope.Save = () => {
                 if ($scope.selectedFile === null) {
                     //raise some kind of error to prevent continuing
-                    alert('No file was selected!!!!!!');
+                    alert('Please select a file to upload.');
                     return;
                 }
             
