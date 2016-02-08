@@ -23,8 +23,7 @@ namespace terminalDocuSign.Services
     {
         //standard thread-safe dictionaies
         public static ConcurrentDictionary<string, List<TemplateInfo>> UserTemplates = new ConcurrentDictionary<string, List<TemplateInfo>>();
-
-        public static ConcurrentDictionary<string, List<EnvelopeDataDTO>> TemplateEnvelopeData = new ConcurrentDictionary<string, List<EnvelopeDataDTO>>();
+        
     }
 
 
