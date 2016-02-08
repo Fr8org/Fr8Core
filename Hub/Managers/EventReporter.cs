@@ -75,7 +75,8 @@ namespace Hub.Managers
             EventManager.EventContainerStateChanged += LogEventContainerStateChanged;
 
             EventManager.EventAuthenticationCompleted += PostToTerminalEventsEndPoint;
-
+            EventManager.EventAuthTokenCreated += AuthTokenCreated;
+            EventManager.EventAuthTokenRemoved += AuthTokenRemoved;
         }
 
         public void UnsubscribeFromAlerts()
@@ -117,6 +118,9 @@ namespace Hub.Managers
             EventManager.EventContainerStateChanged -= LogEventContainerStateChanged;
 
             EventManager.EventAuthenticationCompleted -= PostToTerminalEventsEndPoint;
+
+            EventManager.EventAuthTokenCreated -= AuthTokenCreated;
+            EventManager.EventAuthTokenRemoved -= AuthTokenRemoved;
         }
 
         //private void StaleBookingRequestsDetected(BookingRequestDO[] oldBookingRequests)
@@ -178,6 +182,54 @@ namespace Hub.Managers
 
         //    Logger.GetLogger().Info(string.Format("Reservation Timed out. BookingRequest ID : {0}, Booker ID: {1}", bookingRequestId, bookerId));
         //}
+
+        private static void AuthTokenCreated(AuthorizationTokenDO authToken)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var factDO = new FactDO();
+                factDO.PrimaryCategory = "AuthToken";
+                factDO.SecondaryCategory = "Created";
+                factDO.Activity = "AuthToken Created";
+                factDO.ObjectId = null;
+                factDO.CreatedByID = ObjectFactory.GetInstance<ISecurityServices>().GetCurrentUser();
+                factDO.Data = string.Join(
+                    Environment.NewLine,
+                    "AuthToken method: Created",
+                    "User Id: " + authToken.UserID.ToString(),
+                    "Terminal name: " + (authToken.Terminal != null ? authToken.Terminal.Name : authToken.TerminalID.ToString()),
+                    "External AccountId: " + authToken.ExternalAccountId
+                );
+
+                uow.FactRepository.Add(factDO);
+                uow.SaveChanges();
+            }
+        }
+
+        private static void AuthTokenRemoved(AuthorizationTokenDO authToken)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var newFactDO = new FactDO
+                {
+                    PrimaryCategory = "AuthToken",
+                    SecondaryCategory = "Removed",
+                    Activity = "AuthToken Removed",
+                    ObjectId = null,
+                    CreatedByID = ObjectFactory.GetInstance<ISecurityServices>().GetCurrentUser(),
+                    Data = string.Join(
+                        Environment.NewLine,
+                        "AuthToken method: Removed",
+                        "User Id: " + authToken.UserID.ToString(),
+                        "Terminal name: " + authToken.Terminal != null ? authToken.Terminal.Name : authToken.TerminalID.ToString(),
+                        "External AccountId: " + authToken.ExternalAccountId
+                    )
+                };
+
+                uow.FactRepository.Add(newFactDO);
+                uow.SaveChanges();
+            }
+        }
 
         private static void TrackablePropertyUpdated(string entityName, string propertyName, object id,
             object value)

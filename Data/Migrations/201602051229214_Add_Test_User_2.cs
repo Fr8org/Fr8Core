@@ -15,7 +15,7 @@ namespace Data.Migrations
 
         public override void Up()
         {
-            Register();
+            // Register();
         }
 
         public override void Down()
@@ -48,8 +48,7 @@ namespace Data.Migrations
 
         }
 
-        public Fr8AccountDO Register(IUnitOfWork uow, string userName, string firstName, string lastName,
-    string password, string roleID)
+        public Fr8AccountDO Register(IUnitOfWork uow, string userName, string firstName, string lastName, string password, string roleID)
         {
             var userDO = uow.UserRepository.GetOrCreateUser(userName, roleID);
             uow.UserRepository.UpdateUserCredentials(userDO, userName, password);

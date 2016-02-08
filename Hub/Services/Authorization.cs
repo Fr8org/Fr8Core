@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.UI.WebControls;
+using Newtonsoft.Json;
+using log4net;
+using StructureMap;
 using Data.Constants;
 using Data.Control;
-using Data.Infrastructure;
-using StructureMap;
-using Newtonsoft.Json;
 using Data.Crates;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
@@ -18,7 +20,7 @@ using Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
-using System.Data.Entity.Infrastructure;
+using Utilities.Logging;
 
 namespace Hub.Services
 {
@@ -49,20 +51,6 @@ namespace Hub.Services
             }
             return null;
         }
-
-        //        public string GetTerminalToken(int terminalId)
-        //        {
-        //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //            {
-        //                var curAuthToken = uow.AuthorizationTokenRepository.FindOne(at =>
-        //                    at.TerminalID == terminalId
-        //                    && at.AuthorizationTokenState == AuthorizationTokenState.Active);
-        //
-        //                if (curAuthToken != null)
-        //                    return curAuthToken.Token;
-        //            }
-        //            return null;
-        //        }
 
         /// <summary>
         /// Prepare AuthToken for ActionDTO request message.
@@ -187,6 +175,8 @@ namespace Hub.Services
                     };
 
                     uow.AuthorizationTokenRepository.Add(authToken);
+
+                    EventManager.AuthTokenCreated(authToken);
                 }
                 else
                 {
@@ -266,6 +256,8 @@ namespace Hub.Services
                     authTokenByExternalState.AdditionalAttributes = authTokenDTO.AdditionalAttributes;
 
                     uow.AuthorizationTokenRepository.Remove(authTokenByExternalState);
+
+                    EventManager.AuthTokenCreated(authTokenByExternalAccountId);
                 }
                 else
                 {
@@ -273,6 +265,8 @@ namespace Hub.Services
                     authTokenByExternalState.ExternalAccountId = authTokenDTO.ExternalAccountId;
                     authTokenByExternalState.ExternalStateToken = null;
                     authTokenByExternalState.AdditionalAttributes = authTokenDTO.AdditionalAttributes;
+
+                    EventManager.AuthTokenCreated(authTokenByExternalState);
                 }
 
                 uow.SaveChanges();
@@ -476,6 +470,8 @@ namespace Hub.Services
                 // FR-1958: remove token if could not extract secure data.
                 if (authToken != null && string.IsNullOrEmpty(authToken.Token))
                 {
+                    EventManager.AuthTokenSilentRevoke(authToken);
+
                     RemoveToken(uow, authToken);
                     authToken = null;
                 }
@@ -594,6 +590,8 @@ namespace Hub.Services
 
         private void RemoveToken(IUnitOfWork uow, AuthorizationTokenDO authToken)
         {
+            EventManager.AuthTokenRemoved(authToken);
+
             var activities = uow.PlanRepository.GetActivityQueryUncached()
                 .Where(x => x.AuthorizationToken.Id == authToken.Id)
                 .ToList();
