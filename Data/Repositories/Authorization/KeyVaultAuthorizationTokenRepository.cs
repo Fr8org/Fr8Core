@@ -6,6 +6,7 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using Microsoft.Azure.KeyVault;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using Segment;
 using Utilities.Configuration.Azure;
 
 namespace Data.Repositories
@@ -157,7 +158,8 @@ namespace Data.Repositories
 
                 try
                 {
-                    return (await Client.GetSecretAsync(KeyVaultUrl, secretId)).Value;
+                    var val = (await Client.GetSecretAsync(KeyVaultUrl, secretId)).Value;
+                    return val;
                 }
                 catch (Exception ex)
                 {

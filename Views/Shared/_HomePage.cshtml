@@ -129,7 +129,23 @@
             {
                 <h1 class="site-logo"><a class="navbar-brand" href="http://www.fr8.company" title="fr8"><img src="~/Content/img/site/site-logo.png" alt="fr8" title="fr8"></a></h1>
                  <div class="pull-right visible-desktop visible-tablet">
-                     <a href="/Dashboard#/myaccount" title="Manage">Hello @User.Identity.GetUserName()!</a>
+                     <a href="/Dashboard#/myaccount" title="Manage">Hello 
+                         @if(User.IsInRole("Guest"))
+                         {
+                            <text>Guest User!</text>
+                         }
+                         else
+                         {
+                            <text>@User.Identity.GetUserName()!</text>
+                         }
+                     </a>
+                     @if(User.IsInRole("Guest"))
+                     {
+                         <span>&nbsp;&nbsp;</span>
+                        <a href="/DockyardAccount/Logoff">
+                            <span>Have an Account? Login</span>
+                        </a>
+                     }
                 </div>
             }
             else 

@@ -35,8 +35,10 @@ namespace terminalFr8Core.Actions
             }
             
             //find our action state in operations crate
-            var myPreviousResponse = operationsCrate.CurrentActivityResponse;
-            if (myPreviousResponse == ActivityResponse.RequestSuspend)
+            var myPreviousResponseDTO = operationsCrate.CurrentActivityResponse;
+            
+            //extract ActivityResponse type from result
+            if (myPreviousResponseDTO.Type == ActivityResponse.RequestSuspend.ToString())
             {
                 //this is second time we are being called. this means alarm has triggered
                 return Success(curPayloadDTO);

@@ -21,6 +21,7 @@ using HubWeb.ViewModels;
 using Newtonsoft.Json;
 using Hub.Managers;
 using Data.Crates;
+using Data.Interfaces.DataTransferObjects.Helpers;
 using Utilities.Interfaces;
 using HubWeb.Infrastructure;
 using Data.Interfaces.Manifests;
@@ -31,22 +32,22 @@ namespace HubWeb.Controllers
     [Fr8ApiAuthorize]
     public class RoutesController : ApiController
     {
-        private const string PUSHER_EVENT_GENERIC_SUCCESS = "fr8pusher_generic_success";
-        private const string PUSHER_EVENT_GENERIC_FAILURE = "fr8pusher_generic_failure";
+	    private const string PUSHER_EVENT_GENERIC_SUCCESS = "fr8pusher_generic_success";
+	    private const string PUSHER_EVENT_GENERIC_FAILURE = "fr8pusher_generic_failure";
 
         private readonly Hub.Interfaces.IPlan _plan;
         private readonly IFindObjectsRoute _findObjectsRoute;
         private readonly ISecurityServices _security;
         private readonly ICrateManager _crate;
-        private readonly IPusherNotifier _pusherNotifier;
-
+	    private readonly IPusherNotifier _pusherNotifier;
+        
         public RoutesController()
         {
-            _plan = ObjectFactory.GetInstance<IPlan>();
+			_plan = ObjectFactory.GetInstance<IPlan>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
             _findObjectsRoute = ObjectFactory.GetInstance<IFindObjectsRoute>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
-            _pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
+	        _pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
         }
         /*
         //[Route("~/routes")]
@@ -97,10 +98,11 @@ namespace HubWeb.Controllers
                     return BadRequest("Some of the request data is invalid");
                 }
                 var curPlanDO = Mapper.Map<RouteEmptyDTO, PlanDO>(routeDto, opts => opts.Items.Add("ptid", routeDto.Id));
-                curPlanDO.Fr8Account = _security.GetCurrentAccount(uow);
+                
                 _plan.CreateOrUpdate(uow, curPlanDO, updateRegistrations);
+                
                 uow.SaveChanges();
-                var result = RouteMappingHelper.MapRouteToDto(uow, curPlanDO);
+                var result = RouteMappingHelper.MapRouteToDto(uow, uow.PlanRepository.GetById<PlanDO>(curPlanDO.Id));
                 return Ok(result);
             }
         }
@@ -114,7 +116,7 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var plan = uow.PlanRepository.GetByKey(id);
+                var plan = uow.PlanRepository.GetById<PlanDO>(id);
                 var result = RouteMappingHelper.MapRouteToDto(uow, plan);
 
                 return Ok(result);
@@ -124,13 +126,12 @@ namespace HubWeb.Controllers
         //[Route("getByAction/{id:guid}")]
         [ResponseType(typeof(RouteFullDTO))]
         [HttpGet]
-
+        
         public IHttpActionResult GetByAction(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var activity = uow.ActivityRepository.GetByKey(id);
-                var plan = _plan.GetPlan(activity);
+                var plan = _plan.GetPlanByActivityId(uow, id);
                 var result = RouteMappingHelper.MapRouteToDto(uow, plan);
 
                 return Ok(result);
@@ -160,7 +161,7 @@ namespace HubWeb.Controllers
             }
 
             return Ok();
-        }
+       }
 
         [Fr8ApiAuthorize]
         [Fr8HubWebHMACAuthenticate]
@@ -173,9 +174,9 @@ namespace HubWeb.Controllers
                 var curPlans = _plan.GetByName(uow, _security.GetCurrentAccount(uow), name);
                 var fullRoutes = curPlans.Select(curPlan => RouteMappingHelper.MapRouteToDto(uow, curPlan)).ToList();
                 return Ok(fullRoutes);
-
+                
             }
-
+            
         }
 
         [Fr8ApiAuthorize]
@@ -185,7 +186,7 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curPlanDO = uow.PlanRepository.GetByKey(id);
+                var curPlanDO = uow.PlanRepository.GetById<PlanDO>(id);
                 if (curPlanDO == null)
                 {
                     throw new ApplicationException("Unable to find plan with specified id.");
@@ -197,7 +198,7 @@ namespace HubWeb.Controllers
                 return Ok(new { id = plan.Id });
             }
         }
-
+        
         // GET api/<controller>
         [Fr8ApiAuthorize]
         public IHttpActionResult Get(Guid? id = null)
@@ -211,18 +212,18 @@ namespace HubWeb.Controllers
                     id
                 );
 
-                if (curPlans.Any())
+            if (curPlans.Any())
+            {
+                // Return first record from curPlans, in case id parameter was provided.
+                // User intentionally wants to receive a single JSON object in response.
+                if (id.HasValue)
                 {
-                    // Return first record from curPlans, in case id parameter was provided.
-                    // User intentionally wants to receive a single JSON object in response.
-                    if (id.HasValue)
-                    {
-                        return Ok(Mapper.Map<RouteEmptyDTO>(curPlans.First()));
-                    }
-
-                    // Return JSON array of objects, in case no id parameter was provided.
-                    return Ok(curPlans.Select(Mapper.Map<RouteEmptyDTO>).ToArray());
+                    return Ok(Mapper.Map<RouteEmptyDTO>(curPlans.First()));
                 }
+
+                // Return JSON array of objects, in case no id parameter was provided.
+                return Ok(curPlans.Select(Mapper.Map<RouteEmptyDTO>).ToArray());
+            }
             }
 
             //DO-840 Return empty view as having empty process templates are valid use case.
@@ -238,7 +239,7 @@ namespace HubWeb.Controllers
             return Ok();
         }
 
-
+        
 
         [HttpDelete]
         //[Route("{id:guid}")]
@@ -254,7 +255,7 @@ namespace HubWeb.Controllers
             }
         }
 
-
+        
         [ActionName("triggersettings"), ResponseType(typeof(List<ExternalEventDTO>))]
         [Fr8ApiAuthorize]
         public IHttpActionResult GetTriggerSettings()
@@ -285,7 +286,7 @@ namespace HubWeb.Controllers
                 return BadRequest();
             }
             catch (Exception)
-            {
+        {
                 _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, "There is a problem with activating this plan. Please try again later.");
                 return BadRequest();
             }
@@ -330,7 +331,7 @@ namespace HubWeb.Controllers
             bool inActive = false;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var routeDO = uow.PlanRepository.GetByKey(planId);
+                var routeDO = uow.PlanRepository.GetById<PlanDO>(planId);
 
                 if (routeDO.RouteState == RouteState.Inactive)
                     inActive = true;
@@ -345,28 +346,28 @@ namespace HubWeb.Controllers
 
 
             //RUN
-            CrateDTO curCrateDto;
+			CrateDTO curCrateDto;
             Crate curCrate = null;
 
-            string pusherChannel = String.Format("fr8pusher_{0}", User.Identity.Name);
+			string pusherChannel = String.Format("fr8pusher_{0}", User.Identity.Name);
 
-            if (model != null)
-            {
-                try
-                {
+			if (model != null)
+			{
+				try
+				{
                     curCrateDto = JsonConvert.DeserializeObject<CrateDTO>(model.Payload);
                     curCrate = _crate.FromDto(curCrateDto);
                 }
                 catch (Exception ex)
                 {
-                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, "You payload is invalid. Make sure that it represents a valid crate object JSON.");
-                    return BadRequest();
-                }
-            }
+					_pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, "You payload is invalid. Make sure that it represents a valid crate object JSON.");
+					return BadRequest();
+				}
+			}
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var planDO = uow.PlanRepository.GetByKey(planId);
+                var planDO = uow.PlanRepository.GetById<PlanDO>(planId);
 
                 try
                 {
@@ -381,9 +382,13 @@ namespace HubWeb.Controllers
 
                         string responseMsg = "";
 
-                        if (response != null && (response.ResponseMessageDTO != null && !String.IsNullOrEmpty(response.ResponseMessageDTO.Message)))
+                        ResponseMessageDTO responseMessage;
+                        if (response != null && response.CurrentActivityResponse != null && response.CurrentActivityResponse.TryParseResponseMessageDTO(out responseMessage))
                         {
-                            responseMsg = "\n" + response.ResponseMessageDTO.Message;
+                            if (responseMessage != null && !string.IsNullOrEmpty(responseMessage.Message))
+                            {
+                                responseMsg = "\n" + responseMessage.Message;
+                            }
                         }
 
                         string message = String.Format("Complete processing for Plan \"{0}\".{1}", planDO.Name, responseMsg);
@@ -391,16 +396,14 @@ namespace HubWeb.Controllers
                         _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, message);
 
                         var containerDTO = Mapper.Map<ContainerDTO>(containerDO);
-
-
-
+                        
                         await eventManager.Publish("ContainerLaunched"
-                            , planDO.Fr8Account.Id
+                            , planDO.Fr8AccountId
                             , planDO.Id.ToString()
                             , JsonConvert.SerializeObject(containerDTO).ToString(), "Success");
 
                         await eventManager.Publish("ContainerExecutionComplete"
-                            , planDO.Fr8Account.Id
+                            , planDO.Fr8AccountId
                             , planDO.Id.ToString()
                             , JsonConvert.SerializeObject(containerDTO).ToString(), "Success");
 

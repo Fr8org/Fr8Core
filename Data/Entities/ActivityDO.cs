@@ -8,6 +8,7 @@ using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System;
+using System.Reflection;
 
 namespace Data.Entities
 {
@@ -30,21 +31,7 @@ namespace Data.Entities
         public string ExplicitData { get; set; }
 
         public string currentView { get; set; }
-
-        public override RouteNodeDO Clone()
-        {
-            return new ActivityDO()
-            {
-                Ordering = this.Ordering,
-                Name = this.Name,
-                CrateStorage = this.CrateStorage,
-                Label = this.Label,
-                ActivityTemplateId = this.ActivityTemplateId,
-                Fr8Account = this.Fr8Account
-            };
-        }
-
-
+        
         [ForeignKey("AuthorizationToken")]
         public Guid? AuthorizationTokenId { get; set; }
 
@@ -54,6 +41,49 @@ namespace Data.Entities
         {
             return Id.ToString();
         }
+
+        protected override RouteNodeDO CreateNewInstance()
+        {
+            return new ActivityDO();
+        }
+
+
+        private static readonly PropertyInfo[] TrackingProperties = 
+        {
+            typeof(ActivityDO).GetProperty("Name"),
+            typeof(ActivityDO).GetProperty("CrateStorage"),
+            typeof(ActivityDO).GetProperty("Label"),
+            typeof(ActivityDO).GetProperty("ActivityTemplateId"),
+            typeof(ActivityDO).GetProperty("AuthorizationTokenId"),
+        };
+
+        protected override IEnumerable<PropertyInfo> GetTrackingProperties()
+        {
+            foreach (var trackingProperty in base.GetTrackingProperties())
+            {
+                yield return trackingProperty;
+            }
+
+            foreach (var trackingProperty in TrackingProperties)
+            {
+                yield return trackingProperty;
+            }
+        }
+
+        protected override void CopyProperties(RouteNodeDO source)
+        {
+            var activity = (ActivityDO) source;
+
+            base.CopyProperties(source);
+            Name = activity.Name;
+            Label = activity.Label;
+            CrateStorage = activity.CrateStorage;
+            AuthorizationTokenId = activity.AuthorizationTokenId;
+            ActivityTemplateId = activity.ActivityTemplateId;
+            currentView = activity.currentView;
+            ExplicitData = activity.ExplicitData;
+        }
+
 //        public CrateStorageDTO CrateStorageDTO()
 //        {
 //            return JsonConvert.DeserializeObject<CrateStorageDTO>(this.CrateStorage);

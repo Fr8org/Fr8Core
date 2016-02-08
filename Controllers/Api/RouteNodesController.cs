@@ -54,7 +54,7 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var activityDO = uow.ActivityRepository.GetByKey(id);
+                var activityDO = uow.PlanRepository.GetById<ActivityDO>(id);
                 var upstreamActivities = _activity.GetUpstreamActivities(uow, activityDO);
                 return Ok(upstreamActivities);
             }
@@ -67,7 +67,7 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                ActivityDO activityDO = uow.ActivityRepository.GetByKey(id);
+                ActivityDO activityDO = uow.PlanRepository.GetById<ActivityDO>(id);
                 var downstreamActivities = _activity.GetDownstreamActivities(uow, activityDO);
                 return Ok(downstreamActivities);
             }
@@ -81,7 +81,7 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var activityDO = uow.ActivityRepository.GetByKey(id);
+                var activityDO = uow.PlanRepository.GetById<ActivityDO>(id);
                 var upstreamActions = _activity
                     .GetUpstreamActivities(uow, activityDO)
                     .OfType<ActivityDO>()
@@ -100,7 +100,7 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                ActivityDO activityDO = uow.ActivityRepository.GetByKey(id);
+                ActivityDO activityDO = uow.PlanRepository.GetById<ActivityDO>(id);
                 var downstreamActions = _activity
                     .GetDownstreamActivities(uow, activityDO)
                     .OfType<ActivityDO>()

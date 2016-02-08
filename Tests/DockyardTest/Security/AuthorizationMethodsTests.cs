@@ -171,15 +171,19 @@ namespace DockyardTest.Security
                     Ordering = 1
                 };
 
-                uow.ActivityRepository.Add(activityDO);
+                planDO.ChildNodes.Add(activityDO);
+
+               // uow.ActivityRepository.Add(activityDO);
                 uow.SaveChanges();
 
                 activityDTO.Id = activityDO.Id;
                 activityDTO.ActivityTemplateId = activityTemplateDO.Id;
             }
-            
-                
-            _authorization.PrepareAuthToken(activityDTO);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                _authorization.PrepareAuthToken(uow, activityDTO);
+            }
 
             Assert.AreEqual(Token, activityDTO.AuthToken.Token);
         }
@@ -199,7 +203,14 @@ namespace DockyardTest.Security
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {   
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
-                uow.RouteNodeRepository.Add(activityDO);
+
+                uow.PlanRepository.Add(new PlanDO()
+                {
+                    Name = "name",
+                    RouteState = RouteState.Active,
+                    ChildNodes = { activityDO }
+                });
+                
                 uow.SaveChanges();
             }
 
@@ -285,7 +296,12 @@ namespace DockyardTest.Security
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {   
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
-                uow.RouteNodeRepository.Add(activityDO);
+                uow.PlanRepository.Add(new PlanDO()
+                {
+                    Name = "name",
+                    RouteState = RouteState.Active,
+                    ChildNodes = { activityDO }
+                });
                 uow.SaveChanges();
             }
 
@@ -331,16 +347,24 @@ namespace DockyardTest.Security
                 activityDTO.ActivityTemplateId = activityTemplateDO.Id;
 
                 activityDO.ActivityTemplate = activityTemplateDO;
-                uow.ActivityRepository.Add(activityDO);
+                   uow.PlanRepository.Add(new PlanDO()
+                {
+                    Name = "name",
+                    RouteState = RouteState.Active,
+                    ChildNodes = { activityDO }
+                });
 
                 uow.SaveChanges();
 
                 activityDTO.ActivityTemplateId = activityTemplateDO.Id;
                 activityDTO.Id = activityDO.Id;
             }
-            var testResult = _authorization.ValidateAuthenticationNeeded(userDO.Id, activityDTO);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var testResult = _authorization.ValidateAuthenticationNeeded(uow, userDO.Id, activityDTO);
 
-            Assert.IsTrue(testResult);
+                Assert.IsTrue(testResult);
+            }
         }
 
         [Test]
@@ -360,7 +384,12 @@ namespace DockyardTest.Security
 
                 activityDO.ActivityTemplate = activityTemplateDO;
                 activityDO.AuthorizationToken = tokenDO;
-                uow.ActivityRepository.Add(activityDO);
+                uow.PlanRepository.Add(new PlanDO()
+                {
+                    Name="name",
+                    RouteState = RouteState.Active,
+                    ChildNodes = { activityDO }
+                });
 
                 uow.SaveChanges();
 
@@ -368,9 +397,12 @@ namespace DockyardTest.Security
                 activityDTO.ActivityTemplateId = activityTemplateDO.Id;
             }
 
-            var testResult = _authorization.ValidateAuthenticationNeeded(tokenDO.UserID, activityDTO);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var testResult = _authorization.ValidateAuthenticationNeeded(uow, tokenDO.UserID, activityDTO);
 
-            Assert.IsFalse(testResult);
+                Assert.IsFalse(testResult);
+            }
         }
 
         [Test]

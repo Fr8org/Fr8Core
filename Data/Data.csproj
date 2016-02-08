@@ -281,6 +281,7 @@
     <Compile Include="Infrastructure\MultiTenant\MT_Object.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDataPackageDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActivateActionsDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ActivityResponseDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\AlarmDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\AuthenticateResponse.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EventLoggingDTO.cs" />
@@ -302,6 +303,8 @@
     <Compile Include="Interfaces\DataTransferObjects\FilterConditionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FilterDataDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FinancialLineDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\Helpers\ActivityResponseHelper.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\Fr8DataDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\LogItemDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ManageAuthTokenDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\MappingFieldConfigurationDTO.cs" />
@@ -328,7 +331,7 @@
     <Compile Include="Interfaces\DataTransferObjects\ContainerDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\QueryDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\SubrouteDTO.cs" />
-	<Compile Include="Interfaces\DataTransferObjects\SolutionPageDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\SolutionPageDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\RouteEmptyDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\SlackPayloadDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\TerminalDTO.cs" />
@@ -564,6 +567,7 @@
     <Compile Include="Migrations\201601201734569_Removed_Fr8Account_From_Route.Designer.cs">
       <DependentUpon>201601201734569_Removed_Fr8Account_From_Route.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201601211438483_Add_Test_User.cs" />
     <Compile Include="Migrations\201601240842409_EmptyMigration.cs" />
     <Compile Include="Migrations\201601240842409_EmptyMigration.Designer.cs">
       <DependentUpon>201601240842409_EmptyMigration.cs</DependentUpon>
@@ -576,9 +580,13 @@
     <Compile Include="Migrations\201601241443338_RenameRouteToPlan.Designer.cs">
       <DependentUpon>201601241443338_RenameRouteToPlan.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201601211438483_Add_Test_User.cs" />
-    <Compile Include="Migrations\201601211438483_Add_Test_User.Designer.cs">
-      <DependentUpon>201601211438483_Add_Test_User.cs</DependentUpon>
+    <Compile Include="Migrations\201602051229214_Add_Test_User_2.cs" />
+    <Compile Include="Migrations\201602051229214_Add_Test_User_2.Designer.cs">
+      <DependentUpon>201602051229214_Add_Test_User_2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201602031204174_MergeMigration.cs" />
+    <Compile Include="Migrations\201602031204174_MergeMigration.Designer.cs">
+      <DependentUpon>201602031204174_MergeMigration.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -598,13 +606,26 @@
     <Compile Include="Repositories\MultiTenant\Queryable\MtQueryExecutor.cs" />
     <Compile Include="Expressions\ReplaceParameterVisitor.cs" />
     <Compile Include="Repositories\MultiTenant\Queryable\MtWhere.cs" />
-    <Compile Include="Repositories\RouteNodeRepository.cs" />
+    <Compile Include="Interfaces\IPlanRepository.cs" />
+    <Compile Include="Repositories\Plan\Expiration.cs" />
+    <Compile Include="Repositories\Plan\IPlanCache.cs" />
+    <Compile Include="Repositories\Plan\PlanStorage.cs" />
+    <Compile Include="Repositories\Plan\IPlanStorageProvider.cs" />
+    <Compile Include="Repositories\Plan\LoadedRoute.cs" />
+    <Compile Include="Repositories\Plan\PlanCache.cs" />
+    <Compile Include="Repositories\Plan\PlanRepository.cs" />
+    <Compile Include="Repositories\Plan\PlanStorageProviderMockedDb.cs" />
+    <Compile Include="Repositories\Plan\PlanStorageProviderEf.cs" />
+    <Compile Include="Repositories\Plan\RouteSnapshot.cs" />
+    <Compile Include="Repositories\Plan\RouteTreeHelper.cs" />
+    <Compile Include="Repositories\Plan\Internal\RouteNodeRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\MultiTenant\MTDataRepository.cs" />
     <Compile Include="Repositories\MultiTenant\MTFieldRepository.cs" />
     <Compile Include="Repositories\MultiTenant\MTFieldTypeRepository.cs" />
     <Compile Include="Repositories\MultiTenant\MTObjectRepository.cs" />
     <Compile Include="Repositories\MultiTenant\MultiTenantObjectRepository.cs" />
+    <Compile Include="Repositories\Plan\SlidingExpirationStrategy.cs" />
     <Compile Include="Repositories\TagRepository.cs" />
     <Compile Include="Repositories\TerminalRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
@@ -650,13 +671,13 @@
     <Compile Include="Migrations\DockyardDbMigration.cs" />
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
     <Compile Include="Repositories\ActivityTemplateRepository.cs" />
-    <Compile Include="Repositories\ActivityRepository.cs" />
+    <Compile Include="Repositories\Plan\Internal\ActivityRepository.cs" />
     <Compile Include="Repositories\CriteriaRepository.cs" />
     <Compile Include="Repositories\EmailStatusRepository.cs" />
     <Compile Include="Repositories\EnvelopeRepository.cs" />
     <Compile Include="Repositories\ProcessNodeRepository.cs" />
-    <Compile Include="Repositories\SubrouteRepository.cs" />
-    <Compile Include="Repositories\RouteRepository.cs" />
+    <Compile Include="Repositories\Plan\Internal\SubrouteRepository.cs" />
+    <Compile Include="Repositories\Plan\Internal\RouteRepository.cs" />
     <Compile Include="Repositories\HistoryRepository.cs" />
     <Compile Include="Repositories\ContainerRepository.cs" />
     <Compile Include="Repositories\MetaflowRepository.cs" />
@@ -971,6 +992,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201601241443338_RenameRouteToPlan.resx">
       <DependentUpon>201601241443338_RenameRouteToPlan.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602031204174_MergeMigration.resx">
+      <DependentUpon>201602031204174_MergeMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602051229214_Add_Test_User_2.resx">
+      <DependentUpon>201602051229214_Add_Test_User_2.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

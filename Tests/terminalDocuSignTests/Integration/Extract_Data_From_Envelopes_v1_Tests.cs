@@ -51,15 +51,15 @@ namespace terminalDocuSignTests.Integration
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Extract_Data_From_Envelopes_v1_InitialConfiguration_ActionDTO();
-            AddHubActivityTemplate(requestActionDTO);
+            var requestDataDTO = HealthMonitor_FixtureData.Extract_Data_From_Envelopes_v1_InitialConfiguration_Fr8DataDTO();
+            AddHubActivityTemplate(requestDataDTO.ActivityDTO);
 
             string selectedAction;
 
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    requestActionDTO
+                    requestDataDTO
                 );
 
             using (var updater = Crate.UpdateStorage(responseActionDTO))
@@ -79,7 +79,7 @@ namespace terminalDocuSignTests.Integration
 
                 selectedAction = availableActions.Fields[1].Key;
             }
-            responseActionDTO.AuthToken = requestActionDTO.AuthToken;
+            responseActionDTO.AuthToken = requestDataDTO.ActivityDTO.AuthToken;
             return new Tuple<ActivityDTO, string>(responseActionDTO, selectedAction);
         }
 
@@ -88,13 +88,13 @@ namespace terminalDocuSignTests.Integration
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Extract_Data_From_Envelopes_v1_InitialConfiguration_ActionDTO();
-            AddHubActivityTemplate(requestActionDTO);
+            var requestDataDTO = HealthMonitor_FixtureData.Extract_Data_From_Envelopes_v1_InitialConfiguration_Fr8DataDTO();
+            AddHubActivityTemplate(requestDataDTO.ActivityDTO);
 
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    requestActionDTO
+                    requestDataDTO
                 );
 
             Assert.NotNull(responseActionDTO);
@@ -116,7 +116,7 @@ namespace terminalDocuSignTests.Integration
 
 
                 //var responseActionDTO =
-                //    await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                //    await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                 //        configureUrl,
                 //        activityDTO.Item1
                 //    );
@@ -142,7 +142,7 @@ namespace terminalDocuSignTests.Integration
             //var activityDTO = await GetActionDTO_WithSelectedAction();
 
             //var responseActionDTO =
-            //   await HttpPostAsync<ActivityDTO, ActivityDTO>(
+            //   await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
             //       configureUrl,
             //       activityDTO.Item1
             //   );
@@ -160,14 +160,14 @@ namespace terminalDocuSignTests.Integration
             var configureUrl = GetTerminalActivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = HealthMonitor_FixtureData.Extract_Data_From_Envelopes_v1_InitialConfiguration_ActionDTO();
-            AddHubActivityTemplate(requestActionDTO);
+            var requestDataDTO = HealthMonitor_FixtureData.Extract_Data_From_Envelopes_v1_InitialConfiguration_Fr8DataDTO();
+            AddHubActivityTemplate(requestDataDTO.ActivityDTO);
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    requestActionDTO
+                    requestDataDTO
                 );
 
             //Assert
@@ -182,14 +182,14 @@ namespace terminalDocuSignTests.Integration
             var configureUrl = GetTerminalDeactivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = HealthMonitor_FixtureData.Extract_Data_From_Envelopes_v1_InitialConfiguration_ActionDTO();
-            AddHubActivityTemplate(requestActionDTO);
+            var requestDataDTO = HealthMonitor_FixtureData.Extract_Data_From_Envelopes_v1_InitialConfiguration_Fr8DataDTO();
+            AddHubActivityTemplate(requestDataDTO.ActivityDTO);
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    requestActionDTO
+                    requestDataDTO
                 );
 
             //Assert

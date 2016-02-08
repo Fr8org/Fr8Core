@@ -779,3 +779,12 @@ div[dnd-list].dndDragover {
 .ui-select-match {
     overflow: hidden;
 }
+
+.have-account-login-guest a{
+    color:rgb(142, 163, 182);
+}
+
+.have-account-login-guest a:hover{
+    background-color: #fff !important;
+    color: #7089a2;
+}

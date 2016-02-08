@@ -18,6 +18,7 @@ using Hub.Managers;
 using Utilities.Configuration.Azure;
 using TerminalBase.Infrastructure;
 using AutoMapper;
+using Data.Interfaces.DataTransferObjects.Helpers;
 
 namespace TerminalBase.BaseClasses
 {
@@ -76,7 +77,7 @@ namespace TerminalBase.BaseClasses
             using (var updater = Crate.UpdateStorage(payload))
             {
                 var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActivityResponse = ActivityResponse.RequestSuspend;
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.RequestSuspend);
             }
 
             return payload;
@@ -94,7 +95,7 @@ namespace TerminalBase.BaseClasses
             using (var updater = Crate.UpdateStorage(payload))
             {
                 var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActivityResponse = ActivityResponse.RequestTerminate;
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.RequestTerminate);
             }
 
             return payload;
@@ -110,8 +111,8 @@ namespace TerminalBase.BaseClasses
             using (var updater = Crate.UpdateStorage(payload))
             {
                 var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActivityResponse = ActivityResponse.Success;
-                operationalState.ResponseMessageDTO = new ResponseMessageDTO() { Message = message };
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Success); 
+                operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Message = message });
             }
 
             return payload;
@@ -122,7 +123,7 @@ namespace TerminalBase.BaseClasses
             using (var updater = Crate.UpdateStorage(payload))
             {
                 var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActivityResponse = ActivityResponse.ExecuteClientAction;
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.ExecuteClientAction);
                 operationalState.CurrentClientActionName = clientActionName;
             }
 
@@ -139,7 +140,7 @@ namespace TerminalBase.BaseClasses
             using (var updater = Crate.UpdateStorage(payload))
             {
                 var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActivityResponse = ActivityResponse.SkipChildren;
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.SkipChildren);
             }
 
             return payload;
@@ -157,9 +158,9 @@ namespace TerminalBase.BaseClasses
             using (var updater = Crate.UpdateStorage(payload))
             {
                 var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActivityResponse = ActivityResponse.Error;
                 operationalState.CurrentActivityErrorCode = errorCode;
-                operationalState.CurrentActivityErrorMessage = errorMessage;
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Error);
+                operationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(errorMessage,ErrorType.Generic, errorCode.ToString(),null)); 
             }
 
             return payload;
@@ -185,7 +186,7 @@ namespace TerminalBase.BaseClasses
             using (var updater = Crate.UpdateStorage(payload))
             {
                 var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActivityResponse = ActivityResponse.ReProcessChildren;
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.ReProcessChildren);
             }
 
             return payload;
@@ -392,17 +393,17 @@ namespace TerminalBase.BaseClasses
         public async virtual Task<Crate<StandardDesignTimeFieldsCM>> GetUpstreamManifestListCrate(ActivityDO activityDO)
         {
             var manifestList = (await BuildUpstreamManifestList(activityDO));
-            var fields = manifestList.Select(f => new FieldDTO(f.Id.ToString(), f.Type)).ToArray();
+            var fields = manifestList.Select(f => new FieldDTO(f.Type, f.Id.ToString())).ToArray();
 
-            return Crate.CreateDesignTimeFieldsCrate("Upstream Manifest Type List", fields);
+            return Crate.CreateDesignTimeFieldsCrate("AvailableUpstreamManifests", fields);
         }
 
         public async virtual Task<Crate<StandardDesignTimeFieldsCM>> GetUpstreamCrateLabelListCrate(ActivityDO activityDO)
         {
             var labelList = (await BuildUpstreamCrateLabelList(activityDO));
-            var fields = labelList.Select(f => new FieldDTO(null, f)).ToArray();
+            var fields = labelList.Select(f => new FieldDTO(f, f)).ToArray();
 
-            return Crate.CreateDesignTimeFieldsCrate("Upstream Crate Label List", fields);
+            return Crate.CreateDesignTimeFieldsCrate("AvailableUpstreamLabels", fields);
         }
 
         protected CrateStorage AssembleCrateStorage(params Crate[] curCrates)
@@ -922,9 +923,9 @@ namespace TerminalBase.BaseClasses
 
             //parent must be a Subroute
             //If Route is specified as a parent, then a new subroute will be created
-            Guid parentId = (parent.ChildNodes.Count > 0) ? parent.ChildNodes[0].ParentRouteNodeId.Value : parent.RootRouteNodeId.Value;
+            //Guid parentId = (parent.ChildNodes.Count > 0) ? parent.ChildNodes[0].ParentRouteNodeId.Value : parent.RootRouteNodeId.Value;
 
-            var result = await HubCommunicator.CreateAndConfigureActivity(activityTemplate.Id, name, CurrentFr8UserId, label, order, parentId);
+            var result = await HubCommunicator.CreateAndConfigureActivity(activityTemplate.Id, name, CurrentFr8UserId, label, order, parent.Id);
             var resultDO = Mapper.Map<ActivityDO>(result);
 
             if (resultDO != null)
@@ -1010,6 +1011,55 @@ namespace TerminalBase.BaseClasses
         {
             var curElement = enumerableObject.ElementAt(objectIndex);
             return curElement;
+        }
+
+
+        /// <summary>
+        /// Extract upstream data based on Upstream Crate Chooser Control's selected manifest and label 
+        /// </summary>
+        /// <param name="upstreamCrateChooserName">Upstream Crate Chooser Control's name</param>
+        /// <param name="curActivityDO"></param>
+        /// <returns>StandardTableDataCM. StandardTableDataCM.Table.Count = 0 if its empty</returns>
+        protected async Task<StandardTableDataCM> ExtractDataFromUpstreamCrates(string upstreamCrateChooserName, ActivityDO curActivityDO)
+        {
+            var controls = GetConfigurationControls(curActivityDO);
+            var crateChooser = controls.FindByName<UpstreamCrateChooser>(upstreamCrateChooserName);
+
+            //Get selected manifest and label from crate chooser
+            var manifestType = crateChooser.SelectedCrates.Where(w => !String.IsNullOrEmpty(w.ManifestType.Value)).Select(c => c.ManifestType.Value);
+            var labelControl = crateChooser.SelectedCrates.Where(w => !String.IsNullOrEmpty(w.Label.Value)).Select(c => c.Label.Value);
+
+            //filter by manifest or label based on selected crate chooser control
+            Func<Crate, bool> whereClause = null;
+            if (manifestType.Count() > 0 && labelControl.Count() > 0)
+                whereClause = (crate => manifestType.Contains(crate.ManifestType.Id.ToString()) && labelControl.Contains(crate.Label));
+            else if (manifestType.Count() > 0)
+                whereClause = (crate => manifestType.Contains(crate.ManifestType.Id.ToString()));
+            else if (labelControl.Count() > 0)
+                whereClause = (crate => labelControl.Contains(crate.Label));
+
+
+            //get upstream controls to extract the data based on the selected manifest or label
+            var getUpstreamCrates = (await GetCratesByDirection(curActivityDO, CrateDirection.Upstream)).ToArray();
+            var selectedUpcrateControls = getUpstreamCrates.Where(whereClause).Select(s => s);//filter upstream controls
+
+            StandardTableDataCM resultTable = new StandardTableDataCM();
+            foreach (var selectedUpcrateControl in selectedUpcrateControls)
+            {
+                if (selectedUpcrateControl != null)
+                {
+                    //for standard table data CM return directly the result - the rest of CM will be converted to TableDataCM
+                    if (selectedUpcrateControl.IsOfType<StandardTableDataCM>())
+                    {
+                        var contentTableCM = selectedUpcrateControl.Get<StandardTableDataCM>();
+                        resultTable.Table.AddRange(contentTableCM.Table);//add rows into results StandardTableDataCM
+                    }
+                    else
+                        throw new NotSupportedException("Manifest type is not yet implemented in extracting the data.");
+                }
+            }
+
+            return resultTable;
         }
 
     }

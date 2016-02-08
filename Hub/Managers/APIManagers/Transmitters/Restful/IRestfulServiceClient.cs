@@ -17,6 +17,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
         Task<string> PostAsync(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null);
         Task<string> PostAsync<TContent>(Uri requestUri, TContent content, string CorrelationId = null, Dictionary<string, string> headers = null);
         Task<TResponse> PostAsync<TContent, TResponse>(Uri requestUri, TContent content, string CorrelationId = null, Dictionary<string, string> headers = null);
+        Task DeleteAsync(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null);
         Task<TResponse> PutAsync<TContent, TResponse>(Uri requestUri, TContent content, string CorrelationId = null, Dictionary<string, string> headers = null);
         Task<string> PutAsync<TContent>(Uri requestUri, TContent content, string CorrelationId = null, Dictionary<string, string> headers = null);
 

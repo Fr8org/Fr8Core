@@ -45,7 +45,7 @@ namespace terminalDocuSign.Services
         public async Task CreateRoute_MonitorAllDocuSignEvents(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
         {
             var existingRoutes = (await _hubCommunicator.GetPlansByName("MonitorAllDocuSignEvents", curFr8UserId)).ToList();
-            existingRoutes = existingRoutes.Where(r => r.Tag == "docusign-auto-monitor-plan-"+authTokenDTO.ExternalAccountId).ToList();
+            existingRoutes = existingRoutes.Where(r => r.Tag == ("docusign-auto-monitor-plan-" + curFr8UserId)).ToList();
             if (existingRoutes.Any())
             {
                 //hmmmm which one belongs to us?
@@ -64,7 +64,7 @@ namespace terminalDocuSign.Services
                 Name = "MonitorAllDocuSignEvents",
                 Description = "MonitorAllDocuSignEvents",
                 RouteState = RouteState.Active,
-                Tag = "docusign-auto-monitor-route-"+authTokenDTO.ExternalAccountId
+                Tag = "docusign-auto-monitor-plan-" + curFr8UserId
             };
             var monitorDocusignRoute = await _hubCommunicator.CreatePlan(emptyMonitorRoute, curFr8UserId);
             var activityTemplates = await _hubCommunicator.GetActivityTemplates(null, curFr8UserId);
@@ -132,20 +132,6 @@ namespace terminalDocuSign.Services
             }
 
             return template;
-        }
-
-        private PlanDO GetExistingPlan(IUnitOfWork uow, string routeName, string fr8AccountEmail)
-        {
-            if (uow.PlanRepository.GetQuery().Any(existingRoute =>
-                existingRoute.Name.Equals(routeName) &&
-                existingRoute.Fr8Account.Email.Equals(fr8AccountEmail)))
-            {
-                return uow.PlanRepository.GetQuery().First(existingRoute =>
-                    existingRoute.Name.Equals(routeName) &&
-                    existingRoute.Fr8Account.Email.Equals(fr8AccountEmail));
-            }
-
-            return null;
         }
     }
 }
