@@ -179,9 +179,11 @@ namespace DockyardTest.Security
                 activityDTO.Id = activityDO.Id;
                 activityDTO.ActivityTemplateId = activityTemplateDO.Id;
             }
-            
-                
-            _authorization.PrepareAuthToken(activityDTO);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                _authorization.PrepareAuthToken(uow, activityDTO);
+            }
 
             Assert.AreEqual(Token, activityDTO.AuthToken.Token);
         }
@@ -357,9 +359,12 @@ namespace DockyardTest.Security
                 activityDTO.ActivityTemplateId = activityTemplateDO.Id;
                 activityDTO.Id = activityDO.Id;
             }
-            var testResult = _authorization.ValidateAuthenticationNeeded(userDO.Id, activityDTO);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var testResult = _authorization.ValidateAuthenticationNeeded(uow, userDO.Id, activityDTO);
 
-            Assert.IsTrue(testResult);
+                Assert.IsTrue(testResult);
+            }
         }
 
         [Test]
@@ -392,9 +397,12 @@ namespace DockyardTest.Security
                 activityDTO.ActivityTemplateId = activityTemplateDO.Id;
             }
 
-            var testResult = _authorization.ValidateAuthenticationNeeded(tokenDO.UserID, activityDTO);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var testResult = _authorization.ValidateAuthenticationNeeded(uow, tokenDO.UserID, activityDTO);
 
-            Assert.IsFalse(testResult);
+                Assert.IsFalse(testResult);
+            }
         }
 
         [Test]

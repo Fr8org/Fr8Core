@@ -72,7 +72,7 @@ namespace Hub.Services
                 stopwatch = System.Diagnostics.Stopwatch.StartNew();
                 SaveAndUpdateActivity(uow, submittedActivityData, new List<ActivityDO>());
 
-            uow.SaveChanges();
+                uow.SaveChanges();
                 success = true;
             }
             catch
@@ -83,9 +83,9 @@ namespace Hub.Services
             {
                 stopwatch.Stop();
                 _telemetryClient.TrackDependency("Database", "Saving Action with subactions",
-                   startTime,
-                   stopwatch.Elapsed,
-                   success);
+                    startTime,
+                    stopwatch.Elapsed,
+                    success);
             }
 
             success = false;
@@ -105,25 +105,9 @@ namespace Hub.Services
             {
                 stopwatch.Stop();
                 _telemetryClient.TrackDependency("Database", "Getting Action by id after saving",
-                   startTime,
-                   stopwatch.Elapsed,
-                   success);
-            }
-        }
-
-        public ActivityDO SaveOrUpdateActivity(ActivityDO submittedActivityData)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                return SaveOrUpdateActivity(uow, submittedActivityData);
-            }
-        }
-
-        public ActivityDO GetById(Guid id)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                return GetById(uow, id);
+                    startTime,
+                    stopwatch.Elapsed,
+                    success);
             }
         }
 
@@ -198,12 +182,12 @@ namespace Hub.Services
             RouteNodeDO originalAction;
             if (submittedActiviy.ParentRouteNodeId != null)
             {
-                route = uow.PlanRepository.GetById<RouteNodeDO>(submittedActiviy.ParentRouteNodeId);
+                route = uow.PlanRepository.Reload<RouteNodeDO>(submittedActiviy.ParentRouteNodeId);
                 originalAction = route.ChildNodes.FirstOrDefault(x => x.Id == submittedActiviy.Id);
             }
             else
             {
-                originalAction = uow.PlanRepository.GetById<RouteNodeDO>(submittedActiviy.Id);
+                originalAction = uow.PlanRepository.Reload<RouteNodeDO>(submittedActiviy.Id);
                 route = originalAction.ParentRouteNode;
             }
 
@@ -319,7 +303,7 @@ namespace Hub.Services
             return activity;
         }
 
-        private async Task<ActivityDO> CallActionConfigure(string userId, ActivityDO curActivityDO)
+        private async Task<ActivityDO> CallActionConfigure (IUnitOfWork uow, string userId, ActivityDO curActivityDO)
         {
             if (curActivityDO == null)
             {
@@ -328,13 +312,13 @@ namespace Hub.Services
 
             var tempActionDTO = Mapper.Map<ActivityDTO>(curActivityDO);
 
-            if (!_authorizationToken.ValidateAuthenticationNeeded(userId, tempActionDTO))
+            if (!_authorizationToken.ValidateAuthenticationNeeded(uow, userId, tempActionDTO))
             {
                 curActivityDO = Mapper.Map<ActivityDO>(tempActionDTO);
 
                 try
                 {
-                    tempActionDTO = await CallTerminalActionAsync<ActivityDTO>("configure", curActivityDO, Guid.Empty);
+                    tempActionDTO = await CallTerminalActionAsync<ActivityDTO>(uow, "configure", curActivityDO, Guid.Empty);
                 }
                 catch (ArgumentException e)
                 {
@@ -346,7 +330,7 @@ namespace Hub.Services
                     // terminal requested token invalidation
                     if (e.StatusCode == 419)
                     {
-                        _authorizationToken.InvalidateToken(userId, tempActionDTO);
+                        _authorizationToken.InvalidateToken(uow, userId, tempActionDTO);
                     }
                     else
                     {
@@ -377,32 +361,31 @@ namespace Hub.Services
 
         private async Task<ActivityDO> ConfigureSingleAction(IUnitOfWork uow, string userId, ActivityDO curActivityDO)
         {
-            curActivityDO = await CallActionConfigure(userId, curActivityDO);
+            curActivityDO = await CallActionConfigure(uow, userId, curActivityDO);
 
             UpdateActionProperties(uow, curActivityDO);
 
             return curActivityDO;
         }
 
-        public async Task<ActivityDTO> Configure(string userId, ActivityDO curActivityDO, bool saveResult = true)
+        public async Task<ActivityDTO> Configure(IUnitOfWork uow, string userId, ActivityDO curActivityDO, bool saveResult = true)
         {
-            curActivityDO = await CallActionConfigure(userId, curActivityDO);
+            curActivityDO = await CallActionConfigure(uow, userId, curActivityDO);
+
             if (saveResult)
             {
                 //save the received action as quickly as possible
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    curActivityDO = SaveOrUpdateActivity(uow, curActivityDO);
-                    return Mapper.Map<ActivityDTO>(curActivityDO);
-                }
+                curActivityDO = SaveOrUpdateActivity(uow, curActivityDO);
+                return Mapper.Map<ActivityDTO>(curActivityDO);
             }
+
             return Mapper.Map<ActivityDTO>(curActivityDO);
         }
 
         public ActivityDO MapFromDTO(ActivityDTO curActivityDTO)
         {
-            ActivityDO submittedActivity = AutoMapper.Mapper.Map<ActivityDO>(curActivityDTO);
-            return SaveOrUpdateActivity(submittedActivity);
+            ActivityDO submittedActivity = Mapper.Map<ActivityDO>(curActivityDTO);
+            return submittedActivity;
         }
 
         public void Delete(Guid id)
@@ -489,7 +472,6 @@ namespace Hub.Services
                 {
                     updater.CrateStorage = _crate.FromDto(payload.CrateStorage);
                 }
-                //curContainerDO.CrateStorage = payload.CrateStorage;
             }
 
             uow.SaveChanges();
@@ -499,6 +481,7 @@ namespace Hub.Services
         public async Task<PayloadDTO> Run(IUnitOfWork uow, ActivityDO curActivityDO, ActionState curActionState, ContainerDO curContainerDO)
         {
             var eventManager = ObjectFactory.GetInstance<Hub.Managers.Event>();
+
             if (curActivityDO == null)
             {
                 throw new ArgumentNullException("curActivityDO");
@@ -507,7 +490,7 @@ namespace Hub.Services
             try
             {
                 var actionName = curActionState == ActionState.InitialRun ? "Run" : "ChildrenExecuted";
-                var payloadDTO = await CallTerminalActionAsync<PayloadDTO>(actionName, curActivityDO, curContainerDO.Id);
+                var payloadDTO = await CallTerminalActionAsync<PayloadDTO>(uow, actionName, curActivityDO, curContainerDO.Id);
 
                 // this will break the infinite loop created for logFr8InternalEvents...
 
@@ -570,9 +553,13 @@ namespace Hub.Services
 
                 curActivityDO = (ActivityDO)curActivityDO.Clone();
 
-                var result = await CallTerminalActionAsync<ActivityDTO>("activate", curActivityDO, Guid.Empty);
-                EventManager.ActionActivated(curActivityDO);
-                return result;
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    var result = await CallTerminalActionAsync<ActivityDTO>(uow, "activate", curActivityDO, Guid.Empty);
+
+                    EventManager.ActionActivated(curActivityDO);
+                    return result;
+                }
             }
             catch (ArgumentException)
             {
@@ -588,7 +575,10 @@ namespace Hub.Services
 
         public async Task<ActivityDTO> Deactivate(ActivityDO curActivityDO)
         {
-            return await CallTerminalActionAsync<ActivityDTO>("deactivate", curActivityDO, Guid.Empty);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                return await CallTerminalActionAsync<ActivityDTO>(uow, "deactivate", curActivityDO, Guid.Empty);
+            }
         }
         //private Task<PayloadDTO> RunActionAsync(string actionName, ActionDO curActivityDO, Guid containerId)
         //{
@@ -616,7 +606,7 @@ namespace Hub.Services
         //    return ObjectFactory.GetInstance<ITerminalTransmitter>().CallActionAsync<PayloadDTO>(actionName, dto);
         //}
 
-        private Task<TResult> CallTerminalActionAsync<TResult>(string activityName, ActivityDO curActivityDO, Guid containerId, string curDocumentationSupport = null)
+        private Task<TResult> CallTerminalActionAsync<TResult>(IUnitOfWork uow, string activityName, ActivityDO curActivityDO, Guid containerId, string curDocumentationSupport = null)
         {
             if (activityName == null) throw new ArgumentNullException("activityName");
             if (curActivityDO == null) throw new ArgumentNullException("curActivityDO");
@@ -630,21 +620,22 @@ namespace Hub.Services
             };
 
             if (curDocumentationSupport != null)
+            {
                 dto.DocumentationSupport = curDocumentationSupport;
-            _authorizationToken.PrepareAuthToken(dto);
+            }
+
+            _authorizationToken.PrepareAuthToken(uow, dto);
 
             EventManager.ActionDispatched(curActivityDO, containerId);
 
             if (containerId != Guid.Empty)
             {
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    var containerDO = uow.ContainerRepository.GetByKey(containerId);
-                    EventManager.ContainerSent(containerDO, curActivityDO);
-                    var reponse = ObjectFactory.GetInstance<ITerminalTransmitter>().CallActionAsync<TResult>(activityName, fr8DataDTO, containerId.ToString());
-                    EventManager.ContainerReceived(containerDO, curActivityDO);
-                    return reponse;
-                }
+                var containerDO = uow.ContainerRepository.GetByKey(containerId);
+                EventManager.ContainerSent(containerDO, curActivityDO);
+                var reponse = ObjectFactory.GetInstance<ITerminalTransmitter>()
+                    .CallActionAsync<TResult>(activityName, fr8DataDTO, containerId.ToString());
+                EventManager.ContainerReceived(containerDO, curActivityDO);
+                return reponse;
             }
             return ObjectFactory.GetInstance<ITerminalTransmitter>().CallActionAsync<TResult>(activityName, fr8DataDTO, containerId.ToString());
         }

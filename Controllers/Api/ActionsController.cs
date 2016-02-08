@@ -94,8 +94,12 @@ namespace HubWeb.Controllers
             // WebMonitor.Tracer.Monitor.StartMonitoring("Configuring action " + curActionDesignDTO.Name);
             curActionDesignDTO.CurrentView = null;
             ActivityDO curActivityDO = Mapper.Map<ActivityDO>(curActionDesignDTO);
-            ActivityDTO activityDTO = await _activity.Configure(User.Identity.GetUserId(), curActivityDO);
-            return Ok(activityDTO);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                ActivityDTO activityDTO = await _activity.Configure(uow, User.Identity.GetUserId(), curActivityDO);
+                return Ok(activityDTO);
+            }
         }
 
         /// <summary>

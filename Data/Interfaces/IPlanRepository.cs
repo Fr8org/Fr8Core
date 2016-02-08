@@ -6,6 +6,12 @@ namespace Data.Interfaces
 {
     public interface IPlanRepository
     {
+        TRouteNode Reload<TRouteNode>(Guid id)
+             where TRouteNode : RouteNodeDO;
+
+        TRouteNode Reload<TRouteNode>(Guid? id)
+            where TRouteNode : RouteNodeDO;
+
         TRouteNode GetById<TRouteNode>(Guid id)
             where TRouteNode : RouteNodeDO;
 

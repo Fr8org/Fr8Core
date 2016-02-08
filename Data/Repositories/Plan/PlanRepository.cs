@@ -15,6 +15,7 @@ namespace Data.Repositories.Plan
 
         private readonly List<LoadedRoute>  _loadedRoutes = new List<LoadedRoute>();
         private readonly Dictionary<Guid, LoadedRoute> _loadedNodes = new Dictionary<Guid, LoadedRoute>();
+        private readonly object _sync = new object();
 
         /**********************************************************************************/
         // Functions
@@ -26,7 +27,125 @@ namespace Data.Repositories.Plan
         }
 
         /**********************************************************************************/
-        
+
+        private RouteNodeDO GetNewNodeOrGetExising(Dictionary<Guid, RouteNodeDO> exisingNodes, RouteNodeDO newNode)
+        {
+            if (newNode == null)
+            {
+                return null;
+            }
+
+            RouteNodeDO existingNode;
+
+            if (exisingNodes.TryGetValue(newNode.Id, out existingNode))
+            {
+                return existingNode;
+            }
+
+            return newNode;
+        }
+
+        /**********************************************************************************/
+        // This method updates locally cached elements from global cache or DB
+        // This method will overwrite all local changes
+        public TRouteNode Reload<TRouteNode>(Guid id)
+              where TRouteNode : RouteNodeDO
+        {
+            var routeFromDb = GetRouteByMemberId(id);
+
+            lock (_loadedNodes)
+            {
+                // have we already loaded this route?
+                var loadedRoute = _loadedRoutes.FirstOrDefault(x => x.Root.Id == routeFromDb.Id);
+
+                if (loadedRoute == null)
+                {
+                    //if no, then just get this route by id
+                    return GetById<TRouteNode>(id);
+                }
+
+                routeFromDb = RouteTreeHelper.CloneWithStructure(routeFromDb);
+
+                // get list of currently loaded items
+                var currentNodes = RouteTreeHelper.Linearize(loadedRoute.Root).ToDictionary(x => x.Id, x => x);
+                var dbNodes = RouteTreeHelper.Linearize(routeFromDb).ToDictionary(x => x.Id, x => x);
+
+                foreach (var routeNodeDo in dbNodes)
+                {
+                    RouteNodeDO currentNode;
+
+                    // sync structure
+                    var originalChildren = routeNodeDo.Value.ChildNodes;
+                    routeNodeDo.Value.ChildNodes = new List<RouteNodeDO>(originalChildren.Count);
+
+                    foreach (var childNode in originalChildren)
+                    {
+                        routeNodeDo.Value.ChildNodes.Add(GetNewNodeOrGetExising(currentNodes, childNode));
+                    }
+
+                    routeNodeDo.Value.ParentRouteNode = GetNewNodeOrGetExising(currentNodes, routeNodeDo.Value.ParentRouteNode);
+                    routeNodeDo.Value.RootRouteNode = GetNewNodeOrGetExising(currentNodes, routeNodeDo.Value.RootRouteNode);
+
+                    if (currentNodes.TryGetValue(routeNodeDo.Key, out currentNode))
+                    {
+                        //sync local cached properties with db one
+                        currentNode.SyncPropertiesWith(routeNodeDo.Value);
+                        currentNode.ChildNodes = routeNodeDo.Value.ChildNodes;
+                        currentNode.ParentRouteNode = routeNodeDo.Value.ParentRouteNode;
+                        currentNode.RootRouteNode = routeNodeDo.Value.RootRouteNode;
+                    }
+                    else // we don't have this node in our local cache.
+                    {
+                        _loadedNodes[routeNodeDo.Key] = loadedRoute;
+                    }
+                }
+
+                // remove nodes, that we deleted in the DB version
+                foreach (var routeNodeDo in currentNodes)
+                {
+                    if (!dbNodes.ContainsKey(routeNodeDo.Key))
+                    {
+                        _loadedNodes.Remove(routeNodeDo.Key);
+                    }
+                }
+
+                CheckStructure(loadedRoute.Root, new HashSet<Guid>());
+
+                return (TRouteNode)loadedRoute.Find(id);
+            }
+        }
+
+        /**********************************************************************************/
+
+        private void CheckStructure(RouteNodeDO node, HashSet<Guid> visited)
+        {
+            if (!visited.Add(node.Id))
+            {
+                throw new Exception("Cycle detected");
+            }
+
+            foreach (var routeNodeDo in node.ChildNodes)
+            {
+                CheckStructure(routeNodeDo, visited);
+            }
+        }
+
+
+        /**********************************************************************************/
+
+        public TRouteNode Reload<TRouteNode>(Guid? id)
+            where TRouteNode : RouteNodeDO
+        {
+            if (id == null)
+            {
+                return null;
+            }
+
+            return Reload<TRouteNode>(id.Value);
+        }
+
+        /**********************************************************************************/
+
         public TRouteNode GetById<TRouteNode>(Guid id)
             where TRouteNode : RouteNodeDO
         {
@@ -190,6 +309,8 @@ namespace Data.Repositories.Plan
                 foreach (var loadedRoute in _loadedRoutes)
                 {
                     var route = loadedRoute;
+                    var parentPlan = loadedRoute.Root as PlanDO;
+
                     RouteTreeHelper.Visit(loadedRoute.Root, (x, y) =>
                     {
                         if (x.Id == Guid.Empty)
@@ -199,28 +320,24 @@ namespace Data.Repositories.Plan
 
                         x.ParentRouteNode = y;
                         x.ParentRouteNodeId = y != null ? y.Id : (Guid?) null;
-                        _loadedNodes[x.Id] = route;
-                    });
 
-                    var parentPlan = loadedRoute.Root as PlanDO;
-                    Action<RouteNodeDO> updateCallback;
-
-                    if (parentPlan != null)
-                    {
-                        updateCallback = x =>
+                        if (parentPlan != null)
                         {
                             x.Fr8AccountId = parentPlan.Fr8AccountId;
                             x.Fr8Account = parentPlan.Fr8Account;
                             x.RootRouteNodeId = parentPlan.Id;
-                            UpdateForeignKeys(x);
-                        };
-                    }
-                    else
-                    {
-                        updateCallback = UpdateForeignKeys;
-                    }
 
-                    var clonedRoute = RouteTreeHelper.CloneWithStructure(loadedRoute.Root, updateCallback);
+                            UpdateForeignKeys(x);
+                        }
+                        else
+                        {
+                            UpdateForeignKeys(x);
+                        }
+
+                        _loadedNodes[x.Id] = route;
+                    });
+
+                    var clonedRoute = RouteTreeHelper.CloneWithStructure(loadedRoute.Root);
                     _planStorage.Update(clonedRoute);
                 }
             }

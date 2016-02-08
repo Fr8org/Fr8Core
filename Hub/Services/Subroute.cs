@@ -170,7 +170,7 @@ namespace Hub.Services
                 var configureTaskList = new List<Task<ActivityDTO>>();
                 foreach (var downstreamAction in downstreamActions)
                 {
-                    configureTaskList.Add(_activity.Configure(userId, downstreamAction, false));
+                    configureTaskList.Add(_activity.Configure(uow, userId, downstreamAction, false));
                 }
 
                 await Task.WhenAll(configureTaskList);

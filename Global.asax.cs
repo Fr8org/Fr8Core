@@ -25,6 +25,7 @@ using Utilities;
 using Logger = Utilities.Logging.Logger;
 using HubWeb.Infrastructure;
 using System.Threading.Tasks;
+using Microsoft.ApplicationInsights.Extensibility;
 
 namespace HubWeb
 {

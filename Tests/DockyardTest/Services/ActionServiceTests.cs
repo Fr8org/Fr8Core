@@ -125,7 +125,11 @@ namespace DockyardTest.Services
         public async void Action_Configure_WithNullActionTemplate_ThrowsArgumentNullException()
         {
             var _service = new Action();
-            await _service.Configure(null, null);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                await _service.Configure(uow, null, null);
+            }
         }
 
         [Test]
@@ -153,10 +157,18 @@ namespace DockyardTest.Services
             IActivity activity = new Activity();
 
             //Add
-            activity.SaveOrUpdateActivity(origActivityDO);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                activity.SaveOrUpdateActivity(uow, origActivityDO);
+            }
 
+            ActivityDO activityDO;
             //Get
-            var activityDO = activity.GetById(origActivityDO.Id);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                activityDO = activity.GetById(uow, origActivityDO.Id);
+            }
+
             Assert.AreEqual(origActivityDO.Name, activityDO.Name);
             Assert.AreEqual(origActivityDO.Id, activityDO.Id);
             Assert.AreEqual(origActivityDO.CrateStorage, activityDO.CrateStorage);

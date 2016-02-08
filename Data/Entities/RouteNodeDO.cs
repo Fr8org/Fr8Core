@@ -72,6 +72,11 @@ namespace Data.Entities
             return clone;
         }
 
+        public void SyncPropertiesWith(RouteNodeDO other)
+        {
+            CopyProperties(other);
+        }
+
         public virtual bool AreContentPropertiesEquals(RouteNodeDO other)
         {
             return ParentRouteNodeId == other.ParentRouteNodeId &&

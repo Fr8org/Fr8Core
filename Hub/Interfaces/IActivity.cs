@@ -14,11 +14,9 @@ namespace Hub.Interfaces
     public interface IActivity
     {
         IEnumerable<TViewModel> GetAllActivities<TViewModel>();
-        ActivityDO SaveOrUpdateActivity(ActivityDO currentActivityDo);
         ActivityDO SaveOrUpdateActivity(IUnitOfWork uow, ActivityDO currentActivityDo);
-        Task<ActivityDTO> Configure(string userId, ActivityDO curActivityDO, bool saveResult = true);
+        Task<ActivityDTO> Configure(IUnitOfWork uow, string userId, ActivityDO curActivityDO, bool saveResult = true);
         //Task<ActionDO> SaveUpdateAndConfigure(IUnitOfWork uow, ActionDO submittedActionDo);
-        ActivityDO GetById(Guid id);
         ActivityDO GetById(IUnitOfWork uow, Guid id);
         //void Delete(int id); -> Delete is moved to ProcessNodeTemplate
         ActivityDO MapFromDTO(ActivityDTO curActivityDTO);
