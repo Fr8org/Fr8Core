@@ -24,7 +24,7 @@ using TerminalBase.Services;
 
 namespace terminalFr8Core.Actions
 {
-    public class QueryMTDatabase_v1 : BaseTerminalActivity
+    public class QueryFr8Warehouse_v1 : BaseTerminalActivity
     {
         public class ActionUi : StandardConfigurationControlsCM
         {
@@ -265,6 +265,11 @@ namespace terminalFr8Core.Actions
                 var availableObjects = (DropDownList)queryPicker.Radios[1].Controls[0];
                 var criteria = JsonConvert.DeserializeObject<FilterDataDTO>(filterPane.Value);
 
+                if (availableObjects.Value == null)
+                {
+                    return Error(payload, "This action is designed to query the Fr8 Warehouse for you, but you don't currently have any objects stored there.");
+                }
+
                 int objectId;
                 if (!int.TryParse(availableObjects.Value, out objectId))
                 {
@@ -324,7 +329,7 @@ namespace terminalFr8Core.Actions
                 {
                     searchResult.PayloadObjects.Add(converter(foundObject));
                 }
-                
+
                 using (var updater = Crate.UpdateStorage(payload))
                 {
                     updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Found MT Objects", searchResult));
@@ -395,7 +400,7 @@ namespace terminalFr8Core.Actions
 
                 if (member is FieldInfo)
                 {
-                    accessor = ((FieldInfo) member).ToMemberAccessor();
+                    accessor = ((FieldInfo)member).ToMemberAccessor();
                 }
                 else if (member is PropertyInfo && !((PropertyInfo)member).IsSpecialName)
                 {
@@ -406,7 +411,7 @@ namespace terminalFr8Core.Actions
                     continue;
                 }
 
-                accessors.Add(new KeyValuePair<string, IMemberAccessor>(member.Name, accessor));    
+                accessors.Add(new KeyValuePair<string, IMemberAccessor>(member.Name, accessor));
             }
 
             return x =>
@@ -449,7 +454,7 @@ namespace terminalFr8Core.Actions
 
             return fields.OrderBy(x => x.Key).Select(x => new FieldDTO(x.Key, x.Key));
         }
-        
+
         private IEnumerable<FieldDTO> GetObjects()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

@@ -104,11 +104,11 @@ namespace terminalDocuSignTests.Integration
               setDelayActionTemplate
             );
 
-            var queryMTDatabaseActionTemplate = new ActivityTemplateDTO()
+            var queryFr8WarehouseActionTemplate = new ActivityTemplateDTO()
             {
                 Version = "1",
-                Name = "QueryMTDatabase",
-                Label = "Query MT Database",
+                Name = "QueryFr8Warehouse",
+                Label = "Query Fr8 Warehouse",
                 Category = ActivityCategory.Processors,
                 Terminal = terminalCoreDO,
                 NeedsAuthentication = false,
@@ -117,7 +117,7 @@ namespace terminalDocuSignTests.Integration
 
             AddActivityTemplate(
                activityDTO,
-              queryMTDatabaseActionTemplate
+              queryFr8WarehouseActionTemplate
             );
 
             AddActivityTemplate(

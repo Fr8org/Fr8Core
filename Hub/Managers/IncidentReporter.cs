@@ -42,6 +42,7 @@ namespace Hub.Managers
             EventManager.IncidentMissingFieldInPayload += IncidentMissingFieldInPayload;
             EventManager.ExternalEventReceived += LogExternalEventReceivedIncident;
             EventManager.KeyVaultFailure += KeyVaultFailure;
+            EventManager.EventAuthTokenSilentRevoke += AuthTokenSilentRevoke;
             EventManager.EventContainerFailed += ContainerFailed;
         }
 
@@ -60,6 +61,27 @@ namespace Hub.Managers
                 SecondaryCategory = "QuerySecurePartAsync",
                 Component = "Hub",
                 Activity = "KeyVault Failed"
+            };
+
+            SaveAndLogIncident(incident);
+        }
+
+        private void AuthTokenSilentRevoke(AuthorizationTokenDO authToken)
+        {
+            var incident = new IncidentDO
+            {
+                CustomerId = "unknown",
+                Data = string.Join(
+                    Environment.NewLine,
+                    "AuthToken method: Silent Revoke",
+                    "User Id: " + authToken.UserID.ToString(),
+                    "Terminal name: " + authToken.Terminal != null ? authToken.Terminal.Name : authToken.TerminalID.ToString(),
+                    "External AccountId: " + authToken.ExternalAccountId
+                ),
+                PrimaryCategory = "AuthToken",
+                SecondaryCategory = "Silent Revoke",
+                Component = "Hub",
+                Activity = "AuthToken Silent Revoke"
             };
 
             SaveAndLogIncident(incident);

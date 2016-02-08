@@ -18,6 +18,7 @@ using Hub.Services;
 using Utilities;
 using Utilities.Logging;
 using System.Data.Entity.Infrastructure;
+using System.Web.Mvc;
 
 //NOTES: Do NOT put Incidents here. Put them in IncidentReporter
 
@@ -74,7 +75,8 @@ namespace Hub.Managers
             EventManager.EventContainerStateChanged += LogEventContainerStateChanged;
 
             EventManager.EventAuthenticationCompleted += PostToTerminalEventsEndPoint;
-
+            EventManager.EventAuthTokenCreated += AuthTokenCreated;
+            EventManager.EventAuthTokenRemoved += AuthTokenRemoved;
         }
 
         public void UnsubscribeFromAlerts()
@@ -116,6 +118,9 @@ namespace Hub.Managers
             EventManager.EventContainerStateChanged -= LogEventContainerStateChanged;
 
             EventManager.EventAuthenticationCompleted -= PostToTerminalEventsEndPoint;
+
+            EventManager.EventAuthTokenCreated -= AuthTokenCreated;
+            EventManager.EventAuthTokenRemoved -= AuthTokenRemoved;
         }
 
         //private void StaleBookingRequestsDetected(BookingRequestDO[] oldBookingRequests)
@@ -178,6 +183,54 @@ namespace Hub.Managers
         //    Logger.GetLogger().Info(string.Format("Reservation Timed out. BookingRequest ID : {0}, Booker ID: {1}", bookingRequestId, bookerId));
         //}
 
+        private static void AuthTokenCreated(AuthorizationTokenDO authToken)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var factDO = new FactDO();
+                factDO.PrimaryCategory = "AuthToken";
+                factDO.SecondaryCategory = "Created";
+                factDO.Activity = "AuthToken Created";
+                factDO.ObjectId = null;
+                factDO.CreatedByID = ObjectFactory.GetInstance<ISecurityServices>().GetCurrentUser();
+                factDO.Data = string.Join(
+                    Environment.NewLine,
+                    "AuthToken method: Created",
+                    "User Id: " + authToken.UserID.ToString(),
+                    "Terminal name: " + (authToken.Terminal != null ? authToken.Terminal.Name : authToken.TerminalID.ToString()),
+                    "External AccountId: " + authToken.ExternalAccountId
+                );
+
+                uow.FactRepository.Add(factDO);
+                uow.SaveChanges();
+            }
+        }
+
+        private static void AuthTokenRemoved(AuthorizationTokenDO authToken)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var newFactDO = new FactDO
+                {
+                    PrimaryCategory = "AuthToken",
+                    SecondaryCategory = "Removed",
+                    Activity = "AuthToken Removed",
+                    ObjectId = null,
+                    CreatedByID = ObjectFactory.GetInstance<ISecurityServices>().GetCurrentUser(),
+                    Data = string.Join(
+                        Environment.NewLine,
+                        "AuthToken method: Removed",
+                        "User Id: " + authToken.UserID.ToString(),
+                        "Terminal name: " + authToken.Terminal != null ? authToken.Terminal.Name : authToken.TerminalID.ToString(),
+                        "External AccountId: " + authToken.ExternalAccountId
+                    )
+                };
+
+                uow.FactRepository.Add(newFactDO);
+                uow.SaveChanges();
+            }
+        }
+
         private static void TrackablePropertyUpdated(string entityName, string propertyName, object id,
             object value)
         {
@@ -217,18 +270,23 @@ namespace Hub.Managers
 
         private void EventManagerOnEventProcessRequestReceived(ContainerDO containerDO)
         {
-            var fact = new FactDO
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                //CustomerId = containerDO.Fr8AccountId,
-                CustomerId = containerDO.Plan.Fr8AccountId,
-                Data = containerDO.Id.ToStr(),
-                ObjectId = containerDO.Id.ToStr(),
-                PrimaryCategory = "Process Access",
-                SecondaryCategory = "Process",
-                Activity = "Requested"
-            };
+                var plan = uow.PlanRepository.GetById<PlanDO>(containerDO.PlanId);
 
-            SaveAndLogFact(fact);
+                var fact = new FactDO
+                {
+                    //CustomerId = containerDO.Fr8AccountId,
+                    CustomerId = plan.Fr8AccountId,
+                    Data = containerDO.Id.ToStr(),
+                    ObjectId = containerDO.Id.ToStr(),
+                    PrimaryCategory = "Process Access",
+                    SecondaryCategory = "Process",
+                    Activity = "Requested"
+                };
+
+                SaveAndLogFact(fact);
+            }
         }
 
 
@@ -656,17 +714,22 @@ namespace Hub.Managers
 
         private void LogEventProcessLaunched(ContainerDO launchedContainer)
         {
-            var fact = new FactDO
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                CustomerId = launchedContainer.Plan.Fr8AccountId,
-                Data = launchedContainer.Id.ToStr(),
-                ObjectId = launchedContainer.Id.ToStr(),
-                PrimaryCategory = "Container Execution",
-                SecondaryCategory = "Container",
-                Activity = "Launched"
-            };
+                var plan = uow.PlanRepository.GetById<PlanDO>(launchedContainer.PlanId);
 
-            SaveAndLogFact(fact);
+                var fact = new FactDO
+                {
+                    CustomerId = plan.Fr8AccountId,
+                    Data = launchedContainer.Id.ToStr(),
+                    ObjectId = launchedContainer.Id.ToStr(),
+                    PrimaryCategory = "Container Execution",
+                    SecondaryCategory = "Container",
+                    Activity = "Launched"
+                };
+
+                SaveAndLogFact(fact);
+            }
         }
 
         private void LogEventProcessNodeCreated(ProcessNodeDO processNode)
@@ -677,10 +740,11 @@ namespace Hub.Managers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 containerInExecution = uow.ContainerRepository.GetByKey(processNode.ParentContainerId);
+                var plan = containerInExecution != null ? uow.PlanRepository.GetById<PlanDO>(containerInExecution.PlanId) : null;
 
                 fact = new FactDO
                 {
-                    CustomerId = containerInExecution != null ? containerInExecution.Plan.Fr8AccountId : "unknown",
+                    CustomerId = containerInExecution != null ? plan.Fr8AccountId : "unknown",
                     Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
                     ObjectId = processNode.Id.ToStr(),
                     PrimaryCategory = "Container Execution",
@@ -700,10 +764,11 @@ namespace Hub.Managers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 containerInExecution = uow.ContainerRepository.GetByKey(containerId);
+                var plan = containerInExecution != null ? uow.PlanRepository.GetById<PlanDO>(containerInExecution.PlanId) : null; ;
 
                 fact = new FactDO
                 {
-                    CustomerId = containerInExecution != null ? containerInExecution.Plan.Fr8AccountId : "unknown",
+                    CustomerId = containerInExecution != null ? plan.Fr8AccountId : "unknown",
                     Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
                     ObjectId = null,
                     PrimaryCategory = "Process Execution",
@@ -723,10 +788,11 @@ namespace Hub.Managers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 containerInExecution = uow.ContainerRepository.GetByKey(curContainerId);
+                var plan = containerInExecution != null ? uow.PlanRepository.GetById<PlanDO>(containerInExecution.PlanId) : null;
 
                 fact = new FactDO
                 {
-                    CustomerId = containerInExecution != null ? containerInExecution.Plan.Fr8AccountId : "unknown",
+                    CustomerId = containerInExecution != null ? plan.Fr8AccountId : "unknown",
                     Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
                     ObjectId = null,
                     PrimaryCategory = "Process Execution",
@@ -747,10 +813,11 @@ namespace Hub.Managers
             {
                 containerInExecution = uow.ContainerRepository.GetQuery()
                     .FirstOrDefault(p => p.CurrentRouteNodeId.Value == curActivity.Id);
+                var plan = containerInExecution != null ? uow.PlanRepository.GetById<PlanDO>(containerInExecution.PlanId) : null;
 
                 fact = new FactDO
                 {
-                    CustomerId = (containerInExecution != null) ? containerInExecution.Plan.Fr8AccountId : "unknown",
+                    CustomerId = (containerInExecution != null) ? plan.Fr8AccountId : "unknown",
                     Data = (containerInExecution != null) ? containerInExecution.Id.ToStr() : "unknown",
                     ObjectId = curActivity.Id.ToStr(),
                     PrimaryCategory = "Process Execution",
@@ -771,10 +838,11 @@ namespace Hub.Managers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 containerInExecution = uow.ContainerRepository.GetByKey(processId);
+                var plan = containerInExecution != null ?  uow.PlanRepository.GetById<PlanDO>(containerInExecution.PlanId) : null;
 
                 fact = new FactDO
                 {
-                    CustomerId = containerInExecution != null ? containerInExecution.Plan.Fr8AccountId : "unknown",
+                    CustomerId = containerInExecution != null ? plan.Fr8AccountId : "unknown",
                     Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
                     ObjectId = curActivity.Id.ToStr(),
                     PrimaryCategory = "Process Execution",
@@ -859,9 +927,11 @@ namespace Hub.Managers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var plan = uow.PlanRepository.GetById<PlanDO>(containerDO.PlanId);
+
                 var curFact = new FactDO
                 {
-                    CustomerId = containerDO.Plan.Fr8AccountId,
+                    CustomerId = plan.Fr8AccountId,
                     ObjectId = containerDO.Id.ToStr(),
                     PrimaryCategory = "Containers",
                     SecondaryCategory = "Operations",
