@@ -36,7 +36,7 @@ namespace terminalDocuSignTests.Integration
         CrateStorage crateStorage;
 
         [Test]
-        public void Mail_Merge_Into_DocuSign_EndToEnd()
+        public async void Mail_Merge_Into_DocuSign_EndToEnd()
         {
             string baseUrl = GetHubApiBaseUrl();
             var solutionCreateUrl = baseUrl + "actions/create?solutionName=Mail_Merge_Into_DocuSign";
@@ -44,13 +44,13 @@ namespace terminalDocuSignTests.Integration
             //
             // Create solution
             //
-            var plan = HttpPostAsync<string, RouteFullDTO>(solutionCreateUrl, null).Result;
+            var plan = await HttpPostAsync<string, RouteFullDTO>(solutionCreateUrl, null);
             var solution = plan.Subroutes.FirstOrDefault().Activities.FirstOrDefault();
 
             //
             // Send configuration request without authentication token
             //
-            this.solution = HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure?id=" + solution.Id, solution).Result;
+            this.solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure?id=" + solution.Id, solution);
             crateStorage = _crate.FromDto(this.solution.CrateStorage);
             var stAuthCrate = crateStorage.CratesOfType<StandardAuthenticationCM>().FirstOrDefault();
             bool defaultDocuSignAuthTokenExists = stAuthCrate == null;
@@ -67,7 +67,7 @@ namespace terminalDocuSignTests.Integration
                     IsDemoAccount = true,
                     TerminalId = solution.ActivityTemplate.TerminalId
                 };
-                var token = HttpPostAsync<CredentialsDTO, JObject>(baseUrl + "authentication/token", creds).Result;
+                var token = await HttpPostAsync<CredentialsDTO, JObject>(baseUrl + "authentication/token", creds);
                 Assert.AreEqual(false, String.IsNullOrEmpty(token["authTokenId"].Value<string>()), "AuthTokenId is missing in API response.");
                 Guid tokenGuid = Guid.Parse(token["authTokenId"].Value<string>());
 
@@ -80,13 +80,13 @@ namespace terminalDocuSignTests.Integration
                     AuthTokenId = tokenGuid,
                     IsMain = true
                 };
-                HttpPostAsync<ManageAuthToken_Apply[], string>(baseUrl + "ManageAuthToken/apply", new ManageAuthToken_Apply[] { applyToken }).Wait();
+                await HttpPostAsync<ManageAuthToken_Apply[], string>(baseUrl + "ManageAuthToken/apply", new ManageAuthToken_Apply[] { applyToken });
             }
 
             //
             // Send configuration request with authentication token
             //
-            this.solution = HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure?id=" + solution.Id, solution).Result;
+            this.solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure?id=" + solution.Id, solution);
             crateStorage = _crate.FromDto(this.solution.CrateStorage);
             Assert.True(crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count() > 0, "Crate StandardConfigurationControlsCM is missing in API response.");
             Assert.True(crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count() > 0, "Crate StandardDesignTimeFieldsCM is missing in API response.");
@@ -104,6 +104,14 @@ namespace terminalDocuSignTests.Integration
             button.Clicked = true;
 
             //
+            //Rename route
+            //
+            var newName = plan.Name + " | " + DateTime.UtcNow.ToShortDateString() + " " +
+                DateTime.UtcNow.ToShortTimeString();
+            await HttpPostAsync<object, RouteFullDTO>(baseUrl + "routes?id=" + plan.Id,
+                new { id = plan.Id, name = newName });
+
+            //
             // Configure solution
             //
             using (var updater = _crate.UpdateStorage(this.solution))
@@ -112,16 +120,16 @@ namespace terminalDocuSignTests.Integration
                 updater.CrateStorage.Remove<StandardConfigurationControlsCM>();
                 updater.CrateStorage.Add(controlsCrate);
             }
-            this.solution = HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure?id=" + this.solution.Id, this.solution).Result;
+            this.solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure?id=" + this.solution.Id, this.solution);
             crateStorage = _crate.FromDto(this.solution.CrateStorage);
             Assert.AreEqual(3, this.solution.ChildrenActions.Count(), "Solution child actions failed to create.");
 
             // Delete Google action 
-            HttpDeleteAsync(baseUrl + "actions?id=" + this.solution.ChildrenActions[0].Id).Wait();
+            await HttpDeleteAsync(baseUrl + "actions?id=" + this.solution.ChildrenActions[0].Id);
 
             // Add Add Payload Manually action
             var activityCategoryParam = new ActivityCategory[] { ActivityCategory.Processors };
-            var activityTemplates = HttpPostAsync<ActivityCategory[], List<WebServiceActionSetDTO>>(baseUrl + "webservices/actions", activityCategoryParam).Result;
+            var activityTemplates = await HttpPostAsync<ActivityCategory[], List<WebServiceActionSetDTO>>(baseUrl + "webservices/actions", activityCategoryParam);
             var apmActivityTemplate = activityTemplates.SelectMany(a => a.Actions).Single(a => a.Name == "AddPayloadManually");
 
             var apmAction = new ActivityDTO()
@@ -134,16 +142,16 @@ namespace terminalDocuSignTests.Integration
                 RootRouteNodeId = plan.Id,
                 IsTempId = true
             };
-            apmAction = HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/save", apmAction).Result;
+            apmAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/save", apmAction);
             Assert.NotNull(apmAction, "Add Payload Manually action failed to create");
             Assert.IsTrue(apmAction.Id != default(Guid), "Add Payload Manually action failed to create");
 
             //
-            // Configure individual actions
+            // Configure Add Payload Manually action
             //
 
-            // Add rows to Add Payload Manually action
-            apmAction = HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure", apmAction).Result;
+            //Add rows to Add Payload Manually action
+            apmAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure", apmAction);
             crateStorage = _crate.FromDto(apmAction.CrateStorage);
             controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
             var fieldList = controlsCrate.Content.Controls.OfType<FieldList>().First();
@@ -157,39 +165,70 @@ namespace terminalDocuSignTests.Integration
 
             // Move Add Payload Manually action to the beginning of the plan
             apmAction.Ordering = 1;
-            apmAction = HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/save", apmAction).Result;
-            apmAction = HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure", apmAction).Result;
+            apmAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/save", apmAction);
+            apmAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure", apmAction);
 
-            // Rename route
-            var newName = plan.Name + " | " + DateTime.UtcNow.ToShortDateString() + " " +
-                DateTime.UtcNow.ToShortTimeString();
-            HttpPostAsync<object, RouteFullDTO>(baseUrl + "routes?id=" + plan.Id, 
-                new { id=plan.Id, name = newName }).Wait();
-
-            // Reconfigure Send DocuSign Envelope action
+            //
+            // Configure Send DocuSign Envelope action
+            //
             var sendEnvelopeAction = this.solution.ChildrenActions.Single(a => a.Name == "Send DocuSign Envelope");
 
             crateStorage = _crate.FromDto(sendEnvelopeAction.CrateStorage);
             controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
             var docuSignTemplate = controlsCrate.Content.Controls.OfType<DropDownList>().First();
-            docuSignTemplate.Value = "58521204-58af-4e65-8a77-4f4b51fef626";
+            docuSignTemplate.Value = "9a4d2154-5b18-4316-9824-09432e62f458";
             docuSignTemplate.selectedKey = "Medical_Form_v1";
-            docuSignTemplate.ListItems.Add(new ListItem() { Value = "58521204-58af-4e65-8a77-4f4b51fef626", Key = "Medical_Form_v1" });
+            docuSignTemplate.ListItems.Add(new ListItem() { Value = "9a4d2154-5b18-4316-9824-09432e62f458", Key = "Medical_Form_v1" });
             
+            var emailField = controlsCrate.Content.Controls.OfType<TextSource>().First();
+            emailField.ValueSource = "specific";
+            emailField.Value = "alexavrutin@gmail.com";
+            emailField.TextValue = "alexavrutin@gmail.com";
+
             using (var updater = _crate.UpdateStorage(sendEnvelopeAction))
             {
                 updater.CrateStorage.Remove<StandardConfigurationControlsCM>();
                 updater.CrateStorage.Add(controlsCrate);
             }
-            sendEnvelopeAction = HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/save", sendEnvelopeAction).Result;
-            sendEnvelopeAction = HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure", sendEnvelopeAction).Result;
-            
+            sendEnvelopeAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/save", sendEnvelopeAction);
+            sendEnvelopeAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure", sendEnvelopeAction);
+
+
+            //
+            // Configure Map Fields action
+            //
+
             // Reconfigure Map Fields to have it pick up upstream fields
             var mapFieldsAction = this.solution.ChildrenActions.Single(a => a.Name == "Map Fields");
-            mapFieldsAction = HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure", mapFieldsAction).Result;
+                mapFieldsAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure", mapFieldsAction);
 
-            // Activate route
-            HttpPostAsync<string, string>(baseUrl + "routes/run?planId=" + plan.Id, null).Wait();
+            // Configure mappings
+            crateStorage = _crate.FromDto(mapFieldsAction.CrateStorage);
+            controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
+            var mapping = controlsCrate.Content.Controls.OfType<MappingPane>().First();
+            mapping.Value = @"[{""Key"":""Doctor"",""Value"":""Doctor""},{""Key"":""Condition"",""Value"":""Condition""}]";
+            
+            using (var updater = _crate.UpdateStorage(mapFieldsAction))
+            {
+                updater.CrateStorage.Remove<StandardConfigurationControlsCM>();
+                updater.CrateStorage.Add(controlsCrate);
+            }
+            sendEnvelopeAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/save", mapFieldsAction);
+
+            //
+            // Activate and run plan
+            //
+            await HttpPostAsync<string, string>(baseUrl + "routes/run?planId=" + plan.Id, null);
+
+            //
+            // Deactivate plan
+            //
+            await HttpPostAsync<string, string>(baseUrl + "routes/deactivate?id=" + plan.Id, null);
+
+            //
+            // Delete plan
+            //
+            await HttpDeleteAsync(baseUrl + "actions?id=" + plan.Id);
         }
     }
 }
