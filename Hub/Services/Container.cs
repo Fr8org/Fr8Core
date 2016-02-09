@@ -96,6 +96,7 @@ namespace Hub.Services
             {
                 case ActivityResponse.ExecuteClientAction:
                 case ActivityResponse.Success:
+                case ActivityResponse.ReProcessChildren:
                     //ResetActionResponse(uow, curContainerDo);
                     //do nothing
                     break;
