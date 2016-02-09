@@ -165,8 +165,9 @@ namespace terminalDocuSignTests.Integration
             timePeriod.Hours = 0;
             timePeriod.Minutes = 0;
             var handlersCrate = crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Single(c => c.Label == "AvailableHandlers");
-            notificationHandler.Value = handlersCrate.Content.Fields[0].Value;
-            notificationHandler.selectedKey = handlersCrate.Content.Fields[0].Key;
+            var emailHandler = handlersCrate.Content.Fields.Single(c => c.Key == "Send Email using SendGrid");
+            notificationHandler.Value = emailHandler.Value;
+            notificationHandler.selectedKey = emailHandler.Key;
             var recipientEventsCrate = crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Single(c => c.Label == "AvailableRecipientEvents");
             recipientEvent.Value = recipientEventsCrate.Content.Fields[0].Value;
             recipientEvent.selectedKey = recipientEventsCrate.Content.Fields[0].Key;
@@ -189,6 +190,38 @@ namespace terminalDocuSignTests.Integration
             Assert.True(this.solution.ChildrenActions.Any(a => a.Name == "Test Incoming Data" && a.Ordering == 4));
             Assert.True(this.solution.ChildrenActions.Any(a => a.Name == notificationHandler.selectedKey && a.Ordering == 5));
 
+            //let's configure email settings
+            var emailActivity = this.solution.ChildrenActions.Single(a => a.Name == notificationHandler.selectedKey && a.Ordering == 5);
+            //let's configure this
+            emailActivity = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure?id=" + emailActivity.Id, emailActivity);
+            var emailCrateStorage = _crate.GetStorage(emailActivity);
+
+            var emailControlsCrate = emailCrateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
+            var emailAddress = (TextSource)emailControlsCrate.Content.Controls.Single(c => c.Name == "EmailAddress");
+            var emailSubject = (TextSource)emailControlsCrate.Content.Controls.Single(c => c.Name == "EmailSubject");
+            var emailBody = (TextSource)emailControlsCrate.Content.Controls.Single(c => c.Name == "EmailBody");
+            
+            emailAddress.ValueSource = "specific";
+            emailAddress.Value = "integration_test_runner@fr8.company";
+            emailAddress.TextValue = "integration_test_runner@fr8.company";
+
+            emailSubject.ValueSource = "specific";
+            emailSubject.Value = "Fr8-RichDocumentNotificationsTest";
+            emailSubject.TextValue = "Fr8-RichDocumentNotificationsTest";
+
+            emailBody.ValueSource = "specific";
+            emailBody.Value = "Fr8-RichDocumentNotificationsTest";
+            emailBody.TextValue = "Fr8-RichDocumentNotificationsTest";
+
+            using (var updater = _crate.UpdateStorage(emailActivity))
+            {
+                updater.CrateStorage.Remove<StandardConfigurationControlsCM>();
+                updater.CrateStorage.Add(emailControlsCrate);
+            }
+
+            //save changes
+            await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/save", emailActivity);
+
             //
             //Rename route
             //
@@ -198,123 +231,16 @@ namespace terminalDocuSignTests.Integration
             //let's activate our route
             await HttpPostAsync<string, string>(baseUrl + "routes/activate?planId=" + plan.Id, null);
             
+            
             //everything seems perfect -> let's fake a docusign event
             var fakeDocuSignEventContent = @"<?xml version=""1.0"" encoding=""utf-8""?><DocuSignEnvelopeInformation xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns=""http://www.docusign.net/API/3.0""><EnvelopeStatus><RecipientStatuses><RecipientStatus><Type>Signer</Type><Email>test@fr8.co</Email><UserName>Fr8 Test User</UserName><RoutingOrder>1</RoutingOrder><Sent>2016-02-09T04:19:58.41</Sent><DeclineReason xsi:nil=""true"" /><Status>Sent</Status><RecipientIPAddress /><CustomFields /><TabStatuses><TabStatus><TabType>Custom</TabType><Status>Active</Status><XPosition>189</XPosition><YPosition>326</YPosition><TabLabel>Text 5</TabLabel><TabName>Text</TabName><TabValue /><DocumentID>1</DocumentID><PageNumber>1</PageNumber><OriginalValue /><ValidationPattern /><CustomTabType>Text</CustomTabType></TabStatus><TabStatus><TabType>Custom</TabType><Status>Active</Status><XPosition>675</XPosition><YPosition>504</YPosition><TabLabel>Text 8</TabLabel><TabName>Text</TabName><TabValue /><DocumentID>1</DocumentID><PageNumber>1</PageNumber><OriginalValue /><ValidationPattern /><CustomTabType>Text</CustomTabType></TabStatus><TabStatus><TabType>Custom</TabType><Status>Active</Status><XPosition>941</XPosition><YPosition>860</YPosition><TabLabel>Checkbox 1</TabLabel><TabName>Checkbox</TabName><TabValue /><DocumentID>1</DocumentID><PageNumber>1</PageNumber><OriginalValue /><ValidationPattern /><CustomTabType>Checkbox</CustomTabType></TabStatus><TabStatus><TabType>Custom</TabType><Status>Active</Status><XPosition>1022</XPosition><YPosition>860</YPosition><TabLabel>Checkbox 2</TabLabel><TabName>Checkbox</TabName><TabValue /><DocumentID>1</DocumentID><PageNumber>1</PageNumber><OriginalValue /><ValidationPattern /><CustomTabType>Checkbox</CustomTabType></TabStatus><TabStatus><TabType>Custom</TabType><Status>Active</Status><XPosition>941</XPosition><YPosition>889</YPosition><TabLabel>Checkbox 3</TabLabel><TabName>Checkbox</TabName><TabValue /><DocumentID>1</DocumentID><PageNumber>1</PageNumber><OriginalValue /><ValidationPattern /><CustomTabType>Checkbox</CustomTabType></TabStatus><TabStatus><TabType>Custom</TabType><Status>Active</Status><XPosition>1022</XPosition><YPosition>889</YPosition><TabLabel>Checkbox 4</TabLabel><TabName>Checkbox</TabName><TabValue /><DocumentID>1</DocumentID><PageNumber>1</PageNumber><OriginalValue /><ValidationPattern /><CustomTabType>Checkbox</CustomTabType></TabStatus><TabStatus><TabType>Custom</TabType><Status>Active</Status><XPosition>939</XPosition><YPosition>918</YPosition><TabLabel>Checkbox 5</TabLabel><TabName>Checkbox</TabName><TabValue /><DocumentID>1</DocumentID><PageNumber>1</PageNumber><OriginalValue /><ValidationPattern /><CustomTabType>Checkbox</CustomTabType></TabStatus><TabStatus><TabType>Custom</TabType><Status>Active</Status><XPosition>1022</XPosition><YPosition>918</YPosition><TabLabel>Checkbox 6</TabLabel><TabName>Checkbox</TabName><TabValue /><DocumentID>1</DocumentID><PageNumber>1</PageNumber><OriginalValue /><ValidationPattern /><CustomTabType>Checkbox</CustomTabType></TabStatus><TabStatus><TabType>Custom</TabType><Status>Active</Status><XPosition>812</XPosition><YPosition>192</YPosition><TabLabel>DateOfBirth</TabLabel><TabName>Text</TabName><TabValue /><DocumentID>1</DocumentID><PageNumber>1</PageNumber><OriginalValue /><ValidationPattern /><CustomTabType>Date</CustomTabType></TabStatus><TabStatus><TabType>Custom</TabType><Status>Active</Status><XPosition>364</XPosition><YPosition>400</YPosition><TabLabel>Condition</TabLabel><TabName>Text</TabName><TabValue>Marthambles</TabValue><DocumentID>1</DocumentID><PageNumber>1</PageNumber><OriginalValue>Marthambles</OriginalValue><ValidationPattern /><CustomTabType>Text</CustomTabType></TabStatus><TabStatus><TabType>Custom</TabType><Status>Active</Status><XPosition>181</XPosition><YPosition>239</YPosition><TabLabel>Doctor</TabLabel><TabName>Text</TabName><TabValue>Dohemann</TabValue><DocumentID>1</DocumentID><PageNumber>1</PageNumber><OriginalValue>Dohemann</OriginalValue><ValidationPattern /><CustomTabType>Text</CustomTabType></TabStatus><TabStatus><TabType>FullName</TabType><Status>Active</Status><XPosition>243</XPosition><YPosition>196</YPosition><TabLabel>Name 1</TabLabel><TabName>Name</TabName><TabValue>Bahadir Bozdag</TabValue><DocumentID>1</DocumentID><PageNumber>1</PageNumber><OriginalValue>Joanna Smith</OriginalValue></TabStatus></TabStatuses><AccountStatus>Active</AccountStatus><RecipientId>3c498fd2-499c-414c-a980-6b3a8a108643</RecipientId></RecipientStatus></RecipientStatuses><TimeGenerated>2016-02-09T04:22:25.6749113</TimeGenerated><EnvelopeID>fffb6908-4c84-4a05-9fb4-e3e94d5aaa1a</EnvelopeID><Subject>Please DocuSign: medical_intake_form.pdf</Subject><UserName>Dockyard Developer</UserName><Email>docusign_developer@dockyard.company</Email><Status>Sent</Status><Created>2016-02-09T04:19:40.08</Created><Sent>2016-02-09T04:19:58.567</Sent><ACStatus>Original</ACStatus><ACStatusDate>2016-02-09T04:19:40.08</ACStatusDate><ACHolder>Dockyard Developer</ACHolder><ACHolderEmail>docusign_developer@dockyard.company</ACHolderEmail><ACHolderLocation>DocuSign</ACHolderLocation><SigningLocation>Online</SigningLocation><SenderIPAddress>178.233.137.179</SenderIPAddress><EnvelopePDFHash /><CustomFields /><AutoNavigation>true</AutoNavigation><EnvelopeIdStamping>true</EnvelopeIdStamping><AuthoritativeCopy>false</AuthoritativeCopy><DocumentStatuses><DocumentStatus><ID>1</ID><Name>medical_intake_form.pdf</Name><TemplateName>Medical_Form_v1</TemplateName><Sequence>1</Sequence></DocumentStatus></DocumentStatuses></EnvelopeStatus></DocuSignEnvelopeInformation>";
             var httpContent = new StringContent(fakeDocuSignEventContent, Encoding.UTF8, "application/xml");
             await HttpPostAsync<string>(docusignTerminalUrl + "/terminals/terminalDocuSign/events", httpContent);
 
-            //let's wait 30 seconds before continuing
-            await Task.Delay(TimeSpan.FromSeconds(30));
+            //let's wait 45 seconds before continuing
+            await Task.Delay(TimeSpan.FromSeconds(45));
             //we should have received an email about this operation
-
-            //
-            // Configure solution
-            //
-            using (var updater = _crate.UpdateStorage(this.solution))
-            {
-
-                updater.CrateStorage.Remove<StandardConfigurationControlsCM>();
-                updater.CrateStorage.Add(controlsCrate);
-            }
-            this.solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure?id=" + this.solution.Id, this.solution);
-            crateStorage = _crate.FromDto(this.solution.CrateStorage);
-            Assert.AreEqual(2, this.solution.ChildrenActions.Count(), "Solution child actions failed to create.");
-
-            // Delete Google action 
-            await HttpDeleteAsync(baseUrl + "actions?id=" + this.solution.ChildrenActions[0].Id);
-
-            // Add Add Payload Manually action
-            var activityCategoryParam = new ActivityCategory[] { ActivityCategory.Processors };
-            var activityTemplates = await HttpPostAsync<ActivityCategory[], List<WebServiceActionSetDTO>>(baseUrl + "webservices/actions", activityCategoryParam);
-            var apmActivityTemplate = activityTemplates.SelectMany(a => a.Actions).Single(a => a.Name == "AddPayloadManually");
-
-            var apmAction = new ActivityDTO()
-            {
-                ActivityTemplate = apmActivityTemplate,
-                ActivityTemplateId = apmActivityTemplate.Id,
-                Label = apmActivityTemplate.Label,
-                Name = apmActivityTemplate.Name,
-                ParentRouteNodeId = this.solution.Id,
-                RootRouteNodeId = plan.Id,
-                IsTempId = true
-            };
-            apmAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/save", apmAction);
-            Assert.NotNull(apmAction, "Add Payload Manually action failed to create");
-            Assert.IsTrue(apmAction.Id != default(Guid), "Add Payload Manually action failed to create");
-
-            //
-            // Configure Add Payload Manually action
-            //
-
-            //Add rows to Add Payload Manually action
-            apmAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure", apmAction);
-            crateStorage = _crate.FromDto(apmAction.CrateStorage);
-            controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
-            var fieldList = controlsCrate.Content.Controls.OfType<FieldList>().First();
-            fieldList.Value = @"[{""Key"":""Doctor"",""Value"":""Doctor1""},{""Key"":""Condition"",""Value"":""Condition1""}]";
-
-            using (var updater = _crate.UpdateStorage(apmAction))
-            {
-                updater.CrateStorage.Remove<StandardConfigurationControlsCM>();
-                updater.CrateStorage.Add(controlsCrate);
-            }
-
-            // Move Add Payload Manually action to the beginning of the plan
-            apmAction.Ordering = 1;
-            apmAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/save", apmAction);
-            apmAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure", apmAction);
-
-            //
-            // Configure Send DocuSign Envelope action
-            //
-            var sendEnvelopeAction = this.solution.ChildrenActions.Single(a => a.Name == "Send DocuSign Envelope");
-
-            crateStorage = _crate.FromDto(sendEnvelopeAction.CrateStorage);
-            controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
-            var docuSignTemplate = controlsCrate.Content.Controls.OfType<DropDownList>().First();
-            docuSignTemplate.Value = "9a4d2154-5b18-4316-9824-09432e62f458";
-            docuSignTemplate.selectedKey = "Medical_Form_v1";
-            docuSignTemplate.ListItems.Add(new ListItem() { Value = "9a4d2154-5b18-4316-9824-09432e62f458", Key = "Medical_Form_v1" });
-
-            var emailField = controlsCrate.Content.Controls.OfType<TextSource>().First();
-            emailField.ValueSource = "specific";
-            emailField.Value = "freight.testing@gmail.com";
-            emailField.TextValue = "freight.testing@gmail.com";
-
-            using (var updater = _crate.UpdateStorage(sendEnvelopeAction))
-            {
-                updater.CrateStorage.Remove<StandardConfigurationControlsCM>();
-                updater.CrateStorage.Add(controlsCrate);
-            }
-            sendEnvelopeAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/save", sendEnvelopeAction);
-            sendEnvelopeAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure", sendEnvelopeAction);
-
-
-            //
-            // Configure Map Fields action
-            //
-
-            // Reconfigure Map Fields to have it pick up upstream fields
-            var mapFieldsAction = this.solution.ChildrenActions.Single(a => a.Name == "Map Fields");
-            mapFieldsAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure", mapFieldsAction);
-
-            // Configure mappings
-            crateStorage = _crate.FromDto(mapFieldsAction.CrateStorage);
-            controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
-            var mapping = controlsCrate.Content.Controls.OfType<MappingPane>().First();
-            mapping.Value = @"[{""Key"":""Doctor"",""Value"":""Doctor""},{""Key"":""Condition"",""Value"":""Condition""}]";
-
-            using (var updater = _crate.UpdateStorage(mapFieldsAction))
-            {
-                updater.CrateStorage.Remove<StandardConfigurationControlsCM>();
-                updater.CrateStorage.Add(controlsCrate);
-            }
-            sendEnvelopeAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/save", mapFieldsAction);
-
-            //
-            // Activate and run plan
-            //
-            await HttpPostAsync<string, string>(baseUrl + "routes/run?planId=" + plan.Id, null);
+            
 
             //
             // Deactivate plan
@@ -327,7 +253,8 @@ namespace terminalDocuSignTests.Integration
             await HttpDeleteAsync(baseUrl + "routes?id=" + plan.Id);
 
             // Verify that test email has been received
-            EmailAssert.EmailReceived("dse_demo@docusign.net", "Test Message from Fr8");
+            EmailAssert.EmailReceived("fr8ops@fr8.company", "Fr8-RichDocumentNotificationsTest");
+            
         }
     }
 }
