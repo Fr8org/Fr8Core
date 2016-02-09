@@ -322,6 +322,8 @@ namespace terminalDocuSign.Actions
                     updater.CrateStorage.Add(queryCrate);
                 }
 
+                activityDO.ChildNodes.Clear();
+
                 var queryFr8WarehouseActivityTemplate = activityTemplates
                     .FirstOrDefault(x => x.Name == "QueryFr8Warehouse");
                 if (queryFr8WarehouseActivityTemplate == null) { return activityDO; }
