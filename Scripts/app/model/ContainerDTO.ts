@@ -10,6 +10,7 @@
         createDate: string;
         currentActivityResponse: ActivityResponse;
         currentClientActionName: string;
+        error: any;
     }
 
     export enum ContainerState {

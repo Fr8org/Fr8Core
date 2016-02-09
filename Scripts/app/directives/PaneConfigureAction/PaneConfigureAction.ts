@@ -496,8 +496,7 @@ module dockyard.directives.paneConfigureAction {
                 $timeout: ng.ITimeoutService,
                 $modal,
                 $window: ng.IWindowService,
-                $http: ng.IHttpService,
-                ngToast: any
+                $http: ng.IHttpService
 
             ) => {
 

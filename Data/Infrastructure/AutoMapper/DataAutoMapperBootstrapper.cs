@@ -6,6 +6,7 @@ using AutoMapper;
 using Data.Crates;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.DataTransferObjects.Helpers;
 using Data.Interfaces.Manifests;
 using Data.States;
 using DocuSign.Integrations.Client;
@@ -127,7 +128,7 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<string, CrateStorageDTO>()
                 .ConvertUsing<CrateStorageFromStringConverter>();
             Mapper.CreateMap<FileDO, FileDTO>();
-
+            
             Mapper.CreateMap<ContainerDO, ContainerDTO>()
                 .ForMember(
                     x => x.CurrentActivityResponse,
@@ -136,6 +137,14 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(
                     x => x.CurrentClientActionName,
                     x => x.ResolveUsing(y => ExtractOperationStateData(y, z => z.CurrentClientActionName))
+                )
+                .ForMember(
+                    x => x.Error,
+                    x => x.ResolveUsing(y => ExtractOperationStateData(y, z => {
+                        ErrorDTO errorDTO = null; 
+                        if(z.CurrentActivityResponse != null) z.CurrentActivityResponse.TryParseErrorDTO(out errorDTO);
+                        return errorDTO;
+                    }))
                 );
             Mapper.CreateMap<AuthorizationTokenDTO, AuthorizationTokenDO>()
                 .ForMember(x => x.UserID,    x => x.ResolveUsing(y => y.UserId))

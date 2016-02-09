@@ -256,10 +256,12 @@ namespace terminalGoogleTests.Integration
         {
             //Arrange
             var runUrl = GetTerminalRunUrl();
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
 
             //prepare the action DTO
             var dataDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_Fr8DataDTO();
             AddOperationalStateCrate(dataDTO.ActivityDTO, new OperationalStateCM());
+
             //Act
             await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
         }
@@ -282,6 +284,7 @@ namespace terminalGoogleTests.Integration
             var dataDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_Fr8DataDTO();
             AddUpstreamCrate(dataDTO.ActivityDTO, fixture.GetUpstreamCrate(), "Upsteam Crate");
             AddOperationalStateCrate(dataDTO.ActivityDTO, new OperationalStateCM());
+
             //Act
             await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
         }
@@ -305,6 +308,7 @@ namespace terminalGoogleTests.Integration
             AddUpstreamCrate(dataDTO.ActivityDTO, fixture.GetUpstreamCrate(), "Upsteam Crate");
             AddUpstreamCrate(dataDTO.ActivityDTO, fixture.GetUpstreamCrate(), "Upsteam Crate");
             AddOperationalStateCrate(dataDTO.ActivityDTO, new OperationalStateCM());
+
             //Act
             await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
         }
