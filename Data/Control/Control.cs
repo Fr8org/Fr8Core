@@ -245,7 +245,7 @@ namespace Data.Control
                     return ExtractPayloadFieldValue(payloadCrateStorage, ignoreCase);
 
                 default:
-                    throw new ApplicationException("Could not extract recipient, unknown recipient mode.");
+                    return null;
             }
         }
 
