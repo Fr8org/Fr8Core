@@ -250,6 +250,11 @@ namespace DockyardTest.Controllers
             {
                 throw new NotImplementedException();
             }
+
+            public IEnumerable<ActivityTemplateDTO> GetSolutions(IUnitOfWork uow)
+            {
+                throw new NotImplementedException();
+            }
         }
 
     }
