@@ -21,6 +21,9 @@ namespace terminalDocuSign.Actions
 {
     public class Extract_Data_From_Envelopes_v1 : BaseDocuSignAction
     {
+        private const string SolutionName = "Extract Data From Envelopes";
+        private const double SolutionVersion = 1.0;
+        private const string TerminalName = "DocuSign";
         private class ActionUi : StandardConfigurationControlsCM
         {
             [JsonIgnore]
@@ -129,6 +132,18 @@ namespace terminalDocuSign.Actions
             );
 
             return sources;
+        }
+        //This method provides some documentation for the DocuSign Solution Actions
+        public Task<SolutionPageDTO> Documentation(ActivityDO activityDO)
+        {
+            var curSolutionPage = new SolutionPageDTO
+            {
+                Name = SolutionName,
+                Version = SolutionVersion,
+                Terminal = TerminalName,
+                Body = @"<p>This is a solution action</p>"
+            };
+            return Task.FromResult(curSolutionPage);
         }
     }
 }

@@ -9,6 +9,9 @@ using Data.Interfaces;
 using Hub.Services;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
+using Hub.StructureMap;
+using Hub.Security;
+using Microsoft.Owin.Security.DataProtection;
 
 namespace DockyardTest.Integration
 {
@@ -20,6 +23,9 @@ namespace DockyardTest.Integration
         [Category("IntegrationTests")]
         public async void ITest_CanResetPassword()
         {
+            // DataProtectionProvider property is not getting initialised through startup
+            // So Initiliaze it explicitly. DpapiDataProtectionProvider is used for test cases only
+            DockyardIdentityManager.DataProtectionProvider = new DpapiDataProtectionProvider("fr8");
             string email;
             string id;
             // SETUP

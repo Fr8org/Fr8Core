@@ -16,6 +16,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Hub.Interfaces;
 using Data.Infrastructure;
+using Data.Interfaces.DataTransferObjects.Helpers;
 using Hub.Managers;
 
 namespace Hub.Services
@@ -48,14 +49,19 @@ namespace Hub.Services
             uow.SaveChanges();
         }
 
-        private ActivityResponse GetCurrentActionResponse(ContainerDO curContainerDO)
+        private ActivityResponseDTO GetCurrentActivityResponse(ContainerDO curContainerDO)
         {
             var storage = _crate.GetStorage(curContainerDO.CrateStorage);
             var operationalState = storage.CrateContentsOfType<OperationalStateCM>().Single();
             return operationalState.CurrentActivityResponse;
         }
 
-        private string GetCurrentActionErrorMessage(ContainerDO curContainerDO)
+        public List<ContainerDO> LoadContainers(IUnitOfWork uow, PlanDO plan)
+        {
+            return uow.ContainerRepository.GetQuery().Where(x => x.PlanId == plan.Id).ToList();
+        }
+
+        private string GetCurrentActivityErrorMessage(ContainerDO curContainerDO)
         {
             var storage = _crate.GetStorage(curContainerDO.CrateStorage);
             var operationalState = storage.CrateContentsOfType<OperationalStateCM>().Single();
@@ -73,15 +79,20 @@ namespace Hub.Services
             using (var updater = _crate.UpdateStorage(() => curContainerDo.CrateStorage))
             {
                 var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActivityResponse = ActivityResponse.Null;
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Null);
             }
 
             uow.SaveChanges();
         }
 
-        private async Task ProcessCurrentActionResponse(IUnitOfWork uow, ContainerDO curContainerDo, ActivityResponse response)
+
+        private async Task ProcessCurrentActionResponse(IUnitOfWork uow, ContainerDO curContainerDo, ActivityResponseDTO response)
         {
-            switch (response)
+            //extract the type value from the activity response
+            ActivityResponse activityResponse = ActivityResponse.Null;
+            if (response != null) Enum.TryParse(response.Type, out activityResponse);
+
+            switch (activityResponse)
             {
                 case ActivityResponse.ExecuteClientAction:
                 case ActivityResponse.Success:
@@ -96,17 +107,19 @@ namespace Hub.Services
                     break;
                 case ActivityResponse.Error:
                     //TODO retry activity execution until 3 errors??
-                    throw new ErrorResponseException(string.Format("Error on activity. {0}", GetCurrentActionErrorMessage(curContainerDo)));
+                    throw new ErrorResponseException(string.Format("Error on activity. {0}", GetCurrentActivityErrorMessage(curContainerDo)));
                 case ActivityResponse.RequestTerminate:
                     //FR-2163 - If action response requests for termination, we make the container as Completed to avoid unwanted errors.
                     curContainerDo.ContainerState = ContainerState.Completed;
                     var eventManager = ObjectFactory.GetInstance<Hub.Managers.Event>();
+                    var plan = uow.PlanRepository.GetById<PlanDO>(curContainerDo.PlanId);
+
                     await eventManager.Publish("ProcessingTerminatedPerActionResponse",
-                            curContainerDo.Plan.Fr8Account.Id, curContainerDo.Id.ToString(),
+                            plan.Fr8AccountId, curContainerDo.Id.ToString(),
                             JsonConvert.SerializeObject(Mapper.Map<ContainerDTO>(curContainerDo)), "Terminated");
                     break;
                 default:
-                    throw new Exception("Unknown activity state on activity with id " + curContainerDo.CurrentRouteNode.Id);
+                    throw new Exception("Unknown activity state on activity with id " + curContainerDo.CurrentRouteNodeId);
             }
         }
 
@@ -128,30 +141,35 @@ namespace Hub.Services
         private ActionState MoveToNextRoute(IUnitOfWork uow, ContainerDO curContainerDO, bool skipChildren)
         {
             var state = ActionState.InitialRun;
+            var currentNode = uow.PlanRepository.GetById<RouteNodeDO>(curContainerDO.CurrentRouteNodeId);
             
-            if (skipChildren || !_activity.HasChildren(curContainerDO.CurrentRouteNode))
+            // we need this to make tests wokring. If we leave currentroutenode not null, MockDB will restore CurrentRouteNodeId. 
+            // EF should just igone navigational porperty null value if corresponding foreign key is not null.
+            curContainerDO.CurrentRouteNode = null;
+
+            if (skipChildren || currentNode.ChildNodes.Count == 0)
             {
-                var nextSibling = _activity.GetNextSibling(curContainerDO.CurrentRouteNode);
+                var nextSibling = _activity.GetNextSibling(currentNode);
                 if (nextSibling == null)
                 {
-                    var parent = _activity.GetParent(curContainerDO.CurrentRouteNode);
-                    curContainerDO.CurrentRouteNode = parent;
-                    curContainerDO.CurrentRouteNodeId = parent != null ? parent.Id : (Guid?)null;
+                    curContainerDO.CurrentRouteNodeId = currentNode.ParentRouteNode != null ? currentNode.ParentRouteNode.Id : (Guid?)null;
+
+                   
+
                     state = ActionState.ReturnFromChildren;
                 }
                 else
                 {
-                    curContainerDO.CurrentRouteNode = nextSibling;
                     curContainerDO.CurrentRouteNodeId = nextSibling.Id;
                 }
                 
             }
             else
             {
-                var firstChild = _activity.GetFirstChild(curContainerDO.CurrentRouteNode);
-                curContainerDO.CurrentRouteNode = firstChild;
-                curContainerDO.CurrentRouteNodeId = curContainerDO.CurrentRouteNode.Id;
+                var firstChild = _activity.GetFirstChild(currentNode);
+                curContainerDO.CurrentRouteNodeId = firstChild.Id;
             }
+
             uow.SaveChanges();
 
             return state;
@@ -164,10 +182,10 @@ namespace Hub.Services
         /// <param name="curContainerDO"></param>
         /// <param name="state"></param>
         /// <returns></returns>
-        private async Task<ActivityResponse> ProcessAction(IUnitOfWork uow, ContainerDO curContainerDO, ActionState state)
+        private async Task<ActivityResponseDTO> ProcessAction(IUnitOfWork uow, ContainerDO curContainerDO, ActionState state)
         {
-            await _activity.Process(curContainerDO.CurrentRouteNode.Id, state, curContainerDO);
-            return GetCurrentActionResponse(curContainerDO);
+            await _activity.Process(curContainerDO.CurrentRouteNodeId.Value, state, curContainerDO);
+            return GetCurrentActivityResponse(curContainerDO);
         }
 
         private bool ShouldSkipChildren(ContainerDO curContainerDO, ActionState state, ActivityResponse response)
@@ -219,34 +237,44 @@ namespace Hub.Services
             uow.SaveChanges();
             
 
-            if (curContainerDO.CurrentRouteNode == null)
+            if (curContainerDO.CurrentRouteNodeId == null)
             {
                 throw new ArgumentNullException("CurrentActivity is null. Cannot execute CurrentActivity");
             }
 
             var actionState = ActionState.InitialRun;
-            while (curContainerDO.CurrentRouteNode != null)
+            while (curContainerDO.CurrentRouteNodeId != null)
             {
-                var actionResponse = await ProcessAction(uow, curContainerDO, actionState);
+                var activityResponseDTO = await ProcessAction(uow, curContainerDO, actionState);
 
-                if (actionResponse == ActivityResponse.Success)
+                //extract ActivityResponse type from result
+                ActivityResponse activityResponse = ActivityResponse.Null;
+                if(activityResponseDTO != null)
+                    Enum.TryParse(activityResponseDTO.Type, out activityResponse);
+
+                if (activityResponse == ActivityResponse.Success)
                 {
                     //if its success and crate have responsemessagdto it is activated
                     var response = _crate.GetContentType<OperationalStateCM>(curContainerDO.CrateStorage);
-                    if (response != null && (response.ResponseMessageDTO != null && !String.IsNullOrEmpty(response.ResponseMessageDTO.Message)))
+
+                    ResponseMessageDTO responseMessage;
+                    if (response != null && activityResponseDTO.TryParseResponseMessageDTO(out responseMessage))
+                    {
+                        if (responseMessage != null && !string.IsNullOrEmpty(responseMessage.Message))
                     {
                         break;
                     }
                 }
+                }
 
-                await ProcessCurrentActionResponse(uow, curContainerDO, actionResponse);
+                await ProcessCurrentActionResponse(uow, curContainerDO, activityResponseDTO);
                 if (curContainerDO.ContainerState != ContainerState.Executing)
                 {
                     //we should stop action processing here
                     //there might have happened a problem or a pause request
                     return;
                 }
-                var shouldSkipChildren = ShouldSkipChildren(curContainerDO, actionState, actionResponse);
+                var shouldSkipChildren = ShouldSkipChildren(curContainerDO, actionState, activityResponse);
                 actionState = MoveToNextRoute(uow, curContainerDO, shouldSkipChildren);
             }
 

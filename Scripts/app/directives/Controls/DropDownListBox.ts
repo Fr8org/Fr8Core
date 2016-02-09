@@ -8,6 +8,8 @@ module dockyard.directives.dropDownListBox {
         change: () => (field: model.ControlDefinitionDTO) => void;
         selectedItem: model.FieldDTO;
         setSelectedItem: (item: model.FieldDTO) => void;
+        toggle: boolean;
+        toggleDropDown: (select) => void;
     }
 
     export function DropDownListBox(): ng.IDirective {
@@ -21,6 +23,13 @@ module dockyard.directives.dropDownListBox {
                 if ($scope.change != null && angular.isFunction($scope.change)) {
                     $scope.change()($scope.field);
                 }
+            };
+
+            $scope.toggle = false;
+
+            $scope.toggleDropDown = function (select) {
+                select.open = !$scope.toggle;
+                $scope.toggle = !$scope.toggle;
             };
 
             var findAndSetSelectedItem = function () {

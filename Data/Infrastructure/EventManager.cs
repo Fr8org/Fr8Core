@@ -11,11 +11,8 @@ namespace Data.Infrastructure
     //this class serves as both a registry of all of the defined alerts as well as a utility class.
     public static class EventManager
     {
-
-
         public delegate void ResponseRecievedHandler(int bookingRequestId, String bookerID, String customerID);
         public static event ResponseRecievedHandler AlertResponseReceived;
-
 
         public delegate void TrackablePropertyUpdatedHandler(string name, string contextTable, object id, object status);
         public static event TrackablePropertyUpdatedHandler AlertTrackablePropertyUpdated;
@@ -102,6 +99,9 @@ namespace Data.Infrastructure
         public delegate void EventContainerLaunchedHandler(ContainerDO launchedContainer);
         public static event EventContainerLaunchedHandler EventContainerLaunched;
 
+        public delegate void EventContainerFailedHandler(PlanDO plan, Exception ex);
+        public static event EventContainerFailedHandler EventContainerFailed;
+
         public delegate void EventContainerCreatedHandler(ContainerDO containerDO);
         public static event EventContainerCreatedHandler EventContainerCreated;
 
@@ -156,7 +156,46 @@ namespace Data.Infrastructure
         public delegate void KeyVaultFailureHandler(string keyVaultMethod, Exception ex);
         public static event KeyVaultFailureHandler KeyVaultFailure;
 
+        public delegate void AuthTokenSilentRevokeHandler(AuthorizationTokenDO authToken);
+        public static event AuthTokenSilentRevokeHandler EventAuthTokenSilentRevoke;
+
+        public delegate void AuthTokenCreatedHandler(AuthorizationTokenDO authToken);
+        public static event AuthTokenCreatedHandler EventAuthTokenCreated;
+
+        public delegate void AuthTokenRemovedHandler(AuthorizationTokenDO authToken);
+        public static event AuthTokenRemovedHandler EventAuthTokenRemoved;
+
         #region Method
+
+        public static void AuthTokenSilentRevoke(AuthorizationTokenDO authToken)
+        {
+            var handler = EventAuthTokenSilentRevoke;
+
+            if (handler != null)
+            {
+                handler.Invoke(authToken);
+            }
+        }
+
+        public static void AuthTokenCreated(AuthorizationTokenDO authToken)
+        {
+            var handler = EventAuthTokenCreated;
+
+            if (handler != null)
+            {
+                handler.Invoke(authToken);
+            }
+        }
+
+        public static void AuthTokenRemoved(AuthorizationTokenDO authToken)
+        {
+            var handler = EventAuthTokenRemoved;
+
+            if (handler != null)
+            {
+                handler.Invoke(authToken);
+            }
+        }
 
         public static void KeyVaultFailed(string keyVaultMethod, Exception ex)
         {
@@ -405,6 +444,12 @@ namespace Data.Infrastructure
         {
             var handler = EventContainerLaunched;
             if (handler != null) handler(launchedContainer);
+        }
+
+        public static void ContainerFailed(PlanDO plan, Exception ex)
+        {
+            var handler = EventContainerFailed;
+            if (handler != null) handler(plan, ex);
         }
 
         public static void ProcessNodeCreated(ProcessNodeDO processNode)

@@ -40,11 +40,15 @@ namespace Data.Entities
 
         [ForeignKey("UserDO")]
         public String UserID { get; set; }
-        public virtual Fr8AccountDO UserDO { get; set; }
+        // Authorization tokens are cached. We can't make lazy loading work in this case so disable it. 
+        // If you need Terminal resolve it using UserRepository and UserID property.
+        public Fr8AccountDO UserDO { get; set; }
 
         [ForeignKey("Terminal")]
         public int TerminalID { get; set; }
-        public virtual TerminalDO Terminal { get; set; }
+        // Authorization tokens are cached. We can't make lazy loading work in this case so disable it. 
+        // If you need Terminal resolve it using ITerminal service and TerminalID property.
+        public TerminalDO Terminal { get; set; }
 
         [ForeignKey("AuthorizationTokenStateTemplate")]
         public int? AuthorizationTokenState { get; set; }

@@ -6,6 +6,7 @@ using Data.Exceptions;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Hub.Interfaces;
 using Hub.Services;
 using Utilities;
 using Utilities.Logging;
@@ -15,11 +16,14 @@ namespace Hub.Managers
     public class IncidentReporter
     {
         private readonly EventReporter _eventReporter;
+        private readonly ITerminal _terminal;
 
-        public IncidentReporter(EventReporter eventReporter)
+        public IncidentReporter(EventReporter eventReporter, ITerminal terminal)
         {
             _eventReporter = eventReporter;
+            _terminal = terminal;
         }
+
         public void SubscribeToAlerts()
         {
             EventManager.AlertEmailProcessingFailure += ProcessAlert_EmailProcessingFailure;
@@ -42,6 +46,8 @@ namespace Hub.Managers
             EventManager.IncidentMissingFieldInPayload += IncidentMissingFieldInPayload;
             EventManager.ExternalEventReceived += LogExternalEventReceivedIncident;
             EventManager.KeyVaultFailure += KeyVaultFailure;
+            EventManager.EventAuthTokenSilentRevoke += AuthTokenSilentRevoke;
+            EventManager.EventContainerFailed += ContainerFailed;
         }
 
         private void KeyVaultFailure(string keyVaultMethod, Exception ex)
@@ -49,11 +55,70 @@ namespace Hub.Managers
             var incident = new IncidentDO
             {
                 CustomerId = "unknown",
-                Data = string.Join(Environment.NewLine, "KeyVault method: " + keyVaultMethod, ex.Message, ex.StackTrace ?? ""),
+                Data = string.Join(
+                    Environment.NewLine,
+                    "KeyVault method: " + keyVaultMethod,
+                    ex.Message,
+                    ex.StackTrace ?? ""
+                ),
                 PrimaryCategory = "KeyVault",
                 SecondaryCategory = "QuerySecurePartAsync",
                 Component = "Hub",
                 Activity = "KeyVault Failed"
+            };
+
+            SaveAndLogIncident(incident);
+        }
+
+        private string FormatTerminalName(AuthorizationTokenDO authorizationToken)
+        {
+            var terminal = _terminal.GetByKey(authorizationToken.TerminalID);
+
+            if (terminal != null)
+            {
+                return terminal.Name;
+            }
+
+            return authorizationToken.TerminalID.ToString();
+        }
+
+        private void AuthTokenSilentRevoke(AuthorizationTokenDO authToken)
+        {
+            var incident = new IncidentDO
+            {
+                CustomerId = "unknown",
+                Data = string.Join(
+                    Environment.NewLine,
+                    "AuthToken method: Silent Revoke",
+                    "User Id: " + authToken.UserID.ToString(),
+                    "Terminal name: " + FormatTerminalName(authToken),
+                    "External AccountId: " + authToken.ExternalAccountId
+                ),
+                PrimaryCategory = "AuthToken",
+                SecondaryCategory = "Silent Revoke",
+                Component = "Hub",
+                Activity = "AuthToken Silent Revoke"
+            };
+
+            SaveAndLogIncident(incident);
+        }
+
+        private void ContainerFailed(PlanDO plan, Exception ex)
+        {
+            var incident = new IncidentDO
+            {
+                CustomerId = "unknown",
+                Data = string.Join(
+                    Environment.NewLine,
+                    "Container failure.",
+                    "Plan: " + (plan != null ? plan.Name : "unknown"),
+                    ex.Message,
+                    ex.StackTrace ?? ""
+                ),
+                PrimaryCategory = "Container",
+                SecondaryCategory = "Execution",
+                Component = "Hub",
+                Activity = "Container failure"
             };
 
             SaveAndLogIncident(incident);

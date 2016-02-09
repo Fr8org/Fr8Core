@@ -37,7 +37,10 @@ namespace HubWeb.Controllers
 				if (validToken.ExpiresAt < currentTime)
                     throw new HttpException(404, "Authorization token expired.");
 
-                ObjectFactory.GetInstance<ISecurityServices>().Login(uow, validToken.UserDO);
+                // Auth token are cached, so navigational properties will not work
+                var user = uow.UserRepository.GetByKey(validToken.UserID);
+
+                ObjectFactory.GetInstance<ISecurityServices>().Login(uow, user);
 
                 if (!String.IsNullOrEmpty(validToken.SegmentTrackingEventName))
                 {
@@ -50,7 +53,7 @@ namespace HubWeb.Controllers
                             segmentProps.Add(prop.Key, prop.Value);
                     }
 
-                    ObjectFactory.GetInstance<ITracker>().Track(validToken.UserDO, validToken.SegmentTrackingEventName, segmentProps);
+                    ObjectFactory.GetInstance<ITracker>().Track(user, validToken.SegmentTrackingEventName, segmentProps);
                 }
 
                 return Redirect(validToken.RedirectURL);

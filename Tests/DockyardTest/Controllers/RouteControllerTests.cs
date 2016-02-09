@@ -8,6 +8,8 @@ using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Data.States;
+using DockyardTest.Controllers.Api;
 using HubWeb.Controllers;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
@@ -16,7 +18,7 @@ namespace DockyardTest.Controllers
 {
     [TestFixture]
     [Category("RouteControllerTests")]
-    public class RouteControllerTests : BaseTest
+    public class RouteControllerTests : ApiControllerTestBase
     {
         private Fr8AccountDO _testUserAccount;
 
@@ -52,6 +54,32 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
+        public void RoutesController_ShouldHaveFr8ApiAuthorize()
+        {
+            ShouldHaveFr8ApiAuthorize(typeof(RoutesController));
+        }
+
+        [Test]
+        public void RoutesController_ShouldHaveHMACOnPostMethod()
+        {
+
+            ShouldHaveFr8HMACAuthorizeOnFunction(typeof(RoutesController), "Post");
+        }
+
+        [Test]
+        public void RoutesController_ShouldHaveHMACOnGetByNameMethod()
+        {
+            
+            ShouldHaveFr8HMACAuthorizeOnFunction(typeof(RoutesController), "GetByName");
+        }
+
+        [Test]
+        public void RoutesController_ShouldHaveHMACOnActivateMethod()
+        {
+            ShouldHaveFr8HMACAuthorizeOnFunction(typeof(RoutesController), "Activate");
+        }
+
+        [Test]
         public void RouteController_CanAddNewRoute()
         {
             //Arrange 
@@ -68,8 +96,7 @@ namespace DockyardTest.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 Assert.AreEqual(0, ptc.ModelState.Count()); //must be no errors
-                var ptdo = uow.PlanRepository.
-                    GetQuery().SingleOrDefault(pt => pt.Fr8Account.Id == _testUserAccount.Id && pt.Name == routeDto.Name);
+                var ptdo = uow.PlanRepository.GetPlanQueryUncached().SingleOrDefault(pt => pt.Fr8Account.Id == _testUserAccount.Id && pt.Name == routeDto.Name);
                 Assert.IsNotNull(ptdo);
                 Assert.AreEqual(routeDto.Description, ptdo.Description);
             }
@@ -263,8 +290,7 @@ namespace DockyardTest.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 Assert.AreEqual(0, ptc.ModelState.Count()); //must be no errors
-                var ptdo = uow.PlanRepository.
-                    GetQuery().SingleOrDefault(pt => pt.Fr8Account.Id == _testUserAccount.Id && pt.Name == routeDto.Name);
+                var ptdo = uow.PlanRepository.GetPlanQueryUncached().SingleOrDefault(pt => pt.Fr8Account.Id == _testUserAccount.Id && pt.Name == routeDto.Name);
                 Assert.IsNotNull(ptdo);
                 Assert.AreEqual(routeDto.Name, ptdo.Name);
             }
@@ -279,6 +305,24 @@ namespace DockyardTest.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 curPlanDO.Fr8Account = FixtureData.TestDeveloperAccount();
+                uow.ActivityTemplateRepository.Add(new ActivityTemplateDO
+                {
+                    TerminalId = 1,
+
+                    Id = 1,
+                    Name = "New template",
+                });
+
+               
+                uow.TerminalRepository.Add(new TerminalDO()
+                {
+                    Id = 1,
+                    TerminalStatus = TerminalStatus.Active,
+                    Name = "terminal",
+                    Version = "1"
+
+                });
+                uow.UserRepository.Add(curPlanDO.Fr8Account);
                 uow.PlanRepository.Add(curPlanDO);
                 uow.SaveChanges();
             }

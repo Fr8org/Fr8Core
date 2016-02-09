@@ -6,6 +6,7 @@ using System.Web.Http.Results;
 using StructureMap;
 using Data.Infrastructure;
 using Data.Interfaces.DataTransferObjects;
+using Hub.Exceptions;
 using Hub.Interfaces;
 using System.Configuration;
 using Data.Crates;
@@ -15,6 +16,7 @@ using Data.States;
 using Data.Entities;
 using System.Linq;
 using System.Collections.Generic;
+using System.Data.Entity;
 using Data.Exceptions;
 using Utilities;
 
@@ -93,13 +95,9 @@ namespace Hub.Services
                 else
                 {
                     //find the corresponding DockyardAccount
-                    var authTokenList = uow.AuthorizationTokenRepository.FindList(x => x.ExternalAccountId == eventReportMS.ExternalAccountId);
-                    if (authTokenList == null)
-                    {
-                        return;
-                    }
+                    var authTokenList = uow.AuthorizationTokenRepository.GetPublicDataQuery().Include(x => x.UserDO).Where(x => x.ExternalAccountId == eventReportMS.ExternalAccountId);
 
-                    foreach (var authToken in authTokenList)
+                    foreach (var authToken in authTokenList.ToArray())
                     {
                         var curDockyardAccount = authToken.UserDO;
 
@@ -114,10 +112,7 @@ namespace Hub.Services
                Crate curCrateStandardEventReport, Fr8AccountDO curDockyardAccount = null)
         {
             //find this Account's Routes
-            var initialRoutesList = uow.PlanRepository
-                .FindList(pt => pt.Fr8AccountId == curDockyardAccount.Id)
-                .Where(x => x.RouteState == RouteState.Active);
-
+            var initialRoutesList = uow.PlanRepository.GetPlanQueryUncached().Where(pt => pt.Fr8AccountId == curDockyardAccount.Id && pt.RouteState == RouteState.Active);
             var subscribingRoutes = _plan.MatchEvents(initialRoutesList.ToList(), eventReportMS);
 
             await LaunchProcesses(subscribingRoutes, curCrateStandardEventReport);
@@ -144,7 +139,14 @@ namespace Hub.Services
 
             if (curPlan.RouteState != RouteState.Inactive)
             {
-                await _plan.Run(curPlan, curEventData);
+                try
+                {
+                    await _plan.Run(curPlan, curEventData);
+                }
+                catch (Exception ex)
+                {
+                    EventManager.ContainerFailed(curPlan, ex);
+                }
             }
         }
     }

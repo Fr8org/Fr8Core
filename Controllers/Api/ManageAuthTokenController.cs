@@ -80,11 +80,17 @@ namespace HubWeb.Controllers.Api
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var accountId = User.Identity.GetUserId();
-                var authTokens = Authorization.GetAllTokens(accountId);
+                var authTokens = Authorization.GetAllTokens(accountId).ToArray();
 
                 foreach (Guid actionId in actionIds)
                 {
-                    var activity = Activity.GetById(uow, actionId);
+                    var activity =  uow.PlanRepository.GetActivityQueryUncached().FirstOrDefault(x => x.Id == actionId);
+
+                    if (activity == null)
+                    {
+                        continue;
+                    }
+
                     var template = _activityTemplate.GetByKey(activity.ActivityTemplateId.Value);
                     result.Add(
                         new ManageAuthToken_Terminal_Activity()

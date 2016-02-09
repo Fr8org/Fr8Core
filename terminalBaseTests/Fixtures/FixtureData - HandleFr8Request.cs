@@ -47,6 +47,14 @@ namespace terminalTests.Fixtures
             return activity;
         }
 
+        public static Fr8DataDTO terminalMockFr8DataDTO()
+        {
+            return new Fr8DataDTO
+            {
+                ActivityDTO = terminalMockActionDTO()
+            };
+        }
+
         public static ActivityDTO terminalMockActionDTO()
         {
             var activityTemplate = ActivityTemplate();

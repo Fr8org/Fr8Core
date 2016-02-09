@@ -948,3 +948,7 @@ ul.bordered-list li:first-child {
    font-size: 1.5rem;
    color: #4db3a4;
 }
+
+.base-block-white.button-block.bottom-margin {
+    margin-bottom: 40px;
+}

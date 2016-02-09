@@ -12,6 +12,7 @@ using Utilities.Logging;
 using System.Diagnostics;
 using System.Net;
 using System.Globalization;
+using System.IO;
 
 namespace Hub.Managers.APIManagers.Transmitters.Restful
 {
@@ -40,19 +41,29 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
         /// Creates an instance with JSON formatter for requests and responses
         /// </summary>
         public RestfulServiceClient()
-            : this(new JsonMediaTypeFormatter())
+            : this(new JsonMediaTypeFormatter(), null)
         {
         }
 
+          public RestfulServiceClient(HttpClient _client)
+            : this(new JsonMediaTypeFormatter(), _client)
+        {
+        }      
+        
         /// <summary>
         /// Creates an instance with specified formatter for requests and responses
         /// </summary>
-        public RestfulServiceClient(MediaTypeFormatter formatter)
+        public RestfulServiceClient(MediaTypeFormatter formatter, HttpClient client)
         {
-            _innerClient = new HttpClient();
+            if (client == null)
+            {
+                client = new HttpClient();
+                client.Timeout = new TimeSpan(0, 2, 0); //2 minute
+            }
+
+            _innerClient = client; 
             _formatter = formatter;
             _formatterLogger = new FormatterLogger();
-            _innerClient.Timeout = new TimeSpan(0, 1, 0); //1 minute
         }
 
         protected virtual async Task<HttpResponseMessage> SendInternalAsync(HttpRequestMessage request, string CorrelationId)
@@ -170,7 +181,15 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
                 return await SendInternalAsync(request, CorrelationId);
             }
         }
-
+        private async Task DeleteInternalAsync(Uri requestUri, string CorrelationId, Dictionary<string, string> headers)
+        {
+            using (var request = new HttpRequestMessage(HttpMethod.Delete, requestUri))
+            {
+                AddHeaders(request, headers);
+                var response = await SendInternalAsync(request, CorrelationId);
+                response.Dispose();
+            }
+        }
         private async Task<HttpResponseMessage> PutInternalAsync(Uri requestUri, HttpContent content, string CorrelationId, Dictionary<string, string> headers)
         {
             using (var request = new HttpRequestMessage(HttpMethod.Put, requestUri) { Content = content })
@@ -211,6 +230,26 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
         }
 
         #region GenericRequestMethods
+        /// <summary>
+        /// Downloads file as a MemoryStream from given URL
+        /// </summary>
+        /// <param name="requestUri"></param>
+        /// <param name="CorrelationId"></param>
+        /// <param name="headers"></param>
+        /// <returns>MemoryStream</returns>
+        public async Task<Stream> DownloadAsync(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null)
+        {
+            using (var response = await GetInternalAsync(requestUri, CorrelationId, headers))
+            {
+                //copy stream because response will be disposed on return
+                var downloadedFile = await response.Content.ReadAsStreamAsync();
+                var copy = new MemoryStream();
+                await downloadedFile.CopyToAsync(copy);
+                //rewind stream
+                copy.Position = 0;
+                return copy;
+            }
+        }
 
         public async Task<TResponse> GetAsync<TResponse>(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null)
         {
@@ -253,12 +292,10 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
         {
             return await PostAsync<TResponse>(requestUri, new ObjectContent(typeof(TContent), content, _formatter), CorrelationId, headers);
         }
-
         public async Task<TResponse> PutAsync<TContent, TResponse>(Uri requestUri, TContent content, string CorrelationId = null, Dictionary<string, string> headers = null)
         {
             return await PutAsync<TResponse>(requestUri, new ObjectContent(typeof(TContent), content, _formatter), CorrelationId, headers);
         }
-
         public async Task<string> PutAsync<TContent>(Uri requestUri, TContent content, string CorrelationId = null, Dictionary<string, string> headers = null)
         {
             return await PutAsync(requestUri, (HttpContent)new ObjectContent(typeof(TContent), content, _formatter), CorrelationId, headers);
@@ -280,6 +317,10 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             {
                 return await DeserializeResponseAsync<TResponse>(response);
             }
+        }
+        public async Task DeleteAsync(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null)
+        {
+            await DeleteInternalAsync(requestUri, CorrelationId, headers);
         }
         public async Task<TResponse> PutAsync<TResponse>(Uri requestUri, HttpContent content, string CorrelationId = null, Dictionary<string, string> headers = null)
         {

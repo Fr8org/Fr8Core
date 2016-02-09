@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using StructureMap;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -20,6 +21,7 @@ using terminalDocuSign.Services;
 using Utilities.Configuration.Azure;
 using terminalDocuSign.Infrastructure;
 using Data.Constants;
+using UtilitiesTesting.Fixtures;
 
 namespace terminalDocuSign.Actions
 {
@@ -29,7 +31,13 @@ namespace terminalDocuSign.Actions
         string _dataSourceValue;
         DropDownList _docuSignTemplate;
 
-        public Mail_Merge_Into_DocuSign_v1() : base()
+
+        string _docuSignTemplateValue;
+        private const string SolutionName = "Mail Merge Into DocuSign";
+        private const double SolutionVersion = 1.0;
+        private const string TerminalName = "DocuSign";
+        public Mail_Merge_Into_DocuSign_v1()
+            : base()
         {
             _docuSignManager = new DocuSignManager();
         }
@@ -104,8 +112,9 @@ namespace terminalDocuSign.Actions
 
         private async Task<List<ListItem>> GetDataSourceListItems(ActivityDO activityDO, string tag)
         {
-            var curActivityTempaltes = await HubCommunicator.GetActivityTemplates(activityDO, tag);
-            return curActivityTempaltes.Select(at => new ListItem() { Key = at.Label, Value = at.Name }).ToList();
+            var curActivityTemplates = await HubCommunicator.GetActivityTemplates(activityDO, tag)
+                .ContinueWith(x => x.Result.Where(y => y.Name.StartsWith("Get", StringComparison.InvariantCultureIgnoreCase) && y.Category == Data.States.ActivityCategory.Receivers));
+            return curActivityTemplates.Select(at => new ListItem() { Key = at.Label, Value = at.Name }).ToList();
         }
 
         /// <summary>
@@ -242,27 +251,33 @@ namespace terminalDocuSign.Actions
                 .Select(x => Mapper.Map<ActivityTemplateDO>(x))
                 .ToList();
 
-            try
-            {
                 ActivityDO dataSourceActivity = await AddAndConfigureChildActivity(curActivityDO, _dataSourceValue, order: 1);
-                ActivityDO mapFieldActivity = await AddAndConfigureChildActivity(curActivityDO, "MapFields", order: 2);
+                // ActivityDO mapFieldActivity = await AddAndConfigureChildActivity(curActivityDO, "MapFields", order: 2);
                 ActivityDO sendDocuSignEnvActivity = await AddAndConfigureChildActivity(curActivityDO, "Send_DocuSign_Envelope", order: 3);
 
                 //set docusign template
 
-                SetControlValue(sendDocuSignEnvActivity, "target_docusign_template", 
+                SetControlValue(sendDocuSignEnvActivity, "target_docusign_template",
                     _docuSignTemplate.ListItems.Where(a => a.Key == _docuSignTemplate.selectedKey).FirstOrDefault());
 
-                await HubCommunicator.ConfigureActivity(sendDocuSignEnvActivity, CurrentFr8UserId);
-                await HubCommunicator.ConfigureActivity(mapFieldActivity, CurrentFr8UserId);
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+
+                await ConfigureChildActivity(curActivityDO, sendDocuSignEnvActivity);
+                // await ConfigureChildActivity(curActivityDO, mapFieldActivity);
 
 
             return await Task.FromResult(curActivityDO);
+        }
+        //This method provides some documentation for the DocuSign Solution Actions
+        public Task<SolutionPageDTO> Documentation(ActivityDO activityDO)
+        {
+            var curSolutionPage = new SolutionPageDTO
+            {
+                Name = SolutionName,
+                Version = SolutionVersion,
+                Terminal = TerminalName,
+                Body = @"<p>This is a solution action</p>"
+            };
+            return Task.FromResult(curSolutionPage);
         }
     }
 }

@@ -30,12 +30,15 @@
 					        <span class="username username-hide-mobile">Hello 
                                 @if(User.IsInRole("Guest")){
                                     <text>Guest User</text>
-                                }else{
-                                    <text>@User.Identity.GetUserName()!</text>
-                                } 
+                                }
+                                else
+                                {
+                                    <text>@User.Identity.GetUserName()</text>
+                                }! 
                                 
                                 </span>
 					        </a>
+
                             @if(!User.IsInRole("Guest")){
 					            <ul class="dropdown-menu dropdown-menu-default">
 						            <li>
@@ -50,8 +53,17 @@
 						            </li>
 					            </ul>
                             }
+
 				        </li>
-				<!-- END USER LOGIN DROPDOWN -->
+                        <!-- END USER LOGIN DROPDOWN -->
+                        if (@User.IsInRole("Guest"))
+                        {
+                            <li class="have-account-login-guest visible-lg visible-md visible-sm">
+                                <a href="/DockyardAccount/Logoff">
+                                    <span>Have an Account? Login</span>
+                                </a>
+                            </li>
+                        }
                 }
 			</ul>
 		</div>
@@ -140,6 +152,8 @@
                     <ul class="dropdown-menu">
 
                         <li><a href="http://documentation.fr8.co">Developer Home</a></li>
+                        <li><a href="/Documentation/RestAPIGuide.html">Fr8 Development Resources - DocuSign</a></li>
+                        
                     </ul>
                 </li>
 
@@ -150,12 +164,22 @@
                         <ul class="dropdown-menu">
 
                             <li><a href="#/form-tools">Create Accounts</a></li>
-                            <li><a href="#/accounts">Manage Dockyard Accounts</a></li>
+                            <li><a href="#/accounts">Manage Fr8 Accounts</a></li>
                             <li><a href="#/webservices">Show Web Services</a></li>
 
                         </ul>
                     </li>
                 }
+                
+                @if (User.IsInRole("Guest"))
+                {
+                    <li class="visible-xs">
+                        <a href="/DockyardAccount/Logoff">
+                            Have an Account? Login
+                        </a>
+                    </li>
+                }
+
 			</ul>
            
 		</div>

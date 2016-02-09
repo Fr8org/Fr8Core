@@ -36,7 +36,7 @@ namespace terminalFr8Core.Controllers
 
             var webService = new WebServiceDTO
             {
-                Name = "fr8 Core"
+                Name = "Built-In Services"
             };
 
             result.Add(new ActivityTemplateDTO
@@ -191,8 +191,8 @@ namespace terminalFr8Core.Controllers
 
             result.Add(new ActivityTemplateDTO()
             {
-                Name = "QueryMTDatabase",
-                Label = "Query MT Database",
+                Name = "QueryFr8Warehouse",
+                Label = "Query Fr8 Warehouse",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 WebService = webService,
@@ -227,6 +227,17 @@ namespace terminalFr8Core.Controllers
                 Name = "StoreFile",
                 Label = "Store File",
                 Category = ActivityCategory.Processors,
+                Terminal = terminal,
+                WebService = webService,
+                Version = "1",
+                Type = ActivityType.Standard
+            });
+
+            result.Add(new ActivityTemplateDTO()
+            {
+                Name = "GetFileFromFr8Store",
+                Label = "Get File From Fr8 Store",
+                Category = ActivityCategory.Receivers,
                 Terminal = terminal,
                 WebService = webService,
                 Version = "1",

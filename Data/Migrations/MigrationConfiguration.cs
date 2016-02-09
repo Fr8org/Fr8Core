@@ -59,7 +59,7 @@ namespace Data.Migrations
                 ObjectFactory.Initialize(x => x.AddRegistry<MigrationConsoleSeedRegistry>());
             }
 
-            var uow = new UnitOfWork(context);
+            var uow = new UnitOfWork(context, ObjectFactory.Container);
 
             UpdateRootRouteNodeId(uow);
 
@@ -376,7 +376,7 @@ namespace Data.Migrations
         /// <param name="unitOfWork"></param>
         private static void AddTestAccounts(IUnitOfWork unitOfWork)
         {
-            CreateTestAccount("integration_test_runner@fr8.company", "fr8#s@lt!", unitOfWork);
+            CreateTestAccount("integration_test_runner@fr8.company", "fr8#s@lt!", "IntegrationTestRunner", unitOfWork);
         }
 
         /// <summary>
@@ -399,15 +399,17 @@ namespace Data.Migrations
             return user;
         }
 
-        private static Fr8AccountDO CreateTestAccount(string userEmail, string curPassword, IUnitOfWork uow)
+        private static Fr8AccountDO CreateTestAccount(string userEmail, string curPassword, string userName, IUnitOfWork uow)
         {
             var user = uow.UserRepository.GetOrCreateUser(userEmail);
-            uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
-            uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, user.Id);
-            uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Booker, user.Id);
-            uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, user.Id);
-            user.UserName = "IntegrationTestRunner";
-            user.TestAccount = true;
+            if (user == null)
+            {
+                uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
+                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, user.Id);
+                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Booker, user.Id);
+                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, user.Id);
+                user.TestAccount = true;
+            }
             return user;
         }
 
@@ -418,7 +420,7 @@ namespace Data.Migrations
         /// <param name="curPassword"></param>
         /// <param name="uow"></param>
         /// <returns></returns>
-        internal static Fr8AccountDO CreateDockyardAccount(string userEmail, string curPassword, IUnitOfWork uow)
+        public static Fr8AccountDO CreateDockyardAccount(string userEmail, string curPassword, IUnitOfWork uow)
         {
             var user = uow.UserRepository.GetOrCreateUser(userEmail);
             uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
@@ -544,7 +546,7 @@ namespace Data.Migrations
             AddWebService(uow, "DocuSign", "/Content/icons/web_services/docusign-icon-64x64.png");
             AddWebService(uow, "Microsoft Azure", "/Content/icons/web_services/ms-azure-icon-64x64.png");
             AddWebService(uow, "Excel", "/Content/icons/web_services/ms-excel-icon-64x64.png");
-            AddWebService(uow, "fr8 Core", "/Content/icons/web_services/fr8-core-icon-64x64.png");
+            AddWebService(uow, "Built-In Services", "/Content/icons/web_services/fr8-core-icon-64x64.png");
             AddWebService(uow, "Salesforce", "/Content/icons/web_services/salesforce-icon-64x64.png");
             AddWebService(uow, "SendGrid", "/Content/icons/web_services/sendgrid-icon-64x64.png");
             AddWebService(uow, "Dropbox", "/Content/icons/web_services/dropbox-icon-64x64.png");
@@ -610,16 +612,14 @@ namespace Data.Migrations
 
         private void UpdateRootRouteNodeId(IUnitOfWork uow)
         {
-            var anyRootIdFlag = uow.RouteNodeRepository
-                .GetAll()
-                .Any(x => x.RootRouteNodeId != null);
+            var anyRootIdFlag = uow.PlanRepository.GetNodesQueryUncached().Any(x => x.RootRouteNodeId != null);
 
             if (anyRootIdFlag)
             {
                 return;
             }
 
-            var fullTree = uow.RouteNodeRepository.GetAll().ToList();
+            var fullTree = uow.PlanRepository.GetNodesQueryUncached().ToList();
 
             var parentChildMap = new Dictionary<Guid, List<RouteNodeDO>>();
             foreach (var routeNode in fullTree.Where(x => x.ParentRouteNodeId.HasValue))

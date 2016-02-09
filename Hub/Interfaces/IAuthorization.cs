@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data.Entities;
+using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 
 namespace Hub.Interfaces
 {
     public interface IAuthorization
     {
-        void PrepareAuthToken(ActivityDTO activityDTO);
+        void PrepareAuthToken(IUnitOfWork uow, ActivityDTO activityDTO);
 
         Task<AuthenticateResponse> AuthenticateInternal(Fr8AccountDO account, TerminalDO terminal,
             string domain, string username, string password, bool isDemoAccount = false);
@@ -21,9 +22,9 @@ namespace Hub.Interfaces
 
         void RemoveAuthenticationCrate(ActivityDTO activityDTO);
 
-        bool ValidateAuthenticationNeeded(string userId, ActivityDTO curActionDTO);
+        bool ValidateAuthenticationNeeded(IUnitOfWork uow, string userId, ActivityDTO curActionDTO);
 
-        void InvalidateToken(string userId, ActivityDTO curActivityDto);
+        void InvalidateToken(IUnitOfWork uow, string userId, ActivityDTO curActivityDto);
 
         IEnumerable<AuthorizationTokenDO> GetAllTokens(string accountId);
 

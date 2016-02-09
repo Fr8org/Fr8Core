@@ -31,6 +31,9 @@ namespace terminalDocuSign.Actions
 {
     public class Generate_DocuSign_Report_v1 : BaseTerminalActivity
     {
+        private const string QueryCrateLabel = "DocuSign Query";
+
+
         // Here in this action we have query builder control to build queries against docusign API and out mt database.
         // Docusign and MT DB have different set of fileds and we want to provide ability to search by any field.
         // Our action should "plan" queries on the particular fields to the corresponding backend.
@@ -319,22 +322,71 @@ namespace terminalDocuSign.Actions
                     updater.CrateStorage.Add(queryCrate);
                 }
 
-                var queryMtDatabaseAction = activityTemplates
-                    .FirstOrDefault(x => x.Name == "QueryMTDatabase");
-                if (queryMtDatabaseAction == null) { return activityDO; }
-                
-                activityDO.ChildNodes.Add(new ActivityDO()
-                {
-                    ActivityTemplateId = queryMtDatabaseAction.Id,
-                    IsTempId = true,
-                    Name = queryMtDatabaseAction.Name,
-                    Label = queryMtDatabaseAction.Label,
-                    CrateStorage = Crate.EmptyStorageAsStr(),
-                    ParentRouteNode = activityDO,
-                    Ordering = 1
-                });
+                activityDO.ChildNodes.Clear();
 
-                // await AddAndConfigureChildActivity(activityDO, "QueryMTDatabase");
+                var queryFr8WarehouseActivityTemplate = activityTemplates
+                    .FirstOrDefault(x => x.Name == "QueryFr8Warehouse");
+                if (queryFr8WarehouseActivityTemplate == null) { return activityDO; }
+
+                var queryFr8WarehouseAction = await AddAndConfigureChildActivity(
+                    activityDO,
+                    "QueryFr8Warehouse"
+                );
+
+                using (var updater = Crate.UpdateStorage(queryFr8WarehouseAction))
+                {
+                    updater.CrateStorage.RemoveByLabel("Upstream Crate Label List");
+
+                    var fields = new[]
+                    {
+                        new FieldDTO() { Key = QueryCrateLabel, Value = QueryCrateLabel }
+                    };
+                    var upstreamLabelsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Crate Label List", fields);
+                    updater.CrateStorage.Add(upstreamLabelsCrate);
+
+                    var upstreamManifestTypes = updater.CrateStorage
+                        .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Crate ManifestType List")
+                        .FirstOrDefault();
+
+                    var controls = updater.CrateStorage
+                        .CrateContentsOfType<StandardConfigurationControlsCM>()
+                        .FirstOrDefault();
+
+                    var radioButtonGroup = controls
+                        .FindByName<RadioButtonGroup>("QueryPicker");
+
+                    UpstreamCrateChooser upstreamCrateChooser = null;
+                    if (radioButtonGroup != null
+                        && radioButtonGroup.Radios.Count > 0
+                        && radioButtonGroup.Radios[0].Controls.Count > 0)
+                    {
+                        upstreamCrateChooser = radioButtonGroup.Radios[0].Controls[0] as UpstreamCrateChooser;
+                    }
+
+                    if (upstreamCrateChooser != null)
+                    {
+                        upstreamCrateChooser.SelectedCrates[0].ManifestType.selectedKey = upstreamManifestTypes.Fields[0].Key;
+                        upstreamCrateChooser.SelectedCrates[0].ManifestType.Value = upstreamManifestTypes.Fields[0].Value;
+                        upstreamCrateChooser.SelectedCrates[0].Label.selectedKey = QueryCrateLabel;
+                        upstreamCrateChooser.SelectedCrates[0].Label.Value = QueryCrateLabel;
+                    }
+                }
+
+                queryFr8WarehouseAction = await ConfigureChildActivity(
+                    activityDO,
+                    queryFr8WarehouseAction
+                );
+
+                // activityDO.ChildNodes.Add(new ActivityDO()
+                // {
+                //     ActivityTemplateId = queryFr8WarehouseAction.Id,
+                //     IsTempId = true,
+                //     Name = queryFr8WarehouseAction.Name,
+                //     Label = queryFr8WarehouseAction.Label,
+                //     CrateStorage = Crate.EmptyStorageAsStr(),
+                //     ParentRouteNode = activityDO,
+                //     Ordering = 1
+                // });
             }
             catch (Exception)
             {
@@ -371,7 +423,7 @@ namespace terminalDocuSign.Actions
                 }
             );
 
-            return Crate<StandardQueryCM>.FromContent("DocuSign Query", queryCM);
+            return Crate<StandardQueryCM>.FromContent(QueryCrateLabel, queryCM);
         }
 
         public static FieldDTO[] GetFieldListForQueryBuilder()

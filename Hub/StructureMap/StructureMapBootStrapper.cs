@@ -107,7 +107,7 @@ namespace Hub.StructureMap
                 For<IImapClient>().Use<ImapClientWrapper>();
                 
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
-                For<IRestfulServiceClient>().Singleton().Use<RestfulServiceClient>();
+                For<IRestfulServiceClient>().Singleton().Use<RestfulServiceClient>().SelectConstructor(() => new RestfulServiceClient());
                 For<ITerminalTransmitter>().Use<TerminalTransmitter>();
                 For<IPlan>().Use<Hub.Services.Plan>();
                 For<InternalInterfaces.IContainer>().Use<InternalClass.Container>();

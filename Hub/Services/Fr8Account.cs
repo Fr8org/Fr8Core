@@ -190,7 +190,7 @@ namespace Hub.Services
             {
                 return uow.ContainerRepository.GetQuery().Where
                     (r => r.ContainerState == ContainerState.Executing
-                          & r.Plan.Fr8Account.Id == userId).ToList();
+                          && r.Plan.Fr8Account.Id == userId).ToList();
             }
         }
 
@@ -282,7 +282,7 @@ namespace Hub.Services
         public Fr8AccountDO Register(IUnitOfWork uow, string userName, string firstName, string lastName,
             string password, string roleID)
         {
-            var userDO = uow.UserRepository.GetOrCreateUser(userName);
+            var userDO = uow.UserRepository.GetOrCreateUser(userName, roleID);
             uow.UserRepository.UpdateUserCredentials(userDO, userName, password);
             uow.AspNetUserRolesRepository.AssignRoleToUser(roleID, userDO.Id);
             return userDO;
@@ -387,7 +387,7 @@ namespace Hub.Services
             IEnumerable<PlanDO> activeRoutes;
             using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var routeQuery = unitOfWork.PlanRepository.GetQuery().Include(i => i.Fr8Account);
+                var routeQuery = unitOfWork.PlanRepository.GetPlanQueryUncached().Include(i => i.Fr8Account);
 
                 routeQuery
                     .Where(pt => pt.RouteState == RouteState.Active)//1.
@@ -407,10 +407,6 @@ namespace Hub.Services
             {
                 // Register a guest user 
                Fr8AccountDO fr8AccountDO = Register(uow, guestUserEmail, guestUserEmail, guestUserEmail, guestUserPassword, Roles.Guest);
-               uow.SaveChanges();
-
-               // By default #Register adds Customer role for the user so remove it 
-               uow.AspNetUserRolesRepository.RevokeRoleFromUser(Roles.Customer, fr8AccountDO.Id);
                uow.SaveChanges();
 
                return Task.FromResult(Login(uow, fr8AccountDO, guestUserPassword, false));

@@ -1,53 +1,33 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
-
+using System.Net;
 using System.Net.Http;
-using System.Reflection;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Http;
-using System.Web.Http.Description;
 using AutoMapper;
-using Hub.Services;
-using HubWeb.Controllers.Helpers;
-using Microsoft.AspNet.Identity;
-using Newtonsoft.Json;
-using StructureMap;
 using Data.Entities;
-using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.States;
 using Hub.Interfaces;
-using Hub.Managers;
+using HubWeb.Controllers.Helpers;
 using HubWeb.Infrastructure;
+using Microsoft.AspNet.Identity;
+using StructureMap;
 
 namespace HubWeb.Controllers
 {
-    
-    
     [Fr8ApiAuthorize]
     public class ActionsController : ApiController
     {
         private readonly IActivity _activity;
-        private readonly ISecurityServices _security;
         private readonly IActivityTemplate _activityTemplate;
         private readonly ISubroute _subRoute;
-        private readonly Hub.Interfaces.IPlan _plan;
-
-        private readonly IAuthorization _authorization;
 
         public ActionsController()
         {
             _activity = ObjectFactory.GetInstance<IActivity>();
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
-            _security = ObjectFactory.GetInstance<ISecurityServices>();
             _subRoute = ObjectFactory.GetInstance<ISubroute>();
-            _plan = ObjectFactory.GetInstance<IPlan>();
-            _authorization = ObjectFactory.GetInstance<IAuthorization>();
         }
 
         public ActionsController(IActivity service)
@@ -114,8 +94,12 @@ namespace HubWeb.Controllers
             // WebMonitor.Tracer.Monitor.StartMonitoring("Configuring action " + curActionDesignDTO.Name);
             curActionDesignDTO.CurrentView = null;
             ActivityDO curActivityDO = Mapper.Map<ActivityDO>(curActionDesignDTO);
-            ActivityDTO activityDTO = await _activity.Configure(User.Identity.GetUserId(), curActivityDO);
-            return Ok(activityDTO);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                ActivityDTO activityDTO = await _activity.Configure(uow, User.Identity.GetUserId(), curActivityDO);
+                return Ok(activityDTO);
+            }
         }
 
         /// <summary>
@@ -140,7 +124,7 @@ namespace HubWeb.Controllers
             var isDeleted = await _subRoute.DeleteActivity(User.Identity.GetUserId(), id, confirmed);
             if (!isDeleted)
             {
-                return ResponseMessage(new HttpResponseMessage(System.Net.HttpStatusCode.PreconditionFailed));
+                return ResponseMessage(new HttpResponseMessage(HttpStatusCode.PreconditionFailed));
             }
             return Ok();
         }
@@ -152,31 +136,58 @@ namespace HubWeb.Controllers
         public IHttpActionResult Save(ActivityDTO curActionDTO)
         {
             ActivityDO submittedActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var resultActionDO = _activity.SaveOrUpdateActivity(uow, submittedActivityDO);
                 var resultActionDTO = Mapper.Map<ActivityDTO>(resultActionDO);
-
                 return Ok(resultActionDTO);
             }
         }
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IHttpActionResult> Documentation([FromBody] ActivityDTO curActivityDTO)
+        {
+            var curDocSupport = curActivityDTO.DocumentationSupport;
+            //check if the DocumentationSupport comma separated string has the correct form
+            if (!ValidateDocumentationSupport(curDocSupport))
+                return BadRequest();
+            var solutionPageDTO = await _activity.GetSolutionDocumentation(curActivityDTO);
+            return Ok(solutionPageDTO);
+        }
+        private bool ValidateDocumentationSupport(string docSupport)
+        {
+            var curStringArray = docSupport.Split(',');
+            if (curStringArray.Contains("MainPage") && curStringArray.Contains("HelpMenu"))
+                throw new Exception("ActionDTO cannot have both MainPage and HelpMenu in the Documentation Support field value");
+            if (curStringArray.Contains("MainPage") || curStringArray.Contains("HelpMenu"))
+                return true;
+            return false;
+        }
 
-//        /// <summary>
-//        /// POST : updates the given action
-//        /// </summary>
-//        [HttpPost]
-//        [Route("update")]
-//        public IHttpActionResult Update(ActionDTO curActionDTO)
-//        {
-//            ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);
-//
-//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-//            {
-//                await _action.SaveUpdateAndConfigure(uow, submittedActionDO);
-//            }
-//
-//            return Ok();
-//        }    
-            }
+        [HttpGet]
+        [AllowAnonymous]
+        public IHttpActionResult GetDocuSignSolutionList()
+        {
+            var terminalName = "terminalDocuSign";
+            var solutionNameList = _activity.GetSolutionList(terminalName);
+            return Json(solutionNameList);
+        }
+        //        /// <summary>
+        //        /// POST : updates the given action
+        //        /// </summary>
+        //        [HttpPost]
+        //        [Route("update")]
+        //        public IHttpActionResult Update(ActionDTO curActionDTO)
+        //        {
+        //            ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);
+        //
+        //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //            {
+        //                await _action.SaveUpdateAndConfigure(uow, submittedActionDO);
+        //            }
+        //
+        //            return Ok();
+        //        }      
+	}
+
 }

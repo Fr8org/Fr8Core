@@ -157,6 +157,8 @@ namespace terminalDocuSign.Services
 
         public IEnumerable<EnvelopeDataDTO> GetEnvelopeDataByTemplate(string templateId)
         {
+            var envelopeData = new List<EnvelopeDataDTO>();
+
             var curDocuSignTemplate = new DocuSignTemplate();
 
             if (string.IsNullOrEmpty(_email) || string.IsNullOrEmpty(_apiPassword))
@@ -169,8 +171,6 @@ namespace terminalDocuSign.Services
             }
 
             var templateDetails = curDocuSignTemplate.GetTemplate(templateId);
-
-            var envelopeData = new List<EnvelopeDataDTO>();
 
             var recipients = templateDetails["recipients"];
 

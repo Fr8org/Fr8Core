@@ -1,5 +1,6 @@
 ﻿using System;
 using Data.Repositories;
+using Data.Repositories.Plan;
 using StructureMap;
 
 namespace Data.Interfaces
@@ -44,14 +45,14 @@ namespace Data.Interfaces
         UserStatusRepository UserStatusRepository { get; }
         //NegotiationAnswerEmailRepository NegotiationAnswerEmailRepository { get; }
         ExpectedResponseRepository ExpectedResponseRepository { get; }
-        IPlanRepository PlanRepository { get; }
+        
         SlipRepository SlipRepository { get; }
-        ActivityRepository ActivityRepository { get; }
+        //ActivityRepository ActivityRepository { get; }
         ActivityTemplateRepository ActivityTemplateRepository { get; }
-		RouteNodeRepository RouteNodeRepository { get; }
+		//RouteNodeRepository RouteNodeRepository { get; }
         ProcessNodeRepository ProcessNodeRepository { get; }
 
-        ISubrouteRepository SubrouteRepository { get; }
+       // ISubrouteRepository SubrouteRepository { get; }
         ICriteriaRepository CriteriaRepository { get; }
 
         IFileRepository FileRepository { get; }
@@ -63,7 +64,7 @@ namespace Data.Interfaces
         IMTFieldTypeRepository MTFieldTypeRepository { get; }
 
         IMTDataRepository MTDataRepository { get; }
-
+        IPlanRepository PlanRepository { get; }
         MultiTenantObjectRepository MultiTenantObjectRepository { get; }
 
         ITerminalRepository TerminalRepository { get; }
