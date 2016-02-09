@@ -62,7 +62,16 @@ namespace terminalSalesforce.Actions
                 {
                     new FieldDTO("Account") {Availability = AvailabilityType.Configuration},
                     new FieldDTO("Contact") {Availability = AvailabilityType.Configuration},
-                    new FieldDTO("Lead") {Availability = AvailabilityType.Configuration}
+                    new FieldDTO("Lead") {Availability = AvailabilityType.Configuration},
+                    new FieldDTO("Opportunities") {Availability = AvailabilityType.Configuration},
+                    new FieldDTO("Forecasts") {Availability = AvailabilityType.Configuration},
+                    new FieldDTO("Contracts") {Availability = AvailabilityType.Configuration},
+                    new FieldDTO("Orders") {Availability = AvailabilityType.Configuration},
+                    new FieldDTO("Cases") {Availability = AvailabilityType.Configuration},
+                    new FieldDTO("Solutions") {Availability = AvailabilityType.Configuration},
+                    new FieldDTO("Products") {Availability = AvailabilityType.Configuration},
+                    new FieldDTO("Documents") {Availability = AvailabilityType.Configuration},
+                    new FieldDTO("Files") {Availability = AvailabilityType.Configuration}
                 });
 
             //Note: This design time fields are used to populate the Fileter Pane controls. It has to be labelled as Queryable Criteria
