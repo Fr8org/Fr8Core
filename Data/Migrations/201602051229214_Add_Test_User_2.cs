@@ -8,6 +8,7 @@ namespace Data.Migrations
     using Utilities;
     using System.Linq;
     using States;
+
     public partial class Add_Test_User_2 : DbMigration
     {
         private string email = "integration_test_runner@fr8.company";

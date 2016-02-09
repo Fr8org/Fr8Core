@@ -31,7 +31,8 @@ namespace terminalGoogle.Actions
             if (authTokenDO == null) return true;
             if (!base.NeedsAuthentication(authTokenDO))
                 return false;
-            var token = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
+            var token = JsonConvert.DeserializeObject<GoogleAuthDTO>(
+                authTokenDO.Token);
             // we may also post token to google api to check its validity
             return (token.Expires - DateTime.Now > TimeSpan.FromMinutes(5) ||
                     !string.IsNullOrEmpty(token.RefreshToken));
@@ -57,11 +58,22 @@ namespace terminalGoogle.Actions
                 return NeedsAuthenticationError(payloadCrates);
             }
 
-            return await CreateStandardPayloadDataFromStandardTableData(curActivityDO, containerId, payloadCrates);
+            return await CreateStandardPayloadDataFromStandardTableData(curActivityDO, containerId, payloadCrates, authTokenDO);
         }
 
-        private async Task<PayloadDTO> CreateStandardPayloadDataFromStandardTableData(ActivityDO curActivityDO, Guid containerId, PayloadDTO payloadCrates)
+        private async Task<PayloadDTO> CreateStandardPayloadDataFromStandardTableData(ActivityDO curActivityDO, Guid containerId, PayloadDTO payloadCrates, AuthorizationTokenDO authTokenDO)
         {
+            //at run time pull the entire sheet and store it as payload
+            var spreadsheetControl = FindControl(Crate.GetStorage(curActivityDO.CrateStorage), "select_spreadsheet");
+            var spreadsheetsFromUserSelection = string.Empty;
+            if (spreadsheetControl != null)
+                spreadsheetsFromUserSelection = spreadsheetControl.Value;
+            
+            if (!string.IsNullOrEmpty(spreadsheetsFromUserSelection))
+            {
+                curActivityDO = TransformSpreadsheetDataToPayloadDataCrate(curActivityDO, authTokenDO, spreadsheetsFromUserSelection);
+            }
+
             var tableDataMS = await GetTargetTableData(curActivityDO);
 
             // Create a crate of payload data by using Standard Table Data manifest and use its contents to tranform into a Payload Data manifest.
@@ -237,6 +249,24 @@ namespace terminalGoogle.Actions
             }
 
             CreatePayloadCrate_SpreadsheetRows(curActivityDO, spreadsheetUri, authDTO, headers);
+
+            return curActivityDO;
+        }
+
+        private ActivityDO TransformSpreadsheetDataToPayloadDataCrate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO, string spreadsheetUri)
+        {
+            var rows = new List<TableRowDTO>();
+       
+            var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
+            var extractedData = _google.EnumerateDataRows(spreadsheetUri, authDTO);
+            if (extractedData == null) return curActivityDO;
+
+            using (var updater = Crate.UpdateStorage(curActivityDO))
+            {
+                const string label = "Spreadsheet Payload Rows";
+                updater.CrateStorage.RemoveByLabel(label);
+                updater.CrateStorage.Add(Crate.CreateStandardTableDataCrate(label, false, extractedData.ToArray()));
+            }
 
             return curActivityDO;
         }
