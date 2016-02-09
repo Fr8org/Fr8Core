@@ -303,7 +303,7 @@ namespace terminalDocuSign.Actions
                 updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Log Messages", logMessages));
                 if (curSelectedOption == "template")
                 {
-                    var userDefinedFieldsPayload = _docuSignManager.CreateActionPayload(curActivityDO, authTokenDO, envelopeId);
+                    var userDefinedFieldsPayload = _docuSignManager.CreateActionPayload(curActivityDO, authTokenDO, envelopeId, curSelectedValue);
                     updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Data", userDefinedFieldsPayload));
                 }
             }

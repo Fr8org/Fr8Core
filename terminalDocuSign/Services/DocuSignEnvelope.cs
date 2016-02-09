@@ -126,32 +126,28 @@ namespace terminalDocuSign.Services
         }
 
         /// <summary>
-        /// Creates payload as a collection of fields based on field mappings created by user 
-        /// and field values retrieved from a DocuSign envelope.
+        /// Creates Envelope payload, based on envelope data and default template fields
         /// </summary>
-        /// <param name="curFields">Field mappings created by user for an action.</param>
-        /// <param name="curEnvelopeId">Envelope id which is being processed.</param>
-        /// <param name="curEnvelopeData">A collection of form fields extracted from the DocuSign envelope.</param>
-        public IList<FieldDTO> ExtractPayload(List<FieldDTO> curFields, string curEnvelopeId,
+        /// <param name="curTemplateFields"></param>
+        /// <param name="curEnvelopeId"></param>
+        /// <param name="curEnvelopeData"></param>
+        /// <returns></returns>
+        public IList<FieldDTO> FormEnvelopePayload(List<FieldDTO> curTemplateFields, string curEnvelopeId,
             IList<EnvelopeDataDTO> curEnvelopeData)
         {
             var payload = new List<FieldDTO>();
 
-            if (curFields != null)
+            foreach (var envelopeData in curEnvelopeData)
             {
-                curFields.ForEach(f =>
-                {
-                    var newValue = curEnvelopeData.Where(e => e.Name == f.Key).Select(e => e.Value).SingleOrDefault();
-                    if (newValue == null)
-                    {
-                        EventManager.DocuSignFieldMissing(curEnvelopeId, f.Key);
-                    }
-                    else
-                    {
-                        payload.Add(new FieldDTO() { Key = f.Key, Value = newValue });
-                    }
-                });
+                payload.Add(new FieldDTO() { Key = envelopeData.Name, Value = envelopeData.Value });
             }
+
+            //add missing values from template
+            var missing_fields =
+             curTemplateFields.Where(a => !payload.Any(b => b.Key == a.Key));
+
+            payload.AddRange(missing_fields.ToList());
+
             return payload;
         }
 
@@ -232,7 +228,7 @@ namespace terminalDocuSign.Services
 
         }
 
-        private List<EnvelopeDataDTO> AddEnvelopeData(List<EnvelopeDataDTO> envelopes, JToken tabs,  string tabName, string tabField)
+        private List<EnvelopeDataDTO> AddEnvelopeData(List<EnvelopeDataDTO> envelopes, JToken tabs, string tabName, string tabField)
         {
             if (tabs[tabName] != null)
             {
@@ -242,7 +238,7 @@ namespace terminalDocuSign.Services
                 }
             }
             return envelopes;
-        } 
+        }
 
     }
 }
