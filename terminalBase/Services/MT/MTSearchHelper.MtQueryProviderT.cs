@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
+using Hub.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
@@ -33,71 +34,11 @@ namespace TerminalBase.Services
                 return result;
             }
 
-            private static IMtQueryable<T> CriteriaToMtQuery(List<FilterConditionDTO> conditions, IMtQueryable<T> queryable)
+            private static IMtQueryable<T> CriteriaToMtQuery(
+                List<FilterConditionDTO> conditions, IMtQueryable<T> queryable)
             {
-                var type = typeof (T);
-                ParameterExpression param = Expression.Parameter(type, "x");
-
-                foreach (var condition in conditions)
-                {
-                    var fieldName = condition.Field;
-                    MemberInfo member;
-                    var fieldType = GetMemberType(type, fieldName, out member);
-
-                    if (fieldType == null)
-                    {
-                        continue;
-                    }
-
-                    Expression queryExpression = null;
-                    object convertedValue;
-                    Expression accessor;
-                    
-                    if (TryConvert(fieldType, condition.Value, out convertedValue))
-                    {
-                        accessor = Expression.MakeMemberAccess(param, member);
-                    }
-                    else
-                    {
-                        continue;
-                    }
-                   
-                    var operand = Expression.Constant(convertedValue);
-
-                    switch (condition.Operator)
-                    {
-                        case "eq":
-                            queryExpression = Expression.Equal(accessor, operand);
-                            break;
-
-                        case "neq":
-                            queryExpression = Expression.NotEqual(accessor, operand);
-                            break;
-
-                        case "gt":
-                            queryExpression = Expression.GreaterThan(accessor, operand);
-                            break;
-
-                        case "gte":
-                            queryExpression = Expression.GreaterThanOrEqual(accessor, operand);
-                            break;
-
-                        case "lte":
-                            queryExpression = Expression.LessThanOrEqual(accessor, operand);
-                            break;
-
-                        case "lt":
-                            queryExpression = Expression.LessThan(accessor, operand);
-                            break;
-                    }
-
-                    if (queryExpression == null)
-                    {
-                        continue;
-                    }
-
-                    queryable = queryable.Where(Expression.Lambda<Func<T, bool>>(queryExpression, param));
-                }
+                var predicateBuilder = new FilterConditionPredicateBuilder<T>(conditions);
+                queryable = queryable.Where(predicateBuilder.ToPredicate());
 
                 return queryable;
             }

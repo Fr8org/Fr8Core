@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Web;
 using AutoMapper;
@@ -106,12 +107,20 @@ namespace terminalDocuSign.Actions
         }
 
         // Mapping between quiery builder control field names and information about how this field is routed to the backed 
-        private static readonly Dictionary<string, FieldBackedRoutingInfo> QueryBuilderFields = new Dictionary<string, FieldBackedRoutingInfo>
-        {
-            {"Envelope Text", new FieldBackedRoutingInfo("SearchText", null)},
-            {"Folder", new FieldBackedRoutingInfo("Folder", null)},
-            {"Status", new FieldBackedRoutingInfo("Status", "Status")}
-        };
+        private static readonly Dictionary<string, FieldBackedRoutingInfo> QueryBuilderFields = 
+            new Dictionary<string, FieldBackedRoutingInfo>
+            {
+                { "Envelope Text", new FieldBackedRoutingInfo("SearchText", null) },
+                { "Folder", new FieldBackedRoutingInfo("Folder", null) },
+                { "Status", new FieldBackedRoutingInfo("Status", "Status") },
+                { "CreateDate", new FieldBackedRoutingInfo("CreatedDateTime", "CreateDate") },
+                { "SentDate", new FieldBackedRoutingInfo("SentDateTime", "SentDate") },
+                // Did not find in FolderItem.
+                // { "DeliveredDate", new FieldBackedRoutingInfo("DeliveredDate", "DeliveredDate") },
+                // { "Recipient", new FieldBackedRoutingInfo("Recipient", "Recipient") },
+                { "CompletedDate", new FieldBackedRoutingInfo("CompletedDateTime", "CompletedDate") },
+                { "EnvelopeId", new FieldBackedRoutingInfo("EnvelopeId", "EnvelopeId") }
+            };
 
         private readonly DocuSignManager _docuSignManager;
         private readonly IDocuSignFolder _docuSignFolder;
@@ -252,7 +261,7 @@ namespace terminalDocuSign.Actions
             List<DocusignFolderInfo> folders = null;
 
             //Currently we can support only equality operation
-            foreach (var condition in conditions.Where(x => x.Operator == "eq"))
+            foreach (var condition in conditions)
             {
                 FieldBackedRoutingInfo fieldBackedRoutingInfo;
 
@@ -261,10 +270,11 @@ namespace terminalDocuSign.Actions
                     continue;
                 }
 
-                switch (fieldBackedRoutingInfo.DocusignQueryName)
+                // criteria contains folder name, but to search we need folder id
+                if (fieldBackedRoutingInfo.DocusignQueryName == "Folder")
                 {
-                    // criteria contains folder name, but to search we need folder id
-                    case "Folder":
+                    if (condition.Operator == "eq")
+                    {
                         // cache list of folders
                         if (folders == null)
                         {
@@ -275,15 +285,27 @@ namespace terminalDocuSign.Actions
                         var folder = folders.FirstOrDefault(x => x.Name == value);
 
                         query.Folder = folder != null ? folder.FolderId : value;
-                        break;
-
-                    case "Status":
-                        query.Status = condition.Value;
-                        break;
-
-                    case "SearchText":
+                    }
+                }
+                else if (fieldBackedRoutingInfo.DocusignQueryName == "Status" && condition.Operator == "eq")
+                {
+                    query.Status = condition.Value;
+                }
+                else if (fieldBackedRoutingInfo.DocusignQueryName == "SearchText")
+                {
+                    if (condition.Operator == "eq")
+                    {
                         query.SearchText = condition.Value;
-                        break;
+                    }
+                }
+                else
+                {
+                    query.Conditions.Add(new FilterConditionDTO()
+                    {
+                        Field = fieldBackedRoutingInfo.DocusignQueryName,
+                        Operator = condition.Operator,
+                        Value = condition.Value
+                    });
                 }
             }
 
