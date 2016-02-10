@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class RemoveSubscriptionRequired : IMigrationMetadata
+    public sealed partial class Add_Test_User_2 : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(RemoveSubscriptionRequired));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(Add_Test_User_2));
         
         string IMigrationMetadata.Id
         {
-            get { return "201601310840404_RemoveSubscriptionRequired"; }
+            get { return "201602051229214_Add_Test_User_2"; }
         }
         
         string IMigrationMetadata.Source

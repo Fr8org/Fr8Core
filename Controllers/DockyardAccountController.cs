@@ -1,5 +1,5 @@
 
-﻿using System;
+using System;
 using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
@@ -15,6 +15,7 @@ using Hub.Services;
 using Utilities;
 using Utilities.Logging;
 using HubWeb.ViewModels;
+using Data.Migrations;
 
 namespace HubWeb.Controllers
 {
@@ -85,7 +86,7 @@ namespace HubWeb.Controllers
         [AllowAnonymous]
         public ActionResult Register()
         {
-            ViewBag.GuestUserEmail =  TempData["tempEmail"];            
+            ViewBag.GuestUserEmail = TempData["tempEmail"];
             return View();
         }
 
@@ -124,7 +125,7 @@ namespace HubWeb.Controllers
                     {
                         curRegStatus = await _account.UpdateGuestUserRegistration(submittedRegData.Email.Trim()
                             , submittedRegData.Password.Trim()
-                            ,submittedRegData.GuestUserTempEmail);
+                            , submittedRegData.GuestUserTempEmail);
                     }
                     else
                     {
@@ -138,11 +139,11 @@ namespace HubWeb.Controllers
                     else
                     {
                         // return RedirectToAction("Index", "Home");
-	                  return this.Login(new LoginVM
-	                  {
-                          Email = submittedRegData.Email.Trim(),
-                          Password = submittedRegData.Password.Trim(),
-		                  RememberMe = false
+                        return this.Login(new LoginVM
+                        {
+                            Email = submittedRegData.Email.Trim(),
+                            Password = submittedRegData.Password.Trim(),
+                            RememberMe = false
                         }, string.Empty).Result;
                     }
                 }
@@ -363,7 +364,7 @@ Please register first.");
         [AllowAnonymous]
         public async Task<ActionResult> ProcessGuestUserMode()
         {
-            LoginStatus loginStatus  = await _account.CreateAuthenticateGuestUser();
+            LoginStatus loginStatus = await _account.CreateAuthenticateGuestUser();
 
             if (loginStatus == LoginStatus.Successful)
             {
