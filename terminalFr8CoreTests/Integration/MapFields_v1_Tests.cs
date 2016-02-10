@@ -66,14 +66,14 @@ namespace terminalFr8CoreTests.Integration
             var dataDTO = HealthMonitor_FixtureData.MapFields_v1_InitialConfiguration_Fr8DataDTO();
 
             AddUpstreamCrate(
-                dataDTO.ActivityDTO,
+                dataDTO,
                 new StandardDesignTimeFieldsCM(
                     new FieldDTO("A", "B")
                 )
             );
 
             AddDownstreamCrate(
-                dataDTO.ActivityDTO,
+                dataDTO,
                 new StandardDesignTimeFieldsCM(
                     new FieldDTO("C", "D")
                 )
