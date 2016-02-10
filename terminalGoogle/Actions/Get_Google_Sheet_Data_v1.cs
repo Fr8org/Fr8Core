@@ -57,79 +57,96 @@ namespace terminalGoogle.Actions
                 return NeedsAuthenticationError(payloadCrates);
             }
 
-            //get the link to spreedsheet
-            var spreadsheetsFromUserSelection =
-             Activity.GetControlsManifest(curActivityDO).FindByName("select_spreadsheet").Value;
-            var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
-            //get the data
-            var data = _google.EnumerateDataRows(spreadsheetsFromUserSelection, authDTO);
-            var crate = Crate.CreateStandardTableDataCrate("Spreadsheet Payload Rows", true, data.ToArray());
+
+
+            ///// ********** This code is what have to be done by FR-2246 **************
+
+            ////get the link to spreedsheet
+            //var spreadsheetsFromUserSelection =
+            // Activity.GetControlsManifest(curActivityDO).FindByName("select_spreadsheet").Value;
+            //var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
+            ////get the data
+            //var data = _google.EnumerateDataRows(spreadsheetsFromUserSelection, authDTO);
+            //var crate = Crate.CreateStandardTableDataCrate("Spreadsheet Payload Rows", true, data.ToArray());
+            //using (var updater = Crate.UpdateStorage(payloadCrates))
+            //{
+            //    updater.CrateStorage.Add(crate);
+            //}
+
+            //return Success(payloadCrates);
+
+            ///// **********************The code below should be removed in the scope of FR-2246*************************************************
+
+            return await CreateStandardPayloadDataFromStandardTableData(curActivityDO, containerId, payloadCrates, authTokenDO);
+        }
+
+
+
+        private async Task<PayloadDTO> CreateStandardPayloadDataFromStandardTableData(ActivityDO curActivityDO, Guid containerId, PayloadDTO payloadCrates, AuthorizationTokenDO authTokenDO)
+        {
+            //at run time pull the entire sheet and store it as payload
+            var spreadsheetControl = FindControl(Crate.GetStorage(curActivityDO.CrateStorage), "select_spreadsheet");
+            var spreadsheetsFromUserSelection = string.Empty;
+            if (spreadsheetControl != null)
+                spreadsheetsFromUserSelection = spreadsheetControl.Value;
+
+            if (!string.IsNullOrEmpty(spreadsheetsFromUserSelection))
+            {
+                curActivityDO = TransformSpreadsheetDataToPayloadDataCrate(curActivityDO, authTokenDO, spreadsheetsFromUserSelection);
+            }
+
+            var tableDataMS = await GetTargetTableData(curActivityDO);
+
+            // Create a crate of payload data by using Standard Table Data manifest and use its contents to tranform into a Payload Data manifest.
+            // Add a crate of PayloadData to action's crate storage
+            var payloadDataCrate = Crate.CreatePayloadDataCrate("ExcelTableRow", "Excel Data", tableDataMS);
+
             using (var updater = Crate.UpdateStorage(payloadCrates))
             {
-                updater.CrateStorage.Add(crate);
+                updater.CrateStorage.Add(payloadDataCrate);
             }
+
 
             return Success(payloadCrates);
         }
 
-        //I have no idea what code below is for
-        //commented out with FR-2246
-        //                              Sergey.P
 
+        private async Task<StandardTableDataCM> GetTargetTableData(ActivityDO curActivityDO)
+        {
+            // Find crates of manifest type Standard Table Data
+            var storage = Crate.GetStorage(curActivityDO);
+            var standardTableDataCrates = storage.CratesOfType<StandardTableDataCM>().ToArray();
 
-        //private async Task<PayloadDTO> CreateStandardPayloadDataFromStandardTableData(ActivityDO curActivityDO, Guid containerId, PayloadDTO payloadCrates)
-        //{
-        //    var tableDataMS = await GetTargetTableData(curActivityDO);
+            // If no crate of manifest type "Standard Table Data" found, try to find upstream for a crate of type "Standard File Handle"
+            if (!standardTableDataCrates.Any())
+            {
+                return await GetUpstreamTableData(curActivityDO);
+            }
 
-        //    // Create a crate of payload data by using Standard Table Data manifest and use its contents to tranform into a Payload Data manifest.
-        //    // Add a crate of PayloadData to action's crate storage
-        //    var payloadDataCrate = Crate.CreateStandardTableDataCrate()
+            return standardTableDataCrates.First().Content;
+        }
 
-        //    using (var updater = Crate.UpdateStorage(payloadCrates))
-        //    {
-        //        updater.CrateStorage.Add(payloadDataCrate);
-        //    }
+        private async Task<StandardTableDataCM> GetUpstreamTableData(ActivityDO curActivityDO)
+        {
+            var upstreamFileHandleCrates = await GetUpstreamFileHandleCrates(curActivityDO);
 
+            //if no "Standard File Handle" crate found then return
+            if (!upstreamFileHandleCrates.Any())
+                throw new Exception("No Standard File Handle crate found in upstream.");
 
-        //    return Success(payloadCrates);
-        //}
+            //if more than one "Standard File Handle" crates found then throw an exception
+            if (upstreamFileHandleCrates.Count > 1)
+                throw new Exception("More than one Standard File Handle crates found upstream.");
 
-        //private async Task<StandardTableDataCM> GetTargetTableData(ActivityDO curActivityDO)
-        //{
-        //    // Find crates of manifest type Standard Table Data
-        //    var storage = Crate.GetStorage(curActivityDO);
-        //    var standardTableDataCrates = storage.CratesOfType<StandardTableDataCM>().ToArray();
+            throw new NotImplementedException();
+            // Deserialize the Standard File Handle crate to StandardFileHandleMS object
+            //StandardFileHandleMS fileHandleMS = JsonConvert.DeserializeObject<StandardFileHandleMS>(upstreamFileHandleCrates.First().Contents);
 
-        //    // If no crate of manifest type "Standard Table Data" found, try to find upstream for a crate of type "Standard File Handle"
-        //    if (!standardTableDataCrates.Any())
-        //    {
-        //        return await GetUpstreamTableData(curActivityDO);
-        //    }
+            // Use the url for file from StandardFileHandleMS and read from the file and transform the data into StandardTableData and assign it to Action's crate storage
+            //StandardTableDataCM tableDataMS = ExcelUtils.GetTableData(fileHandleMS.DockyardStorageUrl);
 
-        //    return standardTableDataCrates.First().Content;
-        //}
-
-        //private async Task<StandardTableDataCM> GetUpstreamTableData(ActivityDO curActivityDO)
-        //{
-        //    var upstreamFileHandleCrates = await GetUpstreamFileHandleCrates(curActivityDO);
-
-        //    //if no "Standard File Handle" crate found then return
-        //    if (!upstreamFileHandleCrates.Any())
-        //        throw new Exception("No Standard File Handle crate found in upstream.");
-
-        //    //if more than one "Standard File Handle" crates found then throw an exception
-        //    if (upstreamFileHandleCrates.Count > 1)
-        //        throw new Exception("More than one Standard File Handle crates found upstream.");
-
-        //    throw new NotImplementedException();
-        //    // Deserialize the Standard File Handle crate to StandardFileHandleMS object
-        //    //StandardFileHandleMS fileHandleMS = JsonConvert.DeserializeObject<StandardFileHandleMS>(upstreamFileHandleCrates.First().Contents);
-
-        //    // Use the url for file from StandardFileHandleMS and read from the file and transform the data into StandardTableData and assign it to Action's crate storage
-        //    //StandardTableDataCM tableDataMS = ExcelUtils.GetTableData(fileHandleMS.DockyardStorageUrl);
-
-        //    //return tableDataMS;
-        //}
+            //return tableDataMS;
+        }
 
         /// <summary>
         /// Create configuration controls crate.
@@ -254,6 +271,24 @@ namespace terminalGoogle.Actions
             }
 
             CreatePayloadCrate_SpreadsheetRows(curActivityDO, spreadsheetUri, authDTO, headers);
+
+            return curActivityDO;
+        }
+
+        private ActivityDO TransformSpreadsheetDataToPayloadDataCrate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO, string spreadsheetUri)
+        {
+            var rows = new List<TableRowDTO>();
+
+            var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
+            var extractedData = _google.EnumerateDataRows(spreadsheetUri, authDTO);
+            if (extractedData == null) return curActivityDO;
+
+            using (var updater = Crate.UpdateStorage(curActivityDO))
+            {
+                const string label = "Spreadsheet Payload Rows";
+                updater.CrateStorage.RemoveByLabel(label);
+                updater.CrateStorage.Add(Crate.CreateStandardTableDataCrate(label, false, extractedData.ToArray()));
+            }
 
             return curActivityDO;
         }
