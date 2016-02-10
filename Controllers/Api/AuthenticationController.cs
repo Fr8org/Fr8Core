@@ -10,6 +10,8 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Infrastructure.StructureMap;
 using Hub.Interfaces;
 using Hub.Services;
+using HubWeb.ViewModels;
+using Utilities;
 
 namespace HubWeb.Controllers
 {
@@ -50,7 +52,8 @@ namespace HubWeb.Controllers
                 credentials.IsDemoAccount
             );
 
-            return Ok(new {
+            return Ok(new
+            {
                 TerminalId =
                     response.AuthorizationToken != null
                         ? response.AuthorizationToken.TerminalID
@@ -88,6 +91,32 @@ namespace HubWeb.Controllers
 
             var externalAuthUrlDTO = await _authorization.GetOAuthInitiationURL(account, terminal);
             return Ok(new { Url = externalAuthUrlDTO.Url });
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> Login([FromUri]string username, [FromUri]string password)
+        {
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+            {
+                return BadRequest();
+            }
+
+            LoginStatus curLoginStatus =
+                await new Fr8Account().ProcessLoginRequest(username, password, false);
+            switch (curLoginStatus)
+            {
+                case LoginStatus.InvalidCredential:
+                    return StatusCode(System.Net.HttpStatusCode.Forbidden);
+
+                case LoginStatus.ImplicitUser:
+                    return Conflict();
+
+                case LoginStatus.UnregisteredUser:
+                    return NotFound();
+
+                default:
+                    return Ok();
+            }
         }
     }
 }
