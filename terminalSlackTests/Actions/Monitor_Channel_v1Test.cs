@@ -99,9 +99,9 @@ namespace terminalSlackTests.Integration
         {
             var runUrl = GetTerminalRunUrl();
 
-            ActivityDTO activityDTO = await GetConfiguredActionWithDDLBSelected("general");
-            AddOperationalStateCrate(activityDTO, new OperationalStateCM());
-            var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
+            var dataDTO = await GetConfiguredActionWithDDLBSelected("general");
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
+            
             var responsePayloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
 
             var crateStorage = Crate.GetStorage(responsePayloadDTO);
@@ -118,9 +118,9 @@ namespace terminalSlackTests.Integration
         public async void Monitor_Channel_Run_WrongChannel_Test()
         {
             var runUrl = GetTerminalRunUrl();
-            var activityDTO = await GetConfiguredActionWithDDLBSelected("random");
-            AddOperationalStateCrate(activityDTO, new OperationalStateCM());
-            var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
+            var dataDTO = await GetConfiguredActionWithDDLBSelected("random");
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
+            
             var responsePayloadDTO =
                await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
 
@@ -134,19 +134,19 @@ namespace terminalSlackTests.Integration
             Assert.AreEqual("Unexpected channel-id.", errorMessage.Message);
         }
 
-        private async Task<ActivityDTO> GetConfiguredActionWithDDLBSelected(string selectedChannel)
+        private async Task<Fr8DataDTO> GetConfiguredActionWithDDLBSelected(string selectedChannel)
         { 
             var configureUrl = GetTerminalConfigureUrl();
-            var requestActionDTO = HealthMonitor_FixtureData.Monitor_Channel_v1_InitialConfiguration_Fr8DataDTO();
+            var requestDataDTO = HealthMonitor_FixtureData.Monitor_Channel_v1_InitialConfiguration_Fr8DataDTO();
             var activityDTO =
                 await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    requestActionDTO
+                    requestDataDTO
                 );
-
+            requestDataDTO.ActivityDTO = activityDTO;
             activityDTO.AuthToken = HealthMonitor_FixtureData.Slack_AuthToken();
             AddPayloadCrate(
-                activityDTO,
+                requestDataDTO,
                  new EventReportCM()
                  {
                      EventPayload = new CrateStorage()
@@ -169,12 +169,12 @@ namespace terminalSlackTests.Integration
                 var channels = await slackIntegraion.GetChannelList(HealthMonitor_FixtureData.Slack_AuthToken().Token);
 
                 var ddlb = (DropDownList)controls.Controls[0];
-                var channel = channels.Where(a => a.Key == selectedChannel).FirstOrDefault();
+                var channel = channels.FirstOrDefault(a => a.Key == selectedChannel);
                 if (channel != null)
                     ddlb.Value = channel.Value;
             }
 
-            return activityDTO;
+            return requestDataDTO;
         }
 
         [Test]

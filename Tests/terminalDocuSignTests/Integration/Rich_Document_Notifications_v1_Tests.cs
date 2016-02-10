@@ -49,7 +49,7 @@ namespace terminalDocuSignTests.Integration
             
         }
 
-        private void AddHubActivityTemplate(ActivityDTO activityDTO)
+        private void AddHubActivityTemplate(Fr8DataDTO dataDTO)
         {
 
             var terminal = new TerminalDTO()
@@ -95,12 +95,12 @@ namespace terminalDocuSignTests.Integration
             };
 
             AddActivityTemplate(
-               activityDTO,
+               dataDTO,
               testIncomingDataTemplate
             );
 
             AddActivityTemplate(
-               activityDTO,
+               dataDTO,
               setDelayActionTemplate
             );
 
@@ -116,17 +116,17 @@ namespace terminalDocuSignTests.Integration
             };
 
             AddActivityTemplate(
-               activityDTO,
+               dataDTO,
               queryFr8WarehouseActionTemplate
             );
 
             AddActivityTemplate(
-               activityDTO,
+               dataDTO,
               docusignEventActionTemplate
             );
 
             AddActivityTemplate(
-                activityDTO,
+                dataDTO,
                 new ActivityTemplateDTO()
                 {
                     Id = 9,
@@ -145,7 +145,7 @@ namespace terminalDocuSignTests.Integration
             var configureUrl = GetTerminalConfigureUrl();
 
             var dataDTO = HealthMonitor_FixtureData.Rich_Document_Notifications_v1_InitialConfiguration_Fr8DataDTO();
-            AddHubActivityTemplate(dataDTO.ActivityDTO);
+            AddHubActivityTemplate(dataDTO);
             dataDTO.ActivityDTO.AuthToken = HealthMonitor_FixtureData.DocuSign_AuthToken();
 
             var responseActionDTO =
@@ -167,7 +167,7 @@ namespace terminalDocuSignTests.Integration
         {
             var configureUrl = GetTerminalConfigureUrl();
             var dataDTO = HealthMonitor_FixtureData.Rich_Document_Notifications_v1_InitialConfiguration_Fr8DataDTO();
-            AddHubActivityTemplate(dataDTO.ActivityDTO);
+            AddHubActivityTemplate(dataDTO);
 
             var responseActionDTO =
                 await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
@@ -217,7 +217,7 @@ namespace terminalDocuSignTests.Integration
         {
             var configureUrl = GetTerminalConfigureUrl();
             var dataDTO = HealthMonitor_FixtureData.Rich_Document_Notifications_v1_InitialConfiguration_Fr8DataDTO();
-            AddHubActivityTemplate(dataDTO.ActivityDTO);
+            AddHubActivityTemplate(dataDTO);
 
             var responseActionDTO =
                 await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
