@@ -48,11 +48,19 @@ namespace terminalDocuSign.Services
             new FieldDTO("Auto Responded", "autoresponded"),
         };
 
-        public string SearchText;
+        public DocusignQuery()
+        {
+            Conditions = new List<FilterConditionDTO>();
+        }
+
         public DateTime? FromDate;
         public DateTime? ToDate;
+
+        public string SearchText;
         public string Status;
         public string Folder;
+
+        public List<FilterConditionDTO> Conditions { get; set; }
     }
 
     public class DocuSignManager
@@ -241,7 +249,7 @@ namespace terminalDocuSign.Services
 
         private void SearchFolder(DocuSignAuthTokenDTO authToken, DocusignQuery query, string folder, List<FolderItem> envelopes)
         {
-            envelopes.AddRange(_docuSignFolder.Search(authToken.Email, authToken.ApiPassword, query.SearchText, folder, query.Status == "<any>" ? null : query.Status, query.FromDate, query.ToDate));
+            envelopes.AddRange(_docuSignFolder.Search(authToken.Email, authToken.ApiPassword, query.SearchText, folder, query.Status == "<any>" ? null : query.Status, query.FromDate, query.ToDate, query.Conditions));
         }
     }
 }
