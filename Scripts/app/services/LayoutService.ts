@@ -44,8 +44,16 @@ module dockyard.services {
         
         // Depth first search on the ActionGroup tree going from last sibling to first.
         private processGroup(actionGroups: model.ActivityDTO[][], group: model.ActionGroup, processedGroups: model.ActionGroup[]) {
+            if (group.parentAction && group.parentAction.activityTemplate) {
+                if (group.parentAction.activityTemplate.tags
+                    && group.parentAction.activityTemplate.tags.indexOf('HideChildren') !== -1) {
+                    return;
+                }
+            }
+
             processedGroups.push(group);
             group.actions = _.sortBy(group.actions, (action: model.ActivityDTO) => action.ordering);
+
             for (var i = group.actions.length - 1; i > -1; i--) {
                 //var childGroup = this.findChildGroup(actionGroups, group.actions[i].id);
                 if (group.actions[i].childrenActions.length) {

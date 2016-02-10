@@ -75,8 +75,8 @@ namespace terminalDocuSign.Actions
             {
                 updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(fields)));
 
-                var userDefinedFieldsPayload = _docuSignManager.CreateActionPayload(curActivityDO, authTokenDO, envelopeId);
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Data", userDefinedFieldsPayload));
+                //var userDefinedFieldsPayload = _docuSignManager.CreateActionPayload(curActivityDO, authTokenDO, envelopeId);
+                //updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Data", userDefinedFieldsPayload));
             }
 
             return Success(payloadCrates);
@@ -251,8 +251,6 @@ namespace terminalDocuSign.Actions
                 .Select(x => Mapper.Map<ActivityTemplateDO>(x))
                 .ToList();
 
-            try
-            {
                 ActivityDO dataSourceActivity = await AddAndConfigureChildActivity(curActivityDO, _dataSourceValue, order: 1);
                 // ActivityDO mapFieldActivity = await AddAndConfigureChildActivity(curActivityDO, "MapFields", order: 2);
                 ActivityDO sendDocuSignEnvActivity = await AddAndConfigureChildActivity(curActivityDO, "Send_DocuSign_Envelope", order: 3);
@@ -265,11 +263,7 @@ namespace terminalDocuSign.Actions
 
                 await ConfigureChildActivity(curActivityDO, sendDocuSignEnvActivity);
                 // await ConfigureChildActivity(curActivityDO, mapFieldActivity);
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+
 
             return await Task.FromResult(curActivityDO);
         }

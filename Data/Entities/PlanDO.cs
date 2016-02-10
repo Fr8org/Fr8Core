@@ -4,23 +4,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Data.States.Templates;
 using System.Linq;
 using System;
-using System.Collections;
-using System.Collections.ObjectModel;
-using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Data.Entities
 {
     public class PlanDO : RouteNodeDO
     {
-        public PlanDO()
+        private static readonly PropertyInfo[] TrackingProperties =
         {
-            
-            //Subroutes = new List<SubrouteDO>();
-            /*var startingSubroute = new SubrouteDO();
-            startingSubroute.StartingSubroute = true;
-            Subroutes.Add(startingSubroute);*/
-        }
-       
+            typeof(PlanDO).GetProperty("Name"),
+            typeof(PlanDO).GetProperty("Tag"),
+            typeof(PlanDO).GetProperty("Description"),
+            typeof(PlanDO).GetProperty("RouteState"),
+        };
      
         [Required]
         public string Name { get; set; }
@@ -83,10 +79,7 @@ namespace Data.Entities
         public virtual _RouteStateTemplate RouteStateTemplate { get; set; }
 
         public string Tag { get; set; }
-
-        [InverseProperty("Plan")]
-        public virtual ICollection<ContainerDO> ChildContainers { get; set; }
-
+        
         [NotMapped]
         public IEnumerable<SubrouteDO> Subroutes
         {
@@ -96,91 +89,35 @@ namespace Data.Entities
             }
         }
 
-        public override RouteNodeDO Clone()
+        protected override IEnumerable<PropertyInfo> GetTrackingProperties()
         {
-            return new PlanDO()
+            foreach (var trackingProperty in base.GetTrackingProperties())
             {
-                Ordering = this.Ordering,
-                Name = this.Name,
-                Description = this.Description,
-                RouteState = this.RouteState,
-                Fr8Account = this.Fr8Account
-            };
+                yield return trackingProperty;
+            }
+
+            foreach (var trackingProperty in TrackingProperties)
+            {
+                yield return trackingProperty;
+            }
         }
 
-        public override void BeforeCreate()
+        protected override RouteNodeDO CreateNewInstance()
         {
-            base.BeforeCreate();
-            RootRouteNode = this;
+            return new PlanDO();
         }
 
-        public override void BeforeSave()
+
+        protected override void CopyProperties(RouteNodeDO source)
         {
-            base.BeforeSave();
-            RootRouteNode = this;
-        }
-        
-        private class SmartNavigationalPropertyCollectionProxy<TBase, TDerived> : ICollection<TDerived>
-            where TDerived : TBase
-        {
-            private readonly ICollection<TBase> _baseCollection;
+            var plan = (PlanDO)source;
 
-            public int Count
-            {
-                get
-                {
-                    return _baseCollection.OfType<TDerived>().Count();
-                }
-            }
+            base.CopyProperties(source);
+            Name = plan.Name;
+            Tag = plan.Tag;
+            RouteState = plan.RouteState;
+            Description = plan.Description;
 
-            public bool IsReadOnly
-            {
-                get { return false; }
-            }
-
-            public SmartNavigationalPropertyCollectionProxy(ICollection<TBase> baseCollection)
-            {
-                _baseCollection = baseCollection;
-            }
-
-            public IEnumerator<TDerived> GetEnumerator()
-            {
-                return _baseCollection.OfType<TDerived>().GetEnumerator();
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return GetEnumerator();
-            }
-
-            public void Add(TDerived item)
-            {
-                _baseCollection.Add(item);
-            }
-
-            public void Clear()
-            {
-                throw new NotSupportedException();
-            }
-
-            public bool Contains(TDerived item)
-            {
-                return _baseCollection.Contains(item);
-            }
-
-            public void CopyTo(TDerived[] array, int arrayIndex)
-            {
-                foreach (var derived in _baseCollection.OfType<TDerived>())
-                {
-                    array[arrayIndex] = derived;
-                    arrayIndex++;
-                }
-            }
-
-            public bool Remove(TDerived item)
-            {
-                return _baseCollection.Remove(item);
-            }
         }
     }
 }

@@ -1,87 +1,57 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Caching;
 using Data.Entities;
 using Data.Interfaces;
-using Data.States;
-using Newtonsoft.Json;
-using Utilities;
+using Utilities.Configuration.Azure;
 
 namespace Data.Repositories
 {
-    public abstract class AuthorizationTokenRepositoryBase : GenericRepository<AuthorizationTokenDO>, IAuthorizationTokenRepository, ITrackingChangesRepository
+    public abstract class AuthorizationTokenRepositoryBase : GenericRepository<AuthorizationTokenDO>,
+        IAuthorizationTokenRepository, ITrackingChangesRepository
     {
         /*********************************************************************************/
         // Declarations
         /*********************************************************************************/
 
-        private readonly Dictionary<Guid, AuthorizationTokenChangeTracker> _changesTackers = new Dictionary<Guid, AuthorizationTokenChangeTracker>();
+        private readonly Dictionary<Guid, AuthorizationTokenChangeTracker> _changesTackers =
+            new Dictionary<Guid, AuthorizationTokenChangeTracker>();
+
         private readonly List<AuthorizationTokenDO> _adds = new List<AuthorizationTokenDO>();
         private readonly List<AuthorizationTokenDO> _deletes = new List<AuthorizationTokenDO>();
-        
+        private static readonly MemoryCache TokenCache = new MemoryCache("AuthTokenCache");
+        private static TimeSpan _expiration = TimeSpan.FromMinutes(10);
+
         /*********************************************************************************/
 
         public Type EntityType
         {
-            get {return typeof (AuthorizationTokenDO); }
+            get { return typeof (AuthorizationTokenDO); }
         }
 
         /*********************************************************************************/
         // Functions
         /*********************************************************************************/
-        
+
+        static AuthorizationTokenRepositoryBase()
+        {
+            int exp;
+
+            var expStr = CloudConfigurationManager.GetSetting("Cache.AuthorizationTokenRepository.Expiration");
+
+            if (!string.IsNullOrWhiteSpace(expStr) && int.TryParse(expStr, out exp))
+            {
+                _expiration = TimeSpan.FromMinutes(exp);
+            }
+        }
+
+        /*********************************************************************************/
+
         protected AuthorizationTokenRepositoryBase(IUnitOfWork uow)
             : base(uow)
         {
         }
-
-//        These methods are quite weird and are used only in tests
-//        /*********************************************************************************/
-//
-//        public String GetAuthorizationTokenURL(String url, Fr8AccountDO dockyardAccountDO, String segmentEventName = null, Dictionary<String, Object> segmentTrackingProperties = null)
-//        {
-//            return GetAuthorizationTokenURL(url, dockyardAccountDO.Id, segmentEventName, segmentTrackingProperties);
-//        }
-//
-//        /*********************************************************************************/
-//
-//        public String GetAuthorizationTokenURL(String url, String userID, String segmentEventName = null, Dictionary<String, Object> segmentTrackingProperties = null)
-//        {
-//            var token = GetAuthorizationToken(url, userID, segmentEventName, segmentTrackingProperties);
-//
-//            var responseUrl = String.Format("{0}tokenAuth?token={1}",
-//                Server.ServerUrl,
-//                token);
-//
-//            return responseUrl;
-//        }
-//
-//        /*********************************************************************************/
-//
-//        private String GetAuthorizationToken(String url, String userID, String segmentEventName = null, Dictionary<String, Object> segmentTrackingProperties = null)
-//        {
-//            var newTokenLink = new AuthorizationTokenDO
-//            {
-//                RedirectURL = url,
-//                UserID = userID,
-//                ExpiresAt = DateTime.UtcNow.AddDays(10),
-//                SegmentTrackingEventName = segmentEventName,
-//                Terminal = new TerminalDO()
-//                {
-//                    Id = 0,
-//                    Name = "",
-//                    Endpoint = "",
-//                    Version = "1",
-//                    TerminalStatus = TerminalStatus.Active
-//                }
-//            };
-//
-//            if (segmentTrackingProperties != null)
-//                newTokenLink.SegmentTrackingProperties = JsonConvert.SerializeObject(segmentTrackingProperties);
-//
-//            UnitOfWork.AuthorizationTokenRepository.Add(newTokenLink);
-//            return newTokenLink.Id.ToString();
-//        }
 
         /*********************************************************************************/
 
@@ -102,9 +72,12 @@ namespace Data.Repositories
             }
             else
             {
-                token = GetQuery().FirstOrDefault(x => x.UserID == userId && x.TerminalID == terminalId && x.AuthorizationTokenState == state);
+                token =
+                    GetQuery()
+                        .FirstOrDefault(
+                            x => x.UserID == userId && x.TerminalID == terminalId && x.AuthorizationTokenState == state);
             }
-            
+
             return EnrichAndTrack(token);
         }
 
@@ -122,17 +95,52 @@ namespace Data.Repositories
             return EnrichAndTrack(
                 GetQuery()
                     .FirstOrDefault(x => x.ExternalAccountId == externalAccountId
-                        && x.TerminalID == terminalId
-                        && x.UserID == userId
+                                         && x.TerminalID == terminalId
+                                         && x.UserID == userId
                     )
-            );
+                );
+        }
+
+        /*********************************************************************************/
+
+        public AuthorizationTokenDO FindTokenById(Guid? id)
+        {
+            if (id == null)
+            {
+                return null;
+            }
+
+            return FindTokenById(id.Value.ToString());
         }
 
         /*********************************************************************************/
 
         public AuthorizationTokenDO FindTokenById(string id)
         {
-            return EnrichAndTrack(GetQuery().FirstOrDefault(x => x.Id.ToString() == id));
+            AuthorizationTokenDO token;
+
+            lock (TokenCache)
+            {
+                token = (AuthorizationTokenDO) TokenCache.Get(id);
+                if (token != null)
+                {
+                    return token;
+                }
+            }
+
+            token = EnrichAndTrack(GetQuery().FirstOrDefault(x => x.Id.ToString() == id));
+
+            lock (TokenCache)
+            {
+                TokenCache.Remove(id);
+                TokenCache.Add(new CacheItem(id, token), new CacheItemPolicy
+                {
+                    SlidingExpiration = _expiration
+                });
+            }
+
+            return token;
+
         }
 
         /*********************************************************************************/
@@ -160,6 +168,7 @@ namespace Data.Repositories
             if (!_changesTackers.TryGetValue(token.Id, out changeTracker))
             {
                 token.Token = QuerySecurePart(token.Id);
+
                 _changesTackers[token.Id] = new AuthorizationTokenChangeTracker(token.Token, token);
             }
 
@@ -220,6 +229,14 @@ namespace Data.Repositories
                 if (value.Value.HasChanges)
                 {
                     value.Value.ResetChanges();
+                }
+            }
+
+            lock (TokenCache)
+            {
+                foreach (var authorizationTokenDo in _deletes)
+                {
+                    TokenCache.Remove(authorizationTokenDo.Id.ToString("N"));
                 }
             }
 

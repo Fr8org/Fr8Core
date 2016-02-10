@@ -156,7 +156,46 @@ namespace Data.Infrastructure
         public delegate void KeyVaultFailureHandler(string keyVaultMethod, Exception ex);
         public static event KeyVaultFailureHandler KeyVaultFailure;
 
+        public delegate void AuthTokenSilentRevokeHandler(AuthorizationTokenDO authToken);
+        public static event AuthTokenSilentRevokeHandler EventAuthTokenSilentRevoke;
+
+        public delegate void AuthTokenCreatedHandler(AuthorizationTokenDO authToken);
+        public static event AuthTokenCreatedHandler EventAuthTokenCreated;
+
+        public delegate void AuthTokenRemovedHandler(AuthorizationTokenDO authToken);
+        public static event AuthTokenRemovedHandler EventAuthTokenRemoved;
+
         #region Method
+
+        public static void AuthTokenSilentRevoke(AuthorizationTokenDO authToken)
+        {
+            var handler = EventAuthTokenSilentRevoke;
+
+            if (handler != null)
+            {
+                handler.Invoke(authToken);
+            }
+        }
+
+        public static void AuthTokenCreated(AuthorizationTokenDO authToken)
+        {
+            var handler = EventAuthTokenCreated;
+
+            if (handler != null)
+            {
+                handler.Invoke(authToken);
+            }
+        }
+
+        public static void AuthTokenRemoved(AuthorizationTokenDO authToken)
+        {
+            var handler = EventAuthTokenRemoved;
+
+            if (handler != null)
+            {
+                handler.Invoke(authToken);
+            }
+        }
 
         public static void KeyVaultFailed(string keyVaultMethod, Exception ex)
         {

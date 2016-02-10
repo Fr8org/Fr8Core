@@ -152,15 +152,17 @@ namespace TerminalBase.BaseClasses
         /// <param name="payload"></param>
         /// <param name="errorMessage"></param>
         /// <param name="errorCode"></param>
+        /// <param name="currentActivity">Activity where the error occured</param>
+        /// <param name="currentTerminal">Terminal where the error occured</param>
         /// <returns></returns>
-        protected PayloadDTO Error(PayloadDTO payload, string errorMessage = null, ActionErrorCode? errorCode = null)
+        protected PayloadDTO Error(PayloadDTO payload, string errorMessage = null, ActionErrorCode? errorCode = null, string currentActivity = null, string currentTerminal = null)
         {
             using (var updater = Crate.UpdateStorage(payload))
             {
                 var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
                 operationalState.CurrentActivityErrorCode = errorCode;
                 operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Error);
-                operationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(errorMessage,ErrorType.Generic, errorCode.ToString(),null)); 
+                operationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(errorMessage, ErrorType.Generic, errorCode.ToString(), null, currentActivity, currentTerminal));
             }
 
             return payload;
@@ -708,7 +710,7 @@ namespace TerminalBase.BaseClasses
             var exceptionMessage = string.Format("No field found with specified key: {0}.", fieldKey);
             baseEvent.SendTerminalErrorIncident(_actionName, exceptionMessage, _actionName);
 
-            throw new ApplicationException(exceptionMessage + " Detailed information has been written to log.");
+            throw new ApplicationException(exceptionMessage);
         }
 
         protected void AddLabelControl(CrateStorage storage, string name, string label, string text)
@@ -754,6 +756,8 @@ namespace TerminalBase.BaseClasses
                     .First().Controls;
 
                 var control = TraverseNestedControls(controls, controlFullName);
+                if (control == null) return;
+
                 switch (control.Type)
                 {
                     case "TextBlock":
@@ -923,9 +927,9 @@ namespace TerminalBase.BaseClasses
 
             //parent must be a Subroute
             //If Route is specified as a parent, then a new subroute will be created
-            Guid parentId = (parent.ChildNodes.Count > 0) ? parent.ChildNodes[0].ParentRouteNodeId.Value : parent.RootRouteNodeId.Value;
+            //Guid parentId = (parent.ChildNodes.Count > 0) ? parent.ChildNodes[0].ParentRouteNodeId.Value : parent.RootRouteNodeId.Value;
 
-            var result = await HubCommunicator.CreateAndConfigureActivity(activityTemplate.Id, name, CurrentFr8UserId, label, order, parentId);
+            var result = await HubCommunicator.CreateAndConfigureActivity(activityTemplate.Id, name, CurrentFr8UserId, label, order, parent.Id);
             var resultDO = Mapper.Map<ActivityDO>(result);
 
             if (resultDO != null)
