@@ -725,6 +725,11 @@ namespace Hub.Services
             }
             return solutionPageDTO;
         }
+
+        //public Task<> GetHelp(ActivityDTO curActivityDTO)
+        //{
+            
+        //}
         private Task<SolutionPageDTO> GetDocumentation(ActivityDTO curActivityDTO)
         {
             //Put a method name so that HandleFr8Request could find correct method in the terminal Action
@@ -738,7 +743,8 @@ namespace Hub.Services
                 ActivityDTO = curActivityDTO
             };
             //Call the terminal
-            return ObjectFactory.GetInstance<ITerminalTransmitter>().CallActionAsync<SolutionPageDTO>(actionName, fr8Data, curContainerId.ToString());
+            return ObjectFactory.GetInstance<ITerminalTransmitter>()
+                .CallActionAsync<SolutionPageDTO>(actionName, fr8Data, curContainerId.ToString());
         }
         //        public Task<IEnumerable<T>> FindCratesByManifestType<T>(ActionDO curActivityDO, GetCrateDirection direction = GetCrateDirection.None)
         //        {
