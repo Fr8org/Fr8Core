@@ -3,7 +3,6 @@
         rootRouteNodeId: string;
         parentRouteNodeId: string;
         id: string;
-        isTempId: boolean;
         name: string;
         label: string;
         crateStorage: model.CrateStorage;
@@ -18,13 +17,11 @@
         constructor(
             rootRouteNodeId: string,
             parentRouteNodeId: string,
-            id: string,
-            isTempId: boolean
+            id: string
         ) {
             this.rootRouteNodeId = rootRouteNodeId;
             this.parentRouteNodeId = parentRouteNodeId;
             this.id = id;
-            this.isTempId = isTempId;
             this.activityTemplateId = 0;
             this.configurationControls = new ControlsList();
         }
@@ -37,8 +34,7 @@
             var result = new ActivityDTO(
                 this.rootRouteNodeId,
                 this.parentRouteNodeId,
-                this.id,
-                this.isTempId
+                this.id
             );
             result.name = this.name;
             result.name = this.label;
@@ -47,17 +43,16 @@
         }
 
         static isActionValid(action: interfaces.IActionVM) {
-            return action && action.$resolved && !action.isTempId;
+            return action && action.$resolved;
         }
 
         static create(dataObject: interfaces.IActivityDTO): ActivityDTO {
-            var result = new ActivityDTO('', '', '', false);
+            var result = new ActivityDTO('', '', '');
             result.activityTemplateId = dataObject.activityTemplateId;
             result.activityTemplate = dataObject.activityTemplate;
             result.crateStorage = dataObject.crateStorage;
             result.configurationControls = dataObject.configurationControls;
             result.id = dataObject.id;
-            result.isTempId = dataObject.isTempId;
             result.name = dataObject.name;
             result.label = dataObject.label;
             result.parentRouteNodeId = dataObject.parentRouteNodeId;

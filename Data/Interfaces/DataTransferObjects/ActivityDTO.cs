@@ -18,9 +18,6 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("activityTemplate")]
         public ActivityTemplateDTO ActivityTemplate { get; set; }
 
-        [JsonProperty("isTempId")]
-        public bool IsTempId { get; set; }
-
         [JsonProperty("action_version")]
         public string ActivityVersion { get; set; }
 
