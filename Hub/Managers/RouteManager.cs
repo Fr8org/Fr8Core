@@ -53,21 +53,19 @@ namespace Hub.Managers
                     RouteState = RouteState.Active,
                     Tag = "Monitor",
                     Id = Guid.NewGuid(),
-                   
                 };
 
                 //create a sub plan
                 var subroute = new SubrouteDO(true)
                 {
-                    ParentRouteNode = plan,
                     Id = Guid.NewGuid(),
-                    RootRouteNode = plan
                 };
 
                 //update Route and Sub plan into database
                 plan.ChildNodes = new List<RouteNodeDO> { subroute };
-                uow.RouteNodeRepository.Add(plan);
-                uow.RouteNodeRepository.Add(subroute);
+                
+                uow.PlanRepository.Add(plan);
+                
                 uow.SaveChanges();
 
                 //get activity templates of required actions
@@ -85,11 +83,11 @@ namespace Hub.Managers
 
         private PlanDO GetExistingRoute(IUnitOfWork uow, string routeName, string fr8AccountEmail)
         {
-            if (uow.PlanRepository.GetQuery().Any(existingRoute =>
+            if (uow.PlanRepository.GetPlanQueryUncached().Any(existingRoute =>
                 existingRoute.Name.Equals(routeName) &&
                 existingRoute.Fr8Account.Email.Equals(fr8AccountEmail)))
             {
-                return uow.PlanRepository.GetQuery().First(existingRoute =>
+                return uow.PlanRepository.GetPlanQueryUncached().First(existingRoute =>
                     existingRoute.Name.Equals(routeName) &&
                     existingRoute.Fr8Account.Email.Equals(fr8AccountEmail));
             }

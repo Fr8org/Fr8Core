@@ -28,9 +28,9 @@ namespace terminalTwilio.Actions
         protected ITwilioService _twilio;
 
         public Send_Via_Twilio_v1()
-	    {
+        {
             _twilio = ObjectFactory.GetInstance<ITwilioService>();
-	    }
+        }
 
         public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
@@ -67,19 +67,9 @@ namespace terminalTwilio.Actions
             var fieldsDTO = new List<ControlDefinitionDTO>()
             {
                 CreateSpecificOrUpstreamValueChooser("SMS Number", "SMS_Number", "Upstream Terminal-Provided Fields"),
-                new TextBox()
-                {
-                    Label = "SMS Body",
-                    Name = "SMS_Body",
-                    Required = true
-                }
+                CreateSpecificOrUpstreamValueChooser("SMS Body", "SMS_Body", "Upstream Terminal-Provided Fields")
             };
-            /*
-            var controls = new StandardConfigurationControlsCM()
-            {
-                Controls = fieldsDTO
-            };
-             * */
+
             return Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
         }
 
@@ -108,7 +98,7 @@ namespace terminalTwilio.Actions
             return crate;
         }*/
 
-        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO,AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             //not currently any requirements that need attention at FollowupConfigurationResponse
             return await Task.FromResult(curActivityDO);
@@ -172,9 +162,10 @@ namespace terminalTwilio.Actions
             {
                 throw new ArgumentException("CrateDTO is not a standard UI control");
             }
-            var smsBodyFields = standardControls.FindByName("SMS_Body");
             var smsNumber = GetSMSNumber((TextSource)standardControls.Controls[0], payloadCrates);
-            return new FieldDTO(smsNumber, smsBodyFields.Value);
+            var smsBody = GetSMSBody((TextSource)standardControls.Controls[1], payloadCrates);
+
+            return new FieldDTO(smsNumber, smsBody);
         }
 
         //private string GetSMSNumber(RadioButtonGroup radioButtonGroupControl)
@@ -220,6 +211,32 @@ namespace terminalTwilio.Actions
 
             return smsNumber;
         }
+
+        private string GetSMSBody(TextSource control, PayloadDTO payloadCrates)
+        {
+
+            string smsBody = "";
+            if (control == null)
+            {
+                throw new ApplicationException("TextSource control was expected but not found.");
+            }
+            switch (control.ValueSource)
+            {
+                case "specific":
+                    smsBody = control.TextValue;
+                    break;
+                case "upstream":
+                    //get the payload data 'Key' based on the selected control.Value and get its 'Value' from payload data
+                    smsBody = Crate.GetFieldByKey<StandardPayloadDataCM>(payloadCrates.CrateStorage, control.Value);
+                    break;
+                default:
+                    throw new ApplicationException("Could not extract number, unknown mode.");
+            }
+            smsBody = "Fr8 Alert: " + smsBody + " For more info, visit http://fr8.co/sms";
+
+            return smsBody;
+        }
+
         private List<FieldDTO> CreateKeyValuePairList(Message curMessage)
         {
             List<FieldDTO> returnList = new List<FieldDTO>();

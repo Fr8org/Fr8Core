@@ -65,14 +65,15 @@ namespace terminalTwilioTests.Fixture
                     InitialLabel = "SMS Number",
                     Name = "SMS_Number",
                     Value = "15005550006",
-                    Label = "SMS Number",
+                    Label = "SMS Number"
                 },
-                new TextBox()
+                new TextSource()
                 {
-                    Label = "SMS Body",
+                    UpstreamSourceLabel = "Upstream Terminal-Provided Fields",
+                    InitialLabel = "SMS Body",
                     Name = "SMS_Body",
-                    Required = true,
-                    Value = "That is the message that we are sending"
+                    Value = "That is the message that we are sending",
+                    Label = "SMS Body"
                 }
             };
             return CrateManager.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());

@@ -12,11 +12,8 @@ namespace Hub.Interfaces
     /// </summary>
     public interface ISubroute
     {
-        void Store(IUnitOfWork uow, SubrouteDO subroute);
-        SubrouteDO Create(IUnitOfWork uow, PlanDO plan, string name);
         void Update(IUnitOfWork uow, SubrouteDO subroute);
         void Delete(IUnitOfWork uow, Guid id);
-        void AddActivity(IUnitOfWork uow, ActivityDO resultActivityDo);
         /// <summary>
         /// Backups current action and calls configure on downstream actions
         /// if there are validation errors restores current action and returns false

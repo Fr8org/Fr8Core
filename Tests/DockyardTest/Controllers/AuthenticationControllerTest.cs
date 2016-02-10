@@ -123,7 +123,14 @@ namespace DockyardTest.Controllers
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.ActivityRepository.Add(activityDO);
+                uow.PlanRepository.Add(new PlanDO()
+                {
+                    Name="name",
+                    RouteState = RouteState.Active,
+                    ChildNodes = {activityDO }
+                });
+                
+                //uow.ActivityRepository.Add(activityDO);
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
                 uow.SaveChanges();
             }

@@ -21,7 +21,7 @@ namespace DockyardTest.Services
             _subroute = ObjectFactory.GetInstance<ISubroute>();
         }
 
-        [Test]
+        /*[Test]
         public void SubrouteService_CanCreate()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -108,5 +108,6 @@ namespace DockyardTest.Services
                 }
             }
         }
+        */
     }
 }

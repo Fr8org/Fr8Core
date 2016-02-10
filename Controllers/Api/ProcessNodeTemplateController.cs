@@ -32,20 +32,20 @@ namespace HubWeb.Controllers
             _subroute = ObjectFactory.GetInstance<ISubroute>();
         }
 
-        /// <summary>
-        /// Retrieve Subroute by id.
-        /// </summary>
-        /// <param name="id">Subroute id.</param>
-        [ResponseType(typeof(SubrouteDTO))]
-        public IHttpActionResult Get(int id)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var subroute = uow.SubrouteRepository.GetByKey(id);
-
-                return Ok(Mapper.Map<SubrouteDTO>(subroute));
-            };
-        }
+//        /// <summary>
+//        /// Retrieve Subroute by id.
+//        /// </summary>
+//        /// <param name="id">Subroute id.</param>
+//        [ResponseType(typeof(SubrouteDTO))]
+//        public IHttpActionResult Get(int id)
+//        {
+//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+//            {
+//                var subroute = uow.PlanRepository.GetById<SubrouteDO>(id);
+//
+//                return Ok(Mapper.Map<SubrouteDTO>(subroute));
+//            };
+//        }
 
         /// <summary>
         /// Recieve Subroute with temporary id, create Subroute,
@@ -55,7 +55,9 @@ namespace HubWeb.Controllers
         /// <returns>Created Subroute with global id.</returns>
         public IHttpActionResult Post(SubrouteDTO dto)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            // do we need this anymore?
+            throw new NotImplementedException();
+          /*  using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var subroute = Mapper.Map<SubrouteDO>(dto);
                 _subroute.Store(uow, subroute);
@@ -63,7 +65,7 @@ namespace HubWeb.Controllers
                 uow.SaveChanges();
 
                 return Ok(new { Id = subroute.Id });
-            }
+            }*/
         }
 
         /// <summary>
@@ -79,6 +81,7 @@ namespace HubWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var subroute = Mapper.Map<SubrouteDO>(dto);
+
                 _subroute.Update(uow, subroute);
 
                 uow.SaveChanges();

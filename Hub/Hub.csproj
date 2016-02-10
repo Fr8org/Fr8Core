@@ -234,6 +234,7 @@
     <Compile Include="Exceptions\ErrorResponseException.cs" />
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Helper\LZString.cs" />
+    <Compile Include="Infrastructure\FilterConditionPredicateBuilder.cs" />
     <Compile Include="Infrastructure\fr8HMACAuthenticateAttribute.cs" />
     <Compile Include="Managers\Event.cs" />
     <Compile Include="Managers\RouteManager.cs" />

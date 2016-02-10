@@ -26,13 +26,8 @@ namespace Data.Infrastructure.AutoMapper
                 return null;
             }
 
-            var subrouteDTOList = uow.SubrouteRepository
-                .GetQuery()
-                .Include(x => x.ChildNodes)
-                .Where(x => x.ParentRouteNodeId == plan.Id)
-                .OrderBy(x => x.Id)
-                .ToList()
-                .Select((SubrouteDO x) =>
+            var subrouteDTOList = uow.PlanRepository.GetById<PlanDO>(plan.Id).ChildNodes.OfType<SubrouteDO>()
+                .Select(x =>
                 {
                     var pntDTO = Mapper.Map<FullSubrouteDTO>(x);
                     pntDTO.Activities = x.ChildNodes.OfType<ActivityDO>().Select(Mapper.Map<ActivityDTO>).ToList();

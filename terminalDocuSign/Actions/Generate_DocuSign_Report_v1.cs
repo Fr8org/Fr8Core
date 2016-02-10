@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Web;
 using AutoMapper;
@@ -31,6 +32,9 @@ namespace terminalDocuSign.Actions
 {
     public class Generate_DocuSign_Report_v1 : BaseTerminalActivity
     {
+        private const string QueryCrateLabel = "DocuSign Query";
+
+
         // Here in this action we have query builder control to build queries against docusign API and out mt database.
         // Docusign and MT DB have different set of fileds and we want to provide ability to search by any field.
         // Our action should "plan" queries on the particular fields to the corresponding backend.
@@ -103,12 +107,20 @@ namespace terminalDocuSign.Actions
         }
 
         // Mapping between quiery builder control field names and information about how this field is routed to the backed 
-        private static readonly Dictionary<string, FieldBackedRoutingInfo> QueryBuilderFields = new Dictionary<string, FieldBackedRoutingInfo>
-        {
-            {"Envelope Text", new FieldBackedRoutingInfo("SearchText", null)},
-            {"Folder", new FieldBackedRoutingInfo("Folder", null)},
-            {"Status", new FieldBackedRoutingInfo("Status", "Status")}
-        };
+        private static readonly Dictionary<string, FieldBackedRoutingInfo> QueryBuilderFields = 
+            new Dictionary<string, FieldBackedRoutingInfo>
+            {
+                { "Envelope Text", new FieldBackedRoutingInfo("SearchText", null) },
+                { "Folder", new FieldBackedRoutingInfo("Folder", null) },
+                { "Status", new FieldBackedRoutingInfo("Status", "Status") },
+                { "CreateDate", new FieldBackedRoutingInfo("CreatedDateTime", "CreateDate") },
+                { "SentDate", new FieldBackedRoutingInfo("SentDateTime", "SentDate") },
+                // Did not find in FolderItem.
+                // { "DeliveredDate", new FieldBackedRoutingInfo("DeliveredDate", "DeliveredDate") },
+                // { "Recipient", new FieldBackedRoutingInfo("Recipient", "Recipient") },
+                { "CompletedDate", new FieldBackedRoutingInfo("CompletedDateTime", "CompletedDate") },
+                { "EnvelopeId", new FieldBackedRoutingInfo("EnvelopeId", "EnvelopeId") }
+            };
 
         private readonly DocuSignManager _docuSignManager;
         private readonly IDocuSignFolder _docuSignFolder;
@@ -249,7 +261,7 @@ namespace terminalDocuSign.Actions
             List<DocusignFolderInfo> folders = null;
 
             //Currently we can support only equality operation
-            foreach (var condition in conditions.Where(x => x.Operator == "eq"))
+            foreach (var condition in conditions)
             {
                 FieldBackedRoutingInfo fieldBackedRoutingInfo;
 
@@ -258,10 +270,11 @@ namespace terminalDocuSign.Actions
                     continue;
                 }
 
-                switch (fieldBackedRoutingInfo.DocusignQueryName)
+                // criteria contains folder name, but to search we need folder id
+                if (fieldBackedRoutingInfo.DocusignQueryName == "Folder")
                 {
-                    // criteria contains folder name, but to search we need folder id
-                    case "Folder":
+                    if (condition.Operator == "eq")
+                    {
                         // cache list of folders
                         if (folders == null)
                         {
@@ -272,15 +285,27 @@ namespace terminalDocuSign.Actions
                         var folder = folders.FirstOrDefault(x => x.Name == value);
 
                         query.Folder = folder != null ? folder.FolderId : value;
-                        break;
-
-                    case "Status":
-                        query.Status = condition.Value;
-                        break;
-
-                    case "SearchText":
+                    }
+                }
+                else if (fieldBackedRoutingInfo.DocusignQueryName == "Status" && condition.Operator == "eq")
+                {
+                    query.Status = condition.Value;
+                }
+                else if (fieldBackedRoutingInfo.DocusignQueryName == "SearchText")
+                {
+                    if (condition.Operator == "eq")
+                    {
                         query.SearchText = condition.Value;
-                        break;
+                    }
+                }
+                else
+                {
+                    query.Conditions.Add(new FilterConditionDTO()
+                    {
+                        Field = fieldBackedRoutingInfo.DocusignQueryName,
+                        Operator = condition.Operator,
+                        Value = condition.Value
+                    });
                 }
             }
 
@@ -319,21 +344,71 @@ namespace terminalDocuSign.Actions
                     updater.CrateStorage.Add(queryCrate);
                 }
 
-                var queryFr8WarehouseAction = activityTemplates
-                    .FirstOrDefault(x => x.Name == "QueryFr8Warehouse");
-                if (queryFr8WarehouseAction == null) { return activityDO; }
-                
-                activityDO.ChildNodes.Add(new ActivityDO()
-                {
-                    ActivityTemplateId = queryFr8WarehouseAction.Id,
-                    IsTempId = true,
-                    Label = queryFr8WarehouseAction.Label,
-                    CrateStorage = Crate.EmptyStorageAsStr(),
-                    ParentRouteNode = activityDO,
-                    Ordering = 1
-                });
+                activityDO.ChildNodes.Clear();
 
-                // await AddAndConfigureChildActivity(activityDO, "QueryFr8Warehouse");
+                var queryFr8WarehouseActivityTemplate = activityTemplates
+                    .FirstOrDefault(x => x.Name == "QueryFr8Warehouse");
+                if (queryFr8WarehouseActivityTemplate == null) { return activityDO; }
+
+                var queryFr8WarehouseAction = await AddAndConfigureChildActivity(
+                    activityDO,
+                    "QueryFr8Warehouse"
+                );
+
+                using (var updater = Crate.UpdateStorage(queryFr8WarehouseAction))
+                {
+                    updater.CrateStorage.RemoveByLabel("Upstream Crate Label List");
+
+                    var fields = new[]
+                    {
+                        new FieldDTO() { Key = QueryCrateLabel, Value = QueryCrateLabel }
+                    };
+                    var upstreamLabelsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Crate Label List", fields);
+                    updater.CrateStorage.Add(upstreamLabelsCrate);
+
+                    var upstreamManifestTypes = updater.CrateStorage
+                        .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Crate ManifestType List")
+                        .FirstOrDefault();
+
+                    var controls = updater.CrateStorage
+                        .CrateContentsOfType<StandardConfigurationControlsCM>()
+                        .FirstOrDefault();
+
+                    var radioButtonGroup = controls
+                        .FindByName<RadioButtonGroup>("QueryPicker");
+
+                    UpstreamCrateChooser upstreamCrateChooser = null;
+                    if (radioButtonGroup != null
+                        && radioButtonGroup.Radios.Count > 0
+                        && radioButtonGroup.Radios[0].Controls.Count > 0)
+                    {
+                        upstreamCrateChooser = radioButtonGroup.Radios[0].Controls[0] as UpstreamCrateChooser;
+                    }
+
+                    if (upstreamCrateChooser != null)
+                    {
+                        upstreamCrateChooser.SelectedCrates[0].ManifestType.selectedKey = upstreamManifestTypes.Fields[0].Key;
+                        upstreamCrateChooser.SelectedCrates[0].ManifestType.Value = upstreamManifestTypes.Fields[0].Value;
+                        upstreamCrateChooser.SelectedCrates[0].Label.selectedKey = QueryCrateLabel;
+                        upstreamCrateChooser.SelectedCrates[0].Label.Value = QueryCrateLabel;
+                    }
+                }
+
+                queryFr8WarehouseAction = await ConfigureChildActivity(
+                    activityDO,
+                    queryFr8WarehouseAction
+                );
+
+                // activityDO.ChildNodes.Add(new ActivityDO()
+                // {
+                //     ActivityTemplateId = queryFr8WarehouseAction.Id,
+                //     IsTempId = true,
+                //     Name = queryFr8WarehouseAction.Name,
+                //     Label = queryFr8WarehouseAction.Label,
+                //     CrateStorage = Crate.EmptyStorageAsStr(),
+                //     ParentRouteNode = activityDO,
+                //     Ordering = 1
+                // });
             }
             catch (Exception)
             {
@@ -370,7 +445,7 @@ namespace terminalDocuSign.Actions
                 }
             );
 
-            return Crate<StandardQueryCM>.FromContent("DocuSign Query", queryCM);
+            return Crate<StandardQueryCM>.FromContent(QueryCrateLabel, queryCM);
         }
 
         public static FieldDTO[] GetFieldListForQueryBuilder()

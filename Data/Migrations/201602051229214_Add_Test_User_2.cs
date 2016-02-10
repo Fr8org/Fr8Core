@@ -8,6 +8,7 @@ namespace Data.Migrations
     using Utilities;
     using System.Linq;
     using States;
+
     public partial class Add_Test_User_2 : DbMigration
     {
         private string email = "integration_test_runner@fr8.company";
@@ -15,7 +16,7 @@ namespace Data.Migrations
 
         public override void Up()
         {
-            Register();
+            // Register();
         }
 
         public override void Down()
@@ -48,8 +49,7 @@ namespace Data.Migrations
 
         }
 
-        public Fr8AccountDO Register(IUnitOfWork uow, string userName, string firstName, string lastName,
-    string password, string roleID)
+        public Fr8AccountDO Register(IUnitOfWork uow, string userName, string firstName, string lastName, string password, string roleID)
         {
             var userDO = uow.UserRepository.GetOrCreateUser(userName, roleID);
             uow.UserRepository.UpdateUserCredentials(userDO, userName, password);

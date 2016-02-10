@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Data.States;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 
@@ -35,7 +36,7 @@ namespace DockyardTest.Managers
             // assert
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                Assert.IsFalse(uow.PlanRepository.GetAll().Count() > 1, "Automatic plan is created in following success");
+                Assert.IsFalse(uow.PlanRepository.GetPlanQueryUncached().Count() > 1, "Automatic plan is created in following success");
             }
         }
 
@@ -76,30 +77,44 @@ namespace DockyardTest.Managers
                     a => a.CreateAndConfigure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<int>(),
                         It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>())).Callback(() =>
                         {
-                            using (var uow1 = ObjectFactory.GetInstance<IUnitOfWork>())
+                            /*using (var uow1 = ObjectFactory.GetInstance<IUnitOfWork>())
                             {
-                                uow1.ActivityRepository.Add(monitorFr8Action);
+                                uow1.PlanRepository.Add(new PlanDO()
+                                {
+                                    Name = "plan1",
+                                    RouteState = RouteState.Active,
+                                    ChildNodes = { monitorFr8Action }
+                                });
 
-                                var subRoute = uow1.SubrouteRepository.GetQuery().Single();
-                                subRoute.ChildNodes.Add(monitorFr8Action);
+//                                var subRoute = uow1.SubrouteRepository.GetQuery().Single();
+//                                subRoute.ChildNodes.Add(monitorFr8Action);
 
                                 uow1.SaveChanges();
-                            }
+                            }*/
+                            
                         }).Returns(Task.FromResult(monitorFr8Action as RouteNodeDO));
 
                 _setupMock.Setup(
                     a => a.CreateAndConfigure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<int>(),
                         It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>())).Callback(() =>
                         {
-                            using (var uow1 = ObjectFactory.GetInstance<IUnitOfWork>())
+                           /* using (var uow1 = ObjectFactory.GetInstance<IUnitOfWork>())
                             {
-                                uow1.ActivityRepository.Add(storeMtDataAction);
+                                uow1.PlanRepository.Add(new PlanDO()
+                            {
+                                    Name = "plan2",
+                                    RouteState = RouteState.Active,
+                                    ChildNodes = { storeMtDataAction }
+                                });
 
-                                var subRoute = uow1.SubrouteRepository.GetQuery().Single();
-                                subRoute.ChildNodes.Add(storeMtDataAction);
+                                //uow1.PlanRepository.Add(FixtureData.GetPlanByActivityId(storeMtDataAction));
+//                                uow1.ActivityRepository.Add(storeMtDataAction);
+//
+//                                var subRoute = uow1.SubrouteRepository.GetQuery().Single();
+//                                subRoute.ChildNodes.Add(storeMtDataAction);
 
                                 uow1.SaveChanges();
-                            }
+                            }*/
                         }).Returns(Task.FromResult(storeMtDataAction as RouteNodeDO));
 
                 ObjectFactory.Container.Inject(typeof(IActivity), _setupMock.Object);

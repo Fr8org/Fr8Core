@@ -49,19 +49,15 @@ namespace DockyardTest.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
 
-                //Add a template
-                var curPlan = FixtureData.TestRoute1();
-                uow.PlanRepository.Add(curPlan);
-                uow.SaveChanges();
 
                 //Add a template
                 var plan = FixtureData.TestRoute1();
                 uow.PlanRepository.Add(plan);
-                uow.SaveChanges();
                 //Add a processnodetemplate to plan 
                 _curSubroute = FixtureData.TestSubrouteDO1();
                 _curSubroute.ParentRouteNodeId = plan.Id;
-                uow.SubrouteRepository.Add(_curSubroute);
+                plan.ChildNodes.Add(_curSubroute);
+                
                 uow.SaveChanges();
 
                 /*_curSubroute = FixtureData.TestSubrouteDO1();

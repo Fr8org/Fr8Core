@@ -533,7 +533,7 @@ div.action-header {
     }
 
     .query-builder-table tbody {
-        max-height: 125px;
+        max-height: 296px;
         overflow-y: auto;
     }
 
