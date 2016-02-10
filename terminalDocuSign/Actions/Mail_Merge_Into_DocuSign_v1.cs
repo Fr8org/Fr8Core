@@ -247,7 +247,7 @@ namespace terminalDocuSign.Actions
         /// <returns></returns>
         private bool DoesActivityTemplateGenerateTableData(ActivityTemplateDO activityTemplate)
         {
-            return activityTemplate.Tags.Split(',').Any(t => t.ToLowerInvariant().Contains("table"));
+            return activityTemplate.Tags != null && activityTemplate.Tags.Split(',').Any(t => t.ToLowerInvariant().Contains("table"));
         }
 
         //if the user provides a file name, this action attempts to load the excel file and extracts the column headers from the first sheet in the file.
