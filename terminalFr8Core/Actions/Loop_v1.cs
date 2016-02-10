@@ -321,6 +321,13 @@ namespace terminalFr8Core.Actions
         {
             var controlsMS = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().Single();
             var manifestTypeDropdown = controlsMS.Controls.Single(x => x.Type == ControlTypes.DropDownList && x.Name == "Available_Manifests");
+            
+            //refresh upstream manifest types
+            using (var updater = Crate.UpdateStorage(curActivityDO))
+            {
+                updater.CrateStorage.RemoveByLabel("Available Manifests");
+                updater.CrateStorage.Add(await GetUpstreamManifestTypes(curActivityDO));
+            }
 
             if (manifestTypeDropdown.Value != null)
             {
@@ -332,6 +339,7 @@ namespace terminalFr8Core.Actions
                     updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Available Labels", new StandardDesignTimeFieldsCM() { Fields = labelList }));
                 }
             }
+            
 
             return curActivityDO;
         }

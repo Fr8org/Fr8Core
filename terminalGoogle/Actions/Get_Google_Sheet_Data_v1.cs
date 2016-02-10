@@ -61,23 +61,22 @@ namespace terminalGoogle.Actions
 
             ///// ********** This code is what have to be done by FR-2246 **************
 
-            ////get the link to spreedsheet
-            //var spreadsheetsFromUserSelection =
-            // Activity.GetControlsManifest(curActivityDO).FindByName("select_spreadsheet").Value;
-            //var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
-            ////get the data
-            //var data = _google.EnumerateDataRows(spreadsheetsFromUserSelection, authDTO);
-            //var crate = Crate.CreateStandardTableDataCrate("Spreadsheet Payload Rows", true, data.ToArray());
-            //using (var updater = Crate.UpdateStorage(payloadCrates))
-            //{
-            //    updater.CrateStorage.Add(crate);
-            //}
+            //get the link to spreedsheet
+            var spreadsheetsFromUserSelection = Activity.GetControlsManifest(curActivityDO).FindByName("select_spreadsheet").Value;
+            var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
+            //get the data
+            var data = _google.EnumerateDataRows(spreadsheetsFromUserSelection, authDTO);
+            var crate = Crate.CreateStandardTableDataCrate("Spreadsheet Payload Rows", true, data.ToArray());
+            using (var updater = Crate.UpdateStorage(payloadCrates))
+            {
+                updater.CrateStorage.Add(crate);
+            }
 
-            //return Success(payloadCrates);
+            return Success(payloadCrates);
 
             ///// **********************The code below should be removed in the scope of FR-2246*************************************************
 
-            return await CreateStandardPayloadDataFromStandardTableData(curActivityDO, containerId, payloadCrates, authTokenDO);
+            //return await CreateStandardPayloadDataFromStandardTableData(curActivityDO, containerId, payloadCrates, authTokenDO);
         }
 
 
