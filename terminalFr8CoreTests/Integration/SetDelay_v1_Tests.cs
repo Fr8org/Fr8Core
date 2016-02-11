@@ -155,7 +155,6 @@ namespace terminalFr8CoreTests.Integration
 				Name = "SetDelay",
 				Label = "Set Delay",
 				ActivityTemplate = activityTemplate,
-				ActivityTemplateId = activityTemplate.Id,
 				AuthToken = null
 			};
 

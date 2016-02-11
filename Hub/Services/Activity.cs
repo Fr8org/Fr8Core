@@ -660,7 +660,6 @@ namespace Hub.Services
                 var curSolutionActivityDTO = new ActivityDTO
                 {
                     Id = Guid.NewGuid(),
-                    ActivityTemplateId = curActivityTerminalDTO.Id,
                     Name = curActivityTerminalDTO.Name,
                     Label = curActivityTerminalDTO.Label,
                     AuthToken = new AuthorizationTokenDTO

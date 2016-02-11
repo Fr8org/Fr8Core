@@ -27,8 +27,7 @@ namespace terminalPapertrailTests.Fixtures
                 Name = "Write_To_Log",
                 Label = "Write To Log",
                 AuthToken = null,
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
 
             return new Fr8DataDTO { ActivityDTO = activityDTO };

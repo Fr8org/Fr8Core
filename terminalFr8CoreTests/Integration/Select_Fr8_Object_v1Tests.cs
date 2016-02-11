@@ -284,7 +284,6 @@ namespace terminalFr8CoreTests.Integration
 				Name = "Select_Fr8_Object",
 				Label = "Select Fr8 Object",
 				ActivityTemplate = activityTemplate,
-				ActivityTemplateId = activityTemplate.Id,
 				AuthToken = null
 			};
 

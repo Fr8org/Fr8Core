@@ -147,7 +147,6 @@ namespace terminalDocuSignTests.Integration
             var apmAction = new ActivityDTO()
             {
                 ActivityTemplate = apmActivityTemplate,
-                ActivityTemplateId = apmActivityTemplate.Id,
                 Label = apmActivityTemplate.Label,
                 Name = apmActivityTemplate.Name,
                 ParentRouteNodeId = this.solution.Id,

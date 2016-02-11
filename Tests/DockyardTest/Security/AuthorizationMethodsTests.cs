@@ -177,7 +177,6 @@ namespace DockyardTest.Security
                 uow.SaveChanges();
 
                 activityDTO.Id = activityDO.Id;
-                activityDTO.ActivityTemplateId = activityTemplateDO.Id;
             }
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -344,7 +343,6 @@ namespace DockyardTest.Security
                 activityTemplateDO.NeedsAuthentication = true;
 
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
-                activityDTO.ActivityTemplateId = activityTemplateDO.Id;
 
                 activityDO.ActivityTemplate = activityTemplateDO;
                    uow.PlanRepository.Add(new PlanDO()
@@ -356,7 +354,6 @@ namespace DockyardTest.Security
 
                 uow.SaveChanges();
 
-                activityDTO.ActivityTemplateId = activityTemplateDO.Id;
                 activityDTO.Id = activityDO.Id;
             }
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -380,7 +377,6 @@ namespace DockyardTest.Security
             {
                 var activityTemplateDO = new ActivityTemplateDO("test_name", "test_label", "1", "test_description", tokenDO.TerminalID);
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
-                activityDTO.ActivityTemplateId = activityTemplateDO.Id;
 
                 activityDO.ActivityTemplate = activityTemplateDO;
                 activityDO.AuthorizationToken = tokenDO;
@@ -394,7 +390,6 @@ namespace DockyardTest.Security
                 uow.SaveChanges();
 
                 activityDTO.Id = activityDO.Id;
-                activityDTO.ActivityTemplateId = activityTemplateDO.Id;
             }
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -418,10 +413,8 @@ namespace DockyardTest.Security
             {
                 var activityTemplateDO = new ActivityTemplateDO("test_name", "test_label", "1", "test_description", terminalDO.Id);
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
-                activityDTO.ActivityTemplateId = activityTemplateDO.Id;
                 uow.SaveChanges();
 
-                activityDTO.ActivityTemplateId = activityTemplateDO.Id;
             }
 
             

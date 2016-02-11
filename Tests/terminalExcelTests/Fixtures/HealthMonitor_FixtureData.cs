@@ -33,8 +33,7 @@ namespace terminalExcelTests.Fixtures
                 Name = "Load_Table_Data",
                 Label = "Load Table Data",
                 AuthToken = DocuSign_AuthToken(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
 
             return new Fr8DataDTO { ActivityDTO = activityDTO };

@@ -35,8 +35,7 @@ namespace terminalYammerTests.Fixtures
                 Name = "Groups",
                 Label = "Selected Yammer Group",
                 AuthToken = isAuthToken ? Yammer_AuthToken() : null,
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
 
             return new Fr8DataDTO { ActivityDTO = activityDTO };

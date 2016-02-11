@@ -71,8 +71,7 @@ namespace terminalSalesforceTests.Fixtures
                 Name = "Create_Account",
                 Label = "Create Account",
                 AuthToken = Salesforce_AuthToken(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
 
             return new Fr8DataDTO { ActivityDTO = activityDTO };
@@ -88,8 +87,7 @@ namespace terminalSalesforceTests.Fixtures
                 Name = "Create_Contact",
                 Label = "Create Contact",
                 AuthToken = Salesforce_AuthToken(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
 
             return new Fr8DataDTO { ActivityDTO = activityDTO };
@@ -105,8 +103,7 @@ namespace terminalSalesforceTests.Fixtures
                 Name = "Create_Lead",
                 Label = "Create Lead",
                 AuthToken = Salesforce_AuthToken(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
             return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
@@ -121,8 +118,7 @@ namespace terminalSalesforceTests.Fixtures
                 Name = "Get_Data",
                 Label = "Get Data from Salesforce.com",
                 AuthToken = Salesforce_AuthToken(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
         }
     }

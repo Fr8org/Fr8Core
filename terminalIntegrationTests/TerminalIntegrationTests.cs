@@ -254,7 +254,6 @@ namespace terminalIntegrationTests
         {
             // Fill values as it would be on front-end.
             curActionDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(_waitForDocuSignEventActivityTemplate);
-            curActionDTO.ActivityTemplateId = _waitForDocuSignEventActivityTemplate.Id;
             curActionDTO.CrateStorage = new CrateStorageDTO();
 
             // Send initial configure request.
@@ -338,7 +337,6 @@ namespace terminalIntegrationTests
         private async Task<CrateStorage> TestIncomingData_ConfigureInitial(ActivityDTO curActionDTO)
         {
             // Fill values as it would be on front-end.
-            curActionDTO.ActivityTemplateId = _testIncomingDataActivityTemplate.Id;
             curActionDTO.CrateStorage = new CrateStorageDTO();
 
             // Send initial configure request.
@@ -361,7 +359,6 @@ namespace terminalIntegrationTests
         private async Task<CrateStorage> WriteToSqlServer_ConfigureInitial(ActivityDTO curActionDTO)
         {
             curActionDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(_writeToSqlServerActivityTemplate);
-            curActionDTO.ActivityTemplateId = _writeToSqlServerActivityTemplate.Id;
             curActionDTO.CrateStorage = new CrateStorageDTO();
 
             var curActionController = CreateActionController();

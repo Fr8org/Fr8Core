@@ -122,8 +122,7 @@ namespace terminalGoogleTests.Unit
                 Name = "Receive_Google_Form",
                 Label = "Receive Google Form Response",
                 AuthToken = Google_AuthToken(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
             return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
@@ -139,8 +138,7 @@ namespace terminalGoogleTests.Unit
                 Label = "Receive Google Form Response",
                 AuthToken = Google_AuthToken(),
                 ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id,
-                ParentRouteNodeId = Guid.NewGuid(),
+                ParentRouteNodeId = Guid.NewGuid()
             };
 
             ActivateCrateStorage(activity);
@@ -198,8 +196,7 @@ namespace terminalGoogleTests.Unit
                 Name = "Receive_Google_Form",
                 Label = "Receive Google Form Response",
                 AuthToken = Google_AuthToken(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
             using (var updater = CrateManager.UpdateStorage(activity))
             {
@@ -218,8 +215,7 @@ namespace terminalGoogleTests.Unit
                 Name = "Receive_Google_Form",
                 Label = "Receive Google Form Response",
                 AuthToken = Google_AuthToken(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
             using (var updater = CrateManager.UpdateStorage(activity))
             {
@@ -247,8 +243,7 @@ namespace terminalGoogleTests.Unit
                 Name = "Get_Google_Sheet_Data",
                 Label = "Get Google Sheet Data",
                 AuthToken = Google_AuthToken(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
 
             return new Fr8DataDTO { ActivityDTO = activityDTO };
@@ -265,8 +260,7 @@ namespace terminalGoogleTests.Unit
                 Name = "Get_Google_Sheet_Data",
                 Label = "Get Google Sheet Data",
                 AuthToken = Google_AuthToken1(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id,
+                ActivityTemplate = activityTemplate
             };
             
             return curActivityDto;

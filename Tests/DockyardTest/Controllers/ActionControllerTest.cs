@@ -385,7 +385,6 @@ namespace DockyardTest.Controllers
                 Id = actionId,
                 Name = "WriteToAzureSql",
                 CrateStorage = new CrateStorageDTO(),
-                ActivityTemplateId = 1,
                 ActivityTemplate = FixtureData.TestActionTemplateDTOV2()
                 //,ActionTemplate = FixtureData.TestActivityTemplateDO2()
             };
@@ -444,7 +443,6 @@ namespace DockyardTest.Controllers
         {
             var controller = new ActionsController();
             ActivityDTO actionDesignDTO = CreateActionWithId(FixtureData.GetTestGuidById(2));
-            actionDesignDTO.ActivityTemplateId = 0;
             var actionResult = await controller.Configure(actionDesignDTO);
 
             var okResult = actionResult as OkNegotiatedContentResult<ActivityDO>;
