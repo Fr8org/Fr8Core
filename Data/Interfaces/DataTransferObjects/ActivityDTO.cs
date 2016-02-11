@@ -30,8 +30,6 @@ namespace Data.Interfaces.DataTransferObjects
 
         public int? ActivityTemplateId { get; set; }
 
-        public bool IsTempId { get; set; }
-
         [JsonIgnore]
         public string Fr8AccountId { get; set; }
                 

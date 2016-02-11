@@ -89,9 +89,6 @@ module dockyard.directives.paneWorkflowDesigner {
                 scope.$on(MessageType[MessageType.PaneWorkflowDesigner_ReplaceTempIdForProcessNodeTemplate],
                     (event: ng.IAngularEvent, eventArgs: ReplaceTempIdForProcessNodeTemplateEventArgs) => onProcessNodeTemplateTempIdReplaced(eventArgs, scope));
 
-                scope.$on(MessageType[MessageType.PaneWorkflowDesigner_ActionTempIdReplaced],
-                    (event: ng.IAngularEvent, eventArgs: ActionTempIdReplacedEventArgs) => onActionTempIdReplaced(eventArgs, scope));
-
                 scope.$on(MessageType[MessageType.PaneWorkflowDesigner_UpdateProcessNodeTemplateName],
                     (event: ng.IAngularEvent, eventArgs: UpdateProcessNodeTemplateNameEventArgs) => onProcessNodeTemplateRenamed(eventArgs, scope));
 

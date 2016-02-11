@@ -163,7 +163,6 @@ namespace terminalDocuSign.Actions
                 activity = new ActivityDO
                 {
                     ActivityTemplate = template,
-                    IsTempId = true,
                     CreateDate = DateTime.UtcNow,
                     Label = template.Label,
                     Ordering = 1,

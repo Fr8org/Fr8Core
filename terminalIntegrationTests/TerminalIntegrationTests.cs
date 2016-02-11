@@ -222,9 +222,6 @@ namespace terminalIntegrationTests
             curActivityDO.ParentRouteNodeId = _subrouteDO.Id;
 
             var curActionDTO = Mapper.Map<ActivityDTO>(curActivityDO);
-
-            curActionDTO.IsTempId = true;
-
             var result = curActionController.Save(curActionDTO)
                 as OkNegotiatedContentResult<ActivityDTO>;
 

@@ -150,8 +150,7 @@ namespace terminalDocuSignTests.Integration
                 ActivityTemplateId = apmActivityTemplate.Id,
                 Label = apmActivityTemplate.Label,
                 ParentRouteNodeId = this.solution.Id,
-                RootRouteNodeId = plan.Id,
-                IsTempId = true
+                RootRouteNodeId = plan.Id
             };
             apmAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/save", apmAction);
             Assert.NotNull(apmAction, "Add Payload Manually action failed to create");

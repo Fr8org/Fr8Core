@@ -147,7 +147,6 @@ namespace DockyardTest.Services
 
                 origActivityDO = new FixtureData(uow).TestActivity3();
 
-                origActivityDO.IsTempId = true;
                 origActivityDO.ParentRouteNodeId = subroute.Id;
 
                 uow.ActivityTemplateRepository.Add(origActivityDO.ActivityTemplate);
@@ -281,7 +280,6 @@ namespace DockyardTest.Services
                     {
                         var newAction = new ActivityDO
                         {
-                            IsTempId =true,
                             Id = FixtureData.GetTestGuidById(addCounter + 666),
                             ParentRouteNode = a,
                         };
@@ -301,7 +299,6 @@ namespace DockyardTest.Services
                         {
                             var newAction = new ActivityDO
                             {
-                                IsTempId = true,
                                 Id = FixtureData.GetTestGuidById(addCounter + 666),
                                 ParentRouteNode = a,
                             };

@@ -103,7 +103,6 @@ module dockyard.tests.utils.fixtures {
             activityTemplate: {
                 id: 2
             },
-            isTempId: false,
             currentView: null,
             id: 'E55315F9-A30B-4196-A43D-6F511B91CCF8'
         };
@@ -136,7 +135,6 @@ module dockyard.tests.utils.fixtures {
             activityTemplate: {
                 id: 2
             },
-            isTempId: false,
             currentView: null,
             id: 'E55315F9-A30B-4196-A43D-6F511B91CCF8'
         };
@@ -169,7 +167,6 @@ module dockyard.tests.utils.fixtures {
             activityTemplate: {
                 id: 2
             },
-            isTempId: false,
             currentView: null,
             id: 'E55315F9-A30B-4196-A43D-6F511B91CCF8'
         };
