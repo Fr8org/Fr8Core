@@ -228,7 +228,8 @@ namespace terminalIntegrationTests
             // Assert action was property saved.
             Assert.NotNull(result);
             Assert.NotNull(result.Content);
-            Assert.AreEqual(result.Content.ActivityTemplateId, curActionDTO.ActivityTemplateId);
+            Assert.AreEqual(result.Content.ActivityTemplate.Name, curActionDTO.ActivityTemplate.Name);
+            Assert.AreEqual(result.Content.ActivityTemplate.Version, curActionDTO.ActivityTemplate.Version);
             Assert.AreEqual(result.Content.CrateStorage, curActionDTO.CrateStorage);
 
 
@@ -245,7 +246,10 @@ namespace terminalIntegrationTests
             // Assert action was property saved.
             Assert.NotNull(result);
             Assert.NotNull(result.Content);
-            Assert.AreEqual(result.Content.ActivityTemplateId, curActionDTO.ActivityTemplateId);
+            //TODO bahadir check this -- is it ???
+            Assert.AreEqual(result.Content.ActivityTemplate.Name, curActionDTO.ActivityTemplate.Name);
+            Assert.AreEqual(result.Content.ActivityTemplate.Version, curActionDTO.ActivityTemplate.Version);
+            Assert.AreEqual(result.Content.ActivityTemplate.Terminal.Name, curActionDTO.ActivityTemplate.Terminal.Name);
 
             return result.Content;
         }

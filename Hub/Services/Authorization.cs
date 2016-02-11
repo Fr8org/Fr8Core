@@ -57,15 +57,16 @@ namespace Hub.Services
         /// </summary>
         public void PrepareAuthToken(IUnitOfWork uow, ActivityDTO activityDTO)
         {
-            // Fetch ActivityTemplate.
-            var activityTemplate = _activityTemplate.GetByKey(activityDTO.ActivityTemplateId.Value);
-
+            
             // Fetch Action.
             var activity = uow.PlanRepository.GetById<ActivityDO>(activityDTO.Id);
             if (activity == null)
             {
                 throw new ApplicationException("Could not find Action.");
             }
+
+            // Fetch ActivityTemplate.
+            var activityTemplate = _activityTemplate.GetByKey(activity.ActivityTemplateId.Value);
 
             // Try to find AuthToken if terminal requires authentication.
             if (activityTemplate.NeedsAuthentication &&
@@ -418,7 +419,7 @@ namespace Hub.Services
 
         public bool ValidateAuthenticationNeeded(IUnitOfWork uow, string userId, ActivityDTO curActionDTO)
         {
-            var activityTemplate = _activityTemplate.GetByKey(curActionDTO.ActivityTemplateId.Value);
+            var activityTemplate = _activityTemplate.GetByNameAndVersion(uow, curActionDTO.ActivityTemplate.Name, curActionDTO.ActivityTemplate.Version);
 
             if (activityTemplate == null)
             {
@@ -491,7 +492,8 @@ namespace Hub.Services
 
         public void InvalidateToken(IUnitOfWork uow, string userId, ActivityDTO curActivityDto)
         {
-            var activityTemplate = _activityTemplate.GetByKey(curActivityDto.ActivityTemplateId.Value);
+            
+            var activityTemplate = _activityTemplate.GetByNameAndVersion(uow, curActivityDto.ActivityTemplate.Name, curActivityDto.ActivityTemplate.Version);
 
             if (activityTemplate == null)
             {
