@@ -17,5 +17,15 @@ namespace HubWeb.Controllers
         {
             return View();
         }
+
+        public ActionResult Salesforce()
+        {
+            return View();
+        }
+
+        public ActionResult GoogleApps()
+        {
+            return View();
+        }
     }
 }
