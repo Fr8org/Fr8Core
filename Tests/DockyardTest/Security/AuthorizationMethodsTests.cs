@@ -17,6 +17,7 @@ using Moq;
 using Hub.Managers;
 using Data.Interfaces.Manifests;
 using Data.Crates;
+using AutoMapper;
 
 namespace DockyardTest.Security
 {
@@ -353,6 +354,7 @@ namespace DockyardTest.Security
                 uow.SaveChanges();
 
                 activityDTO.Id = activityDO.Id;
+                activityDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(activityTemplateDO);
             }
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -377,6 +379,7 @@ namespace DockyardTest.Security
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
 
                 activityDO.ActivityTemplate = activityTemplateDO;
+                
                 activityDO.AuthorizationToken = tokenDO;
                 uow.PlanRepository.Add(new PlanDO()
                 {
@@ -388,6 +391,7 @@ namespace DockyardTest.Security
                 uow.SaveChanges();
 
                 activityDTO.Id = activityDO.Id;
+                activityDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(activityTemplateDO);
             }
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

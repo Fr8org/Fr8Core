@@ -375,6 +375,21 @@ namespace DockyardTest.Controllers
             }
         }
 
+        private void CreateActionTemplate(string name, string version)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.ActivityTemplateRepository.Add(new ActivityTemplateDO
+                {
+                    Id = 1,
+                    Name = name,
+                    Terminal = FixtureData.TerminalTwo(),
+                    Version = version
+                });
+                uow.SaveChanges();
+            }
+        }
+
         /// <summary>
         /// Creates a new Action with the given action ID
         /// </summary>
@@ -410,9 +425,13 @@ namespace DockyardTest.Controllers
 
         public async void ActionController_GetConfigurationSettings_ValidActionDesignDTO()
         {
+            
             var controller = new ActionsController();
             ActivityDTO actionDesignDTO = CreateActionWithId(FixtureData.GetTestGuidById(2));
             actionDesignDTO.ActivityTemplate = FixtureData.TestActionTemplateDTOV2();
+
+            
+
             var actionResult = await controller.Configure(actionDesignDTO);
 
             var okResult = actionResult as OkNegotiatedContentResult<ActivityDO>;
@@ -428,6 +447,9 @@ namespace DockyardTest.Controllers
             var controller = new ActionsController();
             ActivityDTO actionDesignDTO = CreateActionWithId(FixtureData.GetTestGuidById(2));
             actionDesignDTO.Id = Guid.Empty;
+
+            CreateActionTemplate(actionDesignDTO.ActivityTemplate.Name, actionDesignDTO.ActivityTemplate.Version);
+
             var actionResult = await controller.Configure(actionDesignDTO);
 
             var okResult = actionResult as OkNegotiatedContentResult<ActivityDO>;
@@ -437,8 +459,8 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
-        [ExpectedException(ExpectedException = typeof(KeyNotFoundException))]
-        public async void ActionController_GetConfigurationSettings_ActionTemplateIdIsMissing()
+        [ExpectedException(ExpectedException = typeof(InvalidOperationException))]
+        public async void ActionController_GetConfigurationSettings_ActionTemplateNameAndVersionIsMissing()
         {
             var controller = new ActionsController();
             ActivityDTO actionDesignDTO = CreateActionWithId(FixtureData.GetTestGuidById(2));
