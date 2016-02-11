@@ -70,7 +70,7 @@ namespace Hub.Services
                 throw new ApplicationException("Activity without a template should not exist");
             }
 
-            var activityTemplate = _activityTemplate.GetByKey(activity.ActivityTemplateId.Value); ;            
+            var activityTemplate = _activityTemplate.GetByKey(activity.ActivityTemplateId.Value);        
 
             // Try to find AuthToken if terminal requires authentication.
             if (activityTemplate.NeedsAuthentication &&
