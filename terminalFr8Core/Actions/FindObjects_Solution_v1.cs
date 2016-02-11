@@ -22,12 +22,10 @@ namespace terminalFr8Core.Actions
     public class FindObjects_Solution_v1 : BaseTerminalActivity
     {
         public FindObjectHelper FindObjectHelper { get; set; }
-        public ExplicitConfigurationHelper ExplicitConfigurationHelper { get; set; }
 
         public FindObjects_Solution_v1()
         {
             FindObjectHelper = new FindObjectHelper();
-            ExplicitConfigurationHelper = new ExplicitConfigurationHelper();
         }
 
         #region Configration.

@@ -72,7 +72,7 @@ namespace terminalDocuSignTests.Integration
             StandardDesignTimeFieldsCM standardDesignFieldsCM = new StandardDesignTimeFieldsCM();
             standardDesignFieldsCM.Fields = fieldDTO;
 
-            base.AddUpstreamCrate<StandardDesignTimeFieldsCM>(dataDTO.ActivityDTO, standardDesignFieldsCM);
+            base.AddUpstreamCrate<StandardDesignTimeFieldsCM>(dataDTO, standardDesignFieldsCM);
 
             //Act
             var responseActionDTO =
@@ -125,9 +125,9 @@ namespace terminalDocuSignTests.Integration
             var runUrl = GetTerminalRunUrl();
 
             var activityDTO = actionDTODesignFields;
-
+            var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
             AddPayloadCrate(
-                activityDTO,
+                dataDTO,
                 new EventReportCM()
                 {
                     EventPayload = new CrateStorage()
@@ -141,7 +141,7 @@ namespace terminalDocuSignTests.Integration
                     }
                 }
             );
-            var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
+            
             var responsePayloadDTO =
                 await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
 

@@ -63,7 +63,7 @@ namespace terminalTwilioTests.Integration
             //Act
             //OperationalStateCM crate is required to be added,
             //as upon return the Run method takes this crate and updates the status to "Success"
-            AddOperationalStateCrate(dataDTO.ActivityDTO, new OperationalStateCM());
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
             var payloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(
                 runUrl,
                 dataDTO
@@ -105,10 +105,11 @@ namespace terminalTwilioTests.Integration
                 curBodyTextSource.ValueSource = "specific";
                 curBodyTextSource.TextValue = "That is the body of the message";
             }
+            dataDTO.ActivityDTO = responseActionDTO;
             //OperationalStateCM crate is required to be added,
             //as upon return the Run method takes this crate and updates the status to "Success"
-            AddOperationalStateCrate(responseActionDTO, new OperationalStateCM());
-            dataDTO.ActivityDTO = responseActionDTO;
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
+            
             var payloadDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(runUrl, dataDTO);
             //Assert
             //After Configure Test
