@@ -56,7 +56,7 @@ namespace terminalSalesforceTests.Fixtures
             {
                 Version = "1",
                 Name = "Get_Data_TEST",
-                Label = "Get Data",
+                Label = "Get Data from Salesforce.com",
                 NeedsAuthentication = true
             };
         }
@@ -115,7 +115,7 @@ namespace terminalSalesforceTests.Fixtures
             return new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Label = "Get Data",
+                Label = "Get Data from Salesforce.com",
                 AuthToken = Salesforce_AuthToken(),
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id

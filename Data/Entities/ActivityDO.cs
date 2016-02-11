@@ -25,9 +25,6 @@ namespace Data.Entities
         [NotMapped]
         public bool IsTempId { get; set; }
 
-        [NotMapped]
-        public string ExplicitData { get; set; }
-
         public string currentView { get; set; }
 
         [ForeignKey("AuthorizationToken")]
@@ -77,7 +74,6 @@ namespace Data.Entities
             AuthorizationTokenId = activity.AuthorizationTokenId;
             ActivityTemplateId = activity.ActivityTemplateId;
             currentView = activity.currentView;
-            ExplicitData = activity.ExplicitData;
         }
 
 //        public CrateStorageDTO CrateStorageDTO()

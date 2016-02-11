@@ -18,10 +18,12 @@ namespace TerminalBase.Infrastructure
     public abstract class DataHubCommunicatorBase : IHubCommunicator
     {
         public ICrateManager Crate { get; set; }
+        public string ExplicitData { get; set; }
 
-        protected DataHubCommunicatorBase()
+        protected DataHubCommunicatorBase(string explicitData)
         {
             Crate = ObjectFactory.GetInstance<ICrateManager>();
+            this.ExplicitData = explicitData;
         }
 
         protected abstract string LabelPrefix { get; }
@@ -44,7 +46,7 @@ namespace TerminalBase.Infrastructure
                 CrateStorage = new CrateStorageDTO()
             };
 
-            var crateStorage = Crate.GetStorage(activityDO.ExplicitData);
+            var crateStorage = Crate.GetStorage(ExplicitData);
             using (var updater = Crate.UpdateStorage(payload))
             {
                 var crates = crateStorage
@@ -65,7 +67,7 @@ namespace TerminalBase.Infrastructure
                 ? LabelPrefix + "_UpstreamCrate"
                 : LabelPrefix + "_DownstreamCrate";
 
-            var crateStorage = Crate.GetStorage(activityDO.ExplicitData);
+            var crateStorage = Crate.GetStorage(ExplicitData);
             var crates = crateStorage
                 .CratesOfType<TManifest>(x => x.Label.StartsWith(searchLabel))
                 .ToList();
@@ -113,7 +115,7 @@ namespace TerminalBase.Infrastructure
         {
             var searchLabel = LabelPrefix + "_ActivityTemplate";
 
-            var crateStorage = Crate.GetStorage(activityDO.ExplicitData);
+            var crateStorage = Crate.GetStorage(ExplicitData);
             var activityTemplates = crateStorage
                 .Where(x => x.Label == searchLabel)
                 .Select(x => JsonConvert.DeserializeObject<ActivityTemplateDTO>(

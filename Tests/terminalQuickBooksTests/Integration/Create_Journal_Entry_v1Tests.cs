@@ -52,7 +52,7 @@ namespace terminalQuickBooksTests.Integration
             var configureUrl = GetTerminalConfigureUrl();
             var dataDTO = HealthMonitor_FixtureData.Action_Create_Journal_Entry_v1_InitialConfiguration_Fr8DataDTO();
             var curStandAccTransCrate = HealthMonitor_FixtureData.GetAccountingTransactionCM();
-            AddUpstreamCrate(dataDTO.ActivityDTO, curStandAccTransCrate);
+            AddUpstreamCrate(dataDTO, curStandAccTransCrate);
             //Act
             var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,

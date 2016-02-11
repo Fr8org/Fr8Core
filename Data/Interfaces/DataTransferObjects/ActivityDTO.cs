@@ -33,15 +33,6 @@ namespace Data.Interfaces.DataTransferObjects
         public bool IsTempId { get; set; }
 
         [JsonIgnore]
-        public bool IsExplicitData { get; set; }
-
-        //[JsonIgnore]
-        public string ExplicitData { get; set; }
-
-        [JsonIgnore]
-        public Guid ContainerId { get; set; }
-
-        [JsonIgnore]
         public string Fr8AccountId { get; set; }
                 
         [JsonProperty("DocumentationSupport")]

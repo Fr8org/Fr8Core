@@ -33,7 +33,7 @@ module dockyard.interfaces {
         field: string;
         operator: string;
         value: string;
-        valueError: boolean;
+        valueError: string;
     }
 
     export interface IField {

@@ -238,7 +238,7 @@ namespace terminalGoogleTests.Integration
             var dataDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_Fr8DataDTO();
             dataDTO.ActivityDTO.AuthToken = null;
 
-            AddOperationalStateCrate(dataDTO.ActivityDTO, new OperationalStateCM());
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
             //Act
             var payload = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
             CheckIfPayloadHasNeedsAuthenticationError(payload);
@@ -322,7 +322,7 @@ namespace terminalGoogleTests.Integration
 
             var dataDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_Fr8DataDTO();
             dataDTO.ActivityDTO.AuthToken = null;
-            AddOperationalStateCrate(dataDTO.ActivityDTO, new OperationalStateCM());
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
             var payload = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
             CheckIfPayloadHasNeedsAuthenticationError(payload);
         }
