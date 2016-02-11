@@ -28,12 +28,14 @@ namespace Hub.Managers
     public class EventReporter
     {
         private readonly IActivityTemplate _activityTemplate;
+        private readonly ITerminal _terminal;
 
-        public EventReporter(IActivityTemplate activityTemplate)
+        public EventReporter(IActivityTemplate activityTemplate, ITerminal terminal)
         {
             _activityTemplate = activityTemplate;
+            _terminal = terminal;
         }
-        
+
         //Register for interesting events
         public void SubscribeToAlerts()
         {
@@ -183,7 +185,19 @@ namespace Hub.Managers
         //    Logger.GetLogger().Info(string.Format("Reservation Timed out. BookingRequest ID : {0}, Booker ID: {1}", bookingRequestId, bookerId));
         //}
 
-        private static void AuthTokenCreated(AuthorizationTokenDO authToken)
+        private string FormatTerminalName(AuthorizationTokenDO authorizationToken)
+        {
+            var terminal = _terminal.GetByKey(authorizationToken.TerminalID);
+
+            if (terminal != null)
+            {
+                return terminal.Name;
+            }
+
+            return authorizationToken.TerminalID.ToString();
+        }
+
+        private void AuthTokenCreated(AuthorizationTokenDO authToken)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -197,7 +211,7 @@ namespace Hub.Managers
                     Environment.NewLine,
                     "AuthToken method: Created",
                     "User Id: " + authToken.UserID.ToString(),
-                    "Terminal name: " + (authToken.Terminal != null ? authToken.Terminal.Name : authToken.TerminalID.ToString()),
+                    "Terminal name: " + FormatTerminalName(authToken),
                     "External AccountId: " + authToken.ExternalAccountId
                 );
 
@@ -206,7 +220,7 @@ namespace Hub.Managers
             }
         }
 
-        private static void AuthTokenRemoved(AuthorizationTokenDO authToken)
+        private void AuthTokenRemoved(AuthorizationTokenDO authToken)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -221,7 +235,7 @@ namespace Hub.Managers
                         Environment.NewLine,
                         "AuthToken method: Removed",
                         "User Id: " + authToken.UserID.ToString(),
-                        "Terminal name: " + authToken.Terminal != null ? authToken.Terminal.Name : authToken.TerminalID.ToString(),
+                        "Terminal name: " + FormatTerminalName(authToken),
                         "External AccountId: " + authToken.ExternalAccountId
                     )
                 };

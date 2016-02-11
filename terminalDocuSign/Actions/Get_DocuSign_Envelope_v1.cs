@@ -105,7 +105,10 @@ namespace terminalDocuSign.Actions
 
             using (var updater = Crate.UpdateStorage(() => payloadCrates.CrateStorage))
             {
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Data", _docuSignManager.CreateActionPayload(activityDO, authTokenDO, envelopeId)));
+
+                // This has to be re-thinked. TemplateId is neccessary to retrieve fields but is unknown atm
+                // Perhaps it can be received by EnvelopeId
+                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Data", _docuSignManager.CreateActionPayload(activityDO, authTokenDO, envelopeId, null)));
             }
 
             return Success(payloadCrates);

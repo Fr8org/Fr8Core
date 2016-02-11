@@ -124,14 +124,11 @@ namespace terminalDocuSign.Actions
             }
         }
 
-
-        public ExplicitConfigurationHelper ExplicitConfigurationHelper { get; set; }
         public DocuSignManager DocuSignManager { get; set; }
 
         public Rich_Document_Notifications_v1()
         {
             DocuSignManager = new DocuSignManager();
-            ExplicitConfigurationHelper = new ExplicitConfigurationHelper();
         }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
@@ -175,6 +172,7 @@ namespace terminalDocuSign.Actions
                 return activityDO;
             }
 
+            //TODO wait for vladimir's concurrent plan bug fix
             //DocuSign
             var monitorDocuSignActionTask = AddAndConfigureChildActivity(activityDO, "Monitor_DocuSign_Envelope_Activity", "Monitor Docusign Envelope Activity", "Monitor Docusign Envelope Activity", 1);
             var setDelayActionTask = AddAndConfigureChildActivity(activityDO, "SetDelay", "Set Delay", "Set Delay", 2);
