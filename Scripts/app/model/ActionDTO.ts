@@ -7,7 +7,6 @@
         label: string;
         crateStorage: model.CrateStorage;
         configurationControls: model.ControlsList;
-        activityTemplateId: number;
         activityTemplate: ActivityTemplate;
         currentView: string;
         childrenActions: Array<interfaces.IActivityDTO>;
@@ -22,7 +21,6 @@
             this.rootRouteNodeId = rootRouteNodeId;
             this.parentRouteNodeId = parentRouteNodeId;
             this.id = id;
-            this.activityTemplateId = 0;
             this.configurationControls = new ControlsList();
         }
 
@@ -48,7 +46,6 @@
 
         static create(dataObject: interfaces.IActivityDTO): ActivityDTO {
             var result = new ActivityDTO('', '', '');
-            result.activityTemplateId = dataObject.activityTemplateId;
             result.activityTemplate = dataObject.activityTemplate;
             result.crateStorage = dataObject.crateStorage;
             result.configurationControls = dataObject.configurationControls;
