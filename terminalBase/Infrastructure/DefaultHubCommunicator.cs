@@ -232,7 +232,7 @@ namespace TerminalBase.Infrastructure
                       + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/actions/create";
             
             
-            var postUrl = "?actionTemplateId={0}&createRoute={2}";
+            var postUrl = "?actionTemplateId={0}&createRoute={1}";
             var formattedPostUrl = string.Format(postUrl, templateId, createRoute ? "true" : "false");
             
             if (label != null)
