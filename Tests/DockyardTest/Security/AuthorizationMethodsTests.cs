@@ -176,6 +176,7 @@ namespace DockyardTest.Security
                 uow.SaveChanges();
 
                 activityDTO.Id = activityDO.Id;
+                activityDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(activityTemplateDO);
             }
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

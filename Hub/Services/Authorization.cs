@@ -65,8 +65,12 @@ namespace Hub.Services
                 throw new ApplicationException("Could not find Action.");
             }
 
-            // Fetch ActivityTemplate.
-            var activityTemplate = _activityTemplate.GetByNameAndVersion(activityDTO.ActivityTemplate.Name, activityDTO.ActivityTemplate.Version);
+            if (activity.ActivityTemplateId == null)
+            {
+                throw new ApplicationException("Activity without a template should not exist");
+            }
+
+            var activityTemplate = _activityTemplate.GetByKey(activity.ActivityTemplateId.Value); ;            
 
             // Try to find AuthToken if terminal requires authentication.
             if (activityTemplate.NeedsAuthentication &&
