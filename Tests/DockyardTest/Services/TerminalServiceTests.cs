@@ -32,8 +32,7 @@ namespace DockyardTest.Services
 
         private bool AreEqual(TerminalDO a, TerminalDO b)
         {
-            return a.SubscriptionRequired == b.SubscriptionRequired &&
-                   a.AuthenticationType == b.AuthenticationType &&
+            return a.AuthenticationType == b.AuthenticationType &&
                    a.Description == b.Description &&
                    a.Endpoint == b.Endpoint &&
                    a.Id == b.Id &&
@@ -56,7 +55,6 @@ namespace DockyardTest.Services
                     Description = prefix + "desc" + i,
                     Name = "name" + i,
                     Version = prefix + "Ver" + i,
-                    SubscriptionRequired = true,
                     TerminalStatus = 1,
                 };
             }

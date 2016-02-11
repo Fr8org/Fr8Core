@@ -68,7 +68,6 @@ namespace terminalSalesforceTests.Fixtures
             var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Create_Account",
                 Label = "Create Account",
                 AuthToken = Salesforce_AuthToken(),
                 ActivityTemplate = activityTemplate
@@ -84,7 +83,6 @@ namespace terminalSalesforceTests.Fixtures
             var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Create_Contact",
                 Label = "Create Contact",
                 AuthToken = Salesforce_AuthToken(),
                 ActivityTemplate = activityTemplate
@@ -100,7 +98,6 @@ namespace terminalSalesforceTests.Fixtures
             var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Create_Lead",
                 Label = "Create Lead",
                 AuthToken = Salesforce_AuthToken(),
                 ActivityTemplate = activityTemplate
@@ -115,7 +112,6 @@ namespace terminalSalesforceTests.Fixtures
             return new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Get_Data",
                 Label = "Get Data from Salesforce.com",
                 AuthToken = Salesforce_AuthToken(),
                 ActivityTemplate = activityTemplate

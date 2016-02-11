@@ -21,7 +21,6 @@ namespace terminalTwilio.Tests.Fixtures
 
             var activityDO = new ActivityDO
             {
-                Name = "testaction",
                 Id = TestGuid_Id_57(),
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate,

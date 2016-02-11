@@ -148,7 +148,6 @@ namespace terminalDocuSignTests.Integration
             {
                 ActivityTemplate = apmActivityTemplate,
                 Label = apmActivityTemplate.Label,
-                Name = apmActivityTemplate.Name,
                 ParentRouteNodeId = this.solution.Id,
                 RootRouteNodeId = plan.Id
             };
@@ -181,7 +180,7 @@ namespace terminalDocuSignTests.Integration
             //
             // Configure Send DocuSign Envelope action
             //
-            var sendEnvelopeAction = this.solution.ChildrenActions.Single(a => a.Name == "Send DocuSign Envelope");
+            var sendEnvelopeAction = this.solution.ChildrenActions.Single(a => a.Label == "Send DocuSign Envelope");
 
             crateStorage = _crate.FromDto(sendEnvelopeAction.CrateStorage);
             controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
@@ -209,7 +208,7 @@ namespace terminalDocuSignTests.Integration
             //
 
             // Reconfigure Map Fields to have it pick up upstream fields
-            var mapFieldsAction = this.solution.ChildrenActions.Single(a => a.Name == "Map Fields");
+            var mapFieldsAction = this.solution.ChildrenActions.Single(a => a.Label == "Map Fields");
             mapFieldsAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure", mapFieldsAction);
 
             // Configure mappings

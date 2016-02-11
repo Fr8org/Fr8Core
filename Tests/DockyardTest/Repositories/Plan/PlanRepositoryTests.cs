@@ -101,18 +101,18 @@ namespace DockyardTest.Repositories.Plan
             return new ActivityDO
             {
                 Id = NewGuid(1),
-                Name = "Base1",
+                Label = "Base1",
                 ChildNodes =
                 {
                     new ActivityDO
                     {
                         Id = NewGuid(2),
-                        Name = "Base2",
+                        Label = "Base2",
                     },
                     new ActivityDO()
                     {
                         Id = NewGuid(3),
-                        Name = "Base3",
+                        Label = "Base3",
                     }
                 }
             };
@@ -138,7 +138,6 @@ namespace DockyardTest.Repositories.Plan
                     {
                         RootRouteNodeId = NewGuid(13),
                         Id = NewGuid(1),
-                        Name = "Base1",
                         ActivityTemplate = new ActivityTemplateDO
                         {
                             TerminalId = 1,
@@ -174,7 +173,6 @@ namespace DockyardTest.Repositories.Plan
                         ActivityTemplateId = 1,
                                 RootRouteNodeId = NewGuid(13),
                                 Id = NewGuid(2),
-                                Name = "Base2",
                                 Fr8Account = new Fr8AccountDO()
                                 {
                                     Id = "acoountId",
@@ -193,7 +191,6 @@ namespace DockyardTest.Repositories.Plan
                         ActivityTemplateId = 1,
                                 RootRouteNodeId = NewGuid(13),
                                 Id = NewGuid(3),
-                                Name = "Base3",
                                 Fr8Account = new Fr8AccountDO()
                                 {
                                     Id = "acoountId",
@@ -270,14 +267,14 @@ namespace DockyardTest.Repositories.Plan
             {
                 Updates =
                 {
-                    new ExpectedObjectChange(NewGuid(2), "Name", "newName"),
-                    new ExpectedObjectChange(NewGuid(3), "Name", "newName3")
+                    new ExpectedObjectChange(NewGuid(2), "Label", "newName"),
+                    new ExpectedObjectChange(NewGuid(3), "Label", "newName3")
                 }
                 
             };
 
-            repository.GetById<ActivityDO>(NewGuid(2)).Name = "newName";
-            repository.GetById<ActivityDO>(NewGuid(3)).Name = "newName3";
+            repository.GetById<ActivityDO>(NewGuid(2)).Label = "newName";
+            repository.GetById<ActivityDO>(NewGuid(3)).Label = "newName3";
 
             repository.SaveChanges();
 
@@ -295,12 +292,12 @@ namespace DockyardTest.Repositories.Plan
                 Deleted = { NewGuid(3) }
             };
 
-            repository.GetById<ActivityDO>(NewGuid(3)).Name = "newName";
+            repository.GetById<ActivityDO>(NewGuid(3)).Label = "newName";
             repository.GetById<ActivityDO>(NewGuid(3)).RemoveFromParent();
             repository.GetById<ActivityDO>(NewGuid(1)).ChildNodes.Add(new ActivityDO
             {
                 Id = NewGuid(4),
-                Name = "Base4",
+                Label = "Base4",
             });
 
             repository.SaveChanges();
@@ -409,15 +406,15 @@ namespace DockyardTest.Repositories.Plan
             var cache = new PlanCache(new ExpirationStrategyMock());
             var repository = new PlanRepository(new PlanStorage(cache, provider));
 
-            repository.GetById<ActivityDO>(NewGuid(2)).Name = "newName";
-            repository.GetById<ActivityDO>(NewGuid(3)).Name = "newName3";
+            repository.GetById<ActivityDO>(NewGuid(2)).Label = "newName";
+            repository.GetById<ActivityDO>(NewGuid(3)).Label = "newName3";
 
             repository.SaveChanges();
 
             repository = new PlanRepository(new PlanStorage(cache, provider));
 
-            Assert.AreEqual("newName", repository.GetById<ActivityDO>(NewGuid(2)).Name);
-            Assert.AreEqual("newName3", repository.GetById<ActivityDO>(NewGuid(3)).Name);
+            Assert.AreEqual("newName", repository.GetById<ActivityDO>(NewGuid(2)).Label);
+            Assert.AreEqual("newName3", repository.GetById<ActivityDO>(NewGuid(3)).Label);
         }
 
     }

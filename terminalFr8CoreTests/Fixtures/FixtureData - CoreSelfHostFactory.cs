@@ -88,7 +88,6 @@ namespace terminalFr8CoreTests.Fixtures
             var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "ConnectToSql_Fr8Core",
                 Label = "ConnectToSql Fr8Core",
                 ActivityTemplate = activityTemplate
             };
@@ -113,7 +112,6 @@ namespace terminalFr8CoreTests.Fixtures
             var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "ExecuteSql_Fr8Core",
                 Label = "ExecuteSql Fr8Core",
                 ActivityTemplate = activityTemplate
             };
@@ -148,7 +146,6 @@ namespace terminalFr8CoreTests.Fixtures
             return new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Monitor_Fr8_Events",
                 Label = "Monitor Fr8 Events",
                 ActivityTemplate = activityTemplate
             };

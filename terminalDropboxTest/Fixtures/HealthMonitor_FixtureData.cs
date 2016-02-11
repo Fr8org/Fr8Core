@@ -20,7 +20,6 @@ namespace terminalDropboxTests.Fixtures
 
             var activityDTO = new ActivityDTO()
             {
-                Name = "testaction",
                 Id = TestGuid_Id_333(),
                 ActivityTemplate = actionTemplate,
                 CrateStorage = null,

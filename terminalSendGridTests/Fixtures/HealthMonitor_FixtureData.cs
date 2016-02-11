@@ -30,7 +30,6 @@ namespace terminalSendGridTests.Fixtures
             var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "SendEmailViaSendGrid",
                 Label = "Send Email using SendGrid",
                 AuthToken = null,
                 ActivityTemplate = activityTemplate

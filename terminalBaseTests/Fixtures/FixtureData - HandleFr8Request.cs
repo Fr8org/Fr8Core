@@ -36,7 +36,6 @@ namespace terminalTests.Fixtures
             var activity = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "terminalActionMock",
                 Label = "Activity Mock",
                 AuthToken = new AuthorizationTokenDTO(),
                 ActivityTemplate = activityTemplate,
@@ -61,7 +60,6 @@ namespace terminalTests.Fixtures
             var activity = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "terminalActionMock",
                 Label = "Activity Mock",
                 AuthToken = new AuthorizationTokenDTO(),
                 ActivityTemplate = activityTemplate,

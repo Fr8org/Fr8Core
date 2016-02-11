@@ -42,7 +42,6 @@ namespace terminalQuickBooksTests.Fixtures
             var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Create_Journal_Entry",
                 Label = "Create Journal Entry",
                 AuthToken = QuickBooks_AuthTokenDTO(),
                 ActivityTemplate = activityTemplate
@@ -66,7 +65,6 @@ namespace terminalQuickBooksTests.Fixtures
             var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Convert_TableData_To_AccountingTransactions",
                 Label = "Convert TableData To AccountingTransactions",
                 AuthToken = QuickBooks_AuthTokenDTO(),
                 ActivityTemplate = activityTemplate
