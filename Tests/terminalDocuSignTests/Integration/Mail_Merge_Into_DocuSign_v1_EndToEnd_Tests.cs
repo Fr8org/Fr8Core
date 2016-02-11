@@ -148,10 +148,8 @@ namespace terminalDocuSignTests.Integration
                 ActivityTemplate = apmActivityTemplate,
                 ActivityTemplateId = apmActivityTemplate.Id,
                 Label = apmActivityTemplate.Label,
-                Name = apmActivityTemplate.Name,
                 ParentRouteNodeId = this.solution.Id,
-                RootRouteNodeId = plan.Id,
-                IsTempId = true
+                RootRouteNodeId = plan.Id
             };
             apmAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "actions/save", apmAction);
             Assert.NotNull(apmAction, "Add Payload Manually action failed to create");
@@ -183,7 +181,7 @@ namespace terminalDocuSignTests.Integration
             //
             // Configure Send DocuSign Envelope action
             //
-            var sendEnvelopeAction = this.solution.ChildrenActions.Single(a => a.Name == "Send DocuSign Envelope");
+            var sendEnvelopeAction = this.solution.ChildrenActions.Single(a => a.Label == "Send DocuSign Envelope");
 
             crateStorage = _crate.FromDto(sendEnvelopeAction.CrateStorage);
             controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();

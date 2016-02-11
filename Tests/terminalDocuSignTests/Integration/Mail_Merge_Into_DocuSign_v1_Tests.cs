@@ -36,11 +36,11 @@ namespace terminalDocuSignTests.Integration
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "Available Templates"));
         }
 
-        private void AddHubActivityTemplate(ActivityDTO activityDTO)
+        private void AddHubActivityTemplate(Fr8DataDTO dataDTO)
         {
 
             AddActivityTemplate(
-              activityDTO,
+              dataDTO,
               new ActivityTemplateDTO()
               {
                   Id = 1,
@@ -51,7 +51,7 @@ namespace terminalDocuSignTests.Integration
           );
 
             AddActivityTemplate(
-                activityDTO,
+                dataDTO,
                 new ActivityTemplateDTO()
                 {
                     Id = 2,
@@ -62,7 +62,7 @@ namespace terminalDocuSignTests.Integration
             );
 
             AddActivityTemplate(
-               activityDTO,
+               dataDTO,
                new ActivityTemplateDTO()
                {
                    Id = 3,
@@ -98,7 +98,7 @@ namespace terminalDocuSignTests.Integration
 
             var requestDataDTO = HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_Fr8DataDTO();
 
-            AddHubActivityTemplate(requestDataDTO.ActivityDTO);
+            AddHubActivityTemplate(requestDataDTO);
             
             var responseActionDTO =
                 await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
@@ -139,7 +139,7 @@ namespace terminalDocuSignTests.Integration
 
             var requestDataDTO = HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_Fr8DataDTO();
 
-            AddHubActivityTemplate(requestDataDTO.ActivityDTO);
+            AddHubActivityTemplate(requestDataDTO);
 
             var responseActionDTO =
                 await HttpPostAsync<Fr8DataDTO, ActivityDTO>(

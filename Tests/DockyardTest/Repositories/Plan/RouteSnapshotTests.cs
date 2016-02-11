@@ -25,18 +25,18 @@ namespace DockyardTest.Repositories.Plan
             return new ActivityDO
             {
                 Id = new Guid(1, (short) 0, (short) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0),
-                Name = "Base1",
+                Label = "Base1",
                 ChildNodes =
                 {
                     new ActivityDO()
                     {
                         Id = new Guid(2, (short) 0, (short) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0),
-                        Name = "Base2",
+                        Label = "Base2",
                     },
                     new ActivityDO()
                     {
                         Id = new Guid(3, (short) 0, (short) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0),
-                        Name = "Base3",
+                        Label = "Base3",
                     }
                 }
             };
@@ -47,18 +47,18 @@ namespace DockyardTest.Repositories.Plan
             return new ActivityDO
             {
                 Id = new Guid(1, (short)0, (short)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0),
-                Name = "Base1_",
+                Label = "Base1_",
                 ChildNodes =
                 {
                     new ActivityDO()
                     {
                         Id = new Guid(2, (short) 0, (short) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0),
-                        Name = "Base2_",
+                        Label = "Base2_",
                     },
                     new ActivityDO()
                     {
                         Id = new Guid(3, (short) 0, (short) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0),
-                        Name = "Base3_",
+                        Label = "Base3_",
                     }
                 }
             };
@@ -69,25 +69,25 @@ namespace DockyardTest.Repositories.Plan
             return new ActivityDO
             {
                 Id = new Guid(1, (short)0, (short)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0),
-                Name = "Base1",
+                Label = "Base1",
                 ChildNodes =
                 {
                     new ActivityDO()
                     {
                         Id = new Guid(4, (short) 0, (short) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0),
-                        Name = "Base4",
+                        Label = "Base4",
                     },
 
                     new ActivityDO()
                     {
                         Id = new Guid(2, (short) 0, (short) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0),
-                        Name = "Base2",
+                        Label = "Base2",
                     },
 
                     new ActivityDO()
                     {
                         Id = new Guid(3, (short) 0, (short) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0),
-                        Name = "Base3",
+                        Label = "Base3",
                     }
                 }
             };
@@ -99,13 +99,13 @@ namespace DockyardTest.Repositories.Plan
             return new ActivityDO
             {
                 Id = new Guid(1, (short)0, (short)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0),
-                Name = "Base1",
+                Label = "Base1",
                 ChildNodes =
                 {
                     new ActivityDO()
                     {
                         Id = new Guid(3, (short) 0, (short) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0),
-                        Name = "Base3",
+                        Label = "Base3",
                     }
                 }
             };

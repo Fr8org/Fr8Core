@@ -119,7 +119,6 @@ namespace terminalGoogleTests.Unit
             var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Receive_Google_Form",
                 Label = "Receive Google Form Response",
                 AuthToken = Google_AuthToken(),
                 ActivityTemplate = activityTemplate,
@@ -135,7 +134,6 @@ namespace terminalGoogleTests.Unit
             var activity = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Receive_Google_Form",
                 Label = "Receive Google Form Response",
                 AuthToken = Google_AuthToken(),
                 ActivityTemplate = activityTemplate,
@@ -195,7 +193,6 @@ namespace terminalGoogleTests.Unit
             var activity = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Receive_Google_Form",
                 Label = "Receive Google Form Response",
                 AuthToken = Google_AuthToken(),
                 ActivityTemplate = activityTemplate,
@@ -215,7 +212,6 @@ namespace terminalGoogleTests.Unit
             var activity = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Receive_Google_Form",
                 Label = "Receive Google Form Response",
                 AuthToken = Google_AuthToken(),
                 ActivityTemplate = activityTemplate,
@@ -244,7 +240,6 @@ namespace terminalGoogleTests.Unit
             var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Get_Google_Sheet_Data",
                 Label = "Get Google Sheet Data",
                 AuthToken = Google_AuthToken(),
                 ActivityTemplate = activityTemplate,
@@ -262,7 +257,6 @@ namespace terminalGoogleTests.Unit
             var curActivityDto = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Get_Google_Sheet_Data",
                 Label = "Get Google Sheet Data",
                 AuthToken = Google_AuthToken1(),
                 ActivityTemplate = activityTemplate,

@@ -404,22 +404,9 @@ module dockyard.controllers {
         private handleActionUpdate(action: model.ActivityDTO) {
             if (!action) return;
 
-            if (this.$scope.current.action.isTempId) {
-                this.$scope.$broadcast(
-                    pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionTempIdReplaced],
-                    new pwd.ActionTempIdReplacedEventArgs(this.$scope.current.action.id, action.id)
-                );
-            }
-
             this.$scope.current.action = action;
             //self.$scope.current.action.id = result.action.id;
             //self.$scope.current.action.isTempId = false;
-
-            //Notify workflow designer of action update
-            this.$scope.$broadcast(
-                pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionNameUpdated],
-                new pwd.ActionNameUpdatedEventArgs(action.id, action.name)
-            );
 
             if (this.CrateHelper.hasControlListCrate(action.crateStorage)) {
                 action.configurationControls = this.CrateHelper
@@ -494,8 +481,9 @@ module dockyard.controllers {
                 parentId = eventArgs.group.parentAction.id;
             }
             // Create new action object.
-            var action = new model.ActivityDTO(this.$scope.planId, parentId, id, true);
-            action.name = activityTemplate.name;
+
+            var action = new model.ActivityDTO(this.$scope.planId, parentId, id);
+
             action.label = activityTemplate.label;
             // Add action to Workflow Designer.
             this.$scope.current.action = action.toActionVM();

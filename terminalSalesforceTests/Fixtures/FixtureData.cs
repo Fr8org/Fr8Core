@@ -27,7 +27,7 @@ namespace terminalSalesforceTests.Fixtures
             {
                 Version = "1",
                 Name = "Get_Data",
-                Label = "Get Data",
+                Label = "Get Data from Salesforce.com",
                 NeedsAuthentication = true
             };
         }
@@ -38,7 +38,6 @@ namespace terminalSalesforceTests.Fixtures
 
             var activityDO = new ActivityDO()
             {
-                Name = "testaction",
                 Id = new Guid("8339DC87-F011-4FB1-B47C-FEC406E4100A"),
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate,

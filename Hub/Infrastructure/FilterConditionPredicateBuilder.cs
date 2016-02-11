@@ -115,7 +115,7 @@ namespace Hub.Infrastructure
                 }
 
                 DateTime tempDateTime;
-                if (DateTime.TryParseExact(value, "yyyy-MM-dd", CultureInfo.CurrentCulture, DateTimeStyles.None, out tempDateTime))
+                if (DateTime.TryParseExact(value, "dd-MM-yyyy", CultureInfo.CurrentCulture, DateTimeStyles.None, out tempDateTime))
                 {
                     result = tempDateTime;
                     return true;

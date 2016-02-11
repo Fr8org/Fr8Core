@@ -34,7 +34,6 @@ module dockyard.directives {
                         $scope.defaultOperator,
                         null
                         );
-                    condition.validate();
 
                     $scope.rows.push(condition);
                 };
@@ -46,7 +45,6 @@ module dockyard.directives {
                 };
 
                 $scope.valueChanged = function (row) {
-                    row.valueError = !row.value;
                 };
 
                 $scope.isActionValid = function (action: interfaces.IActionVM) {

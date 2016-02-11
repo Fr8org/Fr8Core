@@ -147,7 +147,6 @@ namespace DockyardTest.Services
 
                 origActivityDO = new FixtureData(uow).TestActivity3();
 
-                origActivityDO.IsTempId = true;
                 origActivityDO.ParentRouteNodeId = subroute.Id;
 
                 uow.ActivityTemplateRepository.Add(origActivityDO.ActivityTemplate);
@@ -169,7 +168,6 @@ namespace DockyardTest.Services
                 activityDO = activity.GetById(uow, origActivityDO.Id);
             }
 
-            Assert.AreEqual(origActivityDO.Name, activityDO.Name);
             Assert.AreEqual(origActivityDO.Id, activityDO.Id);
             Assert.AreEqual(origActivityDO.CrateStorage, activityDO.CrateStorage);
 
@@ -197,14 +195,14 @@ namespace DockyardTest.Services
                 uow.PlanRepository.Add(plan);
                 uow.SaveChanges();
 
-                Visit(updatedTree, x => x.Name = string.Format("We were here {0}", x.Id));
+                Visit(updatedTree, x => x.Label = string.Format("We were here {0}", x.Id));
 
                 _activity.SaveOrUpdateActivity(uow, updatedTree);
 
                 var result = uow.PlanRepository.GetById<ActivityDO>(tree.Id);
                 Compare(updatedTree, result, (r, a) =>
                 {
-                    if (r.Name != a.Name)
+                    if (r.Label != a.Label)
                     {
                         throw new Exception("Update failed");
                     }
@@ -282,10 +280,8 @@ namespace DockyardTest.Services
                     {
                         var newAction = new ActivityDO
                         {
-                            IsTempId =true,
                             Id = FixtureData.GetTestGuidById(addCounter + 666),
                             ParentRouteNode = a,
-                            Name = "____New " + addCounter
                         };
 
                         a.ParentRouteNode.ChildNodes.Add(newAction);
@@ -303,10 +299,8 @@ namespace DockyardTest.Services
                         {
                             var newAction = new ActivityDO
                             {
-                                IsTempId = true,
                                 Id = FixtureData.GetTestGuidById(addCounter + 666),
                                 ParentRouteNode = a,
-                                Name = "____New " + addCounter
                             };
 
                             a.ParentRouteNode.ChildNodes.Add(newAction);
@@ -330,7 +324,6 @@ namespace DockyardTest.Services
                 });
             }
         }
-
 
 //        [Test]
 //        public void CreateNewAction()

@@ -375,6 +375,7 @@
     <Compile Include="Controllers\Api\TerminalsController.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
     <Compile Include="Controllers\ServicesController.cs" />
+    <Compile Include="Controllers\SupportController.cs" />
     <Compile Include="Controllers\WelcomeController.cs" />
     <Compile Include="Controllers\Api\FieldController.cs" />
     <Compile Include="Controllers\Api\ActionListController.cs" />
@@ -585,7 +586,9 @@
     <Content Include="Content\img\welcome\fr8Terminals-howitworks.png" />
     <Content Include="Content\img\welcome\left-side-bg.jpg" />
     <Content Include="Content\img\welcome\logo.png" />
+    <Content Include="Content\img\welcome\plan_builder.png" />
     <Content Include="Content\img\welcome\plan_with_activities.png" />
+    <Content Include="Content\img\welcome\right-pane-bg.png" />
     <Content Include="Content\img\welcome\right-side-bg.jpg" />
     <Content Include="Content\img\welcome\routeBuilder.png" />
     <Content Include="Content\img\welcome\DocuSign_Logo_Purple_Yellow.png" />
@@ -904,6 +907,9 @@
     <Content Include="Views\AngularTemplate\ActionPicker.cshtml" />
     <Content Include="Views\Services\HowItWorks.cshtml" />
     <Content Include="Views\AngularTemplate\SolutionDocumentation.cshtml" />
+    <Content Include="Views\Services\Salesforce.cshtml" />
+    <Content Include="Views\Services\GoogleApps.cshtml" />
+    <Content Include="Views\Support\Index.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

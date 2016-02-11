@@ -929,7 +929,7 @@ namespace TerminalBase.BaseClasses
             //If Route is specified as a parent, then a new subroute will be created
             //Guid parentId = (parent.ChildNodes.Count > 0) ? parent.ChildNodes[0].ParentRouteNodeId.Value : parent.RootRouteNodeId.Value;
 
-            var result = await HubCommunicator.CreateAndConfigureActivity(activityTemplate.Id, name, CurrentFr8UserId, label, order, parent.Id);
+            var result = await HubCommunicator.CreateAndConfigureActivity(activityTemplate.Id, CurrentFr8UserId, label, order, parent.Id);
             var resultDO = Mapper.Map<ActivityDO>(result);
 
             if (resultDO != null)
