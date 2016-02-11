@@ -66,7 +66,6 @@ namespace terminalIntegrationTests
 		private async Task<CrateStorage> SendDocuSignEnvelope_ConfigureInitial(ActivityDTO curActionDTO)
 		{
 			// Fill values as it would be on front-end.
-			curActionDTO.ActivityTemplateId = _sendDocuSignEnvelopeActivityTemplate.Id;
 		    curActionDTO.CrateStorage = new CrateStorageDTO();
 
 			// Send initial configure request.

@@ -40,7 +40,6 @@ namespace Hub.Services
                 Id = Guid.NewGuid(),
                 Ordering = 1,
                 ActivityTemplateId = connectToSqlActivityTemplate.Id,
-                Name = connectToSqlActivityTemplate.Name,
                 Label = connectToSqlActivityTemplate.Name
             };
 
@@ -50,7 +49,6 @@ namespace Hub.Services
                 Id = Guid.NewGuid(),
                 Ordering = 2,
                 ActivityTemplateId = buildQueryActivityTemplate.Id,
-                Name = buildQueryActivityTemplate.Name,
                 Label = buildQueryActivityTemplate.Name
             };
 
@@ -60,7 +58,6 @@ namespace Hub.Services
                 Id = Guid.NewGuid(),
                 Ordering = 3,
                 ActivityTemplateId = executeSqlActivityTemplate.Id,
-                Name = executeSqlActivityTemplate.Name,
                 Label = executeSqlActivityTemplate.Name
             };
 
@@ -70,7 +67,6 @@ namespace Hub.Services
                 Id = Guid.NewGuid(),
                 Ordering = 4,
                 ActivityTemplateId = manageRouteActivityTemplate.Id,
-                Name = manageRouteActivityTemplate.Name,
                 Label = manageRouteActivityTemplate.Name
             };
 

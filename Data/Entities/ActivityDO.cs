@@ -14,8 +14,6 @@ namespace Data.Entities
 {
     public class ActivityDO : RouteNodeDO
 	{
-        public string Name { get; set; }
-
         public string CrateStorage { get; set; }
         public string Label { get; set; }
 
@@ -23,12 +21,8 @@ namespace Data.Entities
         public int? ActivityTemplateId { get; set; }
 
         public virtual ActivityTemplateDO ActivityTemplate { get; set; }
-
-        [NotMapped]
-        public bool IsTempId { get; set; }
-
         public string currentView { get; set; }
-        
+
         [ForeignKey("AuthorizationToken")]
         public Guid? AuthorizationTokenId { get; set; }
 
@@ -47,7 +41,6 @@ namespace Data.Entities
 
         private static readonly PropertyInfo[] TrackingProperties = 
         {
-            typeof(ActivityDO).GetProperty("Name"),
             typeof(ActivityDO).GetProperty("CrateStorage"),
             typeof(ActivityDO).GetProperty("Label"),
             typeof(ActivityDO).GetProperty("ActivityTemplateId"),
@@ -72,7 +65,6 @@ namespace Data.Entities
             var activity = (ActivityDO) source;
 
             base.CopyProperties(source);
-            Name = activity.Name;
             Label = activity.Label;
             CrateStorage = activity.CrateStorage;
             AuthorizationTokenId = activity.AuthorizationTokenId;

@@ -29,7 +29,6 @@ namespace terminalDropboxTests.Fixtures
 
             var activityDO = new ActivityDO()
             {
-                Name = "testaction",
                 Id = TestGuid_Id_333(),
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate,

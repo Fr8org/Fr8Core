@@ -46,7 +46,6 @@ namespace terminalAtlassianTests.Fixtures
 
             var actionDo = new ActivityDO()
             {
-                Name = "testaction",
                 Id = Guid.NewGuid()
             };
             using (var updater = _crate.UpdateStorage(actionDo))

@@ -208,7 +208,6 @@ namespace UtilitiesTesting.Fixtures
         {
             return new ActivityDO()
             {
-                Name = "New Action #1",
                 CrateStorage = ""
             };
         }

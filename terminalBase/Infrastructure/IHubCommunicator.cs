@@ -29,7 +29,7 @@ namespace TerminalBase.Infrastructure
         Task<List<FieldValidationResult>> ValidateFields(List<FieldValidationDTO> fields, string userId);
         Task<ActivityDTO> ConfigureActivity(ActivityDTO activityDTO, string userId);
         Task<ActivityDO> ConfigureActivity(ActivityDO activityDO, string userId);
-        Task<ActivityDTO> CreateAndConfigureActivity(int templateId, string name, string userId, string label = null, int? order = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null);
+        Task<ActivityDTO> CreateAndConfigureActivity(int templateId, string userId, string label = null, int? order = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null);
         Task<RouteFullDTO> CreatePlan(RouteEmptyDTO planDTO, string userId);
         Task<PlanDO> ActivatePlan(PlanDO planDO, string userId);
         Task<IEnumerable<RouteFullDTO>> GetPlansByName(string name, string userId);
