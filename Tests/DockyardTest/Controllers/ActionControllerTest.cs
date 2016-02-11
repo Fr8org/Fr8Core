@@ -83,15 +83,13 @@ namespace DockyardTest.Controllers
                 plan.ChildNodes.Add(subroute);
                 uow.SaveChanges();
             }
-                //Arrange is done with empty action list
+            //Arrange is done with empty action list
 
-                //Act
-                var actualAction = CreateActionWithId(FixtureData.GetTestGuidById(1));
-
-                actualAction.IsTempId = true;
-                actualAction.ParentRouteNodeId = subroute.Id;
+            //Act
+            var actualAction = CreateActionWithId(FixtureData.GetTestGuidById(1));
+            actualAction.ParentRouteNodeId = subroute.Id;
                 
-                var controller = new ActionsController();
+            var controller = new ActionsController();
             var result = (OkNegotiatedContentResult<ActivityDTO>) controller.Save(actualAction);
             var savedAction = result.Content;
 
@@ -129,12 +127,11 @@ namespace DockyardTest.Controllers
             }
                 //Act
                 var actualAction = CreateActionWithId(FixtureData.GetTestGuidById(2));
-                actualAction.IsTempId = true;
                 actualAction.ParentRouteNodeId = subroute.Id;
 
                 var controller = new ActionsController();
-            var result = (OkNegotiatedContentResult<ActivityDTO>) controller.Save(actualAction);
-            var savedAction = result.Content;
+                var result = (OkNegotiatedContentResult<ActivityDTO>) controller.Save(actualAction);
+                var savedAction = result.Content;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

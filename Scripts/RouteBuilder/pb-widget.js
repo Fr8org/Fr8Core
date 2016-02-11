@@ -62,7 +62,6 @@
 
             var actionDescr = {
                 id: action.id,
-                isTempId: action.isTempId || false,
                 actionType: actionType,
                 data: action,
                 actionNode: null,
@@ -90,9 +89,9 @@
         // Parameters:
         //     actionId - id of action.
         //     isTempId - flag.
-        removeAction: function (actionId, isTempId) {
+        removeAction: function (actionId) {
             for (var i = 0; i < this._actions.length; ++i) {
-                if (this._actions[i].id == actionId && this._actions[i].isTempId == isTempId) {
+                if (this._actions[i].id == actionId) {
                     this._canvas.remove(this._actions[i].actionNode);
                     this._actions.splice(i, 1);
 
@@ -103,23 +102,11 @@
             this.relayout();
         },
 
-        // Replace temporary ID with global ID.
-        replaceActionTempId: function (tempId, id) {
-            for (var i = 0; i < this._actions.length; ++i) {
-                if (this._actions[i].id === tempId
-                    && this._actions[i].isTempId) {
-                    this._actions[i].id = id;
-                    this._actions[i].isTempId = false;
-                    return;
-                }
-            }
-        },
-
+        
         // Rename action with global ID.
         renameAction: function (id, text) {
             for (var i = 0; i < this._actions.length; ++i) {
-                if (this._actions[i].id == id
-                    && !this._actions[i].isTempId) {
+                if (this._actions[i].id == id) {
 
                     this._actions[i].actionNode.setText(text);
 

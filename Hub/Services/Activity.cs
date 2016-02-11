@@ -171,9 +171,8 @@ namespace Hub.Services
             {
                 var activity = (ActivityDO) x;
 
-                if (activity.IsTempId && activity.Id == Guid.Empty)
+                if (activity.Id == Guid.Empty)
                 {
-                    activity.IsTempId = false;
                     activity.Id = Guid.NewGuid();
                 }
             });
