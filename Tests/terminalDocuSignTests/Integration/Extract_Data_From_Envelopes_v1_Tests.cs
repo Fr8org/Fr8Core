@@ -41,10 +41,10 @@ namespace terminalDocuSignTests.Integration
             Assert.AreEqual("FinalActionsList", controls.Controls[1].Name);
         }
 
-        private void AddHubActivityTemplate(ActivityDTO activityDTO)
+        private void AddHubActivityTemplate(Fr8DataDTO dataDTO)
         {
-            AddActivityTemplate(activityDTO, HealthMonitor_FixtureData.Monitor_DocuSign_v1_ActivityTemplate_For_Solution());
-            AddActivityTemplate(activityDTO, HealthMonitor_FixtureData.Send_DocuSign_Envelope_v1_ActivityTemplate_for_Solution());
+            AddActivityTemplate(dataDTO, HealthMonitor_FixtureData.Monitor_DocuSign_v1_ActivityTemplate_For_Solution());
+            AddActivityTemplate(dataDTO, HealthMonitor_FixtureData.Send_DocuSign_Envelope_v1_ActivityTemplate_for_Solution());
         }
 
         private async Task<Tuple<ActivityDTO, string>> GetActionDTO_WithSelectedAction()
@@ -52,7 +52,7 @@ namespace terminalDocuSignTests.Integration
             var configureUrl = GetTerminalConfigureUrl();
 
             var requestDataDTO = HealthMonitor_FixtureData.Extract_Data_From_Envelopes_v1_InitialConfiguration_Fr8DataDTO();
-            AddHubActivityTemplate(requestDataDTO.ActivityDTO);
+            AddHubActivityTemplate(requestDataDTO);
 
             string selectedAction;
 
@@ -89,7 +89,7 @@ namespace terminalDocuSignTests.Integration
             var configureUrl = GetTerminalConfigureUrl();
 
             var requestDataDTO = HealthMonitor_FixtureData.Extract_Data_From_Envelopes_v1_InitialConfiguration_Fr8DataDTO();
-            AddHubActivityTemplate(requestDataDTO.ActivityDTO);
+            AddHubActivityTemplate(requestDataDTO);
 
             var responseActionDTO =
                 await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
@@ -161,7 +161,7 @@ namespace terminalDocuSignTests.Integration
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
             var requestDataDTO = HealthMonitor_FixtureData.Extract_Data_From_Envelopes_v1_InitialConfiguration_Fr8DataDTO();
-            AddHubActivityTemplate(requestDataDTO.ActivityDTO);
+            AddHubActivityTemplate(requestDataDTO);
 
             //Act
             var responseActionDTO =
@@ -183,7 +183,7 @@ namespace terminalDocuSignTests.Integration
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
             var requestDataDTO = HealthMonitor_FixtureData.Extract_Data_From_Envelopes_v1_InitialConfiguration_Fr8DataDTO();
-            AddHubActivityTemplate(requestDataDTO.ActivityDTO);
+            AddHubActivityTemplate(requestDataDTO);
 
             //Act
             var responseActionDTO =

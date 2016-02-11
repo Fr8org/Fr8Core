@@ -522,20 +522,35 @@ div.action-header {
     width: calc(100% - 25px);
 }
 
-    .query-builder-table td:first-of-type,
-    .query-builder-table th:first-of-type {
-        padding-left: 0;
-    }
+.query-builder-table td:first-of-type,
+.query-builder-table th:first-of-type {
+    padding-left: 0;
+}
 
-    .query-builder-table tbody,
-    .query-builder-table thead {
-        display: block;
-    }
+.query-builder-table tbody,
+.query-builder-table thead {
+    display: block;
+}
 
-    .query-builder-table tbody {
-        max-height: 296px;
-        overflow-y: auto;
-    }
+.query-builder-table tbody {
+    max-height: 296px;
+    overflow-y: auto;
+}
+
+.query-builder-table tbody tr.no-border td {
+    border-top: none;
+    padding: 0;
+}
+
+.query-builder-table input[type=text].invalid {
+    border: 1px solid red;
+}
+
+.query-builder-table div.invalid-hint {
+    font-size: 1em;
+    color: #FF0000;
+    text-align: right;
+}
 
 .query-builder-add-button {
     margin-left: 27px;

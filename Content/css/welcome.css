@@ -30,9 +30,10 @@ a:hover {
     background-image: url("/Content/img/welcome/header_green.png");
     background-repeat: repeat-x;
 }
-.MainMenuDropdown .dropdown-toggle img {
-    height: 100px;
-}
+
+    .MainMenuDropdown .dropdown-toggle img {
+        height: 100px;
+    }
 
 .MainMenuDropdown li a {
     text-align: left;
@@ -70,7 +71,6 @@ a:hover {
 }
 
     .HomePage .HomeLeftSide {
-        background: url(../img/welcome/left-side-bg.jpg)right top no-repeat #252830;
         position: absolute;
         left: 0;
         top: 0;
@@ -78,83 +78,82 @@ a:hover {
         width: 50%;
         padding: 40px 0;
         text-align: center;
+        background-color: #1B49A0;
     }
 
         .HomePage .HomeLeftSide:hover {
-            background: #252830;
             cursor: pointer;
         }
 
         .HomePage .HomeLeftSide img {
             margin: 0 auto 0;
-            max-width: 100%;
+            max-width: 35%;
             display: block;
+            padding-top: 5%;
         }
 
-        .HomePage .HomeLeftSide .Login {
-            background: #ef6a20;
-            color: #fff;
-            border-color: #b5490d;
-            text-shadow: 0 1px 1px rgba(0,0,0,.4);
-            border-radius: 0;
-            position: absolute;
-            bottom: 160px;
-            left: 50%;
-            margin-left: -70px;
-        }
-
-            .HomePage .HomeLeftSide .Login:hover {
-                color: #fff;
-                background: #f18041;
+            .HomePage .HomeLeftSide img.left-btm-img {
+                margin-right: 39%;
             }
 
+    .HomePage .HomeRightSide img {
+        margin: 0 auto 0;
+        max-width: 100%;
+        display: block;
+        padding-top: 50px;
+    }
+
 .docusing-pane {
+    display: block;
+    margin-left: 22%;
+    margin-right: 19%;
+    font-family: Arial;
+    color: white;
+}
+
+.docusing-right-pane {
     display: block;
     margin-bottom: 40px;
     margin-left: 140px;
     margin-right: 140px;
     font-family: Arial;
     color: white;
-    margin-top: 30px;
+    margin-top: 50px;
 }
 
-    .docusing-pane p {
-        margin-top: 10px;
-        color: rgb(178, 178, 178);
-        font-size: 20px;
-    }
+.docusing-pane p {
+    margin-top: 10px;
+    color: rgb(178, 178, 178);
+    font-size: 20px;
+}
 
-.try-now {
-    color: white;
-    font-size: 21px;
-    font-weight: 300;
+.left-try {
+    margin-left: 71px;
+    margin-top: 15px;
 }
 
 .docusign-header {
     font-weight: 600;
-    font-size: 40px;
+    font-size: 25px;
     line-height: 36px;
 }
 
 .docusign-info {
     display: block;
-    font-size: 50px;
-    line-height: 36px;
-    margin-bottom: 20px;
     font-family: Arial;
-    color: white;
-    margin-top: 20px;
+    margin-top: 45px;
+    margin-left: 7%;
+    text-align: left;
 }
 
 .HomePage .HomeRightSide {
-    background: url(../img/welcome/right-side-bg.jpg)left top no-repeat #347ab6;
+    background: url(../img/welcome/right-pane-bg.png)left top repeat;
     float: right;
     width: 50%;
     padding: 40px 0;
 }
 
     .HomePage .HomeRightSide:hover {
-        background: #347ab6;
         cursor: pointer;
     }
 
@@ -170,22 +169,13 @@ a:hover {
         }
 
         .HomePage .HomeRightSide .HomeRightSideWrapper p {
-            color: rgb(210, 210, 210);
-            font-size: 20px;
-            line-height: 28px;
-            font-family: Arial;
-            margin-top: -10px;
-            margin-right: 100px;
-            margin-left: 100px;
-            margin-bottom: 30px;
+            margin-top: 10px;
+            font-size: 14px;
         }
 
-            .HomePage .HomeRightSide .HomeRightSideWrapper p b {
-                display: block;
-                color: #fff;
-                font-size: 28px;
-                line-height: 36px;
-                margin-bottom: 20px;
-                font-weight: 600;
-                font-family: Arial;
-            }
+.dropdown-menu {
+    background-color: #4e5966;
+    border: 0 none;
+    border-radius: 0;
+    padding: 5px 0;
+}

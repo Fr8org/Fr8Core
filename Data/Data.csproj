@@ -271,6 +271,8 @@
     <Compile Include="Entities\ActivityTemplateDO.cs" />
     <Compile Include="Infrastructure\AutoMapper\StringToJSONConverter.cs" />
     <Compile Include="Infrastructure\CloudFileManager.cs" />
+    <Compile Include="Infrastructure\JsonNet\ActivityTemplateActivityConverter.cs" />
+    <Compile Include="Infrastructure\JsonNet\TerminalActivityTemplateConverter.cs" />
     <Compile Include="Infrastructure\MultiTenant\IMT_Data.cs" />
     <Compile Include="Infrastructure\MultiTenant\IMT_Field.cs" />
     <Compile Include="Infrastructure\MultiTenant\IMT_FieldType.cs" />
@@ -288,7 +290,6 @@
     <Compile Include="Interfaces\DataTransferObjects\FactDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldValidationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActivityDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ActivityDTOBase.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionPayloadDTO.cs" />
     <Compile Include="Entities\ActivityDO.cs" />
     <Compile Include="Entities\AuthorizationTokenDO.cs" />
@@ -584,6 +585,10 @@
     <Compile Include="Migrations\201602051229214_Add_Test_User_2.Designer.cs">
       <DependentUpon>201602051229214_Add_Test_User_2.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201602071156179_RemoveSubscriptionRequiredAndName.cs" />
+    <Compile Include="Migrations\201602071156179_RemoveSubscriptionRequiredAndName.Designer.cs">
+      <DependentUpon>201602071156179_RemoveSubscriptionRequiredAndName.cs</DependentUpon>
+	</Compile>  
     <Compile Include="Migrations\201602031204174_MergeMigration.cs" />
     <Compile Include="Migrations\201602031204174_MergeMigration.Designer.cs">
       <DependentUpon>201602031204174_MergeMigration.cs</DependentUpon>
@@ -833,7 +838,6 @@
   <ItemGroup>
     <Folder Include="Authentication\" />
     <Folder Include="Entities\Enumerations\" />
-    <Folder Include="Infrastructure\JsonNet\" />
     <Folder Include="Wrappers\" />
   </ItemGroup>
   <ItemGroup>
@@ -998,6 +1002,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201602051229214_Add_Test_User_2.resx">
       <DependentUpon>201602051229214_Add_Test_User_2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602071156179_RemoveSubscriptionRequiredAndName.resx">
+      <DependentUpon>201602071156179_RemoveSubscriptionRequiredAndName.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -108,9 +108,9 @@ namespace terminalPapertrailTests.Integration
 
             //prepare action DTO with valid target URL
             var activityDTO = await GetActionDTO_LogToPapertrailIntegrationTest();
-
+            var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
             //add the log message in upstream action
-            AddPayloadCrate(activityDTO,
+            AddPayloadCrate(dataDTO,
                 new StandardLoggingCM
                 {
                     Item =
@@ -120,8 +120,8 @@ namespace terminalPapertrailTests.Integration
                         }
                 });
 
-            AddOperationalStateCrate(activityDTO, new OperationalStateCM());
-            var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
+            
             //Act
             var responsePayloadDTO =
                 await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
@@ -149,7 +149,7 @@ namespace terminalPapertrailTests.Integration
 
             //prepare the action DTO with valid target URL
             var activityDTO = await GetActionDTO_LogToPapertrailIntegrationTest();
-
+            var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
             //make the target URL as invalid
             using (var updater = Crate.UpdateStorage(activityDTO))
             {
@@ -160,7 +160,7 @@ namespace terminalPapertrailTests.Integration
             }
 
             //add the Log Message in upstream action
-            AddPayloadCrate(activityDTO,
+            AddPayloadCrate(dataDTO,
                 new StandardLoggingCM
                 {
                     Item =
@@ -170,8 +170,8 @@ namespace terminalPapertrailTests.Integration
                         }
                 });
 
-            AddOperationalStateCrate(activityDTO, new OperationalStateCM());
-            var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
+            
             //Act
             var payload = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
 

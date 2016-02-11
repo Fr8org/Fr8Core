@@ -32,7 +32,7 @@ namespace terminalDropboxTests.Integration
             //Arrange
             var runUrl = GetTerminalRunUrl();
             var dataDTO = HealthMonitor_FixtureData.GetFileListTestFr8DataDTO();
-            AddOperationalStateCrate(dataDTO.ActivityDTO, new OperationalStateCM());
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
 
             //Act
             var payloadDTOResult = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);

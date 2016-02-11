@@ -211,8 +211,9 @@ module dockyard.directives.paneConfigureAction {
                     }
                 );
 
-                // Get configuration settings template from the server if the current action does not contain those             
-                if ($scope.currentAction.activityTemplateId > 0) {
+                // Get configuration settings template from the server if the current action does not contain those       
+                //TODO check this     
+                if ($scope.currentAction.activityTemplate != null) {
                     if ($scope.currentAction.crateStorage == null || !$scope.currentAction.crateStorage.crates.length) {
                         $scope.loadConfiguration();
                     } else {

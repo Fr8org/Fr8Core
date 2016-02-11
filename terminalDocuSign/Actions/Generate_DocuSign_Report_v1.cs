@@ -47,11 +47,13 @@ namespace terminalDocuSign.Actions
         // This little class is storing information about how certian field displayed in Query Builder controls is routed to the backed
         class FieldBackedRoutingInfo
         {
+            public readonly string FieldType;
             public readonly string DocusignQueryName;
             public readonly string MtDbPropertyName;
 
-            public FieldBackedRoutingInfo(string docusignQueryName, string mtDbPropertyName)
+            public FieldBackedRoutingInfo(string fieldType, string docusignQueryName, string mtDbPropertyName)
             {
+                FieldType = fieldType;
                 DocusignQueryName = docusignQueryName;
                 MtDbPropertyName = mtDbPropertyName;
             }
@@ -110,16 +112,16 @@ namespace terminalDocuSign.Actions
         private static readonly Dictionary<string, FieldBackedRoutingInfo> QueryBuilderFields = 
             new Dictionary<string, FieldBackedRoutingInfo>
             {
-                { "Envelope Text", new FieldBackedRoutingInfo("SearchText", null) },
-                { "Folder", new FieldBackedRoutingInfo("Folder", null) },
-                { "Status", new FieldBackedRoutingInfo("Status", "Status") },
-                { "CreateDate", new FieldBackedRoutingInfo("CreatedDateTime", "CreateDate") },
-                { "SentDate", new FieldBackedRoutingInfo("SentDateTime", "SentDate") },
+                { "Envelope Text", new FieldBackedRoutingInfo("string", "SearchText", null) },
+                { "Folder", new FieldBackedRoutingInfo("string", "Folder", null) },
+                { "Status", new FieldBackedRoutingInfo("string", "Status", "Status") },
+                { "CreateDate", new FieldBackedRoutingInfo("date", "CreatedDateTime", "CreateDate") },
+                { "SentDate", new FieldBackedRoutingInfo("date", "SentDateTime", "SentDate") },
                 // Did not find in FolderItem.
                 // { "DeliveredDate", new FieldBackedRoutingInfo("DeliveredDate", "DeliveredDate") },
                 // { "Recipient", new FieldBackedRoutingInfo("Recipient", "Recipient") },
-                { "CompletedDate", new FieldBackedRoutingInfo("CompletedDateTime", "CompletedDate") },
-                { "EnvelopeId", new FieldBackedRoutingInfo("EnvelopeId", "EnvelopeId") }
+                { "CompletedDate", new FieldBackedRoutingInfo("date", "CompletedDateTime", "CompletedDate") },
+                { "EnvelopeId", new FieldBackedRoutingInfo("string", "EnvelopeId", "EnvelopeId") }
             };
 
         private readonly DocuSignManager _docuSignManager;
@@ -450,7 +452,10 @@ namespace terminalDocuSign.Actions
 
         public static FieldDTO[] GetFieldListForQueryBuilder()
         {
-            return QueryBuilderFields.Keys.Select(x => new FieldDTO(x, x)).ToArray();
+            return QueryBuilderFields
+                .Keys
+                .Select(x => new FieldDTO(x, x) { Tags = QueryBuilderFields[x].FieldType })
+                .ToArray();
         }
 
         private IEnumerable<Crate> PackDesignTimeData()

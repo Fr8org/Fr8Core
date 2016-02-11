@@ -134,8 +134,6 @@ namespace UtilitiesTesting.Fixtures
                 {
                     ParentRouteNode = planDO,
                     ParentRouteNodeId = planDO.Id,
-                    Name = "testaction",
-
                     Id = GetTestGuidById(1),
                     ActivityTemplateId = actionTemplate.Id,
                     ActivityTemplate = actionTemplate,
@@ -212,9 +210,6 @@ namespace UtilitiesTesting.Fixtures
 
                 var actionDo = new ActivityDO()
                 {
-                   
-                    Name = "testaction",
-
                     Id = GetTestGuidById(12+idOffset),
                     ActivityTemplateId = actionTemplate.Id,
                     ActivityTemplate = actionTemplate,

@@ -953,8 +953,8 @@ namespace Hub.Managers
                 };
                 if (activityDO != null)
                 {
-                    var terminalName = _activityTemplate.GetByKey(activityDO.ActivityTemplateId.Value).Terminal.Name;
-                    curFact.Data = string.Format("Terminal: {0} - Action: {1}.", terminalName, activityDO.Name);
+                    var activityTemplate = _activityTemplate.GetByKey(activityDO.ActivityTemplateId.Value);
+                    curFact.Data = string.Format("Terminal: {0} - Action: {1}.", activityTemplate.Terminal.Name, activityTemplate.Name);
                 }
             
             LogFactInformation(curFact, curFact.Data);
