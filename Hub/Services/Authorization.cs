@@ -66,7 +66,7 @@ namespace Hub.Services
             }
 
             // Fetch ActivityTemplate.
-            var activityTemplate = _activityTemplate.GetByKey(activity.ActivityTemplateId.Value);
+            var activityTemplate = _activityTemplate.GetByNameAndVersion(activityDTO.ActivityTemplate.Name, activityDTO.ActivityTemplate.Version);
 
             // Try to find AuthToken if terminal requires authentication.
             if (activityTemplate.NeedsAuthentication &&
@@ -419,7 +419,7 @@ namespace Hub.Services
 
         public bool ValidateAuthenticationNeeded(IUnitOfWork uow, string userId, ActivityDTO curActionDTO)
         {
-            var activityTemplate = _activityTemplate.GetByNameAndVersion(uow, curActionDTO.ActivityTemplate.Name, curActionDTO.ActivityTemplate.Version);
+            var activityTemplate = _activityTemplate.GetByNameAndVersion(curActionDTO.ActivityTemplate.Name, curActionDTO.ActivityTemplate.Version);
 
             if (activityTemplate == null)
             {
@@ -493,7 +493,7 @@ namespace Hub.Services
         public void InvalidateToken(IUnitOfWork uow, string userId, ActivityDTO curActivityDto)
         {
             
-            var activityTemplate = _activityTemplate.GetByNameAndVersion(uow, curActivityDto.ActivityTemplate.Name, curActivityDto.ActivityTemplate.Version);
+            var activityTemplate = _activityTemplate.GetByNameAndVersion(curActivityDto.ActivityTemplate.Name, curActivityDto.ActivityTemplate.Version);
 
             if (activityTemplate == null)
             {

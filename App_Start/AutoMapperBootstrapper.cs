@@ -33,7 +33,8 @@ namespace HubWeb.App_Start
             Mapper.CreateMap<ActivityDTO, ActivityDO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
                 .ForMember(a => a.RootRouteNodeId, opts => opts.ResolveUsing(ad => ad.RootRouteNodeId))
                 .ForMember(a => a.ParentRouteNodeId, opts => opts.ResolveUsing(ad => ad.ParentRouteNodeId))
-                .ForMember(a => a.ActivityTemplate, opts => opts.Ignore())
+                //.ForMember(a => a.ActivityTemplate, opts => opts.Ignore())
+                .ForMember(a => a.ActivityTemplateId, opts => opts.ResolveUsing(GetActivityTemplateId))
                 //.ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.SerializeObject(ad.CrateStorage)))
                 .ForMember(a => a.currentView, opts => opts.ResolveUsing(ad => ad.CurrentView))
                 .ForMember(a => a.ChildNodes, opts => opts.ResolveUsing(ad => MapActions(ad.ChildrenActions)))
@@ -95,12 +96,27 @@ namespace HubWeb.App_Start
 
         private ActivityTemplateDTO GetActivityTemplate(ActivityDO ad)
         {
-            if (ad.ActivityTemplateId == null)
+            if (ad.ActivityTemplate != null)
+            {
+                return Mapper.Map<ActivityTemplateDTO>(ad.ActivityTemplate);
+            }
+
+            if (ad.ActivityTemplateId == null || ad.ActivityTemplateId == 0)
+            {
+                return null;                
+            }
+
+            return Mapper.Map<ActivityTemplateDTO>(_activityTemplate.GetByKey(ad.ActivityTemplateId.Value));
+        }
+
+        private object GetActivityTemplateId(ActivityDTO ad)
+        {
+            if (ad.ActivityTemplate == null)
             {
                 return null;
             }
 
-            return Mapper.Map<ActivityTemplateDTO>(_activityTemplate.GetByKey(ad.ActivityTemplateId.Value));
+            return _activityTemplate.GetByNameAndVersion(ad.ActivityTemplate.Name, ad.ActivityTemplate.Version).Id;
         }
     }
 }
