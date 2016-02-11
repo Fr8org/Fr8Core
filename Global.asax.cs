@@ -26,6 +26,7 @@ using Logger = Utilities.Logging.Logger;
 using HubWeb.Infrastructure;
 using System.Threading.Tasks;
 using Microsoft.ApplicationInsights.Extensibility;
+using TerminalBase.Infrastructure;
 
 namespace HubWeb
 {
@@ -35,11 +36,19 @@ namespace HubWeb
 
         protected void Application_Start()
         {
-            GlobalConfiguration.Configure(WebApiConfig.Register);
-            AreaRegistration.RegisterAllAreas();
-            FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
-            RouteConfig.RegisterRoutes(RouteTable.Routes);
-            BundleConfig.RegisterBundles(BundleTable.Bundles);
+            Init(false);
+        }
+
+        public void Init(bool selfHostMode = false)
+        {
+            if (!selfHostMode)
+            {
+                GlobalConfiguration.Configure(WebApiConfig.Register);
+                AreaRegistration.RegisterAllAreas();
+                FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
+                RouteConfig.RegisterRoutes(RouteTable.Routes);
+                BundleConfig.RegisterBundles(BundleTable.Bundles);
+            }
 
             // Configure formatters
             // Enable camelCasing in JSON responses
@@ -53,15 +62,15 @@ namespace HubWeb
             GlobalConfiguration.Configuration.Filters.Add(new WebApiExceptionFilterAttribute());
 
             // StructureMap Dependencies configuration 
+
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE);
             //set to either "test" or "live"
-
             var db = ObjectFactory.GetInstance<DbContext>();
-            db.Database.Initialize(true);
-
-            Utilities.Server.ServerPhysicalPath = Server.MapPath("~");
 
             //AutoMapper create map configuration
+            //var a = ObjectFactory.Container.Model.AllInstances.Count();
+            //var b = ObjectFactory.Container.WhatDoIHave();
+
             ObjectFactory.GetInstance<AutoMapperBootStrapper>().ConfigureAutoMapper();
 
             Utilities.Server.IsProduction = ObjectFactory.GetInstance<IConfigRepository>().Get<bool>("IsProduction");
@@ -70,11 +79,25 @@ namespace HubWeb
             // CommunicationManager curCommManager = ObjectFactory.GetInstance<CommunicationManager>();
             //  curCommManager.SubscribeToAlerts();
 
-            var segmentWriteKey = new ConfigRepository().Get("SegmentWriteKey");
-            Analytics.Initialize(segmentWriteKey);
+            db.Database.Initialize(true);
 
-            EventReporter curReporter = ObjectFactory.GetInstance<EventReporter>()
-                ;
+            // *** A HACK *** 
+            // In the self-hosted mode after the prev line (DB init) StructureMap mappings disappear for unknown reason. 
+            // So we have to re-register them. 
+            if (selfHostMode)
+            {
+                StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE);
+                TerminalBootstrapper.ConfigureLive();
+            }
+
+            if (!selfHostMode)
+            {
+                Utilities.Server.ServerPhysicalPath = Server.MapPath("~");
+                var segmentWriteKey = new ConfigRepository().Get("SegmentWriteKey");
+                Analytics.Initialize(segmentWriteKey);
+            }
+
+            EventReporter curReporter = ObjectFactory.GetInstance<EventReporter>();
             curReporter.SubscribeToAlerts();
 
             IncidentReporter incidentReporter = ObjectFactory.GetInstance <IncidentReporter>();

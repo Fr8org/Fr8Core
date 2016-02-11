@@ -76,6 +76,10 @@ namespace HealthMonitor
             {
                 new Program().Run(ensureTerminalsStartup, sendEmailReport, appName, specificTest);
             }
+            catch (Exception ex)
+            {
+
+            }
             finally
             {
                 if (selfHosting)
@@ -83,6 +87,7 @@ namespace HealthMonitor
                     selfHostInitializer.Dispose();
                 }
             }
+
         }
 
         private static void UpdateConnectionString(string key, string value)
@@ -165,7 +170,7 @@ namespace HealthMonitor
 
             ReportToConsole(appName, report);
 
-            // Console.ReadLine();
+            Console.ReadLine();
 
             var errorCount = report.Tests.Count(x => !x.Success);
             Environment.Exit(errorCount);

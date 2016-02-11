@@ -161,7 +161,7 @@ namespace HealthMonitor.Utility
                 await AuthenticateWebApi(email, password);
             }
             catch (Exception ex){
-
+                throw;
             }
             var cookieContainer = new CookieContainer();
 
