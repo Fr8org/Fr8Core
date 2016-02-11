@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@{
+    Layout = "~/Views/Shared/_HomePage.cshtml";
+}
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -13,32 +16,36 @@
 <body>
     <!--site content start-->
     <section class="MainContent">
-        <div class="MainMenuDropdown">
-            <span class="dropdown-toggle">
-                <img src="/Content/img/welcome/welcome_header.png" />
-            </span>
-        </div>
         <div id="HomePage" class="HomePage">
             <div class="HomeLeftSide">
                 <a href="~/Services/DocuSign">
                     <img src="/Content/img/welcome/docusign.png">
                     <div class="docusing-pane">
-                        <span class="docusign-header">DocuSign Solutions</span>
-                        <p>Build personal notifiers using our preconfigured routes. <span class="btn btn-success btn-sm">Try Now</span></p>
+                        <span class="docusign-header">DocuSign Solution QuickStart</span>
+                        <div class="docusign-info">
+                            <p>Featured Solutions:</p>
+                            <ul>
+                                <li>Do a DocuSign Mail Merge</li>
+                                <li>Pull data out of DocuSign Envelopes</li>
+                                <li>Create rich notifications to tell you what's signed and what's not signed</li>
+                                <li>Generate powerful reports</li>
+                            </ul>
+                            <p><span class="btn btn-warning btn-md left-try">Try Now</span></></p>
+                        </div>
                     </div>
-                    <img src="/Content/img/welcome/DocuSign_Logo_Purple_Yellow.png">
+                    <img class="left-btm-img" src="/Content/img/welcome/DocuSign_Logo_Purple_Yellow.png">
                 </a>
             </div>
             <div class="HomeRightSide">
                 <a href="~/dashboard#/myaccount">
                     <div class="HomeRightSideWrapper">
-                        <div class="Logo">
-                            <img src="/Content/img/welcome/logo.png">
+                        <img src="/Content/img/welcome/logo.png">
+                        <div class="docusing-right-pane">
+                            <span class="docusign-header">Build Fr8 Plan</span>
+                            <p>Create powerful web workflows with a few mouse clicks</p>
                         </div>
-                        <p>
-                            <span>Use world best services without any knowledge of programming. Build complex plans. <span class="btn btn-success btn-sm">Try Now</span> </span>
-                        </p>
-                        <img src="/Content/img/welcome/routeBuilder.png" class="hidden-sm hidden-xs">
+                        <p><span class="btn btn-warning btn-md">Try Now</span></></p>
+                        <img src="/Content/img/welcome/plan_builder.png" class="hidden-sm hidden-xs">
                     </div>
                 </a>
             </div>
@@ -50,8 +57,14 @@
     @Scripts.Render("~/bundles/js/jquery")
     @Scripts.Render("~/bundles/js/bootstrap31")
     <script>
+        $(window).load(function () {
+            $(".clear.clear-footer-spacer").height(25);
+            $("#wrap").css("margin-bottom", 0);
+        });
         $(function () {
             var resizePanes = function () {
+                $(".clear.clear-footer-spacer").height(25);
+                $("#wrap").css("margin-bottom", 0);
                 var rightSideMinHeight = $(window).height() - 64;
                 var currentRightSideHeight = $('.HomeRightSide').height();
                 if (currentRightSideHeight < rightSideMinHeight) {

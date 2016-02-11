@@ -578,7 +578,9 @@
     <Content Include="Content\img\welcome\fr8Terminals-howitworks.png" />
     <Content Include="Content\img\welcome\left-side-bg.jpg" />
     <Content Include="Content\img\welcome\logo.png" />
+    <Content Include="Content\img\welcome\plan_builder.png" />
     <Content Include="Content\img\welcome\plan_with_activities.png" />
+    <Content Include="Content\img\welcome\right-pane-bg.png" />
     <Content Include="Content\img\welcome\right-side-bg.jpg" />
     <Content Include="Content\img\welcome\routeBuilder.png" />
     <Content Include="Content\img\welcome\DocuSign_Logo_Purple_Yellow.png" />
