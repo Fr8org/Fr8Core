@@ -104,8 +104,7 @@ module dockyard.tests.utils.fixtures {
                 id: 2
             },
             currentView: null,
-            id: 'E55315F9-A30B-4196-A43D-6F511B91CCF8',
-            name: "Write_To_Sql_Server"
+            id: 'E55315F9-A30B-4196-A43D-6F511B91CCF8'
         };
 
         public static internalAuthActionVM = <interfaces.IActionVM> {
@@ -137,8 +136,7 @@ module dockyard.tests.utils.fixtures {
                 id: 2
             },
             currentView: null,
-            id: 'E55315F9-A30B-4196-A43D-6F511B91CCF8',
-            name: "Write_To_Sql_Server"
+            id: 'E55315F9-A30B-4196-A43D-6F511B91CCF8'
         };
 
         public static externalAuthActionVM = <interfaces.IActionVM> {
@@ -170,8 +168,7 @@ module dockyard.tests.utils.fixtures {
                 id: 2
             },
             currentView: null,
-            id: 'E55315F9-A30B-4196-A43D-6F511B91CCF8',
-            name: "Write_To_Sql_Server"
+            id: 'E55315F9-A30B-4196-A43D-6F511B91CCF8'
         };
 
         /*

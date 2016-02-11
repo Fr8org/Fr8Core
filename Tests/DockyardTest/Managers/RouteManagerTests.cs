@@ -75,7 +75,7 @@ namespace DockyardTest.Managers
 
                 _setupMock.Setup(
                     a => a.CreateAndConfigure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<int>(),
-                        "Monitor_Fr8_Events", It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>())).Callback(() =>
+                        It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>())).Callback(() =>
                         {
                             /*using (var uow1 = ObjectFactory.GetInstance<IUnitOfWork>())
                             {
@@ -96,7 +96,7 @@ namespace DockyardTest.Managers
 
                 _setupMock.Setup(
                     a => a.CreateAndConfigure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<int>(),
-                        "SaveToFr8Warehouse", It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>())).Callback(() =>
+                        It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>())).Callback(() =>
                         {
                            /* using (var uow1 = ObjectFactory.GetInstance<IUnitOfWork>())
                             {

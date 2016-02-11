@@ -63,12 +63,12 @@ namespace DockyardTest.Repositories.Plan
                     new ActivityDO()
                     {
                         Id = new Guid(2, (short) 0, (short) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0),
-                        Name = "Base1"+postfix,
+                        Label = "Base1"+postfix,
                     },
                     new ActivityDO()
                     {
                         Id = new Guid(3, (short) 0, (short) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0),
-                        Name = "Base2"+postfix,
+                        Label = "Base2"+postfix,
                     }
                 }
             };

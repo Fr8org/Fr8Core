@@ -13,7 +13,6 @@ namespace terminalSlackTests.Fixtures
             var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Monitor_Channel",
                 Label = "Monitor_Channel DocuSign",
                 AuthToken = Slack_AuthToken(),
                 ActivityTemplate = activityTemplate,
@@ -66,7 +65,6 @@ namespace terminalSlackTests.Fixtures
             var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Select Slack Channel",
                 Label = "Selected_Slack_Channel",
                 AuthToken = isAuthToken ? Slack_AuthToken() : null,
                 ActivityTemplate = activityTemplate,

@@ -37,7 +37,6 @@ namespace terminalTwilioTests.Fixture
             var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Send_Via_Twilio",
                 Label = "Send Via Twilio",
                 AuthToken = null,
                 ActivityTemplate = activityTemplate,

@@ -3,7 +3,6 @@
         rootRouteNodeId: string;
         parentRouteNodeId: string;
         id: string;
-        name: string;
         label: string;
         crateStorage: model.CrateStorage;
         configurationControls: model.ControlsList;
@@ -36,8 +35,6 @@
                 this.parentRouteNodeId,
                 this.id
             );
-            result.name = this.name;
-            result.name = this.label;
             result.ordering = this.ordering;
             return result;
         }
@@ -53,7 +50,6 @@
             result.crateStorage = dataObject.crateStorage;
             result.configurationControls = dataObject.configurationControls;
             result.id = dataObject.id;
-            result.name = dataObject.name;
             result.label = dataObject.label;
             result.parentRouteNodeId = dataObject.parentRouteNodeId;
             result.ordering = dataObject.ordering;

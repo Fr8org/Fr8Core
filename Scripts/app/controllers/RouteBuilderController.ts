@@ -408,12 +408,6 @@ module dockyard.controllers {
             //self.$scope.current.action.id = result.action.id;
             //self.$scope.current.action.isTempId = false;
 
-            //Notify workflow designer of action update
-            this.$scope.$broadcast(
-                pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionNameUpdated],
-                new pwd.ActionNameUpdatedEventArgs(action.id, action.name)
-            );
-
             if (this.CrateHelper.hasControlListCrate(action.crateStorage)) {
                 action.configurationControls = this.CrateHelper
                     .createControlListFromCrateStorage(action.crateStorage);
@@ -487,8 +481,9 @@ module dockyard.controllers {
                 parentId = eventArgs.group.parentAction.id;
             }
             // Create new action object.
+
             var action = new model.ActivityDTO(this.$scope.planId, parentId, id);
-            action.name = activityTemplate.name;
+
             action.label = activityTemplate.label;
             // Add action to Workflow Designer.
             this.$scope.current.action = action.toActionVM();

@@ -161,8 +161,6 @@ namespace DockyardTest.Security
                 {
                     ParentRouteNode = planDO,
                     ParentRouteNodeId = planDO.Id,
-                    Name = "testaction",
-
                     Id = FixtureData.GetTestGuidById(1),
                     ActivityTemplateId = activityTemplateDO.Id,
                     ActivityTemplate = activityTemplateDO,
