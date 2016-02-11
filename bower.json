@@ -12,7 +12,7 @@
         "angular-touch": "~1.4.3",
         "angular-sanitize": "~1.4.3",
         "angular-ui-router": "~0.2.15",
-        "angular-ui-select": "~0.13.2",
+        "angular-ui-select": "~ 0.14.1",
         "font-awesome-min": "4.3.0",
         "ocLazyLoad": "~1.0.2",
         "ui-bootstrap": "~0.13.0",
