@@ -762,6 +762,7 @@
     <Content Include="Documentation\VoidEnvelope.html" />
     <Content Include="Scripts\ai.0.15.0-build58334.js" />
     <Content Include="Scripts\ai.0.15.0-build58334.min.js" />
+    <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="_PowerShellScripts\RunIntegrationTests-DEV.ps1" />
     <Content Include="_PowerShellScripts\DEV-HealthMonitor.exe.config" />
     <Content Include="_PowerShellScripts\DeployAzureWebJob-HealthMonitor-DEV.ps1" />
@@ -777,6 +778,7 @@
     <Content Include="_PowerShellScripts\SetTerminalFr8CoreCS.ps1" />
     <Content Include="_PowerShellScripts\SetTerminalDocuSignCS.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\ManageUserController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionDocumentationController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\ActionPicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamCrateChooser.ts" />
@@ -896,6 +898,7 @@
     <Content Include="Views\AngularTemplate\ActionPicker.cshtml" />
     <Content Include="Views\Services\HowItWorks.cshtml" />
     <Content Include="Views\AngularTemplate\SolutionDocumentation.cshtml" />
+    <Content Include="Views\AngularTemplate\ChangePassword.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
