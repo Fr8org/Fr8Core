@@ -36,6 +36,7 @@ namespace HubWeb
         {
             //ConfigureDaemons();
             ConfigureAuth(app);
+
 #if DEV || RELEASE
             ConfigureHangfire(app, "DockyardDB");
 #endif 

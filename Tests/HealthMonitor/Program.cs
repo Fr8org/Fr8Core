@@ -87,7 +87,6 @@ namespace HealthMonitor
                     selfHostInitializer.Dispose();
                 }
             }
-
         }
 
         private static void UpdateConnectionString(string key, string value)
@@ -169,9 +168,6 @@ namespace HealthMonitor
             }
 
             ReportToConsole(appName, report);
-
-            Console.ReadLine();
-
             var errorCount = report.Tests.Count(x => !x.Success);
             Environment.Exit(errorCount);
         }

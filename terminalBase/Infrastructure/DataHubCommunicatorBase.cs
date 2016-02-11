@@ -37,6 +37,11 @@ namespace TerminalBase.Infrastructure
             }
         }
 
+        public virtual Task Configure(string terminalName)
+        {
+            return Task.FromResult<object>(null);
+        }
+
         public Task<PayloadDTO> GetPayload(ActivityDO activityDO, Guid containerId, string userId)
         {
             var payload = new PayloadDTO(containerId)

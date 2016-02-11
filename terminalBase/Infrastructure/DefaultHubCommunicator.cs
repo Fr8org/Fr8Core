@@ -35,31 +35,51 @@ namespace TerminalBase.Infrastructure
 
         private readonly IHMACService _hmacService;
         private readonly ICrateManager _crate;
+        private bool _configured;
 
         public DefaultHubCommunicator()
         {
             _routeNode = ObjectFactory.GetInstance<IRouteNode>();
             _restfulServiceClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
-            TerminalSecret = CloudConfigurationManager.GetSetting("TerminalSecret");
-            TerminalId = CloudConfigurationManager.GetSetting("TerminalId");
+
             _crate = ObjectFactory.GetInstance<ICrateManager>();
             _hmacService = ObjectFactory.GetInstance<IHMACService>();
+        }
+
+        public Task Configure(string terminalName)
+        {
+            if (string.IsNullOrEmpty(terminalName))
+                throw new ArgumentNullException("terminalName");
+
+            TerminalSecret = CloudConfigurationManager.GetSetting(terminalName + "_TerminalSecret");
+            TerminalId = CloudConfigurationManager.GetSetting(terminalName + "_TerminalId");
+            _configured = true;
+            return Task.FromResult<object>(null);
         }
 
         #region HMAC
 
         private async Task<Dictionary<string, string>> GetHMACHeader(Uri requestUri, string userId)
         {
+            if (!_configured)
+                throw new InvalidOperationException("Please call Configure() before using the class.");
+
             return await _hmacService.GenerateHMACHeader(requestUri, TerminalId, TerminalSecret, userId);
         }
 
         private async Task<Dictionary<string, string>> GetHMACHeader<T>(Uri requestUri, string userId, T content)
         {
+            if (!_configured)
+                throw new InvalidOperationException("Please call Configure() before using the class.");
+
             return await _hmacService.GenerateHMACHeader(requestUri, TerminalId, TerminalSecret, userId, content);
         }
 
         private async Task<Dictionary<string, string>> GetHMACHeader(Uri requestUri, string userId, HttpContent content)
         {
+            if (!_configured)
+                throw new InvalidOperationException("Please call Configure() before using the class.");
+
             return await _hmacService.GenerateHMACHeader(requestUri, TerminalId, TerminalSecret, userId, content);
         }
 

@@ -60,7 +60,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
                 client = new HttpClient();
 
 #if DEBUG 
-                client.Timeout = new TimeSpan(0, 5, 0); //5 minutes
+                client.Timeout = new TimeSpan(0, 10, 0); //5 minutes
 #else
                 client.Timeout = new TimeSpan(0, 2, 0); //2 minutes
 #endif

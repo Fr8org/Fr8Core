@@ -135,6 +135,18 @@ namespace TerminalBase.BaseClasses
             baseTerminalAction.SetCurrentUser(userId);
         }
 
+        private void ConfigureHubCommunicator(object curObject, string terminalName)
+        {
+            var baseTerminalAction = curObject as BaseTerminalActivity;
+
+            if (baseTerminalAction == null)
+            {
+                return;
+            }
+
+            baseTerminalAction.HubCommunicator.Configure(terminalName);
+        }
+
         /// <summary>
         /// Reports event when process an action
         /// </summary>
@@ -187,6 +199,7 @@ namespace TerminalBase.BaseClasses
             {
                 BindExplicitDataHubCommunicator(curObject);
             }
+
             var curActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
             //this is a comma separated string
             var curDocumentation = curActionDTO.DocumentationSupport;
@@ -198,7 +211,7 @@ namespace TerminalBase.BaseClasses
             var currentUserId = curAuthTokenDO != null ? curAuthTokenDO.UserID : null;
             //Set Current user of action
             SetCurrentUser(curObject, currentUserId);
-
+            ConfigureHubCommunicator(curObject, curTerminal);
             try
             {
                 switch (curActionPath.ToLower())

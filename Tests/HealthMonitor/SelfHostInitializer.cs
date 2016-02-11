@@ -82,6 +82,7 @@ namespace HealthMonitor
 
             _hubProcess = new Process();
             _hubProcess.StartInfo = psi;
+            _hubProcess.OutputDataReceived += _hubProcess_OutputDataReceived1;
             _hubProcess.EnableRaisingEvents = true;
             _hubProcess.Start();
 
@@ -89,7 +90,7 @@ namespace HealthMonitor
             Thread.Sleep(5000);
         }
 
-        private void _hubProcess_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        private void _hubProcess_OutputDataReceived1(object sender, DataReceivedEventArgs e)
         {
             Console.WriteLine("HubLauncher: " + e.Data);
         }

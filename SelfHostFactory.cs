@@ -11,6 +11,12 @@ using Owin;
 using System.Web.Http.Controllers;
 using System.Net.Http;
 using System.Linq;
+using Microsoft.Owin.Security.DataProtection;
+using Microsoft.Owin.Security.Cookies;
+using Microsoft.AspNet.Identity;
+using Microsoft.Owin;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace HubWeb
 {
@@ -18,26 +24,47 @@ namespace HubWeb
     {
         public class SelfHostStartup
         {
+            private static bool IsJsonRequest(IOwinRequest request)
+            {
+                IReadableStringCollection query = request.Query;
+                if ((query != null) && (query["X-Requested-With"] == "XMLHttpRequest"))
+                {
+                    return true;
+                }
+                IHeaderDictionary headers = request.Headers;
+                return ((headers != null) && ((headers["X-Requested-With"] == "XMLHttpRequest") || (headers["Content-Type"] == "application/json")));
+            }
+
+
             public void Configuration(IAppBuilder app)
             {
                 HttpConfiguration config = new HttpConfiguration();
                 WebApiConfig.Register(config);
-                config.Services.Replace(
-                    typeof(IHttpControllerSelector),
-                    new NamespaceHttpControllerSelector(config, "HubWeb.Controllers"));
-                app.UseWebApi(config);
+                app.SetDataProtectionProvider(new DpapiDataProtectionProvider());
                 var startup = new Startup();
                 startup.Configuration(app, true);
+                app.UseWebApi(config);
+                ConfigureFormatters(config);
                 new MvcApplication().Init(true);
+            }
+
+            private void ConfigureFormatters(HttpConfiguration config)
+            {
+                // Configure formatters
+                // Enable camelCasing in JSON responses
+                var formatters = config.Formatters;
+                var jsonFormatter = formatters.JsonFormatter;
+                var settings = jsonFormatter.SerializerSettings;
+                settings.Formatting = Formatting.Indented;
+                settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             }
         }
         public static IDisposable CreateServer(string url)
         {
             return WebApp.Start<SelfHostStartup>(url: url);
         }
-
         public ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
-        {   
+        {
             return new Type[] {
                     typeof(ActionListController),
                     typeof(ActionsController),

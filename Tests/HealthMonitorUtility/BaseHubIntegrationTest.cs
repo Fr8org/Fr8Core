@@ -157,15 +157,8 @@ namespace HealthMonitor.Utility
 
             // Login user
             //await Authenticate(email, password, antiFogeryToken, _httpClient);
-            try {
-                await AuthenticateWebApi(email, password);
-            }
-            catch (Exception ex){
-                throw;
-            }
-            var cookieContainer = new CookieContainer();
-
-    }
+            await AuthenticateWebApi(email, password);
+        }
 
         private Uri GetHubBaseUrl()
         {

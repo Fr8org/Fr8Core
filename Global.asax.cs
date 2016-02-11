@@ -27,6 +27,7 @@ using HubWeb.Infrastructure;
 using System.Threading.Tasks;
 using Microsoft.ApplicationInsights.Extensibility;
 using TerminalBase.Infrastructure;
+using Data.Infrastructure;
 
 namespace HubWeb
 {
@@ -61,34 +62,14 @@ namespace HubWeb
             //Register global Exception Filter for WebAPI 
             GlobalConfiguration.Configuration.Filters.Add(new WebApiExceptionFilterAttribute());
 
-            // StructureMap Dependencies configuration 
+            var db = new DockyardDbContext();
+            db.Database.Initialize(true);
 
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE);
-            //set to either "test" or "live"
-            var db = ObjectFactory.GetInstance<DbContext>();
-
-            //AutoMapper create map configuration
-            //var a = ObjectFactory.Container.Model.AllInstances.Count();
-            //var b = ObjectFactory.Container.WhatDoIHave();
-
             ObjectFactory.GetInstance<AutoMapperBootStrapper>().ConfigureAutoMapper();
 
             Utilities.Server.IsProduction = ObjectFactory.GetInstance<IConfigRepository>().Get<bool>("IsProduction");
             Utilities.Server.IsDevMode = ObjectFactory.GetInstance<IConfigRepository>().Get<bool>("IsDev", true);
-
-            // CommunicationManager curCommManager = ObjectFactory.GetInstance<CommunicationManager>();
-            //  curCommManager.SubscribeToAlerts();
-
-            db.Database.Initialize(true);
-
-            // *** A HACK *** 
-            // In the self-hosted mode after the prev line (DB init) StructureMap mappings disappear for unknown reason. 
-            // So we have to re-register them. 
-            if (selfHostMode)
-            {
-                StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE);
-                TerminalBootstrapper.ConfigureLive();
-            }
 
             if (!selfHostMode)
             {

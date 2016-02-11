@@ -135,7 +135,7 @@ namespace terminalDocuSign.Actions
                     {
                         var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 
-                        //build a controls crate to render the pane
+                        //build a controls crate to render the pane 
                         var configurationControlsCrate = await CreateConfigurationControlsCrate(curActivityDO);
                         var templatesFieldCrate = _docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
 
@@ -151,7 +151,6 @@ namespace terminalDocuSign.Actions
 
             //validate if any DocuSignTemplates has been linked to the Account
             ValidateDocuSignAtLeastOneTemplate(curActivityDO);
-
             return curActivityDO;
         }
 
@@ -251,18 +250,18 @@ namespace terminalDocuSign.Actions
                 .Select(x => Mapper.Map<ActivityTemplateDO>(x))
                 .ToList();
 
-                ActivityDO dataSourceActivity = await AddAndConfigureChildActivity(curActivityDO, _dataSourceValue, order: 1);
-                // ActivityDO mapFieldActivity = await AddAndConfigureChildActivity(curActivityDO, "MapFields", order: 2);
-                ActivityDO sendDocuSignEnvActivity = await AddAndConfigureChildActivity(curActivityDO, "Send_DocuSign_Envelope", order: 3);
+            ActivityDO dataSourceActivity = await AddAndConfigureChildActivity(curActivityDO, _dataSourceValue, order: 1);
+            // ActivityDO mapFieldActivity = await AddAndConfigureChildActivity(curActivityDO, "MapFields", order: 2);
+            ActivityDO sendDocuSignEnvActivity = await AddAndConfigureChildActivity(curActivityDO, "Send_DocuSign_Envelope", order: 3);
 
-                //set docusign template
+            //set docusign template
 
-                SetControlValue(sendDocuSignEnvActivity, "target_docusign_template",
-                    _docuSignTemplate.ListItems.Where(a => a.Key == _docuSignTemplate.selectedKey).FirstOrDefault());
+            SetControlValue(sendDocuSignEnvActivity, "target_docusign_template",
+                _docuSignTemplate.ListItems.Where(a => a.Key == _docuSignTemplate.selectedKey).FirstOrDefault());
 
 
-                await ConfigureChildActivity(curActivityDO, sendDocuSignEnvActivity);
-                // await ConfigureChildActivity(curActivityDO, mapFieldActivity);
+            await ConfigureChildActivity(curActivityDO, sendDocuSignEnvActivity);
+            // await ConfigureChildActivity(curActivityDO, mapFieldActivity);
 
 
             return await Task.FromResult(curActivityDO);
