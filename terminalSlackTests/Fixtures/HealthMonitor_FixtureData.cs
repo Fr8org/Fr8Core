@@ -15,8 +15,7 @@ namespace terminalSlackTests.Fixtures
                 Id = Guid.NewGuid(),
                 Label = "Monitor_Channel DocuSign",
                 AuthToken = Slack_AuthToken(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
 
             return new Fr8DataDTO { ActivityDTO = activityDTO };
@@ -67,8 +66,7 @@ namespace terminalSlackTests.Fixtures
                 Id = Guid.NewGuid(),
                 Label = "Selected_Slack_Channel",
                 AuthToken = isAuthToken ? Slack_AuthToken() : null,
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
             return new Fr8DataDTO { ActivityDTO = activityDTO };
         }

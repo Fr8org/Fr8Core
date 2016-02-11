@@ -39,8 +39,7 @@ namespace terminalTests.Fixtures
                 Label = "Activity Mock",
                 AuthToken = new AuthorizationTokenDTO(),
                 ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id,
-                ParentRouteNodeId = Guid.NewGuid(),
+                ParentRouteNodeId = Guid.NewGuid()
             };
 
             return activity;
@@ -64,8 +63,7 @@ namespace terminalTests.Fixtures
                 Label = "Activity Mock",
                 AuthToken = new AuthorizationTokenDTO(),
                 ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id,
-                ParentRouteNodeId = Guid.NewGuid(),
+                ParentRouteNodeId = Guid.NewGuid()
             };
 
             return activity;

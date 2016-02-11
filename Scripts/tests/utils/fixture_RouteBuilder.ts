@@ -33,7 +33,6 @@
                     activities: [
                         <model.ActivityDTO> {
                             id: '89EBF277-0CC4-4D6D-856B-52457F10C686',
-                            activityTemplateId: 1,
                             activityTemplate: {
                                 id: 1
                             },
@@ -41,7 +40,6 @@
                         },
                         <model.ActivityDTO>{
                             id: '82B62831-687F-4BC8-AB64-B421985D5CF3',
-                            activityTemplateId: 1,
                             activityTemplate: {
                                 id: 1
                             },

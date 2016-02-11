@@ -488,7 +488,6 @@ module dockyard.controllers {
             // Add action to Workflow Designer.
             this.$scope.current.action = action.toActionVM();
             this.$scope.current.action.activityTemplate = activityTemplate;
-            this.$scope.current.action.activityTemplateId = activityTemplate.id;
             this.selectAction(action, eventArgs.group);
         }
 

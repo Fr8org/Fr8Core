@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Data.Entities;
 using Data.Interfaces;
+using System;
 
 namespace Hub.Interfaces
 {
@@ -9,10 +10,11 @@ namespace Hub.Interfaces
         IEnumerable<ActivityTemplateDO> GetQuery();
         ActivityTemplateDO[] GetAll();
         ActivityTemplateDO GetByKey(int curActivityTemplateDOId);
+        //ActivityTemplateDO GetByActivityKey(Guid curActivityId);
         string GetTerminalUrl(int? curActivityTemplateDOId);
         void RegisterOrUpdate(ActivityTemplateDO activityTemplateDo);
         ActivityTemplateDO GetByName(IUnitOfWork uow, string name);
-        ActivityTemplateDO GetByNameAndVersion(IUnitOfWork uow, string name, string version);
+        ActivityTemplateDO GetByNameAndVersion(string name, string version);
        // string AssemblePluginRegistrationName(ActivityTemplateDO curActivityTemplateDO);
     }
 }
