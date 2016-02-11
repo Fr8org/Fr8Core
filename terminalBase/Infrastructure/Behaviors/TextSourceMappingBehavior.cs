@@ -101,6 +101,8 @@ namespace TerminalBase.Infrastructure.Behaviors
 
             foreach (var textSource in textSources)
             {
+
+
                 var fieldId = GetFieldId(textSource);
                 string value = null;
 

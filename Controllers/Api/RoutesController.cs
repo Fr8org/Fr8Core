@@ -25,6 +25,7 @@ using Data.Interfaces.DataTransferObjects.Helpers;
 using Utilities.Interfaces;
 using HubWeb.Infrastructure;
 using Data.Interfaces.Manifests;
+using System.Text;
 
 namespace HubWeb.Controllers
 {
@@ -414,9 +415,8 @@ namespace HubWeb.Controllers
                 }
                 catch (ErrorResponseException exception)
                 {
-                    string message = String.Format("Plan \"{0}\" failed. {1}", planDO.Name, exception.Message);
-
-                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, message);
+                    //this response contains details about the error that happened on some terminal and need to be shown to client
+                    return Ok(exception.ContainerDTO);
                 }
                 catch (Exception e)
                 {

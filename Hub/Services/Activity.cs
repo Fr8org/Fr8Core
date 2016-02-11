@@ -404,8 +404,10 @@ namespace Hub.Services
 
                 var downStreamActivities = _routeNode.GetDownstreamActivities(uow, curAction).OfType<ActivityDO>();
                 //we should clear values of configuration controls
+                var directChildren = curAction.GetDescendants().OfType<ActivityDO>();
 
-                foreach (var downStreamActivity in downStreamActivities)
+                //there is no sense of updating children of action being deleted. 
+                foreach (var downStreamActivity in downStreamActivities.Except(directChildren))
                 {
                     var currentActivity = downStreamActivity;
 
@@ -428,7 +430,7 @@ namespace Hub.Services
                     }
                 }
 
-                curAction.ParentRouteNode.ChildNodes.Remove(curAction);
+                curAction.RemoveFromParent();
 
                 uow.SaveChanges();
             }

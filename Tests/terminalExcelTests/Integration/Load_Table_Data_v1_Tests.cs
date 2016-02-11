@@ -151,7 +151,7 @@ namespace terminalExcelTests.Integration
 
             var dataDTO = HealthMonitor_FixtureData.Load_Table_Data_v1_InitialConfiguration_Fr8DataDTO(Guid.NewGuid());
             AddPayloadCrate(
-                dataDTO.ActivityDTO,
+                dataDTO,
                 new StandardTableDataCM()
                 {
                     FirstRowHeaders = true,

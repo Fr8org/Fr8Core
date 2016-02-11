@@ -10,6 +10,10 @@ namespace Data.Interfaces.DataTransferObjects
     {
         public ActivityDTO ActivityDTO { get; set; }
         public Guid? ContainerId { get; set; }
-
+        
+        /// <summary>
+        /// This property is used for integration tests
+        /// </summary>
+        public string ExplicitData { get; set; }
     }
 }
