@@ -10,6 +10,8 @@ using System.Web.Http.Routing;
 using Microsoft.Owin.Hosting;
 using Owin;
 using Data.Interfaces.DataTransferObjects;
+using Data.States;
+using Data.Entities;
 
 namespace terminalFr8CoreTests.Fixtures
 {
@@ -79,18 +81,19 @@ namespace terminalFr8CoreTests.Fixtures
             return WebApp.Start<ActivitiesController_SelfHostStartup>(url: CoreEndPoint);
         }
 
-        public static ActionDTO ConnectToSql_InitialConfiguration_ActionDTO()
+        public static Fr8DataDTO ConnectToSql_InitialConfiguration_Fr8DataDTO()
         {
             var activityTemplate = ConnectToSql_ActivityTemplate();
 
-            return new ActionDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "ConnectToSql_Fr8Core",
                 Label = "ConnectToSql Fr8Core",
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id
             };
+
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
 
         public static ActivityTemplateDTO ConnectToSql_ActivityTemplate()
@@ -103,18 +106,19 @@ namespace terminalFr8CoreTests.Fixtures
             };
         }
 
-        public static ActionDTO ExecuteSql_InitialConfiguration_ActionDTO()
+        public static Fr8DataDTO ExecuteSql_InitialConfiguration_Fr8DataDTO()
         {
             var activityTemplate = ExecuteSql_ActivityTemplate();
 
-            return new ActionDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "ExecuteSql_Fr8Core",
                 Label = "ExecuteSql Fr8Core",
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id
             };
+
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
 
         public static ActivityTemplateDTO ExecuteSql_ActivityTemplate()
@@ -126,5 +130,29 @@ namespace terminalFr8CoreTests.Fixtures
                 Version = "1"
             };
         }
+
+        public static ActivityTemplateDTO MonitorFr8Event_ActivityTemplate()
+        {
+            return new ActivityTemplateDTO()
+            {
+                Id = 4,
+                Name = "Monitor_Fr8_Events_TEST",
+                Version = "1"
+            };
+        }
+
+        public static ActivityDTO MonitorFr8Event_InitialConfiguration_ActionDTO()
+        {
+            var activityTemplate = MonitorFr8Event_ActivityTemplate();
+
+            return new ActivityDTO()
+            {
+                Id = Guid.NewGuid(),
+                Label = "Monitor Fr8 Events",
+                ActivityTemplate = activityTemplate,
+                ActivityTemplateId = activityTemplate.Id
+            };
+        }
+
     }
 }

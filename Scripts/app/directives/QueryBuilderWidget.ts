@@ -25,7 +25,7 @@ module dockyard.directives {
                 isDisabled: '='
             },
 
-            controller: ($scope: interfaces.IQueryBuilderWidgetScope): void => {
+            controller: ['$scope', ($scope: interfaces.IQueryBuilderWidgetScope): void => {
                 $scope.addRow = function () {
                     if ($scope.isDisabled)
                         return;
@@ -34,7 +34,6 @@ module dockyard.directives {
                         $scope.defaultOperator,
                         null
                         );
-                    condition.validate();
 
                     $scope.rows.push(condition);
                 };
@@ -46,13 +45,12 @@ module dockyard.directives {
                 };
 
                 $scope.valueChanged = function (row) {
-                    row.valueError = !row.value;
                 };
 
                 $scope.isActionValid = function (action: interfaces.IActionVM) {
-                    return model.ActionDTO.isActionValid(action);
+                    return model.ActivityDTO.isActionValid(action);
                 }
-            }
+            }]
         };
     }
 }

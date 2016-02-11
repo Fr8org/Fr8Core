@@ -73,8 +73,14 @@ namespace Hub.Security
                 return false;
             }
 
+            long requestTimeLong;
+            if (!long.TryParse(requestTime, out requestTimeLong))
+            {
+                return false;
+            }
+
             //Check if the maximum allowed request time gap is exceeded,
-            if ((DateTime.UtcNow - DateTimeFromUnixTimestampSeconds(long.Parse(requestTime))).Seconds > MaxAllowedLatency)
+            if ((DateTime.UtcNow - DateTimeFromUnixTimestampSeconds(requestTimeLong)).TotalSeconds > MaxAllowedLatency)
             {
                 return false;
             }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -9,12 +10,14 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
     {
         Uri BaseUri { get; set; }
 
+        Task<Stream> DownloadAsync(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null);
         Task<TResponse> GetAsync<TResponse>(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null);
         Task<string> GetAsync(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null);
         Task<TResponse> PostAsync<TResponse>(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null);
         Task<string> PostAsync(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null);
         Task<string> PostAsync<TContent>(Uri requestUri, TContent content, string CorrelationId = null, Dictionary<string, string> headers = null);
         Task<TResponse> PostAsync<TContent, TResponse>(Uri requestUri, TContent content, string CorrelationId = null, Dictionary<string, string> headers = null);
+        Task DeleteAsync(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null);
         Task<TResponse> PutAsync<TContent, TResponse>(Uri requestUri, TContent content, string CorrelationId = null, Dictionary<string, string> headers = null);
         Task<string> PutAsync<TContent>(Uri requestUri, TContent content, string CorrelationId = null, Dictionary<string, string> headers = null);
 

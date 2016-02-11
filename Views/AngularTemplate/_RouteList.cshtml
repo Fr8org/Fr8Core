@@ -6,22 +6,23 @@
 			<div class="portlet-title">
 				<div class="caption caption-md">
 					<i class="icon-bar-chart font-green-haze hide"></i>
-					<span class="caption-subject font-green-haze bold uppercase">ACTIVE Routes</span>
+					<span class="caption-subject font-green-haze bold uppercase">RUNNING Plans</span>
 					<span class="caption-helper hide">weekly stats...</span>
 				</div>
 			</div>
 
             <div class="portlet-body">
                 <div ng-if="activeRoutes.$resolved != true">Loading routes...</div>
-                <div ng-if="activeRoutes.$resolved == true && activeRoutes.length == 0">No active routes found. To make a route active, click on the Activate button after your route is fully configured.</div>
+                <div ng-if="activeRoutes.$resolved == true && activeRoutes.length == 0">No running plans found. To make a plan running, click on the Run Now button after your plan is fully configured.</div>
                 <div ng-if="activeRoutes.$resolved == true && activeRoutes.length > 0">
                     <div class="table-scrollable table-scrollable-borderless">
-                        <table class="row-border hover table table-hover table-light table-linkrows table-routes">
+                        <table datatable="ng" dt-options="dtOptionsBuilder" dt-column-defs="dtColumnDefs" class="row-border hover table table-hover table-light table-linkrows table-routes">
                             <thead>
                                 <tr>
                                     <th>Name</th>
                                     <th>Description</th>
-                                    <th>Status</th>
+                                    <th>Last Used</th>
+                                    <th>Status</th>                                   
                                     <th style="text-align: right">Actions</th>
                                 </tr>
                             </thead>
@@ -29,9 +30,10 @@
                                 <tr ng-repeat="route in activeRoutes | filter: {routeState:2}">
                                     <td ng-click="goToRouteDetailsPage(route.id)">{{ route.name }}</td>
                                     <td ng-click="goToRouteDetailsPage(route.id)">{{ route.description }}</td>
+                                    <td ng-click="goToRouteDetailsPage(route.id)">{{ route.lastUpdated }}</td>
                                     <td ng-click="goToRouteDetailsPage(route.id)">
                                         <span class="bold font-green-haze">{{route.routeState == 2 ? 'Active' : 'Inactive' }}</span>
-                                    </td>
+                                    </td>                                   
                                     <td>
                                         <div>
                                             <button type="button" class="btn btn-sm red" ng-click="deactivateRoute(route);">Deactivate</button>
@@ -51,7 +53,7 @@
 			<div class="portlet-title">
 				<div class="caption caption-md">
 					<i class="icon-bar-chart font-green-haze hide"></i>
-					<span class="caption-subject font-green-haze bold uppercase">INACTIVE Routes</span>
+					<span class="caption-subject font-green-haze bold uppercase">Plan Library</span>
 					<span class="caption-helper hide">weekly stats...</span>
 				</div>
 				<div class="actions">
@@ -59,15 +61,16 @@
 			</div>
 
                 <div class="portlet-body">
-                    <div ng-if="inActiveRoutes.$resolved != true">Loading routes...</div>
-                    <div ng-if="inActiveRoutes.$resolved == true && inActiveRoutes.length == 0">No inactive routes are found. To make a route inactive, click on the Deactivate button for an Active route you wish to disable.</div>
+                    <div ng-if="inActiveRoutes.$resolved != true">Loading plans...</div>
+                    <div ng-if="inActiveRoutes.$resolved == true && inActiveRoutes.length == 0">No inactive plans are found. To make a plan inactive, click on the Deactivate button for an Active plan you wish to disable.</div>
                     <div ng-if="inActiveRoutes.$resolved == true && inActiveRoutes.length > 0">
                         <div class="table-scrollable table-scrollable-borderless">
-                            <table class="row-border hover table table-hover table-light table-linkrows table-routes">
+                            <table datatable="ng" dt-options="dtOptionsBuilder" dt-column-defs="dtColumnDefs" class="row-border hover table table-hover table-light table-linkrows table-routes">
                                 <thead>
                                     <tr>
                                         <th>Name</th>
                                         <th>Description</th>
+                                        <th>Last Used</th>
                                         <th>Status</th>
                                         <th style="text-align: right">Actions</th>
                                     </tr>
@@ -76,6 +79,7 @@
                                     <tr ng-repeat="route in inActiveRoutes | filter: {routeState:1}">
                                         <td ng-click="goToRouteDetailsPage(route.id)">{{ route.name }}</td>
                                         <td ng-click="goToRouteDetailsPage(route.id)">{{ route.description }}</td>
+                                        <td ng-click="goToRouteDetailsPage(route.id)">{{ route.lastUpdated }}</td>
                                         <td ng-click="goToRouteDetailsPage(route.id)">
                                             <span class="bold font-green-haze">{{route.routeState == 2 ? 'Active' : 'Inactive' }}</span>
 <td>
@@ -83,7 +87,6 @@
                                                 <button type="button" class="btn btn-sm red" ng-click="deleteRoute(route.id,route.routeState);">Delete</button>
                                                 <button type="button" class="btn btn-sm green" ng-click="goToRoutePage(route.id);">Edit</button>
                                                 <button type="button" class="btn btn-sm btn-primary" ng-click="executeRoute(route.id,$event);">Run Now</button>
-                                                <button type="button" class="btn btn-sm green" ng-click="activateRoute(route);">Activate</button>
                                             </div>
                                         </td>
                                     </tr>

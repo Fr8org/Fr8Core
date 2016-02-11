@@ -13,6 +13,7 @@ using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
+using DockyardTest.Controllers.Api;
 using Hub.Interfaces;
 using HubWeb.Controllers;
 using UtilitiesTesting;
@@ -23,7 +24,7 @@ namespace DockyardTest.Controllers
 {
     [TestFixture]
     [Category("ContainerControllerTests")]
-    class ContainerControllerTests : BaseTest
+    class ContainerControllerTests : ApiControllerTestBase
     {
         private Fr8AccountDO _testUserAccount;
 
@@ -40,10 +41,10 @@ namespace DockyardTest.Controllers
             using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //uow.UserRepository.Add(_testUserAccount);
-                var route = FixtureData.TestRoute4();
-
-                // This will Add a user as well as a route for creating Containers
-                unitOfWork.RouteRepository.Add(route);
+                var plan = FixtureData.TestRoute4();
+                unitOfWork.UserRepository.Add(plan.Fr8Account);
+                // This will Add a user as well as a plan for creating Containers
+                unitOfWork.PlanRepository.Add(plan);
                 unitOfWork.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, _testUserAccount.Id);
                 unitOfWork.SaveChanges();
 
@@ -64,6 +65,30 @@ namespace DockyardTest.Controllers
                 uow.UserRepository.Remove(curUser);
                 uow.SaveChanges();
             }
+        }
+
+        [Test]
+        public void ContainerController_ShouldHaveHMACOnGetPayloadMethod()
+        {
+            ShouldHaveFr8HMACAuthorizeOnFunction(typeof(ContainersController), "GetPayload");
+        }
+
+        [Test]
+        public void ContainerController_ShouldHaveFr8ApiAuthorizeOnGetPayloadMethod()
+        {
+            ShouldHaveFr8ApiAuthorizeOnFunction(typeof(ContainersController), "GetPayload");
+        }
+
+        [Test]
+        public void ContainerController_ShouldHaveFr8ApiAuthorizeOnGetIdsByNameMethod()
+        {
+            ShouldHaveFr8ApiAuthorizeOnFunction(typeof(ContainersController), "GetIdsByName");
+        }
+
+        [Test]
+        public void ContainerController_ShouldHaveFr8ApiAuthorizeOnGetMethod()
+        {
+            ShouldHaveFr8ApiAuthorizeOnFunction(typeof(ContainersController), "Get");
         }
 
         [Test]

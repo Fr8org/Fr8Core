@@ -9,19 +9,17 @@ namespace UtilitiesTesting.Fixtures
 {
     partial class FixtureData
     {
-        public static ActionDTO TestActionDTO1()
+        public static ActivityDTO TestActionDTO1()
         {
-            return new ActionDTO()
+            return new ActivityDTO()
             {
-                Name = "test action type",
                 ActivityTemplate = FixtureData.TestActivityTemplateDTO1(),
             };
         }
-        public static ActionDTO TestActionDTO2()
+        public static ActivityDTO TestActionDTO2()
         {
-            ActionDTO curActionDTO = new ActionDTO()
+            ActivityDTO curActionDTO = new ActivityDTO()
             {
-                Name = "test action type",
                 ActivityTemplate = FixtureData.TestActivityTemplateDTO1(),
             };
 
@@ -33,11 +31,10 @@ namespace UtilitiesTesting.Fixtures
             return curActionDTO;
         }
 
-        public static ActionDTO TestActionDTO3()
+        public static ActivityDTO TestActionDTO3()
         {
-            ActionDTO curActionDTO = new ActionDTO()
+            ActivityDTO curActionDTO = new ActivityDTO()
             {
-                Name = "test action type",
                 ActivityTemplate = FixtureData.TestActivityTemplateDTO1()
             };
 
@@ -51,9 +48,9 @@ namespace UtilitiesTesting.Fixtures
             return curActionDTO;
         }
 
-        public static ActionDTO CreateStandardDesignTimeFields()
+        public static ActivityDTO CreateStandardDesignTimeFields()
         {
-            ActionDTO curActionDTO = new ActionDTO();
+            ActivityDTO curActionDTO = new ActivityDTO();
             var curCratesDTO = FixtureData.TestCrateDTO2();
             
             using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(curActionDTO))
@@ -64,39 +61,35 @@ namespace UtilitiesTesting.Fixtures
             return curActionDTO;
         }
 
-        public static ActionDTO TestActionDTOForSalesforce()
+        public static ActivityDTO TestActionDTOForSalesforce()
         {
-            return new ActionDTO()
+            return new ActivityDTO()
             {
-                Name = "test salesforce action",
                 ActivityTemplate = FixtureData.TestActivityTemplateSalesforce()
             };
         }
 
-        public static ActionDTO TestActionDTOForSendGrid()
+        public static ActivityDTO TestActionDTOForSendGrid()
         {
-            return new ActionDTO()
+            return new ActivityDTO()
             {
-                Name = "SendEmailViaSendGrid",
                 ActivityTemplate = FixtureData.TestActivityTemplateSendGrid()
             };
         }
-        public static ActionDTO TestActionDTOSelectFr8ObjectInitial()
+        public static ActivityDTO TestActionDTOSelectFr8ObjectInitial()
         {
-            ActionDTO curActionDTO = new ActionDTO()
+            ActivityDTO curActionDTO = new ActivityDTO()
             {
-                Name = "test action type",
                 ActivityTemplate = FixtureData.ActivityTemplateDTOSelectFr8Object(),
             };
             // curActionDTO.CrateStorage.CrateDTO.Add(CreateStandardConfigurationControls());
 
             return curActionDTO;
         }
-        public static ActionDTO TestActionDTOSelectFr8ObjectFollowup(string selected)
+        public static ActivityDTO TestActionDTOSelectFr8ObjectFollowup(string selected)
         {
-            ActionDTO curActionDTO = new ActionDTO()
+            ActivityDTO curActionDTO = new ActivityDTO()
             {
-                Name = "test action type",
                 ActivityTemplate = FixtureData.ActivityTemplateDTOSelectFr8Object(),
             };
 

@@ -22,7 +22,7 @@
     }
 
     export class CheckBox extends ControlDefinitionDTO {
-        checked: boolean;
+        selected: boolean;
     }
 
     export class Button extends ControlDefinitionDTO {
@@ -98,6 +98,16 @@
         selectedKey: string;
     }
 
+    export class CrateDetails {
+        manifestType: model.DropDownList;
+        label: model.DropDownList;
+    }
+
+    export class UpstreamCrateChooser extends ControlDefinitionDTO {
+        selectedCrates: Array<CrateDetails>;
+        multiSelection: boolean;
+    }
+
     export class TextSource extends DropDownList {
         initialLabel: string;
         valueSource: string;
@@ -142,6 +152,7 @@
         days: number;
         hours: number;
         minutes: number;
+        innerLabel: string;
     }
 
     export class UpstreamDataChooser extends ControlDefinitionDTO {

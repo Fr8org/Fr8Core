@@ -13,7 +13,7 @@ using Newtonsoft.Json.Linq;
 namespace terminalGoogleTests.Unit
 {
     [Explicit]
-    public class Receive_Google_Form_v1_Tests : BaseHealthMonitorTest
+    public class Receive_Google_Form_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {
@@ -29,11 +29,11 @@ namespace terminalGoogleTests.Unit
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Receive_Google_Form_v1_InitialConfiguration_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Receive_Google_Form_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -59,11 +59,11 @@ namespace terminalGoogleTests.Unit
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Receive_Google_Form_v1_InitialConfiguration_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Receive_Google_Form_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -98,11 +98,11 @@ namespace terminalGoogleTests.Unit
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Receive_Google_Form_v1_InitialConfiguration_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Receive_Google_Form_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -128,12 +128,12 @@ namespace terminalGoogleTests.Unit
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Receive_Google_Form_v1_InitialConfiguration_ActionDTO();
-            requestActionDTO.AuthToken = null;
+            var dataDTO = HealthMonitor_FixtureData.Receive_Google_Form_v1_InitialConfiguration_Fr8DataDTO();
+            dataDTO.ActivityDTO.AuthToken = null;
 
-            await HttpPostAsync<ActionDTO, JToken>(
+            await HttpPostAsync<Fr8DataDTO, JToken>(
                 configureUrl,
-                requestActionDTO
+                dataDTO
             );
         }
 
@@ -147,11 +147,11 @@ namespace terminalGoogleTests.Unit
             var configureUrl = GetTerminalActivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = fixture.Receive_Google_Form_v1_ActivateDeactivate_ActionDTO();
+            var requestActionDTO = fixture.Receive_Google_Form_v1_ActivateDeactivate_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -172,11 +172,11 @@ namespace terminalGoogleTests.Unit
             var configureUrl = GetTerminalActivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = fixture.Receive_Google_Form_v1_ActivateDeactivate_ActionDTO();
+            var requestActionDTO = fixture.Receive_Google_Form_v1_ActivateDeactivate_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -193,11 +193,11 @@ namespace terminalGoogleTests.Unit
             var configureUrl = GetTerminalDeactivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = fixture.Receive_Google_Form_v1_ActivateDeactivate_ActionDTO();
+            var requestActionDTO = fixture.Receive_Google_Form_v1_ActivateDeactivate_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -222,10 +222,10 @@ namespace terminalGoogleTests.Unit
 
             //prepare the action DTO with valid target URL
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var actionDTO = fixture.Receive_Google_Form_v1_Run_EmptyPayload();
-
+            var activityDTO = fixture.Receive_Google_Form_v1_Run_EmptyPayload();
+            var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
             //Act
-            await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+            await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
         }
 
         /// <summary>
@@ -238,10 +238,12 @@ namespace terminalGoogleTests.Unit
             var runUrl = GetTerminalRunUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var actionDTO = fixture.Receive_Google_Form_v1_Run_ActionDTO();
+            var activityDTO = fixture.Receive_Google_Form_v1_Run_ActionDTO();
+
+            var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
 
             AddPayloadCrate(
-               actionDTO,
+               dataDTO,
                new EventReportCM()
                {
                    EventPayload = new CrateStorage()
@@ -256,9 +258,10 @@ namespace terminalGoogleTests.Unit
                }
             );
 
+            
             //Act
             var responsePayloadDTO =
-                await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+                await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
 
             //Assert
             var crateStorage = Crate.FromDto(responsePayloadDTO.CrateStorage);

@@ -43,6 +43,7 @@ namespace Data.Control
         public const string RunRouteButton = "RunRouteButton";
         public const string UpstreamDataChooser = "UpstreamDataChooser";
         public const string UpstreamFieldChooser = "UpstreamFieldChooser";
+        public const string UpstreamCrateChooser = "UpstreamCrateChooser";
     }
 
     public class CheckBox : ControlDefinitionDTO
@@ -233,7 +234,7 @@ namespace Data.Control
             };
         }
 
-        public string GetValue(CrateStorage payloadCrateStorage)
+        public string GetValue(CrateStorage payloadCrateStorage, bool ignoreCase = false)
         {
             switch (ValueSource)
             {
@@ -241,10 +242,10 @@ namespace Data.Control
                     return TextValue;
 
                 case "upstream":
-                    return ExtractPayloadFieldValue(payloadCrateStorage);
+                    return ExtractPayloadFieldValue(payloadCrateStorage, ignoreCase);
 
                 default:
-                    throw new ApplicationException("Could not extract recipient, unknown recipient mode.");
+                    return null;
             }
         }
 
@@ -252,16 +253,16 @@ namespace Data.Control
         /// Extracts crate with specified label and ManifestType = Standard Design Time,
         /// then extracts field with specified fieldKey.
         /// </summary>
-        private string ExtractPayloadFieldValue(CrateStorage payloadCrateStorage)
+        private string ExtractPayloadFieldValue(CrateStorage payloadCrateStorage, bool ignoreCase)
         {
-            var fieldValues = payloadCrateStorage.CratesOfType<StandardPayloadDataCM>().SelectMany(x => x.Content.GetValues(selectedKey))
+            var fieldValues = payloadCrateStorage.CratesOfType<StandardPayloadDataCM>().SelectMany(x => x.Content.GetValues(selectedKey, ignoreCase))
                 .Where(s => !string.IsNullOrEmpty(s))
                 .ToArray();
 
             if (fieldValues.Length > 0)
                 return fieldValues[0];
 
-            throw new ApplicationException("No field found with specified key.");
+            throw new ApplicationException(string.Format("No field found with specified key: {0}.", selectedKey));
         }
     }
 
@@ -288,6 +289,7 @@ namespace Data.Control
         public Duration()
         {
             Type = ControlTypes.Duration;
+            InnerLabel = "Choose duration:";
         }
 
         [JsonProperty("value")]
@@ -298,6 +300,9 @@ namespace Data.Control
                 return new TimeSpan(this.Days, this.Hours, this.Minutes, 0);
             }
         }
+
+        [JsonProperty("innerLabel")]
+        public string InnerLabel { get; set; }
 
         [JsonProperty("days")]
         public Int32 Days { get; set; }
@@ -419,6 +424,30 @@ namespace Data.Control
         public string SelectedFieldType { get; set; }
     }
 
+    public class CrateDetails
+    {
+        [JsonProperty("manifestType")]
+        public DropDownList ManifestType { get; set; }
+
+        [JsonProperty("label")]
+        public DropDownList Label { get; set; }
+    }
+
+    public class UpstreamCrateChooser : ControlDefinitionDTO
+    {
+        public UpstreamCrateChooser()
+        {
+            Type = ControlTypes.UpstreamCrateChooser;
+        }
+
+        [JsonProperty("selectedCrates")]
+        public List<CrateDetails> SelectedCrates { get; set; }
+
+        [JsonProperty("multiSelection")]
+        public bool MultiSelection { get; set; }
+
+    }
+
     public class UpstreamFieldChooser : ControlDefinitionDTO
     {
         public UpstreamFieldChooser()
@@ -427,18 +456,29 @@ namespace Data.Control
         }
     }
 
-    public class HelpControlDTO
+    public class DocumentationDTO
     {
-        public HelpControlDTO(string helpPath, string documentationSupport)
+        public DocumentationDTO(string displayMechanism, string contentPath)
         {
-            this.HelpPath = helpPath;
-            this.DocumentationSupport = documentationSupport;
+            this.DisplayMechanism = displayMechanism;
+            this.ContentPath = contentPath;
         }
 
-        [JsonProperty("helpPath")]
-        public string HelpPath { get; set; }
+        [JsonProperty("displayMechanism")]
+        public string DisplayMechanism { get; set; }
 
-        [JsonProperty("documentationSupport")]
-        public string DocumentationSupport { get; set; }
+        [JsonProperty("contentPath")]
+        public string ContentPath { get; set; }
+
+        [JsonProperty("url")]
+        public string URL
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(ContentPath))
+                    return "/actions/documentation";
+                return string.Format("/actions/documentation/{0}", ContentPath);
+            }
+        }
     }
 }

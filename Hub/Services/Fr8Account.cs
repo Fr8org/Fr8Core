@@ -190,7 +190,7 @@ namespace Hub.Services
             {
                 return uow.ContainerRepository.GetQuery().Where
                     (r => r.ContainerState == ContainerState.Executing
-                          & r.Route.Fr8Account.Id == userId).ToList();
+                          && r.Plan.Fr8Account.Id == userId).ToList();
             }
         }
 
@@ -282,7 +282,7 @@ namespace Hub.Services
         public Fr8AccountDO Register(IUnitOfWork uow, string userName, string firstName, string lastName,
             string password, string roleID)
         {
-            var userDO = uow.UserRepository.GetOrCreateUser(userName);
+            var userDO = uow.UserRepository.GetOrCreateUser(userName, roleID);
             uow.UserRepository.UpdateUserCredentials(userDO, userName, password);
             uow.AspNetUserRolesRepository.AssignRoleToUser(roleID, userDO.Id);
             return userDO;
@@ -382,12 +382,12 @@ namespace Hub.Services
 		  //	 return packager.Login();
 		  //}
 
-        public IEnumerable<RouteDO> GetActiveRoutes(string userId)
+        public IEnumerable<PlanDO> GetActivePlans(string userId)
         {
-            IEnumerable<RouteDO> activeRoutes;
+            IEnumerable<PlanDO> activeRoutes;
             using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var routeQuery = unitOfWork.RouteRepository.GetQuery().Include(i => i.Fr8Account);
+                var routeQuery = unitOfWork.PlanRepository.GetPlanQueryUncached().Include(i => i.Fr8Account);
 
                 routeQuery
                     .Where(pt => pt.RouteState == RouteState.Active)//1.
@@ -396,6 +396,68 @@ namespace Hub.Services
                 activeRoutes = routeQuery.ToList();
             }
             return activeRoutes;
+        }
+
+        public Task<LoginStatus> CreateAuthenticateGuestUser()
+        {
+            Guid guid = Guid.NewGuid();
+            string guestUserEmail = guid + "@fr8.co";
+            string guestUserPassword = "fr8123";
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                // Register a guest user 
+               Fr8AccountDO fr8AccountDO = Register(uow, guestUserEmail, guestUserEmail, guestUserEmail, guestUserPassword, Roles.Guest);
+               uow.SaveChanges();
+
+               return Task.FromResult(Login(uow, fr8AccountDO, guestUserPassword, false));
+            }
+        }
+
+        /// <summary>
+        /// Register Guest account
+        /// </summary>
+        /// <param name="email"></param>
+        /// <param name="password"></param>
+        /// <param name="tempEmail"></param>
+        /// <returns></returns>
+        public Task<RegistrationStatus> UpdateGuestUserRegistration(String email, String password, String tempEmail)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                RegistrationStatus curRegStatus = RegistrationStatus.Successful;
+                Fr8AccountDO newDockyardAccountDO = null;
+
+
+                EmailAddressDO existingEmailAddressDO =
+                   uow.EmailAddressRepository.GetQuery().FirstOrDefault(ea => ea.Address == email);
+                if (existingEmailAddressDO != null)
+                {
+                    curRegStatus = RegistrationStatus.UserMustLogIn;
+                    return Task.FromResult(curRegStatus);
+                }
+                
+
+                //check if we know this email address
+
+                EmailAddressDO guestUserexistingEmailAddressDO =
+                    uow.EmailAddressRepository.GetQuery().FirstOrDefault(ea => ea.Address == tempEmail);
+                if (guestUserexistingEmailAddressDO != null)
+                {
+                    var existingUserDO =
+                        uow.UserRepository.GetQuery().FirstOrDefault(u => u.EmailAddressID == guestUserexistingEmailAddressDO.Id);
+                    
+                    // Update Email
+                    uow.UserRepository.UpdateUserCredentials(existingUserDO, email, password);
+                    guestUserexistingEmailAddressDO.Address = email;
+
+                    uow.AspNetUserRolesRepository.RevokeRoleFromUser(Roles.Guest, existingUserDO.Id);
+                    // Add new role
+                    uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, existingUserDO.Id);
+                }
+
+                uow.SaveChanges();
+                return Task.FromResult(curRegStatus);
+            }
         }
     }
 }

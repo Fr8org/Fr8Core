@@ -14,13 +14,14 @@ using Data.Interfaces.Manifests;
 using Data.States;
 
 using Hub.Managers;
-using TerminalBase.Infrastructure;
 using Utilities;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Interfaces;
 using terminalDocuSign.Services;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
+using TerminalBase.Infrastructure.Behaviors;
 
 namespace terminalDocuSign.Actions
 {
@@ -31,16 +32,16 @@ namespace terminalDocuSign.Actions
         {
         }
 
-        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             CheckAuthentication(authTokenDO);
 
-            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
+            return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
         }
 
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var payloadCrates = await GetPayload(curActionDO, containerId);
+            var payloadCrates = await GetPayload(curActivityDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
             {
@@ -53,18 +54,54 @@ namespace terminalDocuSign.Actions
             curEnvelope.Login = new DocuSignPackager()
                 .Login(docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
 
-            curEnvelope = AddTemplateData(curActionDO, payloadCrates, curEnvelope);
+            try
+            {
+                curEnvelope = AddTemplateData(curActivityDO, payloadCrates, curEnvelope);
+            }
+            catch (ApplicationException exception)
+            {
+                //in case of problem with extract payload field values raise and Error alert to the user
+                return Error(payloadCrates, exception.Message, null, "Send DocuSign Envelope", "DocuSign");
+            }
+
             curEnvelope.EmailSubject = "Test Message from Fr8";
             curEnvelope.Status = "sent";
+
+            using (var updater = Crate.UpdateStorage(curActivityDO))
+            {
+                var mappingBehavior = new TextSourceMappingBehavior(
+                    updater.CrateStorage,
+                    "Mapping"
+                );
+
+                var payloadCrateStorage = Crate.FromDto(payloadCrates.CrateStorage);
+                var values = mappingBehavior.GetValues(payloadCrateStorage);
+
+                var valuesToAdd = new List<TextCustomField>();                
+                foreach (var pair in values.Where(x => !string.IsNullOrEmpty(x.Value)))
+                {
+                    valuesToAdd.Add(new TextCustomField()
+                    {
+                        name = pair.Key,
+                        value = pair.Value
+                    });
+                }
+
+                // curEnvelope.AddCustomFields(valuesToAdd);
+                curEnvelope.CustomFields = new CustomFields()
+                {
+                    textCustomFields = valuesToAdd.ToArray()
+                };
+            }
 
             var result = curEnvelope.Create();
 
             return Success(payloadCrates);
         }
 
-        private string ExtractTemplateId(ActionDO curActionDO)
+        private string ExtractTemplateId(ActivityDO curActivityDO)
         {
-            var controls = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().First().Controls;
+            var controls = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().First().Controls;
 
             var templateDropDown = controls.SingleOrDefault(x => x.Name == "target_docusign_template");
 
@@ -77,14 +114,14 @@ namespace terminalDocuSign.Actions
             return result;
         }
 
-        private Envelope AddTemplateData(ActionDO actionDO, PayloadDTO payloadCrates, Envelope curEnvelope)
+        private Envelope AddTemplateData(ActivityDO activityDO, PayloadDTO payloadCrates, Envelope curEnvelope)
         {
-            var curTemplateId = ExtractTemplateId(actionDO);
+            var curTemplateId = ExtractTemplateId(activityDO);
             var payloadCrateStorage = Crate.GetStorage(payloadCrates);
-            var configurationControls = GetConfigurationControls(actionDO);
+            var configurationControls = GetConfigurationControls(activityDO);
             var recipientField = (TextSource)GetControl(configurationControls, "Recipient", ControlTypes.TextSource);
 
-            var curRecipientAddress = recipientField.GetValue(payloadCrateStorage);
+            var curRecipientAddress = recipientField.GetValue(payloadCrateStorage, true);
 
             curEnvelope.TemplateId = curTemplateId;
             curEnvelope.TemplateRoles = new TemplateRole[]
@@ -100,16 +137,16 @@ namespace terminalDocuSign.Actions
             return curEnvelope;
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
             // Do we have any crate? If no, it means that it's Initial configuration
-            if (Crate.IsStorageEmpty(curActionDO))
+            if (Crate.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
 
             // Try to find Configuration_Controls
-            var stdCfgControlMS = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var stdCfgControlMS = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             if (stdCfgControlMS == null)
             {
                 return ConfigurationRequestType.Initial;
@@ -131,57 +168,57 @@ namespace terminalDocuSign.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 
-            using (var updater = Crate.UpdateStorage(curActionDO))
+            using (var updater = Crate.UpdateStorage(curActivityDO))
             {
                 // Only do it if no existing MT.StandardDesignTimeFields crate is present to avoid loss of existing settings
                 // Two crates are created
                 // One to hold the ui controls
                 if (updater.CrateStorage.All(c => c.ManifestType.Id != (int)MT.StandardDesignTimeFields))
                 {
-                    var crateControlsDTO = CreateDocusignTemplateConfigurationControls(curActionDO);
+                    var crateControlsDTO = CreateDocusignTemplateConfigurationControls(curActivityDO);
                     // and one to hold the available templates, which need to be requested from docusign
                     var crateDesignTimeFieldsDTO = _docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
 
                     updater.CrateStorage = new CrateStorage(crateControlsDTO, crateDesignTimeFieldsDTO);
                 }
 
-                await UpdateUpstreamCrate(curActionDO, updater);
+                await UpdateUpstreamCrate(curActivityDO, updater);
             }
 
 
 
-            return curActionDO;
+            return curActivityDO;
         }
 
-        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 
-            using (var updater = Crate.UpdateStorage(curActionDO))
+            using (var updater = Crate.UpdateStorage(curActivityDO))
             {
                 if (updater.CrateStorage.Count == 0)
                 {
-                    return curActionDO;
+                    return curActivityDO;
                 }
 
-                await UpdateUpstreamCrate(curActionDO, updater);
+                await UpdateUpstreamCrate(curActivityDO, updater);
 
                 // Try to find Configuration_Controls.
                 var stdCfgControlMS = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
                 if (stdCfgControlMS == null)
                 {
-                    return curActionDO;
+                    return curActivityDO;
                 }
 
                 // Try to find DocuSignTemplate drop-down.
                 var dropdownControlDTO = stdCfgControlMS.FindByName("target_docusign_template");
                 if (dropdownControlDTO == null)
                 {
-                    return curActionDO;
+                    return curActivityDO;
                 }
 
                 // Get DocuSign Template Id
@@ -217,12 +254,22 @@ namespace terminalDocuSign.Actions
                 updater.CrateStorage.Add(crateUserDefinedDTO);
                 updater.CrateStorage.Add(crateStandardDTO);
 
+                var allFields = new List<string>();
+                allFields.AddRange(userDefinedFields.Select(x => x.Key));
+                allFields.AddRange(standartFields.Select(x => x.Key));
+                
+                var mappingBehavior = new TextSourceMappingBehavior(
+                    updater.CrateStorage,
+                    "Mapping"
+                );
+                mappingBehavior.Clear();
+                mappingBehavior.Append(allFields, "Upstream Terminal-Provided Fields");
             }
 
-            return await Task.FromResult(curActionDO);
+            return await Task.FromResult(curActivityDO);
         }
 
-        private Crate CreateDocusignTemplateConfigurationControls(ActionDO curActionDO)
+        private Crate CreateDocusignTemplateConfigurationControls(ActivityDO curActivityDO)
         {
             var fieldSelectDocusignTemplateDTO = new DropDownList()
             {
@@ -244,6 +291,10 @@ namespace terminalDocuSign.Actions
             {
                 fieldSelectDocusignTemplateDTO,
                 new TextSource("Email Address", "Upstream Terminal-Provided Fields", "Recipient")
+                {
+                    selectedKey = "Recipient",
+                    ValueSource = "upstream"
+                }
             };
 
             var controls = new StandardConfigurationControlsCM()
@@ -254,7 +305,7 @@ namespace terminalDocuSign.Actions
             return Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
         }
 
-        public async Task UpdateUpstreamCrate(ActionDO curActionDO, ICrateStorageUpdater updater)
+        public async Task UpdateUpstreamCrate(ActivityDO curActivityDO, ICrateStorageUpdater updater)
         {
             // Build a crate with the list of available upstream fields
             var curUpstreamFieldsCrate = updater.CrateStorage.SingleOrDefault(c => c.ManifestType.Id == (int)MT.StandardDesignTimeFields
@@ -265,8 +316,9 @@ namespace terminalDocuSign.Actions
                 updater.CrateStorage.Remove(curUpstreamFieldsCrate);
             }
 
-            var curUpstreamFields = (await GetDesignTimeFields(curActionDO.Id, CrateDirection.Upstream))
-                .Fields.Where(a => a.Availability == AvailabilityType.RunTime)
+            var curUpstreamFields = (await GetDesignTimeFields(curActivityDO.Id, CrateDirection.Upstream))
+                .Fields
+                .Where(a => a.Availability == AvailabilityType.RunTime)
                 .ToArray();
 
             //make fields inaccessible to up/downstanding actions
@@ -275,6 +327,5 @@ namespace terminalDocuSign.Actions
             curUpstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided Fields", curUpstreamFields);
             updater.CrateStorage.Add(curUpstreamFieldsCrate);
         }
-
     }
 }

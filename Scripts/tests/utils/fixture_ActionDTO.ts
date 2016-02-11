@@ -1,7 +1,7 @@
 ﻿
 module dockyard.tests.utils.fixtures {
 
-    export class ActionDTO {
+    export class ActivityDTO {
 
         public static newRoute = <interfaces.IRouteVM> {
             name: 'Test',
@@ -103,10 +103,8 @@ module dockyard.tests.utils.fixtures {
             activityTemplate: {
                 id: 2
             },
-            isTempId: false,
             currentView: null,
-            id: 'E55315F9-A30B-4196-A43D-6F511B91CCF8',
-            name: "Write_To_Sql_Server"
+            id: 'E55315F9-A30B-4196-A43D-6F511B91CCF8'
         };
 
         public static internalAuthActionVM = <interfaces.IActionVM> {
@@ -137,10 +135,8 @@ module dockyard.tests.utils.fixtures {
             activityTemplate: {
                 id: 2
             },
-            isTempId: false,
             currentView: null,
-            id: 'E55315F9-A30B-4196-A43D-6F511B91CCF8',
-            name: "Write_To_Sql_Server"
+            id: 'E55315F9-A30B-4196-A43D-6F511B91CCF8'
         };
 
         public static externalAuthActionVM = <interfaces.IActionVM> {
@@ -171,10 +167,8 @@ module dockyard.tests.utils.fixtures {
             activityTemplate: {
                 id: 2
             },
-            isTempId: false,
             currentView: null,
-            id: 'E55315F9-A30B-4196-A43D-6F511B91CCF8',
-            name: "Write_To_Sql_Server"
+            id: 'E55315F9-A30B-4196-A43D-6F511B91CCF8'
         };
 
         /*

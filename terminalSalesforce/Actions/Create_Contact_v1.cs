@@ -1,9 +1,11 @@
-﻿using Data.Entities;
+﻿using System.Linq;
+using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data.Control;
+using Data.Interfaces.Manifests;
 using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
@@ -12,86 +14,73 @@ using terminalSalesforce.Services;
 
 namespace terminalSalesforce.Actions
 {
-    public class Create_Contact_v1 : BaseTerminalAction
+    public class Create_Contact_v1 : BaseTerminalActivity
     {
         ISalesforceManager _salesforce = new SalesforceManager();
 
-        public override async Task<ActionDO> Configure(ActionDO curActionDO,AuthorizationTokenDO authTokenDO)
+        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO,AuthorizationTokenDO authTokenDO)
         {
             CheckAuthentication(authTokenDO);
 
-            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
+            return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
+            if (Crate.IsStorageEmpty(curActivityDO))
+            {
+                return ConfigurationRequestType.Initial;
+            }
+
+            var storage = Crate.GetStorage(curActivityDO);
+
+            var hasConfigurationControlsCrate = storage
+                .CratesOfType<StandardConfigurationControlsCM>(c => c.Label == "Configuration_Controls").FirstOrDefault() != null;
+
+            if (hasConfigurationControlsCrate)
+            {
+                return ConfigurationRequestType.Followup;
+            }
+
             return ConfigurationRequestType.Initial;
         }
 
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO = null)
+        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO = null)
         {
-            var firstNameCrate = new TextBox()
-            {
-                Label = "First Name",
-                Name = "firstName"
-
-            };
-            var lastName = new TextBox()
-            {
-                Label = "Last Name",
-                Name = "lastName",
-                Required = true
-            };
-
-            var mobileNumber = new TextBox()
-            {
-                Label = "Mobile Phone",
-                Name = "mobilePhone",
-                Required = true
-            };
-
-            var email = new TextBox()
-            {
-                Label = "Email",
-                Name = "email",
-                Required = true
-            };
-
-            var controls = PackControlsCrate(firstNameCrate, lastName, mobileNumber, email);
-            using (var updater = Crate.UpdateStorage(curActionDO))
+            using (var updater = Crate.UpdateStorage(curActivityDO))
             {
                 updater.CrateStorage.Clear();
-                updater.CrateStorage.Add(controls);
+
+                AddTextSourceControlForDTO<ContactDTO>(updater.CrateStorage, "Upstream Terminal-Provided Fields", addRequestConfigEvent: false);
             }
 
-            return await Task.FromResult(curActionDO);
+            return await Task.FromResult(curActivityDO);
         }
 
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+
+        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            var payloadCrates = await GetPayload(curActionDO, containerId);
+            using (var updater = Crate.UpdateStorage(curActivityDO))
+            {
+                updater.CrateStorage.ReplaceByLabel(await CreateAvailableFieldsCrate(curActivityDO));
+            }
+            return await Task.FromResult(curActivityDO);
+        }
+
+        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        {
+            var payloadCrates = await GetPayload(curActivityDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
             {
                 return NeedsAuthenticationError(payloadCrates);
             }
 
-            var firstName = ExtractControlFieldValue(curActionDO, "firstName");
-            var lastName = ExtractControlFieldValue(curActionDO, "lastName");
-            var mobilePhone = ExtractControlFieldValue(curActionDO, "mobilePhone");
-            var email = ExtractControlFieldValue(curActionDO, "email");
-            if (string.IsNullOrEmpty(lastName))
+            var contact = _salesforce.CreateSalesforceDTO<ContactDTO>(curActivityDO, payloadCrates, ExtractSpecificOrUpstreamValue);
+            if (string.IsNullOrEmpty(contact.LastName))
             {
-                return Error(payloadCrates, "No last name found in action.");
+                return Error(payloadCrates, "No last name found in activity.");
             }
-
-            var contact = new ContactDTO
-            {
-                FirstName = firstName,
-                LastName = lastName,
-                MobilePhone = mobilePhone,
-                Email = email
-            };
 
             bool result = await _salesforce.CreateObject(contact, "Contact", _salesforce.CreateForceClient(authTokenDO));
 

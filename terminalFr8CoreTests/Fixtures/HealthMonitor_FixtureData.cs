@@ -15,18 +15,20 @@ namespace terminalTests.Fixtures
             };
         }
 
-        public static ActionDTO MapFields_v1_InitialConfiguration_ActionDTO()
+        public static Fr8DataDTO MapFields_v1_InitialConfiguration_Fr8DataDTO()
         {
             var activityTemplate = MapFields_v1_ActivityTemplate();
 
-            return new ActionDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "MapFields",
                 Label = "Map Fields",
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id
             };
+
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
+
         }
     }
 }

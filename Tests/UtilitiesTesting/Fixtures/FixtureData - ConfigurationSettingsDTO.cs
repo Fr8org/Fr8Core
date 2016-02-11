@@ -42,6 +42,15 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
+        public static ControlDefinitionDTO TestConnectionString3()
+        {
+            return new TextBlock()
+            {
+                Name = "Connection_String",
+                Value = @"This is incorrect database connection string!"
+            };
+        }
+
         public static CrateStorage TestCrateStorage()
         {
             ICrateManager crate = ObjectFactory.GetInstance<ICrateManager>();
@@ -67,9 +76,9 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static ActionDO TestConfigurationSettingsDTO1()
+        public static ActivityDO TestConfigurationSettingsDTO1()
         {
-            ActionDO curAction = FixtureData.TestAction1();
+            ActivityDO curAction = FixtureData.TestActivity1();
             ICrateManager crate = ObjectFactory.GetInstance<ICrateManager>();
 
             //create connection string value crates with a vald connection string

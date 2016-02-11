@@ -89,7 +89,7 @@ namespace UtilitiesTesting.Fixtures
                 Id = TestContainer_Id_1(),
                 ContainerState = 1,
                 Name = "test name",
-                RouteId = TestRouteHealthDemo().Id
+                PlanId = TestRouteHealthDemo().Id
             };
 
             using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => containerDO.CrateStorage))
@@ -117,8 +117,8 @@ namespace UtilitiesTesting.Fixtures
 //               Name = "list1",
 //               ActionListType = ActionListType.Immediate
             };
-            curActionListDO.Activities.Add(TestAction20());
-            curActionListDO.Activities.Add(TestAction21());
+            curActionListDO.Activities.Add(TestActivity20());
+            curActionListDO.Activities.Add(TestActivity21());
 //
             return curActionListDO;
         }
@@ -131,8 +131,8 @@ namespace UtilitiesTesting.Fixtures
 //               Name = "list1",
 //               ActionListType = ActionListType.Immediate
             };
-            curActionListDO.Activities.Add(TestAction20());
-            curActionListDO.Activities.Add(TestAction21());
+            curActionListDO.Activities.Add(TestActivity20());
+            curActionListDO.Activities.Add(TestActivity21());
 //
             return curActionListDO;
         }
@@ -191,9 +191,9 @@ namespace UtilitiesTesting.Fixtures
 //               ActionListState = ActionListState.Unstarted,
                 Activities = new System.Collections.Generic.List<RouteNodeDO>() 
                 { 
-                    FixtureData.TestAction22(),
-                   FixtureData.TestAction7(),
-                   FixtureData.TestAction8(null)             
+                    FixtureData.TestActivity22(),
+                   FixtureData.TestActivity7(),
+                   FixtureData.TestActivity8(null)             
                 }
             };
         }
@@ -220,9 +220,9 @@ namespace UtilitiesTesting.Fixtures
 //               ActionListState = ActionListState.Unstarted,
                 Activities = new System.Collections.Generic.List<RouteNodeDO>() 
                 { 
-                    FixtureData.TestAction10(),
-                    FixtureData.TestAction7(),
-                   FixtureData.TestAction8(null)             
+                    FixtureData.TestActivity10(),
+                    FixtureData.TestActivity7(),
+                   FixtureData.TestActivity8(null)             
                 }
             };
         }
@@ -329,7 +329,7 @@ namespace UtilitiesTesting.Fixtures
 //			  return actionLists;
 //		  }
 //
-        public static List<RouteNodeDO> TestActionList1()
+        public static List<RouteNodeDO> TestActionList1(int offset)
         {
             List<ActionListDO> actionLists = new List<ActionListDO>();
 //
@@ -344,12 +344,11 @@ namespace UtilitiesTesting.Fixtures
             {
                  ParentActivityId = GetTestGuidById(1)
             };
-            ActionDO a_23 = new ActionDO()
+            ActivityDO a_23 = new ActivityDO()
             {
-                Id = GetTestGuidById(23), 
+                Id = GetTestGuidById(23+offset), 
                 ActivityTemplate = activityTempate, 
                 ActivityTemplateId = activityTempate.Id,
-                Name = "a_23", 
                 CrateStorage = ""
             };
             al_1.Activities.Add(a_23);
@@ -370,12 +369,11 @@ namespace UtilitiesTesting.Fixtures
                   Name = "Monitor_DocuSign"
               };
              ActionListDO al_1 = new ActionListDO() { ParentActivityId = GetTestGuidById(12) };
-             ActionDO a_23 = new ActionDO()
+             ActivityDO a_23 = new ActivityDO()
              {
                  Id = GetTestGuidById(23), 
                  ActivityTemplate = activityTempate,
                  ActivityTemplateId = activityTempate.Id,
-                 Name = "a_23",
                  CrateStorage = ""
              };
               al_1.Activities.Add(a_23);

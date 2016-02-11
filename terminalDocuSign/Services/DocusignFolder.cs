@@ -6,6 +6,8 @@ using System.Text;
 using System.Web;
 using DocuSign.Integrations.Client;
 using Newtonsoft.Json;
+using Data.Interfaces.DataTransferObjects;
+using Hub.Infrastructure;
 using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Interfaces;
 
@@ -27,7 +29,13 @@ namespace terminalDocuSign.Services
             return MakeRequest<FolderListResponse>("/folders", accout).Folders;
         }
 
-        public List<FolderItem> Search(string login, string password, string searchText, string folderId, string status = null, DateTime? fromDate = null, DateTime? toDate = null)
+
+        public List<DocusignFolderInfo> GetSearchFolders(string login, string password)
+        {
+            return GetFolders(login, password).Where(x => x.Type != "report").ToList();
+        }
+
+        public List<FolderItem> Search(string login, string password, string searchText, string folderId, string status = null, DateTime? fromDate = null, DateTime? toDate = null, IEnumerable<FilterConditionDTO> conditions = null) 
         {
             if (string.IsNullOrWhiteSpace(folderId)) throw new ArgumentNullException("folderId");
             
@@ -87,7 +95,20 @@ namespace terminalDocuSign.Services
                 }
             }
 
-            return items.ToList();
+            var itemsToReturn = items.ToList();
+
+            if (conditions != null)
+            {
+                var filterConditionExecutor =
+                    new FilterConditionPredicateBuilder<FolderItem>(conditions);
+
+                itemsToReturn = itemsToReturn
+                    .AsQueryable()
+                    .Where(filterConditionExecutor.ToPredicate())
+                    .ToList();
+            }
+
+            return itemsToReturn;
         }
 
         private static T MakeRequest<T>(string queryString, DocuSignAccount account, string payload = null)

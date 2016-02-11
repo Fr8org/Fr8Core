@@ -9,7 +9,7 @@ module dockyard.directives.upstreamDataChooser {
         manifestList: model.DropDownList,
         labelList: model.DropDownList,
         fieldTypeList: model.DropDownList,
-        currentAction: model.ActionDTO;
+        currentAction: model.ActivityDTO;
     }
 
     //More detail on creating directives in TypeScript: 
@@ -61,6 +61,8 @@ module dockyard.directives.upstreamDataChooser {
                 }
 
             }
+
+            UpstreamDataChooser.prototype.controller['$inject'] = ['$scope', '$element', '$attrs'];
 
         };
 

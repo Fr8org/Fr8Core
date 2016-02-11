@@ -30,7 +30,7 @@ namespace terminalBaseTests.BaseClasses
     public class BaseTerminalActionTests : BaseTest
     {
         IDisposable _coreServer;
-        BaseTerminalAction _baseTerminalAction;
+        BaseTerminalActivity _baseTerminalAction;
         private ICrateManager _crateManager;
 
         [SetUp]
@@ -38,8 +38,8 @@ namespace terminalBaseTests.BaseClasses
         {
             base.SetUp();
             TerminalBootstrapper.ConfigureTest();
-            ObjectFactory.Configure(x => x.For<IRestfulServiceClient>().Use<RestfulServiceClient>());
-            _baseTerminalAction = new BaseTerminalAction();
+            ObjectFactory.Configure(x => x.For<IRestfulServiceClient>().Use<RestfulServiceClient>().SelectConstructor(() => new RestfulServiceClient()));
+            _baseTerminalAction = new BaseTerminalActivity();
             _coreServer = terminalBaseTests.Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
         }
@@ -58,14 +58,14 @@ namespace terminalBaseTests.BaseClasses
         public async void ProcessConfigurationRequest_CrateStroageIsNull_ShouldCrateNullStorage()
         {
             //Arrange
-            ActionDTO curActionDTO = FixtureData.TestActionDTO1();
+            ActivityDTO curActionDTO = FixtureData.TestActionDTO1();
             ConfigurationEvaluator curConfigurationEvaluator = EvaluateReceivedRequest;
-            var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+            var curActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
             var curAuthTokenDO = curActionDTO.AuthToken;
-            object[] parameters = new object[] { curActionDO, curConfigurationEvaluator, curAuthTokenDO };
+            object[] parameters = new object[] { curActivityDO, curConfigurationEvaluator, curAuthTokenDO };
 
             //Act
-            var result = await (Task<ActionDO>) ClassMethod.Invoke(typeof(BaseTerminalAction), "ProcessConfigurationRequest", parameters);
+            var result = await (Task<ActivityDO>) ClassMethod.Invoke(typeof(BaseTerminalActivity), "ProcessConfigurationRequest", parameters);
 
             
             //Assert
@@ -77,15 +77,15 @@ namespace terminalBaseTests.BaseClasses
         public async void ProcessConfigurationRequest_ConfigurationRequestTypeIsFollowUp_ReturnsExistingCrateStorage()
         {
             //Arrange
-            ActionDO curAction = FixtureData.TestConfigurationSettingsDTO1();
-            ActionDTO curActionDTO = Mapper.Map<ActionDTO>(curAction);
+            ActivityDO curAction = FixtureData.TestConfigurationSettingsDTO1();
+            ActivityDTO curActionDTO = Mapper.Map<ActivityDTO>(curAction);
             ConfigurationEvaluator curConfigurationEvaluator = EvaluateReceivedRequest;
-            var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+            var curActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
             var curAuthTokenDO = curActionDTO.AuthToken;
-            object[] parameters = new object[] { curActionDO, curConfigurationEvaluator, curAuthTokenDO };
+            object[] parameters = new object[] { curActivityDO, curConfigurationEvaluator, curAuthTokenDO };
 
             //Act
-            var result = await (Task<ActionDO>)ClassMethod.Invoke(typeof(BaseTerminalAction), "ProcessConfigurationRequest", parameters);
+            var result = await (Task<ActivityDO>)ClassMethod.Invoke(typeof(BaseTerminalActivity), "ProcessConfigurationRequest", parameters);
 
             //Assert
             Assert.AreEqual(_crateManager.FromDto(curActionDTO.CrateStorage).Count, _crateManager.GetStorage(result.CrateStorage).Count);
@@ -100,7 +100,7 @@ namespace terminalBaseTests.BaseClasses
             object[] parameters = new object[] { FixtureData.FieldDefinitionDTO1() };
 
             //Act
-            var result = (Crate)ClassMethod.Invoke(typeof(BaseTerminalAction), "PackControlsCrate", parameters);
+            var result = (Crate)ClassMethod.Invoke(typeof(BaseTerminalActivity), "PackControlsCrate", parameters);
 
             //Assert
             Assert.IsNotNull(result);
@@ -113,10 +113,15 @@ namespace terminalBaseTests.BaseClasses
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.RouteNodeRepository.Add(FixtureData.TestActionTree());
+                uow.PlanRepository.Add(new PlanDO
+                {
+                    Name="Test route",
+                    RouteState = RouteState.Active,
+                    ChildNodes = { FixtureData.TestActionTree()}
+                });
                 uow.SaveChanges();
 
-                ActionDO curAction = FixtureData.TestAction57();
+                ActivityDO curAction = FixtureData.TestAction57();
 
                 var result = await _baseTerminalAction.GetDesignTimeFields(curAction.Id, CrateDirection.Upstream);
                 Assert.NotNull(result);
@@ -129,10 +134,15 @@ namespace terminalBaseTests.BaseClasses
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.RouteNodeRepository.Add(FixtureData.TestActionTree());
+                uow.PlanRepository.Add(new PlanDO
+                {
+                    Name = "Test route",
+                    RouteState = RouteState.Active,
+                    ChildNodes = { FixtureData.TestActionTree() }
+                });
                 uow.SaveChanges();
 
-                ActionDO curAction = FixtureData.TestAction57();
+                ActivityDO curAction = FixtureData.TestAction57();
 
                 var result = await _baseTerminalAction.GetDesignTimeFields(curAction.Id, CrateDirection.Downstream);
                 Assert.NotNull(result);
@@ -151,10 +161,15 @@ namespace terminalBaseTests.BaseClasses
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.RouteNodeRepository.Add(FixtureData.TestActionTree());
+                uow.PlanRepository.Add(new PlanDO
+                {
+                    Name = "Test route",
+                    RouteState = RouteState.Active,
+                    ChildNodes = { FixtureData.TestActionTree() }
+                });
                 uow.SaveChanges();
 
-                ActionDO curAction = FixtureData.TestAction57();
+                ActivityDO curAction = FixtureData.TestAction57();
                 var manifestList = await _baseTerminalAction.BuildUpstreamManifestList(curAction);
 
                 Assert.NotNull(manifestList);
@@ -173,14 +188,19 @@ namespace terminalBaseTests.BaseClasses
         public async void BuildUpstreamCrateLabelList_ReturnsListOfUpstreamCrateLabels()
         {
             ObjectFactory.Configure(x => x.Forward<IRestfulServiceClient, RestfulServiceClient>());
-            ObjectFactory.Configure(x => x.For<IRestfulServiceClient>().Use<RestfulServiceClient>());
+            ObjectFactory.Configure(x => x.For<IRestfulServiceClient>().Use<RestfulServiceClient>().SelectConstructor(() => new RestfulServiceClient()));
             var test = ObjectFactory.GetInstance<IRestfulServiceClient>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.RouteNodeRepository.Add(FixtureData.TestActionTree());
+                uow.PlanRepository.Add(new PlanDO
+                {
+                    Name = "Test route",
+                    RouteState = RouteState.Active,
+                    ChildNodes = { FixtureData.TestActionTree() }
+                });
                 uow.SaveChanges();
 
-                ActionDO curAction = FixtureData.TestAction57();
+                ActivityDO curAction = FixtureData.TestAction57();
                 var crateLabelList = await _baseTerminalAction.BuildUpstreamCrateLabelList(curAction);
 
                 Assert.NotNull(crateLabelList);
@@ -201,9 +221,9 @@ namespace terminalBaseTests.BaseClasses
             }
         }
 
-        private ConfigurationRequestType EvaluateReceivedRequest(ActionDO curActionDO)
+        private ConfigurationRequestType EvaluateReceivedRequest(ActivityDO curActivityDO)
         {
-            if (_crateManager.IsStorageEmpty(curActionDO))
+            if (_crateManager.IsStorageEmpty(curActivityDO))
                 return ConfigurationRequestType.Initial;
             return ConfigurationRequestType.Followup;
         }

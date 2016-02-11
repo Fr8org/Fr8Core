@@ -20,7 +20,7 @@ using Hub.Managers.APIManagers.Transmitters.Restful;
 namespace terminalFr8Core.Actions
 {
     // The generic interface inheritance.
-    public class Select_Fr8_Object_v1 : BaseTerminalAction
+    public class Select_Fr8_Object_v1 : BaseTerminalActivity
     {
         public class ActionUi : StandardConfigurationControlsCM
         {
@@ -50,28 +50,28 @@ namespace terminalFr8Core.Actions
         }
 
         // configure the action will return the initial UI crate 
-        public override async Task<ActionDO> Configure(ActionDO curActionDataPackageDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActivityDO> Configure(ActivityDO curActionDataPackageDO, AuthorizationTokenDO authTokenDO)
         {
             return await ProcessConfigurationRequest(curActionDataPackageDO, ConfigurationEvaluator, authTokenDO);
         }
 
-        protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             var crateDesignTimeFields = PackFr8ObjectCrate();
 
-            using (var updater = Crate.UpdateStorage(curActionDO))
+            using (var updater = Crate.UpdateStorage(curActivityDO))
             {
                 updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(PackControls(new ActionUi()));
                 updater.CrateStorage.Add(crateDesignTimeFields);
             }
 
-            return Task.FromResult(curActionDO);
+            return Task.FromResult(curActivityDO);
         }
 
-        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActionDO))
+            using (var updater = Crate.UpdateStorage(curActivityDO))
             {
                 var configurationControls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
@@ -98,12 +98,12 @@ namespace terminalFr8Core.Actions
                 }
             }
 
-            return await Task.FromResult(curActionDO);
+            return await Task.FromResult(curActivityDO);
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActionDO))
+            if (Crate.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -142,9 +142,9 @@ namespace terminalFr8Core.Actions
 		}
 
 		#region Execution
-		public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+		public async Task<PayloadDTO> Run(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
 	    {
-			return Success(await GetPayload(actionDO, containerId));
+			return Success(await GetPayload(activityDO, containerId));
 	    }
 		#endregion
 	}

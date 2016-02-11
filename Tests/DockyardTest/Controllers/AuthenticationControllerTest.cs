@@ -13,6 +13,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DockyardTest.Controllers.Api;
+using Hub.Interfaces;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 
@@ -20,7 +22,7 @@ namespace DockyardTest.Controllers
 {
     [TestFixture]
     [Category("AuthenticationController")]
-    public class AuthenticationControllerTest : BaseTest
+    public class AuthenticationControllerTest : ApiControllerTestBase
     {
         private AuthenticationController _authenticationController;
 
@@ -31,6 +33,18 @@ namespace DockyardTest.Controllers
             base.SetUp();
 
             _authenticationController = CreateController<AuthenticationController>();
+        }
+
+        [Test]
+        public void AuthenticationController_ShouldHaveFr8ApiAuthorizeOnAuthenticateMethod()
+        {
+            ShouldHaveFr8ApiAuthorizeOnFunction(typeof(AuthenticationController), "Authenticate");
+        }
+
+        [Test]
+        public void AuthenticationController_ShouldHaveFr8ApiAuthorizeOnGetOAuthInitiationURLMethod()
+        {
+            ShouldHaveFr8ApiAuthorizeOnFunction(typeof(AuthenticationController), "GetOAuthInitiationURL");
         }
 
         private TerminalDO CreateAndAddTerminalDO()
@@ -103,13 +117,20 @@ namespace DockyardTest.Controllers
             activityTemplateDO.Terminal = tokenDO.Terminal;
             activityTemplateDO.Terminal.AuthenticationType = AuthenticationType.Internal;
 
-            var actionDO = FixtureData.TestAction1();
-            actionDO.ActivityTemplate = activityTemplateDO;
-            // actionDO.AuthorizationToken = tokenDO;
+            var activityDO = FixtureData.TestActivity1();
+            activityDO.ActivityTemplate = activityTemplateDO;
+            // activityDO.AuthorizationToken = tokenDO;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.ActionRepository.Add(actionDO);
+                uow.PlanRepository.Add(new PlanDO()
+                {
+                    Name="name",
+                    RouteState = RouteState.Active,
+                    ChildNodes = {activityDO }
+                });
+                
+                //uow.ActivityRepository.Add(activityDO);
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
                 uow.SaveChanges();
             }

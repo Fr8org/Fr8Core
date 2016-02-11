@@ -13,12 +13,12 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
         /// Posts a DTO to terminal API
         /// </summary>
         /// <param name="actionType">Action type</param>
-        /// <param name="actionDTO">ActionDTO</param>
+        /// <param name="activityDTO">ActionDTO</param>
         /// <param name="correlationId"></param>
         /// <param name="userId"></param>
         /// <param name="terminalId"></param>
         /// <param name="terminalSecret"></param>
         /// <returns></returns>
-        Task<TResponse> CallActionAsync<TResponse>(string actionType, ActionDTO actionDTO, string correlationId);
+        Task<TResponse> CallActionAsync<TResponse>(string actionType, Fr8DataDTO dataDTO, string correlationId);
     }
 }

@@ -1,11 +1,13 @@
 ﻿module dockyard.model {
 	export class WebServiceActionSetDTO {
 		webServiceIconPath: string;
-		actions: Array<ActivityTemplate>;
+        actions: Array<ActivityTemplate>;
+        webServiceName: string;
 
-		constructor(webServiceIconPath: string, actions: Array<ActivityTemplate>) {
+		constructor(webServiceIconPath: string, webServiceName: string, actions: Array<ActivityTemplate>) {
 			this.webServiceIconPath = webServiceIconPath;
-			this.actions = actions;
+            this.actions = actions;
+            this.webServiceName = webServiceName;
 		}
 	}
 }

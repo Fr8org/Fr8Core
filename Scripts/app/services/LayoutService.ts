@@ -16,11 +16,11 @@ module dockyard.services {
         constructor(private CrateHelper: services.CrateHelper) {
         }
 
-        placeActions(actions: model.ActionDTO[], startingId: string): model.ActionGroup[] {
+        placeActions(actions: model.ActivityDTO[], startingId: string): model.ActionGroup[] {
             var processedGroups: model.ActionGroup[] = [];
 
-            var actionGroups = _.toArray<model.ActionDTO[]>(
-                _.groupBy<model.ActionDTO>(actions, (action) => action.parentRouteNodeId)
+            var actionGroups = _.toArray<model.ActivityDTO[]>(
+                _.groupBy<model.ActivityDTO>(actions, (action) => action.parentRouteNodeId)
             );
 
             if (actions.length) {
@@ -43,13 +43,21 @@ module dockyard.services {
         }
         
         // Depth first search on the ActionGroup tree going from last sibling to first.
-        private processGroup(actionGroups: model.ActionDTO[][], group: model.ActionGroup, processedGroups: model.ActionGroup[]) {
+        private processGroup(actionGroups: model.ActivityDTO[][], group: model.ActionGroup, processedGroups: model.ActionGroup[]) {
+            if (group.parentAction && group.parentAction.activityTemplate) {
+                if (group.parentAction.activityTemplate.tags
+                    && group.parentAction.activityTemplate.tags.indexOf('HideChildren') !== -1) {
+                    return;
+                }
+            }
+
             processedGroups.push(group);
-            group.actions = _.sortBy(group.actions, (action: model.ActionDTO) => action.ordering);
+            group.actions = _.sortBy(group.actions, (action: model.ActivityDTO) => action.ordering);
+
             for (var i = group.actions.length - 1; i > -1; i--) {
                 //var childGroup = this.findChildGroup(actionGroups, group.actions[i].id);
                 if (group.actions[i].childrenActions.length) {
-                    var newGroup = new model.ActionGroup(<model.ActionDTO[]>group.actions[i].childrenActions, group.actions[i]);
+                    var newGroup = new model.ActionGroup(<model.ActivityDTO[]>group.actions[i].childrenActions, group.actions[i]);
                     this.calculateGroupPosition(newGroup, group, processedGroups);
                     this.processGroup(actionGroups, newGroup, processedGroups);
                 } else if (this.allowsChildren(group.actions[i])) { //has no children, but allows it. we should place an add action button below
@@ -61,7 +69,7 @@ module dockyard.services {
             
         }
 
-        private allowsChildren(action: model.ActionDTO) {
+        private allowsChildren(action: model.ActivityDTO) {
             return action.activityTemplate.type === 'Loop';
         }
 
@@ -109,22 +117,22 @@ module dockyard.services {
             }
         }
 
-        private findParentAction(group: model.ActionGroup, parentGroup: model.ActionGroup): model.ActionDTO {
-            return _.find(parentGroup.actions, (action: model.ActionDTO) => {
+        private findParentAction(group: model.ActionGroup, parentGroup: model.ActionGroup): model.ActivityDTO {
+            return _.find(parentGroup.actions, (action: model.ActivityDTO) => {
                 return action.id === group.parentAction.id;
             });
         }      
 
         private findParentGroup(actionGroups: model.ActionGroup[], parentId: string): model.ActionGroup {
             return _.find(actionGroups, (group: model.ActionGroup) => {
-                return group.actions.some((action: model.ActionDTO) => {
+                return group.actions.some((action: model.ActivityDTO) => {
                     return action.id === parentId;
                 });
             });
         }        
 
-        private findChildGroup(actionGroups: model.ActionDTO[][], parentId: string): model.ActionDTO[] {
-            return _.find(actionGroups, (group: model.ActionDTO[]) => {
+        private findChildGroup(actionGroups: model.ActivityDTO[][], parentId: string): model.ActivityDTO[] {
+            return _.find(actionGroups, (group: model.ActivityDTO[]) => {
                 return group[0].parentRouteNodeId === parentId;
             });
         }        

@@ -20,9 +20,9 @@ namespace terminalSendGridTests.Integration
     /// but allows to trigger that class from HealthMonitor.
     /// </summary>
     [Explicit]
-    public class SendEmailViaSendGrid_v1Tests : BaseHealthMonitorTest
+    public class SendEmailViaSendGrid_v1Tests : BaseTerminalIntegrationTest
     {
-        ActionDTO actionDTOInit = new ActionDTO();
+        ActivityDTO actionDTOInit = new ActivityDTO();
 
         public override string TerminalName
         {
@@ -38,11 +38,11 @@ namespace terminalSendGridTests.Integration
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.SendEmailViaSendGrid_v1_InitialConfiguration_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.SendEmailViaSendGrid_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -72,21 +72,21 @@ namespace terminalSendGridTests.Integration
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.SendEmailViaSendGrid_v1_InitialConfiguration_ActionDTO();
+            var dataDTO = HealthMonitor_FixtureData.SendEmailViaSendGrid_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
             //Call first time for the initial configuration
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    requestActionDTO
+                    dataDTO
                 );
-
+            dataDTO.ActivityDTO = responseActionDTO;
             //Call second time for the follow up configuration
             responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    responseActionDTO
+                    dataDTO
                 );
 
             //Assert
@@ -105,24 +105,24 @@ namespace terminalSendGridTests.Integration
             //Arrange
             var runUrl = GetTerminalRunUrl();
 
-            var actionDTO = HealthMonitor_FixtureData.SendEmailViaSendGrid_v1_InitialConfiguration_ActionDTO();
+            var dataDTO = HealthMonitor_FixtureData.SendEmailViaSendGrid_v1_InitialConfiguration_Fr8DataDTO();
 
 
-            using (var updater = Crate.UpdateStorage(actionDTO))
+            using (var updater = Crate.UpdateStorage(dataDTO.ActivityDTO))
             {
                 updater.CrateStorage.Add(CreateCrates());
             }
 
-            AddOperationalStateCrate(actionDTO, new OperationalStateCM());
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
 
             AddPayloadCrate(
-               actionDTO,
+               dataDTO,
                new StandardPayloadDataCM() { }
             );
 
             //Act
             var responsePayloadDTO =
-                await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+                await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
 
             //Assert
             var crateStorage = Crate.FromDto(responsePayloadDTO.CrateStorage);
@@ -171,11 +171,11 @@ namespace terminalSendGridTests.Integration
             var configureUrl = GetTerminalActivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = HealthMonitor_FixtureData.SendEmailViaSendGrid_v1_InitialConfiguration_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.SendEmailViaSendGrid_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -192,11 +192,11 @@ namespace terminalSendGridTests.Integration
             var configureUrl = GetTerminalDeactivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = HealthMonitor_FixtureData.SendEmailViaSendGrid_v1_InitialConfiguration_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.SendEmailViaSendGrid_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );

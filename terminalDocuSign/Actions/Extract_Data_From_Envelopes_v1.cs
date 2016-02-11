@@ -21,6 +21,9 @@ namespace terminalDocuSign.Actions
 {
     public class Extract_Data_From_Envelopes_v1 : BaseDocuSignAction
     {
+        private const string SolutionName = "Extract Data From Envelopes";
+        private const double SolutionVersion = 1.0;
+        private const string TerminalName = "DocuSign";
         private class ActionUi : StandardConfigurationControlsCM
         {
             [JsonIgnore]
@@ -35,34 +38,34 @@ namespace terminalDocuSign.Actions
                     IsReadOnly = true,
                     Label = "",
                     Value = "<img height=\"30px\" src=\"/Content/icons/web_services/DocuSign-Logo.png\">" +
-							"<p>You will be asked to select a DocuSign Template.</p>" +
-							"<p>Each time a related DocuSign Envelope is completed, we'll extract the data for you.</p>"
-                           
+                            "<p>You will be asked to select a DocuSign Template.</p>" +
+                            "<p>Each time a related DocuSign Envelope is completed, we'll extract the data for you.</p>"
+
                 });
 
                 Controls.Add((FinalActionsList = new DropDownList
                 {
                     Name = "FinalActionsList",
                     Required = true,
-					Label = "What would you like us to do with the data?",
+                    Label = "What would you like us to do with the data?",
                     Source = new FieldSourceDTO
                     {
                         Label = "AvailableActions",
                         ManifestType = CrateManifestTypes.StandardDesignTimeFields
                     },
-                    Events = new List<ControlEvent> {new ControlEvent("onChange", "requestConfig")}
+                    Events = new List<ControlEvent> { new ControlEvent("onChange", "requestConfig") }
                 }));
             }
         }
 
-        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
+            return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActionDO))
+            if (Crate.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -70,91 +73,57 @@ namespace terminalDocuSign.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivtyDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActionDO))
+            using (var updater = Crate.UpdateStorage(curActivtyDO))
             {
                 updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(PackControls(new ActionUi()));
-                updater.CrateStorage.AddRange(await PackSources(curActionDO));
+                updater.CrateStorage.AddRange(await PackSources(curActivtyDO));
             }
 
-            return curActionDO;
+            return curActivtyDO;
         }
 
-        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             var actionUi = new ActionUi();
 
-            actionUi.ClonePropertiesFrom(Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().First());
-            
+            actionUi.ClonePropertiesFrom(Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().First());
+
             //don't add child actions until a selection is made
-            if (string.IsNullOrEmpty(actionUi.FinalActionsList.Value)) 
+            if (string.IsNullOrEmpty(actionUi.FinalActionsList.Value))
             {
-                return curActionDO;
+                return curActivityDO;
             }
 
-            curActionDO.ChildNodes = new List<RouteNodeDO>();
+            curActivityDO.ChildNodes = new List<RouteNodeDO>();
 
             // Always use default template for solution
             const string firstTemplateName = "Monitor_DocuSign_Envelope_Activity";
-            var firstActionTemplate = (await FindTemplates(curActionDO, x => x.Name == "Monitor_DocuSign_Envelope_Activity")).FirstOrDefault();
 
-            if (firstActionTemplate == null)
-            {
-                throw new Exception(string.Format("ActivityTemplate {0} was not found", firstTemplateName));
-            }
+            var firstActivity = await AddAndConfigureChildActivity(curActivityDO, firstTemplateName);
+            var secondActivity = await AddAndConfigureChildActivity(curActivityDO, actionUi.FinalActionsList.Value, "Final activity");
 
-            var firstAction = new ActionDO
-            {
-                IsTempId = true,
-                ActivityTemplateId = firstActionTemplate.Id,
-                CrateStorage = Crate.EmptyStorageAsStr(),
-                CreateDate = DateTime.UtcNow,
-                Ordering = 1,
-                Name = "First action",
-                Label = firstActionTemplate.Label
-            };
-
-            curActionDO.ChildNodes.Add(firstAction);
-
-            int finalActionTemplateId;
-
-            if (int.TryParse(actionUi.FinalActionsList.Value, out finalActionTemplateId))
-            {
-                var finalAction = new ActionDO
-                {
-                    ActivityTemplateId = finalActionTemplateId,
-                    IsTempId = true,
-                    CrateStorage = Crate.EmptyStorageAsStr(),
-                    CreateDate = DateTime.UtcNow,
-                    Ordering = 2,
-                    Name = "Final action",
-                    Label = actionUi.FinalActionsList.selectedKey
-                };
-
-                curActionDO.ChildNodes.Add(finalAction);
-            }
-
-            return curActionDO;
+            return curActivityDO;
         }
 
-        public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            return Success(await GetPayload(actionDO, containerId));
+            return Success(await GetPayload(activityDO, containerId));
         }
-        
-        private async Task<IEnumerable<ActivityTemplateDO>> FindTemplates(ActionDO actionDO, Predicate<ActivityTemplateDO> query)
+
+        private async Task<IEnumerable<ActivityTemplateDO>> FindTemplates(ActivityDO activityDO, Predicate<ActivityTemplateDO> query)
         {
-            var templates = await HubCommunicator.GetActivityTemplates(actionDO,CurrentFr8UserId);
+            var templates = await HubCommunicator.GetActivityTemplates(activityDO, CurrentFr8UserId);
             return templates.Select(x => Mapper.Map<ActivityTemplateDO>(x)).Where(x => query(x));
         }
-        
-        private async Task<IEnumerable<Crate>> PackSources(ActionDO actionDO)
+
+        private async Task<IEnumerable<Crate>> PackSources(ActivityDO activityDO)
         {
             var sources = new List<Crate>();
 
-            var templates = await HubCommunicator.GetActivityTemplates(actionDO, ActivityCategory.Forwarders, CurrentFr8UserId);
+            var templates = await HubCommunicator.GetActivityTemplates(activityDO, ActivityCategory.Forwarders, CurrentFr8UserId);
             sources.Add(
                 Crate.CreateDesignTimeFieldsCrate(
                     "AvailableActions",
@@ -163,6 +132,18 @@ namespace terminalDocuSign.Actions
             );
 
             return sources;
+        }
+        //This method provides some documentation for the DocuSign Solution Actions
+        public Task<SolutionPageDTO> Documentation(ActivityDO activityDO)
+        {
+            var curSolutionPage = new SolutionPageDTO
+            {
+                Name = SolutionName,
+                Version = SolutionVersion,
+                Terminal = TerminalName,
+                Body = @"<p>This is a solution action</p>"
+            };
+            return Task.FromResult(curSolutionPage);
         }
     }
 }

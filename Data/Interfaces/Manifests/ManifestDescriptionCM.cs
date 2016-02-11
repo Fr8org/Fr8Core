@@ -1,4 +1,6 @@
-﻿
+﻿using System.Collections.Generic;
+using Data.Crates;
+
 namespace Data.Interfaces.Manifests
 {
     public class ManifestDescriptionCM : Manifest
@@ -18,6 +20,7 @@ namespace Data.Interfaces.Manifests
         public ManifestDescriptionCM()
             : base(Constants.MT.ManifestDescription)
         {
+
         }
     }
 }

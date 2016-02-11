@@ -17,10 +17,11 @@ namespace terminalExcel.Controllers
         private const string curTerminal = "terminalExcel";
 
         [HttpPost]
-        [fr8TerminalHMACAuthorize(curTerminal)]
-        public Task<object> Execute([FromUri] String actionType, [FromBody] ActionDTO curActionDTO)
+        [fr8TerminalHMACAuthenticate(curTerminal)]
+        [Authorize]
+        public Task<object> Execute([FromUri] String actionType, [FromBody] Fr8DataDTO curDataDTO)
         {
-            return HandleFr8Request(curTerminal, actionType, curActionDTO);
+            return HandleFr8Request(curTerminal, actionType, curDataDTO);
         }
     }
 }

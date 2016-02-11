@@ -37,9 +37,9 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <OutputPath>bin\</OutputPath>
-    <DefineConstants>TRACE;RELEASE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -232,6 +232,7 @@
     </Compile>
     <Compile Include="Actions\Get_DocuSign_Template_v1.cs" />
     <Compile Include="Actions\Mail_Merge_Into_DocuSign_v1.cs" />
+    <Compile Include="Actions\Archive_DocuSign_Template_v1.cs" />
     <Compile Include="Actions\Search_DocuSign_History_v1.cs" />
     <Compile Include="Actions\Query_DocuSign_v1.cs" />
     <Compile Include="Actions\Get_DocuSign_Envelope_v1.cs" />
@@ -290,17 +291,16 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="StructureMapConfigurationcs.cs" />
-    <Compile Include="Tests\Actions\Extract_From_DocuSign_Envelope_v1Tests.cs" />
-    <Compile Include="Tests\Actions\Generate_DocuSign_Report_Tests.cs">
+    <Compile Include="Tests\Actions\Generate_DocuSign_Report_Tests.cs" />
+    <Compile Include="Tests\Actions\Monitor_DocuSignTests.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Tests\Actions\Monitor_DocuSignTests.cs" />
-    <Compile Include="Tests\Actions\Search_DocuSign_Tests.cs" />
     <Compile Include="Tests\Actions\Query_DocuSign_Tests.cs" />
+    <Compile Include="Tests\Actions\Search_DocuSign_Tests.cs" />
     <Compile Include="Tests\DocusignApiHelper.cs" />
     <Compile Include="Tests\Fixtures\AppSettingsFixture.cs" />
-    <Compile Include="Tests\Fixtures\TerminalFixtureData - Folders.cs" />
     <Compile Include="Tests\Fixtures\TerminalFixtureData - DocusignAccount.cs" />
+    <Compile Include="Tests\Fixtures\TerminalFixtureData - Folders.cs" />
     <Compile Include="Tests\Fixtures\TerminalFixtureData - Recipient.cs" />
     <Compile Include="Tests\Fixtures\TerminalFixtureData - Signer.cs" />
     <Compile Include="Tests\IDocusignApiHelper.cs" />

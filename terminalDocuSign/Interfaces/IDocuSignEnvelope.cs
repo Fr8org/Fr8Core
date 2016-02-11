@@ -40,13 +40,14 @@ namespace terminalDocuSign.Interfaces
         IList<EnvelopeDataDTO> GetEnvelopeData(Envelope envelope);
 
         /// <summary>
-        /// Creates payload based on field mappings created by user 
-        /// and field values retrieved from a DocuSign envelope.
+        /// Creates Envelope payload, based on default template fields and added custom values
         /// </summary>
-        /// <param name="curFields">Field mappings created by user for an action.</param>
-        /// <param name="envelopeId">Envelope id which is being processed.</param>
-        /// <param name="curEnvelopeData">A collection of form fields extracted from the DocuSign envelope.</param>
-        IList<FieldDTO> ExtractPayload(List<FieldDTO> curFields, string envelopeId, IList<EnvelopeDataDTO> curEnvelopeData);
+        /// <param name="curTemplateFields"></param>
+        /// <param name="curEnvelopeId"></param>
+        /// <param name="curEnvelopeData"></param>
+        /// <returns></returns>
+        IList<FieldDTO> FormEnvelopePayload(List<FieldDTO> curTemplateFields, string curEnvelopeId,
+            IList<EnvelopeDataDTO> curEnvelopeData);
 
         /// <summary>
         /// Get Envelope Data from a docusign envelope. 

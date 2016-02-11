@@ -42,7 +42,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;RELEASE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -156,6 +156,10 @@
     </Reference>
     <Reference Include="Microsoft.ApplicationInsights, Version=1.2.3.490, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.ApplicationInsights.1.2.3\lib\net45\Microsoft.ApplicationInsights.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.ApplicationInsights.Log4NetAppender, Version=1.2.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.ApplicationInsights.Log4NetAppender.1.2.6\lib\net45\Microsoft.ApplicationInsights.Log4NetAppender.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -362,6 +366,9 @@
     <Compile Include="Controllers\Api\ManifestsController.cs" />
     <Compile Include="Controllers\Api\RoutesController.cs" />
     <Compile Include="Controllers\Api\TerminalsController.cs" />
+    <Compile Include="Controllers\RedirectController.cs" />
+    <Compile Include="Controllers\ServicesController.cs" />
+    <Compile Include="Controllers\SupportController.cs" />
     <Compile Include="Controllers\WelcomeController.cs" />
     <Compile Include="Controllers\Api\FieldController.cs" />
     <Compile Include="Controllers\Api\ActionListController.cs" />
@@ -372,9 +379,8 @@
     <Compile Include="Controllers\AuthenticationCallbackController.cs" />
     <Compile Include="Controllers\Api\FilesController.cs" />
     <Compile Include="Controllers\JsTestsController.cs" />
-    <Compile Include="Controllers\Api\SubrouteController.cs" />
+    <Compile Include="Controllers\Api\ProcessNodeTemplateController.cs" />
     <Compile Include="Controllers\Api\EventController.cs" />
-    <Compile Include="Controllers\External\DocuSign\DocusignAuthCallbackController.cs" />
     <Compile Include="Controllers\EnvelopeController.cs" />
     <Compile Include="Controllers\Api\ContainerController.cs" />
     <Compile Include="Controllers\StatusController.cs" />
@@ -423,8 +429,12 @@
     <Compile Include="Controllers\Api\ReportController.cs" />
     <Compile Include="Controllers\TokenAuthController.cs" />
     <Compile Include="ExceptionHandling\MvcHandleErrorAttribute.cs" />
-    <Compile Include="Infrastructure\fr8HubWebHMACAuthorizeAttribute.cs" />
-    <Compile Include="Infrastructure\TerminalPrinciple.cs" />
+    <Compile Include="Infrastructure\AngularTemplateCacheAttribute.cs" />
+    <Compile Include="Infrastructure\FileActionResult.cs" />
+    <Compile Include="Infrastructure\Fr8HubWebHMACAuthenticateAttribute.cs" />
+    <Compile Include="Infrastructure\Fr8Identity.cs" />
+    <Compile Include="Infrastructure\Fr8Principle.cs" />
+    <Compile Include="SelfHostFactory.cs" />
     <Compile Include="ViewModels\AuthenticationErrorVM.cs" />
     <Compile Include="ViewModels\DocusignLoginVM.cs" />
     <Compile Include="ViewModels\ForgotPasswordVM.cs" />
@@ -488,6 +498,7 @@
     <Content Include="Content\Databases\DO-823.sql" />
     <Content Include="Content\DO-823.sql" />
     <Content Include="Content\documents\Medical_Form_v2.xml" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\icons\web_services\aws-icon-64x64.png" />
     <Content Include="Content\icons\web_services\docusign-icon-64x64.png" />
     <Content Include="Content\icons\web_services\DocuSign-Logo.png" />
@@ -565,13 +576,16 @@
     <Content Include="Content\img\site\kwasant-video-screen.png" />
     <Content Include="Content\img\site\site-logo.png" />
     <Content Include="Content\img\welcome\docusign.png" />
+    <Content Include="Content\img\welcome\fr8Terminals-howitworks.png" />
     <Content Include="Content\img\welcome\left-side-bg.jpg" />
     <Content Include="Content\img\welcome\logo.png" />
+    <Content Include="Content\img\welcome\plan_with_activities.png" />
     <Content Include="Content\img\welcome\right-side-bg.jpg" />
     <Content Include="Content\img\welcome\routeBuilder.png" />
     <Content Include="Content\img\welcome\DocuSign_Logo_Purple_Yellow.png" />
     <Content Include="Content\img\welcome\header_green.png" />
     <Content Include="Content\img\welcome\welcome_header.png" />
+    <Content Include="Documentation\DocuSignRESTAPI.html" />
     <Content Include="fr8terminals.txt" />
     <Content Include="Documentation\AccountCustomFields.html" />
     <Content Include="Documentation\AddaNewGroup.html" />
@@ -761,9 +775,15 @@
     <Content Include="_PowerShellScripts\MASTER-settings.job" />
     <Content Include="_PowerShellScripts\DeployAzureWebJob-HealthMonitor-MASTER.ps1" />
     <Content Include="_PowerShellScripts\KillProcess.ps1" />
+    <Content Include="_PowerShellScripts\SetCloudServiceSize.ps1" />
+    <Content Include="_PowerShellScripts\SetTerminalFr8CoreCS.ps1" />
+    <Content Include="_PowerShellScripts\SetTerminalDocuSignCS.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryListController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\SolutionDocumentationController.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\ActionPicker.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamCrateChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamFieldChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Validators\ManifestDescriptionValidators.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\DateTimeFormatter.ts" />
@@ -776,6 +796,12 @@
     <TypeScriptCompile Include="Scripts\app\services\ConfigureTrackerService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\FileDetailsService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ManifestRegistryService.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\SolutionDTO.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\AuthService.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\ConfigureTrackerService.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\FileDetailsService.ts" />
+    <TypeScriptCompile Include="Scripts\app\interfaces\ISolutionDocumentationService.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\SolutionDocumentationService.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\UpstreamFieldChooser.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\filters\FilterByTagTests.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\TerminalFormController.ts" />
@@ -850,11 +876,15 @@
       <IsTransformFile>True</IsTransformFile>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Content Include="Content\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.woff2" />
     <None Include="Properties\PublishProfiles\dockyard - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\dockyard - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\fr8 - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\fr8 - Web Deploy.pubxml" />
-    <Content Include="Views\Home\DocuSign.cshtml" />
+    <Content Include="Views\Services\DocuSign.cshtml" />
     <Content Include="Views\Shared\_HomePage.cshtml" />
     <Content Include="_PowerShellScripts\UpdateTerminalUrl.ps1" />
     <Content Include="_PowerShellScripts\CheckWebSettings.ps1" />
@@ -873,6 +903,14 @@
     <Content Include="Views\AngularTemplate\UsersEmailList.cshtml" />
     <Content Include="Views\AngularTemplate\FileDetails.cshtml" />
     <Content Include="Views\AngularTemplate\ManifestRegistryList.cshtml" />
+    <Content Include="Views\AngularTemplate\_Debug.cshtml" />
+    <Content Include="Views\AngularTemplate\UpstreamCrateChooser.cshtml" />
+    <Content Include="Views\AngularTemplate\ActionPicker.cshtml" />
+    <Content Include="Views\Services\HowItWorks.cshtml" />
+    <Content Include="Views\AngularTemplate\SolutionDocumentation.cshtml" />
+    <Content Include="Views\Services\Salesforce.cshtml" />
+    <Content Include="Views\Services\GoogleApps.cshtml" />
+    <Content Include="Views\Support\Index.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -4246,7 +4284,6 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="archive\" />
-    <Folder Include="Content\fonts\" />
     <Folder Include="Content\img\forms\" />
     <Folder Include="Content\templates\metronic\assets\global\plugins\angularjs\plugins\angular-file-upload\uploads\" />
     <Folder Include="Content\templates\metronic\demo\" />
@@ -4304,7 +4341,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dev|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;DEV</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>

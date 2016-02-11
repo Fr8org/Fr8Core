@@ -91,6 +91,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.ApplicationInsights, Version=1.2.3.490, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.1.2.3\lib\net45\Microsoft.ApplicationInsights.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core">
       <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.0.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
     </Reference>
@@ -230,7 +234,10 @@
     <Compile Include="Exceptions\ErrorResponseException.cs" />
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Helper\LZString.cs" />
-    <Compile Include="Infrastructure\fr8HMACAuthorizeAttribute.cs" />
+    <Compile Include="Infrastructure\FilterConditionPredicateBuilder.cs" />
+    <Compile Include="Infrastructure\fr8HMACAuthenticateAttribute.cs" />
+    <Compile Include="Managers\Event.cs" />
+    <Compile Include="Managers\RouteManager.cs" />
     <Compile Include="Security\HMACAuthenticator.cs" />
     <Compile Include="Interfaces\IAuthorization.cs" />
     <Compile Include="Interfaces\IFindObjectsRoute.cs" />
@@ -240,7 +247,7 @@
     <Compile Include="Interfaces\IField.cs" />
     <Compile Include="Interfaces\IRouteNode.cs" />
     <Compile Include="Interfaces\IActivityTemplate.cs" />
-    <Compile Include="Interfaces\IAction.cs" />
+    <Compile Include="Interfaces\IActivity.cs" />
     <Compile Include="Helper\ProcessNodeTransition.cs" />
     <Compile Include="Interfaces\ITag.cs" />
     <Compile Include="Interfaces\ITime.cs" />
@@ -260,7 +267,7 @@
     <Compile Include="Interfaces\ISubroute.cs" />
     <Compile Include="Interfaces\IReport.cs" />
     <Compile Include="Interfaces\ISMSMessage.cs" />
-    <Compile Include="Interfaces\IRoute.cs" />
+    <Compile Include="Interfaces\IPlan.cs" />
     <Compile Include="Interfaces\ISubscription.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -278,9 +285,6 @@
     <Compile Include="Managers\APIManagers\Transmitters\Restful\RestfulServiceClient.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Restful\RestfulServiceException.cs" />
     <Compile Include="Managers\EventReporter.cs" />
-    <Compile Include="Managers\APIManagers\Authorizers\Docusign\DocusignAuthFlow.cs" />
-    <Compile Include="Managers\APIManagers\Authorizers\Docusign\DocusignAuthorizer.cs" />
-    <Compile Include="Managers\APIManagers\Authorizers\Docusign\IDocusignAuthorizer.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\Google\AppFlowMetadata.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\Google\AuthorizationCodeFlow.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\Google\GoogleAuthorizer.cs" />
@@ -322,7 +326,7 @@
     <Compile Include="Services\FindObjectsRoute.cs" />
     <Compile Include="Services\Manifest.cs" />
     <Compile Include="Services\RouteNode.cs" />
-    <Compile Include="Services\Action.cs" />
+    <Compile Include="Services\Activity.cs" />
     <Compile Include="Services\ActivityTemplate.cs" />
     <Compile Include="Services\AuthData.cs" />
     <Compile Include="Services\Authorization.cs" />
@@ -340,7 +344,7 @@
     <Compile Include="Services\ProcessNode.cs" />
     <Compile Include="Services\Container.cs" />
     <Compile Include="Services\Subroute.cs" />
-    <Compile Include="Services\Route.cs" />
+    <Compile Include="Services\Plan.cs" />
     <Compile Include="Services\Report.cs" />
     <Compile Include="Services\Subscription.cs" />
     <Compile Include="Services\Time.cs" />

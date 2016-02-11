@@ -17,7 +17,8 @@ var app = angular.module("app", [
     "frapontillo.bootstrap-switch",
     "ApplicationInsightsModule",
     "dndLists",
-    "ngTable"
+    "ngTable",
+    "mb-scrollbar"
 ]);
 
 /* For compatibility with older versions of script files. Can be safely deleted later. */
@@ -104,7 +105,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
     $httpProvider.interceptors.push('fr8VersionInterceptor');
 
     // Install a HTTP request interceptor that causes 'Processing...' message to display
-    $httpProvider.interceptors.push(($q: ng.IQService, $window: ng.IWindowService) => {
+    $httpProvider.interceptors.push(['$q','$window',($q: ng.IQService, $window: ng.IWindowService) => {
         return {
             request: function (config: ng.IRequestConfig) {
                 // Show page spinner If there is no request parameter suppressSpinner.
@@ -130,7 +131,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
                 return $q.reject(config);
             }
         }
-    });
+    }]);
 
     // Redirect any unmatched url
     $urlRouterProvider.otherwise("/myaccount");

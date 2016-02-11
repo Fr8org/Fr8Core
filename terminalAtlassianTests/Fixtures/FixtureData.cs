@@ -28,7 +28,7 @@ namespace terminalAtlassianTests.Fixtures
             };
         }
 
-        public static ActionDO GetJiraIssueTestActionDO1()
+        public static ActivityDO GetJiraIssueTestActionDO1()
         {
             ICrateManager _crate = ObjectFactory.GetInstance<ICrateManager>();
 
@@ -44,9 +44,8 @@ namespace terminalAtlassianTests.Fixtures
                 fieldEnterJiraKey
             };
 
-            var actionDo = new ActionDO()
+            var actionDo = new ActivityDO()
             {
-                Name = "testaction",
                 Id = Guid.NewGuid()
             };
             using (var updater = _crate.UpdateStorage(actionDo))

@@ -11,6 +11,7 @@ using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
 using Data.States;
 using System.Threading.Tasks;
+using StructureMap;
 
 namespace Hub.Managers
 {
@@ -112,6 +113,11 @@ namespace Hub.Managers
             return Crate<StandardDesignTimeFieldsCM>.FromContent(label, new StandardDesignTimeFieldsCM() { Fields = fields.ToList() });
         }
 
+        public Crate<ManifestDescriptionCM> CreateManifestDescriptionCrate(string label, string name, string id, AvailabilityType availability)
+        {
+            return Crate<ManifestDescriptionCM>.FromContent(label, new ManifestDescriptionCM() { Name = name, Id = id }, availability);
+        }
+
         public Crate<StandardDesignTimeFieldsCM> CreateDesignTimeFieldsCrate(string label, AvailabilityType availability, params FieldDTO[] fields)
         {
             return Crate<StandardDesignTimeFieldsCM>.FromContent(label, new StandardDesignTimeFieldsCM() { Fields = fields.ToList() }, availability);
@@ -132,9 +138,9 @@ namespace Hub.Managers
             return Crate<StandardConfigurationControlsCM>.FromContent(label,  new StandardConfigurationControlsCM() { Controls = controls.ToList() }, AvailabilityType.Configuration);
         }
 
-        public Crate CreateStandardEventSubscriptionsCrate(string label, params string[] subscriptions)
+        public Crate CreateStandardEventSubscriptionsCrate(string label, string manufacturer, params string[] subscriptions )
         {
-            return Crate.FromContent(label, new EventSubscriptionCM() { Subscriptions = subscriptions.ToList() });
+            return Crate.FromContent(label, new EventSubscriptionCM() { Subscriptions = subscriptions.ToList(), Manufacturer = manufacturer});
         }
         
         public Crate CreateStandardEventReportCrate(string label, EventReportCM eventReport)
@@ -220,7 +226,7 @@ namespace Hub.Managers
                 if (crateContentType != null)
                 {
                     if (crateContentType is StandardPayloadDataCM)
-                        (crateContentType as StandardPayloadDataCM).TryGetValue(findKey, true, out key);
+                        (crateContentType as StandardPayloadDataCM).TryGetValue(findKey, true, false, out key);
                     else
                         throw new Exception("Manifest type GetFieldByKey implementation is missing");
                 }
@@ -327,6 +333,14 @@ namespace Hub.Managers
             return crates.Where(c => c.ManifestType.Type == manifestType)
                     .GroupBy(c => c.Label)
                     .Select(c => c.Key).ToList();
+        }
+
+        public T GetContentType<T>(string crate) where T : class
+        {
+            ICrateManager _crate = ObjectFactory.GetInstance<ICrateManager>();
+            return _crate.GetStorage(crate)
+                            .CrateContentsOfType<T>()
+                            .FirstOrDefault();
         }
     }
 }

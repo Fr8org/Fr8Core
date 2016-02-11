@@ -2,7 +2,7 @@
 
 module dockyard.directives {
 
-    app.directive('layoutAction', (LayoutService: services.LayoutService) => {
+    app.directive('layoutAction', ['LayoutService', (LayoutService: services.LayoutService) => {
         return {
             restrict: 'A',
             link: (scope: any, elem: ng.IAugmentedJQuery) => {
@@ -14,18 +14,18 @@ module dockyard.directives {
                 });
             }
         };
-    });
+    }]);
 
-    app.directive('layoutActionGroup', (LayoutService: services.LayoutService) => {
+    app.directive('layoutActionGroup', ['LayoutService', (LayoutService: services.LayoutService) => {
         return {
             restrict: 'A',
             link: (scope: any, elem: ng.IAugmentedJQuery) => {
             }
         };
-    });
+    }]);
 
     // calculates process builder container height depending on the amount of actions
-    app.directive('layoutContainer', (LayoutService: services.LayoutService) => {
+    app.directive('layoutContainer', ['LayoutService', (LayoutService: services.LayoutService) => {
         return {
             restrict: 'A',
             link: (scope: ng.IScope, elem: ng.IAugmentedJQuery) => {
@@ -40,5 +40,5 @@ module dockyard.directives {
                 });
             }
         };
-    });
+    }]);
 }

@@ -19,7 +19,7 @@ namespace terminalDropboxTests.Integration
     /// but allows to trigger that class from HealthMonitor.
     /// </summary>
     [Explicit]
-    public class Get_File_List_v1_Tests : BaseHealthMonitorTest
+    public class Get_File_List_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {
@@ -31,11 +31,11 @@ namespace terminalDropboxTests.Integration
         {
             //Arrange
             var runUrl = GetTerminalRunUrl();
-            var requestActionDTO = HealthMonitor_FixtureData.GetFileListTestActionDTO();
-            AddOperationalStateCrate(requestActionDTO, new OperationalStateCM());
+            var dataDTO = HealthMonitor_FixtureData.GetFileListTestFr8DataDTO();
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
 
             //Act
-            var payloadDTOResult = await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, requestActionDTO);
+            var payloadDTOResult = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
             var jsonData = ((JValue)(payloadDTOResult.CrateStorage.Crates[1].Contents)).Value.ToString();
             var dropboxFileList = JsonConvert.DeserializeObject<List<string>>(jsonData);
 

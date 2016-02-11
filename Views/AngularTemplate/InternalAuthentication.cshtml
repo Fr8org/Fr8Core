@@ -25,6 +25,10 @@
             <label>Password: </label>
             <input type="password" class="form-control" ng-model="formData.password" name="password" required />
         </div>
+        <div class="form-group" ng-show="hasDemoService()">
+            <input type="checkbox" ng-model="formData.isDemoAccount" name="isDemoAccount" />
+            <label for="isDemoAccount">This account is on the DocuSign Demo Sandbox (unlikely)</label>
+        </div>
 
         <button type="submit" class="btn btn-primary">Authenticate</button>
     </form>

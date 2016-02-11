@@ -1,30 +1,26 @@
 ﻿module dockyard.model {
-    export class ActionDTO implements interfaces.IActionDTO {
+    export class ActivityDTO implements interfaces.IActivityDTO {
         rootRouteNodeId: string;
         parentRouteNodeId: string;
         id: string;
-        isTempId: boolean;
-        name: string;
         label: string;
         crateStorage: model.CrateStorage;
         configurationControls: model.ControlsList;
         activityTemplateId: number;
         activityTemplate: ActivityTemplate;
         currentView: string;
-        childrenActions: Array<interfaces.IActionDTO>;
+        childrenActions: Array<interfaces.IActivityDTO>;
         height: number = 300;
         ordering: number;
-
+        documentationSupport: string;
         constructor(
             rootRouteNodeId: string,
             parentRouteNodeId: string,
-            id: string,
-            isTempId: boolean
+            id: string
         ) {
             this.rootRouteNodeId = rootRouteNodeId;
             this.parentRouteNodeId = parentRouteNodeId;
             this.id = id;
-            this.isTempId = isTempId;
             this.activityTemplateId = 0;
             this.configurationControls = new ControlsList();
         }
@@ -33,32 +29,27 @@
             return <interfaces.IActionVM>angular.extend({}, this);
         }
 
-        clone(): ActionDTO {
-            var result = new ActionDTO(
+        clone(): ActivityDTO {
+            var result = new ActivityDTO(
                 this.rootRouteNodeId,
                 this.parentRouteNodeId,
-                this.id,
-                this.isTempId
+                this.id
             );
-            result.name = this.name;
-            result.name = this.label;
             result.ordering = this.ordering;
             return result;
         }
 
         static isActionValid(action: interfaces.IActionVM) {
-            return action && action.$resolved && !action.isTempId;
+            return action && action.$resolved;
         }
 
-        static create(dataObject: interfaces.IActionDTO): ActionDTO {
-            var result = new ActionDTO('', '', '', false);
+        static create(dataObject: interfaces.IActivityDTO): ActivityDTO {
+            var result = new ActivityDTO('', '', '');
             result.activityTemplateId = dataObject.activityTemplateId;
             result.activityTemplate = dataObject.activityTemplate;
             result.crateStorage = dataObject.crateStorage;
             result.configurationControls = dataObject.configurationControls;
             result.id = dataObject.id;
-            result.isTempId = dataObject.isTempId;
-            result.name = dataObject.name;
             result.label = dataObject.label;
             result.parentRouteNodeId = dataObject.parentRouteNodeId;
             result.ordering = dataObject.ordering;

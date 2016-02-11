@@ -59,7 +59,7 @@ namespace Data.Migrations
                 ObjectFactory.Initialize(x => x.AddRegistry<MigrationConsoleSeedRegistry>());
             }
 
-            var uow = new UnitOfWork(context);
+            var uow = new UnitOfWork(context, ObjectFactory.Container);
 
             UpdateRootRouteNodeId(uow);
 
@@ -69,14 +69,17 @@ namespace Data.Migrations
             AddAdmins(uow);
             AddDockyardAccounts(uow);
             AddProfiles(uow);
-
+            AddTestAccounts(uow);
             //Addterminals(uow);
 
 
             //AddAuthorizationTokens(uow);
-            AddContainerDOForTestingApi(uow);
+            uow.SaveChanges();
+            Fr8AccountDO fr8AccountDO = GetFr8Account(uow, "alex@edelstein.org");
+            AddContainerDOForTestingApi(uow, fr8AccountDO);
 
             AddWebServices(uow);
+
         }
 
         //Method to let us seed into memory as well
@@ -121,47 +124,53 @@ namespace Data.Migrations
             return Crate.FromContent("Standard Event Report", docusignEventPayload);
         }
 
-        private static void AddContainerDOForTestingApi(IUnitOfWork uow)
+        private static void AddContainerDOForTestingApi(IUnitOfWork uow, Fr8AccountDO fr8AccountDO)
         {
-            new RouteBuilder("TestTemplate{0B6944E1-3CC5-45BA-AF78-728FFBE57358}").AddCrate(GenerateInitialEventCrate()).Store(uow);
-            new RouteBuilder("TestTemplate{77D78B4E-111F-4F62-8AC6-6B77459042CB}")
+            new RouteBuilder("TestTemplate{0B6944E1-3CC5-45BA-AF78-728FFBE57358}", fr8AccountDO).AddCrate(GenerateInitialEventCrate()).Store(uow);
+            new RouteBuilder("TestTemplate{77D78B4E-111F-4F62-8AC6-6B77459042CB}", fr8AccountDO)
                 .AddCrate(GenerateInitialEventCrate())
                 .AddCrate(Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(new FieldDTO("EnvelopeId", "38b8de65-d4c0-435d-ac1b-87d1b2dc5251")))).Store(uow);
 
             uow.SaveChanges();
         }
 
-//        private static void AddAuthorizationTokens(IUnitOfWork uow)
-//        {
-//            AddDocusignAuthToken(uow);
-//        }
-//
-//        private static void AddDocusignAuthToken(IUnitOfWork uow)
-//        {
-//            // Check that terminal does not exist yet.
-//            var docusignAuthToken = uow.AuthorizationTokenRepository.GetQuery()
-//                .Any(x => x.ExternalAccountId == "docusign_developer@dockyard.company");
-//
-//            // Add new terminal and subscription to repository, if terminal doesn't exist.
-//
-//            if (!docusignAuthToken)
-//            {
-//                var token = new AuthorizationTokenDO();
-//                token.ExternalAccountId = "docusign_developer@dockyard.company";
-//                token.Token = "";
-//                token.UserDO = uow.UserRepository.GetOrCreateUser("alex@edelstein.org");
-//
-//                var docuSignTerminal = uow.TerminalRepository.FindOne(p => p.Name == "terminalDocuSign");
-//                token.Terminal = docuSignTerminal;
-//                token.TerminalID = docuSignTerminal.Id;
-//
-//                token.ExpiresAt = DateTime.UtcNow.AddDays(10);
-//
-//                uow.AuthorizationTokenRepository.Add(token);
-//                uow.SaveChanges();
-//
-//            }
-//        }
+        private static Fr8AccountDO GetFr8Account(IUnitOfWork uow, string emailAddress)
+        {
+            return uow.UserRepository.FindOne(u => u.EmailAddress.Address == emailAddress);
+        }
+
+
+        //        private static void AddAuthorizationTokens(IUnitOfWork uow)
+        //        {
+        //            AddDocusignAuthToken(uow);
+        //        }
+        //
+        //        private static void AddDocusignAuthToken(IUnitOfWork uow)
+        //        {
+        //            // Check that terminal does not exist yet.
+        //            var docusignAuthToken = uow.AuthorizationTokenRepository.GetQuery()
+        //                .Any(x => x.ExternalAccountId == "docusign_developer@dockyard.company");
+        //
+        //            // Add new terminal and subscription to repository, if terminal doesn't exist.
+        //
+        //            if (!docusignAuthToken)
+        //            {
+        //                var token = new AuthorizationTokenDO();
+        //                token.ExternalAccountId = "docusign_developer@dockyard.company";
+        //                token.Token = "";
+        //                token.UserDO = uow.UserRepository.GetOrCreateUser("alex@edelstein.org");
+        //
+        //                var docuSignTerminal = uow.TerminalRepository.FindOne(p => p.Name == "terminalDocuSign");
+        //                token.Terminal = docuSignTerminal;
+        //                token.TerminalID = docuSignTerminal.Id;
+        //
+        //                token.ExpiresAt = DateTime.UtcNow.AddDays(10);
+        //
+        //                uow.AuthorizationTokenRepository.Add(token);
+        //                uow.SaveChanges();
+        //
+        //            }
+        //        }
 
         //This method will automatically seed any constants file
         //It looks for rows which implement IConstantRow<>
@@ -359,10 +368,19 @@ namespace Data.Migrations
             CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", unitOfWork);
             CreateDockyardAccount("fileupload@dockyard.company", "test123", unitOfWork);
             CreateDockyardAccount("sacre", "printf", unitOfWork);
+            CreateDockyardAccount("integration_test_runner@fr8.company", "fr8#s@lt!", unitOfWork);
+        }
+        /// <summary>
+        /// Add test user with 'Admin' role
+        /// </summary>
+        /// <param name="unitOfWork"></param>
+        private static void AddTestAccounts(IUnitOfWork unitOfWork)
+        {
+            CreateTestAccount("integration_test_runner@fr8.company", "fr8#s@lt!", "IntegrationTestRunner", unitOfWork);
         }
 
         /// <summary>
-        /// Craete a user with role 'Admin'
+        /// Create a user with role 'Admin'
         /// </summary>
         /// <param name="userEmail"></param>
         /// <param name="curPassword"></param>
@@ -381,6 +399,20 @@ namespace Data.Migrations
             return user;
         }
 
+        private static Fr8AccountDO CreateTestAccount(string userEmail, string curPassword, string userName, IUnitOfWork uow)
+        {
+            var user = uow.UserRepository.GetOrCreateUser(userEmail);
+            if (user == null)
+            {
+                uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
+                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, user.Id);
+                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Booker, user.Id);
+                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, user.Id);
+                user.TestAccount = true;
+            }
+            return user;
+        }
+
         /// <summary>
         /// Craete a user with role 'Customer'
         /// </summary>
@@ -388,7 +420,7 @@ namespace Data.Migrations
         /// <param name="curPassword"></param>
         /// <param name="uow"></param>
         /// <returns></returns>
-        private static Fr8AccountDO CreateDockyardAccount(string userEmail, string curPassword, IUnitOfWork uow)
+        public static Fr8AccountDO CreateDockyardAccount(string userEmail, string curPassword, IUnitOfWork uow)
         {
             var user = uow.UserRepository.GetOrCreateUser(userEmail);
             uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
@@ -514,7 +546,7 @@ namespace Data.Migrations
             AddWebService(uow, "DocuSign", "/Content/icons/web_services/docusign-icon-64x64.png");
             AddWebService(uow, "Microsoft Azure", "/Content/icons/web_services/ms-azure-icon-64x64.png");
             AddWebService(uow, "Excel", "/Content/icons/web_services/ms-excel-icon-64x64.png");
-            AddWebService(uow, "fr8 Core", "/Content/icons/web_services/fr8-core-icon-64x64.png");
+            AddWebService(uow, "Built-In Services", "/Content/icons/web_services/fr8-core-icon-64x64.png");
             AddWebService(uow, "Salesforce", "/Content/icons/web_services/salesforce-icon-64x64.png");
             AddWebService(uow, "SendGrid", "/Content/icons/web_services/sendgrid-icon-64x64.png");
             AddWebService(uow, "Dropbox", "/Content/icons/web_services/dropbox-icon-64x64.png");
@@ -580,16 +612,14 @@ namespace Data.Migrations
 
         private void UpdateRootRouteNodeId(IUnitOfWork uow)
         {
-            var anyRootIdFlag = uow.RouteNodeRepository
-                .GetAll()
-                .Any(x => x.RootRouteNodeId != null);
+            var anyRootIdFlag = uow.PlanRepository.GetNodesQueryUncached().Any(x => x.RootRouteNodeId != null);
 
             if (anyRootIdFlag)
             {
                 return;
             }
 
-            var fullTree = uow.RouteNodeRepository.GetAll().ToList();
+            var fullTree = uow.PlanRepository.GetNodesQueryUncached().ToList();
 
             var parentChildMap = new Dictionary<Guid, List<RouteNodeDO>>();
             foreach (var routeNode in fullTree.Where(x => x.ParentRouteNodeId.HasValue))

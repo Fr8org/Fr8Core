@@ -40,6 +40,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/model/TerminalDTO.js',
         'Scripts/app/model/TerminalActionSetDTO.js',
         'Scripts/app/model/ManageAuthToken.js',
+        'Scripts/app/model/SolutionDTO.js',
         'Scripts/app/services/CrateHelper.js',
         'Scripts/app/services/AuthService.js',
         'Scripts/app/services/ConfigureTrackerService.js',
@@ -58,6 +59,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/services/TerminalService.js',
         'Scripts/app/services/ManageAuthTokenService.js',
         'Scripts/app/services/ManifestRegistryService.js',
+        'Scripts/app/services/SolutionDocumentationService.js',
         'Scripts/app/filters/RouteState.js',
         'Scripts/app/filters/ContainerState.js',
         'Scripts/app/filters/FilterByTag.js',
@@ -89,8 +91,10 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/Controls/Duration.js',
         'Scripts/app/directives/Controls/UpstreamDataChooser.js',
         'Scripts/app/directives/Controls/UpstreamFieldChooser.js',
+        'Scripts/app/directives/Controls/UpstreamCrateChooser.js',
         'Scripts/app/directives/LongAjaxCursor.js',
         'Scripts/app/directives/Validators/ManifestDescriptionValidators.js',
+        'Scripts/app/directives/ActionPicker.js',
         'Scripts/app/filters/ActionNameFormatter.js',
         'Scripts/app/filters/DateTimeFormatter.js',
         'Scripts/app/controllers/RouteBuilderController.js',
@@ -124,7 +128,8 @@ gulp.task('compile_js', function () {
         'Scripts/app/controllers/TerminalFormController.js',
         'Scripts/app/controllers/ManageAuthTokenController.js',
         'Scripts/app/controllers/ManifestRegistryListController.js',
-        'Scripts/app/controllers/ManifestRegistryFormController.js'
+        'Scripts/app/controllers/ManifestRegistryFormController.js',
+        'Scripts/app/controllers/SolutionDocumentationController.js'
     ])
         .pipe(sourcemaps.init())
         .pipe(concat('_compiled.js'))

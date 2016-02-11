@@ -14,7 +14,7 @@ namespace terminalQuickBooksTests.Integration
     /// but allows to trigger that class from HealthMonitor.
     /// </summary>
     [Explicit]
-    internal class Create_Journal_Entry_v1Tests : BaseHealthMonitorTest
+    internal class Create_Journal_Entry_v1Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {
@@ -27,11 +27,11 @@ namespace terminalQuickBooksTests.Integration
             var curMessage =
                 "When this Action runs, it will be expecting to find a Crate of Standard Accounting Transactions. " +
                 "Right now, it doesn't detect any Upstream Actions that produce that kind of Crate. " +
-                "Please add an action upstream (to the left) of this action that does so.";
+                "Please add an activity upstream (to the left) of this action that does so.";
             var configureUrl = GetTerminalConfigureUrl();
-            var requestActionDTO = HealthMonitor_FixtureData.Action_Create_Journal_Entry_v1_InitialConfiguration_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Action_Create_Journal_Entry_v1_InitialConfiguration_Fr8DataDTO();
             //Act
-            var responseActionDTO = await HttpPostAsync<ActionDTO, ActionDTO>(
+            var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -50,13 +50,13 @@ namespace terminalQuickBooksTests.Integration
         {
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
-            var requestActionDTO = HealthMonitor_FixtureData.Action_Create_Journal_Entry_v1_InitialConfiguration_ActionDTO();
+            var dataDTO = HealthMonitor_FixtureData.Action_Create_Journal_Entry_v1_InitialConfiguration_Fr8DataDTO();
             var curStandAccTransCrate = HealthMonitor_FixtureData.GetAccountingTransactionCM();
-            AddUpstreamCrate(requestActionDTO, curStandAccTransCrate);
+            AddUpstreamCrate(dataDTO, curStandAccTransCrate);
             //Act
-            var responseActionDTO = await HttpPostAsync<ActionDTO, ActionDTO>(
+            var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    requestActionDTO
+                    dataDTO
                 );
             //Assert
             Assert.NotNull(responseActionDTO);

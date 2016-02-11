@@ -12,7 +12,7 @@ namespace terminalGoogleTests.Integration
     /// but allows to trigger that class from HealthMonitor.
     /// </summary>
     [Explicit]
-    public class Terminal_Discover_v1_Tests : BaseHealthMonitorTest
+    public class Terminal_Discover_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {
@@ -31,10 +31,11 @@ namespace terminalGoogleTests.Integration
 
             Assert.IsNotNull(googleTerminalDiscoveryResponse, "Terminal Google discovery did not happen.");
             Assert.IsNotNull(googleTerminalDiscoveryResponse.Actions, "Google terminal does not have actions.");
-            Assert.AreEqual(2, googleTerminalDiscoveryResponse.Actions.Count, "Google terminal expected 2 actions.");
+            Assert.AreEqual(3, googleTerminalDiscoveryResponse.Actions.Count, "Google terminal expected 3 actions.");
             Assert.AreEqual("terminalGoogle", googleTerminalDiscoveryResponse.Definition.Name);
             Assert.AreEqual(googleTerminalDiscoveryResponse.Actions.Any(a => a.Name == "Get_Google_Sheet_Data"), true, "Action Get_Google_Sheet_Data was not loaded");
             Assert.AreEqual(googleTerminalDiscoveryResponse.Actions.Any(a => a.Name == "Receive_Google_Form"), true, "Action Receive_Google_Form was not loaded");
+            Assert.AreEqual(googleTerminalDiscoveryResponse.Actions.Any(a => a.Name == "Save_In_Google_Sheet"), true, "Action Save_In_Google_Sheet was not loaded");
         }
     }
 }

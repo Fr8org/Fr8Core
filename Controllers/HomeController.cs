@@ -26,14 +26,6 @@ namespace HubWeb.Controllers
             _email = ObjectFactory.GetInstance<Email>();
             _configRepository = ObjectFactory.GetInstance<IConfigRepository>();
         }
-
-
-
-        public ActionResult DocuSign()
-        {
-            return View();
-        }
-
         public ActionResult Index(string emailAddress)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -72,11 +64,8 @@ namespace HubWeb.Controllers
             }
         }
 
-
         public ActionResult Index_Docusign()
         {
-         
-
             return View();
         }
 
@@ -153,18 +142,12 @@ namespace HubWeb.Controllers
         [HttpPost]
         public ActionResult ProcessHomePageBookingRequest(string emailAddress, string meetingInfo)
         {
-
-
             RegexUtilities.ValidateEmailAddress(emailAddress);
             if (meetingInfo.Trim().Length < 30)
                 return Json(new { Message = "Meeting information must have at least 30 characters" });
 
             return RedirectToAction("CreateViaHomePage", "BookingRequest", new { emailAddress = emailAddress, meetingInfo = meetingInfo });
-
-
         }
-
-
 
         //  EmailAddress  is valid then send mail .    
         // return "success" or  error 

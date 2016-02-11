@@ -44,7 +44,14 @@ namespace DockyardTest.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var root = FixtureData.TestActivityTree();
-                uow.RouteNodeRepository.Add(root);
+
+                uow.PlanRepository.Add(new PlanDO()
+                {
+                    Name = "name",
+                    RouteState = RouteState.Active,
+                    ChildNodes = { root }
+                });
+                
                 uow.SaveChanges();
 
                 RouteNodeDO curActivity = root;
@@ -87,17 +94,26 @@ namespace DockyardTest.Services
             //print out the list of activity ids
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.RouteNodeRepository.Add(FixtureData.TestActivityTree());
+
+                uow.PlanRepository.Add(new PlanDO()
+                {
+                    Name = "name",
+                    RouteState = RouteState.Active,
+                    ChildNodes = { FixtureData.TestActivityTree() }
+                });
+                
                 uow.SaveChanges();
 
 
-                RouteNodeDO curActivity = FixtureData.TestActivity57();
+                RouteNodeDO curActivity = uow.PlanRepository.GetById<RouteNodeDO>(FixtureData.TestActivity57().Id);
 
-                List<RouteNodeDO> upstreamActivities = _activity.GetUpstreamActivities(uow, curActivity);
+                List<RouteNodeDO> upstreamActivities = _activity.GetUpstreamActivities(uow, curActivity).Where(x => !(x is PlanDO)).ToList();
                 foreach (var activity in upstreamActivities)
                 {
-                    Debug.WriteLine(activity.Id);
+                    Debug.WriteLine (FixtureData.GetTestIdByGuid(activity.Id));
                 }
+
+
 
                 Assert.AreEqual(10, upstreamActivities.Count());
 
@@ -113,16 +129,22 @@ namespace DockyardTest.Services
             //print out the list of activity ids
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.RouteNodeRepository.Add(FixtureData.TestActivityTree());
+                uow.PlanRepository.Add(new PlanDO()
+                {
+                    Name = "name",
+                    RouteState = RouteState.Active,
+                    ChildNodes = { FixtureData.TestActivityTree() }
+                });
+                
+                //uow.RouteNodeRepository.Add(FixtureData.TestActivityTree());
                 uow.SaveChanges();
 
 
                 RouteNodeDO curActivity = FixtureData.TestActivity57();
-
-                List<RouteNodeDO> downstreamActivities = _activity.GetDownstreamActivities(uow, curActivity);
+                List<RouteNodeDO> downstreamActivities = _activity.GetDownstreamActivities(uow, uow.PlanRepository.GetById<RouteNodeDO>(curActivity.Id));
                 foreach (var activity in downstreamActivities)
                 {
-                    Debug.WriteLine(activity.Id);
+                    Debug.WriteLine(FixtureData.GetTestIdByGuid(activity.Id));
                 }
 
                 Assert.AreEqual(9, downstreamActivities.Count());
@@ -174,12 +196,12 @@ namespace DockyardTest.Services
                 uow.ActivityTemplateRepository.Add(templateObj);
                 uow.SaveChanges();
 
-                var action = FixtureData.TestAction1();
-                uow.ActionRepository.Add(action);
+                var activity = FixtureData.TestActivity1();
+                //uow.ActivityRepository.Add(activity);
                 uow.SaveChanges();
 
-                ActionDO obj = FixtureData.TestActionProcess();
-                uow.RouteNodeRepository.Add(obj);
+                ActivityDO obj = FixtureData.TestActivityProcess();
+               // uow.RouteNodeRepository.Add(obj);
                 uow.SaveChanges();
 
                 ContainerDO containerDO = FixtureData.TestContainer1();

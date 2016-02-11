@@ -25,19 +25,20 @@ namespace terminalYammerTests.Fixtures
             };
         }
 
-        public static ActionDTO Post_To_Yammer_v1_InitialConfiguration_ActionDTO(bool isAuthToken = true)
+        public static Fr8DataDTO Post_To_Yammer_v1_InitialConfiguration_Fr8DataDTO(bool isAuthToken = true)
         {
             var activityTemplate = Post_To_Yammer_v1_ActivityTemplate();
 
-            return new ActionDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Groups",
                 Label = "Selected Yammer Group",
                 AuthToken = isAuthToken ? Yammer_AuthToken() : null,
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id
             };
+
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
     }
 }

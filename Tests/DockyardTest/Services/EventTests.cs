@@ -30,7 +30,7 @@ namespace DockyardTest.Services
         //{
         //    var processTemplateDO = FixtureData.TestRouteWithSubscribeEvent();
         //    var resultRoutes = new List<RouteDO>() { processTemplateDO };
-        //    IRoute curRoute = ObjectFactory.GetInstance<IRoute>();
+        //    IRoute curPlan = ObjectFactory.GetInstance<IRoute>();
         //    EventReportMS curEventReport = FixtureData.StandardEventReportFormat();
            
         //    Mock<IRoute> processTemplateMock = new Mock<IRoute>();

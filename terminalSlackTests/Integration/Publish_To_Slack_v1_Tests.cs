@@ -20,7 +20,7 @@ namespace terminalSlackTests.Integration
     /// </summary>
     [Explicit]
     [Category("terminalSlack.Integration")]
-    public class Publish_To_Slack_v1_Tests : BaseHealthMonitorTest
+    public class Publish_To_Slack_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {
@@ -37,22 +37,22 @@ namespace terminalSlackTests.Integration
             Assert.NotNull(responseFollowUpActionDTO);
         }
 
-        private async Task<ActionDTO> ConfigurationRequest()
+        private async Task<ActivityDTO> ConfigurationRequest()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Publish_To_Slack_v1_InitialConfiguration_ActionDTO();
+            var requestDataDTO = HealthMonitor_FixtureData.Publish_To_Slack_v1_InitialConfiguration_Fr8DataDTO();
 
-            var responseActionDTO = await HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, requestActionDTO);
+            var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, requestDataDTO);
 
             var storage = Crate.GetStorage(responseActionDTO);
 
-            using (var updater = Crate.UpdateStorage(requestActionDTO))
+            using (var updater = Crate.UpdateStorage(requestDataDTO.ActivityDTO))
             {
                 updater.CrateStorage = storage;
             }
 
-            return await HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, requestActionDTO);
+            return await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, requestDataDTO);
         }
 
         [Test]
@@ -81,12 +81,12 @@ namespace terminalSlackTests.Integration
             AssertCrateTypes(crateStorage);
         }
 
-        private async Task<ActionDTO> ConfigureInitial(bool isAuthToken = true)
+        private async Task<ActivityDTO> ConfigureInitial(bool isAuthToken = true)
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Publish_To_Slack_v1_InitialConfiguration_ActionDTO(isAuthToken);
-            var responseActionDTO = await HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, requestActionDTO);
+            var requestActionDTO = HealthMonitor_FixtureData.Publish_To_Slack_v1_InitialConfiguration_Fr8DataDTO(isAuthToken);
+            var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, requestActionDTO);
 
             return responseActionDTO;
         }
