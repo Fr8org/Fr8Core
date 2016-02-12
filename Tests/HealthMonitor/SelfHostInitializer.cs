@@ -96,7 +96,7 @@ namespace HealthMonitor
             }
 
             // Waiting for the server to initialize
-            Thread.Sleep(5000);
+            Thread.Sleep(10000);
         }
 
         private void _hubProcess_OutputDataReceived(object sender, DataReceivedEventArgs e)

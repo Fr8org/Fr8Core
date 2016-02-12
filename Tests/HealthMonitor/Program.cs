@@ -54,7 +54,7 @@ namespace HealthMonitor
                 {
                     if (string.IsNullOrEmpty(connectionString))
                     {
-                        throw new ArgumentException("You should specify --connectionString '{Name}={Value}' parameter when using self host mode.");
+                        throw new ArgumentException("You should specify --connectionString \"{Name}={Value}\" argument when using self host mode.");
                     }
 
                     var regex = new System.Text.RegularExpressions.Regex("([\\w\\d]{1,})=([\\s\\S]+)");
