@@ -64,6 +64,7 @@ namespace HealthMonitor.Utility
             _baseUrl = GetHubApiBaseUrl();
             _restfulServiceClient = new RestfulServiceClient(_httpClient);
 
+            // Get auth cookie from the Hub and save it to HttpClient's internal cookie storage
             LoginUser(TestUserEmail, TestUserPassword).Wait();
 
             // Initailize EmailAssert utility.
