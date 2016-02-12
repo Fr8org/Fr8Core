@@ -27,6 +27,7 @@ namespace DockyardTest.Services
         public override void SetUp()
         {
             base.SetUp();
+            FixtureData.AddTestActivityTemplate();
         }
 
         [Test]

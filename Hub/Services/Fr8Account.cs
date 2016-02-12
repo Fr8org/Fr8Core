@@ -29,6 +29,18 @@ namespace Hub.Services
             }
         }
 
+        public bool IsValidHashedPassword(Fr8AccountDO dockyardAccountDO, string password)
+        {
+            if (dockyardAccountDO != null)
+            {
+                var passwordHasher = new PasswordHasher();
+                return (passwordHasher.VerifyHashedPassword(dockyardAccountDO.PasswordHash, password) ==
+                    PasswordVerificationResult.Success);
+            }
+            else
+                return false;
+        }
+
         /// <summary>
         /// Determines <see cref="CommunicationMode">communication mode</see> for user
         /// </summary>

@@ -43,6 +43,8 @@ namespace terminalBaseTests.BaseClasses
             _baseTerminalAction.HubCommunicator.Configure("terminal");
             _coreServer = terminalBaseTests.Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
+
+            FixtureData.AddTestActivityTemplate();
         }
 
         [TearDown]

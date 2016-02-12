@@ -28,8 +28,11 @@ namespace UtilitiesTesting
             ConfigureAutoMapper();
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
 
+            
+            
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>()) //Get the seeding done first
                 uow.SaveChanges();
+                
         }
 
 
