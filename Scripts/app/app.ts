@@ -18,7 +18,8 @@ var app = angular.module("app", [
     "ApplicationInsightsModule",
     "dndLists",
     "ngTable",
-    "mb-scrollbar"
+    "mb-scrollbar",
+    "ngMessages"
 ]);
 
 /* For compatibility with older versions of script files. Can be safely deleted later. */
@@ -252,6 +253,12 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             url: '/manageAuthTokens',
             templateUrl: '/AngularTemplate/ManageAuthTokens',
             data: { pageTitle: 'Manage Auth Tokens', pageSubTitle: '' }
+        })
+
+        .state('changePassword', {
+            url: '/changePassword',
+            templateUrl: '/AngularTemplate/ChangePassword',
+            data: { pageTitle: 'Change Password', pageSubTitle: '' }
         });
 }]);
 

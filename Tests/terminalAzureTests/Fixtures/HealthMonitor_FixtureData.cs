@@ -24,8 +24,7 @@ namespace terminalAzureTests.Fixtures
             {
                 Id = Guid.NewGuid(),
                 Label = "Write To Sql Server",
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
 
             return new Fr8DataDTO

@@ -28,11 +28,10 @@ namespace Data.Interfaces.DataTransferObjects
 
         public AuthorizationTokenDTO AuthToken { get; set; }
 
-        public int? ActivityTemplateId { get; set; }
 
         [JsonIgnore]
         public string Fr8AccountId { get; set; }
-                
+
         [JsonProperty("DocumentationSupport")]
         public string DocumentationSupport { get; set; }
 

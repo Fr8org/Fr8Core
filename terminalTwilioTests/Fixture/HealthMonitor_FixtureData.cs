@@ -39,8 +39,7 @@ namespace terminalTwilioTests.Fixture
                 Id = Guid.NewGuid(),
                 Label = "Send Via Twilio",
                 AuthToken = null,
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
 
             return new Fr8DataDTO { ActivityDTO = activityDTO };

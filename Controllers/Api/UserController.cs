@@ -412,5 +412,30 @@ namespace HubWeb.Controllers
                 return Ok(userDTO);
             }
         }
+
+        [HttpPost]
+        public IHttpActionResult UpdatePassword(string oldPassword, string newPassword, string confirmPassword)
+        {
+            if (string.IsNullOrEmpty(oldPassword))
+                throw new Exception("Old password is required.");
+            if (!string.Equals(newPassword, confirmPassword, StringComparison.OrdinalIgnoreCase))
+                throw new Exception("New password and confirm password did not match.");
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var user = uow.UserRepository.FindOne(u => u.EmailAddress.Address == User.Identity.Name);
+
+                Fr8Account fr8Account = new Fr8Account();
+                if (fr8Account.IsValidHashedPassword(user, oldPassword))
+                {
+                    fr8Account.UpdatePassword(uow, user, newPassword);
+                    uow.SaveChanges();
+                }
+                else
+                    throw new Exception("Invalid current password.");
+            }
+
+            return Ok();
+        }
     }
 }

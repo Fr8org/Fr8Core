@@ -23,8 +23,7 @@ namespace terminalTests.Fixtures
             {
                 Id = Guid.NewGuid(),
                 Label = "Map Fields",
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
 
             return new Fr8DataDTO { ActivityDTO = activityDTO };

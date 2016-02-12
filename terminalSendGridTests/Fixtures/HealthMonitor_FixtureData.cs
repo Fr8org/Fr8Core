@@ -32,8 +32,7 @@ namespace terminalSendGridTests.Fixtures
                 Id = Guid.NewGuid(),
                 Label = "Send Email using SendGrid",
                 AuthToken = null,
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
 
             return new Fr8DataDTO { ActivityDTO = activityDTO };
