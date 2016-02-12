@@ -597,6 +597,10 @@
     <Compile Include="Migrations\201602121355488_RemovedNullableActivityTemplateIdFromActivityDO.Designer.cs">
       <DependentUpon>201602121355488_RemovedNullableActivityTemplateIdFromActivityDO.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201602122245004_Added_Footer_To_EnvelopeDO.cs" />
+    <Compile Include="Migrations\201602122245004_Added_Footer_To_EnvelopeDO.Designer.cs">
+      <DependentUpon>201602122245004_Added_Footer_To_EnvelopeDO.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryBase.cs" />
@@ -1012,6 +1016,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201602121355488_RemovedNullableActivityTemplateIdFromActivityDO.resx">
       <DependentUpon>201602121355488_RemovedNullableActivityTemplateIdFromActivityDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602122245004_Added_Footer_To_EnvelopeDO.resx">
+      <DependentUpon>201602122245004_Added_Footer_To_EnvelopeDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
