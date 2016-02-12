@@ -17,6 +17,7 @@ using Data.Interfaces.DataTransferObjects.Helpers;
 using StructureMap;
 using System.Net.Http;
 using System.Net;
+using System.Linq;
 
 namespace HealthMonitor.Utility
 {
@@ -50,7 +51,8 @@ namespace HealthMonitor.Utility
 
         public BaseHubIntegrationTest()
         {
-            try {
+            try
+            {
                 ObjectFactory.Initialize();
                 ObjectFactory.Configure(Hub.StructureMap.StructureMapBootStrapper.LiveConfiguration);
 
@@ -77,8 +79,24 @@ namespace HealthMonitor.Utility
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("Exception during initialization: " + ex.Message
-                    + Environment.NewLine + ex.StackTrace);
+                if (ex is AggregateException)
+                {
+                    System.Diagnostics.Debug.WriteLine("Exception during initialization:" + ex.Message + ". Any inner exceptions follow below.");
+                    foreach (Exception e in ((AggregateException)ex).Flatten().GetInnerExceptions())
+                    {
+                        System.Diagnostics.Debug.WriteLine(ex.Message + Environment.NewLine + ex.StackTrace);
+                    }
+                    System.Diagnostics.Debug.WriteLine("=== End ===");
+
+                }
+                else {
+                    System.Diagnostics.Debug.WriteLine("Exception during initialization: " + ex.Message +". Any inner exceptions follow below.");
+                    foreach (Exception e in ex.GetInnerExceptions())
+                    {
+                        System.Diagnostics.Debug.WriteLine(ex.Message + Environment.NewLine + ex.StackTrace);
+                    }
+                    System.Diagnostics.Debug.WriteLine("=== End ===");
+                }
                 throw;
             }
         }
@@ -177,7 +195,7 @@ namespace HealthMonitor.Utility
 
         private async Task AuthenticateWebApi(string email, string password)
         {
-            await HttpPostAsync<string, object>(_baseUrl 
+            await HttpPostAsync<string, object>(_baseUrl
                 + string.Format("authentication/login?username={0}&password={1}", Uri.EscapeDataString(email), Uri.EscapeDataString(password)), null);
         }
 
