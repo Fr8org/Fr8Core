@@ -150,7 +150,10 @@
       "Includes": [ "*.js" ],
       "Excludes": [ "*.ts" ]
     },
-    { "Path": "../tests/templates/templateCache.js" }
+    { "Path": "../tests/templates/templateCache.js" },
+     {
+      "Path": "../../bower_components/angular-messages/angular-messages.min.js"
+    }
   ],
   "Tests": [{ "Include": "*.js" }],
   "RootReferencePathMode": "SettingsFileDirectory"

@@ -803,3 +803,20 @@ div[dnd-list].dndDragover {
     background-color: #fff !important;
     color: #7089a2;
 }
+
+.ng-invalid {
+    border-color: red;
+    outline-color: red;
+}
+
+.ng-valid {
+    border-color: green;
+    outline-color: green;
+}
+
+.validationMessages {
+  font-size: smaller;
+  padding-top: 5px;
+  padding-bottom: 10px;
+  color: red;
+}

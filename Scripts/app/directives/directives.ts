@@ -196,3 +196,22 @@ app.directive('inputFocus', ['$parse', ($parse: ng.IParseService) => {
         }
     };
 }]);
+
+app.directive('compareTo', () => {
+    return {
+        require: "ngModel",
+        scope: {
+            otherModelValue: "=compareTo"
+        },
+        link: function (scope: any, element, attributes, ngModel) {
+
+            ngModel.$validators.compareTo = function (modelValue) {
+                return modelValue == scope.otherModelValue;
+            };
+
+            scope.$watch("otherModelValue", function () {
+                ngModel.$validate();
+            });
+        }
+    };
+});
