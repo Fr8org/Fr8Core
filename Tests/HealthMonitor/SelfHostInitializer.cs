@@ -72,8 +72,9 @@ namespace HealthMonitor
         {
             Console.WriteLine("Starting HubLauncher...");
             string hubLauncherDirectory = GetHubLauncherDirectory();
-
-            ProcessStartInfo psi = new ProcessStartInfo(Path.Combine(hubLauncherDirectory, "HealthMonitor.HubLauncher.exe"), "--endpoint " + hub.Url + " --selfHostFactory \"" + hub.Type + "\"");
+            string args = "--endpoint " + hub.Url + " --selfHostFactory \"" + hub.Type + "\""
+            ProcessStartInfo psi = new ProcessStartInfo(Path.Combine(hubLauncherDirectory, "HealthMonitor.HubLauncher.exe"), args);
+            Console.WriteLine("HubLauncher Path: " + psi.FileName + " " + args);
             psi.UseShellExecute = false;
             psi.RedirectStandardError = true;
             psi.RedirectStandardInput = true;
@@ -85,11 +86,16 @@ namespace HealthMonitor
             _hubProcess.OutputDataReceived += _hubProcess_OutputDataReceived;
             _hubProcess.ErrorDataReceived += _hubProcess_OutputDataReceived;
             _hubProcess.EnableRaisingEvents = true;
-            _hubProcess.Start();
+            bool started = _hubProcess.Start();
             _hubProcess.BeginOutputReadLine();
             _hubProcess.BeginErrorReadLine();
                         
-            // Waiting for the process to start
+            if (!started)
+            {
+                throw new Exception("Cannot start HubLauncher for an unknown reason. Test runner aborted.");
+            }
+
+            // Waiting for the server to initialize
             Thread.Sleep(5000);
         }
 
