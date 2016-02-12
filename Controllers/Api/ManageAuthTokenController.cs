@@ -91,7 +91,7 @@ namespace HubWeb.Controllers.Api
                         continue;
                     }
 
-                    var template = _activityTemplate.GetByKey(activity.ActivityTemplateId.Value);
+                    var template = _activityTemplate.GetByKey(activity.ActivityTemplateId);
                     result.Add(
                         new ManageAuthToken_Terminal_Activity()
                         {
