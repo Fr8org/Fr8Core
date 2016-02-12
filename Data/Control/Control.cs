@@ -257,12 +257,15 @@ namespace Data.Control
         {
             //search through every crate except operational state crate
             Expression<Func<Crate, bool>> defaultSearchArguments = (c) => c.ManifestType.Id != (int)MT.OperationalStatus;
-            
+
+            //apply label criteria if not null
             if (label != null)
             {
                 Expression<Func<Crate, bool>> andLabel = (c) => c.Label == label;
                 defaultSearchArguments = Expression.Lambda<Func<Crate, bool>>(Expression.AndAlso(defaultSearchArguments, andLabel), defaultSearchArguments.Parameters);
             }
+
+            //apply manifest criteria if not null
             if (manifestType != null)
             {
                 Expression<Func<Crate, bool>> andManifestType = (c) => c.ManifestType.Id == (int)manifestType;
@@ -276,24 +279,27 @@ namespace Data.Control
                 return null;
             }
 
-            //check if this crate is loop related
+            //get operational state crate to check for loops
             var operationalState = payloadStorage.CrateContentsOfType<OperationalStateCM>().Single();
-
+            //iterate through found crates to find the payload
             foreach (var foundCrate in foundCrates)
             {
                 object searchArea = null;
                 //let's check if we are in a loop
                 //and this is a loop data?
+                //check if this crate is loop related
                 var deepestLoop = operationalState.Loops.OrderByDescending(l => l.Level).FirstOrDefault(l => !l.BreakSignalReceived && l.Label == foundCrate.Label && l.CrateManifest == foundCrate.ManifestType.Type);
-                if (deepestLoop != null)
+                if (deepestLoop != null) //this is a loop related data request
                 {
-                    //this is a loop related data request
+                    //find current element
                     var dataList = Fr8ReflectionHelper.FindFirstArray(foundCrate.Get());
+                    //we will search requested field in current element
                     searchArea = dataList[deepestLoop.Index];
                 }
                 else
                 {
                     //hmmm this is a regular data request
+                    //lets search in complete crate
                     searchArea = foundCrate;
                 }
 
