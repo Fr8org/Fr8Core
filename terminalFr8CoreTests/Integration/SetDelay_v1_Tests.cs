@@ -152,10 +152,8 @@ namespace terminalFr8CoreTests.Integration
 			var requestActionDTO = new ActivityDTO
 			{
 				Id = Guid.NewGuid(),
-				Name = "SetDelay",
 				Label = "Set Delay",
 				ActivityTemplate = activityTemplate,
-				ActivityTemplateId = activityTemplate.Id,
 				AuthToken = null
 			};
 

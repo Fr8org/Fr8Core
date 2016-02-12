@@ -35,7 +35,7 @@ module dockyard.controllers {
 
                     var activityTemplate = new model.ActivityTemplate(-1, solutionName, "", "", "", "", "");
 
-                    var activityDTO = new model.ActivityDTO("", "", "", true);
+                    var activityDTO = new model.ActivityDTO("", "", "");
                     activityDTO.toActionVM();
                     activityDTO.documentationSupport = "MainPage";
                     activityDTO.activityTemplate = activityTemplate;

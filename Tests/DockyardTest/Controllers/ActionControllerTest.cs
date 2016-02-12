@@ -52,7 +52,7 @@ namespace DockyardTest.Controllers
         [Test]
         public void ActionController_ShouldHaveHMACOnCreateMethod()
         {
-            var createMethod = typeof (ActionsController).GetMethod("Create", new Type[] { typeof(int), typeof(string), typeof(string), typeof(int ?), typeof(Guid ?), typeof(bool), typeof(Guid ?)});
+            var createMethod = typeof (ActionsController).GetMethod("Create", new Type[] { typeof(int), typeof(string), typeof(int ?), typeof(Guid ?), typeof(bool), typeof(Guid ?)});
             ShouldHaveFr8HMACAuthorizeOnFunction(createMethod);
         }
 
@@ -83,15 +83,13 @@ namespace DockyardTest.Controllers
                 plan.ChildNodes.Add(subroute);
                 uow.SaveChanges();
             }
-                //Arrange is done with empty action list
+            //Arrange is done with empty action list
 
-                //Act
-                var actualAction = CreateActionWithId(FixtureData.GetTestGuidById(1));
-
-                actualAction.IsTempId = true;
-                actualAction.ParentRouteNodeId = subroute.Id;
+            //Act
+            var actualAction = CreateActionWithId(FixtureData.GetTestGuidById(1));
+            actualAction.ParentRouteNodeId = subroute.Id;
                 
-                var controller = new ActionsController();
+            var controller = new ActionsController();
             var result = (OkNegotiatedContentResult<ActivityDTO>) controller.Save(actualAction);
             var savedAction = result.Content;
 
@@ -103,7 +101,7 @@ namespace DockyardTest.Controllers
 
                 var expectedAction = uow.PlanRepository.GetById<ActivityDO>(actualAction.Id);
                 Assert.IsNotNull(expectedAction);
-                Assert.AreEqual(actualAction.Name, expectedAction.Name);
+                Assert.AreEqual(actualAction.Id, expectedAction.Id);
             }
         }
 
@@ -129,12 +127,11 @@ namespace DockyardTest.Controllers
             }
                 //Act
                 var actualAction = CreateActionWithId(FixtureData.GetTestGuidById(2));
-                actualAction.IsTempId = true;
                 actualAction.ParentRouteNodeId = subroute.Id;
 
                 var controller = new ActionsController();
-            var result = (OkNegotiatedContentResult<ActivityDTO>) controller.Save(actualAction);
-            var savedAction = result.Content;
+                var result = (OkNegotiatedContentResult<ActivityDTO>) controller.Save(actualAction);
+                var savedAction = result.Content;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -145,7 +142,7 @@ namespace DockyardTest.Controllers
                 //Still there is only one action as the update happened.
                 var expectedAction = uow.PlanRepository.GetById<ActivityDO>(actualAction.Id);
                 Assert.IsNotNull(expectedAction);
-                Assert.AreEqual(actualAction.Name, expectedAction.Name);
+                Assert.AreEqual(actualAction.Id, expectedAction.Id);
             }
         }
 
@@ -188,7 +185,7 @@ namespace DockyardTest.Controllers
                 //Still there is only one action as the update happened.
                 var expectedAction = uow.PlanRepository.GetById<ActivityDO>(actualAction.Id);
                 Assert.IsNotNull(expectedAction);
-                Assert.AreEqual(expectedAction.Name, actualAction.Name);
+
             }
         }
 
@@ -378,6 +375,21 @@ namespace DockyardTest.Controllers
             }
         }
 
+        private void CreateActionTemplate(string name, string version)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.ActivityTemplateRepository.Add(new ActivityTemplateDO
+                {
+                    Id = 1,
+                    Name = name,
+                    Terminal = FixtureData.TerminalTwo(),
+                    Version = version
+                });
+                uow.SaveChanges();
+            }
+        }
+
         /// <summary>
         /// Creates a new Action with the given action ID
         /// </summary>
@@ -386,9 +398,7 @@ namespace DockyardTest.Controllers
             return new ActivityDTO
             {
                 Id = actionId,
-                Name = "WriteToAzureSql",
                 CrateStorage = new CrateStorageDTO(),
-                ActivityTemplateId = 1,
                 ActivityTemplate = FixtureData.TestActionTemplateDTOV2()
                 //,ActionTemplate = FixtureData.TestActivityTemplateDO2()
             };
@@ -415,9 +425,13 @@ namespace DockyardTest.Controllers
 
         public async void ActionController_GetConfigurationSettings_ValidActionDesignDTO()
         {
+            
             var controller = new ActionsController();
             ActivityDTO actionDesignDTO = CreateActionWithId(FixtureData.GetTestGuidById(2));
             actionDesignDTO.ActivityTemplate = FixtureData.TestActionTemplateDTOV2();
+
+            
+
             var actionResult = await controller.Configure(actionDesignDTO);
 
             var okResult = actionResult as OkNegotiatedContentResult<ActivityDO>;
@@ -433,6 +447,9 @@ namespace DockyardTest.Controllers
             var controller = new ActionsController();
             ActivityDTO actionDesignDTO = CreateActionWithId(FixtureData.GetTestGuidById(2));
             actionDesignDTO.Id = Guid.Empty;
+
+            CreateActionTemplate(actionDesignDTO.ActivityTemplate.Name, actionDesignDTO.ActivityTemplate.Version);
+
             var actionResult = await controller.Configure(actionDesignDTO);
 
             var okResult = actionResult as OkNegotiatedContentResult<ActivityDO>;
@@ -442,12 +459,11 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
-        [ExpectedException(ExpectedException = typeof(KeyNotFoundException))]
-        public async void ActionController_GetConfigurationSettings_ActionTemplateIdIsMissing()
+        [ExpectedException(ExpectedException = typeof(InvalidOperationException))]
+        public async void ActionController_GetConfigurationSettings_ActionTemplateNameAndVersionIsMissing()
         {
             var controller = new ActionsController();
             ActivityDTO actionDesignDTO = CreateActionWithId(FixtureData.GetTestGuidById(2));
-            actionDesignDTO.ActivityTemplateId = 0;
             var actionResult = await controller.Configure(actionDesignDTO);
 
             var okResult = actionResult as OkNegotiatedContentResult<ActivityDO>;

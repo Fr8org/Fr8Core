@@ -38,7 +38,6 @@ namespace terminalSalesforceTests.Fixtures
 
             var activityDO = new ActivityDO()
             {
-                Name = "testaction",
                 Id = new Guid("8339DC87-F011-4FB1-B47C-FEC406E4100A"),
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate,

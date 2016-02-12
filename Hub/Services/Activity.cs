@@ -152,9 +152,10 @@ namespace Hub.Services
 
         private static void UpdateActionProperties(ActivityDO existingActivity, ActivityDO submittedActivity)
         {
+
             // it is unlikely that we have scenarios when activity template can be changed after activity was created
             //existingActivity.ActivityTemplateId = submittedActivity.ActivityTemplateId;
-            existingActivity.Name = submittedActivity.Name;
+
             existingActivity.Label = submittedActivity.Label;
             existingActivity.CrateStorage = submittedActivity.CrateStorage;
             existingActivity.Ordering = submittedActivity.Ordering;
@@ -171,9 +172,8 @@ namespace Hub.Services
             {
                 var activity = (ActivityDO) x;
 
-                if (activity.IsTempId && activity.Id == Guid.Empty)
+                if (activity.Id == Guid.Empty)
                 {
-                    activity.IsTempId = false;
                     activity.Id = Guid.NewGuid();
                 }
             });
@@ -233,7 +233,7 @@ namespace Hub.Services
             return uow.PlanRepository.GetById<ActivityDO>(id);
         }
 
-        public async Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, string name, string label = null, int? order = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null)
+        public async Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, string label = null, int? order = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null)
         {
             if (parentNodeId != null && createRoute)
             {
@@ -243,6 +243,12 @@ namespace Hub.Services
             if (parentNodeId == null && !createRoute)
             {
                 throw new ArgumentException("Either Parent node id or create route flag must be set");
+            }
+
+            // to avoid null pointer exception while creating parent node if label is null 
+            if (label == null)
+            {
+                label = userId + "_" + actionTemplateId.ToString();
             }
 
             RouteNodeDO parentNode;
@@ -255,7 +261,7 @@ namespace Hub.Services
                 plan.ChildNodes.Add(parentNode = new SubrouteDO
                 {
                     StartingSubroute = true,
-                    Name = name + " #1"
+                    Name = label + " #1"
                 });
             }
             else
@@ -269,13 +275,14 @@ namespace Hub.Services
                         parentNode.ChildNodes.Add(parentNode = new SubrouteDO
                         {
                             StartingSubroute = true,
-                            Name = name + " #1"
+                            Name = label + " #1"
                         });
                 }
                     else
                     {
                         parentNode = ((PlanDO) parentNode).StartingSubroute;
             }
+
                 }
             }
 
@@ -283,7 +290,6 @@ namespace Hub.Services
             {
                 Id = Guid.NewGuid(),
                 ActivityTemplateId =  actionTemplateId,
-                Name = name,
                 Label = label,
                 CrateStorage = _crate.EmptyStorageAsStr(),
                 AuthorizationTokenId = authorizationTokenId
@@ -661,8 +667,6 @@ namespace Hub.Services
                 var curSolutionActivityDTO = new ActivityDTO
                 {
                     Id = Guid.NewGuid(),
-                    ActivityTemplateId = curActivityTerminalDTO.Id,
-                    Name = curActivityTerminalDTO.Name,
                     Label = curActivityTerminalDTO.Label,
                     AuthToken = new AuthorizationTokenDTO
                     {
