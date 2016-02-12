@@ -1,5 +1,6 @@
 ﻿using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -33,14 +34,16 @@ namespace Data.Infrastructure.JsonNet
             writer.WriteValue(item.Name);
             writer.WritePropertyName("version");
             writer.WriteValue(item.Version);
+            writer.WritePropertyName("label");
+            writer.WriteValue(item.Label);
             writer.WritePropertyName("terminal");
             writer.WriteRawValue(JsonConvert.SerializeObject(item.Terminal, customTerminalConverter));
             writer.WritePropertyName("tags");
             writer.WriteValue(item.Tags);
             writer.WritePropertyName("category");
-            writer.WriteValue(item.Category);
+            writer.WriteValue(item.Category.ToString());
             writer.WritePropertyName("type");
-            writer.WriteValue(item.Type);
+            writer.WriteValue(item.Type.ToString());
             writer.WritePropertyName("minPaneWidth");
             writer.WriteValue(item.MinPaneWidth);
             writer.WritePropertyName("needsAuthentication");

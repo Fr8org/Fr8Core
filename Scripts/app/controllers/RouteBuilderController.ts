@@ -380,6 +380,7 @@ module dockyard.controllers {
 
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_SetSolutionMode], () => this.PaneConfigureAction_SetSolutionMode());
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ChildActionsDetected], () => this.PaneConfigureAction_ChildActionsDetected());
+            this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ExecutePlan], () => this.PaneConfigureAction_ExecutePlan());
 
             // Handles Response from Configure call from PaneConfiguration
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ConfigureCallResponse],
@@ -645,6 +646,19 @@ module dockyard.controllers {
 
         private PaneConfigureAction_ChildActionsDetected() {
             this.loadRoute();
+        }
+
+        private PaneConfigureAction_ExecutePlan() {
+            var self = this;
+
+            ++self._longRunningActionsCounter;
+
+            this.RouteService.runAndProcessClientAction(this.$scope.current.route.id)
+                .finally(function () {
+                    if (self._longRunningActionsCounter > 0) {
+                        --self._longRunningActionsCounter;
+                    }
+                });
         }
 
         // This should handle everything that should be done when a configure call response arrives from server.
