@@ -129,7 +129,8 @@ gulp.task('compile_js', function () {
         'Scripts/app/controllers/ManageAuthTokenController.js',
         'Scripts/app/controllers/ManifestRegistryListController.js',
         'Scripts/app/controllers/ManifestRegistryFormController.js',
-        'Scripts/app/controllers/SolutionDocumentationController.js'
+        'Scripts/app/controllers/SolutionDocumentationController.js',
+        'Scripts/app/controllers/ManageUserController.js'
     ])
         .pipe(sourcemaps.init())
         .pipe(concat('_compiled.js'))

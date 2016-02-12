@@ -63,8 +63,7 @@ namespace terminalDocuSignTests.Fixtures
                 Id = Guid.NewGuid(),
                 Label = "Monitor DocuSign Envelope Activity",
                 AuthToken = DocuSign_AuthToken(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
 
             return ConvertToFr8Data(activity);
@@ -79,8 +78,7 @@ namespace terminalDocuSignTests.Fixtures
                 Id = Guid.NewGuid(),
                 Label = "Query DocuSign",
                 AuthToken = DocuSign_AuthToken(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
 
             return ConvertToFr8Data(activityDTO);
@@ -95,8 +93,7 @@ namespace terminalDocuSignTests.Fixtures
                 Id = Guid.NewGuid(),
                 Label = "Receive DocuSign",
                 AuthToken = DocuSign_AuthToken(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
 
             return ConvertToFr8Data(activityDTO);
@@ -111,8 +108,7 @@ namespace terminalDocuSignTests.Fixtures
                 Id = Guid.NewGuid(),
                 Label = "Record DocuSign",
                 AuthToken = DocuSign_AuthToken(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
             return ConvertToFr8Data(activityDTO);
         }
@@ -136,8 +132,7 @@ namespace terminalDocuSignTests.Fixtures
                 Id = Guid.NewGuid(),
                 Label = "Send DocuSign",
                 AuthToken = DocuSign_AuthToken(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
 
             return ConvertToFr8Data(activityDTO);
@@ -162,8 +157,7 @@ namespace terminalDocuSignTests.Fixtures
                 Id = Guid.NewGuid(),
                 Label = "Mail Merge Into DocuSign",
                 AuthToken = DocuSign_AuthToken(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
             return ConvertToFr8Data(activityDTO);
         }
@@ -187,8 +181,7 @@ namespace terminalDocuSignTests.Fixtures
                 Id = Guid.NewGuid(),
                 Label = "Rich Document Notifications",
                 AuthToken = DocuSign_AuthToken(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
 
             return ConvertToFr8Data(activityDTO);
@@ -213,8 +206,7 @@ namespace terminalDocuSignTests.Fixtures
                 Id = Guid.NewGuid(),
                 Label = "Extract Data From Envelopes",
                 AuthToken = DocuSign_AuthToken(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
             return ConvertToFr8Data(activityDTO);
         }
