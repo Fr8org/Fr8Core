@@ -190,7 +190,7 @@ namespace TerminalBase.BaseClasses
             //Object to carry Documentation
             SolutionPageDTO curSolutionPageDTO;
             var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
-            
+
             Task<ActivityDO> response;
             var currentUserId = curAuthTokenDO != null ? curAuthTokenDO.UserID : null;
             //Set Current user of action
@@ -252,11 +252,16 @@ namespace TerminalBase.BaseClasses
                         }
                     case "documentation":
                         {
-                            curSolutionPageDTO = new SolutionPageDTO();
-                            if (!curDocumentation.IsNullOrEmpty() && curDocumentation.Split(',').Contains("MainPage"))
+curSolutionPageDTO = new SolutionPageDTO();
+if (!curDocumentation.IsNullOrEmpty() && curDocumentation.Split(',').Contains("MainPage"))
+{
+    Task<SolutionPageDTO> resultSolutionPageDTO = (Task<SolutionPageDTO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDO, curDocumentation });
+    return await resultSolutionPageDTO;
+}
+                            if (!curDocumentation.IsNullOrEmpty() && curDocumentation.Split(',').Contains("HelpMenu"))
                             {
-                                Task<SolutionPageDTO> resutlSolutionPageDTO = (Task<SolutionPageDTO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDO });
-                                return await resutlSolutionPageDTO;
+                                Task<ActivityResponseDTO> resultActivityRepsonceDTO = (Task<ActivityResponseDTO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDO, curDocumentation });
+                                return await resultActivityRepsonceDTO;
                             }
                             return Task.FromResult(curSolutionPageDTO);
                         }

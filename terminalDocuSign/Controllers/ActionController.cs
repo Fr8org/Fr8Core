@@ -22,7 +22,6 @@ namespace terminalDocuSign.Controllers
     public class ActionController : BaseTerminalController
     {
         private const string curTerminal = "terminalDocuSign";
-
         [HttpPost]
         [fr8TerminalHMACAuthenticate(curTerminal)]
         [Authorize]
@@ -30,10 +29,5 @@ namespace terminalDocuSign.Controllers
         {
             return HandleFr8Request(curTerminal, actionType, curDataDTO);
         }
-        //[HttpPost]
-        //public HttpResponseMessage Documentation(string helpPath)
-        //{
-        //    return GetActionDocumentation(helpPath);
-        //}
     }
 }
