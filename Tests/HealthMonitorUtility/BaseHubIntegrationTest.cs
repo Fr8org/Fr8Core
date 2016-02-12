@@ -79,6 +79,7 @@ namespace HealthMonitor.Utility
             {
                 System.Diagnostics.Debug.WriteLine("Exception during initialization: " + ex.Message
                     + Environment.NewLine + ex.StackTrace);
+                throw;
             }
         }
         public abstract string TerminalName { get; }
