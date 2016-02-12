@@ -265,6 +265,7 @@
     <Compile Include="Expressions\ExpressionTransformation.cs" />
     <Compile Include="Expressions\ExpressionTransformation.PropertyInfo.cs" />
     <Compile Include="Expressions\ExpressionTransformation.TransformationVisitor.cs" />
+    <Compile Include="Helpers\Fr8ReflectionHelper.cs" />
     <Compile Include="Infrastructure\AutoMapper\JSONToStringConverter.cs" />
     <Compile Include="Infrastructure\AutoMapper\DataAutoMapperBootstrapper.cs" />
     <Compile Include="Infrastructure\AutoMapper\RouteDOFullConverter.cs" />
@@ -588,7 +589,7 @@
     <Compile Include="Migrations\201602071156179_RemoveSubscriptionRequiredAndName.cs" />
     <Compile Include="Migrations\201602071156179_RemoveSubscriptionRequiredAndName.Designer.cs">
       <DependentUpon>201602071156179_RemoveSubscriptionRequiredAndName.cs</DependentUpon>
-	</Compile>  
+    </Compile>
     <Compile Include="Migrations\201602031204174_MergeMigration.cs" />
     <Compile Include="Migrations\201602031204174_MergeMigration.Designer.cs">
       <DependentUpon>201602031204174_MergeMigration.cs</DependentUpon>

@@ -11,9 +11,11 @@ using Data.Constants;
 using Data.Control;
 using Data.Crates;
 using Data.Entities;
+using Data.Helpers;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
+using Hub.Helper;
 using Hub.Managers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -35,16 +37,23 @@ namespace terminalFr8Core.Actions
             {
                 return Error(curPayloadDTO, "This Action can't run without OperationalStateCM crate", ActionErrorCode.PAYLOAD_DATA_MISSING);
             }
+
+            var crateToProcess = FindCrateToProcess(curActivityDO, payloadStorage);
+
+            if (crateToProcess == null)
+            {
+                Error(curPayloadDTO, "This Action can't run without OperationalStateCM crate", ActionErrorCode.PAYLOAD_DATA_MISSING);
+                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Unable to find any crate with Manifest Type: \"" + crateToProcess.ManifestType.Type + "\" and Label: \"" + crateToProcess.Label + "\"");
+            }
+
             //set default loop index for initial state
-            CreateLoop(curActivityDO.GetLoopId(), curPayloadDTO);
+            CreateLoop(curActivityDO.GetLoopId(), curPayloadDTO, crateToProcess);
             try
             {
-                if (ShouldBreakLoop(curPayloadDTO, curActivityDO))
+                if (ShouldBreakLoop(curPayloadDTO, curActivityDO, crateToProcess))
                 {
                     return SkipChildren(curPayloadDTO);
                 }
-                else
-                    IteratePayload(curActivityDO, curPayloadDTO, 0);
             }
             catch (TerminalCodedException)
             {
@@ -56,17 +65,24 @@ namespace terminalFr8Core.Actions
         public override async Task<PayloadDTO> ChildrenExecuted(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var curPayloadDTO = await GetPayload(curActivityDO, containerId);
+            var payloadStorage = Crate.GetStorage(curPayloadDTO);
             int i = IncrementLoopIndex(curActivityDO.GetLoopId(), curPayloadDTO);
             try
             {
+                var crateToProcess = FindCrateToProcess(curActivityDO, payloadStorage);
+
+                if (crateToProcess == null)
+                {
+                    Error(curPayloadDTO, "This Action can't run without OperationalStateCM crate", ActionErrorCode.PAYLOAD_DATA_MISSING);
+                    throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Unable to find any crate with Manifest Type: \"" + crateToProcess.ManifestType.Type + "\" and Label: \"" + crateToProcess.Label + "\"");
+                }
+
                 //check if we need to end this loop
-                if (ShouldBreakLoop(curPayloadDTO, curActivityDO))
+                if (ShouldBreakLoop(curPayloadDTO, curActivityDO, crateToProcess))
                 {
                     BreakLoop(curActivityDO.GetLoopId(), curPayloadDTO);
                     return Success(curPayloadDTO);
                 }
-                else
-                    IteratePayload(curActivityDO, curPayloadDTO, i);
             }
             catch (TerminalCodedException)
             {
@@ -75,7 +91,7 @@ namespace terminalFr8Core.Actions
 
             return ReProcessChildActions(curPayloadDTO);
         }
-
+        /*
         //the purpose of this is to create a payload for each row in table data upon each iteration
         //introduced with FR-2246
         private void IteratePayload(ActivityDO curActivityDO, PayloadDTO curPayloadDTO, int i)
@@ -100,9 +116,9 @@ namespace terminalFr8Core.Actions
                 updater.CrateStorage.Add(crate);
             }
 
-        }
+        }*/
 
-        private bool ShouldBreakLoop(PayloadDTO curPayloadDTO, ActivityDO curActivityDO)
+        private bool ShouldBreakLoop(PayloadDTO curPayloadDTO, ActivityDO curActivityDO, Crate crateToProcess)
         {
             var payloadStorage = Crate.GetStorage(curPayloadDTO);
 
@@ -115,27 +131,16 @@ namespace terminalFr8Core.Actions
                 throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_INVALID);
             }
             //set default loop index for initial state
-
             var myLoop = operationsCrate.Loops.FirstOrDefault(l => l.Id == loopId);
             var currentLoopIndex = myLoop.Index;
 
-            string manifestType, label;
-
-            var crateToProcess = FindCrateToProcess(curActivityDO, payloadStorage, out manifestType, out label);
-
-            if (crateToProcess == null)
-            {
-                Error(curPayloadDTO, "This Action can't run without OperationalStateCM crate", ActionErrorCode.PAYLOAD_DATA_MISSING);
-                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Unable to find any crate with Manifest Type: \"" + manifestType + "\" and Label: \"" + label + "\"");
-            }
-
             Object[] dataList = null;
             //find our list data that we will iterate
-            dataList = crateToProcess.IsKnownManifest ? FindFirstArray(crateToProcess.Get()) : FindFirstArray(crateToProcess.GetRaw());
+            dataList = crateToProcess.IsKnownManifest ? Fr8ReflectionHelper.FindFirstArray(crateToProcess.Get()) : FindFirstArray(crateToProcess.GetRaw());
 
             if (dataList == null)
             {
-                Error(curPayloadDTO, "Unable to find a list in specified crate with Manifest Type: \"" + manifestType + "\" and Label: \"" + label + "\"", ActionErrorCode.PAYLOAD_DATA_MISSING);
+                Error(curPayloadDTO, "Unable to find a list in specified crate with Manifest Type: \"" + crateToProcess.ManifestType.Type + "\" and Label: \"" + crateToProcess.Label + "\"", ActionErrorCode.PAYLOAD_DATA_MISSING);
                 throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING);
             }
 
@@ -148,14 +153,13 @@ namespace terminalFr8Core.Actions
             return false;
         }
 
-        private Crate FindCrateToProcess(ActivityDO curActivityDO, CrateStorage payloadStorage, out string manifestType, out string label)
+        private Crate FindCrateToProcess(ActivityDO curActivityDO, CrateStorage payloadStorage)
         {
             //get user selected design time values
-            manifestType = GetSelectedCrateManifestTypeToProcess(curActivityDO);
-            label = GetSelectedLabelToProcess(curActivityDO);
-            var lab = label;
+            var manifestType = GetSelectedCrateManifestTypeToProcess(curActivityDO);
+            var label = GetSelectedLabelToProcess(curActivityDO);
             //find crate by user selected values
-            return payloadStorage.FirstOrDefault(c => /*c.ManifestType.Type == manifestType && */c.Label == lab);
+            return payloadStorage.FirstOrDefault(c => /*c.ManifestType.Type == manifestType && */c.Label == label);
         }
 
         private void BreakLoop(string loopId, PayloadDTO payload)
@@ -167,7 +171,7 @@ namespace terminalFr8Core.Actions
             }
         }
 
-        private void CreateLoop(string loopId, PayloadDTO payload)
+        private void CreateLoop(string loopId, PayloadDTO payload, Crate crateToProcess)
         {
             using (var updater = Crate.UpdateStorage(payload))
             {
@@ -178,7 +182,9 @@ namespace terminalFr8Core.Actions
                     BreakSignalReceived = false,
                     Id = loopId,
                     Index = 0,
-                    Level = loopLevel
+                    Level = loopLevel,
+                    Label = crateToProcess.Label,
+                    CrateManifest = crateToProcess.ManifestType.Type
                 });
             }
         }
@@ -191,42 +197,6 @@ namespace terminalFr8Core.Actions
                 operationalState.Loops.First(l => l.Id == loopId).Index += 1;
                 return operationalState.Loops.First(l => l.Id == loopId).Index;
             }
-        }
-
-        private static object[] FindFirstArray(Object obj, int maxSearchDepth = 0)
-        {
-            return FindFirstArrayRecursive(obj, maxSearchDepth, 0);
-        }
-
-        private static object[] FindFirstArrayRecursive(Object obj, int maxSearchDepth, int depth)
-        {
-            if (maxSearchDepth != 0 && depth > maxSearchDepth)
-            {
-                return null;
-            }
-
-            if (obj is IEnumerable)
-            {
-                return ((IEnumerable)obj).OfType<Object>().ToArray();
-            }
-            var objType = obj.GetType();
-            bool isPrimitiveType = objType.IsPrimitive || objType.IsValueType || (objType == typeof(string));
-
-            if (!isPrimitiveType)
-            {
-                var objProperties = objType.GetProperties();
-                foreach (var prop in objProperties)
-                {
-                    var result = FindFirstArrayRecursive(prop.GetValue(obj), maxSearchDepth, depth + 1);
-
-                    if (result != null)
-                    {
-                        return result;
-                    }
-                }
-            }
-
-            return null;
         }
 
         /// <summary>

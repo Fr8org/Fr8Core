@@ -121,6 +121,8 @@ namespace terminalDocuSign.Actions
             var configurationControls = GetConfigurationControls(activityDO);
             var recipientField = (TextSource)GetControl(configurationControls, "Recipient", ControlTypes.TextSource);
 
+            
+
             var curRecipientAddress = recipientField.GetValue(payloadCrateStorage, true);
 
             curEnvelope.TemplateId = curTemplateId;

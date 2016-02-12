@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using Data.Constants;
 using Data.Crates;
+using Data.Helpers;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
@@ -234,7 +237,7 @@ namespace Data.Control
             };
         }
 
-        public string GetValue(CrateStorage payloadCrateStorage, bool ignoreCase = false)
+        public string GetValue(CrateStorage payloadCrateStorage, bool ignoreCase = false, MT? manifestType = null, string label = null)
         {
             switch (ValueSource)
             {
@@ -242,11 +245,70 @@ namespace Data.Control
                     return TextValue;
 
                 case "upstream":
-                    return ExtractPayloadFieldValue(payloadCrateStorage, ignoreCase);
+                    return GetPayloadValue(payloadCrateStorage, ignoreCase, manifestType, label);
 
                 default:
                     return null;
             }
+        }
+
+        //TODO inspect this
+        public string GetPayloadValue(CrateStorage payloadStorage, bool ignoreCase = false, MT? manifestType = null, string label = null)
+        {
+            //search through every crate except operational state crate
+            Expression<Func<Crate, bool>> defaultSearchArguments = (c) => c.ManifestType.Id != (int)MT.OperationalStatus;
+            
+            if (label != null)
+            {
+                Expression<Func<Crate, bool>> andLabel = (c) => c.Label == label;
+                defaultSearchArguments = Expression.Lambda<Func<Crate, bool>>(Expression.AndAlso(defaultSearchArguments, andLabel), defaultSearchArguments.Parameters);
+            }
+            if (manifestType != null)
+            {
+                Expression<Func<Crate, bool>> andManifestType = (c) => c.ManifestType.Id == (int)manifestType;
+                defaultSearchArguments = Expression.Lambda<Func<Crate, bool>>(Expression.AndAlso(defaultSearchArguments, andManifestType), defaultSearchArguments.Parameters);
+            }
+
+            //find user requested crate
+            var foundCrates = payloadStorage.Where(defaultSearchArguments.Compile()).ToList();
+            if (!foundCrates.Any())
+            {
+                return null;
+            }
+
+            //check if this crate is loop related
+            var operationalState = payloadStorage.CrateContentsOfType<OperationalStateCM>().Single();
+
+            foreach (var foundCrate in foundCrates)
+            {
+                object searchArea = null;
+                //let's check if we are in a loop
+                //and this is a loop data?
+                var deepestLoop = operationalState.Loops.OrderByDescending(l => l.Level).FirstOrDefault(l => !l.BreakSignalReceived && l.Label == foundCrate.Label && l.CrateManifest == foundCrate.ManifestType.Type);
+                if (deepestLoop != null)
+                {
+                    //this is a loop related data request
+                    var dataList = Fr8ReflectionHelper.FindFirstArray(foundCrate.Get());
+                    searchArea = dataList[deepestLoop.Index];
+                }
+                else
+                {
+                    //hmmm this is a regular data request
+                    searchArea = foundCrate;
+                }
+
+                //we should find first related field and return
+                var fields = Fr8ReflectionHelper.FindFieldsRecursive(searchArea);
+                var fieldMatch = fields.FirstOrDefault(f => f.Key == this.selectedKey);
+                //let's return first match
+                if (fieldMatch != null)
+                {
+                    return fieldMatch.Value;
+                }
+            }
+
+
+            return null;
         }
 
         /// <summary>
