@@ -10,6 +10,7 @@ module dockyard.directives.dropDownListBox {
         setSelectedItem: (item: model.FieldDTO) => void;
         toggle: boolean;
         toggleDropDown: (select) => void;
+        focusOutSet: (focusElem: any) => void;
     }
 
     export function DropDownListBox(): ng.IDirective {
@@ -27,10 +28,22 @@ module dockyard.directives.dropDownListBox {
 
             $scope.toggle = false;
 
-            $scope.toggleDropDown = function (select) {
-                select.open = !$scope.toggle;
+            $scope.toggleDropDown = function ($select) {
+                if (!$scope.focusOutSet) {
+                    var focusElem = angular.element($select.focusInput);
+                    $scope.focusOutSet = isFocusOutFunc;
+                    $scope.focusOutSet(focusElem);
+                }
+
+                $select.open = !$scope.toggle;
                 $scope.toggle = !$scope.toggle;
-            };
+            }
+            
+            var isFocusOutFunc = function(focusElem) {
+                focusElem.focusout(function () {
+                    $scope.toggle = false;
+                });
+            }
 
             var findAndSetSelectedItem = function () {
                 for (var i = 0; i < $scope.field.listItems.length; i++) {
