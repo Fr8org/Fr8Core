@@ -18,6 +18,7 @@ namespace HealthMonitor
             var selfHosting = false;
             var connectionString = string.Empty;
             var specificTest = string.Empty;
+            int errorCount = 0;
 
             if (args != null)
             {
@@ -69,14 +70,14 @@ namespace HealthMonitor
             var selfHostInitializer = new SelfHostInitializer();
             if (selfHosting)
             {
-                selfHostInitializer.Initialize();
+                selfHostInitializer.Initialize(connectionString);
             }
 
             try
             {
-                new Program().Run(ensureTerminalsStartup, sendEmailReport, appName, specificTest);
+                errorCount = new Program().Run(ensureTerminalsStartup, sendEmailReport, appName, specificTest);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
@@ -87,6 +88,7 @@ namespace HealthMonitor
                     selfHostInitializer.Dispose();
                 }
             }
+            Environment.Exit(errorCount);
         }
 
         private static void UpdateConnectionString(string key, string value)
@@ -139,7 +141,7 @@ namespace HealthMonitor
             }
         }
 
-        private void Run(
+        private int Run(
             bool ensureTerminalsStartup,
             bool sendEmailReport,
             string appName,
@@ -168,7 +170,7 @@ namespace HealthMonitor
             }
 
             ReportToConsole(appName, report);
-            var errorCount = report.Tests.Count(x => !x.Success);
+            return report.Tests.Count(x => !x.Success);
         }
     }
 }

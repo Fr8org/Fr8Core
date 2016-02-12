@@ -17,7 +17,7 @@ namespace HealthMonitor
         IList<IDisposable> _selfHostedTerminals = new List<IDisposable>();
         Process _hubProcess;
 
-        public void Initialize()
+        public void Initialize(string connectionString)
         {
             var selfHostedTerminals = GetSelfHostedTerminals();
             try
@@ -39,7 +39,7 @@ namespace HealthMonitor
                     {
                         // Run the Hub in a separate appdomain to avoid conflict with StructureMap configurations for
                         // termianls and the Hub.
-                        StartHub(terminal);
+                        StartHub(terminal, connectionString);
                     }
                     else {
                         MethodInfo curMethodInfo = calledType.GetMethod("CreateServer", BindingFlags.Static | BindingFlags.Public);
@@ -68,11 +68,11 @@ namespace HealthMonitor
             return Path.Combine(directory.FullName, "HealthMonitor.HubLauncher\\bin\\", CONFIG);
         }
 
-        private void StartHub(SelfHostedTerminalsElement hub)
+        private void StartHub(SelfHostedTerminalsElement hub, string connectionString)
         {
             Console.WriteLine("Starting HubLauncher...");
             string hubLauncherDirectory = GetHubLauncherDirectory();
-            string args = "--endpoint " + hub.Url + " --selfHostFactory \"" + hub.Type + "\"";
+            string args = "--endpoint " + hub.Url + " --selfHostFactory \"" + hub.Type + "\" --connectionString \"" + connectionString + "\"";
             ProcessStartInfo psi = new ProcessStartInfo(Path.Combine(hubLauncherDirectory, "HealthMonitor.HubLauncher.exe"), args);
             Console.WriteLine("HubLauncher Path: " + psi.FileName + " " + args);
             psi.UseShellExecute = false;

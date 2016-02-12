@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Runtime.InteropServices;
 using System.Threading;
 
@@ -15,6 +16,7 @@ namespace HealthMonitor.HubLauncher
         {
             string endpoint = string.Empty;
             string selfHostFactory = string.Empty;
+            string connectionString = string.Empty;
 
             AppDomain.CurrentDomain.ProcessExit += new EventHandler(CurrentDomain_ProcessExit);
             // Start the message pumping thread that enables graceful closing the app
@@ -34,6 +36,10 @@ namespace HealthMonitor.HubLauncher
                     {
                         selfHostFactory = args[i];
                     }
+                    else if (i > 0 && args[i - 1] == "--connectionString" && args[i] != null)
+                    {
+                        connectionString = args[i];
+                    }
                 }
             }
             else
@@ -41,8 +47,16 @@ namespace HealthMonitor.HubLauncher
                 ShowHelp();
             }
 
-            if (string.IsNullOrEmpty(endpoint) || string.IsNullOrEmpty(selfHostFactory))
+            if (string.IsNullOrEmpty(endpoint) || string.IsNullOrEmpty(selfHostFactory) || string.IsNullOrEmpty(connectionString))
                 ShowHelp();
+
+            var regex = new System.Text.RegularExpressions.Regex("([\\w\\d]{1,})=([\\s\\S]+)");
+            var match = regex.Match(connectionString);
+            if (match == null || !match.Success || match.Groups.Count != 3)
+            {
+                throw new ArgumentException("Please specify connection string in the following format: \"{Name}={Value}\".");
+            }
+            UpdateConnectionString(match.Groups[1].Value, match.Groups[2].Value);
 
             _initializer = new SelfHostInitializer();
             _initializer.Initialize(selfHostFactory, endpoint);
@@ -82,13 +96,21 @@ namespace HealthMonitor.HubLauncher
         {
             Console.WriteLine("Exiting...");
             _initializer.Dispose();
-            Thread.Sleep(100);
         }
 
+        private static void UpdateConnectionString(string key, string value)
+        {
+            System.Configuration.Configuration configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            configuration.ConnectionStrings.ConnectionStrings[key].ConnectionString = value;
+            configuration.Save();
+
+            ConfigurationManager.RefreshSection("connectionStrings");
+        }
+        
         private static void ShowHelp()
         {
             Console.WriteLine("Usage: HealthMonitor.HubLauncher --endpoint localhost: " +
-                "{xxxx} --selfHostFactory {hub type} \r\nwhere xxxx is port number to start the Hub on, usually 30643\r\n" +
+                "{xxxx} --selfHostFactory {hub type} --connectionString \"{Name}={Value}\" \r\nwhere xxxx is port number to start the Hub on, usually 30643\r\n" +
                 "hub type is type which acts as the self-host factory for the Hub, usually 'HubWeb.SelfHostFactory, HubWeb'");
             Environment.Exit(1);
         }
