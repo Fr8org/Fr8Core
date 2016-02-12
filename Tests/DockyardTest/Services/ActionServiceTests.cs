@@ -60,6 +60,8 @@ namespace DockyardTest.Services
             _eventReceived = false;
             _baseTerminalAction = new BaseTerminalActivity();
             _terminal = ObjectFactory.GetInstance<Terminal>();
+
+            FixtureData.AddTestActivityTemplate();
         }
         
         // DO-1214
@@ -282,6 +284,7 @@ namespace DockyardTest.Services
                         {
                             Id = FixtureData.GetTestGuidById(addCounter + 666),
                             ParentRouteNode = a,
+                            ActivityTemplateId = 1
                         };
 
                         a.ParentRouteNode.ChildNodes.Add(newAction);
@@ -301,6 +304,7 @@ namespace DockyardTest.Services
                             {
                                 Id = FixtureData.GetTestGuidById(addCounter + 666),
                                 ParentRouteNode = a,
+                                ActivityTemplateId = 1
                             };
 
                             a.ParentRouteNode.ChildNodes.Add(newAction);
