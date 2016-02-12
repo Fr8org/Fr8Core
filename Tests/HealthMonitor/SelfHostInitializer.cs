@@ -64,7 +64,7 @@ namespace HealthMonitor
 #else
             "debug";
 #endif
-            var directory = Directory.GetParent(Directory.GetParent(Directory.GetParent(Environment.CurrentDirectory).FullName).FullName);
+            var directory = Directory.GetParent(Directory.GetParent(Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).FullName).FullName);
             return Path.Combine(directory.FullName, "HealthMonitor.HubLauncher\\bin\\", CONFIG);
         }
 
