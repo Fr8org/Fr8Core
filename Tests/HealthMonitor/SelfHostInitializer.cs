@@ -118,7 +118,7 @@ namespace HealthMonitor
                 selfHostedTerminal.Dispose();
             }
 
-            if (_hubProcess != null)
+            if (_hubProcess != null && !_hubProcess.HasExited)
             {
                 Console.WriteLine("Terminating HubLauncher...");
                 _hubProcess.StandardInput.WriteLine("quit");
