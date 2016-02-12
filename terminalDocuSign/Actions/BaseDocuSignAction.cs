@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using Data.Crates;
 using TerminalBase.BaseClasses;
 using terminalDocuSign.Infrastructure;
 using Hub.Managers;

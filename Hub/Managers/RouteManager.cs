@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Data.Crates;
 using Utilities.Configuration.Azure;
 using Utilities.Logging;
 

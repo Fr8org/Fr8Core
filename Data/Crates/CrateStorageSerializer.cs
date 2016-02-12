@@ -91,7 +91,7 @@ namespace Data.Crates
         /// </summary>
         /// <param name="rawStorage"></param>
         /// <returns></returns>
-        public CrateStorage ConvertFromDto(CrateStorageDTO rawStorage)
+        public ICrateStorage ConvertFromDto(CrateStorageDTO rawStorage)
         {
             var storage = new CrateStorage();
 
@@ -112,7 +112,7 @@ namespace Data.Crates
         /// </summary>
         /// <param name="storage"></param>
         /// <returns></returns>
-        public CrateStorageDTO ConvertToDto(CrateStorage storage)
+        public CrateStorageDTO ConvertToDto(ICrateStorage storage)
         {
             var storageSerializationProxy = new CrateStorageDTO
             {

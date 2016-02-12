@@ -69,7 +69,7 @@ namespace terminalSlackTests.Integration
             Assert.AreEqual("Info_Label", controls.Controls[1].Name);
         }
 
-        private void AssertCrateTypes(CrateStorage crateStorage)
+        private void AssertCrateTypes(ICrateStorage crateStorage)
         {
             Assert.AreEqual(4, crateStorage.Count);
 

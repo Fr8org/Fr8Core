@@ -129,7 +129,7 @@ namespace terminalSlack.Actions
             return await Task.FromResult<ActivityDO>(curActivityDO);
         }
 
-        private void PackConfigurationControls(CrateStorage crateStorage)
+        private void PackConfigurationControls(ICrateStorage crateStorage)
         {
             AddControl(
                 crateStorage,

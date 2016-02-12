@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data.Control;
+using Data.Crates;
 using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;

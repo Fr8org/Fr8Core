@@ -136,7 +136,7 @@ namespace terminalDocuSign.Services
             }
         }
 
-        private CrateStorage ExtractEventPayload(IEnumerable<DocuSignEventDTO> curEvents)
+        private ICrateStorage ExtractEventPayload(IEnumerable<DocuSignEventDTO> curEvents)
         {
             var stroage = new CrateStorage();
 

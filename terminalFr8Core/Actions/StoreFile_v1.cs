@@ -114,7 +114,7 @@ namespace terminalFr8Core.Actions
             return stream;
         }
 
-        public async Task UpdateUpstreamFileCrates(ActivityDO curActivityDO, CrateStorage storage)
+        public async Task UpdateUpstreamFileCrates(ActivityDO curActivityDO, ICrateStorage storage)
         {
             // Build a crate with the list of available upstream fields
             var curUpstreamFieldsCrate = storage.SingleOrDefault(c => c.ManifestType.Id == (int)MT.StandardDesignTimeFields

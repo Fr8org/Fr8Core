@@ -234,7 +234,7 @@ namespace Data.Control
             };
         }
 
-        public string GetValue(CrateStorage payloadCrateStorage, bool ignoreCase = false)
+        public string GetValue(ICrateStorage payloadCrateStorage, bool ignoreCase = false)
         {
             switch (ValueSource)
             {
@@ -253,7 +253,7 @@ namespace Data.Control
         /// Extracts crate with specified label and ManifestType = Standard Design Time,
         /// then extracts field with specified fieldKey.
         /// </summary>
-        private string ExtractPayloadFieldValue(CrateStorage payloadCrateStorage, bool ignoreCase)
+        private string ExtractPayloadFieldValue(ICrateStorage payloadCrateStorage, bool ignoreCase)
         {
             var fieldValues = payloadCrateStorage.CratesOfType<StandardPayloadDataCM>().SelectMany(x => x.Content.GetValues(selectedKey, ignoreCase))
                 .Where(s => !string.IsNullOrEmpty(s))

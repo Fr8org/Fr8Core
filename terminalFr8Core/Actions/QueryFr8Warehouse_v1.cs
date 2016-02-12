@@ -389,7 +389,7 @@ namespace terminalFr8Core.Actions
             }
         }
 
-        private string GetCurrentEnvelopeId(CrateStorage storage)
+        private string GetCurrentEnvelopeId(ICrateStorage storage)
         {
             var envelopePayloadCrate = storage.CrateContentsOfType<StandardPayloadDataCM>(c => c.Label == "DocuSign Envelope Payload Data").Single();
             var envelopeId = envelopePayloadCrate.PayloadObjects.SelectMany(o => o.PayloadObject).Single(po => po.Key == "EnvelopeId").Value;

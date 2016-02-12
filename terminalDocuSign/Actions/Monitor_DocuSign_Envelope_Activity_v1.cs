@@ -55,7 +55,7 @@ namespace terminalDocuSign.Actions
             GetTemplateRecipientPickerValue(Crate.GetStorage(curActivityDO), out selectedOption, out selectedValue);
         }
 
-        private void GetTemplateRecipientPickerValue(CrateStorage storage, out string selectedOption, out string selectedValue)
+        private void GetTemplateRecipientPickerValue(ICrateStorage storage, out string selectedOption, out string selectedValue)
         {
             var controls = storage.FirstCrate<StandardConfigurationControlsCM>(x => x.Label == "Configuration_Controls");
 
@@ -112,10 +112,10 @@ namespace terminalDocuSign.Actions
             return Task.FromResult<ActivityDO>(curActivityDO);
         }
 
-        protected override async Task<CrateStorage> ValidateActivity(ActivityDO curActivityDO)
+        protected override async Task<ICrateStorage> ValidateActivity(ActivityDO curActivityDO)
         {
             ValidateEnvelopeSelectableEvents(curActivityDO);
-            return await Task.FromResult<CrateStorage>(null);
+            return await Task.FromResult<ICrateStorage>(null);
         }
 
         /// <summary>
@@ -352,7 +352,7 @@ namespace terminalDocuSign.Actions
         /// Updates event subscriptions list by user checked check boxes.
         /// </summary>
         /// <remarks>The configuration controls include check boxes used to get the selected DocuSign event subscriptions</remarks>
-        private void UpdateSelectedEvents(CrateStorage storage)
+        private void UpdateSelectedEvents(ICrateStorage storage)
         {
             //get the config controls manifest
 

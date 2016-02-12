@@ -54,7 +54,7 @@ namespace terminalYammerTests.Integration
             return responseActionDTO;
         }
 
-        private void AssertCrateTypes(CrateStorage crateStorage)
+        private void AssertCrateTypes(ICrateStorage crateStorage)
         {
             Assert.AreEqual(3, crateStorage.Count);
 

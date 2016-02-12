@@ -148,7 +148,7 @@ namespace terminalFr8Core.Actions
             return false;
         }
 
-        private Crate FindCrateToProcess(ActivityDO curActivityDO, CrateStorage payloadStorage, out string manifestType, out string label)
+        private Crate FindCrateToProcess(ActivityDO curActivityDO, ICrateStorage payloadStorage, out string manifestType, out string label)
         {
             //get user selected design time values
             manifestType = GetSelectedCrateManifestTypeToProcess(curActivityDO);

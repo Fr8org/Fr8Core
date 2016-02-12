@@ -17,7 +17,7 @@ namespace Hub.Managers
 {
     public partial class CrateManager : ICrateManager
     {
-        public CrateStorageDTO ToDto(CrateStorage storage)
+        public CrateStorageDTO ToDto(ICrateStorage storage)
         {
             return CrateStorageSerializer.Default.ConvertToDto(storage);
         }
@@ -32,7 +32,7 @@ namespace Hub.Managers
             return crate != null ? CrateStorageSerializer.Default.ConvertFromDto(crate) : null;
         }
 
-        public CrateStorage FromDto(CrateStorageDTO crateStorage)
+        public ICrateStorage FromDto(CrateStorageDTO crateStorage)
         {
             return CrateStorageSerializer.Default.ConvertFromDto(crateStorage);
         }
@@ -73,7 +73,7 @@ namespace Hub.Managers
             return CrateStorageAsStr(new CrateStorage());
         }
 
-        public string CrateStorageAsStr(CrateStorage storage)
+        public string CrateStorageAsStr(ICrateStorage storage)
         {
             return JsonConvert.SerializeObject(CrateStorageSerializer.Default.ConvertToDto(storage));
         }
@@ -237,14 +237,14 @@ namespace Hub.Managers
 
         public OperationalStateCM GetOperationalState(PayloadDTO payloadDTO)
         {
-            CrateStorage curCrateStorage = FromDto(payloadDTO.CrateStorage);
+            ICrateStorage curCrateStorage = FromDto(payloadDTO.CrateStorage);
             OperationalStateCM curOperationalState = curCrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
             return curOperationalState;
         }
         //This method returns one crate of the specified Manifest Type from the payload
         public T GetByManifest<T>(PayloadDTO payloadDTO) where T : Manifest
         {
-            CrateStorage curCrateStorage = FromDto(payloadDTO.CrateStorage);
+            ICrateStorage curCrateStorage = FromDto(payloadDTO.CrateStorage);
             var curCrate = curCrateStorage.CratesOfType<T>().Single().Content;
             return curCrate;
         }

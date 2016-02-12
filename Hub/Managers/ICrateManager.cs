@@ -16,16 +16,16 @@ namespace Hub.Managers
 {
     public interface ICrateStorageUpdater : IDisposable
     {
-        CrateStorage CrateStorage { get; set; }
+        ICrateStorage CrateStorage { get; set; }
         void DiscardChanges();
     }
 
     public interface ICrateManager
     {
         CrateDTO ToDto(Crate crate);
-        CrateStorageDTO ToDto(CrateStorage storage);
+        CrateStorageDTO ToDto(ICrateStorage storage);
 
-        CrateStorage FromDto(CrateStorageDTO storageDto);
+        ICrateStorage FromDto(CrateStorageDTO storageDto);
         Crate FromDto(CrateDTO crateDto);
 
         ICrateStorageUpdater UpdateStorage(Expression<Func<CrateStorageDTO>> storageAccessExpression);
@@ -33,7 +33,7 @@ namespace Hub.Managers
 
         bool IsEmptyStorage(CrateStorageDTO storageDto);
         string EmptyStorageAsStr();
-        string CrateStorageAsStr(CrateStorage storage);
+        string CrateStorageAsStr(ICrateStorage storage);
         void AddLogMessage(string label, List<LogItemDTO> logItemList, ContainerDO containerDO);
         Crate CreateAuthenticationCrate(string label, AuthenticationMode mode);
 

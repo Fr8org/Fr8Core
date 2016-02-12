@@ -182,7 +182,7 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Add SelectObject drop-down-list to controls crate.
         /// </summary>
-        private void AddSelectObjectDdl(CrateStorage storage)
+        private void AddSelectObjectDdl(ICrateStorage storage)
         {
             AddControl(
                 storage,
@@ -204,7 +204,7 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Extract SelectedObject from Action crates.
         /// </summary>
-        private string ExtractSelectedObjectFromControl(CrateStorage storage)
+        private string ExtractSelectedObjectFromControl(ICrateStorage storage)
         {
             var controls = storage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
@@ -219,7 +219,7 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Exract previously stored valued of selected object type.
         /// </summary>
-        private string ExtractSelectedObjectFromCrate(CrateStorage storage)
+        private string ExtractSelectedObjectFromCrate(ICrateStorage storage)
         {
             var fields = storage.CratesOfType<StandardDesignTimeFieldsCM>()
                 .FirstOrDefault(x => x.Label == "Selected Object");
@@ -235,7 +235,7 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Update previously stored value of selected object type.
         /// </summary>
-        private void UpdateSelectedObjectCrate(CrateStorage storage, string selectedObject)
+        private void UpdateSelectedObjectCrate(ICrateStorage storage, string selectedObject)
         {
             UpdateDesignTimeCrateValue(
                 storage,
@@ -244,7 +244,7 @@ namespace terminalFr8Core.Actions
             );
         }
 
-        private StandardQueryCM ExtractSelectedQueryFromCrate(CrateStorage storage)
+        private StandardQueryCM ExtractSelectedQueryFromCrate(ICrateStorage storage)
         {
             var queryCM = storage
                 .CrateContentsOfType<StandardQueryCM>(x => x.Label == "Selected Query")
@@ -256,7 +256,7 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Update Selected Query crate.
         /// </summary>
-        private void UpdateSelectedQueryCrate(CrateStorage storage)
+        private void UpdateSelectedQueryCrate(ICrateStorage storage)
         {
             var selectedObject = ExtractSelectedObjectFromCrate(storage);
 
@@ -331,7 +331,7 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Update queryable criteria list.
         /// </summary>
-        private async Task UpdateQueryableCriteria(CrateStorage storage, ActivityDO activityDO, string selectedObject)
+        private async Task UpdateQueryableCriteria(ICrateStorage storage, ActivityDO activityDO, string selectedObject)
         {
             var matchedColumns = await MatchColumnsForSelectedObject(activityDO, selectedObject);
             UpdateDesignTimeCrateValue(storage, "Queryable Criteria", matchedColumns.ToArray());
@@ -340,7 +340,7 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Add query builder widget to action.
         /// </summary>
-        private void AddQueryBuilder(CrateStorage storage)
+        private void AddQueryBuilder(ICrateStorage storage)
         {
             var queryBuilder = new QueryBuilder()
             {

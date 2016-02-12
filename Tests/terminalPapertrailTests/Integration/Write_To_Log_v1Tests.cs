@@ -208,7 +208,7 @@ namespace terminalPapertrailTests.Integration
             var responsePayloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
         }
 
-        private void AssertCrateTypes(CrateStorage crateStorage)
+        private void AssertCrateTypes(ICrateStorage crateStorage)
         {
             Assert.AreEqual(1, crateStorage.Count,
                 "There should be only one crate storage in initial and follow up configuration of Write To Log action.");

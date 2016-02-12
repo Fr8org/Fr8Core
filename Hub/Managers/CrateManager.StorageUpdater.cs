@@ -17,10 +17,10 @@ namespace Hub.Managers
         {
             private readonly Expression _expr;
             private readonly Func<object> _getValue;
-            private Action<CrateStorage> _setValue;
+            private Action<ICrateStorage> _setValue;
             private bool _discardChanges;
 
-            public CrateStorage CrateStorage
+            public ICrateStorage CrateStorage
             {
                 get;
                 set;
@@ -58,7 +58,7 @@ namespace Hub.Managers
                 InitializeAccessors(memberExpr.Member, fieldInfo.GetValue(ce.Value), ReadStorage, x => JsonConvert.SerializeObject(CrateStorageSerializer.Default.ConvertToDto(x)));
             }
             
-            private void InitializeAccessors(MemberInfo memberInfo, object instance, Func<object, CrateStorage> readConverter, Func<CrateStorage, object> writeConverter)
+            private void InitializeAccessors(MemberInfo memberInfo, object instance, Func<object, ICrateStorage> readConverter, Func<ICrateStorage, object> writeConverter)
             {
                 if (memberInfo is FieldInfo)
                 {
@@ -72,7 +72,7 @@ namespace Hub.Managers
                 }
             }
 
-            private CrateStorage ReadStorage(object value)
+            private ICrateStorage ReadStorage(object value)
             {
                 if (value is string)
                 {

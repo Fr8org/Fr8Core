@@ -86,7 +86,7 @@ namespace terminalFr8Core.Actions
             return activityDO;
         }
 
-        private string GetCurrentSelectedObject(CrateStorage storage)
+        private string GetCurrentSelectedObject(ICrateStorage storage)
         {
             var selectObjectDdl = FindControl(storage, "SelectObjectDdl") as DropDownList;
             if (selectObjectDdl == null)
@@ -97,7 +97,7 @@ namespace terminalFr8Core.Actions
             return selectObjectDdl.Value;
         }
 
-        private List<FilterConditionDTO> GetCurrentSelectedConditions(CrateStorage storage)
+        private List<FilterConditionDTO> GetCurrentSelectedConditions(ICrateStorage storage)
         {
             var queryBuilder = FindControl(storage, "QueryBuilder");
             if (queryBuilder == null || queryBuilder.Value == null)
@@ -112,7 +112,7 @@ namespace terminalFr8Core.Actions
             return conditions;
         }
 
-        private bool NeedsCreateQueryBuilder(CrateStorage storage)
+        private bool NeedsCreateQueryBuilder(ICrateStorage storage)
         {
             var currentSelectedObject = GetCurrentSelectedObject(storage);
 
@@ -129,7 +129,7 @@ namespace terminalFr8Core.Actions
             return false;
         }
 
-        private bool NeedsRemoveQueryBuilder(CrateStorage storage)
+        private bool NeedsRemoveQueryBuilder(ICrateStorage storage)
         {
             var currentSelectedObject = GetCurrentSelectedObject(storage);
 

@@ -101,7 +101,7 @@ namespace terminalExcel.Actions
             return Success(payloadCrates);        
         }
 
-        private async Task<StandardTableDataCM> GetTargetTableData(ActivityDO activityDO, CrateStorage curCrateStorageDTO)
+        private async Task<StandardTableDataCM> GetTargetTableData(ActivityDO activityDO, ICrateStorage curCrateStorageDTO)
         {
             // Find crates of manifest type Standard Table Data
             var standardTableDataCrates = curCrateStorageDTO.CratesOfType<StandardTableDataCM>();
@@ -269,7 +269,7 @@ namespace terminalExcel.Actions
             return uploadFilePath;
         }
 
-        private void TransformExcelFileDataToStandardTableDataCrate(CrateStorage storage, string selectedFilePath)
+        private void TransformExcelFileDataToStandardTableDataCrate(ICrateStorage storage, string selectedFilePath)
         {
             // Check if the file is an Excel file.
             string ext = Path.GetExtension(selectedFilePath);
@@ -303,7 +303,7 @@ namespace terminalExcel.Actions
             CreatePayloadCrate_ExcelRows(storage, fileAsByteArray, headersArray, ext);
         }
 
-        private void CreatePayloadCrate_ExcelRows(CrateStorage storage, byte[] fileAsByteArray, string[] headersArray, string extension)
+        private void CreatePayloadCrate_ExcelRows(ICrateStorage storage, byte[] fileAsByteArray, string[] headersArray, string extension)
         {
             // Fetch rows in Excel file and assign them to the action's crate storage as Standard Table Data crate
             var rowsDictionary = ExcelUtils.GetTabularData(fileAsByteArray, extension);

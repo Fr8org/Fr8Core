@@ -143,7 +143,7 @@ namespace terminalGoogleTests.Unit
             return new Fr8DataDTO { ActivityDTO = activity };
         }
 
-        private CrateStorage WrapPayloadDataCrate(List<FieldDTO> payloadFields)
+        private ICrateStorage WrapPayloadDataCrate(List<FieldDTO> payloadFields)
         {
             return new CrateStorage(Data.Crates.Crate.FromContent("Payload Data", new StandardPayloadDataCM(payloadFields)));
         }

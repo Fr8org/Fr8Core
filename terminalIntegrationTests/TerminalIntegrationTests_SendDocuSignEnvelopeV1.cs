@@ -63,7 +63,7 @@ namespace terminalIntegrationTests
 			await SendDocuSignEnvelope_ConfigureFollowUp(savedActionDTO);
 
 		}
-		private async Task<CrateStorage> SendDocuSignEnvelope_ConfigureInitial(ActivityDTO curActionDTO)
+		private async Task<ICrateStorage> SendDocuSignEnvelope_ConfigureInitial(ActivityDTO curActionDTO)
 		{
 			// Fill values as it would be on front-end.
 		    curActionDTO.CrateStorage = new CrateStorageDTO();
@@ -87,7 +87,7 @@ namespace terminalIntegrationTests
 			return storage;
 		}
 		
-        private void SendDocuSignEnvelope_SelectFirstTemplate(CrateStorage curCrateStorage)
+        private void SendDocuSignEnvelope_SelectFirstTemplate(ICrateStorage curCrateStorage)
 		{
 			// Fetch Available Template crate and parse StandardDesignTimeFieldsMS.
             var availableTemplatesCrateDTO = curCrateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Single(x => x.Label == "Available Templates");
@@ -106,7 +106,7 @@ namespace terminalIntegrationTests
 			docuSignTemplateControlDTO.Value = fieldsMS.Fields.First().Value;
 		}
 
-		private async Task<CrateStorage> SendDocuSignEnvelope_ConfigureFollowUp(ActivityDTO curActionDTO)
+		private async Task<ICrateStorage> SendDocuSignEnvelope_ConfigureFollowUp(ActivityDTO curActionDTO)
 		{
 			var curActionController = CreateActionController();
 

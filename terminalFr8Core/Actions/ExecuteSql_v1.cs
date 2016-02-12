@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Crates;
 using Newtonsoft.Json;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;

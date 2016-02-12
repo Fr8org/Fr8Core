@@ -2,6 +2,7 @@
 using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using Data.Crates;
 using Hub.Managers;
 using StructureMap;
 

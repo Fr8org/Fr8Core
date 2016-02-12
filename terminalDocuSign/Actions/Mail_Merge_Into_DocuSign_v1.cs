@@ -166,7 +166,7 @@ namespace terminalDocuSign.Actions
             return Task.FromResult((Crate)PackControlsCrate(controlList.ToArray()));
         }
 
-        private T GetStdConfigurationControl<T>(CrateStorage storage, string name)
+        private T GetStdConfigurationControl<T>(ICrateStorage storage, string name)
             where T : ControlDefinitionDTO
         {
             var controls = storage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
@@ -185,11 +185,11 @@ namespace terminalDocuSign.Actions
         /// </summary>
         /// <param name="curActivityDO"></param>
         /// <returns></returns>
-        protected override async Task<CrateStorage> ValidateActivity(ActivityDO curActivityDO)
+        protected override async Task<ICrateStorage> ValidateActivity(ActivityDO curActivityDO)
         {
             ValidateDocuSignAtLeastOneTemplate(curActivityDO);
 
-            return await Task.FromResult<CrateStorage>(null);
+            return await Task.FromResult<ICrateStorage>(null);
         }
 
         private void ValidateDocuSignAtLeastOneTemplate(ActivityDO curActivityDO)

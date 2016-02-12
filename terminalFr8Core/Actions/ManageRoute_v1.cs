@@ -46,7 +46,7 @@ namespace terminalFr8Core.Actions
 
         }
 
-        private void AddRunNowButton(CrateStorage crateStorage)
+        private void AddRunNowButton(ICrateStorage crateStorage)
         {
             AddControl(crateStorage,
                 new RunRouteButton()

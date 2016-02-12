@@ -21,14 +21,14 @@ namespace terminalFr8CoreTests.Integration
             get { return "terminalFr8Core"; }
         }
 
-        private void AssertCrateStructure(CrateStorage storage)
+        private void AssertCrateStructure(ICrateStorage storage)
         {
             Assert.AreEqual(1, storage.CratesOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Downstream Terminal-Provided Fields").Count());
             Assert.AreEqual(1, storage.CratesOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Terminal-Provided Fields").Count());
             Assert.AreEqual(1, storage.CratesOfType<StandardConfigurationControlsCM>(x => x.Label == "Configuration_Controls").Count());
         }
 
-        private void AssertCrateContent_Initial(CrateStorage storage)
+        private void AssertCrateContent_Initial(ICrateStorage storage)
         {
             var downstream = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Downstream Terminal-Provided Fields").Single();
             Assert.AreEqual(0, downstream.Fields.Count());
@@ -41,7 +41,7 @@ namespace terminalFr8CoreTests.Integration
             Assert.IsTrue(controls.Controls[0] is TextBlock);
         }
 
-        private void AssertCrateContent_FollowUp(CrateStorage storage)
+        private void AssertCrateContent_FollowUp(ICrateStorage storage)
         {
             var downstream = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Downstream Terminal-Provided Fields").Single();
             Assert.AreEqual(1, downstream.Fields.Count());

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Web.Helpers;
 using AutoMapper;
 using Data.Constants;
+using Data.Crates;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;

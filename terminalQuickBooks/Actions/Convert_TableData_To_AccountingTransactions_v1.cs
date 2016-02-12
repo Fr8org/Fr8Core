@@ -283,7 +283,7 @@ namespace terminalQuickBooks.Actions
             );
             return sources;
         }
-        private void ValidateControls(CrateStorage storage)
+        private void ValidateControls(ICrateStorage storage)
         {
             var controls = GetConfigurationControls(storage);
             var curDebitCreditButtonGroup = (RadioButtonGroup)GetControl(controls, "Debit/Credit", ControlTypes.RadioButtonGroup);
@@ -298,7 +298,7 @@ namespace terminalQuickBooks.Actions
         /// ButtonGroup with the Name "Debit/Credit", update the debitLineAccount values
         /// 2) Extract Memo from the TextBlock with Name "Transaction_Memo"
         /// </summary>
-        private string GetMemoText(CrateStorage storage)
+        private string GetMemoText(ICrateStorage storage)
         {
             var controls = GetConfigurationControls(storage);
             var curMemoControl = (TextBox)GetControl(controls, "Transaction_Memo", ControlTypes.TextBox);
@@ -311,7 +311,7 @@ namespace terminalQuickBooks.Actions
         /// </summary>
         /// <remarks>It is assumed that the method is called from using.
         /// It is also assumed that ChartOfAccountCM is in the storage</remarks>
-        private AccountDTO GetDebitAccount(CrateStorage storage)
+        private AccountDTO GetDebitAccount(ICrateStorage storage)
         {
             var debitAccount = new AccountDTO();
             var controls = GetConfigurationControls(storage);

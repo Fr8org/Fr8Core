@@ -69,7 +69,7 @@ namespace terminalFr8Core.Services
         }
 
         // Create event payload from the JSON data.
-        private CrateStorage EventPayload(string eventName, StandardLoggingCM loggingManifest)
+        private ICrateStorage EventPayload(string eventName, StandardLoggingCM loggingManifest)
         {
             var storage = new CrateStorage();
             storage.Add(Data.Crates.Crate.FromContent(eventName, loggingManifest));

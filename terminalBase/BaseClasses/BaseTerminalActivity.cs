@@ -217,7 +217,7 @@ namespace TerminalBase.BaseClasses
             return GetConfigurationControls(storage);
         }
 
-        protected StandardConfigurationControlsCM GetConfigurationControls(CrateStorage storage)
+        protected StandardConfigurationControlsCM GetConfigurationControls(ICrateStorage storage)
         {
             var controlsCrate = storage.CrateContentsOfType<StandardConfigurationControlsCM>(c => c.Label == ConfigurationControlsLabel).FirstOrDefault();
             return controlsCrate;
@@ -278,9 +278,9 @@ namespace TerminalBase.BaseClasses
         }
 
         //if the Action doesn't provide a specific method to override this, we just return null = no validation errors
-        protected virtual async Task<CrateStorage> ValidateActivity(ActivityDO curActivityDO)
+        protected virtual async Task<ICrateStorage> ValidateActivity(ActivityDO curActivityDO)
         {
-            return await Task.FromResult<CrateStorage>(null);
+            return await Task.FromResult<ICrateStorage>(null);
         }
 
         protected async Task<ActivityDO> ProcessConfigurationRequest(ActivityDO curActivityDO, ConfigurationEvaluator configurationEvaluationResult, AuthorizationTokenDO authToken)
@@ -408,7 +408,7 @@ namespace TerminalBase.BaseClasses
             return Crate.CreateDesignTimeFieldsCrate("AvailableUpstreamLabels", fields);
         }
 
-        protected CrateStorage AssembleCrateStorage(params Crate[] curCrates)
+        protected ICrateStorage AssembleCrateStorage(params Crate[] curCrates)
         {
             return new CrateStorage(curCrates);
         }
@@ -547,7 +547,7 @@ namespace TerminalBase.BaseClasses
         /// <param name="filterByTag">Filter for upstream source, Empty by default</param>
         /// <param name="addRequestConfigEvent">True if onChange event needs to be configured, False otherwise. True by default</param>
         /// <param name="required">True if the control is required, False otherwise. False by default</param>
-        protected void AddTextSourceControl(CrateStorage storage, string label, string controlName,
+        protected void AddTextSourceControl(ICrateStorage storage, string label, string controlName,
                                             string upstreamSourceLabel, string filterByTag = "",
                                             bool addRequestConfigEvent = true, bool required = false)
         {
@@ -562,7 +562,7 @@ namespace TerminalBase.BaseClasses
         /// Adds Text Source for the DTO type. 
         /// </summary>
         /// <remarks>The (T), DTO's Proerty Names will be used to name and label the new Text Source Controls</remarks>
-        protected void AddTextSourceControlForDTO<T>(CrateStorage storage, string upstreamSourceLabel,
+        protected void AddTextSourceControlForDTO<T>(ICrateStorage storage, string upstreamSourceLabel,
                                                      string filterByTag = "",
                                                      bool addRequestConfigEvent = true, bool required = false)
         {
@@ -654,7 +654,7 @@ namespace TerminalBase.BaseClasses
             }
         }
 
-        private string ExtractSpecificOrUpstreamValueLegacy(RadioButtonGroup radioButtonGroupControl, CrateStorage runTimeCrateStorage, ActivityDO curActivity)
+        private string ExtractSpecificOrUpstreamValueLegacy(RadioButtonGroup radioButtonGroupControl, ICrateStorage runTimeCrateStorage, ActivityDO curActivity)
         {
             var radioButton = radioButtonGroupControl
                 .Radios
@@ -697,7 +697,7 @@ namespace TerminalBase.BaseClasses
         /// Extracts crate with specified label and ManifestType = Standard Design Time,
         /// then extracts field with specified fieldKey.
         /// </summary>
-        protected string ExtractPayloadFieldValue(CrateStorage crateStorage, string fieldKey, ActivityDO curActivity)
+        protected string ExtractPayloadFieldValue(ICrateStorage crateStorage, string fieldKey, ActivityDO curActivity)
         {
             var fieldValues = crateStorage.CratesOfType<StandardPayloadDataCM>().SelectMany(x => x.Content.GetValues(fieldKey))
                 .Where(s => !string.IsNullOrEmpty(s))
@@ -713,7 +713,7 @@ namespace TerminalBase.BaseClasses
             throw new ApplicationException(exceptionMessage);
         }
 
-        protected void AddLabelControl(CrateStorage storage, string name, string label, string text)
+        protected void AddLabelControl(ICrateStorage storage, string name, string label, string text)
         {
             AddControl(
                 storage,
@@ -721,7 +721,7 @@ namespace TerminalBase.BaseClasses
             );
         }
 
-        protected void AddControl(CrateStorage storage, ControlDefinitionDTO control)
+        protected void AddControl(ICrateStorage storage, ControlDefinitionDTO control)
         {
             var controlsCrate = EnsureControlsCrate(storage);
 
@@ -730,7 +730,7 @@ namespace TerminalBase.BaseClasses
             controlsCrate.Content.Controls.Add(control);
         }
 
-        protected ControlDefinitionDTO FindControl(CrateStorage storage, string name)
+        protected ControlDefinitionDTO FindControl(ICrateStorage storage, string name)
         {
             var controlsCrate = storage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
@@ -807,7 +807,7 @@ namespace TerminalBase.BaseClasses
                 throw new NotImplementedException("Can't search for controls inside of " + control.Type);
         }
 
-        protected void RemoveControl(CrateStorage storage, string name)
+        protected void RemoveControl(ICrateStorage storage, string name)
         {
             var controlsCrate = storage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
@@ -822,7 +822,7 @@ namespace TerminalBase.BaseClasses
             }
         }
 
-        protected Crate<StandardConfigurationControlsCM> EnsureControlsCrate(CrateStorage storage)
+        protected Crate<StandardConfigurationControlsCM> EnsureControlsCrate(ICrateStorage storage)
         {
             var controlsCrate = storage.CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
@@ -835,7 +835,7 @@ namespace TerminalBase.BaseClasses
             return controlsCrate;
         }
 
-        protected void UpdateDesignTimeCrateValue(CrateStorage storage, string label, params FieldDTO[] fields)
+        protected void UpdateDesignTimeCrateValue(ICrateStorage storage, string label, params FieldDTO[] fields)
         {
             var crate = storage.CratesOfType<StandardDesignTimeFieldsCM>().FirstOrDefault(x => x.Label == label);
 

@@ -138,7 +138,7 @@ namespace terminalSalesforceTests.Intergration
             return resultActionDto;
         }
 
-        private void AssertConfigurationControls(CrateStorage curActionCrateStorage)
+        private void AssertConfigurationControls(ICrateStorage curActionCrateStorage)
         {
             var configurationControls = curActionCrateStorage.CratesOfType<StandardConfigurationControlsCM>().Single();
 

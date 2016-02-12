@@ -15,19 +15,19 @@ namespace UtilitiesTesting.Fixtures
 {
     public partial class FixtureData
     {
-        public static CrateStorage TestConfigurationSettings_healthdemo()
+        public static ICrateStorage TestConfigurationSettings_healthdemo()
         {
             return CrateStorageDTO();
         }
 
-        public static CrateStorage CrateStorageDTO()
+        public static ICrateStorage CrateStorageDTO()
         {
             var fieldDTO = new TextBox();
             fieldDTO.Name = "connection_string";
             fieldDTO.Required = true;
             fieldDTO.Label = "SQL Connection String";
 
-            CrateStorage curCrateStorage = new CrateStorage();
+            ICrateStorage curCrateStorage = new CrateStorage();
             ICrateManager crate = ObjectFactory.GetInstance<ICrateManager>();
             curCrateStorage.Add(crate.CreateStandardConfigurationControlsCrate("Configuration Data for WriteToAzureSqlServer", fieldDTO));
             return curCrateStorage;
@@ -51,7 +51,7 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static CrateStorage TestCrateStorage()
+        public static ICrateStorage TestCrateStorage()
         {
             ICrateManager crate = ObjectFactory.GetInstance<ICrateManager>();
             var curConfigurationStore = new CrateStorage

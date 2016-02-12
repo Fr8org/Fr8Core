@@ -27,12 +27,12 @@ namespace Hub.Managers
             return crateManager.UpdateStorage(() => payload.CrateStorage);
         }
 
-        public static CrateStorage GetStorage(this ICrateManager crateManager, ActivityDO activity)
+        public static ICrateStorage GetStorage(this ICrateManager crateManager, ActivityDO activity)
         {
            return GetStorage(crateManager, activity.CrateStorage);
         }
 
-        public static CrateStorage GetStorage(this ICrateManager crateManager, string crateStorageRaw)
+        public static ICrateStorage GetStorage(this ICrateManager crateManager, string crateStorageRaw)
         {
             if (string.IsNullOrWhiteSpace(crateStorageRaw))
             {
@@ -42,12 +42,12 @@ namespace Hub.Managers
             return crateManager.FromDto(CrateStorageFromStringConverter.Convert(crateStorageRaw));
         }
 
-        public static CrateStorage GetStorage(this ICrateManager crateManager, ActivityDTO activity)
+        public static ICrateStorage GetStorage(this ICrateManager crateManager, ActivityDTO activity)
         {
             return crateManager.FromDto(activity.CrateStorage);
         }
 
-        public static CrateStorage GetStorage(this ICrateManager crateManager, PayloadDTO payload)
+        public static ICrateStorage GetStorage(this ICrateManager crateManager, PayloadDTO payload)
         {
             return crateManager.FromDto(payload.CrateStorage);
         }

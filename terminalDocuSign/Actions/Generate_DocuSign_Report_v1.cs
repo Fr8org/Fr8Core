@@ -421,7 +421,7 @@ namespace terminalDocuSign.Actions
             return activityDO;
         }
 
-        private Crate<StandardQueryCM> ExtractQueryCrate(CrateStorage storage)
+        private Crate<StandardQueryCM> ExtractQueryCrate(ICrateStorage storage)
         {
             var configurationControls = storage
                 .CrateContentsOfType<StandardConfigurationControlsCM>()

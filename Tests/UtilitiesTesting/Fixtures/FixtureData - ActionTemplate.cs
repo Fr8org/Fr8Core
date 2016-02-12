@@ -73,12 +73,12 @@ namespace UtilitiesTesting.Fixtures
             return curActionTemplate;
         }
 
-        public static CrateStorage TestConfigurationSettings()
+        public static ICrateStorage TestConfigurationSettings()
         {
             return FixtureData.CrateStorageDTO();
         }
 
-        public static CrateStorage TestConfigurationStore()
+        public static ICrateStorage TestConfigurationStore()
         {
             return new CrateStorage
             {

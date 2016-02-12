@@ -35,7 +35,7 @@ namespace terminalAzureTests.Integration
             Assert.AreEqual("connection_string", control.Controls[0].Name);
         }
 
-        private void AssertConfigureCrate(CrateStorage crateStorage)
+        private void AssertConfigureCrate(ICrateStorage crateStorage)
         {
             Assert.AreEqual(1, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());

@@ -91,7 +91,7 @@ namespace terminalSlackTests.Integration
             return responseActionDTO;
         }
 
-        private void AssertCrateTypes(CrateStorage crateStorage)
+        private void AssertCrateTypes(ICrateStorage crateStorage)
         {
             Assert.AreEqual(4, crateStorage.Count);
 

@@ -33,7 +33,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         ActivityDTO solution;
-        CrateStorage crateStorage;
+        ICrateStorage crateStorage;
 
         [Test, Ignore]
         [ExpectedException(typeof(AssertionException))]

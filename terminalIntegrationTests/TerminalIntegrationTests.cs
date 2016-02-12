@@ -254,7 +254,7 @@ namespace terminalIntegrationTests
             return result.Content;
         }
 
-        private async Task<CrateStorage> WaitForDocuSignEvent_ConfigureInitial(ActivityDTO curActionDTO)
+        private async Task<ICrateStorage> WaitForDocuSignEvent_ConfigureInitial(ActivityDTO curActionDTO)
         {
             // Fill values as it would be on front-end.
             curActionDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(_waitForDocuSignEventActivityTemplate);
@@ -294,7 +294,7 @@ namespace terminalIntegrationTests
 //            }
 //        }
 
-        private void WaitForDocuSignEvent_SelectFirstTemplate(CrateStorage curCrateStorage)
+        private void WaitForDocuSignEvent_SelectFirstTemplate(ICrateStorage curCrateStorage)
         {
             // Fetch Available Template crate and parse StandardDesignTimeFieldsMS.
             var availableTemplatesCrate = curCrateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Single(x => x.Label == "Available Templates");
@@ -316,7 +316,7 @@ namespace terminalIntegrationTests
             docuSignTemplateControl.Controls[0].Value = fieldsMS.Fields.First().Value;
         }
 
-        private async Task<CrateStorage> WaitForDocuSignEvent_ConfigureFollowUp(ActivityDTO curActionDTO)
+        private async Task<ICrateStorage> WaitForDocuSignEvent_ConfigureFollowUp(ActivityDTO curActionDTO)
         {
             var curActionController = CreateActionController();
 
@@ -338,7 +338,7 @@ namespace terminalIntegrationTests
             return storage;
         }
 
-        private async Task<CrateStorage> TestIncomingData_ConfigureInitial(ActivityDTO curActionDTO)
+        private async Task<ICrateStorage> TestIncomingData_ConfigureInitial(ActivityDTO curActionDTO)
         {
             // Fill values as it would be on front-end.
             curActionDTO.CrateStorage = new CrateStorageDTO();
@@ -360,7 +360,7 @@ namespace terminalIntegrationTests
             return storage;
         }
 
-        private async Task<CrateStorage> WriteToSqlServer_ConfigureInitial(ActivityDTO curActionDTO)
+        private async Task<ICrateStorage> WriteToSqlServer_ConfigureInitial(ActivityDTO curActionDTO)
         {
             curActionDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(_writeToSqlServerActivityTemplate);
             curActionDTO.CrateStorage = new CrateStorageDTO();
@@ -380,7 +380,7 @@ namespace terminalIntegrationTests
             return storage;
         }
 
-        private void WriteToSqlServer_InputConnectionString(CrateStorage curCrateStorage)
+        private void WriteToSqlServer_InputConnectionString(ICrateStorage curCrateStorage)
         {
             var controlsMS = curCrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
@@ -390,7 +390,7 @@ namespace terminalIntegrationTests
             connectionStringControl.Value = "Server = tcp:s79ifqsqga.database.windows.net,1433; Database = demodb_health; User ID = alexeddodb@s79ifqsqga; Password = Thales89; Trusted_Connection = False; Encrypt = True; Connection Timeout = 30;";
         }
 
-        private async Task<CrateStorage> WriteToSqlServer_ConfigureFollowUp(ActivityDTO curActionDTO)
+        private async Task<ICrateStorage> WriteToSqlServer_ConfigureFollowUp(ActivityDTO curActionDTO)
         {
             var curActionController = CreateActionController();
 
