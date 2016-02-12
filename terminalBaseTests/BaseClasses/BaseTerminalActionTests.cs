@@ -42,6 +42,8 @@ namespace terminalBaseTests.BaseClasses
             _baseTerminalAction = new BaseTerminalActivity();
             _coreServer = terminalBaseTests.Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
+
+            FixtureData.AddTestActivityTemplate();
         }
 
         [TearDown]
