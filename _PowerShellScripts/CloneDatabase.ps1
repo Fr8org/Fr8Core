@@ -24,7 +24,7 @@ if ($command.ExecuteNonQuery() -ne -1)
 }
 Write-Host "Successfully deleted old target database."
 
-$commandText = "CREATE DATABASE $($targetDbName)Staging AS COPY OF $($serverName).$($sourceDbName)"
+$commandText = "CREATE DATABASE $($targetDbName) AS COPY OF $($serverName).$($sourceDbName)"
 Write-Host $commandText
 $command.CommandText = $commandText
 if ($command.ExecuteNonQuery() -ne -1)
