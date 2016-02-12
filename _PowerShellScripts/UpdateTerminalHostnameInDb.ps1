@@ -5,15 +5,13 @@
 #>
 param(
     [string]$connectionString,
-	[string]$dbName,
-	[string]$serverName,
 	[string]$newHostname
 )
 
 Write-Host "Update terminal URLs to $newHostname"
 $errorMessage = "An error while executing the query. Possibly cannot connect to the database, please check connection string."
 
-$commandText = "UPDATE $dbName.dbo.Terminals SET [Endpoint] = '$newHostname" + ":' + RIGHT([Endpoint], 5)"
+$commandText = "UPDATE Terminals SET [Endpoint] = '$newHostname" + ":' + RIGHT([Endpoint], 5)"
 Write-Host $commandText
 
 $connection = new-object system.data.SqlClient.SQLConnection($connectionString)
