@@ -84,7 +84,7 @@ namespace HealthMonitor.Utility
                     System.Diagnostics.Debug.WriteLine("Exception during initialization:" + ex.Message + ". Any inner exceptions follow below.");
                     foreach (Exception e in ((AggregateException)ex).Flatten().GetInnerExceptions())
                     {
-                        System.Diagnostics.Debug.WriteLine(ex.Message + Environment.NewLine + ex.StackTrace);
+                        System.Diagnostics.Debug.WriteLine(e.Message + Environment.NewLine + e.StackTrace);
                     }
                     System.Diagnostics.Debug.WriteLine("=== End ===");
 
@@ -93,7 +93,7 @@ namespace HealthMonitor.Utility
                     System.Diagnostics.Debug.WriteLine("Exception during initialization: " + ex.Message +". Any inner exceptions follow below.");
                     foreach (Exception e in ex.GetInnerExceptions())
                     {
-                        System.Diagnostics.Debug.WriteLine(ex.Message + Environment.NewLine + ex.StackTrace);
+                        System.Diagnostics.Debug.WriteLine(e.Message + Environment.NewLine + e.StackTrace);
                     }
                     System.Diagnostics.Debug.WriteLine("=== End ===");
                 }
