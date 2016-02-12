@@ -8,8 +8,6 @@ param(
 	[string]$newHostname
 )
 
-Write-Host "Waiting for 30 seconds after the previous action to allow the test database to activate."
-Start-Sleep 30000
 Write-Host "Update terminal URLs to $newHostname"
 $errorMessage = "An error while executing the query. Possibly cannot connect to the database, please check connection string."
 
