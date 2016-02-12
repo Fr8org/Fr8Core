@@ -401,6 +401,19 @@ namespace terminalDocuSign.Actions
                     queryFr8WarehouseAction
                 );
 
+                using (var updater = Crate.UpdateStorage(activityDO))
+                {
+                    updater.CrateStorage.RemoveByManifestId((int)MT.OperationalStatus);
+                
+                    var operationalStatus = new OperationalStateCM();
+                    operationalStatus.CurrentActivityResponse =
+                        ActivityResponseDTO.Create(ActivityResponse.ExecuteClientAction);
+                    operationalStatus.CurrentClientActionName = "ExecuteAfterConfigure";
+
+                    var operationsCrate = Data.Crates.Crate.FromContent("Operational Status", operationalStatus);
+                    updater.CrateStorage.Add(operationsCrate);
+                }
+
                 // activityDO.ChildNodes.Add(new ActivityDO()
                 // {
                 //     ActivityTemplateId = queryFr8WarehouseAction.Id,
