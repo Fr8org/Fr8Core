@@ -58,10 +58,11 @@ namespace HealthMonitor.HubLauncher
             }
             UpdateConnectionString(match.Groups[1].Value, match.Groups[2].Value);
 
+            Console.WriteLine("{0} About to launch self-hosting. This may take up to 90 seconds.", DateTime.UtcNow.ToLongTimeString());
             _initializer = new SelfHostInitializer();
             _initializer.Initialize(selfHostFactory, endpoint);
 
-            Console.WriteLine("Listening...");
+            Console.WriteLine("{0} Listening...", DateTime.UtcNow.ToLongTimeString());
 
             // read input to detect "quit" command
             string command = string.Empty;

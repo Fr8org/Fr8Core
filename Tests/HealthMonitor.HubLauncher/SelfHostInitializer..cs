@@ -9,11 +9,11 @@ namespace HealthMonitor.HubLauncher
 {
     public class SelfHostInitializer : IDisposable
     {
-        IDisposable hubReference = null;
+        IDisposable _hubReference = null;
 
         public void Dispose()
         {
-            hubReference.Dispose();
+            _hubReference.Dispose();
         }
 
         public void Initialize(string selfHostFactory, string endpoint)
@@ -30,7 +30,7 @@ namespace HealthMonitor.HubLauncher
             }
 
             MethodInfo curMethodInfo = calledType.GetMethod("CreateServer", BindingFlags.Static | BindingFlags.Public);
-            hubReference = (IDisposable)curMethodInfo.Invoke(null, new string[] { endpoint });
+            _hubReference = (IDisposable)curMethodInfo.Invoke(null, new string[] { endpoint });
         }
     }
 }

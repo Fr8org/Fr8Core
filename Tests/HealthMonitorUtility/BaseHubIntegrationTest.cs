@@ -51,54 +51,29 @@ namespace HealthMonitor.Utility
 
         public BaseHubIntegrationTest()
         {
-            try
-            {
-                ObjectFactory.Initialize();
-                ObjectFactory.Configure(Hub.StructureMap.StructureMapBootStrapper.LiveConfiguration);
+            ObjectFactory.Initialize();
+            ObjectFactory.Configure(Hub.StructureMap.StructureMapBootStrapper.LiveConfiguration);
 
-                // Use a common HttpClient for all REST operations within testing session 
-                // to ensure the presense of the authentication cookie. 
-                _httpClient = new HttpClient();
-                _httpClient.BaseAddress = GetHubBaseUrl();
+            // Use a common HttpClient for all REST operations within testing session 
+            // to ensure the presense of the authentication cookie. 
+            _httpClient = new HttpClient();
+            _httpClient.BaseAddress = GetHubBaseUrl();
 
-                _crate = new CrateManager();
-                _hmacService = new Fr8HMACService();
-                _baseUrl = GetHubApiBaseUrl();
-                _restfulServiceClient = new RestfulServiceClient(_httpClient);
+            _crate = new CrateManager();
+            _hmacService = new Fr8HMACService();
+            _baseUrl = GetHubApiBaseUrl();
+            _restfulServiceClient = new RestfulServiceClient(_httpClient);
 
-                LoginUser(TestUserEmail, TestUserPassword).Wait();
+            LoginUser(TestUserEmail, TestUserPassword).Wait();
 
-                // Initailize EmailAssert utility.
-                string testEmail = ConfigurationManager.AppSettings["TestEmail"];
-                string hostname = ConfigurationManager.AppSettings["TestEmail_Pop3Server"];
-                int port = int.Parse(ConfigurationManager.AppSettings["TestEmail_Port"]);
-                bool useSsl = ConfigurationManager.AppSettings["TestEmail_UseSsl"] == "true" ? true : false;
-                string username = ConfigurationManager.AppSettings["TestEmail_Username"];
-                string password = ConfigurationManager.AppSettings["TestEmail_Password"];
-                EmailAssert.InitEmailAssert(testEmail, hostname, port, useSsl, username, password);
-            }
-            catch (Exception ex)
-            {
-                if (ex is AggregateException)
-                {
-                    System.Diagnostics.Debug.WriteLine("Exception during initialization:" + ex.Message + ". Any inner exceptions follow below.");
-                    foreach (Exception e in ((AggregateException)ex).Flatten().GetInnerExceptions())
-                    {
-                        System.Diagnostics.Debug.WriteLine(e.Message + Environment.NewLine + e.StackTrace);
-                    }
-                    System.Diagnostics.Debug.WriteLine("=== End ===");
-
-                }
-                else {
-                    System.Diagnostics.Debug.WriteLine("Exception during initialization: " + ex.Message +". Any inner exceptions follow below.");
-                    foreach (Exception e in ex.GetInnerExceptions())
-                    {
-                        System.Diagnostics.Debug.WriteLine(e.Message + Environment.NewLine + e.StackTrace);
-                    }
-                    System.Diagnostics.Debug.WriteLine("=== End ===");
-                }
-                throw;
-            }
+            // Initailize EmailAssert utility.
+            string testEmail = ConfigurationManager.AppSettings["TestEmail"];
+            string hostname = ConfigurationManager.AppSettings["TestEmail_Pop3Server"];
+            int port = int.Parse(ConfigurationManager.AppSettings["TestEmail_Port"]);
+            bool useSsl = ConfigurationManager.AppSettings["TestEmail_UseSsl"] == "true" ? true : false;
+            string username = ConfigurationManager.AppSettings["TestEmail_Username"];
+            string password = ConfigurationManager.AppSettings["TestEmail_Password"];
+            EmailAssert.InitEmailAssert(testEmail, hostname, port, useSsl, username, password);
         }
         public abstract string TerminalName { get; }
 
