@@ -15,6 +15,7 @@ using Newtonsoft.Json.Linq;
 using Data.Crates;
 using Data.Control;
 using Data.States;
+using Data.Entities;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -238,17 +239,12 @@ namespace terminalDocuSignTests.Integration
             //
             // Activate and run plan
             //
-            try {
-                await HttpPostAsync<string, string>(_baseUrl + "routes/run?planId=" + plan.Id, null);
-            }
-            catch (Exception ex)
-            {
+            await HttpPostAsync<string, string>(_baseUrl + "routes/run?planId=" + plan.Id, null);
 
-            }
             //
             // Deactivate plan
             //
-            //await HttpPostAsync<string, string>(_baseUrl + "routes/deactivate?id=" + plan.Id, plan);
+            //await HttpPostAsync<string, string>(_baseUrl + "routes/deactivate?planId=" + plan.Id, null);
 
             //
             // Delete plan

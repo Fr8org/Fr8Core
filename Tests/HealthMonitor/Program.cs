@@ -169,7 +169,6 @@ namespace HealthMonitor
 
             ReportToConsole(appName, report);
             var errorCount = report.Tests.Count(x => !x.Success);
-            Environment.Exit(errorCount);
         }
     }
 }

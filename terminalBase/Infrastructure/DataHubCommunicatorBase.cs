@@ -28,6 +28,11 @@ namespace TerminalBase.Infrastructure
 
         protected abstract string LabelPrefix { get; }
 
+        public bool IsConfigured
+        {
+            get; set;            
+        }
+
         private void StripLabelPrefix(IEnumerable<Crate> crates, string prefix)
         {
             foreach (var crate in crates)

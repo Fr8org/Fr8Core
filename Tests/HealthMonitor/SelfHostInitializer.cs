@@ -37,7 +37,6 @@ namespace HealthMonitor
 
                     if (terminal.Type.IndexOf("HubWeb") > -1)
                     {
-                        Console.WriteLine("Starting HubLauncher...");
                         // Run the Hub in a separate appdomain to avoid conflict with StructureMap configurations for
                         // termianls and the Hub.
                         StartHub(terminal);
@@ -71,6 +70,7 @@ namespace HealthMonitor
 
         private void StartHub(SelfHostedTerminalsElement hub)
         {
+            Console.WriteLine("Starting HubLauncher...");
             string hubLauncherDirectory = GetHubLauncherDirectory();
 
             ProcessStartInfo psi = new ProcessStartInfo(Path.Combine(hubLauncherDirectory, "HealthMonitor.HubLauncher.exe"), "--endpoint " + hub.Url + " --selfHostFactory \"" + hub.Type + "\"");
@@ -82,17 +82,20 @@ namespace HealthMonitor
 
             _hubProcess = new Process();
             _hubProcess.StartInfo = psi;
-            _hubProcess.OutputDataReceived += _hubProcess_OutputDataReceived1;
+            _hubProcess.OutputDataReceived += _hubProcess_OutputDataReceived;
+            _hubProcess.ErrorDataReceived += _hubProcess_OutputDataReceived;
             _hubProcess.EnableRaisingEvents = true;
             _hubProcess.Start();
-
+            _hubProcess.BeginOutputReadLine();
+            _hubProcess.BeginErrorReadLine();
+                        
             // Waiting for the process to start
             Thread.Sleep(5000);
         }
 
-        private void _hubProcess_OutputDataReceived1(object sender, DataReceivedEventArgs e)
+        private void _hubProcess_OutputDataReceived(object sender, DataReceivedEventArgs e)
         {
-            Console.WriteLine("HubLauncher: " + e.Data);
+            Console.WriteLine("HubLauncher:\\> " + e.Data);
         }
 
         private SelfHostedTerminalsCollection GetSelfHostedTerminals()
@@ -117,7 +120,9 @@ namespace HealthMonitor
 
             if (_hubProcess != null)
             {
+                Console.WriteLine("Terminating HubLauncher...");
                 _hubProcess.StandardInput.WriteLine("quit");
+                _hubProcess.WaitForExit();
             }
         }
     }

@@ -23,6 +23,7 @@ using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using AutoMapper;
+using System.Configuration;
 
 namespace TerminalBase.Infrastructure
 {
@@ -35,7 +36,7 @@ namespace TerminalBase.Infrastructure
 
         private readonly IHMACService _hmacService;
         private readonly ICrateManager _crate;
-        private bool _configured;
+        public bool IsConfigured { get; set; }
 
         public DefaultHubCommunicator()
         {
@@ -51,9 +52,17 @@ namespace TerminalBase.Infrastructure
             if (string.IsNullOrEmpty(terminalName))
                 throw new ArgumentNullException("terminalName");
 
-            TerminalSecret = CloudConfigurationManager.GetSetting(terminalName + "_TerminalSecret");
-            TerminalId = CloudConfigurationManager.GetSetting(terminalName + "_TerminalId");
-            _configured = true;
+            TerminalSecret = CloudConfigurationManager.GetSetting("TerminalSecret");
+            TerminalId = CloudConfigurationManager.GetSetting("TerminalId");
+
+            //we might be on integration test currently
+            if (TerminalSecret == null || TerminalId == null)
+            {
+                TerminalSecret = ConfigurationManager.AppSettings[terminalName + "TerminalSecret"];
+                TerminalId = ConfigurationManager.AppSettings[terminalName + "TerminalId"];
+            }
+
+            IsConfigured = true;
             return Task.FromResult<object>(null);
         }
 
@@ -61,7 +70,7 @@ namespace TerminalBase.Infrastructure
 
         private async Task<Dictionary<string, string>> GetHMACHeader(Uri requestUri, string userId)
         {
-            if (!_configured)
+            if (!IsConfigured)
                 throw new InvalidOperationException("Please call Configure() before using the class.");
 
             return await _hmacService.GenerateHMACHeader(requestUri, TerminalId, TerminalSecret, userId);
@@ -69,7 +78,7 @@ namespace TerminalBase.Infrastructure
 
         private async Task<Dictionary<string, string>> GetHMACHeader<T>(Uri requestUri, string userId, T content)
         {
-            if (!_configured)
+            if (!IsConfigured)
                 throw new InvalidOperationException("Please call Configure() before using the class.");
 
             return await _hmacService.GenerateHMACHeader(requestUri, TerminalId, TerminalSecret, userId, content);
@@ -77,7 +86,7 @@ namespace TerminalBase.Infrastructure
 
         private async Task<Dictionary<string, string>> GetHMACHeader(Uri requestUri, string userId, HttpContent content)
         {
-            if (!_configured)
+            if (!IsConfigured)
                 throw new InvalidOperationException("Please call Configure() before using the class.");
 
             return await _hmacService.GenerateHMACHeader(requestUri, TerminalId, TerminalSecret, userId, content);

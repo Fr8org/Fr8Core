@@ -37,5 +37,6 @@ namespace TerminalBase.Infrastructure
         Task<Stream> DownloadFile(int fileId, string userId);
         Task<IEnumerable<FileDTO>> GetFiles(string userId);
         Task Configure(string terminalName);
+        bool IsConfigured { get; set; }
     }
 }

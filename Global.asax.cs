@@ -62,11 +62,17 @@ namespace HubWeb
             //Register global Exception Filter for WebAPI 
             GlobalConfiguration.Configuration.Filters.Add(new WebApiExceptionFilterAttribute());
 
-            var db = new DockyardDbContext();
-            db.Database.Initialize(true);
-
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE);
             ObjectFactory.GetInstance<AutoMapperBootStrapper>().ConfigureAutoMapper();
+
+            var db = ObjectFactory.GetInstance<DbContext>();
+            db.Database.Initialize(true);
+
+            if (selfHostMode)
+            {
+                StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE);
+                ObjectFactory.GetInstance<AutoMapperBootStrapper>().ConfigureAutoMapper();
+            }
 
             Utilities.Server.IsProduction = ObjectFactory.GetInstance<IConfigRepository>().Get<bool>("IsProduction");
             Utilities.Server.IsDevMode = ObjectFactory.GetInstance<IConfigRepository>().Get<bool>("IsDev", true);
