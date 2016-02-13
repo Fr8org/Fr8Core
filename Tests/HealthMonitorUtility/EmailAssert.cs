@@ -59,7 +59,7 @@ namespace HealthMonitor.Utility
                         return;
                     }
                     System.Threading.Thread.Sleep(2000);
-                    timeToCompare = DateTime.UtcNow; // Next time use current iteration time 
+                    timeToCompare = DateTime.UtcNow; // Next time use current iteration call time 
                 }
                 throw new AssertionException(String.Format(
                         "Email to {0} was not received within the timeout period {1}.", 
@@ -93,7 +93,8 @@ namespace HealthMonitor.Utility
 
         private static bool ValidateConditions(string expectedFromAddr, string expectedSubject, MessageHeader msg)
         {
-            return expectedFromAddr == msg.From.Address && expectedSubject == msg.Subject;
+            return string.Equals(expectedFromAddr, msg.From.Address, StringComparison.InvariantCultureIgnoreCase) 
+                && string.Equals(expectedSubject, msg.Subject, StringComparison.InvariantCultureIgnoreCase);
         }
 
         private static bool ValidateTime(TimeSpan recentMsgThreshold, DateTime startTime, DateTime dateSent)

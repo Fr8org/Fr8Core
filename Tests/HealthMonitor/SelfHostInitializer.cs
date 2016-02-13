@@ -90,19 +90,21 @@ namespace HealthMonitor
             bool started = _hubProcess.Start();
             _hubProcess.BeginOutputReadLine();
             _hubProcess.BeginErrorReadLine();
-                        
+
             if (!started)
             {
                 throw new Exception("Cannot start HubLauncher for an unknown reason. Test runner aborted.");
             }
 
-            _waitHandle.Wait(new TimeSpan(0,3,0));
+            _waitHandle.Wait(new TimeSpan(0, 3, 0));
             Console.WriteLine("Proceeding to Tests");
 
         }
 
         private void _hubProcess_OutputDataReceived(object sender, DataReceivedEventArgs e)
         {
+            if (e.Data == null) return;
+
             if (e.Data.IndexOf("Listening...") > -1)
             {
                 // HubLauncher is ready, can start tests
