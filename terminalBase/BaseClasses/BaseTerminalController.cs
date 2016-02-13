@@ -252,15 +252,17 @@ namespace TerminalBase.BaseClasses
                         }
                     case "documentation":
                         {
-curSolutionPageDTO = new SolutionPageDTO();
-if (!curDocumentation.IsNullOrEmpty() && curDocumentation.Split(',').Contains("MainPage"))
-{
-    Task<SolutionPageDTO> resultSolutionPageDTO = (Task<SolutionPageDTO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDO, curDocumentation });
-    return await resultSolutionPageDTO;
-}
+                            curSolutionPageDTO = new SolutionPageDTO();
+                            if (!curDocumentation.IsNullOrEmpty() && curDocumentation.Split(',').Contains("MainPage"))
+                            {
+                                Task<SolutionPageDTO> resultSolutionPageDTO = (Task<SolutionPageDTO>)curMethodInfo
+                                    .Invoke(curObject, new Object[] { curActivityDO, curDocumentation });
+                                return await resultSolutionPageDTO;
+                            }
                             if (!curDocumentation.IsNullOrEmpty() && curDocumentation.Split(',').Contains("HelpMenu"))
                             {
-                                Task<ActivityResponseDTO> resultActivityRepsonceDTO = (Task<ActivityResponseDTO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDO, curDocumentation });
+                                Task<ActivityResponseDTO> resultActivityRepsonceDTO = (Task<ActivityResponseDTO>)curMethodInfo
+                                    .Invoke(curObject, new Object[] { curActivityDO, curDocumentation });
                                 return await resultActivityRepsonceDTO;
                             }
                             return Task.FromResult(curSolutionPageDTO);
