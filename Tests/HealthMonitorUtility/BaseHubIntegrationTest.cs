@@ -48,6 +48,7 @@ namespace HealthMonitor.Utility
 
         protected string TestUserEmail = "integration_test_runner@fr8.company";
         protected string TestUserPassword = "fr8#s@lt!";
+        protected string TestEmail;
 
         public BaseHubIntegrationTest()
         {
@@ -68,13 +69,13 @@ namespace HealthMonitor.Utility
             LoginUser(TestUserEmail, TestUserPassword).Wait();
 
             // Initailize EmailAssert utility.
-            string testEmail = ConfigurationManager.AppSettings["TestEmail"];
+            string TestEmail = ConfigurationManager.AppSettings["TestEmail"];
             string hostname = ConfigurationManager.AppSettings["TestEmail_Pop3Server"];
             int port = int.Parse(ConfigurationManager.AppSettings["TestEmail_Port"]);
             bool useSsl = ConfigurationManager.AppSettings["TestEmail_UseSsl"] == "true" ? true : false;
             string username = ConfigurationManager.AppSettings["TestEmail_Username"];
             string password = ConfigurationManager.AppSettings["TestEmail_Password"];
-            EmailAssert.InitEmailAssert(testEmail, hostname, port, useSsl, username, password);
+            EmailAssert.InitEmailAssert(TestEmail, hostname, port, useSsl, username, password);
         }
         public abstract string TerminalName { get; }
 

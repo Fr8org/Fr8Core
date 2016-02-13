@@ -193,8 +193,8 @@ namespace terminalDocuSignTests.Integration
 
             var emailField = controlsCrate.Content.Controls.OfType<TextSource>().First();
             emailField.ValueSource = "specific";
-            emailField.Value = "freight.testing@gmail.com";
-            emailField.TextValue = "freight.testing@gmail.com";
+            emailField.Value = TestEmail;
+            emailField.TextValue = TestEmail;
 
             using (var updater = _crate.UpdateStorage(sendEnvelopeAction))
             {
@@ -212,8 +212,8 @@ namespace terminalDocuSignTests.Integration
             Assert.AreEqual("Medical_Form_v1", docuSignTemplate.selectedKey, "Selected DocuSign Template did not save on Send DocuSign Envelope action.");
 
             emailField = controlsCrate.Content.Controls.OfType<TextSource>().First();
-            Assert.AreEqual("freight.testing@gmail.com", emailField.Value, "Email did not save on Send DocuSign Envelope action.");
-            Assert.AreEqual("freight.testing@gmail.com", emailField.TextValue, "Email did not save on Send DocuSign Envelope action.");
+            Assert.AreEqual(TestEmail, emailField.Value, "Email did not save on Send DocuSign Envelope action.");
+            Assert.AreEqual(TestEmail, emailField.TextValue, "Email did not save on Send DocuSign Envelope action.");
 
             //
             // Configure Map Fields action
@@ -244,7 +244,7 @@ namespace terminalDocuSignTests.Integration
             //
             // Deactivate plan
             //
-            //await HttpPostAsync<string, string>(_baseUrl + "routes/deactivate?planId=" + plan.Id, null);
+            await HttpPostAsync<string, string>(_baseUrl + "routes/deactivate?planId=" + plan.Id, null);
 
             //
             // Delete plan
