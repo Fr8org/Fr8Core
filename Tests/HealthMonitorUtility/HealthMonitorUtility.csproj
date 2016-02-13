@@ -66,6 +66,7 @@
     <Compile Include="BaseHubIntegrationTest.cs" />
     <Compile Include="BaseTerminalIntegrationTest.cs" />
     <Compile Include="EmailAssert.cs" />
+    <Compile Include="ExceptionExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
