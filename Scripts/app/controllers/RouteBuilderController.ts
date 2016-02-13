@@ -27,6 +27,7 @@ module dockyard.controllers {
 
         addAction(group: model.ActionGroup): void;
         deleteAction: (action: model.ActivityDTO) => void;
+        reConfigureAction: (action: model.ActivityDTO) => void;
         chooseAuthToken: (action: model.ActivityDTO) => void;
         selectAction(action): void;
         isBusy: () => boolean;
@@ -106,6 +107,11 @@ module dockyard.controllers {
             this._longRunningActionsCounter = 0;
 
             $scope.deleteAction = <() => void>angular.bind(this, this.deleteAction);
+            $scope.reConfigureAction = (action: model.ActivityDTO) => {
+                var actionsArray = new Array<model.ActivityDTO>();
+                actionsArray.push(action);
+                this.reConfigure(actionsArray);
+            };
             this.$scope.chooseAuthToken = (action: model.ActivityDTO) => {
                 this.chooseAuthToken(action);
             };
