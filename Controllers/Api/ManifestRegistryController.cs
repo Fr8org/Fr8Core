@@ -54,18 +54,42 @@ namespace HubWeb.Controllers.Api
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                // TODO: change this to check version too, expression can be only unary on key property! 
-                // TODO: Need to upgrade MultiTennantObjectRepository
-                var manifestDescription = uow.MultiTenantObjectRepository.Get<ManifestDescriptionCM>
-                                                (uow, systemUserAccountId, a => a.Name == name);
-                
-                return Ok(manifestDescription == null);
+                var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(uow, systemUserAccountId);
+                var isInDB = manifestDescriptions.Any(md => md.Name == name && md.Version == version);
+                BoolValue result = new BoolValue  { Value = !isInDB };
+
+                return Ok(result);
+            }
+        }
+
+        [HttpGet]
+        [ActionName("getDescriptionWithMaxVersion")]
+        public IHttpActionResult GetDescriptionWithMaxVersion(string name)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(uow, systemUserAccountId);
+                var descriptions = manifestDescriptions.Where(md => md.Name == name).ToArray();
+
+                var result = descriptions.First();
+                string maxVersion = result.Version;
+
+                foreach (var description in descriptions)
+                {
+                    if (description.Version.CompareTo(maxVersion) > 0)
+                    {
+                        result = description;
+                        maxVersion = description.Version;
+                    }
+                }
+
+                return Ok(result);
             }
         }
 
         private string NextId()
         {
-            int result = 0;
+            int result = 1;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(uow, systemUserAccountId);
@@ -73,10 +97,15 @@ namespace HubWeb.Controllers.Api
                 {
                     return result.ToString();
                 }
-                result = manifestDescriptions.Max(obj => int.Parse(obj.Id)) + 1;                
+                result = int.Parse(manifestDescriptions.OrderByDescending(d => d.Id).First().Id) + 1;                
             }
 
             return result.ToString();
+        }
+
+        class BoolValue
+        {
+            public bool Value { get; set; }
         }
     }
 }

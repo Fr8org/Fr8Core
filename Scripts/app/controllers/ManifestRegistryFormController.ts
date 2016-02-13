@@ -5,10 +5,15 @@ module dockyard.controllers {
     
     export interface IManifestRegistryFormScope extends ng.IScope {
         manifestDescription: interfaces.IManifestRegistryVM;
-        submit: (formValidAndNotPending: boolean) => void;
+        selectedDescription: interfaces.IManifestRegistryVM;
+        submit: (isValid: boolean) => void;
         cancel: () => void;
         isNameVersionOk: boolean;
         errorMessage: string;
+    }
+
+    export interface BoolValue extends ng.resource.IResource<any> {
+        value: boolean;
     }
 
     class ManifestRegistryFormController {
@@ -20,22 +25,29 @@ module dockyard.controllers {
         public static $inject = [
             '$scope',
             'ManifestRegistryService',
-            '$modalInstance'
+            '$modalInstance',
+            'descriptionName'
         ];
 
-        private submitted = false;
-       
         constructor(
             private $scope: IManifestRegistryFormScope,
             private ManifestRegistryService: services.IManifestRegistryService,
-            private $q: ng.IQService,
-            private $modalInstance: any) {
+            private $modalInstance: any,
+            private descriptionName) {
+
+            if (descriptionName !== undefined) {
+                
+                ManifestRegistryService.getDescriptionWithMaxVersion({ name: descriptionName.value }).$promise.then(data => {
+                    this.$scope.manifestDescription = data;
+                });
+            }
 
             $scope.submit = isValid => {
 
                 this.ManifestRegistryService.checkVersionAndName({ version: this.$scope.manifestDescription.version }, { name: this.$scope.manifestDescription.name }).$promise
-                    .then(isNameVersionValid => {
-                        if (isValid && isNameVersionValid) {
+                    .then(result => {
+                    $scope.isNameVersionOk = result.value;
+                        if (isValid && $scope.isNameVersionOk) {
                             this.ManifestRegistryService.save(this.$scope.manifestDescription).$promise.then(manifestDescription => {
                                 this.$modalInstance.close(manifestDescription);
                                
@@ -55,7 +67,7 @@ module dockyard.controllers {
             this.$modalInstance.dismiss('cancel');
         }
 
- }
+    }
 
     app.controller('ManifestRegistryFormController', ManifestRegistryFormController);
 }

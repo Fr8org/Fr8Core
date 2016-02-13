@@ -6,6 +6,7 @@ module dockyard.controllers {
     export interface IManifestRegistryListScope extends ng.IScope {
         manifestRegistry: Array<interfaces.IManifestRegistryVM>;
         showAddManifestDescriptionModal: () => void;
+        showModalWithPopulatedValues: (manifestDescription: interfaces.IManifestRegistryVM) => void;
     }
 
     class ManifestRegistryListController {
@@ -26,23 +27,52 @@ module dockyard.controllers {
             private $modal: any) {
 
             $scope.showAddManifestDescriptionModal = <() => void> angular.bind(this, this.showAddManifestDescriptionModal);
+            $scope.showModalWithPopulatedValues = <(manifestDescription: interfaces.IManifestRegistryVM) => void> angular.bind(this, this.showModalWithPopulatedValues);
 
             ManifestRegistryService.query().$promise.then(data => {
                     $scope.manifestRegistry = data;
-                });
-               
+            });
+
         }
 
         private showAddManifestDescriptionModal() {
+            
             this.$modal.open({
                 animation: true,
                 templateUrl: 'manifestDescriptionFormModal',
-                controller: 'ManifestRegistryFormController'
+                controller: 'ManifestRegistryFormController',
+                resolve: {
+                    descriptionName: function () {
+                        return undefined;
+                    }
+                }
             })
                 .result.then(manifestDescription => {
                     this.$scope.manifestRegistry.push(manifestDescription);
                 });
         }
+
+        private showModalWithPopulatedValues(manifestDescription: interfaces.IManifestRegistryVM) {
+            var descriptionName = { value: manifestDescription.name };
+
+            this.$modal.open({
+                animation: true,
+                templateUrl: 'manifestDescriptionFormModal',
+                controller: 'ManifestRegistryFormController',
+                resolve: {
+                    descriptionName: function () {
+                        return descriptionName;
+                    }
+                }
+            })
+                .result.then(manifestDescription => {
+                    this.$scope.manifestRegistry.push(manifestDescription);
+                    this.ManifestRegistryService.query().$promise.then(data => {
+                        this.$scope.manifestRegistry = data;
+                    });
+                });
+        }
+
     }
 
     app.controller('ManifestRegistryListController', ManifestRegistryListController);
