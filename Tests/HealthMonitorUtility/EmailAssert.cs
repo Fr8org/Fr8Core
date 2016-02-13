@@ -13,9 +13,9 @@ namespace HealthMonitor.Utility
 {
     public static class EmailAssert
     {
-        // If a matching message has been received at most 7 seconds before calling the method, 
+        // If a matching message has been received at most 30 seconds before calling the method, 
         // the test is considered passed.
-        public static TimeSpan RecentMsgThreshold = new TimeSpan(0, 0, 7); // 7 seconds
+        public static TimeSpan RecentMsgThreshold = new TimeSpan(0, 0, 30); // 30 seconds
         static TimeSpan _timeout = new TimeSpan(0, 0, 30); // 30 seconds
         static bool _initialized = false;
 
