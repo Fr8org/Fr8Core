@@ -666,6 +666,7 @@ namespace Hub.Services
         {
             //activityResponce can be either of type SolutoinPageDTO or ActivityRepsonceDTO
             T activityResponce;
+            var userId = Guid.NewGuid().ToString();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var allActivityTemplates = ObjectFactory.GetInstance<IEnumerable<ActivityTemplateDTO>>();
@@ -675,6 +676,7 @@ namespace Hub.Services
                 else
                 {
                     var curUser = _security.GetCurrentAccount(uow);
+                    userId = curUser.Id;
                     allActivityTemplates = _routeNode.GetAvailableActivities(uow, curUser);
                 }
                 //find the activity by the provided name
@@ -696,7 +698,8 @@ namespace Hub.Services
                 };
                 activityResponce = await GetDocumentation<T>(curActivityDTO);
                 //Add log to the database
-                //await _event.Publish("ActionReturnedDocumentation", activityDTO.Fr8AccountId, activityDTO.Id.ToString(), JsonConvert.SerializeObject(activityDTO).ToString(), "Success");
+                if (!isSolution)
+                    await _event.Publish("ActionExecuted", userId, curActivityDTO.Id.ToString(), JsonConvert.SerializeObject(curActivityDTO).ToString(), "Success");
             }
             return activityResponce;
         }
