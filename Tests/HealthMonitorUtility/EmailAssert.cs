@@ -43,6 +43,7 @@ namespace HealthMonitor.Utility
             {
                 throw new InvalidOperationException("Call Assert.InitEmailAssert(...) first.");
             }
+            System.Diagnostics.Debug.WriteLine("Expected Address: " + expectedFromAddr + ", Suject: " + expectedSubject);
 
             DateTime methodCalledTime = DateTime.UtcNow;
 
@@ -58,7 +59,7 @@ namespace HealthMonitor.Utility
                     {
                         return;
                     }
-                    System.Threading.Thread.Sleep(2000);
+                    System.Threading.Thread.Sleep(5000);
                     timeToCompare = DateTime.UtcNow; // Next time use current iteration call time 
                 }
                 throw new AssertionException(String.Format(
@@ -71,11 +72,13 @@ namespace HealthMonitor.Utility
         private static bool CheckEmail(Pop3Client client, string expectedFromAddr, string expectedSubject, DateTime startTime)
         {
             MessageHeader msg = null;
-
+            System.Diagnostics.Debug.WriteLine("=== Checking email ===");
+            System.Diagnostics.Debug.WriteLine("Start time: " + startTime.ToLongDateString());
             int messageCount = client.GetMessageCount();
             for (int i = messageCount; i > 0; i--)
             {
                 msg = client.GetMessageHeaders(i);
+                System.Diagnostics.Debug.WriteLine(msg.DateSent.ToLongTimeString() + "  " + msg.From.Address + "  " + msg.Subject);
                 if (ValidateTime(RecentMsgThreshold, startTime, msg.DateSent))
                 {
                     if (ValidateConditions(expectedFromAddr, expectedSubject, msg))
