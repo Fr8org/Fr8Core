@@ -5,6 +5,7 @@ using System.Threading;
 using NUnit.Core;
 using HealthMonitor.Configuration;
 using System.Configuration;
+using System.Diagnostics;
 
 namespace HealthMonitor
 {
