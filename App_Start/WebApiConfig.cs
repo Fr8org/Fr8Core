@@ -50,9 +50,7 @@ namespace HubWeb
                 routeTemplate: "api/v1/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional, action = "Delete" },
                 constraints: new { httpMethod = new HttpMethodConstraint(HttpMethod.Delete) }
-                );
-
-            
+                );            
 
             //config.Routes.MapHttpRoute(
             //    name: "DefaultApi",

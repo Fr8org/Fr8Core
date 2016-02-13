@@ -953,7 +953,7 @@ namespace Hub.Managers
                 };
                 if (activityDO != null)
                 {
-                    var activityTemplate = _activityTemplate.GetByKey(activityDO.ActivityTemplateId.Value);
+                    var activityTemplate = _activityTemplate.GetByKey(activityDO.ActivityTemplateId);
                     curFact.Data = string.Format("Terminal: {0} - Action: {1}.", activityTemplate.Terminal.Name, activityTemplate.Name);
                 }
             

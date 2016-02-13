@@ -5,6 +5,7 @@ using System.Threading;
 using NUnit.Core;
 using HealthMonitor.Configuration;
 using System.Configuration;
+using System.Diagnostics;
 
 namespace HealthMonitor
 {
@@ -18,6 +19,9 @@ namespace HealthMonitor
             var selfHosting = false;
             var connectionString = string.Empty;
             var specificTest = string.Empty;
+            int errorCount = 0;
+
+            Debug.AutoFlush = true;
 
             if (args != null)
             {
@@ -53,7 +57,7 @@ namespace HealthMonitor
                 {
                     if (string.IsNullOrEmpty(connectionString))
                     {
-                        throw new ArgumentException("You should specify --connectionString '{Name}={Value}' parameter when using self host mode.");
+                        throw new ArgumentException("You should specify --connectionString \"{Name}={Value}\" argument when using self host mode.");
                     }
 
                     var regex = new System.Text.RegularExpressions.Regex("([\\w\\d]{1,})=([\\s\\S]+)");
@@ -69,12 +73,16 @@ namespace HealthMonitor
             var selfHostInitializer = new SelfHostInitializer();
             if (selfHosting)
             {
-                selfHostInitializer.Initialize();
+                selfHostInitializer.Initialize(connectionString);
             }
 
             try
             {
-                new Program().Run(ensureTerminalsStartup, sendEmailReport, appName, specificTest);
+                errorCount = new Program().Run(ensureTerminalsStartup, sendEmailReport, appName, specificTest);
+            }
+            catch (Exception)
+            {
+
             }
             finally
             {
@@ -83,6 +91,7 @@ namespace HealthMonitor
                     selfHostInitializer.Dispose();
                 }
             }
+            Environment.Exit(errorCount);
         }
 
         private static void UpdateConnectionString(string key, string value)
@@ -135,7 +144,7 @@ namespace HealthMonitor
             }
         }
 
-        private void Run(
+        private int Run(
             bool ensureTerminalsStartup,
             bool sendEmailReport,
             string appName,
@@ -164,11 +173,7 @@ namespace HealthMonitor
             }
 
             ReportToConsole(appName, report);
-
-            // Console.ReadLine();
-
-            var errorCount = report.Tests.Count(x => !x.Success);
-            Environment.Exit(errorCount);
+            return report.Tests.Count(x => !x.Success);
         }
     }
 }

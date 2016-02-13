@@ -34,6 +34,7 @@ namespace terminalDropboxTests.Actions
             ObjectFactory.Configure(cfg => cfg.For<IRestfulServiceClient>().Use(restfulServiceClient.Object));
 
             _getFileList_v1 = ObjectFactory.GetInstance<Get_File_List_v1>();
+            _getFileList_v1.HubCommunicator.Configure("terminalDropbox");
         }
 
         [Test]

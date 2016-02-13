@@ -50,12 +50,6 @@ namespace Hub.Services
         {
             var queryableRepo = unitOfWork.PlanRepository.GetPlanQueryUncached();
 
-            if (isAdmin)
-            {
-                queryableRepo = (id == null ? queryableRepo : queryableRepo.Where(pt => pt.Id == id));
-                return (status == null ? queryableRepo : queryableRepo.Where(pt => pt.RouteState == status)).ToList();
-            }
-
             queryableRepo = (id == null
                 ? queryableRepo.Where(pt => pt.Fr8Account.Id == account.Id)
                 : queryableRepo.Where(pt => pt.Id == id && pt.Fr8Account.Id == account.Id));
@@ -320,6 +314,11 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var root = uow.PlanRepository.GetById<PlanDO>(id);
+                if (root == null)
+                {
+                    return null;
+                }
+
                 return root.GetDescendantsOrdered().OfType<ActivityDO>().FirstOrDefault(
                     x =>
                     {
