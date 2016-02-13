@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using Data.Exceptions;
 using Utilities;
+using Hub.Managers;
 
 namespace Hub.Services
 {
@@ -89,8 +90,15 @@ namespace Hub.Services
             {
                 if (eventReportMS.ExternalAccountId == systemUserEmail)
                 {
-                    Fr8AccountDO systemUser = uow.UserRepository.GetOrCreateUser(systemUserEmail);
-                    await FindAccountRoutes(uow, eventReportMS, curCrateStandardEventReport, systemUser);
+                    try
+                    {
+                        Fr8AccountDO systemUser = uow.UserRepository.GetOrCreateUser(systemUserEmail);
+                        await FindAccountRoutes(uow, eventReportMS, curCrateStandardEventReport, systemUser);
+                    }
+                    catch (Exception ex)
+                    {
+                        EventManager.UnexpectedError(ex);
+                    }
                 }
                 else
                 {
@@ -99,9 +107,15 @@ namespace Hub.Services
 
                     foreach (var authToken in authTokenList.ToArray())
                     {
-                        var curDockyardAccount = authToken.UserDO;
-
-                        await FindAccountRoutes(uow, eventReportMS, curCrateStandardEventReport, curDockyardAccount);
+                        try
+                        {
+                            var curDockyardAccount = authToken.UserDO;
+                            await FindAccountRoutes(uow, eventReportMS, curCrateStandardEventReport, curDockyardAccount);
+                        }
+                        catch (Exception ex)
+                        {
+                            EventManager.UnexpectedError(ex);
+                        }
                     }
                 }
 

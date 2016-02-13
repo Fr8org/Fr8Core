@@ -59,6 +59,7 @@ namespace HealthMonitor.Utility
             // to ensure the presense of the authentication cookie. 
             _httpClient = new HttpClient();
             _httpClient.BaseAddress = GetHubBaseUrl();
+            _httpClient.Timeout = TimeSpan.FromMinutes(2);
 
             _crate = new CrateManager();
             _hmacService = new Fr8HMACService();

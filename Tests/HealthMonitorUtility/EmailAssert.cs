@@ -17,7 +17,7 @@ namespace HealthMonitor.Utility
         // If a matching message has been received at most 30 seconds before calling the method, 
         // the test is considered passed.
         public static TimeSpan RecentMsgThreshold = new TimeSpan(0, 0, 30); // 30 seconds
-        static TimeSpan _timeout = new TimeSpan(0, 0, 30); // 30 seconds
+        public static TimeSpan _timeout = new TimeSpan(0, 0, 30); // 30 seconds
         static bool _initialized = false;
 
         static string _testEmail;
