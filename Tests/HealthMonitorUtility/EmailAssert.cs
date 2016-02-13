@@ -44,16 +44,16 @@ namespace HealthMonitor.Utility
                 throw new InvalidOperationException("Call Assert.InitEmailAssert(...) first.");
             }
 
-            DateTime timeCalled = DateTime.UtcNow;
+            DateTime methodCalledTime = DateTime.UtcNow;
 
             using (Pop3Client client = new Pop3Client())
             {
                 client.Connect(_hostname, _port, _useSsl);
                 client.Authenticate(_username, _password);
 
-                while (DateTime.UtcNow < timeCalled + _timeout)
+                while (DateTime.UtcNow < methodCalledTime + _timeout)
                 {
-                    if (CheckEmail(client, expectedFromAddr, expectedSubject, timeCalled))
+                    if (CheckEmail(client, expectedFromAddr, expectedSubject, DateTime.UtcNow))
                     {
                         return;
                     }
@@ -66,7 +66,7 @@ namespace HealthMonitor.Utility
             }
         }
 
-        private static bool CheckEmail(Pop3Client client, string expectedFromAddr, string expectedSubject, DateTime timeCalled)
+        private static bool CheckEmail(Pop3Client client, string expectedFromAddr, string expectedSubject, DateTime startTime)
         {
             MessageHeader msg = null;
 
@@ -74,7 +74,7 @@ namespace HealthMonitor.Utility
             for (int i = messageCount; i > 0; i--)
             {
                 msg = client.GetMessageHeaders(i);
-                if (ValidateTime(RecentMsgThreshold, timeCalled, msg.DateSent))
+                if (ValidateTime(RecentMsgThreshold, startTime, msg.DateSent))
                 {
                     if (ValidateConditions(expectedFromAddr, expectedSubject, msg))
                     {
@@ -94,9 +94,9 @@ namespace HealthMonitor.Utility
             return expectedFromAddr == msg.From.Address && expectedSubject == msg.Subject;
         }
 
-        private static bool ValidateTime(TimeSpan recentMsgThreshold, DateTime timeCalled, DateTime dateSent)
+        private static bool ValidateTime(TimeSpan recentMsgThreshold, DateTime startTime, DateTime dateSent)
         {
-            return dateSent >= timeCalled - recentMsgThreshold;
+            return dateSent >= startTime - recentMsgThreshold;
         }
     }
 }
