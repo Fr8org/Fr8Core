@@ -271,7 +271,7 @@ namespace terminalDocuSignTests.Integration
             // Delete plan
             //
             await HttpDeleteAsync(_baseUrl + "routes?id=" + plan.Id);
-
+            EmailAssert._timeout = TimeSpan.FromSeconds(45);
             // Verify that test email has been received
             EmailAssert.EmailReceived("dse_demo@docusign.net", "Test Message from Fr8");
 
