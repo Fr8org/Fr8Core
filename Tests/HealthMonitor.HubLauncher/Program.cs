@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 
@@ -17,6 +18,8 @@ namespace HealthMonitor.HubLauncher
             string endpoint = string.Empty;
             string selfHostFactory = string.Empty;
             string connectionString = string.Empty;
+
+            Debug.AutoFlush = true;
 
             AppDomain.CurrentDomain.ProcessExit += new EventHandler(CurrentDomain_ProcessExit);
             // Start the message pumping thread that enables graceful closing the app
