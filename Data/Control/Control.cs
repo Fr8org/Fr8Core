@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using Data.Constants;
 using Data.Crates;
+using Data.Helpers;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
@@ -234,7 +237,7 @@ namespace Data.Control
             };
         }
 
-        public string GetValue(CrateStorage payloadCrateStorage, bool ignoreCase = false)
+        public string GetValue(CrateStorage payloadCrateStorage, bool ignoreCase = false, MT? manifestType = null, string label = null)
         {
             switch (ValueSource)
             {
@@ -242,11 +245,81 @@ namespace Data.Control
                     return TextValue;
 
                 case "upstream":
-                    return ExtractPayloadFieldValue(payloadCrateStorage, ignoreCase);
+                    return GetPayloadValue(payloadCrateStorage, ignoreCase, manifestType, label);
 
                 default:
                     return null;
             }
+        }
+
+        public string GetPayloadValue(CrateStorage payloadStorage, bool ignoreCase = false, MT? manifestType = null, string label = null)
+        {
+            //search through every crate except operational state crate
+            Expression<Func<Crate, bool>> defaultSearchArguments = (c) => c.ManifestType.Id != (int)MT.OperationalStatus;
+
+            //apply label criteria if not null
+            if (label != null)
+            {
+                Expression<Func<Crate, bool>> andLabel = (c) => c.Label == label;
+                defaultSearchArguments = Expression.Lambda<Func<Crate, bool>>(Expression.AndAlso(defaultSearchArguments, andLabel), defaultSearchArguments.Parameters);
+            }
+
+            //apply manifest criteria if not null
+            if (manifestType != null)
+            {
+                Expression<Func<Crate, bool>> andManifestType = (c) => c.ManifestType.Id == (int)manifestType;
+                defaultSearchArguments = Expression.Lambda<Func<Crate, bool>>(Expression.AndAlso(defaultSearchArguments, andManifestType), defaultSearchArguments.Parameters);
+            }
+
+            //find user requested crate
+            var foundCrates = payloadStorage.Where(defaultSearchArguments.Compile()).ToList();
+            if (!foundCrates.Any())
+            {
+                return null;
+            }
+
+            //get operational state crate to check for loops
+            var operationalState = payloadStorage.CrateContentsOfType<OperationalStateCM>().Single();
+            //iterate through found crates to find the payload
+            foreach (var foundCrate in foundCrates)
+            {
+                var foundField = FindField(operationalState, foundCrate);
+                if (foundField != null)
+                {
+                    return foundField.Value;
+                }
+            }
+
+            return null;
+        }
+
+
+        private FieldDTO FindField(OperationalStateCM operationalState, Crate crate)
+        {
+            object searchArea = null;
+            //let's check if we are in a loop
+            //and this is a loop data?
+            //check if this crate is loop related
+            var deepestLoop = operationalState.Loops.OrderByDescending(l => l.Level).FirstOrDefault(l => !l.BreakSignalReceived && l.Label == crate.Label && l.CrateManifest == crate.ManifestType.Type);
+            if (deepestLoop != null) //this is a loop related data request
+            {
+                //find current element
+                var dataList = Fr8ReflectionHelper.FindFirstArray(crate.Get());
+                //we will search requested field in current element
+                searchArea = dataList[deepestLoop.Index];
+            }
+            else
+            {
+                //hmmm this is a regular data request
+                //lets search in complete crate
+                searchArea = crate;
+            }
+
+            //we should find first related field and return
+            var fields = Fr8ReflectionHelper.FindFieldsRecursive(searchArea);
+            var fieldMatch = fields.FirstOrDefault(f => f.Key == this.selectedKey);
+            //let's return first match
+            return fieldMatch;
         }
 
         /// <summary>

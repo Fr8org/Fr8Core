@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HubWeb", "HubWeb.csproj", "{F7BD7117-4F1D-4215-B338-61EBDD0D0BFE}"
 EndProject
@@ -125,6 +125,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalYammer", "terminalYammer\terminalYammer.csproj", "{E8BF04AC-1A7D-4CBE-80B9-E20F53699F2D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalYammerTests", "terminalYammerTests\terminalYammerTests.csproj", "{D2638CB3-33D6-443F-BC87-E20260D3C9EF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthMonitor.HubLauncher", "Tests\HealthMonitor.HubLauncher\HealthMonitor.HubLauncher.csproj", "{47CA975F-1F5B-4C90-9DA1-A88C53E0760A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -709,6 +711,22 @@ Global
 		{D2638CB3-33D6-443F-BC87-E20260D3C9EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D2638CB3-33D6-443F-BC87-E20260D3C9EF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D2638CB3-33D6-443F-BC87-E20260D3C9EF}.Release|x86.ActiveCfg = Release|Any CPU
+		{47CA975F-1F5B-4C90-9DA1-A88C53E0760A}.alexlocal|Any CPU.ActiveCfg = Release|Any CPU
+		{47CA975F-1F5B-4C90-9DA1-A88C53E0760A}.alexlocal|Any CPU.Build.0 = Release|Any CPU
+		{47CA975F-1F5B-4C90-9DA1-A88C53E0760A}.alexlocal|x86.ActiveCfg = Release|Any CPU
+		{47CA975F-1F5B-4C90-9DA1-A88C53E0760A}.alexlocal|x86.Build.0 = Release|Any CPU
+		{47CA975F-1F5B-4C90-9DA1-A88C53E0760A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47CA975F-1F5B-4C90-9DA1-A88C53E0760A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47CA975F-1F5B-4C90-9DA1-A88C53E0760A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{47CA975F-1F5B-4C90-9DA1-A88C53E0760A}.Debug|x86.Build.0 = Debug|Any CPU
+		{47CA975F-1F5B-4C90-9DA1-A88C53E0760A}.Dev|Any CPU.ActiveCfg = Debug|Any CPU
+		{47CA975F-1F5B-4C90-9DA1-A88C53E0760A}.Dev|Any CPU.Build.0 = Debug|Any CPU
+		{47CA975F-1F5B-4C90-9DA1-A88C53E0760A}.Dev|x86.ActiveCfg = Debug|Any CPU
+		{47CA975F-1F5B-4C90-9DA1-A88C53E0760A}.Dev|x86.Build.0 = Debug|Any CPU
+		{47CA975F-1F5B-4C90-9DA1-A88C53E0760A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47CA975F-1F5B-4C90-9DA1-A88C53E0760A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47CA975F-1F5B-4C90-9DA1-A88C53E0760A}.Release|x86.ActiveCfg = Release|Any CPU
+		{47CA975F-1F5B-4C90-9DA1-A88C53E0760A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -751,5 +769,6 @@ Global
 		{FDA06158-A81E-46B4-9F25-5AB76DFD400A} = {6CF6EAFB-0D62-4D76-8B2C-FA9C6BBB073B}
 		{E8BF04AC-1A7D-4CBE-80B9-E20F53699F2D} = {9A01CAA2-30D9-45B5-9FF3-A0DDF12551F2}
 		{D2638CB3-33D6-443F-BC87-E20260D3C9EF} = {6CF6EAFB-0D62-4D76-8B2C-FA9C6BBB073B}
+		{47CA975F-1F5B-4C90-9DA1-A88C53E0760A} = {6CF6EAFB-0D62-4D76-8B2C-FA9C6BBB073B}
 	EndGlobalSection
 EndGlobal
