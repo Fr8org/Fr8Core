@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using Data.Entities;
 using Data.Interfaces;
 using StructureMap;
@@ -64,6 +65,11 @@ namespace Data.Infrastructure.StructureMap
         {
             lock (_locker)
                 _currentLoggedInDockyardAccount = null;
+        }
+
+        public ClaimsIdentity GetIdentity(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO)
+        {
+            throw new NotImplementedException();
         }
     }
 }

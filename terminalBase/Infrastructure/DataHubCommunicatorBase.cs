@@ -28,6 +28,11 @@ namespace TerminalBase.Infrastructure
 
         protected abstract string LabelPrefix { get; }
 
+        public bool IsConfigured
+        {
+            get; set;            
+        }
+
         private void StripLabelPrefix(IEnumerable<Crate> crates, string prefix)
         {
             foreach (var crate in crates)
@@ -37,6 +42,11 @@ namespace TerminalBase.Infrastructure
                     crate.Label = crate.Label.Substring((prefix + "_").Length);
                 }
             }
+        }
+
+        public virtual Task Configure(string terminalName)
+        {
+            return Task.FromResult<object>(null);
         }
 
         public Task<PayloadDTO> GetPayload(ActivityDO activityDO, Guid containerId, string userId)

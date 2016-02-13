@@ -40,6 +40,7 @@ namespace terminalBaseTests.BaseClasses
             TerminalBootstrapper.ConfigureTest();
             ObjectFactory.Configure(x => x.For<IRestfulServiceClient>().Use<RestfulServiceClient>().SelectConstructor(() => new RestfulServiceClient()));
             _baseTerminalAction = new BaseTerminalActivity();
+            _baseTerminalAction.HubCommunicator.Configure("terminal");
             _coreServer = terminalBaseTests.Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
 

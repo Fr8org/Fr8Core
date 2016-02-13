@@ -19,33 +19,6 @@ using Data.Migrations;
 
 namespace HubWeb.Controllers
 {
-    /// <summary>
-    /// Email service
-    /// </summary>
-    public class KwasantEmailService : IIdentityMessageService
-    {
-        public Task SendAsync(IdentityMessage message)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                String senderMailAddress =
-                    ObjectFactory.GetInstance<IConfigRepository>().Get("EmailAddress_GeneralInfo");
-
-                EmailDO emailDO = new EmailDO();
-                emailDO.AddEmailRecipient(EmailParticipantType.To,
-                    Email.GenerateEmailAddress(uow, new MailAddress(message.Destination)));
-                emailDO.From = Email.GenerateEmailAddress(uow, new MailAddress(senderMailAddress));
-
-                emailDO.Subject = message.Subject;
-                emailDO.HTMLText = message.Body;
-
-                //uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
-                uow.SaveChanges();
-                return Task.FromResult(0);
-            }
-        }
-    }
-
     [DockyardAuthorize]
     public class DockyardAccountController : Controller
     {
