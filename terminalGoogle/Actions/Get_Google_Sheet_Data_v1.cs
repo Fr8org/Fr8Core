@@ -199,6 +199,7 @@ namespace terminalGoogle.Actions
             using (var updater = Crate.UpdateStorage(curActivityDO))
             {
                 updater.CrateStorage = AssembleCrateStorage(configurationControlsCrate);
+                updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("Spreadsheet Column Headers", new FieldDTO[] {}));
             }
 
             return Task.FromResult(curActivityDO);

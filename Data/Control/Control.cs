@@ -252,7 +252,6 @@ namespace Data.Control
             }
         }
 
-        //TODO inspect this
         public string GetPayloadValue(CrateStorage payloadStorage, bool ignoreCase = false, MT? manifestType = null, string label = null)
         {
             //search through every crate except operational state crate
@@ -284,37 +283,43 @@ namespace Data.Control
             //iterate through found crates to find the payload
             foreach (var foundCrate in foundCrates)
             {
-                object searchArea = null;
-                //let's check if we are in a loop
-                //and this is a loop data?
-                //check if this crate is loop related
-                var deepestLoop = operationalState.Loops.OrderByDescending(l => l.Level).FirstOrDefault(l => !l.BreakSignalReceived && l.Label == foundCrate.Label && l.CrateManifest == foundCrate.ManifestType.Type);
-                if (deepestLoop != null) //this is a loop related data request
+                var foundField = FindField(operationalState, foundCrate);
+                if (foundField != null)
                 {
-                    //find current element
-                    var dataList = Fr8ReflectionHelper.FindFirstArray(foundCrate.Get());
-                    //we will search requested field in current element
-                    searchArea = dataList[deepestLoop.Index];
-                }
-                else
-                {
-                    //hmmm this is a regular data request
-                    //lets search in complete crate
-                    searchArea = foundCrate;
-                }
-
-                //we should find first related field and return
-                var fields = Fr8ReflectionHelper.FindFieldsRecursive(searchArea);
-                var fieldMatch = fields.FirstOrDefault(f => f.Key == this.selectedKey);
-                //let's return first match
-                if (fieldMatch != null)
-                {
-                    return fieldMatch.Value;
+                    return foundField.Value;
                 }
             }
 
-
             return null;
+        }
+
+
+        private FieldDTO FindField(OperationalStateCM operationalState, Crate crate)
+        {
+            object searchArea = null;
+            //let's check if we are in a loop
+            //and this is a loop data?
+            //check if this crate is loop related
+            var deepestLoop = operationalState.Loops.OrderByDescending(l => l.Level).FirstOrDefault(l => !l.BreakSignalReceived && l.Label == crate.Label && l.CrateManifest == crate.ManifestType.Type);
+            if (deepestLoop != null) //this is a loop related data request
+            {
+                //find current element
+                var dataList = Fr8ReflectionHelper.FindFirstArray(crate.Get());
+                //we will search requested field in current element
+                searchArea = dataList[deepestLoop.Index];
+            }
+            else
+            {
+                //hmmm this is a regular data request
+                //lets search in complete crate
+                searchArea = crate;
+            }
+
+            //we should find first related field and return
+            var fields = Fr8ReflectionHelper.FindFieldsRecursive(searchArea);
+            var fieldMatch = fields.FirstOrDefault(f => f.Key == this.selectedKey);
+            //let's return first match
+            return fieldMatch;
         }
 
         /// <summary>
