@@ -8,7 +8,7 @@
                class='form-control form-control-focus small-input' name='pca__txt{{field.$$hashKey}}__value' ng-click="field.valueSource='specific'" stop-click-propagation>
     </div>
     <div style="padding-left: 20px;">
-        <input  ng-click="onChange(field.name)" ng-focus="onFocus(field.name)" name="pca_chk_ts_{{uniqueDirectiveId}}" type="radio" id="pca__chk{{field.$$hashKey}}__crate{{uniqueDirectiveId}}" value="upstream" ng-model="field.valueSource" ng-click="field.value=''" stop-click-propagation/>
+        <input  ng-click="onChange(field.name)" name="pca_chk_ts_{{uniqueDirectiveId}}" type="radio" id="pca__chk{{field.$$hashKey}}__crate{{uniqueDirectiveId}}" value="upstream" ng-model="field.valueSource" ng-click="field.value=''" stop-click-propagation/>
         <label for="pca__chk{{field.$$hashKey}}__crate{{uniqueDirectiveId}}" stop-click-propagation>a value from an upstream Crate <a href="/documentation/UpstreamCrates.html" class="documentation-link"><i class="fa fa-question-circle"></i></a></label>
         <div class="nested-controls" ng-if="field.valueSource == 'upstream'">
             <drop-down-list-box field='field' change='onChange'></drop-down-list-box>

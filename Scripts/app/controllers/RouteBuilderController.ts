@@ -188,17 +188,6 @@ module dockyard.controllers {
                 }
             });
 
-            document.addEventListener("focusin", function(event) {
-                console.log("global focus");
-                console.log(document.activeElement);
-                if (event.srcElement.tagName != "INPUT") {
-                    console.log("empty focus");
-                    $scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_ConfigureFocusElement],
-                        new pca.ConfigureFocusElementArgs(null));
-                }
-
-            }, true);
-
             this.processState($state);
         }
 
@@ -693,8 +682,8 @@ module dockyard.controllers {
 
             //wait UI to finish rendering
             this.$timeout(() => {
-                console.log("is focused = true");
                 if (callConfigureResponseEventArgs.focusElement != null) {
+                    //broadcast to control to set focus on current element        
                     this.$scope.$broadcast("onFieldFocus", callConfigureResponseEventArgs);
                 }
             }, 300);

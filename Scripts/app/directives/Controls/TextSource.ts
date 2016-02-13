@@ -23,12 +23,14 @@ module dockyard.directives.textSource {
             $scope.onChange = (fieldName: string) => {
                 if ($scope.change != null && angular.isFunction($scope.change)) {
                     $scope.change()($scope.field);
+
                     $scope.isFocused = false;
+                    $scope.$emit(pca.MessageType[pca.MessageType.PaneConfigureAction_ConfigureFocusElement],
+                        new pca.ConfigureFocusElementArgs(null));
                 }
             };
 
             $scope.$on("onFieldFocus", function(event, args:pca.CallConfigureResponseEventArgs) {
-                console.log("onFieldFocus is called");
                 if ($scope.field.name === args.focusElement.name) {
                     $scope.isFocused = true;
                 } else {
@@ -37,32 +39,27 @@ module dockyard.directives.textSource {
             });
 
             $scope.onFocus = (fieldName: string) => {
-                console.log("call onfocus from inside TextSource");
                 $scope.$emit(pca.MessageType[pca.MessageType.PaneConfigureAction_ConfigureFocusElement],
                     new pca.ConfigureFocusElementArgs($scope.field));
             };
         }];
 
+        var link = function($scope, $element, attrs) {
+            //watch function for programatically setting focus on html element
+            $scope.$watch("isFocused", function (currentValue, previousValue) {
+                if (currentValue === true && !previousValue) {
+                    var theElement = $element.find("input[type='text']")[0];
+                    theElement.focus();
+                    $scope.field.valueSource = 'specific';
+                }
+            });
+        }
+
         return {
             restrict: 'E',
             templateUrl: '/AngularTemplate/TextSource',
             controller: controller,
-            link: function ($scope, $element, attrs) {
-                $scope.$watch("isFocused", function (currentValue, previousValue) {
-                    console.log("field.isFocused called " + currentValue);
-                    if (currentValue === true && !previousValue) {
-                        var textSource = $element.find("input[type='text']");
-                        if (textSource != undefined) {
-                            textSource[0].focus();
-                        }
-                    } else {
-                        var textSource = $element.find("input[type='text']");
-                        if (textSource != undefined) {
-                            textSource[0].blur();
-                        }
-                    }
-                });
-            },
+            link: link,
             scope: {
                 field: '=',
                 change: '&',
