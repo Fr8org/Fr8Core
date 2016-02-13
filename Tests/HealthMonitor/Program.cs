@@ -20,6 +20,8 @@ namespace HealthMonitor
             var specificTest = string.Empty;
             int errorCount = 0;
 
+            Debug.AutoFlush = true;
+
             if (args != null)
             {
                 for (var i = 0; i < args.Length; ++i)

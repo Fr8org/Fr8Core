@@ -18,6 +18,8 @@ namespace HealthMonitor.HubLauncher
             string selfHostFactory = string.Empty;
             string connectionString = string.Empty;
 
+            Debug.AutoFlush = true;
+
             AppDomain.CurrentDomain.ProcessExit += new EventHandler(CurrentDomain_ProcessExit);
             // Start the message pumping thread that enables graceful closing the app
             Thread msgThread = new Thread(MessagePump);

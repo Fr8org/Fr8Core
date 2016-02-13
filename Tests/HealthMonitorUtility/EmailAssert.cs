@@ -29,6 +29,8 @@ namespace HealthMonitor.Utility
 
         public static void InitEmailAssert(string testEmail, string hostname, int port, bool useSsl, string username, string password)
         {
+            Debug.AutoFlush = true;
+
             _testEmail = testEmail;
             _hostname = hostname;
             _port = port;
@@ -74,7 +76,7 @@ namespace HealthMonitor.Utility
         {
             MessageHeader msg = null;
             Debug.WriteLine("=== Checking email ===");
-            Debug.WriteLine("Start time: " + startTime.ToLongDateString());
+            Debug.WriteLine("Start time: " + startTime.ToLongTimeString());
             int messageCount = client.GetMessageCount();
             for (int i = messageCount; i > 0; i--)
             {
