@@ -178,10 +178,12 @@ namespace terminalDocuSignTests.Integration
             apmAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "actions/configure", apmAction);
             Assert.AreEqual(1, apmAction.Ordering, "Failed to reoder the action Add Payload Manually");
 
+            var fr8CoreLoop = this.solution.ChildrenActions.Single(a => a.Label == "Fr8 Core Loop");
+            
             //
             // Configure Send DocuSign Envelope action
             //
-            var sendEnvelopeAction = this.solution.ChildrenActions.Single(a => a.Label == "Send DocuSign Envelope");
+            var sendEnvelopeAction = fr8CoreLoop.ChildrenActions.Single(a => a.Label == "Send DocuSign Envelope");
 
             crateStorage = _crate.FromDto(sendEnvelopeAction.CrateStorage);
             controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
