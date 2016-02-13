@@ -21,18 +21,9 @@ module dockyard.directives.paneConfigureAction {
         public field: model.ControlDefinitionDTO;
     }
 
-    export class FocusEventArgs {
-        constructor(field: model.ControlDefinitionDTO) {
-            this.field = field;
-        }
-
-        public field: model.ControlDefinitionDTO;
-    }
-
     export interface IConfigurationControlScope extends ng.IScope {
         field: model.ControlDefinitionDTO;
         onChange: (radio: model.ControlDefinitionDTO) => void;
-        onFocus: (field: model.ControlDefinitionDTO) => void;
         onClick: (event: any) => void;
     }
 
