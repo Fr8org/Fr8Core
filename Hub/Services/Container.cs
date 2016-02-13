@@ -288,14 +288,8 @@ namespace Hub.Services
                 throw new ApplicationException("UserId must not be null");
 
             var containerRepository = unitOfWork.ContainerRepository.GetQuery();
-
-            if (isAdmin)
-            {
-                return (id == null
-               ? containerRepository
-               : containerRepository.Where(container => container.Id == id)).ToList();
-            }
-
+            
+      
             return (id == null
                ? containerRepository.Where(container => container.Plan.Fr8Account.Id == account.Id)
                : containerRepository.Where(container => container.Id == id && container.Plan.Fr8Account.Id == account.Id)).ToList();

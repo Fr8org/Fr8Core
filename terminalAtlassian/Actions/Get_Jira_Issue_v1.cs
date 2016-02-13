@@ -24,7 +24,6 @@ namespace terminalAtlassian.Actions
         {
             _atlassianService = ObjectFactory.GetInstance<AtlassianService>();
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
-
         }
 
         public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)

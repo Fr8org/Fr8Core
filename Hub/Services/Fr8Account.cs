@@ -14,6 +14,7 @@ using Data.States;
 using Hub.Security;
 using Utilities;
 using System.Web;
+using System.Net.Http;
 
 namespace Hub.Services
 {
@@ -264,7 +265,7 @@ namespace Hub.Services
             }
         }
 
-        public Task<LoginStatus> ProcessLoginRequest(string username, string password, bool isPersistent)
+        public Task<LoginStatus> ProcessLoginRequest(string username, string password, bool isPersistent, HttpRequestMessage request = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
