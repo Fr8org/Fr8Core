@@ -5,6 +5,7 @@ using System.Threading;
 using NUnit.Core;
 using HealthMonitor.Configuration;
 using System.Configuration;
+using System.Diagnostics;
 
 namespace HealthMonitor
 {
@@ -19,6 +20,8 @@ namespace HealthMonitor
             var connectionString = string.Empty;
             var specificTest = string.Empty;
             int errorCount = 0;
+
+            Debug.AutoFlush = true;
 
             if (args != null)
             {
