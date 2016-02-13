@@ -42,16 +42,24 @@ namespace terminalDropbox.Infrastructure
             return externalAuthUrlDTO;
         }
 
-        public AuthorizationTokenDTO Authenticate(ExternalAuthenticationDTO externalAuthDTO)
+        public async Task<AuthorizationTokenDTO> Authenticate(ExternalAuthenticationDTO externalAuthDTO)
         {
             string code;
             string state;
             ParseCodeAndState(externalAuthDTO.RequestQueryString, out code, out state);
             OAuth2Response response = (OAuth2Response)Task.Run(() => GetAuthToken(code)).Result;
+
+            string externalId = "";
+            using (var dbx = new DropboxClient(response.AccessToken))
+            {
+                externalId = (await dbx.Users.GetCurrentAccountAsync()).AccountId;
+            }
+
             return new AuthorizationTokenDTO()
             {
                 Token = response.AccessToken,
-                ExternalStateToken = state
+                ExternalStateToken = state,
+                ExternalAccountId = externalId
             };
         }
 

@@ -10,7 +10,7 @@ module dockyard.services {
         getByAction: (id: { id: string }) => interfaces.IRouteVM;
         execute: (id: { id: number }, payload: { payload: string }, success: any, error: any) => void;
         activate: (data :{planId: string, routeBuilderActivate : boolean}) => any;
-        deactivate: (route: model.RouteDTO) => ng.resource.IResource<string>;
+        deactivate: (data: { planId: string }) => ng.resource.IResource<string>;
         update: (data: { id: string, name: string }) => interfaces.IRouteVM;
         run: (id: string) => ng.IPromise<model.ContainerDTO>;
         runAndProcessClientAction: (id: string) => ng.IPromise<model.ContainerDTO>;
@@ -131,6 +131,7 @@ module dockyard.services {
                         isArray: false,
                         url: '/api/routes/deactivate/',
                         params: {
+                            planId: '@planId'
                         }
                     },
                     'update': {

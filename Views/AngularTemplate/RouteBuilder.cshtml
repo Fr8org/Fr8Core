@@ -9,7 +9,7 @@
 </ul>
 <!-- END PAGE BREADCRUMB -->
 <!-- BEGIN MAIN CONTENT -->
-<div ng-controller="RouteBuilderController" class="margin-top-10" block-if="isBusy()" stop-click-propagation>
+<div ng-controller="RouteBuilderController" class="margin-top-10" block-if="isBusy()">
     <designer-header route="current.route"></designer-header>
     <div class="route-builder-container" layout-container>
         <div ng-repeat="group in actionGroups" layout-action-group class="action-group" ng-style="{left: group.offsetLeft, top: group.offsetTop}">

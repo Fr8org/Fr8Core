@@ -179,7 +179,7 @@ module dockyard.controllers {
 
                     if (currentState !== $scope.current.route.routeState) {
                         if ($scope.current.route.routeState === model.RouteState.Inactive) {
-                            RouteService.deactivate($scope.current.route);
+                            RouteService.deactivate({ planId: $scope.current.route.id });
                         } else if ($scope.current.route.routeState === model.RouteState.Active) {
                             RouteService.activate(<any>{ planId: $scope.current.route.id, routeBuilderActivate: true })
                                     .$promise.then((result) => {

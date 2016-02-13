@@ -153,7 +153,6 @@ namespace terminalDocuSign.Actions
 
             //validate if any DocuSignTemplates has been linked to the Account
             ValidateDocuSignAtLeastOneTemplate(curActivityDO);
-
             return curActivityDO;
         }
 
