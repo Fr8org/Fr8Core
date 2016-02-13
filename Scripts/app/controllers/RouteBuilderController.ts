@@ -166,6 +166,7 @@ module dockyard.controllers {
 
             };
 
+
             var currentState: number;
             $scope.$watch('current.route.routeState', () => {
                 if ($scope.current.route) {
@@ -186,6 +187,17 @@ module dockyard.controllers {
                     }
                 }
             });
+
+            document.addEventListener("focusin", function(event) {
+                console.log("global focus");
+                console.log(document.activeElement);
+                if (event.srcElement.tagName != "INPUT") {
+                    console.log("empty focus");
+                    $scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_ConfigureFocusElement],
+                        new pca.ConfigureFocusElementArgs(null));
+                }
+
+            }, true);
 
             this.processState($state);
         }
@@ -678,6 +690,14 @@ module dockyard.controllers {
 
             // scann all actions to find actions with tag AgressiveReload in ActivityTemplate
             this.reConfigure(results);
+
+            //wait UI to finish rendering
+            this.$timeout(() => {
+                console.log("is focused = true");
+                if (callConfigureResponseEventArgs.focusElement != null) {
+                    this.$scope.$broadcast("onFieldFocus", callConfigureResponseEventArgs);
+                }
+            }, 300);
         }
 
         private getAgressiveReloadingActions (actionGroups: Array<model.ActionGroup>, currentAction: interfaces.IActivityDTO) {
