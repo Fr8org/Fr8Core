@@ -274,6 +274,7 @@ namespace terminalDocuSignTests.Integration
 
             // Verify that test email has been received
             EmailAssert.EmailReceived("dse_demo@docusign.net", "Test Message from Fr8");
+
         }
     }
 }
