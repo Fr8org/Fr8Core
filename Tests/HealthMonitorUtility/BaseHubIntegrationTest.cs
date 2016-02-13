@@ -75,7 +75,7 @@ namespace HealthMonitor.Utility
             bool useSsl = ConfigurationManager.AppSettings["TestEmail_UseSsl"] == "true" ? true : false;
             string username = ConfigurationManager.AppSettings["TestEmail_Username"];
             string password = ConfigurationManager.AppSettings["TestEmail_Password"];
-            EmailAssert.InitEmailAssert(TestEmail, hostname, port, useSsl, username, password);
+            //EmailAssert.InitEmailAssert(TestEmail, hostname, port, useSsl, username, password);
         }
         public abstract string TerminalName { get; }
 
