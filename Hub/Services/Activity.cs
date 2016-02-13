@@ -635,7 +635,7 @@ namespace Hub.Services
 
             if (curDocumentationSupport != null)
             {
-                dto.DocumentationSupport = curDocumentationSupport;
+                dto.Documentation = curDocumentationSupport;
             }
 
             _authorizationToken.PrepareAuthToken(uow, dto);
@@ -659,60 +659,60 @@ namespace Hub.Services
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="activityDTO"></param>
-/// <param name="isSolution">This parameter controls the access level: if it is a solution case
-/// we allow calls without CurrentAccount; if it is not - we need a User to get the list of available activities</param>
-/// <returns>Task<SolutionPageDTO/> or Task<ActivityResponceDTO/></returns>
-public async Task<T> GetActivityDocumentation<T>(ActivityDTO activityDTO, bool isSolution = false)
-{
-    //activityResponce can be either of type SolutoinPageDTO or ActivityRepsonceDTO
-    T activityResponce;
-    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-    {
-        var allActivityTemplates = ObjectFactory.GetInstance<IEnumerable<ActivityTemplateDTO>>();
-        if (isSolution)
-            //Get the list of all actions that are solutions from database
-            allActivityTemplates = _routeNode.GetSolutions(uow);
-        else
+        /// <param name="isSolution">This parameter controls the access level: if it is a solution case
+        /// we allow calls without CurrentAccount; if it is not - we need a User to get the list of available activities</param>
+        /// <returns>Task<SolutionPageDTO/> or Task<ActivityResponceDTO/></returns>
+        public async Task<T> GetActivityDocumentation<T>(ActivityDTO activityDTO, bool isSolution = false)
         {
-            var curUser = _security.GetCurrentAccount(uow);
-            allActivityTemplates = _routeNode.GetAvailableActivities(uow, curUser);
-        }
-        //find the activity by the provided name
-        var curActivityTerminalDTO = allActivityTemplates.Single(a => a.Name == activityDTO.ActivityTemplate.Name);
-        //prepare an Activity object to be sent to Activity in a Terminal
-        //IMPORTANT: this object will not be hold in the database
-        //It is used to transfer data
-        //as ActivityDTO is the first mean of communication between The Hub and Terminals
-        var curActivityDTO = new ActivityDTO
-        {
-            Id = Guid.NewGuid(),
-            Label = curActivityTerminalDTO.Label,
-            ActivityTemplate = curActivityTerminalDTO,
-            AuthToken = new AuthorizationTokenDTO
+            //activityResponce can be either of type SolutoinPageDTO or ActivityRepsonceDTO
+            T activityResponce;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                UserId = null
-            },
-            DocumentationSupport = activityDTO.DocumentationSupport
-        };
-        activityResponce = await GetDocumentation<T>(curActivityDTO);
-        //Add log to the database
-        //await _event.Publish("ActionReturnedDocumentation", activityDTO.Fr8AccountId, activityDTO.Id.ToString(), JsonConvert.SerializeObject(activityDTO).ToString(), "Success");
-    }
-    return activityResponce;
-}
-private async Task<T> GetDocumentation<T>(ActivityDTO curActivityDTO)
-{
-    //Put a method name so that HandleFr8Request could find correct method in the terminal Action
-    var actionName = "documentation";
-    curActivityDTO.DocumentationSupport = curActivityDTO.DocumentationSupport;
-    var curContainerId = Guid.Empty;
-    var fr8Data = new Fr8DataDTO
-    {
-        ActivityDTO = curActivityDTO
-    };
-    //Call the terminal
-    return await ObjectFactory.GetInstance<ITerminalTransmitter>().CallActionAsync<T>(actionName, fr8Data, curContainerId.ToString());
-}
+                var allActivityTemplates = ObjectFactory.GetInstance<IEnumerable<ActivityTemplateDTO>>();
+                if (isSolution)
+                    //Get the list of all actions that are solutions from database
+                    allActivityTemplates = _routeNode.GetSolutions(uow);
+                else
+                {
+                    var curUser = _security.GetCurrentAccount(uow);
+                    allActivityTemplates = _routeNode.GetAvailableActivities(uow, curUser);
+                }
+                //find the activity by the provided name
+                var curActivityTerminalDTO = allActivityTemplates.Single(a => a.Name == activityDTO.ActivityTemplate.Name);
+                //prepare an Activity object to be sent to Activity in a Terminal
+                //IMPORTANT: this object will not be hold in the database
+                //It is used to transfer data
+                //as ActivityDTO is the first mean of communication between The Hub and Terminals
+                var curActivityDTO = new ActivityDTO
+                {
+                    Id = Guid.NewGuid(),
+                    Label = curActivityTerminalDTO.Label,
+                    ActivityTemplate = curActivityTerminalDTO,
+                    AuthToken = new AuthorizationTokenDTO
+                    {
+                        UserId = null
+                    },
+                    Documentation = activityDTO.Documentation
+                };
+                activityResponce = await GetDocumentation<T>(curActivityDTO);
+                //Add log to the database
+                //await _event.Publish("ActionReturnedDocumentation", activityDTO.Fr8AccountId, activityDTO.Id.ToString(), JsonConvert.SerializeObject(activityDTO).ToString(), "Success");
+            }
+            return activityResponce;
+        }
+        private async Task<T> GetDocumentation<T>(ActivityDTO curActivityDTO)
+        {
+            //Put a method name so that HandleFr8Request could find correct method in the terminal Action
+            var actionName = "documentation";
+            curActivityDTO.Documentation = curActivityDTO.Documentation;
+            var curContainerId = Guid.Empty;
+            var fr8Data = new Fr8DataDTO
+            {
+                ActivityDTO = curActivityDTO
+            };
+            //Call the terminal
+            return await ObjectFactory.GetInstance<ITerminalTransmitter>().CallActionAsync<T>(actionName, fr8Data, curContainerId.ToString());
+        }
         public List<string> GetSolutionList(string terminalName)
         {
             var solutionNameList = new List<string>();

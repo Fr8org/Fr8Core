@@ -111,7 +111,7 @@ namespace TerminalBase.BaseClasses
             using (var updater = Crate.UpdateStorage(payload))
             {
                 var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Success); 
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Success);
                 operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Message = message });
             }
 
@@ -1065,6 +1065,21 @@ namespace TerminalBase.BaseClasses
 
             return resultTable;
         }
-
+        public ActivityResponseDTO GenerateDocumentationRepsonce(string documentation)
+        {
+            return new ActivityResponseDTO
+            {
+                Body = documentation,
+                Type = ActivityResponse.ShowDocumentation.ToString()
+            };
+        }
+        public ActivityResponseDTO GenerateErrorRepsonce(string errorMessage)
+        {
+            return new ActivityResponseDTO
+            {
+                Body = errorMessage,
+                Type = ActivityResponse.ShowDocumentation.ToString()
+            };
+        }
     }
 }

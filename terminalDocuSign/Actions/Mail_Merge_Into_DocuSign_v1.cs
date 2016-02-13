@@ -269,67 +269,42 @@ namespace terminalDocuSign.Actions
 
             return await Task.FromResult(curActivityDO);
         }
-        //This method provides some documentation for the DocuSign Solution Actions
-        public Task<object> Documentation(ActivityDO activityDO, string curDocumentation)
-        {
-            object respond;
-            if (curDocumentation.Contains("MainPage"))
-                respond = GetSolutionPage(activityDO);
-            else if (curDocumentation.Contains("HelpMenu"))
-                respond = GetHelp(activityDO, curDocumentation);
-            else
-            {
-                respond = Task.FromResult(
-                    new ActivityResponseDTO
-                    {
-                        Body = "Unknown displayMechanism",
-                        Type = ActivityResponse.Error.ToString()
-                    }
-                    );
-            }
-            return Task.FromResult(respond);
-        }
-
-        private Task<SolutionPageDTO> GetSolutionPage(ActivityDO activityDO)
-        {
-            var curSolutionPage = new SolutionPageDTO
-            {
-                Name = SolutionName,
-                Version = SolutionVersion,
-                Terminal = TerminalName,
-                Body = @"<p>This is a solution action</p>"
-            };
-            return Task.FromResult(curSolutionPage);
-        }
-
         /// <summary>
-        /// This method acts in accord with curDocumentation
+        /// This method provides documentation in two forms:
+        /// SolutionPageDTO for general information and 
+        /// ActivityResponseDTO for specific Help on minicon
         /// </summary>
         /// <param name="activityDO"></param>
-        /// <param name="curDocumentation">This string looks like this: "HelpMenu, ExplainMailMerge" or "HelpMenu, ExplainService"</param>
+        /// <param name="curDocumentation"></param>
         /// <returns></returns>
-        public Task<ActivityResponseDTO> GetHelp(ActivityDO activityDO, string curDocumentation)
+        public dynamic Documentation(ActivityDO activityDO, string curDocumentation)
         {
-            var resultActivityRepsonceDTO = new ActivityResponseDTO();
-            if (curDocumentation.Contains("ExplainMailMerge"))
+            if (curDocumentation.Contains("MainPage"))
             {
-                resultActivityRepsonceDTO.Body =
-                    @"This solution helps you to work with email and move data from them to DocuSign service";
-                resultActivityRepsonceDTO.Type = ActivityResponse.ShowDocumentation.ToString();
+                var curSolutionPage = new SolutionPageDTO
+                {
+                    Name = SolutionName,
+                    Version = SolutionVersion,
+                    Terminal = TerminalName,
+                    Body = @"<p>This is a solution action</p>"
+                };
+                return Task.FromResult(curSolutionPage);
             }
-            if (curDocumentation.Contains("ExplainService"))
+            if (curDocumentation.Contains("HelpMenu"))
             {
-                resultActivityRepsonceDTO.Body =
-                    @"This solution works and DocuSign service and uses Fr8 infrastructure";
-                resultActivityRepsonceDTO.Type = ActivityResponse.ShowDocumentation.ToString();
+                if (curDocumentation.Contains("ExplainMailMerge"))
+                {
+                    return Task.FromResult(GenerateDocumentationRepsonce(@"This solution helps you to work with email and move data from them to DocuSign service"));
+                }
+                if (curDocumentation.Contains("ExplainService"))
+                {
+                    return Task.FromResult(GenerateDocumentationRepsonce(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
+                }
+                return Task.FromResult(GenerateErrorRepsonce("Unknown contentPath"));
             }
-            else
-            {
-                resultActivityRepsonceDTO.Type = ActivityResponse.Error.ToString();
-                resultActivityRepsonceDTO.Body = "Unknown contentPath";
-            }
-            return Task.FromResult(resultActivityRepsonceDTO);
+            return
+                Task.FromResult(
+                    GenerateErrorRepsonce("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
         }
-
     }
 }

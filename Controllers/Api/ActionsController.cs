@@ -147,7 +147,7 @@ namespace HubWeb.Controllers
 [AllowAnonymous]
 public async Task<IHttpActionResult> Documentation([FromBody] ActivityDTO curActivityDTO)
 {
-    var curDocSupport = curActivityDTO.DocumentationSupport;
+    var curDocSupport = curActivityDTO.Documentation;
     //check if the DocumentationSupport comma separated string has the correct form
     if (!ValidateDocumentationSupport(curDocSupport))
         return BadRequest();
