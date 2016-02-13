@@ -108,6 +108,7 @@ namespace Data.Repositories.Plan
                     }
                 }
 
+                loadedRoute.RebuildSnapshot();
                 return (TRouteNode)loadedRoute.Find(id);
             }
         }
@@ -318,8 +319,10 @@ namespace Data.Repositories.Plan
                         _loadedNodes[x.Id] = route;
                     });
 
-                    var clonedRoute = RouteTreeHelper.CloneWithStructure(loadedRoute.Root);
-                    _planStorage.Update(clonedRoute);
+                    var previous = loadedRoute.RebuildSnapshot();
+                    var changes = loadedRoute.Snapshot.Compare(previous);
+
+                    _planStorage.Update(loadedRoute.Root.Id, changes);
                 }
             }
         }

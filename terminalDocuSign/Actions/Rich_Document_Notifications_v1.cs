@@ -110,14 +110,11 @@ namespace terminalDocuSign.Actions
             }
         }
 
-
-        public ExplicitConfigurationHelper ExplicitConfigurationHelper { get; set; }
         public DocuSignManager DocuSignManager { get; set; }
 
         public Rich_Document_Notifications_v1()
         {
             DocuSignManager = new DocuSignManager();
-            ExplicitConfigurationHelper = new ExplicitConfigurationHelper();
         }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
@@ -160,21 +157,20 @@ namespace terminalDocuSign.Actions
                 return activityDO;
             }
 
-            //TODO wait for vladimir's concurrent plan bug fix
             //DocuSign
-            var monitorDocuSignActionTask = await AddAndConfigureChildActivity(activityDO, "Monitor_DocuSign_Envelope_Activity", "Monitor Docusign Envelope Activity", "Monitor Docusign Envelope Activity", 1);
-            var setDelayActionTask = await AddAndConfigureChildActivity(activityDO, "SetDelay", "Set Delay", "Set Delay", 2);
-            var queryFr8WarehouseActionTask = await AddAndConfigureChildActivity(activityDO, "QueryFr8Warehouse", "Query Fr8 Warehouse", "Query Fr8 Warehouse", 3);
-            var filterActionTask = await AddAndConfigureChildActivity(activityDO, "TestIncomingData", "Test Incoming Data", "Test Incoming Data", 4);
-            var notifierActivityTask = await AddAndConfigureChildActivity(activityDO, howToBeNotifiedDdl.Value, howToBeNotifiedDdl.selectedKey, howToBeNotifiedDdl.selectedKey, 5);
+            var monitorDocuSignActionTask = AddAndConfigureChildActivity(activityDO, "Monitor_DocuSign_Envelope_Activity", "Monitor Docusign Envelope Activity", "Monitor Docusign Envelope Activity", 1);
+            var setDelayActionTask = AddAndConfigureChildActivity(activityDO, "SetDelay", "Set Delay", "Set Delay", 2);
+            var queryFr8WarehouseActionTask = AddAndConfigureChildActivity(activityDO, "QueryFr8Warehouse", "Query Fr8 Warehouse", "Query Fr8 Warehouse", 3);
+            var filterActionTask = AddAndConfigureChildActivity(activityDO, "TestIncomingData", "Test Incoming Data", "Test Incoming Data", 4);
+            var notifierActivityTask = AddAndConfigureChildActivity(activityDO, howToBeNotifiedDdl.Value, howToBeNotifiedDdl.selectedKey, howToBeNotifiedDdl.selectedKey, 5);
 
-            //await Task.WhenAll(monitorDocuSignActionTask, setDelayActionTask, queryFr8WarehouseActionTask, filterActionTask, notifierActivityTask);
+            await Task.WhenAll(monitorDocuSignActionTask, setDelayActionTask, queryFr8WarehouseActionTask, filterActionTask, notifierActivityTask);
 
-            var monitorDocuSignAction = monitorDocuSignActionTask;//.Result;
-            var setDelayAction = setDelayActionTask;//.Result;
-            var queryFr8WarehouseAction = queryFr8WarehouseActionTask;//.Result;
-            var filterAction = filterActionTask;//.Result;
-            var notifierActivity = notifierActivityTask;//.Result;
+            var monitorDocuSignAction = monitorDocuSignActionTask.Result;
+            var setDelayAction = setDelayActionTask.Result;
+            var queryFr8WarehouseAction = queryFr8WarehouseActionTask.Result;
+            var filterAction = filterActionTask.Result;
+            var notifierActivity = notifierActivityTask.Result;
 
             if (specificRecipientOption.Selected)
             {

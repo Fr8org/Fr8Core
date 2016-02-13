@@ -63,12 +63,12 @@ namespace DockyardTest.Repositories.Plan
                     new ActivityDO()
                     {
                         Id = new Guid(2, (short) 0, (short) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0),
-                        Name = "Base1"+postfix,
+                        Label = "Base1"+postfix,
                     },
                     new ActivityDO()
                     {
                         Id = new Guid(3, (short) 0, (short) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0),
-                        Name = "Base2"+postfix,
+                        Label = "Base2"+postfix,
                     }
                 }
             };
@@ -199,13 +199,24 @@ namespace DockyardTest.Repositories.Plan
 
             var route1 = cache.Get(routeId, cacheMiss);
             var updated = LoadRoute(routeId, "updated");
-            cache.Update(updated);
+
+            var o = new RouteSnapshot(route1, false);
+            var c = new RouteSnapshot(updated, false);
+
+            cache.Update(updated.Id, c.Compare(o));
             var route2 = cache.Get(routeId, cacheMiss);
 
             Assert.AreEqual(1, calledTimes);
-            Assert.AreEqual(route1, route);
-            Assert.AreEqual(route2, updated);
+            Assert.IsTrue(AreEquals(route1, route));
+            Assert.IsTrue(AreEquals(route2, updated));
         }
-        
+
+        private static bool AreEquals(RouteNodeDO a, RouteNodeDO b)
+        {
+            var snapShotA = new RouteSnapshot(a, false);
+            var snapShotB = new RouteSnapshot(b, false);
+
+            return !snapShotB.Compare(snapShotA).HasChanges;
+        }
     }
 }

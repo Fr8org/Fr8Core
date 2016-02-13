@@ -27,6 +27,7 @@ module dockyard.controllers {
 
         addAction(group: model.ActionGroup): void;
         deleteAction: (action: model.ActivityDTO) => void;
+        reConfigureAction: (action: model.ActivityDTO) => void;
         chooseAuthToken: (action: model.ActivityDTO) => void;
         selectAction(action): void;
         isBusy: () => boolean;
@@ -106,6 +107,11 @@ module dockyard.controllers {
             this._longRunningActionsCounter = 0;
 
             $scope.deleteAction = <() => void>angular.bind(this, this.deleteAction);
+            $scope.reConfigureAction = (action: model.ActivityDTO) => {
+                var actionsArray = new Array<model.ActivityDTO>();
+                actionsArray.push(action);
+                this.reConfigure(actionsArray);
+            };
             this.$scope.chooseAuthToken = (action: model.ActivityDTO) => {
                 this.chooseAuthToken(action);
             };
@@ -173,7 +179,7 @@ module dockyard.controllers {
 
                     if (currentState !== $scope.current.route.routeState) {
                         if ($scope.current.route.routeState === model.RouteState.Inactive) {
-                            RouteService.deactivate($scope.current.route);
+                            RouteService.deactivate({ planId: $scope.current.route.id });
                         } else if ($scope.current.route.routeState === model.RouteState.Active) {
                             RouteService.activate(<any>{ planId: $scope.current.route.id, routeBuilderActivate: true })
                                     .$promise.then((result) => {
@@ -374,6 +380,7 @@ module dockyard.controllers {
 
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_SetSolutionMode], () => this.PaneConfigureAction_SetSolutionMode());
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ChildActionsDetected], () => this.PaneConfigureAction_ChildActionsDetected());
+            this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ExecutePlan], () => this.PaneConfigureAction_ExecutePlan());
 
             // Handles Response from Configure call from PaneConfiguration
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ConfigureCallResponse],
@@ -404,22 +411,9 @@ module dockyard.controllers {
         private handleActionUpdate(action: model.ActivityDTO) {
             if (!action) return;
 
-            if (this.$scope.current.action.isTempId) {
-                this.$scope.$broadcast(
-                    pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionTempIdReplaced],
-                    new pwd.ActionTempIdReplacedEventArgs(this.$scope.current.action.id, action.id)
-                );
-            }
-
             this.$scope.current.action = action;
             //self.$scope.current.action.id = result.action.id;
             //self.$scope.current.action.isTempId = false;
-
-            //Notify workflow designer of action update
-            this.$scope.$broadcast(
-                pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionNameUpdated],
-                new pwd.ActionNameUpdatedEventArgs(action.id, action.name)
-            );
 
             if (this.CrateHelper.hasControlListCrate(action.crateStorage)) {
                 action.configurationControls = this.CrateHelper
@@ -494,13 +488,13 @@ module dockyard.controllers {
                 parentId = eventArgs.group.parentAction.id;
             }
             // Create new action object.
-            var action = new model.ActivityDTO(this.$scope.planId, parentId, id, true);
-            action.name = activityTemplate.name;
+
+            var action = new model.ActivityDTO(this.$scope.planId, parentId, id);
+
             action.label = activityTemplate.label;
             // Add action to Workflow Designer.
             this.$scope.current.action = action.toActionVM();
             this.$scope.current.action.activityTemplate = activityTemplate;
-            this.$scope.current.action.activityTemplateId = activityTemplate.id;
             this.selectAction(action, eventArgs.group);
         }
 
@@ -652,6 +646,19 @@ module dockyard.controllers {
 
         private PaneConfigureAction_ChildActionsDetected() {
             this.loadRoute();
+        }
+
+        private PaneConfigureAction_ExecutePlan() {
+            var self = this;
+
+            ++self._longRunningActionsCounter;
+
+            this.RouteService.runAndProcessClientAction(this.$scope.current.route.id)
+                .finally(function () {
+                    if (self._longRunningActionsCounter > 0) {
+                        --self._longRunningActionsCounter;
+                    }
+                });
         }
 
         // This should handle everything that should be done when a configure call response arrives from server.

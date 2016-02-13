@@ -13,7 +13,6 @@ namespace UtilitiesTesting.Fixtures
         {
             return new ActivityDTO()
             {
-                Name = "test activity type",
                 ActivityTemplate = FixtureData.TestActivityTemplateDTO1(),
             };
         }
@@ -21,7 +20,6 @@ namespace UtilitiesTesting.Fixtures
         {
             ActivityDTO curActionDTO = new ActivityDTO()
             {
-                Name = "test activity type",
                 ActivityTemplate = FixtureData.TestActivityTemplateDTO1(),
             };
 
@@ -37,7 +35,6 @@ namespace UtilitiesTesting.Fixtures
         {
             ActivityDTO curActionDTO = new ActivityDTO()
             {
-                Name = "test activity type",
                 ActivityTemplate = FixtureData.TestActivityTemplateDTO1()
             };
 
@@ -68,7 +65,6 @@ namespace UtilitiesTesting.Fixtures
         {
             return new ActivityDTO()
             {
-                Name = "test salesforce activity",
                 ActivityTemplate = FixtureData.TestActivityTemplateSalesforce()
             };
         }
@@ -77,7 +73,6 @@ namespace UtilitiesTesting.Fixtures
         {
             return new ActivityDTO()
             {
-                Name = "SendEmailViaSendGrid",
                 ActivityTemplate = FixtureData.TestActivityTemplateSendGrid()
             };
         }
@@ -85,7 +80,6 @@ namespace UtilitiesTesting.Fixtures
         {
             ActivityDTO curActionDTO = new ActivityDTO()
             {
-                Name = "test activity type",
                 ActivityTemplate = FixtureData.ActivityTemplateDTOSelectFr8Object(),
             };
             // curActionDTO.CrateStorage.CrateDTO.Add(CreateStandardConfigurationControls());
@@ -96,7 +90,6 @@ namespace UtilitiesTesting.Fixtures
         {
             ActivityDTO curActionDTO = new ActivityDTO()
             {
-                Name = "test activity type",
                 ActivityTemplate = FixtureData.ActivityTemplateDTOSelectFr8Object(),
             };
 

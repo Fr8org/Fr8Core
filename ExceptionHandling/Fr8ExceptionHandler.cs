@@ -8,6 +8,9 @@ namespace HubWeb.ExceptionHandling
     {
         public override void HandleCore(ExceptionHandlerContext context)
         {
+            //Self-host fix
+            if (HttpContext.Current == null) return;
+
             var error = ErrorDTO.InternalError();
 
             error.Message = "Sorry, an unexpected error has occurred while serving your request. Please try again in a few minutes.";

@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -18,7 +20,9 @@ using Hub.Managers;
 using Utilities.Configuration.Azure;
 using TerminalBase.Infrastructure;
 using AutoMapper;
+using Data.Helpers;
 using Data.Interfaces.DataTransferObjects.Helpers;
+using Hub.Helper;
 
 namespace TerminalBase.BaseClasses
 {
@@ -152,15 +156,17 @@ namespace TerminalBase.BaseClasses
         /// <param name="payload"></param>
         /// <param name="errorMessage"></param>
         /// <param name="errorCode"></param>
+        /// <param name="currentActivity">Activity where the error occured</param>
+        /// <param name="currentTerminal">Terminal where the error occured</param>
         /// <returns></returns>
-        protected PayloadDTO Error(PayloadDTO payload, string errorMessage = null, ActionErrorCode? errorCode = null)
+        protected PayloadDTO Error(PayloadDTO payload, string errorMessage = null, ActionErrorCode? errorCode = null, string currentActivity = null, string currentTerminal = null)
         {
             using (var updater = Crate.UpdateStorage(payload))
             {
                 var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
                 operationalState.CurrentActivityErrorCode = errorCode;
                 operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Error);
-                operationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(errorMessage,ErrorType.Generic, errorCode.ToString(),null)); 
+                operationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(errorMessage, ErrorType.Generic, errorCode.ToString(), null, currentActivity, currentTerminal));
             }
 
             return payload;
@@ -190,6 +196,42 @@ namespace TerminalBase.BaseClasses
             }
 
             return payload;
+        }
+
+        protected FieldDTO GetPayloadValue(CrateStorage payloadStorage, string fieldName, MT manifestType = MT.StandardPayloadData, string label = null)
+        {
+            Func<Crate, bool> crateSearchArguments = (c) => c.ManifestType.Type == CrateManifestType.FromEnum(manifestType).Type;
+            if (label != null)
+            {
+                crateSearchArguments = (c) => c.ManifestType.Type == CrateManifestType.FromEnum(manifestType).Type && c.Label == label;
+            }
+            //find user requested crate
+            var foundCrate = payloadStorage.FirstOrDefault(crateSearchArguments);
+            if (foundCrate == null)
+            {
+                return null;
+            }
+            object searchArea = null;
+            //check if this crate is loop related
+            var operationalState = payloadStorage.CrateContentsOfType<OperationalStateCM>().Single();
+            //let's check if we are in a loop
+            //and this is a loop data?
+            var deepestLoop = operationalState.Loops.OrderByDescending(l => l.Level).FirstOrDefault(l => !l.BreakSignalReceived && l.Label == foundCrate.Label && l.CrateManifest == foundCrate.ManifestType.Type);
+            if (deepestLoop != null)
+            {
+                //this is a loop related data request
+                var dataList = Fr8ReflectionHelper.FindFirstArray(foundCrate);
+                searchArea = dataList[deepestLoop.Index];
+            }
+            else
+            {
+                //hmmm this is a regular data request
+                searchArea = foundCrate;
+            }
+
+            //we should find first related field and return
+            var fields = Fr8ReflectionHelper.FindFieldsRecursive(searchArea);
+            return fields.FirstOrDefault(f => f.Key == fieldName);
         }
 
         protected ControlDefinitionDTO GetControl(StandardConfigurationControlsCM controls, string name, string controlType = null)
@@ -354,43 +396,43 @@ namespace TerminalBase.BaseClasses
         }
 
         //wrapper for support test method
-        public async virtual Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActivityDO activityDO, CrateDirection direction)
+        public virtual async Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActivityDO activityDO, CrateDirection direction)
         {
             return await HubCommunicator.GetCratesByDirection<TManifest>(activityDO, direction, CurrentFr8UserId);
             // return await Activity.GetCratesByDirection<TManifest>(activityId, direction);
         }
 
         //wrapper for support test method
-        public async virtual Task<List<Crate>> GetCratesByDirection(ActivityDO activityDO, CrateDirection direction)
+        public virtual async Task<List<Crate>> GetCratesByDirection(ActivityDO activityDO, CrateDirection direction)
         {
             return await HubCommunicator.GetCratesByDirection(activityDO, direction, CurrentFr8UserId);
         }
 
-        public async virtual Task<StandardDesignTimeFieldsCM> GetDesignTimeFields(Guid activityId, CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet)
+        public virtual async Task<StandardDesignTimeFieldsCM> GetDesignTimeFields(Guid activityId, CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet)
         {
             var mergedFields = await HubCommunicator.GetDesignTimeFieldsByDirection(activityId, direction, availability, CurrentFr8UserId);
             return mergedFields;
         }
 
-        public async virtual Task<StandardDesignTimeFieldsCM> GetDesignTimeFields(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet)
+        public virtual async Task<StandardDesignTimeFieldsCM> GetDesignTimeFields(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet)
         {
             var mergedFields = await HubCommunicator.GetDesignTimeFieldsByDirection(activityDO, direction, availability, CurrentFr8UserId);
             return mergedFields;
         }
 
-        public async virtual Task<List<CrateManifestType>> BuildUpstreamManifestList(ActivityDO activityDO)
+        public virtual async Task<List<CrateManifestType>> BuildUpstreamManifestList(ActivityDO activityDO)
         {
             var upstreamCrates = await this.GetCratesByDirection<Data.Interfaces.Manifests.Manifest>(activityDO, CrateDirection.Upstream);
             return upstreamCrates.Where(x => !ExcludedManifestTypes.Contains(x.ManifestType)).Select(f => f.ManifestType).Distinct().ToList();
         }
 
-        public async virtual Task<List<String>> BuildUpstreamCrateLabelList(ActivityDO activityDO)
+        public virtual async Task<List<String>> BuildUpstreamCrateLabelList(ActivityDO activityDO)
         {
             var curCrates = await this.GetCratesByDirection<Data.Interfaces.Manifests.Manifest>(activityDO, CrateDirection.Upstream);
             return curCrates.Where(x => !ExcludedManifestTypes.Contains(x.ManifestType)).Select(f => f.Label).Distinct().ToList();
         }
 
-        public async virtual Task<Crate<StandardDesignTimeFieldsCM>> GetUpstreamManifestListCrate(ActivityDO activityDO)
+        public virtual async Task<Crate<StandardDesignTimeFieldsCM>> GetUpstreamManifestListCrate(ActivityDO activityDO)
         {
             var manifestList = (await BuildUpstreamManifestList(activityDO));
             var fields = manifestList.Select(f => new FieldDTO(f.Type, f.Id.ToString())).ToArray();
@@ -398,7 +440,7 @@ namespace TerminalBase.BaseClasses
             return Crate.CreateDesignTimeFieldsCrate("AvailableUpstreamManifests", fields);
         }
 
-        public async virtual Task<Crate<StandardDesignTimeFieldsCM>> GetUpstreamCrateLabelListCrate(ActivityDO activityDO)
+        public virtual async Task<Crate<StandardDesignTimeFieldsCM>> GetUpstreamCrateLabelListCrate(ActivityDO activityDO)
         {
             var labelList = (await BuildUpstreamCrateLabelList(activityDO));
             var fields = labelList.Select(f => new FieldDTO(f, f)).ToArray();
@@ -453,7 +495,7 @@ namespace TerminalBase.BaseClasses
             return field.Value;
         }
 
-        protected async virtual Task<List<Crate<StandardFileDescriptionCM>>> GetUpstreamFileHandleCrates(ActivityDO activityDO)
+        protected virtual async Task<List<Crate<StandardFileDescriptionCM>>> GetUpstreamFileHandleCrates(ActivityDO activityDO)
         {
             return await HubCommunicator.GetCratesByDirection<StandardFileDescriptionCM>(activityDO, CrateDirection.Upstream, CurrentFr8UserId);
         }
@@ -708,7 +750,7 @@ namespace TerminalBase.BaseClasses
             var exceptionMessage = string.Format("No field found with specified key: {0}.", fieldKey);
             baseEvent.SendTerminalErrorIncident(_actionName, exceptionMessage, _actionName);
 
-            throw new ApplicationException(exceptionMessage + " Detailed information has been written to log.");
+            throw new ApplicationException(exceptionMessage);
         }
 
         protected void AddLabelControl(CrateStorage storage, string name, string label, string text)
@@ -754,7 +796,6 @@ namespace TerminalBase.BaseClasses
                     .First().Controls;
 
                 var control = TraverseNestedControls(controls, controlFullName);
-
                 if (control == null) return;
 
                 switch (control.Type)
@@ -789,14 +830,14 @@ namespace TerminalBase.BaseClasses
         private ControlDefinitionDTO TraverseNestedControls(List<ControlDefinitionDTO> controls, string childControl)
         {
             var controlNames = childControl.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
-            var control = controls.Where(a => a.Name == controlNames[0]).FirstOrDefault();
+            var control = controls.FirstOrDefault(a => a.Name == controlNames[0]);
             if (controlNames.Count() == 1) return control;
 
             List<ControlDefinitionDTO> nestedControls = null;
 
             if (control.Type == "RadioButtonGroup")
             {
-                var radio = (control as RadioButtonGroup).Radios.Where(a => a.Name == controlNames[1]).FirstOrDefault();
+                var radio = (control as RadioButtonGroup).Radios.FirstOrDefault(a => a.Name == controlNames[1]);
                 radio.Selected = true;
                 nestedControls = radio.Controls.ToList();
                 return TraverseNestedControls(nestedControls, string.Join(".", controlNames.Skip(2)));
@@ -928,7 +969,7 @@ namespace TerminalBase.BaseClasses
             //If Route is specified as a parent, then a new subroute will be created
             //Guid parentId = (parent.ChildNodes.Count > 0) ? parent.ChildNodes[0].ParentRouteNodeId.Value : parent.RootRouteNodeId.Value;
 
-            var result = await HubCommunicator.CreateAndConfigureActivity(activityTemplate.Id, name, CurrentFr8UserId, label, order, parent.Id);
+            var result = await HubCommunicator.CreateAndConfigureActivity(activityTemplate.Id, CurrentFr8UserId, label, order, parent.Id);
             var resultDO = Mapper.Map<ActivityDO>(result);
 
             if (resultDO != null)
@@ -1034,11 +1075,11 @@ namespace TerminalBase.BaseClasses
 
             //filter by manifest or label based on selected crate chooser control
             Func<Crate, bool> whereClause = null;
-            if (manifestType.Count() > 0 && labelControl.Count() > 0)
+            if (manifestType.Any() && labelControl.Any())
                 whereClause = (crate => manifestType.Contains(crate.ManifestType.Id.ToString()) && labelControl.Contains(crate.Label));
-            else if (manifestType.Count() > 0)
+            else if (manifestType.Any())
                 whereClause = (crate => manifestType.Contains(crate.ManifestType.Id.ToString()));
-            else if (labelControl.Count() > 0)
+            else if (labelControl.Any())
                 whereClause = (crate => labelControl.Contains(crate.Label));
 
 
@@ -1064,6 +1105,5 @@ namespace TerminalBase.BaseClasses
 
             return resultTable;
         }
-
     }
 }

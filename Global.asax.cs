@@ -26,6 +26,8 @@ using Logger = Utilities.Logging.Logger;
 using HubWeb.Infrastructure;
 using System.Threading.Tasks;
 using Microsoft.ApplicationInsights.Extensibility;
+using TerminalBase.Infrastructure;
+using Data.Infrastructure;
 
 namespace HubWeb
 {
@@ -35,11 +37,19 @@ namespace HubWeb
 
         protected void Application_Start()
         {
-            GlobalConfiguration.Configure(WebApiConfig.Register);
-            AreaRegistration.RegisterAllAreas();
-            FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
-            RouteConfig.RegisterRoutes(RouteTable.Routes);
-            BundleConfig.RegisterBundles(BundleTable.Bundles);
+            Init(false);
+        }
+
+        public void Init(bool selfHostMode = false)
+        {
+            if (!selfHostMode)
+            {
+                GlobalConfiguration.Configure(WebApiConfig.Register);
+                AreaRegistration.RegisterAllAreas();
+                FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
+                RouteConfig.RegisterRoutes(RouteTable.Routes);
+                BundleConfig.RegisterBundles(BundleTable.Bundles);
+            }
 
             // Configure formatters
             // Enable camelCasing in JSON responses
@@ -52,29 +62,32 @@ namespace HubWeb
             //Register global Exception Filter for WebAPI 
             GlobalConfiguration.Configuration.Filters.Add(new WebApiExceptionFilterAttribute());
 
-            // StructureMap Dependencies configuration 
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE);
-            //set to either "test" or "live"
+            ObjectFactory.GetInstance<AutoMapperBootStrapper>().ConfigureAutoMapper();
 
             var db = ObjectFactory.GetInstance<DbContext>();
             db.Database.Initialize(true);
 
-            Utilities.Server.ServerPhysicalPath = Server.MapPath("~");
-
-            //AutoMapper create map configuration
-            ObjectFactory.GetInstance<AutoMapperBootStrapper>().ConfigureAutoMapper();
+            // A HACK. In self-hosted mode after calling db.Database.Initialize StructureMap mappings
+            // mess up for some reason. So we need to repeat configuration of StructureMap and then 
+            // again Automapper. 
+            if (selfHostMode)
+            {
+                StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE);
+                ObjectFactory.GetInstance<AutoMapperBootStrapper>().ConfigureAutoMapper();
+            }
 
             Utilities.Server.IsProduction = ObjectFactory.GetInstance<IConfigRepository>().Get<bool>("IsProduction");
             Utilities.Server.IsDevMode = ObjectFactory.GetInstance<IConfigRepository>().Get<bool>("IsDev", true);
 
-            // CommunicationManager curCommManager = ObjectFactory.GetInstance<CommunicationManager>();
-            //  curCommManager.SubscribeToAlerts();
+            if (!selfHostMode)
+            {
+                Utilities.Server.ServerPhysicalPath = Server.MapPath("~");
+                var segmentWriteKey = new ConfigRepository().Get("SegmentWriteKey");
+                Analytics.Initialize(segmentWriteKey);
+            }
 
-            var segmentWriteKey = new ConfigRepository().Get("SegmentWriteKey");
-            Analytics.Initialize(segmentWriteKey);
-
-            EventReporter curReporter = ObjectFactory.GetInstance<EventReporter>()
-                ;
+            EventReporter curReporter = ObjectFactory.GetInstance<EventReporter>();
             curReporter.SubscribeToAlerts();
 
             IncidentReporter incidentReporter = ObjectFactory.GetInstance <IncidentReporter>();
@@ -96,12 +109,6 @@ namespace HubWeb
 
             ConfigureValidationEngine();
             StartupMigration.CreateSystemUser();
-
-            // At Startup Check If the Log Monitor Fr8 Event plan exist in the database then active it. otherwise create the new plan.
-            RouteManager routeManager = new RouteManager();
-            string sytemUserEmail = ObjectFactory.GetInstance<IConfigRepository>().Get<string>("SystemUserEmail");
-
-            Task.Factory.StartNew(async () => await routeManager.CreateRoute_LogFr8InternalEvents(sytemUserEmail).ConfigureAwait(true));
 
         }
 

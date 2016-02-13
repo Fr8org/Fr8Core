@@ -56,7 +56,7 @@ namespace terminalSalesforceTests.Fixtures
             {
                 Version = "1",
                 Name = "Get_Data_TEST",
-                Label = "Get Data",
+                Label = "Get Data from Salesforce.com",
                 NeedsAuthentication = true
             };
         }
@@ -68,11 +68,9 @@ namespace terminalSalesforceTests.Fixtures
             var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Create_Account",
                 Label = "Create Account",
                 AuthToken = Salesforce_AuthToken(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
 
             return new Fr8DataDTO { ActivityDTO = activityDTO };
@@ -85,11 +83,9 @@ namespace terminalSalesforceTests.Fixtures
             var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Create_Contact",
                 Label = "Create Contact",
                 AuthToken = Salesforce_AuthToken(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
 
             return new Fr8DataDTO { ActivityDTO = activityDTO };
@@ -102,11 +98,9 @@ namespace terminalSalesforceTests.Fixtures
             var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Create_Lead",
                 Label = "Create Lead",
                 AuthToken = Salesforce_AuthToken(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
             return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
@@ -118,11 +112,9 @@ namespace terminalSalesforceTests.Fixtures
             return new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Get_Data",
-                Label = "Get Data",
+                Label = "Get Data from Salesforce.com",
                 AuthToken = Salesforce_AuthToken(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
         }
     }

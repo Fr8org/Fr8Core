@@ -1,4 +1,4 @@
-﻿using System;
+﻿    using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -36,11 +36,12 @@ namespace HubWeb
         {
             //ConfigureDaemons();
             ConfigureAuth(app);
+
 #if DEV || RELEASE
             ConfigureHangfire(app, "DockyardDB");
 #endif 
 
-            if (!selfHostMode)
+                if (!selfHostMode)
             {
                 await RegisterTerminalActions();
             }
@@ -161,7 +162,12 @@ namespace HubWeb
 
             alertReporter.ActivityTemplatesSuccessfullyRegistered(count);
 
-                    }
+            // At Startup Check If the Log Monitor Fr8 Event plan exist in the database then active it. otherwise create the new plan.
+
+            RouteManager manager = new RouteManager();
+            string sytemUserEmail = ObjectFactory.GetInstance<IConfigRepository>().Get<string>("SystemUserEmail");
+            await manager.CreateRoute_LogFr8InternalEvents(sytemUserEmail).ConfigureAwait(true);
+        }
 
         public static IDisposable CreateServer(string url)
         {

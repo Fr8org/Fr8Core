@@ -50,12 +50,6 @@ namespace Hub.Services
         {
             var queryableRepo = unitOfWork.PlanRepository.GetPlanQueryUncached();
 
-            if (isAdmin)
-            {
-                queryableRepo = (id == null ? queryableRepo : queryableRepo.Where(pt => pt.Id == id));
-                return (status == null ? queryableRepo : queryableRepo.Where(pt => pt.RouteState == status)).ToList();
-            }
-
             queryableRepo = (id == null
                 ? queryableRepo.Where(pt => pt.Fr8Account.Id == account.Id)
                 : queryableRepo.Where(pt => pt.Id == id && pt.Fr8Account.Id == account.Id));
@@ -171,6 +165,7 @@ namespace Hub.Services
                         }
                         else if (validationErrorChecker)
                         {
+
                             //if the activate call is comming from the Routes List then show the first error message and redirect to plan builder 
                             //so the user could fix the configuration
                             result.RedirectToRouteBuilder = true;
@@ -181,7 +176,7 @@ namespace Hub.Services
                     catch (Exception ex)
                     {
                         throw new ApplicationException(
-                            string.Format("Process template activation failed for action {0}.", curActionDO.Name), ex);
+                            string.Format("Process template activation failed for action {0}.", curActionDO.Label), ex);
                     }
                 }
 
@@ -217,7 +212,7 @@ namespace Hub.Services
                 {
                     //here show only the first error as an issue to redirect back the user to the plan builder
                     errorMessage = string.Format("There was a problem with the configuration of the action '{0}': {1}",
-                        curActivityDTO.Name, control.ErrorMessage);
+                        curActivityDTO.ActivityTemplate.Name, control.ErrorMessage);
                     return true;
                 }
             }

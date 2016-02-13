@@ -94,12 +94,18 @@ namespace terminalFr8Core.Actions
             if (fieldListControl.Value != null)
             {
                 var userDefinedPayload = JsonConvert.DeserializeObject<List<FieldDTO>>(fieldListControl.Value);
-                userDefinedPayload.ForEach(x => x.Value = x.Key);
+                userDefinedPayload.ForEach(x =>
+                {
+                    x.Value = x.Key;
+                    x.Availability = Data.States.AvailabilityType.RunTime;
+                });
 
                 using (var updater = Crate.UpdateStorage(curActivityDO))
                 {
                     updater.CrateStorage.RemoveByLabel("ManuallyAddedPayload");
-                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("ManuallyAddedPayload", new StandardDesignTimeFieldsCM() { Fields = userDefinedPayload }));
+                    var crate = Data.Crates.Crate.FromContent("ManuallyAddedPayload", new StandardDesignTimeFieldsCM() { Fields = userDefinedPayload });
+                    crate.Availability = Data.States.AvailabilityType.RunTime;
+                    updater.CrateStorage.Add(crate);
                 }
             }
 

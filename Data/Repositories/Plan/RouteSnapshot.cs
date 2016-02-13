@@ -47,6 +47,12 @@ namespace Data.Repositories.Plan
         // Functions
         /**********************************************************************************/
 
+        public RouteSnapshot()
+        {
+        }
+
+        /**********************************************************************************/
+
         public RouteSnapshot(RouteNodeDO node, bool cloneNodes)
         {
             RouteTreeHelper.Visit(node, (x, y) =>

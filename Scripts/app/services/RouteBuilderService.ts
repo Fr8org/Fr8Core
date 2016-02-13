@@ -10,7 +10,7 @@ module dockyard.services {
         getByAction: (id: { id: string }) => interfaces.IRouteVM;
         execute: (id: { id: number }, payload: { payload: string }, success: any, error: any) => void;
         activate: (data :{planId: string, routeBuilderActivate : boolean}) => any;
-        deactivate: (route: model.RouteDTO) => ng.resource.IResource<string>;
+        deactivate: (data: { planId: string }) => ng.resource.IResource<string>;
         update: (data: { id: string, name: string }) => interfaces.IRouteVM;
         run: (id: string) => ng.IPromise<model.ContainerDTO>;
         runAndProcessClientAction: (id: string) => ng.IPromise<model.ContainerDTO>;
@@ -68,11 +68,13 @@ module dockyard.services {
         '$http',
         '$q',
         '$location',
+        'ngToast',
         function (
             $resource: ng.resource.IResourceService,
             $http: ng.IHttpService,
             $q: ng.IQService,
-            $location: ng.ILocationService
+            $location: ng.ILocationService,
+            ngToast: any
         ): IRouteService {
 
             var resource = <IRouteService>$resource(
@@ -129,6 +131,7 @@ module dockyard.services {
                         isArray: false,
                         url: '/api/routes/deactivate/',
                         params: {
+                            planId: '@planId'
                         }
                     },
                     'update': {
@@ -175,6 +178,14 @@ module dockyard.services {
                                     default:
                                         break;
                                 }
+                            }
+
+                            if (container && container.error != null) {
+                                var messageToShow = "Plan " + container.name + " failed." + "<br/>";
+                                messageToShow += "Action: " + container.error.currentActivity + "<br/>";
+                                messageToShow += "Terminal: " + container.error.currentTerminal + "<br/>";
+                                messageToShow += "Message: " + container.error.message;
+                                ngToast.danger(messageToShow);
                             }
 
                             d.resolve(container);

@@ -6,5 +6,9 @@
         {
             get { return "ExplicitData"; }
         }
+
+        public ExplicitDataHubCommunicator(string explicitData) : base(explicitData)
+        {
+        }
     }
 }

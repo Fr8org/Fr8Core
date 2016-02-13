@@ -14,6 +14,7 @@ using Data.States;
 using Hub.Security;
 using Utilities;
 using System.Web;
+using System.Net.Http;
 
 namespace Hub.Services
 {
@@ -26,6 +27,18 @@ namespace Hub.Services
             {
                 uow.UserRepository.UpdateUserCredentials(dockyardAccountDO, password: password);
             }
+        }
+
+        public bool IsValidHashedPassword(Fr8AccountDO dockyardAccountDO, string password)
+        {
+            if (dockyardAccountDO != null)
+            {
+                var passwordHasher = new PasswordHasher();
+                return (passwordHasher.VerifyHashedPassword(dockyardAccountDO.PasswordHash, password) ==
+                    PasswordVerificationResult.Success);
+            }
+            else
+                return false;
         }
 
         /// <summary>
@@ -252,7 +265,7 @@ namespace Hub.Services
             }
         }
 
-        public Task<LoginStatus> ProcessLoginRequest(string username, string password, bool isPersistent)
+        public Task<LoginStatus> ProcessLoginRequest(string username, string password, bool isPersistent, HttpRequestMessage request = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

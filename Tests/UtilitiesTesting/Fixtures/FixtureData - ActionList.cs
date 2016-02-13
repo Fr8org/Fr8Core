@@ -349,7 +349,6 @@ namespace UtilitiesTesting.Fixtures
                 Id = GetTestGuidById(23+offset), 
                 ActivityTemplate = activityTempate, 
                 ActivityTemplateId = activityTempate.Id,
-                Name = "a_23", 
                 CrateStorage = ""
             };
             al_1.Activities.Add(a_23);
@@ -375,7 +374,6 @@ namespace UtilitiesTesting.Fixtures
                  Id = GetTestGuidById(23), 
                  ActivityTemplate = activityTempate,
                  ActivityTemplateId = activityTempate.Id,
-                 Name = "a_23",
                  CrateStorage = ""
              };
               al_1.Activities.Add(a_23);
