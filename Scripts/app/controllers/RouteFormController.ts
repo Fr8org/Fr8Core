@@ -55,7 +55,7 @@ module dockyard.controllers {
                     result.$promise
                         .then(() => {
                             $rootScope.lastResult = "success";
-                            window.location.href = '#routes/' + result.id + '/builder';
+                            window.location.href = '#plans/' + result.id + '/builder';
                         })
                         .catch(function (e) {
                             switch (e.status) {
