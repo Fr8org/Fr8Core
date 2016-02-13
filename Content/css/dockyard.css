@@ -825,3 +825,6 @@ div[dnd-list].dndDragover {
   padding-bottom: 10px;
   color: red;
 }
+.push-footer {
+    background: #eff3f8
+}

@@ -18,7 +18,7 @@ namespace Data.Entities
         public string Label { get; set; }
 
         [ForeignKey("ActivityTemplate")]
-        public int? ActivityTemplateId { get; set; }
+        public int ActivityTemplateId { get; set; }
 
         public virtual ActivityTemplateDO ActivityTemplate { get; set; }
         public string currentView { get; set; }
