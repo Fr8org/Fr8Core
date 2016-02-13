@@ -100,8 +100,8 @@ namespace terminalDocuSignTests.Integration
             //
             this.solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "actions/configure?id=" + solution.Id, solution);
             crateStorage = _crate.FromDto(this.solution.CrateStorage);
-            Assert.True(crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count() > 0, "Crate StandardConfigurationControlsCM is missing in API response.");
-            Assert.True(crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count() > 0, "Crate StandardDesignTimeFieldsCM is missing in API response.");
+            Assert.True(crateStorage.CratesOfType<StandardConfigurationControlsCM>().Any(), "Crate StandardConfigurationControlsCM is missing in API response.");
+            Assert.True(crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Any(), "Crate StandardDesignTimeFieldsCM is missing in API response.");
 
             var controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
             var controls = controlsCrate.Content.Controls;
@@ -179,7 +179,26 @@ namespace terminalDocuSignTests.Integration
             Assert.AreEqual(1, apmAction.Ordering, "Failed to reoder the action Add Payload Manually");
 
             var fr8CoreLoop = this.solution.ChildrenActions.Single(a => a.Label == "Fr8 Core Loop");
-            
+
+            fr8CoreLoop = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "actions/configure", fr8CoreLoop);
+            //we should update fr8Core loop to loop through manually added payload
+            var fr8CoreLoopCrateStorage = _crate.FromDto(fr8CoreLoop.CrateStorage);
+            var loopConfigCrate = fr8CoreLoopCrateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
+            var loopConfigControls = loopConfigCrate.Content.Controls;
+            var availableManifests = (DropDownList) loopConfigControls.Single(c => c.Name == "Available_Manifests");
+            var availableLabels = (DropDownList)loopConfigControls.Single(c => c.Name == "Available_Labels");
+            availableManifests.Value = "Standard Design-Time Fields";
+            availableManifests.selectedKey = "Standard Design-Time Fields";
+            availableLabels.Value = "ManuallyAddedPayload";
+            availableLabels.selectedKey = "ManuallyAddedPayload";
+            using (var updater = _crate.UpdateStorage(fr8CoreLoop))
+            {
+                updater.CrateStorage.Remove<StandardConfigurationControlsCM>();
+                updater.CrateStorage.Add(loopConfigCrate);
+            }
+
+            fr8CoreLoop = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "actions/save", fr8CoreLoop);
+
             //
             // Configure Send DocuSign Envelope action
             //
