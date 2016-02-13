@@ -7,7 +7,6 @@ module dockyard.directives.textSource {
         change: () => (field: model.ControlDefinitionDTO) => void;
         onChange: any;
         onFocus: any;
-        onBlur: any;
         uniqueDirectiveId: number;
         isFocused : boolean;
     }
