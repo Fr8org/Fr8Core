@@ -15,6 +15,7 @@ namespace HealthMonitor
     public class SelfHostInitializer : IDisposable
     {
         IList<IDisposable> _selfHostedTerminals = new List<IDisposable>();
+        ManualResetEventSlim _waitHandle = new ManualResetEventSlim(false);
         Process _hubProcess;
 
         public void Initialize(string connectionString)
@@ -95,12 +96,18 @@ namespace HealthMonitor
                 throw new Exception("Cannot start HubLauncher for an unknown reason. Test runner aborted.");
             }
 
-            // Waiting for the server to initialize
-            Thread.Sleep(new TimeSpan(0, 0, 20));
+            _waitHandle.Wait(new TimeSpan(0,3,0));
+            Console.WriteLine("Proceeding to Tests");
+
         }
 
         private void _hubProcess_OutputDataReceived(object sender, DataReceivedEventArgs e)
         {
+            if (e.Data.IndexOf("Listening...") > -1)
+            {
+                // HubLauncher is ready, can start tests
+                _waitHandle.Set();
+            }
             Console.WriteLine("HubLauncher:\\> " + e.Data);
         }
 

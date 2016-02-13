@@ -13,9 +13,9 @@ namespace HealthMonitor.Utility
 {
     public static class EmailAssert
     {
-        // If a matching message has been received at most 5 seconds before calling the method, 
+        // If a matching message has been received at most 7 seconds before calling the method, 
         // the test is considered passed.
-        public static TimeSpan RecentMsgThreshold = new TimeSpan(0, 0, 5); // 5 seconds
+        public static TimeSpan RecentMsgThreshold = new TimeSpan(0, 0, 7); // 7 seconds
         static TimeSpan _timeout = new TimeSpan(0, 0, 30); // 30 seconds
         static bool _initialized = false;
 
@@ -51,13 +51,15 @@ namespace HealthMonitor.Utility
                 client.Connect(_hostname, _port, _useSsl);
                 client.Authenticate(_username, _password);
 
+                DateTime timeToCompare = methodCalledTime; // First time use method call time to compare time
                 while (DateTime.UtcNow < methodCalledTime + _timeout)
                 {
-                    if (CheckEmail(client, expectedFromAddr, expectedSubject, DateTime.UtcNow))
+                    if (CheckEmail(client, expectedFromAddr, expectedSubject, timeToCompare))
                     {
                         return;
                     }
                     System.Threading.Thread.Sleep(2000);
+                    timeToCompare = DateTime.UtcNow; // Next time use current iteration time 
                 }
                 throw new AssertionException(String.Format(
                         "Email to {0} was not received within the timeout period {1}.", 
