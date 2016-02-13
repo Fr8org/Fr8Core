@@ -169,8 +169,8 @@ namespace terminalDocuSignTests.Integration
             notificationHandler.Value = emailHandler.Value;
             notificationHandler.selectedKey = emailHandler.Key;
             var recipientEventsCrate = crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Single(c => c.Label == "AvailableRecipientEvents");
-            recipientEvent.Value = recipientEventsCrate.Content.Fields[0].Value;
-            recipientEvent.selectedKey = recipientEventsCrate.Content.Fields[0].Key;
+            recipientEvent.Value = recipientEventsCrate.Content.Fields[1].Value;
+            recipientEvent.selectedKey = recipientEventsCrate.Content.Fields[1].Key;
 
             using (var updater = _crate.UpdateStorage(this.solution))
             {
@@ -184,14 +184,14 @@ namespace terminalDocuSignTests.Integration
             //from now on our solution should have followup crate structure
             Assert.True(this.solution.ChildrenActions.Length == 5, "Solution child actions failed to create.");
 
-            Assert.True(this.solution.ChildrenActions.Any(a => a.Name == "Monitor Docusign Envelope Activity" && a.Ordering == 1));
-            Assert.True(this.solution.ChildrenActions.Any(a => a.Name == "Set Delay" && a.Ordering == 2));
-            Assert.True(this.solution.ChildrenActions.Any(a => a.Name == "Query Fr8 Warehouse" && a.Ordering == 3));
-            Assert.True(this.solution.ChildrenActions.Any(a => a.Name == "Test Incoming Data" && a.Ordering == 4));
-            Assert.True(this.solution.ChildrenActions.Any(a => a.Name == notificationHandler.selectedKey && a.Ordering == 5));
+            Assert.True(this.solution.ChildrenActions.Any(a => a.Label == "Monitor Docusign Envelope Activity" && a.Ordering == 1));
+            Assert.True(this.solution.ChildrenActions.Any(a => a.Label == "Set Delay" && a.Ordering == 2));
+            Assert.True(this.solution.ChildrenActions.Any(a => a.Label == "Query Fr8 Warehouse" && a.Ordering == 3));
+            Assert.True(this.solution.ChildrenActions.Any(a => a.Label == "Test Incoming Data" && a.Ordering == 4));
+            Assert.True(this.solution.ChildrenActions.Any(a => a.Label == notificationHandler.selectedKey && a.Ordering == 5));
 
             //let's configure email settings
-            var emailActivity = this.solution.ChildrenActions.Single(a => a.Name == notificationHandler.selectedKey && a.Ordering == 5);
+            var emailActivity = this.solution.ChildrenActions.Single(a => a.Label == notificationHandler.selectedKey && a.Ordering == 5);
             //let's configure this
             emailActivity = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure?id=" + emailActivity.Id, emailActivity);
             var emailCrateStorage = _crate.GetStorage(emailActivity);
@@ -202,8 +202,8 @@ namespace terminalDocuSignTests.Integration
             var emailBody = (TextSource)emailControlsCrate.Content.Controls.Single(c => c.Name == "EmailBody");
             
             emailAddress.ValueSource = "specific";
-            emailAddress.Value = "integration_test_runner@fr8.company";
-            emailAddress.TextValue = "integration_test_runner@fr8.company";
+            emailAddress.Value = "freight.testing@gmail.com";
+            emailAddress.TextValue = "freight.testing@gmail.com";
 
             emailSubject.ValueSource = "specific";
             emailSubject.Value = "Fr8-RichDocumentNotificationsTest";
@@ -250,9 +250,10 @@ namespace terminalDocuSignTests.Integration
             //
             // Delete plan
             //
-            await HttpDeleteAsync(baseUrl + "routes?id=" + plan.Id);
+            //await HttpDeleteAsync(baseUrl + "routes?id=" + plan.Id);
 
             EmailAssert.RecentMsgThreshold = TimeSpan.FromSeconds(45);
+            EmailAssert._timeout = TimeSpan.FromSeconds(45);
             // Verify that test email has been received
             EmailAssert.EmailReceived("fr8ops@fr8.company", "Fr8-RichDocumentNotificationsTest");
             
