@@ -103,7 +103,7 @@ namespace terminalSendGrid.Services
                 if (headers.Any())
                     mailMessage.AddHeaders(headers);
                 if (mailer.Footer.Any())
-                    mailMessage.EnableFooter(mailer.Footer);
+                    mailMessage.EnableFooter(null, mailer.Footer);
 
                 if (!string.IsNullOrEmpty(mailer.TemplateName))
                 {
