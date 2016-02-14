@@ -373,6 +373,7 @@
     <Compile Include="Controllers\Api\ManifestsController.cs" />
     <Compile Include="Controllers\Api\RoutesController.cs" />
     <Compile Include="Controllers\Api\TerminalsController.cs" />
+    <Compile Include="Controllers\CompanyController.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
     <Compile Include="Controllers\ServicesController.cs" />
     <Compile Include="Controllers\SupportController.cs" />
@@ -915,6 +916,7 @@
     <Content Include="Views\Services\GoogleApps.cshtml" />
     <Content Include="Views\Support\Index.cshtml" />
     <Content Include="Views\AngularTemplate\ChangePassword.cshtml" />
+    <Content Include="Views\Company\Jobs.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
