@@ -69,7 +69,7 @@ namespace HubWeb.Controllers
                 webServiceList = _activityTemplate.GetQuery()
                     .Where(x => x.ActivityTemplateState == ActivityTemplateState.Active)
                     .Where(x => categories == null || categories.Contains(x.Category))
-                    .Where(x => x.ClientVisibility == null || x.ClientVisibility == true)
+                    .Where(x => x.ClientVisibility == null || x.ClientVisibility.Value == true)
 			        .GroupBy(x => x.WebService, x => x, (key, group) => new
 			        {
 			            WebService = key,
