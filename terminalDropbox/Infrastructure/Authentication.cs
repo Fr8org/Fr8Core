@@ -47,7 +47,10 @@ namespace terminalDropbox.Infrastructure
             string code;
             string state;
             ParseCodeAndState(externalAuthDTO.RequestQueryString, out code, out state);
-            OAuth2Response response = (OAuth2Response)Task.Run(() => GetAuthToken(code)).Result;
+            OAuth2Response response = (OAuth2Response)await GetAuthToken(code);
+
+            if (response == null)
+                throw new ArgumentNullException("Unable to get authentication token in dropbox.");
 
             string externalId = "";
             using (var dbx = new DropboxClient(response.AccessToken))
@@ -63,14 +66,25 @@ namespace terminalDropbox.Infrastructure
             };
         }
 
-        private async Task<object> GetAuthToken(string code)
+        private async Task<OAuth2Response> GetAuthToken(string code)
         {
 
-            return await DropboxOAuth2Helper.ProcessCodeFlowAsync(
-                  code,
-                  dropboxAuthAppKey,
-                  dropboxAuthAppSecret,
-                  RedirectURI);
+            OAuth2Response response = null;
+
+            try
+            {
+                response = await DropboxOAuth2Helper.ProcessCodeFlowAsync(
+                          code,
+                          dropboxAuthAppKey,
+                          dropboxAuthAppSecret,
+                          RedirectURI);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message, ex.InnerException);
+            }
+
+            return response;
         }
 
         private string CreateAuthUrl(string externalStateValue)
