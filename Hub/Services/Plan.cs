@@ -314,6 +314,11 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var root = uow.PlanRepository.GetById<PlanDO>(id);
+                if (root == null)
+                {
+                    return null;
+                }
+
                 return root.GetDescendantsOrdered().OfType<ActivityDO>().FirstOrDefault(
                     x =>
                     {

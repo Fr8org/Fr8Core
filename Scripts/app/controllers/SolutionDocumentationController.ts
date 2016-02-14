@@ -37,7 +37,7 @@ module dockyard.controllers {
 
                     var activityDTO = new model.ActivityDTO("", "", "");
                     activityDTO.toActionVM();
-                    activityDTO.documentationSupport = "MainPage";
+                    activityDTO.documentation = "MainPage";
                     activityDTO.activityTemplate = activityTemplate;
 
                     SolutionDocumentationService.getSolutionDTO(activityDTO).$promise.then(data=> {

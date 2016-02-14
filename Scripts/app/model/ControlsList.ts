@@ -14,6 +14,7 @@
         errorMessage : string;
         events: Array<ControlEvent>;
         value: string;
+        isFocused: boolean;
     }
 
     export class ControlEvent {

@@ -8,6 +8,7 @@ using OpenPop.Pop3;
 using System.Configuration;
 using OpenPop.Mime;
 using OpenPop.Mime.Header;
+using System.Diagnostics;
 
 namespace HealthMonitor.Utility
 {
@@ -28,6 +29,8 @@ namespace HealthMonitor.Utility
 
         public static void InitEmailAssert(string testEmail, string hostname, int port, bool useSsl, string username, string password)
         {
+            Debug.AutoFlush = true;
+
             _testEmail = testEmail;
             _hostname = hostname;
             _port = port;
@@ -43,7 +46,7 @@ namespace HealthMonitor.Utility
             {
                 throw new InvalidOperationException("Call Assert.InitEmailAssert(...) first.");
             }
-            System.Diagnostics.Debug.WriteLine("Expected Address: " + expectedFromAddr + ", Suject: " + expectedSubject);
+            Debug.WriteLine("Expected Address: " + expectedFromAddr + ", Suject: " + expectedSubject);
 
             DateTime methodCalledTime = DateTime.UtcNow;
 
@@ -72,13 +75,13 @@ namespace HealthMonitor.Utility
         private static bool CheckEmail(Pop3Client client, string expectedFromAddr, string expectedSubject, DateTime startTime)
         {
             MessageHeader msg = null;
-            System.Diagnostics.Debug.WriteLine("=== Checking email ===");
-            System.Diagnostics.Debug.WriteLine("Start time: " + startTime.ToLongDateString());
+            Debug.WriteLine("=== Checking email ===");
+            Debug.WriteLine("Start time: " + startTime.ToLongTimeString());
             int messageCount = client.GetMessageCount();
             for (int i = messageCount; i > 0; i--)
             {
                 msg = client.GetMessageHeaders(i);
-                System.Diagnostics.Debug.WriteLine(msg.DateSent.ToLongTimeString() + "  " + msg.From.Address + "  " + msg.Subject);
+                Debug.WriteLine(msg.DateSent.ToLongTimeString() + "  " + msg.From.Address + "  " + msg.Subject);
                 if (ValidateTime(RecentMsgThreshold, startTime, msg.DateSent))
                 {
                     if (ValidateConditions(expectedFromAddr, expectedSubject, msg))

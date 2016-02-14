@@ -52,5 +52,8 @@ namespace Data.Interfaces.DataTransferObjects
       
         [JsonProperty("showDocumentation")]
         public ActivityResponseDTO ShowDocumentation { get; set; }
+
+        [JsonProperty("clientVisibility")]
+        public bool ClientVisibility { get; set; } = true;
     }
 }

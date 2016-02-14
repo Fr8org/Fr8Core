@@ -99,9 +99,11 @@ namespace terminalSendGrid.Services
                 }
 
                 var headers = new Dictionary<String, String>();
-
+                
                 if (headers.Any())
                     mailMessage.AddHeaders(headers);
+                if (mailer.Footer.Any())
+                    mailMessage.EnableFooter(null, mailer.Footer);
 
                 if (!string.IsNullOrEmpty(mailer.TemplateName))
                 {
