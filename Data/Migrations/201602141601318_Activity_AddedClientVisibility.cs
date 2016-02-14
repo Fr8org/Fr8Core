@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class Activity_AddedClientVisiblity : DbMigration
+    public partial class Activity_AddedClientVisibility : DbMigration
     {
         public override void Up()
         {
