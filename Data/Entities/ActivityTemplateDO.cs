@@ -102,6 +102,6 @@ namespace Data.Entities
 
 		public virtual WebServiceDO WebService { get; set; }
 
-        public bool ClientVisibility { get; set; }
+        public bool? ClientVisibility { get; set; }
     }
 }
