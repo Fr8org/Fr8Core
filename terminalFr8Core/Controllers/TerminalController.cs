@@ -81,8 +81,7 @@ namespace terminalFr8Core.Controllers
                 Terminal = terminal,
                 Version = "1",
                 MinPaneWidth = 330,
-                WebService = webService,
-                ClientVisibility = true
+                WebService = webService
             });
 
             result.Add(new ActivityTemplateDTO
