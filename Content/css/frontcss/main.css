@@ -451,6 +451,7 @@ header#site-header {
         border-bottom-color: #697882;
     }
 /*Company Page Style*/
+
 /*Vision Section*/
 #vision .inner-bg {
     background-image: url('/Content/img/backgrounds/contact-bg.jpg');
@@ -472,6 +473,16 @@ header#site-header {
         font-size: 1.5rem;
     }
 /*Team Section*/
+.bio {
+    font-size: 0.75em;
+}
+
+.team-member .col-xs-2 .img {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
 #team .inner-bg {
     background-image: url('/Content/img/backgrounds/contact-bg.jpg');
 }
