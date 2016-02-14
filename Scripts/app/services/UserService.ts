@@ -9,6 +9,7 @@ module dockyard.services {
     export interface IUserService extends ng.resource.IResourceClass<interfaces.IUserDTO> {
         getAll: () => Array<interfaces.IUserDTO>
         getCurrentUser: () => interfaces.IUserDTO
+        updatePassword: (data: { oldPassword: string, newPassword: string, confirmPassword: string }) => any;
     }
 
     app.factory('UserService', [
@@ -23,6 +24,16 @@ module dockyard.services {
                 method: 'GET',
                 isArray: false,
                 url: '/api/user/getCurrent'
+            },
+            updatePassword: {
+                method: 'POST',
+                isArray: false,
+                url: '/api/user/updatePassword/',
+                params: {
+                    oldPassword: '@oldPassword',
+                    newPassword: '@newPassword',
+                    confirmPassword: '@confirmPassword'
+                }
             }
         })
     ]);

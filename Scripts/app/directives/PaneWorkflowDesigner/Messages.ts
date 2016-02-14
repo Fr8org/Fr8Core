@@ -135,16 +135,6 @@ module dockyard.directives.paneWorkflowDesigner {
     export class TemplateSelectedEventArgs {
     }
 
-    export class ActionNameUpdatedEventArgs {
-        public id: string;
-        public name: string;
-
-        constructor(id: string, name: string) {
-            this.id = id;
-            this.name = name;
-        }
-    }
-
     export class ReplaceTempIdForProcessNodeTemplateEventArgs {
         public tempId: number;
         public id: number;

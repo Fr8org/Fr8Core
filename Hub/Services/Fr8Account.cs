@@ -14,6 +14,7 @@ using Data.States;
 using Hub.Security;
 using Utilities;
 using System.Web;
+using System.Net.Http;
 
 namespace Hub.Services
 {
@@ -26,6 +27,18 @@ namespace Hub.Services
             {
                 uow.UserRepository.UpdateUserCredentials(dockyardAccountDO, password: password);
             }
+        }
+
+        public bool IsValidHashedPassword(Fr8AccountDO dockyardAccountDO, string password)
+        {
+            if (dockyardAccountDO != null)
+            {
+                var passwordHasher = new PasswordHasher();
+                return (passwordHasher.VerifyHashedPassword(dockyardAccountDO.PasswordHash, password) ==
+                    PasswordVerificationResult.Success);
+            }
+            else
+                return false;
         }
 
         /// <summary>
@@ -190,7 +203,7 @@ namespace Hub.Services
             {
                 return uow.ContainerRepository.GetQuery().Where
                     (r => r.ContainerState == ContainerState.Executing
-                          & r.Plan.Fr8Account.Id == userId).ToList();
+                          && r.Plan.Fr8Account.Id == userId).ToList();
             }
         }
 
@@ -252,7 +265,7 @@ namespace Hub.Services
             }
         }
 
-        public Task<LoginStatus> ProcessLoginRequest(string username, string password, bool isPersistent)
+        public Task<LoginStatus> ProcessLoginRequest(string username, string password, bool isPersistent, HttpRequestMessage request = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -387,7 +400,7 @@ namespace Hub.Services
             IEnumerable<PlanDO> activeRoutes;
             using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var routeQuery = unitOfWork.PlanRepository.GetQuery().Include(i => i.Fr8Account);
+                var routeQuery = unitOfWork.PlanRepository.GetPlanQueryUncached().Include(i => i.Fr8Account);
 
                 routeQuery
                     .Where(pt => pt.RouteState == RouteState.Active)//1.

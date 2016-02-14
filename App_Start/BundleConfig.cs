@@ -196,6 +196,7 @@ namespace HubWeb.App_Start
                 .Include("~/bower_components/angular-ui-select/dist/select.min.js")
                 .Include("~/bower_components/angular-applicationinsights/dist/angular-applicationinsights.min.js")
                 .Include("~/bower_components/dndLists/angular-drag-and-drop-lists.min.js")
+                .Include("~/bower_components/angular-messages/angular-messages.min.js")
             );
 
 #if RELEASE || DEV

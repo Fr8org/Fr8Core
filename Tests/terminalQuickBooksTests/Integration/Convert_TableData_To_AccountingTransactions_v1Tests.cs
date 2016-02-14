@@ -37,7 +37,7 @@ namespace terminalQuickBooksTests.Integration
                 HealthMonitor_FixtureData.Convert_TableData_To_AccountingTransactions_v1_InitialConfiguration_Fr8DataDTO();
             var curAccountsCrate = HealthMonitor_FixtureData.ChartOfAccounts_Test1();
             var curTableDataCrate = HealthMonitor_FixtureData.StandardTableData_Test1();
-            AddUpstreamCrate(dataDTO.ActivityDTO, curTableDataCrate, "DocuSignTableDataMappedToQuickbooks");
+            AddUpstreamCrate(dataDTO, curTableDataCrate, "DocuSignTableDataMappedToQuickbooks");
             using (var updater = Crate.UpdateStorage(dataDTO.ActivityDTO))
             {
                 updater.CrateStorage.Add(Data.Crates.Crate.FromContent("ChartOfAccounts", curAccountsCrate));
@@ -47,6 +47,9 @@ namespace terminalQuickBooksTests.Integration
                     configureUrl,
                     dataDTO
                 );
+
+            dataDTO.ActivityDTO = firstResponseActionDTO;
+
             using (var updater = Crate.UpdateStorage(firstResponseActionDTO))
             {
                 var controls = updater.CrateStorage
@@ -67,9 +70,8 @@ namespace terminalQuickBooksTests.Integration
                 memoTextBox.Value = "The testing transactions";
                 updater.CrateStorage.Remove<StandardAccountingTransactionCM>();
                 updater.CrateStorage.Add(Data.Crates.Crate.FromContent("StandardConfigurationControlsCM", controls));
-                AddOperationalStateCrate(firstResponseActionDTO, new OperationalStateCM());
+                AddOperationalStateCrate(dataDTO, new OperationalStateCM());
             }
-            dataDTO.ActivityDTO = firstResponseActionDTO;
             var payloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
             AssertControls(Crate.GetByManifest<StandardAccountingTransactionCM>(payloadDTO));
         }

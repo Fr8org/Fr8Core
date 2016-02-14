@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Data.Entities;
 using NUnit.Framework;
 using StructureMap;
 using Data.Interfaces;
@@ -21,16 +22,15 @@ namespace DockyardTest.Entities
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var plan = FixtureData.TestRoute2();
-                uow.PlanRepository.Add(plan);
-
                 var subroute = FixtureData.TestSubrouteDO2();
-                uow.SubrouteRepository.Add(subroute);
+
+                plan.ChildNodes.Add(subroute);
+                uow.PlanRepository.Add(plan);
                 plan.StartingSubroute = subroute;
 
                 uow.SaveChanges();
 
-                var result = uow.PlanRepository.GetQuery()
-                    .SingleOrDefault(pt => pt.StartingSubrouteId == subroute.Id);
+                var result = uow.PlanRepository.GetById<PlanDO>(plan.Id);//.SingleOrDefault(pt => pt.StartingSubrouteId == subroute.Id);
 
                 Assert.AreEqual(subroute.Id, result.StartingSubroute.Id);
                 Assert.AreEqual(subroute.Name, result.StartingSubroute.Name);

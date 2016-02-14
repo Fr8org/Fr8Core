@@ -142,7 +142,7 @@ namespace terminalDocuSign.Tests.Actions
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var activityDO = uow.ActivityRepository.GetByKey(activityId);
+                var activityDO = uow.PlanRepository.GetById<ActivityDO>(activityId);
                 var upstreamActions = _activity
                     .GetUpstreamActivities(uow, activityDO)
                     .OfType<ActivityDO>()

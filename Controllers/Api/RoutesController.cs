@@ -25,6 +25,7 @@ using Data.Interfaces.DataTransferObjects.Helpers;
 using Utilities.Interfaces;
 using HubWeb.Infrastructure;
 using Data.Interfaces.Manifests;
+using System.Text;
 
 namespace HubWeb.Controllers
 {
@@ -98,10 +99,11 @@ namespace HubWeb.Controllers
                     return BadRequest("Some of the request data is invalid");
                 }
                 var curPlanDO = Mapper.Map<RouteEmptyDTO, PlanDO>(routeDto, opts => opts.Items.Add("ptid", routeDto.Id));
-                curPlanDO.Fr8Account = _security.GetCurrentAccount(uow);
+
                 _plan.CreateOrUpdate(uow, curPlanDO, updateRegistrations);
+
                 uow.SaveChanges();
-                var result = RouteMappingHelper.MapRouteToDto(uow, curPlanDO);
+                var result = RouteMappingHelper.MapRouteToDto(uow, uow.PlanRepository.GetById<PlanDO>(curPlanDO.Id));
                 return Ok(result);
             }
         }
@@ -115,7 +117,7 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var plan = uow.PlanRepository.GetByKey(id);
+                var plan = uow.PlanRepository.GetById<PlanDO>(id);
                 var result = RouteMappingHelper.MapRouteToDto(uow, plan);
 
                 return Ok(result);
@@ -130,8 +132,7 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var activity = uow.ActivityRepository.GetByKey(id);
-                var plan = _plan.GetPlan(activity);
+                var plan = _plan.GetPlanByActivityId(uow, id);
                 var result = RouteMappingHelper.MapRouteToDto(uow, plan);
 
                 return Ok(result);
@@ -186,7 +187,7 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curPlanDO = uow.PlanRepository.GetByKey(id);
+                var curPlanDO = uow.PlanRepository.GetById<PlanDO>(id);
                 if (curPlanDO == null)
                 {
                     throw new ApplicationException("Unable to find plan with specified id.");
@@ -293,20 +294,17 @@ namespace HubWeb.Controllers
         }
 
         [HttpPost]
-        //[Route("deactivate")]
         [Fr8ApiAuthorize]
-        public async Task<IHttpActionResult> Deactivate(PlanDO curRoute)
+        public async Task<IHttpActionResult> Deactivate(Guid planId)
         {
             var eventManager = ObjectFactory.GetInstance<Event>();
-            string activityDTO = await _plan.Deactivate(curRoute.Id);
-            var routeDTO = Mapper.Map<RouteEmptyDTO>(curRoute);
-            await eventManager.Publish("RouteDeactivated", ObjectFactory.GetInstance<ISecurityServices>().GetCurrentUser(), curRoute.Id.ToString(), JsonConvert.SerializeObject(routeDTO).ToString(), "Success");
+            string activityDTO = await _plan.Deactivate(planId);
+            await eventManager.Publish("RouteDeactivated", ObjectFactory.GetInstance<ISecurityServices>().GetCurrentUser(), planId.ToString(), null, "Success");
 
             return Ok(activityDTO);
         }
 
         [HttpPost]
-        //[Route("find_objects/create")]
         [Fr8ApiAuthorize]
         public IHttpActionResult CreateFindObjectsRoute()
         {
@@ -322,7 +320,6 @@ namespace HubWeb.Controllers
         }
 
         [Fr8ApiAuthorize("Admin", "Customer")]
-        //[Route("run")]
         [HttpPost]
         public async Task<IHttpActionResult> Run(Guid planId, [FromBody]PayloadVM model)
         {
@@ -331,7 +328,7 @@ namespace HubWeb.Controllers
             bool inActive = false;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var routeDO = uow.PlanRepository.GetByKey(planId);
+                var routeDO = uow.PlanRepository.GetById<PlanDO>(planId);
 
                 if (routeDO.RouteState == RouteState.Inactive)
                     inActive = true;
@@ -343,7 +340,6 @@ namespace HubWeb.Controllers
                 await eventManager.Publish("RouteActivated", ObjectFactory.GetInstance<ISecurityServices>().GetCurrentAccount
                     (ObjectFactory.GetInstance<IUnitOfWork>()).Id.ToString(), planId.ToString(), JsonConvert.SerializeObject(planId).ToString(), "Success");
             }
-
 
             //RUN
             CrateDTO curCrateDto;
@@ -367,7 +363,7 @@ namespace HubWeb.Controllers
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var planDO = uow.PlanRepository.GetByKey(planId);
+                var planDO = uow.PlanRepository.GetById<PlanDO>(planId);
 
                 try
                 {
@@ -396,14 +392,14 @@ namespace HubWeb.Controllers
                         _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, message);
 
                         var containerDTO = Mapper.Map<ContainerDTO>(containerDO);
-                        
+
                         await eventManager.Publish("ContainerLaunched"
-                            , planDO.Fr8Account.Id
+                            , planDO.Fr8AccountId
                             , planDO.Id.ToString()
                             , JsonConvert.SerializeObject(containerDTO).ToString(), "Success");
 
                         await eventManager.Publish("ContainerExecutionComplete"
-                            , planDO.Fr8Account.Id
+                            , planDO.Fr8AccountId
                             , planDO.Id.ToString()
                             , JsonConvert.SerializeObject(containerDTO).ToString(), "Success");
 
@@ -414,9 +410,8 @@ namespace HubWeb.Controllers
                 }
                 catch (ErrorResponseException exception)
                 {
-                    string message = String.Format("Plan \"{0}\" failed. {1}", planDO.Name, exception.Message);
-
-                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, message);
+                    //this response contains details about the error that happened on some terminal and need to be shown to client
+                    return Ok(exception.ContainerDTO);
                 }
                 catch (Exception e)
                 {

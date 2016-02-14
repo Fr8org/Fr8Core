@@ -5,7 +5,7 @@ using Data.Interfaces;
 
 namespace Data.Repositories
 {
-    public interface IAuthorizationTokenRepository : IGenericRepository<AuthorizationTokenDO>
+    public interface IAuthorizationTokenRepository
     {
         IQueryable<AuthorizationTokenDO> GetPublicDataQuery();
         void Add(AuthorizationTokenDO newToken);
@@ -14,6 +14,7 @@ namespace Data.Repositories
         AuthorizationTokenDO FindTokenByExternalState(string externalStateToken, int terminalId);
         AuthorizationTokenDO FindTokenByExternalAccount(string externalAccountId, int terminalId, string userId);
         AuthorizationTokenDO FindTokenById(string id);
+        AuthorizationTokenDO FindTokenById(Guid? id);
         int Count();
     }
 }

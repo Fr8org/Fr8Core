@@ -66,7 +66,7 @@ namespace TerminalBase.Infrastructure.Behaviors
 
             var textSources = controlsCM
                 .Controls
-                .Where(x => IsBehaviorControl(x))
+                .Where(IsBehaviorControl)
                 .OfType<TextSource>()
                 .ToList();
 
@@ -96,24 +96,24 @@ namespace TerminalBase.Infrastructure.Behaviors
 
             var textSources = controlsCM
                 .Controls
-                .Where(x => IsBehaviorControl(x))
+                .Where(IsBehaviorControl)
                 .OfType<TextSource>();
 
             foreach (var textSource in textSources)
             {
                 var fieldId = GetFieldId(textSource);
                 string value = null;
-
                 try
                 {
                     value = textSource.GetValue(payload ?? _crateStorage);
                 }
                 catch { }
-
                 result.Add(fieldId, value);
             }
 
             return result;
         }
+
+        
     }
 }

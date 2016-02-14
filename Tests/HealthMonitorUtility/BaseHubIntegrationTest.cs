@@ -16,6 +16,8 @@ using Data.Constants;
 using Data.Interfaces.DataTransferObjects.Helpers;
 using StructureMap;
 using System.Net.Http;
+using System.Net;
+using System.Linq;
 
 namespace HealthMonitor.Utility
 {
@@ -27,21 +29,26 @@ namespace HealthMonitor.Utility
         private string terminalSecret;
         private string terminalId;
         HttpClient _httpClient;
+        protected string _baseUrl;
 
-        protected string TerminalSecret {
-            get 
+        protected string TerminalSecret
+        {
+            get
             {
                 return terminalSecret ?? (terminalSecret = ConfigurationManager.AppSettings[TerminalName + "TerminalSecret"]);
             }
         }
-        protected string TerminalId {
+        protected string TerminalId
+        {
             get
             {
                 return terminalId ?? (terminalId = ConfigurationManager.AppSettings[TerminalName + "TerminalId"]);
             }
         }
+
         protected string TestUserEmail = "integration_test_runner@fr8.company";
         protected string TestUserPassword = "fr8#s@lt!";
+        protected string TestEmail;
 
         public BaseHubIntegrationTest()
         {
@@ -52,13 +59,25 @@ namespace HealthMonitor.Utility
             // to ensure the presense of the authentication cookie. 
             _httpClient = new HttpClient();
             _httpClient.BaseAddress = GetHubBaseUrl();
+            _httpClient.Timeout = TimeSpan.FromMinutes(2);
 
             _crate = new CrateManager();
             _hmacService = new Fr8HMACService();
-
-            LoginUser(TestUserEmail, TestUserPassword).Wait();
+            _baseUrl = GetHubApiBaseUrl();
             _restfulServiceClient = new RestfulServiceClient(_httpClient);
-        }   
+
+            // Get auth cookie from the Hub and save it to HttpClient's internal cookie storage
+            LoginUser(TestUserEmail, TestUserPassword).Wait();
+
+            // Initailize EmailAssert utility.
+            string TestEmail = ConfigurationManager.AppSettings["TestEmail"];
+            string hostname = ConfigurationManager.AppSettings["TestEmail_Pop3Server"];
+            int port = int.Parse(ConfigurationManager.AppSettings["TestEmail_Port"]);
+            bool useSsl = ConfigurationManager.AppSettings["TestEmail_UseSsl"] == "true" ? true : false;
+            string username = ConfigurationManager.AppSettings["TestEmail_Username"];
+            string password = ConfigurationManager.AppSettings["TestEmail_Password"];
+            //EmailAssert.InitEmailAssert(TestEmail, hostname, port, useSsl, username, password);
+        }
         public abstract string TerminalName { get; }
 
 
@@ -118,7 +137,12 @@ namespace HealthMonitor.Utility
         public async Task<TResponse> HttpPostAsync<TRequest, TResponse>(string url, TRequest request)
         {
             var uri = new Uri(url);
-            return await _restfulServiceClient.PostAsync<TRequest, TResponse>(uri, request, null, await GetHMACHeader(uri, "testUser", request));
+            return await _restfulServiceClient.PostAsync<TRequest, TResponse>(uri, request, null, null);
+        }
+        public async Task HttpDeleteAsync(string url)
+        {
+            var uri = new Uri(url);
+            await _restfulServiceClient.DeleteAsync(uri, null, null);
         }
         public async Task<TResponse> HttpGetAsync<TResponse>(string url)
         {
@@ -128,11 +152,16 @@ namespace HealthMonitor.Utility
 
         private async Task LoginUser(string email, string password)
         {
+            // The functions below re using ASP.NET MVC endpoi9nts to authenticate the user. 
+            // Since we cannot use them in the self-hosted mode, we use WebAPI based 
+            // authentication instead. 
+
             // Get login page and extract request validation token
-            var antiFogeryToken = await GetVerificationToken(_httpClient);
+            //var antiFogeryToken = await GetVerificationToken(_httpClient);
 
             // Login user
-            await Authenticate(email, password, antiFogeryToken, _httpClient);
+            //await Authenticate(email, password, antiFogeryToken, _httpClient);
+            await AuthenticateWebApi(email, password);
         }
 
         private Uri GetHubBaseUrl()
@@ -141,6 +170,13 @@ namespace HealthMonitor.Utility
             var hubBaseUrl = new Uri(hubApiBaseUrl.Scheme + "://" + hubApiBaseUrl.Host + ":" + hubApiBaseUrl.Port);
             return hubBaseUrl;
         }
+
+        private async Task AuthenticateWebApi(string email, string password)
+        {
+            await HttpPostAsync<string, object>(_baseUrl
+                + string.Format("authentication/login?username={0}&password={1}", Uri.EscapeDataString(email), Uri.EscapeDataString(password)), null);
+        }
+
 
         private async Task Authenticate(string email, string password, string verificationToken, HttpClient httpClient)
         {

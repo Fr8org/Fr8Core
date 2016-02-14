@@ -256,7 +256,7 @@ namespace terminalFr8Core.Actions
 
                 var query = queryCM.Queries[0];
 
-                conditions = query.Criteria;
+                conditions = query.Criteria ?? new List<FilterConditionDTO>();
                 selectedObjectId = ExtractUpstreamObjectId(query);
             }
             else
@@ -321,7 +321,13 @@ namespace terminalFr8Core.Actions
 
                 var queryBuilder = MTSearchHelper.CreateQueryProvider(manifestType);
                 var converter = CrateManifestToRowConverter(manifestType);
-                var foundObjects = queryBuilder.Query(uow, authTokenDO.UserID, conditions).ToArray();
+                var foundObjects = queryBuilder.Query(
+                    uow,
+                    authTokenDO.UserID,
+                    // Currently MT supports only EQ and NEQ operators, since all fields are strings.
+                    conditions.Where(x => x.Operator == "eq" || x.Operator == "neq").ToList()
+                )
+                .ToArray();
 
                 var searchResult = new StandardPayloadDataCM();
 

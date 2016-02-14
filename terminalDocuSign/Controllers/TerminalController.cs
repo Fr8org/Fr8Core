@@ -158,7 +158,8 @@ namespace terminalDocuSign.Controllers
                 NeedsAuthentication = true,
                 Terminal = terminal,
                 WebService = webService,
-                MinPaneWidth = 380
+                MinPaneWidth = 380,
+                Tags = "HideChildren"
             };
 
             var searchDocusignHistory = new ActivityTemplateDTO

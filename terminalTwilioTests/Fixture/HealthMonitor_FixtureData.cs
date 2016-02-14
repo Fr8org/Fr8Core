@@ -37,11 +37,9 @@ namespace terminalTwilioTests.Fixture
             var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Send_Via_Twilio",
                 Label = "Send Via Twilio",
                 AuthToken = null,
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
 
             return new Fr8DataDTO { ActivityDTO = activityDTO };
@@ -66,14 +64,15 @@ namespace terminalTwilioTests.Fixture
                     InitialLabel = "SMS Number",
                     Name = "SMS_Number",
                     Value = "15005550006",
-                    Label = "SMS Number",
+                    Label = "SMS Number"
                 },
-                new TextBox()
+                new TextSource()
                 {
-                    Label = "SMS Body",
+                    UpstreamSourceLabel = "Upstream Terminal-Provided Fields",
+                    InitialLabel = "SMS Body",
                     Name = "SMS_Body",
-                    Required = true,
-                    Value = "That is the message that we are sending"
+                    Value = "That is the message that we are sending",
+                    Label = "SMS Body"
                 }
             };
             return CrateManager.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());

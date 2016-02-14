@@ -46,10 +46,9 @@ namespace terminalTwilioTests.Integration
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             var controls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
             Assert.NotNull(controls.Controls[0] is TextSource);
-            Assert.NotNull(controls.Controls[1] is TextBox);
-            Assert.AreEqual("SMS Body", controls.Controls[1].Label);
-            Assert.AreEqual("SMS_Body", controls.Controls[1].Name);
+            Assert.NotNull(controls.Controls[1] is TextSource);
             Assert.AreEqual("Upstream Terminal-Provided Fields", controls.Controls[0].Source.Label);
+            Assert.AreEqual("Upstream Terminal-Provided Fields", controls.Controls[1].Source.Label);
             Assert.AreEqual(false, controls.Controls[0].Selected);
         }
         /// <summary>
@@ -64,7 +63,7 @@ namespace terminalTwilioTests.Integration
             //Act
             //OperationalStateCM crate is required to be added,
             //as upon return the Run method takes this crate and updates the status to "Success"
-            AddOperationalStateCrate(dataDTO.ActivityDTO, new OperationalStateCM());
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
             var payloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(
                 runUrl,
                 dataDTO
@@ -94,18 +93,23 @@ namespace terminalTwilioTests.Integration
             var crateManager = new CrateManager();
             using (var updater = crateManager.UpdateStorage(responseActionDTO))
             {
-                var curTextSource =
+                var curNumberTextSource =
                     (TextSource)
                         updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0];
-                curTextSource.ValueSource = "specific";
-                curTextSource.TextValue = "+15005550006";
-                updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[1].Value =
-                    "That is the body of the message";
+                curNumberTextSource.ValueSource = "specific";
+                curNumberTextSource.TextValue = "+15005550006";
+
+                var curBodyTextSource =
+                   (TextSource)
+                       updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[1];
+                curBodyTextSource.ValueSource = "specific";
+                curBodyTextSource.TextValue = "That is the body of the message";
             }
+            dataDTO.ActivityDTO = responseActionDTO;
             //OperationalStateCM crate is required to be added,
             //as upon return the Run method takes this crate and updates the status to "Success"
-            AddOperationalStateCrate(responseActionDTO, new OperationalStateCM());
-            dataDTO.ActivityDTO = responseActionDTO;
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
+            
             var payloadDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(runUrl, dataDTO);
             //Assert
             //After Configure Test
@@ -115,10 +119,9 @@ namespace terminalTwilioTests.Integration
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             var controls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
             Assert.NotNull(controls.Controls[0] is TextSource);
-            Assert.NotNull(controls.Controls[1] is TextBox);
-            Assert.AreEqual("SMS Body", controls.Controls[1].Label);
-            Assert.AreEqual("SMS_Body", controls.Controls[1].Name);
+            Assert.NotNull(controls.Controls[1] is TextSource);
             Assert.AreEqual("Upstream Terminal-Provided Fields", controls.Controls[0].Source.Label);
+            Assert.AreEqual("Upstream Terminal-Provided Fields", controls.Controls[1].Source.Label);
             Assert.AreEqual(false, controls.Controls[0].Selected);
             //After Run Test
             var payload = Crate.FromDto(payloadDTO.CrateStorage).CrateContentsOfType<StandardPayloadDataCM>().Single();

@@ -32,6 +32,7 @@ namespace terminaBaselTests.Infrastructure
             _restfulServiceClient.Setup(r => r.GetAsync<StandardDesignTimeFieldsCM>(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()));
             ObjectFactory.Configure(cfg => cfg.For<IRestfulServiceClient>().Use(_restfulServiceClient.Object));
             IHubCommunicator _hubCommunicator = new DefaultHubCommunicator();
+            _hubCommunicator.Configure("sampleterminal");
 
             Guid id = Guid.NewGuid();
             CrateDirection direction = CrateDirection.Downstream;

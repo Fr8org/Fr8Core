@@ -17,6 +17,33 @@ namespace UtilitiesTesting.Fixtures
 {
     partial class FixtureData
     {
+        public static void AddTestActivityTemplate()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.TerminalRepository.Add(new TerminalDO
+                {
+                    Id = 1,
+                    Name = "testTerminal",
+                    Version = "v1",
+                    PublicIdentifier = "test",
+                    Secret = "test",
+                    TerminalStatus = 1
+                });
+                uow.SaveChanges();
+                uow.ActivityTemplateRepository.Add(GetTestActivityTemplateDO());
+                uow.SaveChanges();
+            }
+        }
+
+        public static ActivityTemplateDO GetTestActivityTemplateDO()
+        {
+            return new ActivityTemplateDO("Test", "test", "v1", "test", 1)
+            {
+                Id = 1
+            };
+        }
+
         public static void AddAuthorizationToken(Fr8AccountDO user, string externalAccountId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

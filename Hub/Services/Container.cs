@@ -23,13 +23,13 @@ namespace Hub.Services
 {
     public class Container : Hub.Interfaces.IContainer
     {
-        
+
         // Declarations
-        
+
         private readonly IProcessNode _processNode;
         private readonly IRouteNode _activity;
         private readonly ICrateManager _crate;
-        
+
         public Container()
         {
             _processNode = ObjectFactory.GetInstance<IProcessNode>();
@@ -56,6 +56,11 @@ namespace Hub.Services
             return operationalState.CurrentActivityResponse;
         }
 
+        public List<ContainerDO> LoadContainers(IUnitOfWork uow, PlanDO plan)
+        {
+            return uow.ContainerRepository.GetQuery().Where(x => x.PlanId == plan.Id).ToList();
+        }
+
         private string GetCurrentActivityErrorMessage(ContainerDO curContainerDO)
         {
             var storage = _crate.GetStorage(curContainerDO.CrateStorage);
@@ -80,6 +85,7 @@ namespace Hub.Services
             uow.SaveChanges();
         }
 
+
         private async Task ProcessCurrentActionResponse(IUnitOfWork uow, ContainerDO curContainerDo, ActivityResponseDTO response)
         {
             //extract the type value from the activity response
@@ -90,6 +96,7 @@ namespace Hub.Services
             {
                 case ActivityResponse.ExecuteClientAction:
                 case ActivityResponse.Success:
+                case ActivityResponse.ReProcessChildren:
                     //ResetActionResponse(uow, curContainerDo);
                     //do nothing
                     break;
@@ -101,17 +108,20 @@ namespace Hub.Services
                     break;
                 case ActivityResponse.Error:
                     //TODO retry activity execution until 3 errors??
-                    throw new ErrorResponseException(string.Format("Error on activity. {0}", GetCurrentActivityErrorMessage(curContainerDo)));
+                    //so we are able to show the specific error that is embedded inside the container we are sending back that container to client
+                    throw new ErrorResponseException(Mapper.Map<ContainerDO, ContainerDTO>(curContainerDo));
                 case ActivityResponse.RequestTerminate:
                     //FR-2163 - If action response requests for termination, we make the container as Completed to avoid unwanted errors.
                     curContainerDo.ContainerState = ContainerState.Completed;
                     var eventManager = ObjectFactory.GetInstance<Hub.Managers.Event>();
+                    var plan = uow.PlanRepository.GetById<PlanDO>(curContainerDo.PlanId);
+
                     await eventManager.Publish("ProcessingTerminatedPerActionResponse",
-                            curContainerDo.Plan.Fr8Account.Id, curContainerDo.Id.ToString(),
+                            plan.Fr8AccountId, curContainerDo.Id.ToString(),
                             JsonConvert.SerializeObject(Mapper.Map<ContainerDTO>(curContainerDo)), "Terminated");
                     break;
                 default:
-                    throw new Exception("Unknown activity state on activity with id " + curContainerDo.CurrentRouteNode.Id);
+                    throw new Exception("Unknown activity state on activity with id " + curContainerDo.CurrentRouteNodeId);
             }
         }
 
@@ -133,30 +143,35 @@ namespace Hub.Services
         private ActionState MoveToNextRoute(IUnitOfWork uow, ContainerDO curContainerDO, bool skipChildren)
         {
             var state = ActionState.InitialRun;
+            var currentNode = uow.PlanRepository.GetById<RouteNodeDO>(curContainerDO.CurrentRouteNodeId);
             
-            if (skipChildren || !_activity.HasChildren(curContainerDO.CurrentRouteNode))
+            // we need this to make tests wokring. If we leave currentroutenode not null, MockDB will restore CurrentRouteNodeId. 
+            // EF should just igone navigational porperty null value if corresponding foreign key is not null.
+            curContainerDO.CurrentRouteNode = null;
+
+            if (skipChildren || currentNode.ChildNodes.Count == 0)
             {
-                var nextSibling = _activity.GetNextSibling(curContainerDO.CurrentRouteNode);
+                var nextSibling = _activity.GetNextSibling(currentNode);
                 if (nextSibling == null)
                 {
-                    var parent = _activity.GetParent(curContainerDO.CurrentRouteNode);
-                    curContainerDO.CurrentRouteNode = parent;
-                    curContainerDO.CurrentRouteNodeId = parent != null ? parent.Id : (Guid?)null;
+                    curContainerDO.CurrentRouteNodeId = currentNode.ParentRouteNode != null ? currentNode.ParentRouteNode.Id : (Guid?)null;
+
+                   
+
                     state = ActionState.ReturnFromChildren;
                 }
                 else
                 {
-                    curContainerDO.CurrentRouteNode = nextSibling;
                     curContainerDO.CurrentRouteNodeId = nextSibling.Id;
                 }
                 
             }
             else
             {
-                var firstChild = _activity.GetFirstChild(curContainerDO.CurrentRouteNode);
-                curContainerDO.CurrentRouteNode = firstChild;
-                curContainerDO.CurrentRouteNodeId = curContainerDO.CurrentRouteNode.Id;
+                var firstChild = _activity.GetFirstChild(currentNode);
+                curContainerDO.CurrentRouteNodeId = firstChild.Id;
             }
+
             uow.SaveChanges();
 
             return state;
@@ -171,7 +186,7 @@ namespace Hub.Services
         /// <returns></returns>
         private async Task<ActivityResponseDTO> ProcessAction(IUnitOfWork uow, ContainerDO curContainerDO, ActionState state)
         {
-            await _activity.Process(curContainerDO.CurrentRouteNode.Id, state, curContainerDO);
+            await _activity.Process(curContainerDO.CurrentRouteNodeId.Value, state, curContainerDO);
             return GetCurrentActivityResponse(curContainerDO);
         }
 
@@ -222,21 +237,20 @@ namespace Hub.Services
 
             curContainerDO.ContainerState = ContainerState.Executing;
             uow.SaveChanges();
-            
 
-            if (curContainerDO.CurrentRouteNode == null)
+            if (curContainerDO.CurrentRouteNodeId == null)
             {
                 throw new ArgumentNullException("CurrentActivity is null. Cannot execute CurrentActivity");
             }
 
             var actionState = ActionState.InitialRun;
-            while (curContainerDO.CurrentRouteNode != null)
+            while (curContainerDO.CurrentRouteNodeId != null)
             {
                 var activityResponseDTO = await ProcessAction(uow, curContainerDO, actionState);
 
                 //extract ActivityResponse type from result
                 ActivityResponse activityResponse = ActivityResponse.Null;
-                if(activityResponseDTO != null)
+                if (activityResponseDTO != null)
                     Enum.TryParse(activityResponseDTO.Type, out activityResponse);
 
                 if (activityResponse == ActivityResponse.Success)
@@ -248,10 +262,10 @@ namespace Hub.Services
                     if (response != null && activityResponseDTO.TryParseResponseMessageDTO(out responseMessage))
                     {
                         if (responseMessage != null && !string.IsNullOrEmpty(responseMessage.Message))
-                        {
-                            break;
-                        }
+                    {
+                        break;
                     }
+                }
                 }
 
                 await ProcessCurrentActionResponse(uow, curContainerDO, activityResponseDTO);
@@ -274,14 +288,8 @@ namespace Hub.Services
                 throw new ApplicationException("UserId must not be null");
 
             var containerRepository = unitOfWork.ContainerRepository.GetQuery();
-
-            if (isAdmin)
-            {
-                return (id == null
-               ? containerRepository
-               : containerRepository.Where(container => container.Id == id)).ToList();
-            }
-
+            
+      
             return (id == null
                ? containerRepository.Where(container => container.Plan.Fr8Account.Id == account.Id)
                : containerRepository.Where(container => container.Id == id && container.Plan.Fr8Account.Id == account.Id)).ToList();

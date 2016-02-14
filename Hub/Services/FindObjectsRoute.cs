@@ -31,7 +31,6 @@ namespace Hub.Services
             var subroute = new SubrouteDO()
             {
                 Id = Guid.NewGuid(),
-                RootRouteNode = plan,
                 ParentRouteNode = plan
             };
 
@@ -39,10 +38,8 @@ namespace Hub.Services
             var connectToSqlAction = new ActivityDO()
             {
                 Id = Guid.NewGuid(),
-                ParentRouteNode = subroute,
                 Ordering = 1,
                 ActivityTemplateId = connectToSqlActivityTemplate.Id,
-                Name = connectToSqlActivityTemplate.Name,
                 Label = connectToSqlActivityTemplate.Name
             };
 
@@ -50,10 +47,8 @@ namespace Hub.Services
             var buildQueryAction = new ActivityDO()
             {
                 Id = Guid.NewGuid(),
-                ParentRouteNode = subroute,
                 Ordering = 2,
                 ActivityTemplateId = buildQueryActivityTemplate.Id,
-                Name = buildQueryActivityTemplate.Name,
                 Label = buildQueryActivityTemplate.Name
             };
 
@@ -61,10 +56,8 @@ namespace Hub.Services
             var executeSqlAction = new ActivityDO()
             {
                 Id = Guid.NewGuid(),
-                ParentRouteNode = subroute,
                 Ordering = 3,
                 ActivityTemplateId = executeSqlActivityTemplate.Id,
-                Name = executeSqlActivityTemplate.Name,
                 Label = executeSqlActivityTemplate.Name
             };
 
@@ -72,10 +65,8 @@ namespace Hub.Services
             var manageRouteAction = new ActivityDO()
             {
                 Id = Guid.NewGuid(),
-                ParentRouteNode = subroute,
                 Ordering = 4,
                 ActivityTemplateId = manageRouteActivityTemplate.Id,
-                Name = manageRouteActivityTemplate.Name,
                 Label = manageRouteActivityTemplate.Name
             };
 
@@ -86,12 +77,7 @@ namespace Hub.Services
             subroute.ChildNodes.Add(executeSqlAction);
             subroute.ChildNodes.Add(manageRouteAction);
 
-            uow.RouteNodeRepository.Add(plan);
-            uow.RouteNodeRepository.Add(subroute);
-            uow.RouteNodeRepository.Add(connectToSqlAction);
-            uow.RouteNodeRepository.Add(buildQueryAction);
-            uow.RouteNodeRepository.Add(executeSqlAction);
-            uow.RouteNodeRepository.Add(manageRouteAction);
+            uow.PlanRepository.Add(plan);
 
             return plan;
         }
@@ -99,8 +85,7 @@ namespace Hub.Services
         private string GenerateFindObjectsRouteName(
             IUnitOfWork uow, Fr8AccountDO account)
         {
-            var findObjectRoutes = uow.PlanRepository
-                .GetQuery()
+            var findObjectRoutes = uow.PlanRepository.GetPlanQueryUncached()
                 .Where(x => x.Fr8Account.Id == account.Id)
                 .Where(x => x.Name.StartsWith("FindObjects #"))
                 .ToList();

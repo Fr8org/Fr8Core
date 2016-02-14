@@ -198,10 +198,9 @@ namespace terminalAzureTests.Integration
                 updater.CrateStorage.Add(CreateConnectionStringCrate());
             }
 
-            AddOperationalStateCrate(fr8DataDTO.ActivityDTO, new OperationalStateCM());
+            AddOperationalStateCrate(fr8DataDTO, new OperationalStateCM());
 
-            AddPayloadCrate(
-               fr8DataDTO.ActivityDTO,
+            AddPayloadCrate(fr8DataDTO,
                new StandardPayloadDataCM(
                     new FieldDTO("Field1", "[Customer].[Physician]"),
                     new FieldDTO("Field2", "[Customer].[CurrentMedicalCondition]")
@@ -209,8 +208,7 @@ namespace terminalAzureTests.Integration
                "MappedFields"
             );
 
-            AddPayloadCrate(
-                fr8DataDTO.ActivityDTO,
+            AddPayloadCrate(fr8DataDTO,
                 new StandardPayloadDataCM(
                     new FieldDTO("Field1", "test physician"),
                     new FieldDTO("Field2", "teststring")

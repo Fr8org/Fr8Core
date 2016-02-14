@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Data.Control;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
@@ -205,13 +206,17 @@ namespace terminalFr8CoreTests.Integration
 
 			var requestActionDTO = CreateRequestActionFixture();
 
-			var responseActionDTO = HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, requestActionDTO).Result;
+            var dataDTO = new Fr8DataDTO { ActivityDTO = requestActionDTO };
+
+            var responseActionDTO = HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO).Result;
 
 			SetRoutesOptionSelected(responseActionDTO);
 
 			var runUrl = GetTerminalRunUrl();
 
-			AddPayloadCrate(responseActionDTO, new StandardFr8RoutesCM
+		    dataDTO.ActivityDTO = responseActionDTO;
+
+            AddPayloadCrate(dataDTO, new StandardFr8RoutesCM
 			{
 				CreateDate = DateTime.UtcNow,
 				LastUpdated = DateTime.UtcNow,
@@ -222,7 +227,7 @@ namespace terminalFr8CoreTests.Integration
 				SubRoutes = new List<SubrouteDTO>()
 			});
 
-			var runResponse = HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, requestActionDTO).Result;
+			var runResponse = HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO).Result;
 
 			Assert.NotNull(runResponse);
 		}
@@ -234,13 +239,17 @@ namespace terminalFr8CoreTests.Integration
 
 			var requestActionDTO = CreateRequestActionFixture();
 
-			var responseActionDTO = HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, requestActionDTO).Result;
+            var dataDTO = new Fr8DataDTO { ActivityDTO = requestActionDTO };
+
+            var responseActionDTO = HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO).Result;
 
 			SetContainersOptionSelected(responseActionDTO);
 
 			var runUrl = GetTerminalRunUrl();
 
-			AddPayloadCrate(responseActionDTO, new StandardFr8ContainersCM()
+            dataDTO.ActivityDTO = responseActionDTO;
+
+            AddPayloadCrate(dataDTO, new StandardFr8ContainersCM()
 			{
 				Name = "Some name",
 				Description = "Some description",
@@ -248,7 +257,7 @@ namespace terminalFr8CoreTests.Integration
 				CreatedDate = DateTime.UtcNow
 			});
 
-			var runResponse = HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, requestActionDTO).Result;
+			var runResponse = HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO).Result;
 
 			Assert.NotNull(runResponse);
 		}
@@ -272,10 +281,8 @@ namespace terminalFr8CoreTests.Integration
 			var requestActionDTO = new ActivityDTO
 			{
 				Id = Guid.NewGuid(),
-				Name = "Select_Fr8_Object",
 				Label = "Select Fr8 Object",
 				ActivityTemplate = activityTemplate,
-				ActivityTemplateId = activityTemplate.Id,
 				AuthToken = null
 			};
 
