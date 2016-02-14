@@ -22,6 +22,9 @@ namespace terminalDocuSign.Actions
 {
     public class Archive_DocuSign_Template_v1 : BaseDocuSignAction
     {
+        private const string SolutionName = "Archive DocuSign Template";
+        private const double SolutionVersion = 1.0;
+        private const string TerminalName = "DocuSign";
         private class ActionUi : StandardConfigurationControlsCM
         {
             public ActionUi()
@@ -50,7 +53,7 @@ namespace terminalDocuSign.Actions
         }
 
         private readonly DocuSignManager DocuSignManager;
-        
+
 
         public Archive_DocuSign_Template_v1()
         {
@@ -84,7 +87,7 @@ namespace terminalDocuSign.Actions
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             var confControls = GetConfigurationControls(curActivityDO);
-            var selectedTemplateField = (DropDownList) GetControl(confControls, "Available_Templates", ControlTypes.DropDownList);
+            var selectedTemplateField = (DropDownList)GetControl(confControls, "Available_Templates", ControlTypes.DropDownList);
             if (string.IsNullOrEmpty(selectedTemplateField.Value))
             {
                 return curActivityDO;
@@ -131,7 +134,7 @@ namespace terminalDocuSign.Actions
         }
         private async Task<ActivityDO> CreateStoreFileActivity(ActivityTemplateDTO template, ActivityDO parentAction)
         {
-            var activity = await HubCommunicator.CreateAndConfigureActivity(template.Id, CurrentFr8UserId, "Store File", 3,parentAction.Id);
+            var activity = await HubCommunicator.CreateAndConfigureActivity(template.Id, CurrentFr8UserId, "Store File", 3, parentAction.Id);
             return Mapper.Map<ActivityDO>(activity);
         }
 
@@ -167,7 +170,7 @@ namespace terminalDocuSign.Actions
             {
                 var confControls = GetConfigurationControls(updater.CrateStorage);
                 var fromDropdown = (DropDownList)GetControl(confControls, "Available_From_Manifests", ControlTypes.DropDownList);
-                
+
                 fromDropdown.Value = ((int)MT.DocuSignTemplate).ToString(CultureInfo.InvariantCulture);
                 fromDropdown.selectedKey = MT.DocuSignTemplate.GetEnumDisplayName();
             }
@@ -198,6 +201,44 @@ namespace terminalDocuSign.Actions
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             return Success(await GetPayload(curActivityDO, containerId));
+        }
+
+        /// <summary>
+        /// This method provides documentation in two forms:
+        /// SolutionPageDTO for general information and 
+        /// ActivityResponseDTO for specific Help on minicon
+        /// </summary>
+        /// <param name="activityDO"></param>
+        /// <param name="curDocumentation"></param>
+        /// <returns></returns>
+        public dynamic Documentation(ActivityDO activityDO, string curDocumentation)
+        {
+            if (curDocumentation.Contains("MainPage"))
+            {
+                var curSolutionPage = new SolutionPageDTO
+                {
+                    Name = SolutionName,
+                    Version = SolutionVersion,
+                    Terminal = TerminalName,
+                    Body = @"<p>This is Archive DocuSign Template solution action</p>"
+                };
+                return Task.FromResult(curSolutionPage);
+            }
+            if (curDocumentation.Contains("HelpMenu"))
+            {
+                if (curDocumentation.Contains("ExplainArchiveTemplate"))
+                {
+                    return Task.FromResult(GenerateDocumentationRepsonce(@"This solution work with DocuSign templates"));
+                }
+                if (curDocumentation.Contains("ExplainService"))
+                {
+                    return Task.FromResult(GenerateDocumentationRepsonce(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
+                }
+                return Task.FromResult(GenerateErrorRepsonce("Unknown contentPath"));
+            }
+            return
+                Task.FromResult(
+                    GenerateErrorRepsonce("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
         }
     }
 }

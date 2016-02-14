@@ -1105,5 +1105,21 @@ namespace TerminalBase.BaseClasses
 
             return resultTable;
         }
+        public ActivityResponseDTO GenerateDocumentationRepsonce(string documentation)
+        {
+            return new ActivityResponseDTO
+            {
+                Body = documentation,
+                Type = ActivityResponse.ShowDocumentation.ToString()
+            };
+        }
+        public ActivityResponseDTO GenerateErrorRepsonce(string errorMessage)
+        {
+            return new ActivityResponseDTO
+            {
+                Body = errorMessage,
+                Type = ActivityResponse.ShowDocumentation.ToString()
+            };
+        }
     }
 }

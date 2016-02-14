@@ -203,7 +203,7 @@ namespace terminalDocuSign.Actions
             //let's make followup configuration for monitorDocuSignEventAction
             //followup call places EventSubscription crate in storage
             var configureMonitorDocusignTask = HubCommunicator.ConfigureActivity(monitorDocuSignAction, CurrentFr8UserId);
-            
+
 
             var durationControl = (Duration)controls.FindByName("TimePeriod");
             SetControlValue(setDelayAction, "Delay_Duration", durationControl.Value);
@@ -393,17 +393,42 @@ namespace terminalDocuSign.Actions
         {
             return Success(await GetPayload(curActivityDO, containerId));
         }
-        //This method provides some documentation for the DocuSign Solution Actions
-        public Task<SolutionPageDTO> Documentation(ActivityDO activityDO)
+        /// <summary>
+        /// This method provides documentation in two forms:
+        /// SolutionPageDTO for general information and 
+        /// ActivityResponseDTO for specific Help on minicon
+        /// </summary>
+        /// <param name="activityDO"></param>
+        /// <param name="curDocumentation"></param>
+        /// <returns></returns>
+        public dynamic Documentation(ActivityDO activityDO, string curDocumentation)
         {
-            var curSolutionPage = new SolutionPageDTO
+            if (curDocumentation.Contains("MainPage"))
             {
-                Name = SolutionName,
-                Version = SolutionVersion,
-                Terminal = TerminalName,
-                Body = @"<p>This is a solution action</p>"
-            };
-            return Task.FromResult(curSolutionPage);
+                var curSolutionPage = new SolutionPageDTO
+                {
+                    Name = SolutionName,
+                    Version = SolutionVersion,
+                    Terminal = TerminalName,
+                    Body = @"<p>This is Rich Document Notification solution action</p>"
+                };
+                return Task.FromResult(curSolutionPage);
+            }
+            if (curDocumentation.Contains("HelpMenu"))
+            {
+                if (curDocumentation.Contains("ExplainRichDocumentation"))
+                {
+                    return Task.FromResult(GenerateDocumentationRepsonce(@"This solution work with notifications"));
+                }
+                if (curDocumentation.Contains("ExplainService"))
+                {
+                    return Task.FromResult(GenerateDocumentationRepsonce(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
+                }
+                return Task.FromResult(GenerateErrorRepsonce("Unknown contentPath"));
+            }
+            return
+                Task.FromResult(
+                    GenerateErrorRepsonce("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
         }
     }
 }

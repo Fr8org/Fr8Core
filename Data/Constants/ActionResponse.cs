@@ -15,6 +15,7 @@ namespace Data.Constants
         RequestSuspend,
         SkipChildren,
         ReProcessChildren,
-        ExecuteClientAction
+        ExecuteClientAction,
+        ShowDocumentation
     }
 }
