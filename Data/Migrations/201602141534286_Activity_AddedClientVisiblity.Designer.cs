@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class ActivityClientVisibility : IMigrationMetadata
+    public sealed partial class Activity_AddedClientVisiblity : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(ActivityClientVisibility));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(Activity_AddedClientVisiblity));
         
         string IMigrationMetadata.Id
         {
-            get { return "201602071040503_ActivityClientVisibility"; }
+            get { return "201602141534286_Activity_AddedClientVisiblity"; }
         }
         
         string IMigrationMetadata.Source

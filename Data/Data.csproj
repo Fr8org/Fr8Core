@@ -590,10 +590,6 @@
     <Compile Include="Migrations\201602071156179_RemoveSubscriptionRequiredAndName.Designer.cs">
       <DependentUpon>201602071156179_RemoveSubscriptionRequiredAndName.cs</DependentUpon>
     </Compile>
-	<Compile Include="Migrations\201602071040503_ActivityClientVisibility.cs" />
-    <Compile Include="Migrations\201602071040503_ActivityClientVisibility.Designer.cs">
-      <DependentUpon>201602071040503_ActivityClientVisibility.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201602031204174_MergeMigration.cs" />
     <Compile Include="Migrations\201602031204174_MergeMigration.Designer.cs">
       <DependentUpon>201602031204174_MergeMigration.cs</DependentUpon>
@@ -601,6 +597,10 @@
     <Compile Include="Migrations\201602121355488_RemovedNullableActivityTemplateIdFromActivityDO.cs" />
     <Compile Include="Migrations\201602121355488_RemovedNullableActivityTemplateIdFromActivityDO.Designer.cs">
       <DependentUpon>201602121355488_RemovedNullableActivityTemplateIdFromActivityDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201602141534286_Activity_AddedClientVisiblity.cs" />
+    <Compile Include="Migrations\201602141534286_Activity_AddedClientVisiblity.Designer.cs">
+      <DependentUpon>201602141534286_Activity_AddedClientVisiblity.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -1015,11 +1015,11 @@
     <EmbeddedResource Include="Migrations\201602071156179_RemoveSubscriptionRequiredAndName.resx">
       <DependentUpon>201602071156179_RemoveSubscriptionRequiredAndName.cs</DependentUpon>
     </EmbeddedResource>
-	<EmbeddedResource Include="Migrations\201602071040503_ActivityClientVisibility.resx">
-      <DependentUpon>201602071040503_ActivityClientVisibility.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201602121355488_RemovedNullableActivityTemplateIdFromActivityDO.resx">
       <DependentUpon>201602121355488_RemovedNullableActivityTemplateIdFromActivityDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602141534286_Activity_AddedClientVisiblity.resx">
+      <DependentUpon>201602141534286_Activity_AddedClientVisiblity.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
