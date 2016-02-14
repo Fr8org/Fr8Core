@@ -66,6 +66,24 @@ namespace terminalSalesforce.Actions
             return await Task.FromResult(curActivityDO);
         }
 
+        public override async Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        {
+            using (var updater = Crate.UpdateStorage(curActivityDO))
+            {
+                var configControls = GetConfigurationControls(updater.CrateStorage);
+
+                //verify the account name has a value provided
+                var accountNameControl = configControls.Controls.Single(ctl => ctl.Name.Equals("Name"));
+
+                if (string.IsNullOrEmpty((accountNameControl as TextSource).ValueSource))
+                {
+                    accountNameControl.ErrorMessage = "Account Name must be provided for creating Account.";
+                }
+            }
+
+            return await Task.FromResult(curActivityDO);
+        }
+
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
 
@@ -77,11 +95,6 @@ namespace terminalSalesforce.Actions
             }
 
             var account = _salesforce.CreateSalesforceDTO<Infrastructure.AccountDTO>(curActivityDO, payloadCrates, ExtractSpecificOrUpstreamValue);
-            if (string.IsNullOrEmpty(account.Name))
-            {
-                return Error(payloadCrates, "No account name found in activity.");
-            }
-
             bool result = await _salesforce.CreateObject(account, "Account", _salesforce.CreateForceClient(authTokenDO));
 
             if (result)

@@ -76,7 +76,7 @@ namespace terminalSalesforceTests.Intergration
             Assert.AreEqual("No AuthToken provided.", errorMessage.Message, "Authentication is mishandled at activity side.");
         }
 
-        [Test, Category("intergration.terminalSalesforce")]
+        [Test, Category("intergration.terminalSalesforce"), Ignore("Ignored due to the introduction of new Activate checking logic.")]
         public async void Create_Contact_Run_With_NoLastName_Check_NoLastNameProvided_Error()
         {
             //Arrange

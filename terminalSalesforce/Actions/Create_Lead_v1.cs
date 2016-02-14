@@ -71,6 +71,32 @@ namespace terminalSalesforce.Actions
             return await Task.FromResult(curActivityDO);
         }
 
+        public override async Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        {
+            using (var updater = Crate.UpdateStorage(curActivityDO))
+            {
+                var configControls = GetConfigurationControls(updater.CrateStorage);
+
+                //verify the last name has a value provided
+                var lastNameControl = configControls.Controls.Single(ctl => ctl.Name.Equals("LastName"));
+
+                if (string.IsNullOrEmpty((lastNameControl as TextSource).ValueSource))
+                {
+                    lastNameControl.ErrorMessage = "Last Name must be provided for creating Lead.";
+                }
+
+                //verify the company has a value provided
+                var companyControl = configControls.Controls.Single(ctl => ctl.Name.Equals("Company")); 
+
+                if (string.IsNullOrEmpty((companyControl as TextSource).ValueSource))
+                {
+                    companyControl.ErrorMessage = "Company must be provided for creating Lead.";
+                }
+            }
+
+            return await Task.FromResult(curActivityDO);
+        }
+
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payloadCrates = await GetPayload(curActivityDO, containerId);
@@ -81,17 +107,6 @@ namespace terminalSalesforce.Actions
             }
 
             var lead = _salesforce.CreateSalesforceDTO<LeadDTO>(curActivityDO, payloadCrates, ExtractSpecificOrUpstreamValue);
-
-            if (string.IsNullOrEmpty(lead.LastName))
-            {
-                return Error(payloadCrates, "No last name found in activity.");
-            }
-
-            if (string.IsNullOrEmpty(lead.Company))
-            {
-                return Error(payloadCrates, "No company name found in activity.");
-            }
-
             bool result = await _salesforce.CreateObject(lead, "Lead", _salesforce.CreateForceClient(authTokenDO));
 
             if (result)
