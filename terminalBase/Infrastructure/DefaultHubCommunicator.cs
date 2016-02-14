@@ -104,6 +104,15 @@ namespace TerminalBase.Infrastructure
 
             return payloadDTOTask;
         }
+        public async Task<UserDTO> GetCurrentUser(ActivityDO activityDO, Guid containerId, string userId)
+        {
+            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/user/getUserData?id="+userId;
+            var uri = new Uri(url, UriKind.Absolute);
+            var curUser = await _restfulServiceClient.GetAsync<UserDTO>(new Uri(url, UriKind.Absolute), containerId.ToString(), await GetHMACHeader(uri, userId));
+
+            return curUser;
+        }
 
         public async Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActivityDO activityDO, CrateDirection direction, string userId)
         {

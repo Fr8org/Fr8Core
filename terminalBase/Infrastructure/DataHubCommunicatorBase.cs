@@ -71,6 +71,11 @@ namespace TerminalBase.Infrastructure
             return Task.FromResult(payload);
         }
 
+        public Task<UserDTO> GetCurrentUser(ActivityDO activityDO, Guid containerId, string userId)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActivityDO activityDO, CrateDirection direction, string userId)
         {
             var searchLabel = direction == CrateDirection.Upstream

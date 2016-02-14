@@ -106,7 +106,7 @@ namespace terminalPapertrail.Actions
             return Success(curProcessPayload);
         }
 
-        private void GetPapertrailTargetUrlAndPort(ActivityDO curActivityDO, out string paperrrialTargetUrl, out int papertrailTargetPort)
+        private void GetPapertrailTargetUrlAndPort(ActivityDO curActivityDO, out string papertrialTargetUrl, out int papertrailTargetPort)
         {
             //get the configuration control of the given action
             var curActionConfigControls =
@@ -122,7 +122,7 @@ namespace terminalPapertrail.Actions
             }
 
             //assgign the output value
-            paperrrialTargetUrl = targetUrlValue[0];
+            papertrialTargetUrl = targetUrlValue[0];
             papertrailTargetPort = Convert.ToInt32(targetUrlValue[1]);
         }
     }
