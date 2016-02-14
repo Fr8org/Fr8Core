@@ -40,6 +40,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/model/TerminalDTO.js',
         'Scripts/app/model/TerminalActionSetDTO.js',
         'Scripts/app/model/ManageAuthToken.js',
+        'Scripts/app/model/SolutionDTO.js',
         'Scripts/app/services/CrateHelper.js',
         'Scripts/app/services/AuthService.js',
         'Scripts/app/services/ConfigureTrackerService.js',
@@ -57,6 +58,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/services/WebServiceService.js',
         'Scripts/app/services/TerminalService.js',
         'Scripts/app/services/ManageAuthTokenService.js',
+        'Scripts/app/services/SolutionDocumentationService.js',
         'Scripts/app/filters/RouteState.js',
         'Scripts/app/filters/ContainerState.js',
         'Scripts/app/filters/FilterByTag.js',
@@ -122,7 +124,9 @@ gulp.task('compile_js', function () {
         'Scripts/app/controllers/PayloadFormController.js',
         'Scripts/app/controllers/TerminalListController.js',
         'Scripts/app/controllers/TerminalFormController.js',
-        'Scripts/app/controllers/ManageAuthTokenController.js'
+        'Scripts/app/controllers/ManageAuthTokenController.js',
+        'Scripts/app/controllers/SolutionDocumentationController.js',
+        'Scripts/app/controllers/ManageUserController.js'
     ])
         .pipe(sourcemaps.init())
         .pipe(concat('_compiled.js'))

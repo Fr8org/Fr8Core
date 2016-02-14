@@ -60,8 +60,9 @@ namespace terminalSalesforceTests.Intergration
             //Arrange
             var initialConfigActionDto = await PerformInitialConfiguration();
             initialConfigActionDto = SetLastName(initialConfigActionDto);
-            AddOperationalStateCrate(initialConfigActionDto, new OperationalStateCM());
             var dataDTO = new Fr8DataDTO { ActivityDTO = initialConfigActionDto };
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
+            
             //Act
             var responseOperationalState = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(GetTerminalRunUrl(), dataDTO);
 
@@ -81,8 +82,9 @@ namespace terminalSalesforceTests.Intergration
             //Arrange
             var initialConfigActionDto = await PerformInitialConfiguration();
             initialConfigActionDto.AuthToken = HealthMonitor_FixtureData.Salesforce_AuthToken();
-            AddOperationalStateCrate(initialConfigActionDto, new OperationalStateCM());
             var dataDTO = new Fr8DataDTO { ActivityDTO = initialConfigActionDto };
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
+            
             //Act
             var responseOperationalState = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(GetTerminalRunUrl(), dataDTO);
 
@@ -102,8 +104,9 @@ namespace terminalSalesforceTests.Intergration
             var initialConfigActionDto = await PerformInitialConfiguration();
             initialConfigActionDto = SetLastName(initialConfigActionDto);
             initialConfigActionDto.AuthToken = HealthMonitor_FixtureData.Salesforce_AuthToken();
-            AddOperationalStateCrate(initialConfigActionDto, new OperationalStateCM());
             var dataDTO = new Fr8DataDTO { ActivityDTO = initialConfigActionDto };
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
+            
             //Act
             var responseOperationalState = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(GetTerminalRunUrl(), dataDTO);
 

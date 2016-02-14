@@ -99,7 +99,7 @@ namespace TerminalBase.BaseClasses
         }
 
 
-        private void BindTestHubCommunicator(object curObject)
+        private void BindTestHubCommunicator(object curObject, string explicitData)
         {
             var baseTerminalAction = curObject as BaseTerminalActivity;
 
@@ -108,10 +108,10 @@ namespace TerminalBase.BaseClasses
                 return;
             }
 
-            baseTerminalAction.HubCommunicator = new TestMonitoringHubCommunicator();
+            baseTerminalAction.HubCommunicator = new TestMonitoringHubCommunicator(explicitData);
         }
 
-        private void BindExplicitDataHubCommunicator(object curObject)
+        private void BindExplicitDataHubCommunicator(object curObject, string explicitData)
         {
             var baseTerminalAction = curObject as BaseTerminalActivity;
 
@@ -120,7 +120,7 @@ namespace TerminalBase.BaseClasses
                 return;
             }
 
-            baseTerminalAction.HubCommunicator = new ExplicitDataHubCommunicator();
+            baseTerminalAction.HubCommunicator = new ExplicitDataHubCommunicator(explicitData);
         }
 
         private void SetCurrentUser(object curObject, string userId)
@@ -133,6 +133,18 @@ namespace TerminalBase.BaseClasses
             }
 
             baseTerminalAction.SetCurrentUser(userId);
+        }
+
+        private void ConfigureHubCommunicator(object curObject, string terminalName)
+        {
+            var baseTerminalAction = curObject as BaseTerminalActivity;
+
+            if (baseTerminalAction == null)
+            {
+                return;
+            }
+
+            baseTerminalAction.HubCommunicator.Configure(terminalName);
         }
 
         /// <summary>
@@ -181,12 +193,9 @@ namespace TerminalBase.BaseClasses
 
             if (_integrationTestMode)
             {
-                BindTestHubCommunicator(curObject);
+                BindTestHubCommunicator(curObject, curDataDTO.ExplicitData);
             }
-            else if (curActionDTO.IsExplicitData)
-            {
-                BindExplicitDataHubCommunicator(curObject);
-            }
+
             var curActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
             //this is a comma separated string
             var curDocumentation = curActionDTO.DocumentationSupport;
@@ -198,7 +207,7 @@ namespace TerminalBase.BaseClasses
             var currentUserId = curAuthTokenDO != null ? curAuthTokenDO.UserID : null;
             //Set Current user of action
             SetCurrentUser(curObject, currentUserId);
-
+            ConfigureHubCommunicator(curObject, curTerminal);
             try
             {
                 switch (curActionPath.ToLower())

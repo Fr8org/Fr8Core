@@ -110,7 +110,7 @@ namespace terminalDocuSignTests.Integration
             
             var dataDTO = HealthMonitor_FixtureData.Record_Docusign_v1_InitialConfiguration_Fr8DataDTO();
             dataDTO.ActivityDTO.AuthToken = null;
-            AddOperationalStateCrate(dataDTO.ActivityDTO, new OperationalStateCM());
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
             var payload = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
             CheckIfPayloadHasNeedsAuthenticationError(payload);
         }
@@ -132,7 +132,7 @@ namespace terminalDocuSignTests.Integration
             var recipientId = Guid.NewGuid().ToString();
             
             AddPayloadCrate(
-               dataDTO.ActivityDTO,
+               dataDTO,
                new EventReportCM()
                {
                    EventPayload = new CrateStorage()
@@ -157,7 +157,7 @@ namespace terminalDocuSignTests.Integration
                }
            );
 
-            AddOperationalStateCrate(dataDTO.ActivityDTO, new OperationalStateCM());
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
 
             var responsePayloadDTO =
                 await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);

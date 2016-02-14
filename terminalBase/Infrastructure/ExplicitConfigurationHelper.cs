@@ -10,6 +10,7 @@ using StructureMap;
 
 namespace TerminalBase.Infrastructure
 {
+    /*
     public class ExplicitConfigurationHelper
     {
         public ICrateManager Crate { get; set; }
@@ -87,5 +88,5 @@ namespace TerminalBase.Infrastructure
             var responseActionDO = Mapper.Map<ActivityDO>(responseActionDTO);
             return responseActionDO;
         }
-    }
+    }*/
 }

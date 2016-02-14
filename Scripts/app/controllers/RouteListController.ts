@@ -98,7 +98,7 @@ module dockyard.controllers {
 
         }
         private deactivateRoute(route) {
-            this.RouteService.deactivate(route).$promise.then((result) => {
+            this.RouteService.deactivate({ planId: route.id }).$promise.then((result) => {
                 location.reload();
             }, () => {
                 //deactivation failed

@@ -18,7 +18,8 @@ var app = angular.module("app", [
     "ApplicationInsightsModule",
     "dndLists",
     "ngTable",
-    "mb-scrollbar"
+    "mb-scrollbar",
+    "ngMessages"
 ]);
 
 /* For compatibility with older versions of script files. Can be safely deleted later. */
@@ -144,21 +145,21 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
         })
     // Route list
         .state('routeList', {
-            url: "/routes",
+            url: "/plans",
             templateUrl: "/AngularTemplate/RouteList",
             data: { pageTitle: 'Routes', pageSubTitle: 'This page displays all Routes' }
         })
 
     // Route form
         .state('routeForm', {
-            url: "/routes/{id}",
+            url: "/plans/{id}",
             templateUrl: "/AngularTemplate/RouteForm",
             data: { pageTitle: 'Route', pageSubTitle: 'Add a new Route' },
         })
 
     // Process Builder framework
         .state('routeBuilder', {
-            url: "/routes/{id}/builder",
+            url: "/plans/{id}/builder",
             templateUrl: "/AngularTemplate/RouteBuilder",
             data: { pageTitle: '' },
         })
@@ -252,6 +253,12 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             url: '/manageAuthTokens',
             templateUrl: '/AngularTemplate/ManageAuthTokens',
             data: { pageTitle: 'Manage Auth Tokens', pageSubTitle: '' }
+        })
+
+        .state('changePassword', {
+            url: '/changePassword',
+            templateUrl: '/AngularTemplate/ChangePassword',
+            data: { pageTitle: 'Change Password', pageSubTitle: '' }
         });
 }]);
 

@@ -110,9 +110,9 @@ namespace terminalYammerTests.Integration
             //Arrange
             var runUrl = GetTerminalRunUrl();
             var activityDTO = await ConfigurationRequest();
-
+            var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
             AddPayloadCrate(
-                activityDTO,
+                dataDTO,
                 new StandardPayloadDataCM(
                     new FieldDTO("message", "Hello")
                 ),
@@ -120,7 +120,7 @@ namespace terminalYammerTests.Integration
             );
 
             activityDTO.AuthToken = HealthMonitor_FixtureData.Yammer_AuthToken();
-            var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
+            
             //Act
             var responsePayloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
 

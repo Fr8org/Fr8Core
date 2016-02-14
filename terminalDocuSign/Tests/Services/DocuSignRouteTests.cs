@@ -37,9 +37,9 @@ namespace terminalDocuSign.Tests.Services
             //Assert
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                Assert.AreEqual(1, uow.PlanRepository.GetAll().Count(), "Automatic plan is not created");
+                Assert.AreEqual(1, uow.PlanRepository.GetPlanQueryUncached().Count(), "Automatic plan is not created");
 
-                var automaticRoute = uow.PlanRepository.GetQuery().First();
+                var automaticRoute = uow.PlanRepository.GetPlanQueryUncached().First();
 
                 Assert.AreEqual("MonitorAllDocuSignEvents", automaticRoute.Name, "Automatic plan name is wrong");
                 Assert.AreEqual(1, automaticRoute.Subroutes.Count(), "Automatic subroute is not created");
@@ -60,7 +60,7 @@ namespace terminalDocuSign.Tests.Services
             //Assert
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                Assert.IsFalse(uow.PlanRepository.GetAll().Count() > 1, "Automatic plan is created in following authentication success");
+                Assert.IsFalse(uow.PlanRepository.GetPlanQueryUncached().Count() > 1, "Automatic plan is created in following authentication success");
             }
         }
 
@@ -97,14 +97,12 @@ namespace terminalDocuSign.Tests.Services
 
                 _actionMock.Setup(
                     a => a.CreateAndConfigure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<int>(),
-                        "Record_DocuSign_Events", It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>())).Callback(() =>
+                        It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>())).Callback(() =>
                         {
                             using (var uow1 = ObjectFactory.GetInstance<IUnitOfWork>())
                             {
-                                uow1.ActivityRepository.Add(recordDocuSignAction);
-
-                                var subRoute = uow1.SubrouteRepository.GetQuery().Single();
-                                subRoute.ChildNodes.Add(recordDocuSignAction);
+                                var subroute = uow1.PlanRepository.GetById<SubrouteDO>(uow1.PlanRepository.GetNodesQueryUncached().OfType<SubrouteDO>().First().Id);
+                                subroute.ChildNodes.Add(recordDocuSignAction);
 
                                 uow1.SaveChanges();
                             }
@@ -112,14 +110,12 @@ namespace terminalDocuSign.Tests.Services
 
                 _actionMock.Setup(
                     a => a.CreateAndConfigure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<int>(),
-                        "StoreMTData", It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>())).Callback(() =>
+                        It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>())).Callback(() =>
                         {
                             using (var uow1 = ObjectFactory.GetInstance<IUnitOfWork>())
                             {
-                                uow1.ActivityRepository.Add(storeMtDataAction);
-
-                                var subRoute = uow1.SubrouteRepository.GetQuery().Single();
-                                subRoute.ChildNodes.Add(recordDocuSignAction);
+                                var subroute = uow1.PlanRepository.GetById<SubrouteDO>(uow1.PlanRepository.GetNodesQueryUncached().OfType<SubrouteDO>().First().Id);
+                                subroute.ChildNodes.Add(storeMtDataAction);
 
                                 uow1.SaveChanges();
                             }

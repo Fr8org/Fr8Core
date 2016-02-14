@@ -47,6 +47,7 @@ namespace terminalDocuSign.Actions
         /// </summary>
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
+            /*
             var payloadCrates = await GetPayload(curActivityDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
@@ -75,11 +76,13 @@ namespace terminalDocuSign.Actions
             {
                 updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(fields)));
 
-                var userDefinedFieldsPayload = _docuSignManager.CreateActionPayload(curActivityDO, authTokenDO, envelopeId);
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Data", userDefinedFieldsPayload));
+                //var userDefinedFieldsPayload = _docuSignManager.CreateActionPayload(curActivityDO, authTokenDO, envelopeId);
+                //updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Data", userDefinedFieldsPayload));
             }
-
-            return Success(payloadCrates);
+            */
+            //i (bahadir) think solutions should not do anything on their run method
+            //they are just preconfiguring existing activities
+            return Success(await GetPayload(curActivityDO, containerId));
         }
 
         /// <summary>
@@ -113,15 +116,14 @@ namespace terminalDocuSign.Actions
         private async Task<List<ListItem>> GetDataSourceListItems(ActivityDO activityDO, string tag)
         {
             var curActivityTemplates = await HubCommunicator.GetActivityTemplates(activityDO, tag)
-                .ContinueWith(x => x.Result.Where(y => y.Name.StartsWith("Get", StringComparison.InvariantCultureIgnoreCase)));
+                .ContinueWith(x => x.Result.Where(y => y.Name.StartsWith("Get", StringComparison.InvariantCultureIgnoreCase) && y.Category == Data.States.ActivityCategory.Receivers));
             return curActivityTemplates.Select(at => new ListItem() { Key = at.Label, Value = at.Name }).ToList();
         }
 
         /// <summary>
         /// Looks for upstream and downstream Creates.
         /// </summary>
-        protected override async Task<ActivityDO> InitialConfigurationResponse(
-            ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             if (curActivityDO.Id != Guid.Empty)
             {
@@ -151,7 +153,6 @@ namespace terminalDocuSign.Actions
 
             //validate if any DocuSignTemplates has been linked to the Account
             ValidateDocuSignAtLeastOneTemplate(curActivityDO);
-
             return curActivityDO;
         }
 
@@ -238,39 +239,57 @@ namespace terminalDocuSign.Actions
             return ConfigurationRequestType.Followup;
         }
 
+        /// <summary>
+        /// Checks if activity template generates table data
+        /// TODO: find a smoother (unified) way for this
+        /// </summary>
+        /// <returns></returns>
+        private bool DoesActivityTemplateGenerateTableData(ActivityTemplateDO activityTemplate)
+        {
+            return activityTemplate.Tags != null && activityTemplate.Tags.Split(',').Any(t => t.ToLowerInvariant().Contains("table"));
+        }
+
         //if the user provides a file name, this action attempts to load the excel file and extracts the column headers from the first sheet in the file.
-        protected override async Task<ActivityDO> FollowupConfigurationResponse(
-            ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 
             //extract fields in docusign form
             _docuSignManager.UpdateUserDefinedFields(curActivityDO, authTokenDO, Crate.UpdateStorage(curActivityDO), _docuSignTemplate.Value);
 
+
             var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(curActivityDO, null))
                 .Select(x => Mapper.Map<ActivityTemplateDO>(x))
                 .ToList();
 
-            try
+            //let's check if activity template generates table data
+            var selectedReceiver = curActivityTemplates.Single(x => x.Name == _dataSourceValue);
+
+
+            var dataSourceActivity = await AddAndConfigureChildActivity(curActivityDO, selectedReceiver.Id.ToString(), order: 1);
+
+            ActivityDO parentOfSendDocusignEnvelope = null;
+            int orderOfSendDocusignEnvelope = 0;
+
+            if (DoesActivityTemplateGenerateTableData(selectedReceiver))
             {
-                ActivityDO dataSourceActivity = await AddAndConfigureChildActivity(curActivityDO, _dataSourceValue, order: 1);
-                // ActivityDO mapFieldActivity = await AddAndConfigureChildActivity(curActivityDO, "MapFields", order: 2);
-                ActivityDO sendDocuSignEnvActivity = await AddAndConfigureChildActivity(curActivityDO, "Send_DocuSign_Envelope", order: 3);
-
-                //set docusign template
-
-                SetControlValue(sendDocuSignEnvActivity, "target_docusign_template",
-                    _docuSignTemplate.ListItems.Where(a => a.Key == _docuSignTemplate.selectedKey).FirstOrDefault());
-
-
-                await ConfigureChildActivity(curActivityDO, sendDocuSignEnvActivity);
-                // await ConfigureChildActivity(curActivityDO, mapFieldActivity);
+                //we need to configure this but it is hard to do
+                var loopActivity = await AddAndConfigureChildActivity(curActivityDO, "Loop", order: 2);
+                parentOfSendDocusignEnvelope = loopActivity;
+                orderOfSendDocusignEnvelope = 1;
             }
-            catch (Exception)
+            else
             {
-                return null;
+                parentOfSendDocusignEnvelope = curActivityDO;
+                orderOfSendDocusignEnvelope = 2;
             }
 
+            var sendDocuSignEnvActivity = await AddAndConfigureChildActivity(parentOfSendDocusignEnvelope, "Send_DocuSign_Envelope", order: orderOfSendDocusignEnvelope);
+            //set docusign template
+            SetControlValue(sendDocuSignEnvActivity, "target_docusign_template", _docuSignTemplate.ListItems.Where(a => a.Key == _docuSignTemplate.selectedKey).FirstOrDefault());
+
+
+            await ConfigureChildActivity(parentOfSendDocusignEnvelope, sendDocuSignEnvActivity);
             return await Task.FromResult(curActivityDO);
         }
         //This method provides some documentation for the DocuSign Solution Actions

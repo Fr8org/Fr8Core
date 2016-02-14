@@ -54,7 +54,16 @@ namespace terminalDocuSign.Actions
             curEnvelope.Login = new DocuSignPackager()
                 .Login(docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
 
-            curEnvelope = AddTemplateData(curActivityDO, payloadCrates, curEnvelope);
+            try
+            {
+                curEnvelope = AddTemplateData(curActivityDO, payloadCrates, curEnvelope);
+            }
+            catch (ApplicationException exception)
+            {
+                //in case of problem with extract payload field values raise and Error alert to the user
+                return Error(payloadCrates, exception.Message, null, "Send DocuSign Envelope", "DocuSign");
+            }
+
             curEnvelope.EmailSubject = "Test Message from Fr8";
             curEnvelope.Status = "sent";
 
@@ -111,6 +120,8 @@ namespace terminalDocuSign.Actions
             var payloadCrateStorage = Crate.GetStorage(payloadCrates);
             var configurationControls = GetConfigurationControls(activityDO);
             var recipientField = (TextSource)GetControl(configurationControls, "Recipient", ControlTypes.TextSource);
+
+            
 
             var curRecipientAddress = recipientField.GetValue(payloadCrateStorage, true);
 

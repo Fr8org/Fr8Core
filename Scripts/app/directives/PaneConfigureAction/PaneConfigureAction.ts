@@ -12,7 +12,8 @@ module dockyard.directives.paneConfigureAction {
         PaneConfigureAction_ReloadAction,
         PaneConfigureAction_SetSolutionMode,
         PaneConfigureAction_ConfigureCallResponse,
-        PaneConfigureAction_AuthFailure
+        PaneConfigureAction_AuthFailure,
+        PaneConfigureAction_ExecutePlan
     }
 
     export class ActionReconfigureEventArgs {
@@ -211,8 +212,9 @@ module dockyard.directives.paneConfigureAction {
                     }
                 );
 
-                // Get configuration settings template from the server if the current action does not contain those             
-                if ($scope.currentAction.activityTemplateId > 0) {
+                // Get configuration settings template from the server if the current action does not contain those       
+                //TODO check this     
+                if ($scope.currentAction.activityTemplate != null) {
                     if ($scope.currentAction.crateStorage == null || !$scope.currentAction.crateStorage.crates.length) {
                         $scope.loadConfiguration();
                     } else {
@@ -375,6 +377,20 @@ module dockyard.directives.paneConfigureAction {
                         .then((res: interfaces.IActionVM) => {
                             var childActionsDetected = false;
 
+                            // Detect OperationalState crate with CurrentClientActionName = 'ExecuteAfterConfigure'.
+                            if (crateHelper.hasCrateOfManifestType(res.crateStorage, 'Operational State')) {
+                                var operationalStatus = crateHelper
+                                    .findByManifestType(res.crateStorage, 'Operational State');
+
+                                var contents = <any>operationalStatus.contents;
+
+                                if (contents.CurrentActivityResponse.type === 'ExecuteClientAction'
+                                    && contents.CurrentClientActionName === 'ExecuteAfterConfigure') {
+
+                                    $scope.$emit(MessageType[MessageType.PaneConfigureAction_ExecutePlan]);
+                                }
+                            }
+
                             if (res.childrenActions && res.childrenActions.length > 0) {
                                 // If the directive is used for configuring solutions,
                                 // the SolutionController would listen to this event 
@@ -440,8 +456,10 @@ module dockyard.directives.paneConfigureAction {
                         AuthService.enqueue($scope.currentAction.id);
                     }
 
+                    // if (crateHelper.hasCrateOfManifestType(
+
                     $scope.currentAction.configurationControls =
-                    crateHelper.createControlListFromCrateStorage($scope.currentAction.crateStorage);
+                        crateHelper.createControlListFromCrateStorage($scope.currentAction.crateStorage);
 
                     // Before setting up watcher on configuration change, make sure that the first invokation of the handler 
                     // is ignored: watcher always triggers after having been set up, and we don't want to handle that 
@@ -496,8 +514,7 @@ module dockyard.directives.paneConfigureAction {
                 $timeout: ng.ITimeoutService,
                 $modal,
                 $window: ng.IWindowService,
-                $http: ng.IHttpService,
-                ngToast: any
+                $http: ng.IHttpService
 
             ) => {
 

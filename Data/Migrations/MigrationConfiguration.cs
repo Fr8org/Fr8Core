@@ -59,7 +59,7 @@ namespace Data.Migrations
                 ObjectFactory.Initialize(x => x.AddRegistry<MigrationConsoleSeedRegistry>());
             }
 
-            var uow = new UnitOfWork(context);
+            var uow = new UnitOfWork(context, ObjectFactory.Container);
 
             UpdateRootRouteNodeId(uow);
 
@@ -546,7 +546,7 @@ namespace Data.Migrations
             AddWebService(uow, "DocuSign", "/Content/icons/web_services/docusign-icon-64x64.png");
             AddWebService(uow, "Microsoft Azure", "/Content/icons/web_services/ms-azure-icon-64x64.png");
             AddWebService(uow, "Excel", "/Content/icons/web_services/ms-excel-icon-64x64.png");
-            AddWebService(uow, "fr8 Core", "/Content/icons/web_services/fr8-core-icon-64x64.png");
+            AddWebService(uow, "Built-In Services", "/Content/icons/web_services/fr8-core-icon-64x64.png");
             AddWebService(uow, "Salesforce", "/Content/icons/web_services/salesforce-icon-64x64.png");
             AddWebService(uow, "SendGrid", "/Content/icons/web_services/sendgrid-icon-64x64.png");
             AddWebService(uow, "Dropbox", "/Content/icons/web_services/dropbox-icon-64x64.png");
@@ -612,16 +612,14 @@ namespace Data.Migrations
 
         private void UpdateRootRouteNodeId(IUnitOfWork uow)
         {
-            var anyRootIdFlag = uow.RouteNodeRepository
-                .GetAll()
-                .Any(x => x.RootRouteNodeId != null);
+            var anyRootIdFlag = uow.PlanRepository.GetNodesQueryUncached().Any(x => x.RootRouteNodeId != null);
 
             if (anyRootIdFlag)
             {
                 return;
             }
 
-            var fullTree = uow.RouteNodeRepository.GetAll().ToList();
+            var fullTree = uow.PlanRepository.GetNodesQueryUncached().ToList();
 
             var parentChildMap = new Dictionary<Guid, List<RouteNodeDO>>();
             foreach (var routeNode in fullTree.Where(x => x.ParentRouteNodeId.HasValue))

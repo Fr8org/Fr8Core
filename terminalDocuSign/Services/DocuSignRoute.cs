@@ -70,9 +70,9 @@ namespace terminalDocuSign.Services
             var activityTemplates = await _hubCommunicator.GetActivityTemplates(null, curFr8UserId);
             var recordDocusignEventsTemplate = GetActivityTemplate(activityTemplates, "Record_DocuSign_Events");
             var storeMTDataTemplate = GetActivityTemplate(activityTemplates, "SaveToFr8Warehouse");
-            await _hubCommunicator.CreateAndConfigureActivity(recordDocusignEventsTemplate.Id, "Record_DocuSign_Events",
+            await _hubCommunicator.CreateAndConfigureActivity(recordDocusignEventsTemplate.Id, 
                 curFr8UserId, "Record DocuSign Events", 1, monitorDocusignRoute.StartingSubrouteId, false, new Guid(authTokenDTO.Id));
-            var storeMTDataActivity = await _hubCommunicator.CreateAndConfigureActivity(storeMTDataTemplate.Id, "Save To Fr8 Warehouse",
+            var storeMTDataActivity = await _hubCommunicator.CreateAndConfigureActivity(storeMTDataTemplate.Id, 
                 curFr8UserId, "Save To Fr8 Warehouse", 2, monitorDocusignRoute.StartingSubrouteId);
             SetSelectedCrates(storeMTDataActivity);
             //save this
@@ -132,20 +132,6 @@ namespace terminalDocuSign.Services
             }
 
             return template;
-        }
-
-        private PlanDO GetExistingPlan(IUnitOfWork uow, string routeName, string fr8AccountEmail)
-        {
-            if (uow.PlanRepository.GetQuery().Any(existingRoute =>
-                existingRoute.Name.Equals(routeName) &&
-                existingRoute.Fr8Account.Email.Equals(fr8AccountEmail)))
-            {
-                return uow.PlanRepository.GetQuery().First(existingRoute =>
-                    existingRoute.Name.Equals(routeName) &&
-                    existingRoute.Fr8Account.Email.Equals(fr8AccountEmail));
-            }
-
-            return null;
         }
     }
 }

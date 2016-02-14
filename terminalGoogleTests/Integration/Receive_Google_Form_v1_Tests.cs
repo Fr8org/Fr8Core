@@ -240,8 +240,10 @@ namespace terminalGoogleTests.Unit
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
             var activityDTO = fixture.Receive_Google_Form_v1_Run_ActionDTO();
 
+            var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
+
             AddPayloadCrate(
-               activityDTO,
+               dataDTO,
                new EventReportCM()
                {
                    EventPayload = new CrateStorage()
@@ -256,7 +258,7 @@ namespace terminalGoogleTests.Unit
                }
             );
 
-            var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
+            
             //Act
             var responsePayloadDTO =
                 await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);

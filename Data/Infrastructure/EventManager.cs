@@ -11,6 +11,9 @@ namespace Data.Infrastructure
     //this class serves as both a registry of all of the defined alerts as well as a utility class.
     public static class EventManager
     {
+        public delegate void UnexpectedErrorHandler(Exception ex);
+        public static event UnexpectedErrorHandler EventUnexpectedError;
+
         public delegate void ResponseRecievedHandler(int bookingRequestId, String bookerID, String customerID);
         public static event ResponseRecievedHandler AlertResponseReceived;
 
@@ -156,7 +159,56 @@ namespace Data.Infrastructure
         public delegate void KeyVaultFailureHandler(string keyVaultMethod, Exception ex);
         public static event KeyVaultFailureHandler KeyVaultFailure;
 
+        public delegate void AuthTokenSilentRevokeHandler(AuthorizationTokenDO authToken);
+        public static event AuthTokenSilentRevokeHandler EventAuthTokenSilentRevoke;
+
+        public delegate void AuthTokenCreatedHandler(AuthorizationTokenDO authToken);
+        public static event AuthTokenCreatedHandler EventAuthTokenCreated;
+
+        public delegate void AuthTokenRemovedHandler(AuthorizationTokenDO authToken);
+        public static event AuthTokenRemovedHandler EventAuthTokenRemoved;
+
         #region Method
+
+        public static void UnexpectedError(Exception ex)
+        {
+            var handler = EventUnexpectedError;
+
+            if (handler != null)
+            {
+                handler.Invoke(ex);
+            }
+        }
+
+        public static void AuthTokenSilentRevoke(AuthorizationTokenDO authToken)
+        {
+            var handler = EventAuthTokenSilentRevoke;
+
+            if (handler != null)
+            {
+                handler.Invoke(authToken);
+            }
+        }
+
+        public static void AuthTokenCreated(AuthorizationTokenDO authToken)
+        {
+            var handler = EventAuthTokenCreated;
+
+            if (handler != null)
+            {
+                handler.Invoke(authToken);
+            }
+        }
+
+        public static void AuthTokenRemoved(AuthorizationTokenDO authToken)
+        {
+            var handler = EventAuthTokenRemoved;
+
+            if (handler != null)
+            {
+                handler.Invoke(authToken);
+            }
+        }
 
         public static void KeyVaultFailed(string keyVaultMethod, Exception ex)
         {

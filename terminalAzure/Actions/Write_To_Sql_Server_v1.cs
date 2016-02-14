@@ -18,6 +18,7 @@ using TerminalBase.Infrastructure;
 using TerminalSqlUtilities;
 using terminalAzure.Infrastructure;
 using terminalAzure.Services;
+using Utilities;
 
 namespace terminalAzure.Actions
 {
@@ -46,7 +47,10 @@ namespace terminalAzure.Actions
 
             var storage = Crate.GetStorage(curActivityDO);
 
-            var connectionStrings = storage.CratesOfType<StandardConfigurationControlsCM>().Select(x => x.Content.FindByName("connection_string")).Where(x => x != null && !string.IsNullOrWhiteSpace(x.Value)).ToArray();
+            var connectionStrings = storage.CratesOfType<StandardConfigurationControlsCM>()
+                .Select(x => x.Content.FindByName("connection_string"))
+                .Where(x => x != null && !string.IsNullOrWhiteSpace(x.Value))
+                .ToArray();
 
             //if there are more than 2 return connection strings, something is wrong
             //if there are none or if there's one but it's value is "" the return initial else return followup
@@ -60,7 +64,7 @@ namespace terminalAzure.Actions
                 //we should validate our data now
                 //CheckFields(curActivityDO, new List<ValidationDataTuple> { new ValidationDataTuple("connection_string", "test", GetCrateDirection.Upstream, CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME) });
                 return ConfigurationRequestType.Followup;
-            }            
+            }
         }
 
         //If the user provides no Connection String value, provide an empty Connection String field for the user to populate
@@ -76,34 +80,51 @@ namespace terminalAzure.Actions
         }
 
         private Crate CreateControlsCrate()
-        { 
+        {
             // "[{ type: 'textField', name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }]"
-            var control = new TextBox()
-            {
-                Label = "SQL Connection String",
-                Name = "connection_string",
-                Required = true,
-                Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
+            var controls = new ControlDefinitionDTO[]{
+                new TextBox
+                {
+                    Label = "SQL Connection String",
+                    Name = "connection_string",
+                    Required = true
+                },
+                new Button
+                {
+                    Label = "Continue",
+                    Name = "Continue",
+                    Events = new List<ControlEvent>()
+                    {
+                        new ControlEvent("onClick", "requestConfig")
+                    }
+                }
             };
-            return PackControlsCrate(control);
+            return PackControlsCrate(controls);
         }
 
         //if the user provides a connection string, this action attempts to connect to the sql server and get its columns and tables
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
+            //Verify controls, make sure that TextBox with value exists
+            ValidateControls(curActivityDO);
             //In all followup calls, update data fields of the configuration store          
-            List<String> contentsList = GetFieldMappings(curActivityDO);
-
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            List<String> contentsList;
+            try
             {
-                updater.CrateStorage.RemoveByLabel("Sql Table Columns");
-                //this needs to be updated to hold Crates instead of FieldDefinitionDTO
-                updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("Sql Table Columns", contentsList.Select(col => new FieldDTO() {Key = col, Value = col}).ToArray()));
+                contentsList = GetFieldMappings(curActivityDO);
+                using (var updater = Crate.UpdateStorage(curActivityDO))
+                {
+                    updater.CrateStorage.RemoveByLabel("Sql Table Columns");
+                    //this needs to be updated to hold Crates instead of FieldDefinitionDTO
+                    updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("Sql Table Columns", contentsList.Select(col => new FieldDTO() { Key = col, Value = col }).ToArray()));
+                }
             }
-
+            catch
+            {
+                AddErrorToControl(curActivityDO);
+            }
             return await Task.FromResult<ActivityDO>(curActivityDO);
         }
-
         public async Task<PayloadDTO> Run(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payloadCrates = await GetPayload(activityDO, containerId);
@@ -120,12 +141,12 @@ namespace terminalAzure.Actions
         //Specialized Methods (Only found in this Action class)
 
         private const string ProviderName = "System.Data.SqlClient";
-        private const string FieldMappingQuery = @"SELECT CONCAT('[', r.NAME, '].', r.COLUMN_NAME) as tblcols " +
+        private const string FieldMappingQuery = @"SELECT CONCAT('[', r.TABLE_NAME, '].', r.COLUMN_NAME) as tblcols " +
                                                  @"FROM ( " +
-                                                    @"SELECT DISTINCT tbls.NAME, cols.COLUMN_NAME " +
-                                                    @"FROM sys.Tables tbls, INFORMATION_SCHEMA.COLUMNS cols " +
+                                                    @"SELECT DISTINCT tbls.TABLE_NAME, cols.COLUMN_NAME " +
+                                                    @"FROM INFORMATION_SCHEMA.Tables tbls INNER JOIN INFORMATION_SCHEMA.COLUMNS cols ON tbls.TABLE_NAME = cols.TABLE_NAME " +
                                                  @") r " +
-                                                 @"ORDER BY r.NAME, r.COLUMN_NAME";
+                                                 @"ORDER BY r.TABLE_NAME, r.COLUMN_NAME";
 
 
         //CONFIGURATION-Related Methods
@@ -133,27 +154,8 @@ namespace terminalAzure.Actions
 
         public List<string> GetFieldMappings(ActivityDO curActivityDO)
         {
-
-            var storage = Crate.GetStorage(curActivityDO);
-
-            if (storage.Count == 0)
-            {
-                throw new TerminalCodedException(TerminalErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
-            }
-
-            var confControls = storage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-
-            if (confControls == null)
-            {
-                throw new TerminalCodedException(TerminalErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
-            }
-
+            var confControls = GetConfigurationControls(curActivityDO);
             var connStringField = confControls.Controls.First();
-            if (connStringField == null || String.IsNullOrEmpty(connStringField.Value))
-            {
-                throw new TerminalCodedException(TerminalErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
-            }
-
             var curProvider = ObjectFactory.GetInstance<IDbProvider>();
 
             return (List<string>)curProvider.ConnectToSql(connStringField.Value, (command) =>
@@ -177,6 +179,38 @@ namespace terminalAzure.Actions
             });
         }
 
+        private void ValidateControls(ActivityDO activityDO)
+        {
+            var storage = Crate.GetStorage(activityDO);
+
+            if (storage.Count == 0)
+            {
+                throw new TerminalCodedException(TerminalErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
+            }
+
+            var confControls = storage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+
+            if (confControls == null)
+            {
+                throw new TerminalCodedException(TerminalErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
+            }
+
+            var connStringField = confControls.Controls.First();
+            if (connStringField == null || String.IsNullOrEmpty(connStringField.Value))
+            {
+                throw new TerminalCodedException(TerminalErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
+            }
+        }
+        private void AddErrorToControl(ActivityDO activityDO)
+        {
+            using (var updater = Crate.UpdateStorage(activityDO))
+            {
+                var controls = GetConfigurationControls(updater.CrateStorage);
+                var connStringTextBox = GetControl(controls, "connection_string", ControlTypes.TextBox);
+                connStringTextBox.Value = "Incorrect Connection String";
+            }
+        }
+
         //EXECUTION-Related Methods
         //-----------------------------------------
         private WriteCommandArgs PrepareSQLWrite(ActivityDO curActivityDO, PayloadDTO payloadCrates)
@@ -192,11 +226,11 @@ namespace terminalAzure.Actions
         {
             var mappedFieldsCrate = Crate.GetStorage(payloadCrates).CratesOfType<StandardPayloadDataCM>().FirstOrDefault(x => x.Label == "MappedFields");
 
-//            var mappedFieldsCrate = processPayload.CrateStorageDTO()
-//                .CrateDTO
-//                .Where(x => x.Label == "MappedFields"
-//                    && x.ManifestType == CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME)
-//                .FirstOrDefault();
+            //            var mappedFieldsCrate = processPayload.CrateStorageDTO()
+            //                .CrateDTO
+            //                .Where(x => x.Label == "MappedFields"
+            //                    && x.ManifestType == CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME)
+            //                .FirstOrDefault();
 
             if (mappedFieldsCrate == null)
             {
@@ -204,20 +238,20 @@ namespace terminalAzure.Actions
             }
 
             var valuesCrate = Crate.GetStorage(payloadCrates).CratesOfType<StandardPayloadDataCM>().FirstOrDefault(x => x.Label == "DocuSign Envelope Data");
-//
-//            var valuesCrate = processPayload.CrateStorageDTO()
-//                .CrateDTO
-//                .Where(x => x.ManifestType == CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME
-//                    && x.Label == "DocuSign Envelope Data")
-//                .FirstOrDefault();
+            //
+            //            var valuesCrate = processPayload.CrateStorageDTO()
+            //                .CrateDTO
+            //                .Where(x => x.ManifestType == CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME
+            //                    && x.Label == "DocuSign Envelope Data")
+            //                .FirstOrDefault();
 
             if (valuesCrate == null)
             {
                 throw new ApplicationException("No payload crate found with Label == DocuSign Envelope Data");
             }
 
-//            var mappedFields = mappedFieldsCrate.Value.AllValues();// JsonConvert.DeserializeObject<List<FieldDTO>>(mappedFieldsCrate.Contents);
-//            var values = JsonConvert.DeserializeObject<List<FieldDTO>>(valuesCrate.Contents);
+            //            var mappedFields = mappedFieldsCrate.Value.AllValues();// JsonConvert.DeserializeObject<List<FieldDTO>>(mappedFieldsCrate.Contents);
+            //            var values = JsonConvert.DeserializeObject<List<FieldDTO>>(valuesCrate.Contents);
 
             return CreateTables(mappedFieldsCrate.Content.AllValues().ToList(), valuesCrate.Content.AllValues().ToList());
         }

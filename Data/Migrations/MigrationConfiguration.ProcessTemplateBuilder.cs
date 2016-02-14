@@ -59,7 +59,7 @@ namespace Data.Migrations
 
             private void StoreTemplate(IUnitOfWork uow)
             {
-                var plan = uow.PlanRepository.GetQuery().FirstOrDefault(x => x.Name == _name);
+                var plan = uow.PlanRepository.GetPlanQueryUncached().FirstOrDefault(x => x.Name == _name);
                 bool add = plan == null;
 
                 if (add)

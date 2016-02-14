@@ -61,6 +61,7 @@ namespace DockyardTest.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var plan = FixtureData.TestRoute5();
+                uow.UserRepository.Add(plan.Fr8Account);
                 uow.PlanRepository.Add(plan);
                 foreach (var container in FixtureData.GetContainers())
                 {
@@ -151,10 +152,21 @@ namespace DockyardTest.Services
                 .Returns(Task.Delay(100))
                 .Verifiable();
             ContainerDO containerDO = FixtureData.TestContainerWithCurrentActivityAndNextActivity();
-            RouteNodeDO originalCurrentActivity = containerDO.CurrentRouteNode;
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var plan = FixtureData.TestRoute2();
+
+                plan.ChildNodes.AddRange(new[] {FixtureData.TestActivity10(), FixtureData.TestActivity7()});
+                uow.PlanRepository.Add(plan);
+                uow.ActivityTemplateRepository.Add(FixtureData.ActionTemplate());
+                uow.SaveChanges();
+            }
+
+            var originalCurrentActivityId = containerDO.CurrentRouteNodeId;
             _activity
-                .Setup(c => c.GetNextSibling(It.Is<RouteNodeDO>((r) => r.Id == originalCurrentActivity.Id)))
-                .Returns(containerDO.NextRouteNode);
+                .Setup(c => c.GetNextSibling(It.Is<RouteNodeDO>((r) => r.Id == originalCurrentActivityId)))
+                .Returns(FixtureData.TestActivity10());
 
             ObjectFactory.Configure(cfg => cfg.For<IRouteNode>().Use(_activity.Object));
 
@@ -165,8 +177,8 @@ namespace DockyardTest.Services
                 await _container.Run(uow, containerDO);
             }
 
-            Assert.AreNotEqual(originalCurrentActivity, containerDO.CurrentRouteNode);
-            Assert.IsNull(containerDO.CurrentRouteNode);
+            Assert.AreNotEqual(originalCurrentActivityId, containerDO.CurrentRouteNodeId);
+            Assert.IsNull(containerDO.CurrentRouteNodeId);
             _activity.Verify(p => p.Process(It.IsAny<Guid>(), It.IsAny<ActionState>(), It.IsAny<ContainerDO>()));
         }
 

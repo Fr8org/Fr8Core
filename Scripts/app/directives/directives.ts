@@ -196,3 +196,54 @@ app.directive('inputFocus', ['$parse', ($parse: ng.IParseService) => {
         }
     };
 }]);
+
+app.directive('compareTo', () => {
+    return {
+        require: "ngModel",
+        scope: {
+            otherModelValue: "=compareTo"
+        },
+        link: function (scope: any, element, attributes, ngModel) {
+
+            ngModel.$validators.compareTo = function (modelValue) {
+                return modelValue == scope.otherModelValue;
+            };
+
+            scope.$watch("otherModelValue", function () {
+                ngModel.$validate();
+            });
+        }
+    };
+});
+
+
+app.directive('stickyFooter', [
+    '$timeout',
+    function ($timeout) {
+        return {
+            restrict: 'A',
+            link: function (scope, iElement, iAttrs) {
+                var stickyFooterWrapper = $(iAttrs.stickyFooter);
+
+                stickyFooterWrapper.parents().css('height', '100%');
+                stickyFooterWrapper.css({
+                    'min-height': '100%',
+                    'height': 'auto'
+                });
+
+                // Append a pushing div to the stickyFooterWrapper.
+                var stickyFooterPush = $('<div class="push-footer"></div>');
+                stickyFooterWrapper.append(stickyFooterPush);
+
+                var setHeights = function () {
+                    var height = iElement.outerHeight();
+                    stickyFooterPush.height(height);
+                    stickyFooterWrapper.css('margin-bottom', -(height));
+                };
+
+                $timeout(setHeights, 0);
+                $(window).on('resize', setHeights);
+            }
+        };
+    }
+]);

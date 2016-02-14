@@ -10,7 +10,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="user in ::users" ng-click="openDetails(user)">
+                <tr ng-repeat="user in ::users" ng-click="openDetails(user)" style="cursor: pointer;">
                     <td>{{:: user.id }}</td>
                     <td>{{:: user.emailAddress }}</td>
                     <td>{{:: user.role }}</td>

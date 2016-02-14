@@ -58,7 +58,12 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             if (client == null)
             {
                 client = new HttpClient();
-                client.Timeout = new TimeSpan(0, 2, 0); //2 minute
+
+#if DEBUG 
+                client.Timeout = new TimeSpan(0, 10, 0); //5 minutes
+#else
+                client.Timeout = new TimeSpan(0, 2, 0); //2 minutes
+#endif
             }
 
             _innerClient = client; 
@@ -154,7 +159,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             return responseContent;
         }
 
-        #region InternalRequestMethods
+#region InternalRequestMethods
         private async Task<HttpResponseMessage> GetInternalAsync(Uri requestUri, string CorrelationId, Dictionary<string, string> headers)
         {
             using (var request = new HttpRequestMessage(HttpMethod.Get, requestUri))
@@ -181,7 +186,15 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
                 return await SendInternalAsync(request, CorrelationId);
             }
         }
-
+        private async Task DeleteInternalAsync(Uri requestUri, string CorrelationId, Dictionary<string, string> headers)
+        {
+            using (var request = new HttpRequestMessage(HttpMethod.Delete, requestUri))
+            {
+                AddHeaders(request, headers);
+                var response = await SendInternalAsync(request, CorrelationId);
+                response.Dispose();
+            }
+        }
         private async Task<HttpResponseMessage> PutInternalAsync(Uri requestUri, HttpContent content, string CorrelationId, Dictionary<string, string> headers)
         {
             using (var request = new HttpRequestMessage(HttpMethod.Put, requestUri) { Content = content })
@@ -191,7 +204,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             }
         }
 
-        #endregion
+#endregion
 
         private void AddHeaders(HttpRequestMessage request, Dictionary<string, string> headers)
         {
@@ -221,7 +234,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             set { _innerClient.BaseAddress = value; }
         }
 
-        #region GenericRequestMethods
+#region GenericRequestMethods
         /// <summary>
         /// Downloads file as a MemoryStream from given URL
         /// </summary>
@@ -284,20 +297,18 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
         {
             return await PostAsync<TResponse>(requestUri, new ObjectContent(typeof(TContent), content, _formatter), CorrelationId, headers);
         }
-
         public async Task<TResponse> PutAsync<TContent, TResponse>(Uri requestUri, TContent content, string CorrelationId = null, Dictionary<string, string> headers = null)
         {
             return await PutAsync<TResponse>(requestUri, new ObjectContent(typeof(TContent), content, _formatter), CorrelationId, headers);
         }
-
         public async Task<string> PutAsync<TContent>(Uri requestUri, TContent content, string CorrelationId = null, Dictionary<string, string> headers = null)
         {
             return await PutAsync(requestUri, (HttpContent)new ObjectContent(typeof(TContent), content, _formatter), CorrelationId, headers);
         }
 
-        #endregion
+#endregion
 
-        #region HttpContentRequestMethods
+#region HttpContentRequestMethods
         public async Task<string> PostAsync(Uri requestUri, HttpContent content, string CorrelationId = null, Dictionary<string, string> headers = null)
         {
             using (var response = await PostInternalAsync(requestUri, content, CorrelationId, headers))
@@ -311,6 +322,10 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             {
                 return await DeserializeResponseAsync<TResponse>(response);
             }
+        }
+        public async Task DeleteAsync(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null)
+        {
+            await DeleteInternalAsync(requestUri, CorrelationId, headers);
         }
         public async Task<TResponse> PutAsync<TResponse>(Uri requestUri, HttpContent content, string CorrelationId = null, Dictionary<string, string> headers = null)
         {
@@ -327,7 +342,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             }
         }
 
-        #endregion
+#endregion
 
     }
 }

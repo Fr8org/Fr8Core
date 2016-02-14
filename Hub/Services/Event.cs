@@ -16,8 +16,10 @@ using Data.States;
 using Data.Entities;
 using System.Linq;
 using System.Collections.Generic;
+using System.Data.Entity;
 using Data.Exceptions;
 using Utilities;
+using Hub.Managers;
 
 namespace Hub.Services
 {
@@ -88,23 +90,32 @@ namespace Hub.Services
             {
                 if (eventReportMS.ExternalAccountId == systemUserEmail)
                 {
-                    Fr8AccountDO systemUser = uow.UserRepository.GetOrCreateUser(systemUserEmail);
-                    await FindAccountRoutes(uow, eventReportMS, curCrateStandardEventReport, systemUser);
+                    try
+                    {
+                        Fr8AccountDO systemUser = uow.UserRepository.GetOrCreateUser(systemUserEmail);
+                        await FindAccountRoutes(uow, eventReportMS, curCrateStandardEventReport, systemUser);
+                    }
+                    catch (Exception ex)
+                    {
+                        EventManager.UnexpectedError(ex);
+                    }
                 }
                 else
                 {
                     //find the corresponding DockyardAccount
-                    var authTokenList = uow.AuthorizationTokenRepository.FindList(x => x.ExternalAccountId == eventReportMS.ExternalAccountId);
-                    if (authTokenList == null)
-                    {
-                        return;
-                    }
+                    var authTokenList = uow.AuthorizationTokenRepository.GetPublicDataQuery().Include(x => x.UserDO).Where(x => x.ExternalAccountId == eventReportMS.ExternalAccountId);
 
-                    foreach (var authToken in authTokenList)
+                    foreach (var authToken in authTokenList.ToArray())
                     {
-                        var curDockyardAccount = authToken.UserDO;
-
-                        await FindAccountRoutes(uow, eventReportMS, curCrateStandardEventReport, curDockyardAccount);
+                        try
+                        {
+                            var curDockyardAccount = authToken.UserDO;
+                            await FindAccountRoutes(uow, eventReportMS, curCrateStandardEventReport, curDockyardAccount);
+                        }
+                        catch (Exception ex)
+                        {
+                            EventManager.UnexpectedError(ex);
+                        }
                     }
                 }
 
@@ -115,10 +126,7 @@ namespace Hub.Services
                Crate curCrateStandardEventReport, Fr8AccountDO curDockyardAccount = null)
         {
             //find this Account's Routes
-            var initialRoutesList = uow.PlanRepository
-                .FindList(pt => pt.Fr8AccountId == curDockyardAccount.Id)
-                .Where(x => x.RouteState == RouteState.Active);
-
+            var initialRoutesList = uow.PlanRepository.GetPlanQueryUncached().Where(pt => pt.Fr8AccountId == curDockyardAccount.Id && pt.RouteState == RouteState.Active);
             var subscribingRoutes = _plan.MatchEvents(initialRoutesList.ToList(), eventReportMS);
 
             await LaunchProcesses(subscribingRoutes, curCrateStandardEventReport);
