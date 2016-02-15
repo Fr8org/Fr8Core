@@ -144,7 +144,7 @@ namespace DockyardTest.Services
 */
 
         [Test]
-        public async void Execute_MoveToNextActivity_ProcessCurrentAndNextActivity()
+        public async Task Execute_MoveToNextActivity_ProcessCurrentAndNextActivity()
         {
             var _activity = new Mock<IRouteNode>();
             _activity
@@ -182,52 +182,52 @@ namespace DockyardTest.Services
             _activity.Verify(p => p.Process(It.IsAny<Guid>(), It.IsAny<ActionState>(), It.IsAny<ContainerDO>()));
         }
 
-//        [Test]
-//        public async void Execute_ProcessUntil3rdActivities_ProcessAllActivities()
-//        {
-//            var _activity = new Mock<IActivity>();
-//            _activity
-//                .Setup(c => c.Process(It.IsAny<int>(), It.IsAny<ProcessDO>()))
-//                .Returns(Task.Delay(100))
-//                .Verifiable();
-//            //Setup 3rd ActivityDO
-//            _activity.Setup(c => c.GetNextActivities(It.IsAny<ActivityDO>())).Returns(new List<ActivityDO>() { FixtureData.TestAction9() });
-//            ObjectFactory.Configure(cfg => cfg.For<IActivity>().Use(_activity.Object));
-//            _processService = ObjectFactory.GetInstance<IProcess>();
-//            ProcessDO processDO = FixtureData.TestProcesswithCurrentActivityAndNextActivity();
-//            ActivityDO originalCurrentActivity = processDO.CurrentActivity;
-//            ActivityDO originalNextActivity = processDO.NextActivity;
-//
-//            await _processService.Execute(processDO);
-//
-//            Assert.AreNotEqual(originalCurrentActivity, processDO.CurrentActivity);
-//            Assert.AreNotEqual(originalNextActivity, processDO.NextActivity);
-//            Assert.IsNull(processDO.CurrentActivity);
-//            _activity.Verify(p => p.Process(It.IsAny<int>(), It.IsAny<ProcessDO>()));
-//        }
+        //        [Test]
+        //        public async Task Execute_ProcessUntil3rdActivities_ProcessAllActivities()
+        //        {
+        //            var _activity = new Mock<IActivity>();
+        //            _activity
+        //                .Setup(c => c.Process(It.IsAny<int>(), It.IsAny<ProcessDO>()))
+        //                .Returns(Task.Delay(100))
+        //                .Verifiable();
+        //            //Setup 3rd ActivityDO
+        //            _activity.Setup(c => c.GetNextActivities(It.IsAny<ActivityDO>())).Returns(new List<ActivityDO>() { FixtureData.TestAction9() });
+        //            ObjectFactory.Configure(cfg => cfg.For<IActivity>().Use(_activity.Object));
+        //            _processService = ObjectFactory.GetInstance<IProcess>();
+        //            ProcessDO processDO = FixtureData.TestProcesswithCurrentActivityAndNextActivity();
+        //            ActivityDO originalCurrentActivity = processDO.CurrentActivity;
+        //            ActivityDO originalNextActivity = processDO.NextActivity;
+        //
+        //            await _processService.Execute(processDO);
+        //
+        //            Assert.AreNotEqual(originalCurrentActivity, processDO.CurrentActivity);
+        //            Assert.AreNotEqual(originalNextActivity, processDO.NextActivity);
+        //            Assert.IsNull(processDO.CurrentActivity);
+        //            _activity.Verify(p => p.Process(It.IsAny<int>(), It.IsAny<ProcessDO>()));
+        //        }
 
-//        [Test]
-//        public async void Execute_SetNextActivityNull_ProcessCurrentActivity()
-//        {
-//            var _activity = new Mock<IActivity>();
-//            _activity
-//                .Setup(c => c.Process(It.IsAny<int>(), It.IsAny<ProcessDO>()))
-//                .Returns(Task.Delay(100))
-//                .Verifiable();
-//            ObjectFactory.Configure(cfg => cfg.For<IActivity>().Use(_activity.Object));
-//            _processService = ObjectFactory.GetInstance<IProcess>();
-//            ProcessDO processDO = FixtureData.TestProcesswithCurrentActivityAndNextActivity();
-//            processDO.NextActivity = null;
-//
-//            await _processService.Execute(processDO);
-//
-//            Assert.IsNull(processDO.CurrentActivity);
-//            _activity.Verify(p => p.Process(It.IsAny<int>(), It.IsAny<ProcessDO>()));
-//        }
-//
+        //        [Test]
+        //        public async Task Execute_SetNextActivityNull_ProcessCurrentActivity()
+        //        {
+        //            var _activity = new Mock<IActivity>();
+        //            _activity
+        //                .Setup(c => c.Process(It.IsAny<int>(), It.IsAny<ProcessDO>()))
+        //                .Returns(Task.Delay(100))
+        //                .Verifiable();
+        //            ObjectFactory.Configure(cfg => cfg.For<IActivity>().Use(_activity.Object));
+        //            _processService = ObjectFactory.GetInstance<IProcess>();
+        //            ProcessDO processDO = FixtureData.TestProcesswithCurrentActivityAndNextActivity();
+        //            processDO.NextActivity = null;
+        //
+        //            await _processService.Execute(processDO);
+        //
+        //            Assert.IsNull(processDO.CurrentActivity);
+        //            _activity.Verify(p => p.Process(It.IsAny<int>(), It.IsAny<ProcessDO>()));
+        //        }
+        //
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public async void Execute_SetCurrentActivityNull_ThrowsException()
+        public async Task Execute_SetCurrentActivityNull_ThrowsException()
         {
             _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
 

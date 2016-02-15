@@ -24,7 +24,7 @@ namespace terminalSalesforceTests.Intergration
         }
 
         [Test, Category("intergration.terminalSalesforce")]
-        public async void Create_Contact_Initial_Configuration_Check_Crate_Structure()
+        public async Task Create_Contact_Initial_Configuration_Check_Crate_Structure()
         {
             //Act
             var initialConfigActionDto = await PerformInitialConfiguration();
@@ -40,7 +40,7 @@ namespace terminalSalesforceTests.Intergration
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException)
         )]
-        public async void Create_Contact_Initial_Configuration_Without_AuthToken_Exception_Thrown()
+        public async Task Create_Contact_Initial_Configuration_Without_AuthToken_Exception_Thrown()
         {
             //Arrange
             string terminalConfigureUrl = GetTerminalConfigureUrl();
@@ -55,7 +55,7 @@ namespace terminalSalesforceTests.Intergration
         }
 
         [Test, Category("intergration.terminalSalesforce")]
-        public async void Create_Contact_Run_With_NoAuth_Check_NoAuthProvided_Error()
+        public async Task Create_Contact_Run_With_NoAuth_Check_NoAuthProvided_Error()
         {
             //Arrange
             var initialConfigActionDto = await PerformInitialConfiguration();
@@ -77,7 +77,7 @@ namespace terminalSalesforceTests.Intergration
         }
 
         [Test, Category("intergration.terminalSalesforce")]
-        public async void Create_Contact_Run_With_NoLastName_Check_NoLastNameProvided_Error()
+        public async Task Create_Contact_Run_With_NoLastName_Check_NoLastNameProvided_Error()
         {
             //Arrange
             var initialConfigActionDto = await PerformInitialConfiguration();
@@ -98,7 +98,7 @@ namespace terminalSalesforceTests.Intergration
         }
 
         [Test, Category("intergration.terminalSalesforce")]
-        public async void Create_Contact_Run_With_ValidParameter_Check_PayloadDto_OperationalState()
+        public async Task Create_Contact_Run_With_ValidParameter_Check_PayloadDto_OperationalState()
         {
             //Arrange
             var initialConfigActionDto = await PerformInitialConfiguration();

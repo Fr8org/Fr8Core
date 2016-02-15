@@ -28,7 +28,7 @@ namespace terminalSlackTests.Integration
         }
 
         [Test]
-        public async void Publish_To_Slack_v1_ProcessConfigurationRequest()
+        public async Task Publish_To_Slack_v1_ProcessConfigurationRequest()
         {
             // Act
             var responseFollowUpActionDTO = await ConfigurationRequest();
@@ -60,14 +60,14 @@ namespace terminalSlackTests.Integration
             ExpectedException = typeof(RestfulServiceException),
             ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}"
         )]
-        public async void Publish_To_Slack_v1_Initial_Configuration_Check_Crate_Structure_NoAuth()
+        public async Task Publish_To_Slack_v1_Initial_Configuration_Check_Crate_Structure_NoAuth()
         {
             // Act
             var responseActionDTO = await ConfigureInitial(false);
         }
 
         [Test]
-        public async void Publish_To_Slack_v1_Initial_Configuration_Check_Crate_Structure()
+        public async Task Publish_To_Slack_v1_Initial_Configuration_Check_Crate_Structure()
         {
             // Act
             var responseActionDTO = await ConfigureInitial();

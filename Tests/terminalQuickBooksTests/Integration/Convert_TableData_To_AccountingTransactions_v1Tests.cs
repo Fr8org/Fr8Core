@@ -28,7 +28,7 @@ namespace terminalQuickBooksTests.Integration
         }
 
         [Test, Category("Integration.terminalQuickBooks")]
-        public async void Convert_TableData_To_AccountingTransactions()
+        public async Task Convert_TableData_To_AccountingTransactions()
         {
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
