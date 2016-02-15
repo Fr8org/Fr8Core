@@ -114,7 +114,7 @@ namespace terminalDocuSignTests
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
         [Test]
-        public async void Send_DocuSign_Envelope_Initial_Configuration_Check_Crate_Structure()
+        public async Task Send_DocuSign_Envelope_Initial_Configuration_Check_Crate_Structure()
         {
             var responseActionDTO = await ConfigureInitial();
 
@@ -135,7 +135,7 @@ namespace terminalDocuSignTests
             ExpectedException = typeof(RestfulServiceException),
             ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}"
         )]
-        public async void Send_DocuSign_Envelope_Initial_Configuration_NoAuth()
+        public async Task Send_DocuSign_Envelope_Initial_Configuration_NoAuth()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -152,7 +152,7 @@ namespace terminalDocuSignTests
         /// Validate correct crate-storage structure in follow-up configuration response.
         /// </summary>
         [Test]
-        public async void Send_DocuSign_Envelope_FollowUp_Configuration_Check_Crate_Structure()
+        public async Task Send_DocuSign_Envelope_FollowUp_Configuration_Check_Crate_Structure()
         {
             var responseFollowUpActionDTO = await ConfigureFollowUp();
 
@@ -173,7 +173,7 @@ namespace terminalDocuSignTests
             ExpectedException = typeof(RestfulServiceException),
             ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}"
         )]
-        public async void Send_DocuSign_Envelope_FollowUp_Configuration_NoAuth()
+        public async Task Send_DocuSign_Envelope_FollowUp_Configuration_NoAuth()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -199,7 +199,7 @@ namespace terminalDocuSignTests
         /// Test run-time for action from Monitor_DocuSign_FollowUp_Configuration_TemplateValue.
         /// </summary>
         [Test]
-        public async void Send_DocuSign_Envelope_Run_With_Specific_Recipient()
+        public async Task Send_DocuSign_Envelope_Run_With_Specific_Recipient()
         {
             var runUrl = GetTerminalRunUrl();
             var configureUrl = GetTerminalConfigureUrl();
@@ -227,7 +227,7 @@ namespace terminalDocuSignTests
             ExpectedException = typeof(RestfulServiceException),
             ExpectedMessage = @"{""status"":""terminal_error"",""message"":""No auth token provided.""}"
         )]
-        public async void Send_DocuSign_Envelope_Run_NoAuth()
+        public async Task Send_DocuSign_Envelope_Run_NoAuth()
         {
             var runUrl = GetTerminalRunUrl();
             var configureUrl = GetTerminalConfigureUrl();
@@ -274,7 +274,7 @@ namespace terminalDocuSignTests
         }
 
         [Test]
-        public async void Send_DocuSign_Envelope_Activate_Returns_ActionDTO()
+        public async Task Send_DocuSign_Envelope_Activate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
@@ -295,7 +295,7 @@ namespace terminalDocuSignTests
         }
 
         [Test]
-        public async void Send_DocuSign_Envelope_Deactivate_Returns_ActionDTO()
+        public async Task Send_DocuSign_Envelope_Deactivate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();

@@ -74,20 +74,6 @@ namespace terminalDocuSign.Actions
                     }
                     }
                 });
-                /*
-                Controls.Add(new DropDownList()
-                {
-                    Name = "SpecificEvent",
-                    Label = "What event do you want to watch for?",
-                    Events = new List<ControlEvent> { ControlEvent.RequestConfig },
-                    Source = new FieldSourceDTO
-                    {
-                        Label = "AvailableEvents",
-                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                    }
-                });
-                */
-
                 Controls.Add(new Duration
                 {
                     Label = "After you send a Tracked Envelope, Fr8 will wait.",
@@ -147,7 +133,6 @@ namespace terminalDocuSign.Actions
                 crateStorage.Clear();
                 crateStorage.Add(PackControls(new ActionUi()));
                 crateStorage.Add(PackAvailableTemplates(authTokenDO));
-                crateStorage.Add(PackAvailableEvents());
                 crateStorage.Add(await PackAvailableHandlers(activityDO));
                 crateStorage.Add(PackAvailableRecipientEvents(activityDO));
             }
@@ -195,7 +180,7 @@ namespace terminalDocuSign.Actions
             {
                 var ddlbTemplate = (specificTemplateOption.Controls[0] as DropDownList);
                 SetControlValue(monitorDocuSignAction, "TemplateRecipientPicker.template.UpstreamCrate",
-                   ddlbTemplate.ListItems.Where(a => a.Key == ddlbTemplate.selectedKey).Single());
+                   ddlbTemplate.ListItems.Single(a => a.Key == ddlbTemplate.selectedKey));
             }
 
             SetControlValue(monitorDocuSignAction, "Event_Envelope_Sent", "true");
@@ -258,7 +243,7 @@ namespace terminalDocuSign.Actions
                 var radioButtonGroup = (configControlCM.Controls.First() as RadioButtonGroup);
                 radioButtonGroup.Radios[0].Selected = false;
                 radioButtonGroup.Radios[1].Selected = true;
-                var objectList = (DropDownList)(radioButtonGroup.Radios[1].Controls.Where(c => c.Name == "AvailableObjects").FirstOrDefault());
+                var objectList = (DropDownList)(radioButtonGroup.Radios[1].Controls.FirstOrDefault(c => c.Name == "AvailableObjects"));
                 MT_Object selectedObject;
                 if (string.IsNullOrEmpty(recipientEmail))
                 {
@@ -344,19 +329,6 @@ namespace terminalDocuSign.Actions
 
             var crate = DocuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
             crate.Label = "AvailableTemplates";
-
-            return crate;
-        }
-
-        private Crate PackAvailableEvents()
-        {
-            var crate = CrateManager.CreateDesignTimeFieldsCrate(
-                "AvailableEvents",
-                new FieldDTO { Key = "You sent a Docusign Envelope", Value = "Event_Envelope_Sent" },
-                new FieldDTO { Key = "Someone received an Envelope you sent", Value = "Event_Envelope_Received" },
-                new FieldDTO { Key = "One of your Recipients signed an Envelope", Value = "Event_Recipient_Signed" }
-                //,new FieldDTO { Key = "Recipient Sent", Value = "Event_Recipient_Sent" }
-            );
 
             return crate;
         }

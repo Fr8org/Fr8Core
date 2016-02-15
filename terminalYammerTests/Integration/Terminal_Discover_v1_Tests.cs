@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
 using NUnit.Framework;
@@ -24,7 +25,7 @@ namespace terminalYammerTests.Integration
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
         [Test, CategoryAttribute("Integration.terminalYammer")]
-        public async void Terminal_Yammer_Discover()
+        public async Task Terminal_Yammer_Discover()
         {
             var discoverUrl = GetTerminalDiscoverUrl();
 

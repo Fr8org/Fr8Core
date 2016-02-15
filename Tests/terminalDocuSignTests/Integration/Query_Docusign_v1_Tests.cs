@@ -1,4 +1,5 @@
-﻿using Data.Crates;
+﻿using System.Threading.Tasks;
+using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
 using HealthMonitor.Utility;
 using Hub.Managers.APIManagers.Transmitters.Restful;
@@ -34,7 +35,7 @@ namespace terminalDocuSignTests.Integration
             ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}",
             MatchType = MessageMatch.Contains
         )]
-        public async void Query_DocuSign_Configuration_NoAuth()
+        public async Task Query_DocuSign_Configuration_NoAuth()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -57,7 +58,7 @@ namespace terminalDocuSignTests.Integration
             ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}",
             MatchType = MessageMatch.Contains
         )]
-        public async void Query_DocuSign_Run_NoAuth()
+        public async Task Query_DocuSign_Run_NoAuth()
         {
             var runUrl = GetTerminalRunUrl();
 
@@ -77,7 +78,7 @@ namespace terminalDocuSignTests.Integration
             ExpectedMessage = @"{""status"":""terminal_error"",""message"":""Action was not configured correctly""}",
             MatchType = MessageMatch.Contains
         )]
-        public async void Query_DocuSign_Run_NoConfig()
+        public async Task Query_DocuSign_Run_NoConfig()
         {
             var runUrl = GetTerminalRunUrl();
 
@@ -88,7 +89,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async void Query_DocuSign_Activate_Returns_ActionDTO()
+        public async Task Query_DocuSign_Activate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
@@ -109,7 +110,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async void Query_DocuSign_Deactivate_Returns_ActionDTO()
+        public async Task Query_DocuSign_Deactivate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();

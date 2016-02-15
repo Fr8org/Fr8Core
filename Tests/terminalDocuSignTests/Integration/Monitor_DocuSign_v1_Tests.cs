@@ -171,7 +171,7 @@ namespace terminalDocuSignTests.Integration
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
         [Test]
-        public async void Monitor_DocuSign_Initial_Configuration_Check_Crate_Structure()
+        public async Task Monitor_DocuSign_Initial_Configuration_Check_Crate_Structure()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -201,7 +201,7 @@ namespace terminalDocuSignTests.Integration
             ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}",
             MatchType = MessageMatch.Contains
         )]
-        public async void Monitor_DocuSign_Initial_Configuration_NoAuth()
+        public async Task Monitor_DocuSign_Initial_Configuration_NoAuth()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -218,7 +218,7 @@ namespace terminalDocuSignTests.Integration
         /// Validate correct crate-storage structure in follow-up configuration response.
         /// </summary>
         [Test]
-        public async void Monitor_DocuSign_FollowUp_Configuration_Check_Crate_Structure()
+        public async Task Monitor_DocuSign_FollowUp_Configuration_Check_Crate_Structure()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -255,7 +255,7 @@ namespace terminalDocuSignTests.Integration
         /// that contains single field with key = "TemplateId" and empty value.
         /// </summary>
         [Test]
-        public async void Monitor_DocuSign_FollowUp_Configuration_RecipientValue()
+        public async Task Monitor_DocuSign_FollowUp_Configuration_RecipientValue()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -284,7 +284,7 @@ namespace terminalDocuSignTests.Integration
         /// the value of that field should be equal to what was set to "UpstreamCrate" drop-down-list.
         /// </summary>
         [Test]
-        public async void Monitor_DocuSign_FollowUp_Configuration_TemplateValue()
+        public async Task Monitor_DocuSign_FollowUp_Configuration_TemplateValue()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -313,7 +313,7 @@ namespace terminalDocuSignTests.Integration
             ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}",
             MatchType = MessageMatch.Contains
         )]
-        public async void Monitor_DocuSign_FollowUp_Configuration_NoAuth()
+        public async Task Monitor_DocuSign_FollowUp_Configuration_NoAuth()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -335,7 +335,7 @@ namespace terminalDocuSignTests.Integration
         /// Test run-time for action from Monitor_DocuSign_FollowUp_Configuration_RecipientValue.
         /// </summary>
         [Test]
-        public async void Monitor_DocuSign_Run_RecipientValue()
+        public async Task Monitor_DocuSign_Run_RecipientValue()
         {
             var envelopeId = Guid.NewGuid().ToString();
 
@@ -379,7 +379,7 @@ namespace terminalDocuSignTests.Integration
         /// Test run-time for action from Monitor_DocuSign_FollowUp_Configuration_TemplateValue.
         /// </summary>
         [Test]
-        public async void Monitor_DocuSign_Run_TemplateValue()
+        public async Task Monitor_DocuSign_Run_TemplateValue()
         {
             var envelopeId = Guid.NewGuid().ToString();
 
@@ -425,7 +425,7 @@ namespace terminalDocuSignTests.Integration
         /// Test run-time without Auth-Token.
         /// </summary>
         [Test]
-        public async void Monitor_DocuSign_Run_NoAuth()
+        public async Task Monitor_DocuSign_Run_NoAuth()
         {
             var runUrl = GetTerminalRunUrl();
 
@@ -437,7 +437,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async void Monitor_DocuSign_Activate_Returns_ActionDTO()
+        public async Task Monitor_DocuSign_Activate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
@@ -463,7 +463,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async void Monitor_DocuSign_Deactivate_Returns_ActionDTO()
+        public async Task Monitor_DocuSign_Deactivate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();

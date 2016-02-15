@@ -21,7 +21,7 @@ namespace terminalExcelTests.Integration
         }
 
         [Test]
-        public async void Discover_Check_Returned_Actions()
+        public async Task Discover_Check_Returned_Actions()
         {
             var discoverUrl = GetTerminalDiscoverUrl();
 

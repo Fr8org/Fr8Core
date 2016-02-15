@@ -11,6 +11,7 @@ using StructureMap;
 using terminalAzureTests.Fixtures;
 using UtilitiesTesting.Fixtures;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace terminalAzureTests.Integration
 {
@@ -61,7 +62,7 @@ namespace terminalAzureTests.Integration
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
         [Test]
-        public async void Write_To_Sql_Server_Initial_Configuration_Check_Crate_Structure()
+        public async Task Write_To_Sql_Server_Initial_Configuration_Check_Crate_Structure()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -85,7 +86,7 @@ namespace terminalAzureTests.Integration
         /// Validate correct crate-storage structure in follow-up configuration response 
         /// </summary>
         [Test]
-        public async void Write_To_Sql_Server_FollowUp_Configuration_Check_Crate_Structure()
+        public async Task Write_To_Sql_Server_FollowUp_Configuration_Check_Crate_Structure()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -137,7 +138,7 @@ namespace terminalAzureTests.Integration
         /// with incorrect connection string
         /// </summary>
         [Test]
-        public async void Write_To_Sql_Server_FollowUp_Configuration_Check_Crate_Structure_Incorrect_ConnectionString()
+        public async Task Write_To_Sql_Server_FollowUp_Configuration_Check_Crate_Structure_Incorrect_ConnectionString()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -187,7 +188,7 @@ namespace terminalAzureTests.Integration
         /// Test run-time for action Run().
         /// </summary>
         [Test]
-        public async void Write_To_Sql_Server_Run()
+        public async Task Write_To_Sql_Server_Run()
         {
             var runUrl = GetTerminalRunUrl();
 
@@ -224,7 +225,7 @@ namespace terminalAzureTests.Integration
         }
 
         [Test]
-        public async void Write_To_Sql_Server_Activate_Returns_ActionDTO()
+        public async Task Write_To_Sql_Server_Activate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
@@ -245,7 +246,7 @@ namespace terminalAzureTests.Integration
         }
 
         [Test]
-        public async void Write_To_Sql_Server_Deactivate_Returns_ActionDTO()
+        public async Task Write_To_Sql_Server_Deactivate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();

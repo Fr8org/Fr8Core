@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Data.Control;
 using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
@@ -22,7 +23,7 @@ namespace terminalQuickBooksTests.Integration
             get { return "terminalQuickBooks"; }
         }
         [Test, Category("Integration.terminalQuickBooks")]
-        public async void Create_Journal_Entry_Configuration_Check_With_No_Upstream_Crate()
+        public async Task Create_Journal_Entry_Configuration_Check_With_No_Upstream_Crate()
         {
             //Arrange
             var curMessage =
@@ -47,7 +48,7 @@ namespace terminalQuickBooksTests.Integration
             Assert.AreEqual("alert alert-warning", curTextBlock.CssClass);
         }
         [Test, Category("Integration.terminalQuickBooks")]
-        public async void Create_Journal_Entry_Configuration_Check_With_Upstream_Crate()
+        public async Task Create_Journal_Entry_Configuration_Check_With_Upstream_Crate()
         {
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();

@@ -33,7 +33,7 @@ namespace terminalSendGridTests.Integration
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
         [Test, Category("Integration.terminalSendGrid")]
-        public async void SendEmailViaSendGrid_Initial_Configuration_Check_Crate_Structure()
+        public async Task SendEmailViaSendGrid_Initial_Configuration_Check_Crate_Structure()
         {
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
@@ -67,7 +67,7 @@ namespace terminalSendGridTests.Integration
         /// Validate correct crate-storage structure in followup configuration response.
         /// </summary>
         [Test, Category("Integration.terminalSendGrid")]
-        public async void SendEmailViaSendGrid_FollowUp_Configuration_Check_Crate_Structure()
+        public async Task SendEmailViaSendGrid_FollowUp_Configuration_Check_Crate_Structure()
         {
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
@@ -100,7 +100,7 @@ namespace terminalSendGridTests.Integration
         }
 
         [Test, Category("Integration.terminalSendGrid")]
-        public async void SendEmailViaSendGrid_Run_Returns_Payload()
+        public async Task SendEmailViaSendGrid_Run_Returns_Payload()
         {
             //Arrange
             var runUrl = GetTerminalRunUrl();
@@ -165,7 +165,7 @@ namespace terminalSendGridTests.Integration
         }
 
         [Test, Category("Integration.terminalSendGrid")]
-        public async void SendEmailViaSendGrid_Activate_Returns_ActionDTO()
+        public async Task SendEmailViaSendGrid_Activate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
@@ -186,7 +186,7 @@ namespace terminalSendGridTests.Integration
         }
 
         [Test, Category("Integration.terminalSendGrid")]
-        public async void SendEmailViaSendGrid_Deactivate_Returns_ActionDTO()
+        public async Task SendEmailViaSendGrid_Deactivate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();

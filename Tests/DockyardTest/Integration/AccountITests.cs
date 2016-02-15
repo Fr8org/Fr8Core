@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Hub.Managers.APIManagers.Packagers;
 using Moq;
 using NUnit.Framework;
@@ -21,7 +22,7 @@ namespace DockyardTest.Integration
     {
         [Test]
         [Category("IntegrationTests")]
-        public async void ITest_CanResetPassword()
+        public async Task ITest_CanResetPassword()
         {
             // DataProtectionProvider property is not getting initialised through startup
             // So Initiliaze it explicitly. DpapiDataProtectionProvider is used for test cases only

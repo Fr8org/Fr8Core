@@ -37,6 +37,7 @@ namespace terminalDocuSign.Services
             _activity = ObjectFactory.GetInstance<IActivity>();
             _hubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
+            _hubCommunicator.Configure("terminalDocuSign");
         }
 
         /// <summary>

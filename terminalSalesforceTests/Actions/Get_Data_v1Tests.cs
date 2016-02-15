@@ -61,7 +61,7 @@ namespace terminalSalesforceTests.Actions
         }
 
         [Test, Category("terminalSalesforceTests.Get_Data.Configure")]
-        public async void Configure_InitialConfig_CheckControlsCrate()
+        public async Task Configure_InitialConfig_CheckControlsCrate()
         {
             //Arrange
             var activityDO = FixtureData.GetFileListTestActionDO1();
@@ -87,7 +87,7 @@ namespace terminalSalesforceTests.Actions
         }
 
         [Test, Category("terminalSalesforceTests.Get_Data.Configure")]
-        public async void Configure_FollowUpConfig_CheckObjectFields()
+        public async Task Configure_FollowUpConfig_CheckObjectFields()
         {
             //Arrange
             var activityDO = FixtureData.GetFileListTestActionDO1();
@@ -111,7 +111,7 @@ namespace terminalSalesforceTests.Actions
         }
 
         [Test, Category("terminalSalesforceTests.Get_Data.Run")]
-        public async void Run_Check_PayloadDTO_ForObjectData()
+        public async Task Run_Check_PayloadDTO_ForObjectData()
         {
             //Arrange
             var activityDO = FixtureData.GetFileListTestActionDO1();

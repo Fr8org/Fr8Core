@@ -34,7 +34,7 @@ namespace terminalPapertrailTests.Integration
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
         [Test, Category("Integration.terminalPapertrail")]
-        public async void Write_To_Log_Initial_Configuration_Check_Crate_Structure()
+        public async Task Write_To_Log_Initial_Configuration_Check_Crate_Structure()
         {
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
@@ -62,7 +62,7 @@ namespace terminalPapertrailTests.Integration
         /// Validate correct crate-storage structure in followup configuration response.
         /// </summary>
         [Test, Category("Integration.terminalPapertrail")]
-        public async void Write_To_Log_FollowUp_Configuration_Check_Crate_Structure()
+        public async Task Write_To_Log_FollowUp_Configuration_Check_Crate_Structure()
         {
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
@@ -101,7 +101,7 @@ namespace terminalPapertrailTests.Integration
         /// Should successfully log the message
         /// </summary>
         [Test, Category("Integration.terminalPapertrail")]
-        public async void Write_To_Log_Run_WithUpstreamActionLog_ValidTargetUrl_ShouldLogMessage()
+        public async Task Write_To_Log_Run_WithUpstreamActionLog_ValidTargetUrl_ShouldLogMessage()
         {
             //Arrange
             var runUrl = GetTerminalRunUrl();
@@ -142,7 +142,7 @@ namespace terminalPapertrailTests.Integration
         /// Should throw exception
         /// </summary>
         [Test]
-        public async void Write_To_Log_Run_WithInvalidPapertrailUrl_ShouldReturnError()
+        public async Task Write_To_Log_Run_WithInvalidPapertrailUrl_ShouldReturnError()
         {
             //Arrange
             var runUrl = GetTerminalRunUrl();
@@ -196,7 +196,7 @@ namespace terminalPapertrailTests.Integration
             ExpectedMessage = @"{""status"":""terminal_error"",""message"":""Sequence contains no elements""}",
             MatchType = MessageMatch.Contains
             )]
-        public async void Write_To_Log_Run_WithoutLogMessageInUpstreamAction_ShouldThrowException()
+        public async Task Write_To_Log_Run_WithoutLogMessageInUpstreamAction_ShouldThrowException()
         {
             //Arrange
             var runUrl = GetTerminalRunUrl();
@@ -256,7 +256,7 @@ namespace terminalPapertrailTests.Integration
         }
 
         [Test, Category("Integration.terminalPapertrail")]
-        public async void Write_To_Log_Activate_Returns_ActionDTO()
+        public async Task Write_To_Log_Activate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
@@ -277,7 +277,7 @@ namespace terminalPapertrailTests.Integration
         }
 
         [Test, Category("Integration.terminalPapertrail")]
-        public async void Write_To_Log_Deactivate_Returns_ActionDTO()
+        public async Task Write_To_Log_Deactivate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();

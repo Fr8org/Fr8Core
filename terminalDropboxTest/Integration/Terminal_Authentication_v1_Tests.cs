@@ -27,7 +27,7 @@ namespace terminalDocuSignTests.Integration
             ExpectedMessage = @"Authorization has been denied for this request.",
             MatchType = MessageMatch.Contains
         )]
-        public async void Should_Fail_WithAuthorizationError()
+        public async Task Should_Fail_WithAuthorizationError()
         {
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();

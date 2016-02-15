@@ -64,7 +64,7 @@ namespace terminalYammerTests.Integration
         }
 
         [Test]
-        public async void Post_To_Yammer_v1_Initial_Configuration_Check_Crate_Structure()
+        public async Task Post_To_Yammer_v1_Initial_Configuration_Check_Crate_Structure()
         {
             // Act
             var responseActionDTO = await ConfigureInitial();
@@ -82,7 +82,7 @@ namespace terminalYammerTests.Integration
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException)
         )]
-        public async void Post_To_Yammer_v1_Initial_Configuration_Check_Crate_Structure_NoAuth()
+        public async Task Post_To_Yammer_v1_Initial_Configuration_Check_Crate_Structure_NoAuth()
         {
             // Act
             var responseActionDTO = await ConfigureInitial(false);
@@ -90,7 +90,7 @@ namespace terminalYammerTests.Integration
 
 
         [Test]
-        public async void Post_To_Yammer_v1_FollowupConfiguration()
+        public async Task Post_To_Yammer_v1_FollowupConfiguration()
         {
             // Act
             var responseFollowUpActionDTO = await ConfigurationRequest();
@@ -105,7 +105,7 @@ namespace terminalYammerTests.Integration
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException)
         )]
-        public async void Post_To_Yammer_Run_Return_Payload()
+        public async Task Post_To_Yammer_Run_Return_Payload()
         {
             //Arrange
             var runUrl = GetTerminalRunUrl();

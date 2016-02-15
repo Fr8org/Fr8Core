@@ -23,6 +23,7 @@ namespace terminalFr8Core.Actions
 {
     public class SetDelay_v1 : BaseTerminalActivity
     {
+        private const int MinDurationSeconds = 10;
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var curPayloadDTO = await GetPayload(curActivityDO, containerId);
@@ -56,6 +57,10 @@ namespace terminalFr8Core.Actions
 
         private AlarmDTO CreateAlarm(ActivityDO activityDO, Guid containerId, TimeSpan duration)
         {
+            if (duration.TotalSeconds == 0)
+            {
+                duration.Add(TimeSpan.FromSeconds(MinDurationSeconds));
+            }
             return new AlarmDTO
             {
                 ActivityDTO = Mapper.Map<ActivityDTO>(activityDO),

@@ -133,7 +133,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async void Mail_Merge_Into_DocuSign_Initial_Configuration_Check_Crate_Structure()
+        public async Task Mail_Merge_Into_DocuSign_Initial_Configuration_Check_Crate_Structure()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -157,7 +157,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async void Mail_Merge_Into_DocuSign_FollowUp_Configuration_Check_ChildAction_Load_Excel_File()
+        public void Mail_Merge_Into_DocuSign_FollowUp_Configuration_Check_ChildAction_Load_Excel_File()
         {
             //string childAction = "Load Excel File";
             //var configureUrl = GetTerminalConfigureUrl();
@@ -180,7 +180,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async void Mail_Merge_Into_DocuSign_FollowUp_Configuration_Check_ChildAction_Extract_Spreadsheet_Data()
+        public void Mail_Merge_Into_DocuSign_FollowUp_Configuration_Check_ChildAction_Extract_Spreadsheet_Data()
         {
             //string childAction = "Extract Spreadsheet Data";
             //var configureUrl = GetTerminalConfigureUrl();
@@ -203,7 +203,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async void Mail_Merge_Into_DocuSign_Activate_Returns_ActionDTO()
+        public async Task Mail_Merge_Into_DocuSign_Activate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
@@ -224,7 +224,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async void Mail_Merge_Into_DocuSign_Deactivate_Returns_ActionDTO()
+        public async Task Mail_Merge_Into_DocuSign_Deactivate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();
