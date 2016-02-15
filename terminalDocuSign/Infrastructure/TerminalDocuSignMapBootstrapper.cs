@@ -42,9 +42,8 @@ namespace terminalDocuSign.Infrastructure.StructureMap
                 For<IDocuSignFolder>().Use<DocuSignFolder>();
 				For<IDocuSignEnvelope>().Use<DocuSignEnvelope>();
 				For<IDocuSignTemplate>().Use<DocuSignTemplate>();
-                For<IDocuSignRoute>().Use<DocuSignRoute>();
-                //For<IDocuSignRoute>().Use(new Mock<DocuSignRoute>(MockBehavior.Default).Object);
-            }
+                For<IDocuSignRoute>().Use(new Mock<DocuSignRoute>(MockBehavior.Default).Object);
+			}
 		}
 
 	}
