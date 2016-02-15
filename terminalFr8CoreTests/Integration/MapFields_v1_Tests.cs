@@ -110,7 +110,7 @@ namespace terminalFr8CoreTests.Integration
         }
 
         [Test]
-        public async void MapFields_Configure_No_Upstream_Downstream_Data()
+        public async Task MapFields_Configure_No_Upstream_Downstream_Data()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -125,7 +125,7 @@ namespace terminalFr8CoreTests.Integration
         }
 
         [Test]
-        public async void MapFields_Configure_With_Upstream_Downstream_Data()
+        public async Task MapFields_Configure_With_Upstream_Downstream_Data()
         {
             var activityDTO = await ConfigureWithUpstreamDownstreamData();
             var crateStorage = Crate.GetStorage(activityDTO);
@@ -135,7 +135,7 @@ namespace terminalFr8CoreTests.Integration
         }
 
         [Test]
-        public async void MapFields_Configure_With_Upstream_Downstream_Control_Data()
+        public async Task MapFields_Configure_With_Upstream_Downstream_Control_Data()
         {
             var activityDTO = await ConfigureWithUpstreamDownstreamControlData();
 
@@ -159,7 +159,7 @@ namespace terminalFr8CoreTests.Integration
         }
 
         [Test]
-        public async void MapFields_Run()
+        public void MapFields_Run()
         {
             //var actionDTO = await ConfigureWithUpstreamDownstreamControlData();
 

@@ -38,7 +38,7 @@ namespace terminalFr8CoreTests.Integration
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
         [Test]
-        public async void ExecuteSql_Initial_Configuration_Check_Crate_Structure()
+        public async Task ExecuteSql_Initial_Configuration_Check_Crate_Structure()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -65,7 +65,7 @@ namespace terminalFr8CoreTests.Integration
         /// Test run-time for action Run().
         /// </summary>
         [Test]
-        public async void ExecuteSql_Run()
+        public async Task ExecuteSql_Run()
         {
 
             var runUrl = GetTerminalRunUrl();

@@ -50,14 +50,14 @@ namespace terminalBaseTests.BaseClasses
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public async void HandleFr8Request_NullActionDTO_ThrowsException()
+        public async Task HandleFr8Request_NullActionDTO_ThrowsException()
         {
             await _baseTerminalController.HandleFr8Request(terminalName, "", null);
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentException))]
-        public async void HandleFr8Request_NullActivityTemplate_ThrowsException()
+        public async Task HandleFr8Request_NullActivityTemplate_ThrowsException()
         {
             var activityDTO = Fixture_HandleRequest.terminalMockActionDTO();
             activityDTO.ActivityTemplate = null;
@@ -67,7 +67,7 @@ namespace terminalBaseTests.BaseClasses
 
         [Test]
         [ExpectedException(typeof(ArgumentException))]
-        public async void HandleFr8Request_TerminalNotExist_ThrowsException()
+        public async Task HandleFr8Request_TerminalNotExist_ThrowsException()
         {
             ActivityDTO activityDTO = new ActivityDTO();
             activityDTO.ActivityTemplate = new ActivityTemplateDTO() { Name = "terminalDummy", Version = "1.1" };
@@ -76,7 +76,7 @@ namespace terminalBaseTests.BaseClasses
         }
 
         [Test]
-        public async void HandleFr8Request_Configure_ReturnsActionDTO()
+        public async Task HandleFr8Request_Configure_ReturnsActionDTO()
         {
             var result = await _baseTerminalController.HandleFr8Request(terminalName, "configure", Fixture_HandleRequest.terminalMockFr8DataDTO());
 
@@ -90,7 +90,7 @@ namespace terminalBaseTests.BaseClasses
         }
 
         [Test]
-        public async void HandleFr8Request_Run_ReturnsPayloadDTO()
+        public async Task HandleFr8Request_Run_ReturnsPayloadDTO()
         {
             var result = await _baseTerminalController.HandleFr8Request(terminalName, "run", Fixture_HandleRequest.terminalMockFr8DataDTO());
 
@@ -99,7 +99,7 @@ namespace terminalBaseTests.BaseClasses
         }
 
         [Test]
-        public async void HandleFr8Request_ChildrenExecuted_ReturnsPayloadDTO()
+        public async Task HandleFr8Request_ChildrenExecuted_ReturnsPayloadDTO()
         {
             var result = await _baseTerminalController.HandleFr8Request(terminalName, "childrenexecuted", Fixture_HandleRequest.terminalMockFr8DataDTO());
 
@@ -108,7 +108,7 @@ namespace terminalBaseTests.BaseClasses
         }
 
         [Test]
-        public async void HandleFr8Request_Activate_ReturnsActionDTO()
+        public async Task HandleFr8Request_Activate_ReturnsActionDTO()
         {
             var result = await _baseTerminalController.HandleFr8Request(terminalName, "activate", Fixture_HandleRequest.terminalMockFr8DataDTO());
 
@@ -122,7 +122,7 @@ namespace terminalBaseTests.BaseClasses
         }
 
         [Test]
-        public async void HandleFr8Request_Deactivate_ReturnsActionDTO()
+        public async Task HandleFr8Request_Deactivate_ReturnsActionDTO()
         {
             var result = await _baseTerminalController.HandleFr8Request(terminalName, "deactivate", Fixture_HandleRequest.terminalMockFr8DataDTO());
 
@@ -136,7 +136,7 @@ namespace terminalBaseTests.BaseClasses
         }
 
         [Test]
-        public async void HandleFr8Request_Othermethod_ReturnsActionDTO()
+        public async Task HandleFr8Request_Othermethod_ReturnsActionDTO()
         {
             var result = await _baseTerminalController.HandleFr8Request(terminalName, "OtherMethod", Fixture_HandleRequest.terminalMockFr8DataDTO());
 

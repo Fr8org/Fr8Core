@@ -444,7 +444,7 @@ namespace terminalGoogle.Actions
             return uploadedWorksheet;
         }
 
-        private async void UpdateWorksheetFields(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        private async Task UpdateWorksheetFields(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             StandardConfigurationControlsCM configurationControls = GetConfigurationControls(curActivityDO);
             if (configurationControls != null)
