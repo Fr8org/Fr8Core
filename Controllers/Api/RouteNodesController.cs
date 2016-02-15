@@ -91,7 +91,6 @@ namespace HubWeb.Controllers
                 return Ok(upstreamActions);
             }
         }
-
         // TODO: after DO-1214 is completed, this method must be removed.
         [ActionName("downstream_actions")]
         [ResponseType(typeof (List<ActivityDTO>))]
@@ -129,7 +128,7 @@ namespace HubWeb.Controllers
         [HttpGet]
         public IHttpActionResult GetAvailableActivities()
         {
-            var categoriesWithActivities = _activity.GetAvailableActivitiyGroups();
+            var categoriesWithActivities = _activity.GetAvailableActivityGroups();
 
             return Ok(categoriesWithActivities);
         }

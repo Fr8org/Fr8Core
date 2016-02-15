@@ -13,7 +13,8 @@ module dockyard.directives.paneConfigureAction {
         PaneConfigureAction_SetSolutionMode,
         PaneConfigureAction_ConfigureCallResponse,
         PaneConfigureAction_AuthFailure,
-        PaneConfigureAction_ExecutePlan
+        PaneConfigureAction_ExecutePlan,
+        PaneConfigureAction_ConfigureFocusElement
     }
 
     export class ActionReconfigureEventArgs {
@@ -40,6 +41,14 @@ module dockyard.directives.paneConfigureAction {
 
         constructor(activityTemplateId: number) {
             this.activityTemplateId = activityTemplateId;
+        }
+    }
+
+    export class ConfigureFocusElementArgs {
+        public fieldName: model.ControlDefinitionDTO;
+
+        constructor(fieldName: model.ControlDefinitionDTO) {
+            this.fieldName = fieldName;
         }
     }
 
@@ -92,9 +101,9 @@ module dockyard.directives.paneConfigureAction {
         mode: string;
         reconfigureChildrenActions: boolean;
         setSolutionMode: () => void;
+        currentActiveElement: model.ControlDefinitionDTO;
     }
-
-
+    
     export class CancelledEventArgs extends CancelledEventArgsBase { }
 
     export class ReloadActionEventArgs {
@@ -113,8 +122,10 @@ module dockyard.directives.paneConfigureAction {
 
     export class CallConfigureResponseEventArgs {
         public action: interfaces.IActivityDTO;
-        constructor(action: interfaces.IActivityDTO) {
+        public focusElement: model.ControlDefinitionDTO;
+        constructor(action: interfaces.IActivityDTO, focusElement: model.ControlDefinitionDTO) {
             this.action = action;
+            this.focusElement = focusElement;
         }
     }
 
@@ -185,6 +196,10 @@ module dockyard.directives.paneConfigureAction {
 
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_ReloadAction], (event: ng.IAngularEvent, reloadActionEventArgs: ReloadActionEventArgs) => {
                     reloadAction(reloadActionEventArgs);
+                });
+
+                $scope.$on(MessageType[MessageType.PaneConfigureAction_ConfigureFocusElement], (event: ng.IAngularEvent, configureFocusElementArgs: ConfigureFocusElementArgs) => {
+                    $scope.currentActiveElement = configureFocusElementArgs.fieldName;
                 });
 
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_RenderConfiguration],
@@ -440,7 +455,7 @@ module dockyard.directives.paneConfigureAction {
                         .finally(() => {
                             ConfigureTrackerService.configureCallFinished($scope.currentAction.id);
                             // emit ConfigureCallResponse for RouteBuilderController be able to reload actions with AgressiveReloadTag
-                            $scope.$emit(MessageType[MessageType.PaneConfigureAction_ConfigureCallResponse], new CallConfigureResponseEventArgs($scope.currentAction));
+                            $scope.$emit(MessageType[MessageType.PaneConfigureAction_ConfigureCallResponse], new CallConfigureResponseEventArgs($scope.currentAction, $scope.currentActiveElement));
                         });
                 };
 

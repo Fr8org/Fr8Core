@@ -241,7 +241,7 @@ namespace DockyardTest.Controllers
                 throw new NotImplementedException();
             }
 
-            public IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivitiyGroups()
+            public IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivityGroups()
             {
                 throw new NotImplementedException();
             }

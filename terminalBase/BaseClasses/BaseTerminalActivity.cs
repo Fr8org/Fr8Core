@@ -286,7 +286,10 @@ namespace TerminalBase.BaseClasses
         {
             return await HubCommunicator.GetPayload(activityDO, containerId, CurrentFr8UserId);
         }
-
+        protected async Task<UserDTO> GetCurrentUserData(ActivityDO activityDO, Guid containerId)
+        {
+            return await HubCommunicator.GetCurrentUser(activityDO, containerId, CurrentFr8UserId);
+        }
         protected async Task<Crate> ValidateFields(List<FieldValidationDTO> requiredFieldList)
         {
             var result = await HubCommunicator.ValidateFields(requiredFieldList, CurrentFr8UserId);
@@ -589,7 +592,7 @@ namespace TerminalBase.BaseClasses
         /// <param name="required">True if the control is required, False otherwise. False by default</param>
         protected void AddTextSourceControl(CrateStorage storage, string label, string controlName,
                                             string upstreamSourceLabel, string filterByTag = "",
-                                            bool addRequestConfigEvent = true, bool required = false)
+                                            bool addRequestConfigEvent = false, bool required = false)
         {
             var textSourceControl = CreateSpecificOrUpstreamValueChooser(label, controlName, upstreamSourceLabel,
                 filterByTag, addRequestConfigEvent);
@@ -604,7 +607,7 @@ namespace TerminalBase.BaseClasses
         /// <remarks>The (T), DTO's Proerty Names will be used to name and label the new Text Source Controls</remarks>
         protected void AddTextSourceControlForDTO<T>(CrateStorage storage, string upstreamSourceLabel,
                                                      string filterByTag = "",
-                                                     bool addRequestConfigEvent = true, bool required = false)
+                                                     bool addRequestConfigEvent = false, bool required = false)
         {
             typeof(T).GetProperties()
                 .Where(property => !property.Name.Equals("Id")).ToList().ForEach(property =>
@@ -618,7 +621,7 @@ namespace TerminalBase.BaseClasses
         /// Creates RadioButtonGroup to enter specific value or choose value from upstream crate.
         /// </summary>
         protected ControlDefinitionDTO CreateSpecificOrUpstreamValueChooser(
-            string label, string controlName, string upstreamSourceLabel, string filterByTag = "", bool addRequestConfigEvent = true)
+            string label, string controlName, string upstreamSourceLabel, string filterByTag = "", bool addRequestConfigEvent = false)
         {
             var control = new TextSource(label, upstreamSourceLabel, controlName)
             {
@@ -1104,6 +1107,22 @@ namespace TerminalBase.BaseClasses
             }
 
             return resultTable;
+        }
+        public ActivityResponseDTO GenerateDocumentationRepsonce(string documentation)
+        {
+            return new ActivityResponseDTO
+            {
+                Body = documentation,
+                Type = ActivityResponse.ShowDocumentation.ToString()
+            };
+        }
+        public ActivityResponseDTO GenerateErrorRepsonce(string errorMessage)
+        {
+            return new ActivityResponseDTO
+            {
+                Body = errorMessage,
+                Type = ActivityResponse.ShowDocumentation.ToString()
+            };
         }
     }
 }

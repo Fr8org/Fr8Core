@@ -80,6 +80,20 @@ namespace Data.Migrations
 
             AddWebServices(uow);
 
+            UpdateTerminalClientVisibility(uow);
+        }
+
+        private void UpdateTerminalClientVisibility(UnitOfWork uow)
+        {
+            var activities = uow.ActivityTemplateRepository.GetAll();
+            foreach (var activity in activities)
+            {
+                if (activity.Name == "Monitor_DocuSign_Envelope_Activity")
+                    activity.ClientVisibility = false;
+                else
+                    activity.ClientVisibility = true;
+            }
+            uow.SaveChanges();
         }
 
         //Method to let us seed into memory as well

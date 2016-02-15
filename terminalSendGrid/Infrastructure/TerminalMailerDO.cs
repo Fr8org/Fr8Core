@@ -19,7 +19,7 @@ namespace terminalSendGrid.Infrastructure
         {
             get { return null; }
         }
-
         public IEmailDO Email { get; set; }
+        public string Footer { get; set; }
     }
 }
