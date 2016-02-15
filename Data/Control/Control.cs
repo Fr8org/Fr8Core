@@ -423,6 +423,14 @@ namespace Data.Control
             }
         }
 
+        public static ControlEvent RequestConfigOnClick
+        {
+            get
+            {
+                return new ControlEvent("onClick", "requestConfig");
+            }
+        }
+
         [JsonProperty("name")]
         public string Name { get; set; }
         [JsonProperty("handler")]
