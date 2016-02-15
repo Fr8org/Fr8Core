@@ -172,6 +172,7 @@ module dockyard.controllers {
 
             };
 
+
             var currentState: number;
             $scope.$watch('current.route.routeState', () => {
                 if ($scope.current.route) {
@@ -684,6 +685,14 @@ module dockyard.controllers {
 
             // scann all actions to find actions with tag AgressiveReload in ActivityTemplate
             this.reConfigure(results);
+
+            //wait UI to finish rendering
+            this.$timeout(() => {
+                if (callConfigureResponseEventArgs.focusElement != null) {
+                    //broadcast to control to set focus on current element        
+                    this.$scope.$broadcast("onFieldFocus", callConfigureResponseEventArgs);
+                }
+            }, 300);
         }
 
         private getAgressiveReloadingActions (actionGroups: Array<model.ActionGroup>, currentAction: interfaces.IActivityDTO) {

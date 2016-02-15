@@ -51,7 +51,7 @@ namespace terminalSalesforce.Actions
             {
                 updater.CrateStorage.Clear();
 
-                AddTextSourceControlForDTO<Infrastructure.AccountDTO>(updater.CrateStorage, "Upstream Terminal-Provided Fields", addRequestConfigEvent: false);
+                AddTextSourceControlForDTO<Infrastructure.AccountDTO>(updater.CrateStorage, "Upstream Terminal-Provided Fields");
             }
 
             return await Task.FromResult(curActivityDO);

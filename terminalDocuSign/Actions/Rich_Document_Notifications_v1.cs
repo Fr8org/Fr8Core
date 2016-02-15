@@ -68,26 +68,12 @@ namespace terminalDocuSign.Actions
                                     {
                                         Label = "AvailableTemplates",
                                         ManifestType = CrateManifestTypes.StandardDesignTimeFields
+                                    }
                                 }
                             }
                         }
                     }
-                    }
                 });
-                /*
-                Controls.Add(new DropDownList()
-                {
-                    Name = "SpecificEvent",
-                    Label = "What event do you want to watch for?",
-                    Events = new List<ControlEvent> { ControlEvent.RequestConfig },
-                    Source = new FieldSourceDTO
-                    {
-                        Label = "AvailableEvents",
-                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                    }
-                });
-                */
-
                 Controls.Add(new Duration
                 {
                     Label = "After you send a Tracked Envelope, Fr8 will wait.",
@@ -147,7 +133,6 @@ namespace terminalDocuSign.Actions
                 updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(PackControls(new ActionUi()));
                 updater.CrateStorage.Add(PackAvailableTemplates(authTokenDO));
-                updater.CrateStorage.Add(PackAvailableEvents());
                 updater.CrateStorage.Add(await PackAvailableHandlers(activityDO));
                 updater.CrateStorage.Add(PackAvailableRecipientEvents(activityDO));
             }
@@ -195,7 +180,7 @@ namespace terminalDocuSign.Actions
             {
                 var ddlbTemplate = (specificTemplateOption.Controls[0] as DropDownList);
                 SetControlValue(monitorDocuSignAction, "TemplateRecipientPicker.template.UpstreamCrate",
-                   ddlbTemplate.ListItems.Where(a => a.Key == ddlbTemplate.selectedKey).Single());
+                   ddlbTemplate.ListItems.Single(a => a.Key == ddlbTemplate.selectedKey));
             }
 
             SetControlValue(monitorDocuSignAction, "Event_Envelope_Sent", "true");
@@ -203,7 +188,7 @@ namespace terminalDocuSign.Actions
             //let's make followup configuration for monitorDocuSignEventAction
             //followup call places EventSubscription crate in storage
             var configureMonitorDocusignTask = HubCommunicator.ConfigureActivity(monitorDocuSignAction, CurrentFr8UserId);
-            
+
 
             var durationControl = (Duration)controls.FindByName("TimePeriod");
             SetControlValue(setDelayAction, "Delay_Duration", durationControl.Value);
@@ -258,7 +243,7 @@ namespace terminalDocuSign.Actions
                 var radioButtonGroup = (configControlCM.Controls.First() as RadioButtonGroup);
                 radioButtonGroup.Radios[0].Selected = false;
                 radioButtonGroup.Radios[1].Selected = true;
-                var objectList = (DropDownList)(radioButtonGroup.Radios[1].Controls.Where(c => c.Name == "AvailableObjects").FirstOrDefault());
+                var objectList = (DropDownList)(radioButtonGroup.Radios[1].Controls.FirstOrDefault(c => c.Name == "AvailableObjects"));
                 MT_Object selectedObject;
                 if (string.IsNullOrEmpty(recipientEmail))
                 {
@@ -348,19 +333,6 @@ namespace terminalDocuSign.Actions
             return crate;
         }
 
-        private Crate PackAvailableEvents()
-        {
-            var crate = Crate.CreateDesignTimeFieldsCrate(
-                "AvailableEvents",
-                new FieldDTO { Key = "You sent a Docusign Envelope", Value = "Event_Envelope_Sent" },
-                new FieldDTO { Key = "Someone received an Envelope you sent", Value = "Event_Envelope_Received" },
-                new FieldDTO { Key = "One of your Recipients signed an Envelope", Value = "Event_Recipient_Signed" }
-                //,new FieldDTO { Key = "Recipient Sent", Value = "Event_Recipient_Sent" }
-            );
-
-            return crate;
-        }
-
         private Crate PackAvailableRecipientEvents(ActivityDO activityDO)
         {
             var events = new[] { "Delivered", "Signed", "Declined", "AutoResponded" };
@@ -393,17 +365,42 @@ namespace terminalDocuSign.Actions
         {
             return Success(await GetPayload(curActivityDO, containerId));
         }
-        //This method provides some documentation for the DocuSign Solution Actions
-        public Task<SolutionPageDTO> Documentation(ActivityDO activityDO)
+        /// <summary>
+        /// This method provides documentation in two forms:
+        /// SolutionPageDTO for general information and 
+        /// ActivityResponseDTO for specific Help on minicon
+        /// </summary>
+        /// <param name="activityDO"></param>
+        /// <param name="curDocumentation"></param>
+        /// <returns></returns>
+        public dynamic Documentation(ActivityDO activityDO, string curDocumentation)
         {
-            var curSolutionPage = new SolutionPageDTO
+            if (curDocumentation.Contains("MainPage"))
             {
-                Name = SolutionName,
-                Version = SolutionVersion,
-                Terminal = TerminalName,
-                Body = @"<p>This is a solution action</p>"
-            };
-            return Task.FromResult(curSolutionPage);
+                var curSolutionPage = new SolutionPageDTO
+                {
+                    Name = SolutionName,
+                    Version = SolutionVersion,
+                    Terminal = TerminalName,
+                    Body = @"<p>This is Rich Document Notification solution action</p>"
+                };
+                return Task.FromResult(curSolutionPage);
+            }
+            if (curDocumentation.Contains("HelpMenu"))
+            {
+                if (curDocumentation.Contains("ExplainRichDocumentation"))
+                {
+                    return Task.FromResult(GenerateDocumentationRepsonce(@"This solution work with notifications"));
+                }
+                if (curDocumentation.Contains("ExplainService"))
+                {
+                    return Task.FromResult(GenerateDocumentationRepsonce(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
+                }
+                return Task.FromResult(GenerateErrorRepsonce("Unknown contentPath"));
+            }
+            return
+                Task.FromResult(
+                    GenerateErrorRepsonce("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
         }
     }
 }

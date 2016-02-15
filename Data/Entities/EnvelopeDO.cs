@@ -29,6 +29,8 @@ namespace Data.Entities
             set { Email = (EmailDO)value; }
         }
 
+        public string Footer { get; set; }
+
         [Key]
         public int Id { get; set; }
         public string Handler { get; set; }

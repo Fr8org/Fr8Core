@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
+using Data.Constants;
 using Data.Control;
 using Data.Crates;
 using Data.Entities;
@@ -133,17 +134,42 @@ namespace terminalDocuSign.Actions
 
             return sources;
         }
-        //This method provides some documentation for the DocuSign Solution Actions
-        public Task<SolutionPageDTO> Documentation(ActivityDO activityDO)
+        /// <summary>
+        /// This method provides documentation in two forms:
+        /// SolutionPageDTO for general information and 
+        /// ActivityResponseDTO for specific Help on minicon
+        /// </summary>
+        /// <param name="activityDO"></param>
+        /// <param name="curDocumentation"></param>
+        /// <returns></returns>
+        public dynamic Documentation(ActivityDO activityDO, string curDocumentation)
         {
-            var curSolutionPage = new SolutionPageDTO
+            if (curDocumentation.Contains("MainPage"))
             {
-                Name = SolutionName,
-                Version = SolutionVersion,
-                Terminal = TerminalName,
-                Body = @"<p>This is a solution action</p>"
-            };
-            return Task.FromResult(curSolutionPage);
+                var curSolutionPage = new SolutionPageDTO
+                {
+                    Name = SolutionName,
+                    Version = SolutionVersion,
+                    Terminal = TerminalName,
+                    Body = @"<p>This is Extract Data From Envelopes solution action</p>"
+                };
+                return Task.FromResult(curSolutionPage);
+            }
+            if (curDocumentation.Contains("HelpMenu"))
+            {
+                if (curDocumentation.Contains("ExplainExtractData"))
+                {
+                    return Task.FromResult(GenerateDocumentationRepsonce(@"This solution work with DocuSign envelops"));
+                }
+                if (curDocumentation.Contains("ExplainService"))
+                {
+                    return Task.FromResult(GenerateDocumentationRepsonce(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
+                }
+                return Task.FromResult(GenerateErrorRepsonce("Unknown contentPath"));
+            }
+            return
+                Task.FromResult(
+                    GenerateErrorRepsonce("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
         }
     }
 }
