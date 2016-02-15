@@ -40,7 +40,7 @@ namespace terminalExcelTests.Integration
             get { return "terminalExcel"; }
         }
 
-        private void AssertCrateTypes(CrateStorage crateStorage)
+        private void AssertCrateTypes(ICrateStorage crateStorage)
         {
             Assert.AreEqual(crateStorage.Count, 2);
             Assert.AreEqual(crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(), 1);
@@ -74,15 +74,15 @@ namespace terminalExcelTests.Integration
 
             var storage = _crateManager.GetStorage(responseActionDTO);
 
-            using (var updater = _crateManager.UpdateStorage(dataDTO.ActivityDTO))
+            using (var crateStorage = _crateManager.GetUpdatableStorage(dataDTO.ActivityDTO))
             {
-                updater.CrateStorage = storage;
+                crateStorage.Replace(storage);
             }
 
             return await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
         }
 
-        private void AssertFollowUpCrateTypes(CrateStorage crateStorage)
+        private void AssertFollowUpCrateTypes(ICrateStorage crateStorage)
         {
             Assert.AreEqual(crateStorage.Count, 2);
 

@@ -48,7 +48,7 @@ namespace terminalFr8CoreTests.Integration
             Assert.AreEqual("ErrorLabel", control.Controls[1].Name);
         }
 
-        private void AssertFollowUpCrateTypes(CrateStorage crateStorage)
+        private void AssertFollowUpCrateTypes(ICrateStorage crateStorage)
         {
             Assert.AreEqual(4, crateStorage.Count);
             Assert.AreEqual(3, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count());
@@ -59,7 +59,7 @@ namespace terminalFr8CoreTests.Integration
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "Sql Connection String"));
         }
 
-        private void AssertConfigureCrate(CrateStorage crateStorage)
+        private void AssertConfigureCrate(ICrateStorage crateStorage)
         {
             Assert.AreEqual(1, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
@@ -163,10 +163,10 @@ namespace terminalFr8CoreTests.Integration
                     dataDTO
                 );            
 
-            using (var updater = Crate.UpdateStorage(responseActionDTO))
+            using (var updatableStorage = Crate.GetUpdatableStorage(responseActionDTO))
             {
-                updater.CrateStorage.RemoveByLabel("Configuration_Controls");
-                updater.CrateStorage.Add(CreateWrongConnectionStringCrate());
+                updatableStorage.RemoveByLabel("Configuration_Controls");
+                updatableStorage.Add(CreateWrongConnectionStringCrate());
             }
             dataDTO.ActivityDTO = responseActionDTO;
             responseActionDTO =
@@ -202,11 +202,12 @@ namespace terminalFr8CoreTests.Integration
                     dataDTO
                 );
 
-            using (var updater = Crate.UpdateStorage(responseActionDTO))
+            using (var updatableStorage = Crate.GetUpdatableStorage(responseActionDTO))
             {
-                updater.CrateStorage.RemoveByLabel("Configuration_Controls");
-                updater.CrateStorage.Add(CreateConnectionStringCrate());
+                updatableStorage.RemoveByLabel("Configuration_Controls");
+                updatableStorage.Add(CreateConnectionStringCrate());
             }
+
             dataDTO.ActivityDTO = responseActionDTO;
             responseActionDTO =
                 await HttpPostAsync<Fr8DataDTO, ActivityDTO>(

@@ -66,10 +66,10 @@ namespace terminalGoogle.Actions
             var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
             //get the data
             var data = _google.EnumerateDataRows(spreadsheetsFromUserSelection, authDTO);
-            var crate = Crate.CreateStandardTableDataCrate(TableCrateLabel, true, data.ToArray());
-            using (var updater = Crate.UpdateStorage(payloadCrates))
+            var crate = CrateManager.CreateStandardTableDataCrate(TableCrateLabel, true, data.ToArray());
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
             {
-                updater.CrateStorage.Add(crate);
+                crateStorage.Add(crate);
             }
 
             return Success(payloadCrates);
@@ -84,7 +84,7 @@ namespace terminalGoogle.Actions
         private async Task<PayloadDTO> CreateStandardPayloadDataFromStandardTableData(ActivityDO curActivityDO, Guid containerId, PayloadDTO payloadCrates, AuthorizationTokenDO authTokenDO)
         {
             //at run time pull the entire sheet and store it as payload
-            var spreadsheetControl = FindControl(Crate.GetStorage(curActivityDO.CrateStorage), "select_spreadsheet");
+            var spreadsheetControl = FindControl(CrateManager.GetStorage(curActivityDO.CrateStorage), "select_spreadsheet");
             var spreadsheetsFromUserSelection = string.Empty;
             if (spreadsheetControl != null)
                 spreadsheetsFromUserSelection = spreadsheetControl.Value;
@@ -98,11 +98,11 @@ namespace terminalGoogle.Actions
 
             // Create a crate of payload data by using Standard Table Data manifest and use its contents to tranform into a Payload Data manifest.
             // Add a crate of PayloadData to action's crate storage
-            var payloadDataCrate = Crate.CreatePayloadDataCrate("ExcelTableRow", "Excel Data", tableDataMS);
+            var payloadDataCrate = CrateManager.CreatePayloadDataCrate("ExcelTableRow", "Excel Data", tableDataMS);
 
-            using (var updater = Crate.UpdateStorage(payloadCrates))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
             {
-                updater.CrateStorage.Add(payloadDataCrate);
+                crateStorage.Add(payloadDataCrate);
             }
 
 
@@ -113,7 +113,7 @@ namespace terminalGoogle.Actions
         private async Task<StandardTableDataCM> GetTargetTableData(ActivityDO curActivityDO)
         {
             // Find crates of manifest type Standard Table Data
-            var storage = Crate.GetStorage(curActivityDO);
+            var storage = CrateManager.GetStorage(curActivityDO);
             var standardTableDataCrates = storage.CratesOfType<StandardTableDataCM>().ToArray();
 
             // If no crate of manifest type "Standard Table Data" found, try to find upstream for a crate of type "Standard File Handle"
@@ -196,10 +196,10 @@ namespace terminalGoogle.Actions
             var spreadsheets = _google.EnumerateSpreadsheetsUris(authDTO);
             var configurationControlsCrate = CreateConfigurationControlsCrate(spreadsheets);
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage = AssembleCrateStorage(configurationControlsCrate);
-                updater.CrateStorage.Add(Crate.CreateStandardTableDataCrate(TableCrateLabel, false, new TableRowDTO[]{}));
+                crateStorage.Replace( AssembleCrateStorage(configurationControlsCrate));
+                crateStorage.Add(CrateManager.CreateStandardTableDataCrate(TableCrateLabel, false, new TableRowDTO[]{}));
             }
 
             return Task.FromResult(curActivityDO);
@@ -210,9 +210,9 @@ namespace terminalGoogle.Actions
         /// </summary>
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            var spreadsheetsFromUserSelectionControl = FindControl(Crate.GetStorage(curActivityDO.CrateStorage), "select_spreadsheet");
+            var spreadsheetsFromUserSelectionControl = FindControl(CrateManager.GetStorage(curActivityDO.CrateStorage), "select_spreadsheet");
 
-            var hasDesignTimeFields = Crate.GetStorage(curActivityDO)
+            var hasDesignTimeFields = CrateManager.GetStorage(curActivityDO)
                 .Any(x => x.IsOfType<StandardConfigurationControlsCM>());
 
             if (hasDesignTimeFields && !string.IsNullOrEmpty(spreadsheetsFromUserSelectionControl.Value))
@@ -234,11 +234,11 @@ namespace terminalGoogle.Actions
             var spreadsheets = _google.EnumerateSpreadsheetsUris(authDTO);
             var configControlsCrate = CreateConfigurationControlsCrate(spreadsheets, spreadsheetsFromUserSelection);
             // Remove previously created configuration control crate
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.Remove<StandardConfigurationControlsCM>();
+                crateStorage.Remove<StandardConfigurationControlsCM>();
 
-                updater.CrateStorage.Add(configControlsCrate);
+                crateStorage.Add(configControlsCrate);
             }
 
             if (!string.IsNullOrEmpty(spreadsheetsFromUserSelection))
@@ -258,15 +258,15 @@ namespace terminalGoogle.Actions
             var headers = _google.EnumerateColumnHeaders(spreadsheetUri, authDTO);
             if (headers.Any())
             {
-                using (var updater = Crate.UpdateStorage(curActivityDO))
+                using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
                 {
                     const string label = "Spreadsheet Column Headers";
-                    updater.CrateStorage.RemoveByLabel(label);
-                    var curCrateDTO = Crate.CreateDesignTimeFieldsCrate(
+                    crateStorage.RemoveByLabel(label);
+                    var curCrateDTO = CrateManager.CreateDesignTimeFieldsCrate(
                                 label,
                                 headers.Select(col => new FieldDTO() { Key = col.Key, Value = col.Key, Availability = Data.States.AvailabilityType.RunTime }).ToArray()
                             );
-                    updater.CrateStorage.Add(curCrateDTO);
+                    crateStorage.Add(curCrateDTO);
                 }
             }
 
@@ -283,10 +283,10 @@ namespace terminalGoogle.Actions
             var extractedData = _google.EnumerateDataRows(spreadsheetUri, authDTO);
             if (extractedData == null) return curActivityDO;
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.RemoveByLabel(TableCrateLabel);
-                updater.CrateStorage.Add(Crate.CreateStandardTableDataCrate(TableCrateLabel, false, extractedData.ToArray()));
+                crateStorage.RemoveByLabel(TableCrateLabel);
+                crateStorage.Add(CrateManager.CreateStandardTableDataCrate(TableCrateLabel, false, extractedData.ToArray()));
             }
 
             return curActivityDO;
@@ -310,10 +310,10 @@ namespace terminalGoogle.Actions
 
             rows.Add(headerTableRowDTO);
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.RemoveByLabel(TableCrateLabel);
-                updater.CrateStorage.Add(Crate.CreateStandardTableDataCrate(TableCrateLabel, false, rows.ToArray()));
+                crateStorage.RemoveByLabel(TableCrateLabel);
+                crateStorage.Add(CrateManager.CreateStandardTableDataCrate(TableCrateLabel, false, rows.ToArray()));
             }
         }
     }

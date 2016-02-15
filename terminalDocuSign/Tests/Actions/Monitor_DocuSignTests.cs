@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Data.Crates;
 using NUnit.Framework;
 using Newtonsoft.Json;
 using StructureMap;

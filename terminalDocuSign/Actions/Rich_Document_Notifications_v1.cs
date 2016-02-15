@@ -68,10 +68,10 @@ namespace terminalDocuSign.Actions
                                     {
                                         Label = "AvailableTemplates",
                                         ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                                    }
                                 }
                             }
                         }
+                    }
                     }
                 });
                 Controls.Add(new Duration
@@ -119,7 +119,7 @@ namespace terminalDocuSign.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -128,13 +128,13 @@ namespace terminalDocuSign.Actions
         }
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO activityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(activityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(activityDO))
             {
-                updater.CrateStorage.Clear();
-                updater.CrateStorage.Add(PackControls(new ActionUi()));
-                updater.CrateStorage.Add(PackAvailableTemplates(authTokenDO));
-                updater.CrateStorage.Add(await PackAvailableHandlers(activityDO));
-                updater.CrateStorage.Add(PackAvailableRecipientEvents(activityDO));
+                crateStorage.Clear();
+                crateStorage.Add(PackControls(new ActionUi()));
+                crateStorage.Add(PackAvailableTemplates(authTokenDO));
+                crateStorage.Add(await PackAvailableHandlers(activityDO));
+                crateStorage.Add(PackAvailableRecipientEvents(activityDO));
             }
 
             return activityDO;
@@ -142,7 +142,7 @@ namespace terminalDocuSign.Actions
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO activityDO, AuthorizationTokenDO authTokenDO)
         {
-            var controls = Crate.GetStorage(activityDO)
+            var controls = CrateManager.GetStorage(activityDO)
                 .CrateContentsOfType<StandardConfigurationControlsCM>()
                 .First();
 
@@ -209,9 +209,9 @@ namespace terminalDocuSign.Actions
 
         private void SetFilterUsingRunTimeActionFields(ActivityDO filterUsingRunTimeAction, string status)
         {
-            using (var updater = Crate.UpdateStorage(filterUsingRunTimeAction))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(filterUsingRunTimeAction))
             {
-                var configControlCM = updater.CrateStorage
+                var configControlCM = crateStorage
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
                     .First();
 
@@ -228,18 +228,18 @@ namespace terminalDocuSign.Actions
                     Conditions = conditions
                 });
 
-                var queryFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Queryable Criteria", new FieldDTO[] { new FieldDTO("Status", "Status") });
-                updater.CrateStorage.RemoveByLabel("Queryable Criteria");
-                updater.CrateStorage.Add(queryFieldsCrate);
+                var queryFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", new FieldDTO[] { new FieldDTO("Status", "Status") });
+                crateStorage.RemoveByLabel("Queryable Criteria");
+                crateStorage.Add(queryFieldsCrate);
             }
         }
 
         private async Task SetQueryFr8WarehouseActionFields(ActivityDO queryFr8Warehouse, string recipientEmail)
         {
             //update action's duration value
-            using (var updater = Crate.UpdateStorage(queryFr8Warehouse))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(queryFr8Warehouse))
             {
-                var configControlCM = GetConfigurationControls(updater.CrateStorage);
+                var configControlCM = GetConfigurationControls(crateStorage);
                 var radioButtonGroup = (configControlCM.Controls.First() as RadioButtonGroup);
                 radioButtonGroup.Radios[0].Selected = false;
                 radioButtonGroup.Radios[1].Selected = true;
@@ -280,7 +280,7 @@ namespace terminalDocuSign.Actions
                     Conditions = conditions
                 });
 
-                updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("Queryable Criteria", GetFieldsByObjectId(selectedObject.Id).ToArray()));
+                crateStorage.Add(CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", GetFieldsByObjectId(selectedObject.Id).ToArray()));
             }
         }
 
@@ -338,7 +338,7 @@ namespace terminalDocuSign.Actions
             var events = new[] { "Delivered", "Signed", "Declined", "AutoResponded" };
 
             var availableRecipientEventsCrate =
-                Crate.CreateDesignTimeFieldsCrate(
+                CrateManager.CreateDesignTimeFieldsCrate(
                     "AvailableRecipientEvents", events.Select(x => new FieldDTO(x, x)).ToArray()
                 );
 
@@ -351,7 +351,7 @@ namespace terminalDocuSign.Actions
             var taggedTemplates = templates.Where(x => x.Tags != null && x.Tags.Contains("Notifier"));
 
             var availableHandlersCrate =
-                Crate.CreateDesignTimeFieldsCrate(
+                CrateManager.CreateDesignTimeFieldsCrate(
                     "AvailableHandlers",
                     taggedTemplates.Select(x => new FieldDTO(x.Label, x.Id.ToString())).ToArray()
                 );

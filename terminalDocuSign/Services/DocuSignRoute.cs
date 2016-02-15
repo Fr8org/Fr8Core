@@ -84,9 +84,9 @@ namespace terminalDocuSign.Services
 
         private void SetSelectedCrates(ActivityDTO storeMTDataActivity)
         {
-            using (var updater = _crateManager.UpdateStorage(() => storeMTDataActivity.CrateStorage))
+            using (var crateStorage = _crateManager.UpdateStorage(() => storeMTDataActivity.CrateStorage))
             {
-                var configControlCM = updater.CrateStorage
+                var configControlCM = crateStorage
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
                     .First();
 

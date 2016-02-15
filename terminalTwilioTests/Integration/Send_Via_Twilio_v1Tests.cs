@@ -92,17 +92,17 @@ namespace terminalTwilioTests.Integration
             //Act
             var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
             var crateManager = new CrateManager();
-            using (var updater = crateManager.UpdateStorage(responseActionDTO))
+            using (var updatableStorage = crateManager.GetUpdatableStorage(responseActionDTO))
             {
                 var curNumberTextSource =
                     (TextSource)
-                        updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0];
+                        updatableStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0];
                 curNumberTextSource.ValueSource = "specific";
                 curNumberTextSource.TextValue = "+15005550006";
 
                 var curBodyTextSource =
                    (TextSource)
-                       updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[1];
+                       updatableStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[1];
                 curBodyTextSource.ValueSource = "specific";
                 curBodyTextSource.TextValue = "That is the body of the message";
             }

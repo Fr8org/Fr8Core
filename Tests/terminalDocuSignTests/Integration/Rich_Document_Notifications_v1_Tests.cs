@@ -26,7 +26,7 @@ namespace terminalDocuSignTests.Integration
             get { return "terminalDocuSign"; }
         }
 
-        private void AssertCrateTypes(CrateStorage crateStorage)
+        private void AssertCrateTypes(ICrateStorage crateStorage)
         {
             Assert.AreEqual(4, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
@@ -174,9 +174,9 @@ namespace terminalDocuSignTests.Integration
                     dataDTO
                 );
 
-            using (var updater = Crate.UpdateStorage(responseActionDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(responseActionDTO))
             {
-                var controls = updater.CrateStorage
+                var controls = crateStorage
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
                     .Single();
 
@@ -185,11 +185,11 @@ namespace terminalDocuSignTests.Integration
                 var radioGroup = (RadioButtonGroup)controls.Controls[0];
                 radioGroup.Radios[0].Selected = true;
 
-                var availableEventCM = updater.CrateStorage
+                var availableEventCM = crateStorage
                     .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "AvailableEvents")
                     .Single();
 
-                var availableHandlers = updater.CrateStorage
+                var availableHandlers = crateStorage
                     .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "AvailableHandlers")
                     .Single();
 
@@ -224,9 +224,9 @@ namespace terminalDocuSignTests.Integration
                     dataDTO
                 );
 
-            using (var updater = Crate.UpdateStorage(responseActionDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(responseActionDTO))
             {
-                var controls = updater.CrateStorage
+                var controls = crateStorage
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
                     .Single();
 
@@ -235,11 +235,11 @@ namespace terminalDocuSignTests.Integration
                 var radioGroup = (RadioButtonGroup)controls.Controls[0];
                 radioGroup.Radios[0].Selected = true;
 
-                var availableEventCM = updater.CrateStorage
+                var availableEventCM = crateStorage
                     .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "AvailableEvents")
                     .Single();
 
-                var availableHandlers = updater.CrateStorage
+                var availableHandlers = crateStorage
                     .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "AvailableHandlers")
                     .Single();
 

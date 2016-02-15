@@ -62,7 +62,7 @@ namespace terminalDocuSign.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -74,11 +74,11 @@ namespace terminalDocuSign.Actions
         {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
             var docuSignTemplatesCrate = DocuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.Clear();
-                updater.CrateStorage.Add(PackControls(new ActionUi()));
-                updater.CrateStorage.Add(docuSignTemplatesCrate);
+                crateStorage.Clear();
+                crateStorage.Add(PackControls(new ActionUi()));
+                crateStorage.Add(docuSignTemplatesCrate);
             }
 
             return Task.FromResult(curActivityDO);
@@ -151,9 +151,9 @@ namespace terminalDocuSign.Actions
 
         private void SetFileDetails(ActivityDO storeFileActivity, string fileName)
         {
-            using (var updater = Crate.UpdateStorage(storeFileActivity))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(storeFileActivity))
             {
-                var confControls = GetConfigurationControls(updater.CrateStorage);
+                var confControls = GetConfigurationControls(crateStorage);
                 var fileNameTextbox = (TextBox)GetControl(confControls, "File_Name", ControlTypes.TextBox);
                 var fileCrateTextSource = (TextSource)GetControl(confControls, "File Crate label", ControlTypes.TextSource);
 
@@ -166,9 +166,9 @@ namespace terminalDocuSign.Actions
 
         private void SetFromConversion(ActivityDO convertCratesActivity)
         {
-            using (var updater = Crate.UpdateStorage(convertCratesActivity))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(convertCratesActivity))
             {
-                var confControls = GetConfigurationControls(updater.CrateStorage);
+                var confControls = GetConfigurationControls(crateStorage);
                 var fromDropdown = (DropDownList)GetControl(confControls, "Available_From_Manifests", ControlTypes.DropDownList);
 
                 fromDropdown.Value = ((int)MT.DocuSignTemplate).ToString(CultureInfo.InvariantCulture);
@@ -178,9 +178,9 @@ namespace terminalDocuSign.Actions
 
         private void SetToConversion(ActivityDO convertCratesActivity)
         {
-            using (var updater = Crate.UpdateStorage(convertCratesActivity))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(convertCratesActivity))
             {
-                var confControls = GetConfigurationControls(updater.CrateStorage);
+                var confControls = GetConfigurationControls(crateStorage);
                 var toDropdown = (DropDownList)GetControl(confControls, "Available_To_Manifests", ControlTypes.DropDownList);
                 toDropdown.Value = ((int)MT.StandardFileHandle).ToString(CultureInfo.InvariantCulture);
                 toDropdown.selectedKey = MT.StandardFileHandle.GetEnumDisplayName();
@@ -189,9 +189,9 @@ namespace terminalDocuSign.Actions
 
         private void SetSelectedTemplate(ActivityDO docuSignActivity, DropDownList selectedTemplateDd)
         {
-            using (var updater = Crate.UpdateStorage(docuSignActivity))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(docuSignActivity))
             {
-                var confControls = GetConfigurationControls(updater.CrateStorage);
+                var confControls = GetConfigurationControls(crateStorage);
                 var actionDdlb = (DropDownList)GetControl(confControls, "Available_Templates", ControlTypes.DropDownList);
                 actionDdlb.selectedKey = selectedTemplateDd.selectedKey;
                 actionDdlb.Value = selectedTemplateDd.Value;

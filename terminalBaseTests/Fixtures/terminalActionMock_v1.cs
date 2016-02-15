@@ -23,7 +23,7 @@ namespace terminalBaseTests.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -78,10 +78,10 @@ namespace terminalBaseTests.Actions
 
         private void AddCrateMethodInvoked(ActivityDO curActivityDO, string methodName)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.Remove<StandardConfigurationControlsCM>();
-                updater.CrateStorage = new CrateStorage(CreateControlsCrate(methodName));
+                crateStorage.Remove<StandardConfigurationControlsCM>();
+                crateStorage.Replace(new CrateStorage(CreateControlsCrate(methodName)));
             }
         }
 

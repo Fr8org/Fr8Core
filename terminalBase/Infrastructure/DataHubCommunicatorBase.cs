@@ -57,7 +57,7 @@ namespace TerminalBase.Infrastructure
             };
 
             var crateStorage = Crate.GetStorage(ExplicitData);
-            using (var updater = Crate.UpdateStorage(payload))
+            using (var updatableStorage = Crate.GetUpdatableStorage(payload))
             {
                 var crates = crateStorage
                     .Where(x => x.Label.StartsWith(LabelPrefix + "_PayloadCrate"))
@@ -65,7 +65,7 @@ namespace TerminalBase.Infrastructure
 
                 StripLabelPrefix(crates, LabelPrefix + "_PayloadCrate");
 
-                updater.CrateStorage.AddRange(crates);
+                updatableStorage.AddRange(crates);
             }
 
             return Task.FromResult(payload);

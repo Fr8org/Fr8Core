@@ -36,9 +36,9 @@ namespace terminalYammerTests.Integration
 
             var storage = Crate.GetStorage(responseActionDTO);
 
-            using (var updater = Crate.UpdateStorage(dataDTO.ActivityDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(dataDTO.ActivityDTO))
             {
-                updater.CrateStorage = storage;
+                crateStorage.Replace(storage);
             }
 
             return await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
@@ -54,7 +54,7 @@ namespace terminalYammerTests.Integration
             return responseActionDTO;
         }
 
-        private void AssertCrateTypes(CrateStorage crateStorage)
+        private void AssertCrateTypes(ICrateStorage crateStorage)
         {
             Assert.AreEqual(3, crateStorage.Count);
 

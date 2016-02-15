@@ -69,7 +69,7 @@ namespace terminalSlackTests.Integration
             Assert.AreEqual("Info_Label", controls.Controls[1].Name);
         }
 
-        private void AssertCrateTypes(CrateStorage crateStorage)
+        private void AssertCrateTypes(ICrateStorage crateStorage)
         {
             Assert.AreEqual(4, crateStorage.Count);
 
@@ -159,9 +159,9 @@ namespace terminalSlackTests.Integration
                     }
                  }
             );
-            using (var updater = Crate.UpdateStorage(activityDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(activityDTO))
             {
-                var controls = updater.CrateStorage
+                var controls = crateStorage
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
                     .Single();
 

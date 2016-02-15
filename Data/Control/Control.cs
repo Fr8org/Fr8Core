@@ -237,7 +237,7 @@ namespace Data.Control
             };
         }
 
-        public string GetValue(CrateStorage payloadCrateStorage, bool ignoreCase = false, MT? manifestType = null, string label = null)
+        public string GetValue(ICrateStorage payloadCrateStorage, bool ignoreCase = false, MT? manifestType = null, string label = null)
         {
             switch (ValueSource)
             {
@@ -252,7 +252,7 @@ namespace Data.Control
             }
         }
 
-        public string GetPayloadValue(CrateStorage payloadStorage, bool ignoreCase = false, MT? manifestType = null, string label = null)
+        public string GetPayloadValue(ICrateStorage payloadStorage, bool ignoreCase = false, MT? manifestType = null, string label = null)
         {
             //search through every crate except operational state crate
             Expression<Func<Crate, bool>> defaultSearchArguments = (c) => c.ManifestType.Id != (int)MT.OperationalStatus;
@@ -326,7 +326,7 @@ namespace Data.Control
         /// Extracts crate with specified label and ManifestType = Standard Design Time,
         /// then extracts field with specified fieldKey.
         /// </summary>
-        private string ExtractPayloadFieldValue(CrateStorage payloadCrateStorage, bool ignoreCase)
+        private string ExtractPayloadFieldValue(ICrateStorage payloadCrateStorage, bool ignoreCase)
         {
             var fieldValues = payloadCrateStorage.CratesOfType<StandardPayloadDataCM>().SelectMany(x => x.Content.GetValues(selectedKey, ignoreCase))
                 .Where(s => !string.IsNullOrEmpty(s))

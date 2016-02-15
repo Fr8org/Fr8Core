@@ -71,7 +71,7 @@ namespace terminalYammer.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -87,12 +87,12 @@ namespace terminalYammer.Actions
             var crateAvailableGroups = CreateAvailableGroupsCrate(groups);
             var crateAvailableFields = await CreateAvailableFieldsCrate(curActivityDO);
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.Clear();
-                updater.CrateStorage.Add(PackControls(new ActionUi()));
-                updater.CrateStorage.Add(crateAvailableGroups);
-                updater.CrateStorage.Add(crateAvailableFields);
+                crateStorage.Clear();
+                crateStorage.Add(PackControls(new ActionUi()));
+                crateStorage.Add(crateAvailableGroups);
+                crateStorage.Add(crateAvailableFields);
             }
 
             return curActivityDO;
@@ -102,7 +102,7 @@ namespace terminalYammer.Actions
         {
 
             CheckAuthentication(authTokenDO);
-            var ui = Crate.GetStorage(activityDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
+            var ui = CrateManager.GetStorage(activityDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
 
             if (ui == null)
             {
@@ -115,7 +115,7 @@ namespace terminalYammer.Actions
 
             var processPayload = await GetPayload(activityDO, containerId);
 
-            var payloadMessageField = Crate.GetFieldByKey<StandardPayloadDataCM>(processPayload.CrateStorage, groupMessageField.Message);
+            var payloadMessageField = CrateManager.GetFieldByKey<StandardPayloadDataCM>(processPayload.CrateStorage, groupMessageField.Message);
 
             ValidateYammerAction(payloadMessageField, "No specified field found in activity.");
 
@@ -128,7 +128,7 @@ namespace terminalYammer.Actions
         private Crate CreateAvailableGroupsCrate(IEnumerable<FieldDTO> groups)
         {
             var crate =
-                Crate.CreateDesignTimeFieldsCrate(
+                CrateManager.CreateDesignTimeFieldsCrate(
                     "Available Groups",
                     groups.ToArray()
                 );
@@ -156,7 +156,7 @@ namespace terminalYammer.Actions
                 .SelectMany(x => x.Content.Fields)
                 .ToArray();
 
-            var availableFieldsCrate = Crate.CreateDesignTimeFieldsCrate(
+            var availableFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(
                     "Available Fields",
                     curUpstreamFields
                 );

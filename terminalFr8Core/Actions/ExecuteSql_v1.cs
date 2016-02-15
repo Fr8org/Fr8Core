@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Crates;
 using Newtonsoft.Json;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -32,11 +33,11 @@ namespace terminalFr8Core.Actions
 
         protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 AddLabelControl(
 
-                    updater.CrateStorage,
+                    crateStorage,
                     "NoConfigLabel",
                     "No configuration",
                     "This activity does not require any configuration."
@@ -52,7 +53,7 @@ namespace terminalFr8Core.Actions
 
         private QueryDTO ExtractSqlQuery(PayloadDTO payload)
         {
-            var sqlQueryCrate = Crate.FromDto(payload.CrateStorage).CratesOfType<StandardQueryCM>(x => x.Label == "Sql Query").FirstOrDefault();
+            var sqlQueryCrate = CrateManager.FromDto(payload.CrateStorage).CratesOfType<StandardQueryCM>(x => x.Label == "Sql Query").FirstOrDefault();
 
             if (sqlQueryCrate == null) { return null; }
 
@@ -183,9 +184,9 @@ namespace terminalFr8Core.Actions
 
             var payloadCMCrate = Data.Crates.Crate.FromContent("Sql Query Result", payloadCM);
 
-            using (var updater = Crate.UpdateStorage(payload))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
-                updater.CrateStorage.Add(payloadCMCrate);
+                crateStorage.Add(payloadCMCrate);
             }
 
             return Success(payload);

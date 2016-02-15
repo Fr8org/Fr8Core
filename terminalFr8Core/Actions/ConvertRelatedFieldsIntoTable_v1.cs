@@ -36,11 +36,11 @@ namespace terminalFr8Core.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActionDataPackageDO)
         {
-            if (Crate.IsStorageEmpty(curActionDataPackageDO))
+            if (CrateManager.IsStorageEmpty(curActionDataPackageDO))
             {
                 return ConfigurationRequestType.Initial;
             }
-            var storage = Crate.GetStorage(curActionDataPackageDO);
+            var storage = CrateManager.GetStorage(curActionDataPackageDO);
             var hasControlsCrate = GetConfigurationControls(storage) != null;
 
             var hasManifestTypeList = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Manifest Type List").Any();
@@ -64,10 +64,10 @@ namespace terminalFr8Core.Actions
                 //build a controls crate to render the pane
                 var configurationControlsCrate = PackCrate_ConfigurationControls();
 
-                using (var updater = Crate.UpdateStorage(() => curActivityDO.CrateStorage))
+                using (var crateStorage = CrateManager.UpdateStorage(() => curActivityDO.CrateStorage))
                 {
-                    updater.CrateStorage = AssembleCrateStorage(configurationControlsCrate);
-                    updater.CrateStorage.Add(await GetUpstreamManifestTypes(curActivityDO));
+                    crateStorage.Replace(AssembleCrateStorage(configurationControlsCrate));
+                    crateStorage.Add(await GetUpstreamManifestTypes(curActivityDO));
                 }
             }
             else
@@ -87,10 +87,10 @@ namespace terminalFr8Core.Actions
             {
                 var labelList = await GetLabelsByManifestType(curActivityDO, upstreamDataChooser.SelectedManifest);
 
-                using (var updater = Crate.UpdateStorage(curActivityDO))
+                using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
                 {
-                    updater.CrateStorage.RemoveByLabel("Upstream Crate Label List");
-                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Upstream Crate Label List", new StandardDesignTimeFieldsCM() { Fields = labelList }));
+                    crateStorage.RemoveByLabel("Upstream Crate Label List");
+                    crateStorage.Add(Data.Crates.Crate.FromContent("Upstream Crate Label List", new StandardDesignTimeFieldsCM() { Fields = labelList }));
                 }
             }
 
@@ -103,7 +103,7 @@ namespace terminalFr8Core.Actions
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var curPayloadDTO = await GetPayload(curActivityDO, containerId);
-            var storage = Crate.GetStorage(curPayloadDTO);
+            var storage = CrateManager.GetStorage(curPayloadDTO);
 
             var designTimeControls = GetConfigurationControls(curActivityDO);
             var upstreamDataChooser = (UpstreamDataChooser)designTimeControls.Controls.Single(x => x.Type == ControlTypes.UpstreamDataChooser && x.Name == "Upstream_data_chooser");
@@ -120,7 +120,7 @@ namespace terminalFr8Core.Actions
                 filteredCrates = filteredCrates.Where(s => s.Label == upstreamDataChooser.SelectedLabel);
             }
 
-            var fieldList = Crate.GetFields(filteredCrates);
+            var fieldList = CrateManager.GetFields(filteredCrates);
 
             
             if (upstreamDataChooser.SelectedFieldType != null)
@@ -160,10 +160,10 @@ namespace terminalFr8Core.Actions
                     }).ToList()
                 });
 
-            var tableDataCrate = Crate.CreateStandardTableDataCrate("AssembledTableData", false, rows.ToArray());
-            using (var updater = Crate.UpdateStorage(curPayloadDTO))
+            var tableDataCrate = CrateManager.CreateStandardTableDataCrate("AssembledTableData", false, rows.ToArray());
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curPayloadDTO))
             {
-                updater.CrateStorage.Add(tableDataCrate);
+                crateStorage.Add(tableDataCrate);
             }
 
             return Success(curPayloadDTO);
@@ -186,14 +186,14 @@ namespace terminalFr8Core.Actions
         {
             var upstreamCrates = await GetCratesByDirection(curActivityDO, CrateDirection.Upstream);
             var manifestTypeOptions = upstreamCrates.GroupBy(c => c.ManifestType).Select(c => new FieldDTO(c.Key.Type, c.Key.Type));
-            var queryFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Manifest Type List", manifestTypeOptions.ToArray());
+            var queryFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Upstream Manifest Type List", manifestTypeOptions.ToArray());
             return queryFieldsCrate;
         }
 
         private async Task<List<FieldDTO>> GetLabelsByManifestType(ActivityDO curActivityDO, string manifestType)
         {
             var upstreamCrates = await GetCratesByDirection(curActivityDO, CrateDirection.Upstream);
-            return Crate.GetLabelsByManifestType(upstreamCrates, manifestType).Select(c => new FieldDTO(c, c)).ToList();
+            return CrateManager.GetLabelsByManifestType(upstreamCrates, manifestType).Select(c => new FieldDTO(c, c)).ToList();
         }
 
         private Crate PackCrate_ConfigurationControls()

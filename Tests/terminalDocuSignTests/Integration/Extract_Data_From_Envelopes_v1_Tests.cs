@@ -25,7 +25,7 @@ namespace terminalDocuSignTests.Integration
             get { return "terminalDocuSign"; }
         }
 
-        private void AssertCrateTypes(CrateStorage crateStorage)
+        private void AssertCrateTypes(ICrateStorage crateStorage)
         {
             Assert.AreEqual(2, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(x => x.Label == "Configuration_Controls"));
@@ -62,14 +62,14 @@ namespace terminalDocuSignTests.Integration
                     requestDataDTO
                 );
 
-            using (var updater = Crate.UpdateStorage(responseActionDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(responseActionDTO))
             {
-                var controls = updater.CrateStorage
+                var controls = crateStorage
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
                     .Single();
                 var dropDownList = (DropDownList)controls.Controls[1];
 
-                 var availableActions = updater.CrateStorage
+                 var availableActions = crateStorage
                     .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "AvailableActions")
                     .Single();
 

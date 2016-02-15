@@ -43,7 +43,7 @@ namespace terminalTwilio.Actions
         /// </summary>
         private ConfigurationRequestType EvaluateReceivedRequest(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -53,11 +53,11 @@ namespace terminalTwilio.Actions
 
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.Clear();
-                updater.CrateStorage.Add(PackCrate_ConfigurationControls());
-                updater.CrateStorage.Add(await CreateAvailableFieldsCrate(curActivityDO));
+                crateStorage.Clear();
+                crateStorage.Add(PackCrate_ConfigurationControls());
+                crateStorage.Add(await CreateAvailableFieldsCrate(curActivityDO));
             }
             return await Task.FromResult(curActivityDO);
         }
@@ -70,7 +70,7 @@ namespace terminalTwilio.Actions
                 CreateSpecificOrUpstreamValueChooser("SMS Body", "SMS_Body", "Upstream Terminal-Provided Fields")
             };
 
-            return Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
+            return CrateManager.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
         }
 
         private List<FieldDTO> GetRegisteredSenderNumbersData()
@@ -108,7 +108,7 @@ namespace terminalTwilio.Actions
         {
             Message curMessage;
             var payloadCrates = await GetPayload(curActivityDO, containerId);
-            var controlsCrate = Crate.GetStorage(curActivityDO).CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var controlsCrate = CrateManager.GetStorage(curActivityDO).CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             if (controlsCrate == null)
             {
                 PackCrate_WarningMessage(curActivityDO, "No StandardConfigurationControlsCM crate provided", "No Controls");
@@ -130,9 +130,9 @@ namespace terminalTwilio.Actions
                     curMessage = _twilio.SendSms(smsNumber, smsBody);
                     EventManager.TwilioSMSSent(smsNumber, smsBody);
                     var curFieldDTOList = CreateKeyValuePairList(curMessage);
-                    using (var updater = Crate.UpdateStorage(payloadCrates))
+                    using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
                     {
-                        updater.CrateStorage.Add(PackCrate_TwilioMessageDetails(curFieldDTOList));
+                        crateStorage.Add(PackCrate_TwilioMessageDetails(curFieldDTOList));
                     }
                 }
                 catch (Exception ex)
@@ -200,7 +200,7 @@ namespace terminalTwilio.Actions
                     break;
                 case "upstream":
                     //get the payload data 'Key' based on the selected control.Value and get its 'Value' from payload data
-                    smsNumber = Crate.GetFieldByKey<StandardPayloadDataCM>(payloadCrates.CrateStorage, control.Value);
+                    smsNumber = CrateManager.GetFieldByKey<StandardPayloadDataCM>(payloadCrates.CrateStorage, control.Value);
                     break;
                 default:
                     throw new ApplicationException("Could not extract number, unknown mode.");
@@ -227,7 +227,7 @@ namespace terminalTwilio.Actions
                     break;
                 case "upstream":
                     //get the payload data 'Key' based on the selected control.Value and get its 'Value' from payload data
-                    smsBody = Crate.GetFieldByKey<StandardPayloadDataCM>(payloadCrates.CrateStorage, control.Value);
+                    smsBody = CrateManager.GetFieldByKey<StandardPayloadDataCM>(payloadCrates.CrateStorage, control.Value);
                     break;
                 default:
                     throw new ApplicationException("Could not extract number, unknown mode.");
@@ -254,10 +254,10 @@ namespace terminalTwilio.Actions
         private void PackCrate_WarningMessage(ActivityDO activityDO, string warningMessage, string warningLabel)
         {
             var textBlock = GenerateTextBlock(warningLabel, warningMessage, "alert alert-warning");
-            using (var updater = Crate.UpdateStorage(activityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(activityDO))
             {
-                updater.CrateStorage.Clear();
-                updater.CrateStorage.Add(PackControlsCrate(textBlock));
+                crateStorage.Clear();
+                crateStorage.Add(PackControlsCrate(textBlock));
             }
         }
     }

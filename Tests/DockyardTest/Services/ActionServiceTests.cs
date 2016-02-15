@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Web.Helpers;
 using AutoMapper;
 using Data.Constants;
+using Data.Crates;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -525,9 +526,9 @@ namespace DockyardTest.Services
         {
             ActivityDO activityDO = FixtureData.TestActivity23();
 
-            using (var updater = _crate.UpdateStorage(activityDO))
+            using (var crateStorage = _crate.GetUpdatableStorage(activityDO))
             {
-                updater.CrateStorage.AddRange(FixtureData.CrateStorageDTO());
+                crateStorage.AddRange(FixtureData.CrateStorageDTO());
             }
 
             Assert.IsNotEmpty(activityDO.CrateStorage);

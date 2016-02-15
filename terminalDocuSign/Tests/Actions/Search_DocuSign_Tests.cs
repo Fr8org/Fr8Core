@@ -96,9 +96,9 @@ namespace terminalDocuSign.Tests.Actions
 
             var activity = new ActivityDO();
 
-            using (var updater = _crateManager.UpdateStorage(activity))
+            using (var crateStorage = _crateManager.GetUpdatableStorage(activity))
             {
-                updater.CrateStorage.Add(Crate.FromContent("UI", new Search_DocuSign_History_v1.ActionUi
+                crateStorage.Add(Crate.FromContent("UI", new Search_DocuSign_History_v1.ActionUi
                 {
                     Folder = { Value = "A"},
                     SearchText = { Value = "B"},

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data.Control;
+using Data.Crates;
 using Data.Interfaces.Manifests;
 using Hub.Managers;
 using TerminalBase.BaseClasses;
@@ -27,12 +28,12 @@ namespace terminalSalesforce.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
 
-            var storage = Crate.GetStorage(curActivityDO);
+            var storage = CrateManager.GetStorage(curActivityDO);
 
             var hasConfigurationControlsCrate = storage
                 .CratesOfType<StandardConfigurationControlsCM>(c => c.Label == "Configuration_Controls").FirstOrDefault() != null;
@@ -47,11 +48,11 @@ namespace terminalSalesforce.Actions
 
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO = null)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.Clear();
+                crateStorage.Clear();
 
-                AddTextSourceControlForDTO<ContactDTO>(updater.CrateStorage, "Upstream Terminal-Provided Fields");
+                AddTextSourceControlForDTO<ContactDTO>(crateStorage, "Upstream Terminal-Provided Fields");
             }
 
             return await Task.FromResult(curActivityDO);
@@ -60,9 +61,9 @@ namespace terminalSalesforce.Actions
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.ReplaceByLabel(await CreateAvailableFieldsCrate(curActivityDO));
+                crateStorage.ReplaceByLabel(await CreateAvailableFieldsCrate(curActivityDO));
             }
             return await Task.FromResult(curActivityDO);
         }

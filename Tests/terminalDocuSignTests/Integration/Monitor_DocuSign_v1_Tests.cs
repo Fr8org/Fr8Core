@@ -28,7 +28,7 @@ namespace terminalDocuSignTests.Integration
             get { return "terminalDocuSign"; }
         }
 
-        private void AssertCrateTypes(CrateStorage crateStorage)
+        private void AssertCrateTypes(ICrateStorage crateStorage)
         {
             Assert.AreEqual(4, crateStorage.Count);
 
@@ -111,9 +111,9 @@ namespace terminalDocuSignTests.Integration
 
             responseActionDTO.AuthToken = HealthMonitor_FixtureData.DocuSign_AuthToken();
 
-            using (var updater = Crate.UpdateStorage(responseActionDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(responseActionDTO))
             {
-                var controls = updater.CrateStorage
+                var controls = crateStorage
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
                     .Single();
 
@@ -143,9 +143,9 @@ namespace terminalDocuSignTests.Integration
             responseActionDTO.AuthToken = HealthMonitor_FixtureData.DocuSign_AuthToken();
 
             string selectedTemplate = null;
-            using (var updater = Crate.UpdateStorage(responseActionDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(responseActionDTO))
             {
-                var controls = updater.CrateStorage
+                var controls = crateStorage
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
                     .Single();
 
@@ -155,7 +155,7 @@ namespace terminalDocuSignTests.Integration
 
                 var templateDdl = (DropDownList)radioGroup.Radios[1].Controls[0];
 
-                var availableTemplatesCM = updater.CrateStorage
+                var availableTemplatesCM = crateStorage
                     .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Available Templates")
                     .Single();
                 Assert.IsTrue(availableTemplatesCM.Fields.Count > 0);
@@ -444,9 +444,9 @@ namespace terminalDocuSignTests.Integration
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
             var requestDataDTO = HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_Fr8DataDTO();
-            using (var updater = Crate.UpdateStorage(requestDataDTO.ActivityDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(requestDataDTO.ActivityDTO))
             {
-                updater.CrateStorage.Add(Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", new ControlDefinitionDTO[] { }));
+                crateStorage.Add(Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", new ControlDefinitionDTO[] { }));
             }
             
 
@@ -470,9 +470,9 @@ namespace terminalDocuSignTests.Integration
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
             var requestDataDTO = HealthMonitor_FixtureData.Monitor_DocuSign_v1_InitialConfiguration_Fr8DataDTO();
-            using (var updater = Crate.UpdateStorage(requestDataDTO.ActivityDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(requestDataDTO.ActivityDTO))
             {
-                updater.CrateStorage.Add(Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", new ControlDefinitionDTO[] { }));
+                crateStorage.Add(Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", new ControlDefinitionDTO[] { }));
             }
             //Act
             var responseActionDTO =

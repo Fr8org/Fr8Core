@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Data.Control;
+using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;

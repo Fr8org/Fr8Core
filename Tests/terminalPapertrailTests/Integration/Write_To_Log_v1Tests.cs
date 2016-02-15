@@ -151,9 +151,9 @@ namespace terminalPapertrailTests.Integration
             var activityDTO = await GetActionDTO_LogToPapertrailIntegrationTest();
             var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
             //make the target URL as invalid
-            using (var updater = Crate.UpdateStorage(activityDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(activityDTO))
             {
-                var controls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
+                var controls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
 
                 var targetUrlTextBox = (TextBox)controls.Controls[0];
                 targetUrlTextBox.Value = "InvalidUrl";
@@ -208,7 +208,7 @@ namespace terminalPapertrailTests.Integration
             var responsePayloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
         }
 
-        private void AssertCrateTypes(CrateStorage crateStorage)
+        private void AssertCrateTypes(ICrateStorage crateStorage)
         {
             Assert.AreEqual(1, crateStorage.Count,
                 "There should be only one crate storage in initial and follow up configuration of Write To Log action.");
@@ -244,9 +244,9 @@ namespace terminalPapertrailTests.Integration
                     requestActionDTO
                 );
 
-            using (var updater = Crate.UpdateStorage(responseActionDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(responseActionDTO))
             {
-                var controls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
+                var controls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
 
                 var targetUrlTextBox = (TextBox) controls.Controls[0];
                 targetUrlTextBox.Value = "logs3.papertrailapp.com:22529";

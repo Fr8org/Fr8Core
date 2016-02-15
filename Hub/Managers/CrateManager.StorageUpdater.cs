@@ -1,32 +1,31 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using Data.Crates;
-using Data.Entities;
 using Data.Infrastructure.AutoMapper;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Hub.Managers
 {
     partial class CrateManager
     {
-        public class CrateStorageStorageUpdater : ICrateStorageUpdater
+        public class UpdatableCrateStorageStorage : IUpdatableCrateStorage
         {
             private readonly Expression _expr;
             private readonly Func<object> _getValue;
-            private Action<CrateStorage> _setValue;
+            private Action<ICrateStorage> _setValue;
             private bool _discardChanges;
+            private ICrateStorage _crateStorage;
 
-            public CrateStorage CrateStorage
+            public int Count
             {
-                get;
-                set;
+                get { return _crateStorage.Count; }
             }
 
-            public CrateStorageStorageUpdater(Expression<Func<CrateStorageDTO>> expr)
+            public UpdatableCrateStorageStorage(Expression<Func<CrateStorageDTO>> expr)
             {
                 var memberExpr = expr.Body as MemberExpression;
 
@@ -42,7 +41,7 @@ namespace Hub.Managers
                 InitializeAccessors(memberExpr.Member, fieldInfo.GetValue(ce.Value), ReadStorage, x => CrateStorageSerializer.Default.ConvertToDto(x));
             }
 
-            public CrateStorageStorageUpdater(Expression<Func<string>> expr)
+            public UpdatableCrateStorageStorage(Expression<Func<string>> expr)
             {
                 var memberExpr = expr.Body as MemberExpression;
 
@@ -57,22 +56,52 @@ namespace Hub.Managers
 
                 InitializeAccessors(memberExpr.Member, fieldInfo.GetValue(ce.Value), ReadStorage, x => JsonConvert.SerializeObject(CrateStorageSerializer.Default.ConvertToDto(x)));
             }
-            
-            private void InitializeAccessors(MemberInfo memberInfo, object instance, Func<object, CrateStorage> readConverter, Func<CrateStorage, object> writeConverter)
+
+            public void Replace(ICrateStorage crateStorage)
+            {
+                _crateStorage = crateStorage;
+            }
+
+            public void Add(Crate crate)
+            {
+                _crateStorage.Add(crate);
+            }
+
+            public void Clear()
+            {
+                _crateStorage.Clear();
+            }
+
+            public int Remove(Predicate<Crate> predicate)
+            {
+                return _crateStorage.Remove(predicate);
+            }
+
+            public int Replace(Predicate<Crate> predicate, Crate crate)
+            {
+                return _crateStorage.Replace(predicate, crate);
+            }
+
+            public IEnumerator<Crate> GetEnumerator()
+            {
+                return _crateStorage.GetEnumerator();
+            }
+
+            private void InitializeAccessors(MemberInfo memberInfo, object instance, Func<object, ICrateStorage> readConverter, Func<ICrateStorage, object> writeConverter)
             {
                 if (memberInfo is FieldInfo)
                 {
-                    CrateStorage = readConverter(((FieldInfo)memberInfo).GetValue(instance));
+                    _crateStorage = readConverter(((FieldInfo)memberInfo).GetValue(instance));
                     _setValue = x => ((FieldInfo)memberInfo).SetValue(instance, writeConverter(x));
                 }
                 else if (memberInfo is PropertyInfo)
                 {
-                    CrateStorage = readConverter(((PropertyInfo)memberInfo).GetValue(instance));
+                    _crateStorage = readConverter(((PropertyInfo)memberInfo).GetValue(instance));
                     _setValue = x => ((PropertyInfo)memberInfo).SetValue(instance, writeConverter(x));
                 }
             }
 
-            private CrateStorage ReadStorage(object value)
+            private ICrateStorage ReadStorage(object value)
             {
                 if (value is string)
                 {
@@ -96,8 +125,13 @@ namespace Hub.Managers
             {
                 if (!_discardChanges)
                 {
-                    _setValue(CrateStorage ?? new CrateStorage());
+                    _setValue(_crateStorage ?? new CrateStorage());
                 }
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return ((IEnumerable)_crateStorage).GetEnumerator();
             }
         }
     }

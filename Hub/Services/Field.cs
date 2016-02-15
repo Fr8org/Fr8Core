@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using StructureMap;
 using Data.Constants;
+using Data.Crates;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;

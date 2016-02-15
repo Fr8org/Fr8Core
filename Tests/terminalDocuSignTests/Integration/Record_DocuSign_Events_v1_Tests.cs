@@ -24,7 +24,7 @@ namespace terminalDocuSignTests.Integration
             get { return "terminalDocuSign"; }
         }
 
-        private void AssertCrateTypes(CrateStorage crateStorage)
+        private void AssertCrateTypes(ICrateStorage crateStorage)
         {
 
             Assert.AreEqual(5, crateStorage.Count);

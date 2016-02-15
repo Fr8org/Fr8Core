@@ -17,7 +17,7 @@ namespace terminalDocuSignTests.Integration
             get { return "terminalDocuSign"; }
         }
 
-        private CrateStorage CreateConfiguredStorage()
+        private ICrateStorage CreateConfiguredStorage()
         {
             var storage = new CrateStorage();
 

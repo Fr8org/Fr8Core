@@ -47,9 +47,9 @@ namespace terminalSlackTests.Integration
 
             var storage = Crate.GetStorage(responseActionDTO);
 
-            using (var updater = Crate.UpdateStorage(requestDataDTO.ActivityDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(requestDataDTO.ActivityDTO))
             {
-                updater.CrateStorage = storage;
+                crateStorage.Replace(storage);
             }
 
             return await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, requestDataDTO);
@@ -91,7 +91,7 @@ namespace terminalSlackTests.Integration
             return responseActionDTO;
         }
 
-        private void AssertCrateTypes(CrateStorage crateStorage)
+        private void AssertCrateTypes(ICrateStorage crateStorage)
         {
             Assert.AreEqual(4, crateStorage.Count);
 
