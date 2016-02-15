@@ -78,10 +78,10 @@ namespace terminalBaseTests.Actions
 
         private void AddCrateMethodInvoked(ActivityDO curActivityDO, string methodName)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.Remove<StandardConfigurationControlsCM>();
-                updater.CrateStorage = new CrateStorage(CreateControlsCrate(methodName));
+                crateStorage.Remove<StandardConfigurationControlsCM>();
+                crateStorage.Replace(new CrateStorage(CreateControlsCrate(methodName)));
             }
         }
 

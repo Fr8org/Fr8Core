@@ -228,13 +228,13 @@ namespace HubTests.Managers
             var newCrateStorageDto = GetKnownManifestsStorageDto("newValue");
             var newCrateStorage = _crateManager.FromDto(newCrateStorageDto);
 
-            using (var updater = _crateManager.UpdateStorage(activityDto))
+            using (var crateStorage = _crateManager.GetUpdatableStorage(activityDto))
             {
-                updater.CrateStorage.Clear();
+                crateStorage.Clear();
 
                 foreach (var crates in newCrateStorage)
                 {
-                    updater.CrateStorage.Add(crates);
+                    crateStorage.Add(crates);
                 }
             }
 
@@ -273,13 +273,13 @@ namespace HubTests.Managers
             var newCrateStorageDto = GetKnownManifestsStorageDto("newValue");
             var newCrateStorage = _crateManager.FromDto(newCrateStorageDto);
 
-            using (var updater = _crateManager.UpdateStorage(actionDo))
+            using (var crateStorage = _crateManager.GetUpdatableStorage(actionDo))
             {
-                updater.CrateStorage.Clear();
+                crateStorage.Clear();
 
                 foreach (var crates in newCrateStorage)
                 {
-                    updater.CrateStorage.Add(crates);
+                    crateStorage.Add(crates);
                 }
             }
 

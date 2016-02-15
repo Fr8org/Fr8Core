@@ -83,11 +83,11 @@ namespace UtilitiesTesting.Fixtures
 
             //create connection string value crates with a vald connection string
             
-            using (var updater = crate.UpdateStorage(curAction))
+            using (var crateStorage = crate.GetUpdatableStorage(curAction))
             {
-               updater.CrateStorage = TestCrateStorage();
+                crateStorage.Replace(TestCrateStorage());
 
-               var connectionStringFields = updater.CrateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
+               var connectionStringFields = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
                 
                 connectionStringFields.Content.Controls[0].Value = @"Data Source=s79ifqsqga.database.windows.net;Initial Catalog=demodb_health;User ID=alexeddodb;Password=Thales89";
             }

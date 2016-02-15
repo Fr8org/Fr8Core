@@ -64,10 +64,10 @@ namespace terminalFr8Core.Actions
                 //build a controls crate to render the pane
                 var configurationControlsCrate = PackCrate_ConfigurationControls();
 
-                using (var updater = Crate.UpdateStorage(() => curActivityDO.CrateStorage))
+                using (var crateStorage = Crate.UpdateStorage(() => curActivityDO.CrateStorage))
                 {
-                    updater.CrateStorage = AssembleCrateStorage(configurationControlsCrate);
-                    updater.CrateStorage.Add(await GetUpstreamManifestTypes(curActivityDO));
+                    crateStorage.Replace(AssembleCrateStorage(configurationControlsCrate));
+                    crateStorage.Add(await GetUpstreamManifestTypes(curActivityDO));
                 }
             }
             else
@@ -87,10 +87,10 @@ namespace terminalFr8Core.Actions
             {
                 var labelList = await GetLabelsByManifestType(curActivityDO, upstreamDataChooser.SelectedManifest);
 
-                using (var updater = Crate.UpdateStorage(curActivityDO))
+                using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
                 {
-                    updater.CrateStorage.RemoveByLabel("Upstream Crate Label List");
-                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Upstream Crate Label List", new StandardDesignTimeFieldsCM() { Fields = labelList }));
+                    crateStorage.RemoveByLabel("Upstream Crate Label List");
+                    crateStorage.Add(Data.Crates.Crate.FromContent("Upstream Crate Label List", new StandardDesignTimeFieldsCM() { Fields = labelList }));
                 }
             }
 
@@ -161,9 +161,9 @@ namespace terminalFr8Core.Actions
                 });
 
             var tableDataCrate = Crate.CreateStandardTableDataCrate("AssembledTableData", false, rows.ToArray());
-            using (var updater = Crate.UpdateStorage(curPayloadDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curPayloadDTO))
             {
-                updater.CrateStorage.Add(tableDataCrate);
+                crateStorage.Add(tableDataCrate);
             }
 
             return Success(curPayloadDTO);

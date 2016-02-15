@@ -51,11 +51,11 @@ namespace terminalSalesforce.Actions
 
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.Clear();
+                crateStorage.Clear();
 
-                AddTextSourceControlForDTO<LeadDTO>(updater.CrateStorage, "Upstream Terminal-Provided Fields");
+                AddTextSourceControlForDTO<LeadDTO>(crateStorage, "Upstream Terminal-Provided Fields", addRequestConfigEvent:true);
             }
 
             return await Task.FromResult(curActivityDO);
@@ -64,9 +64,9 @@ namespace terminalSalesforce.Actions
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO,
                                                                                 AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.ReplaceByLabel(await CreateAvailableFieldsCrate(curActivityDO));
+                crateStorage.ReplaceByLabel(await CreateAvailableFieldsCrate(curActivityDO));
             }
             return await Task.FromResult(curActivityDO);
         }

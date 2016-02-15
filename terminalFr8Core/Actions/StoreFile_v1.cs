@@ -56,10 +56,10 @@ namespace terminalFr8Core.Actions
             //build a controls crate to render the pane
             var configurationControlsCrate = CreateControlsCrate();
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage = AssembleCrateStorage(configurationControlsCrate);
-                await UpdateUpstreamFileCrates(curActivityDO, updater.CrateStorage);
+                crateStorage.Replace(AssembleCrateStorage(configurationControlsCrate));
+                await UpdateUpstreamFileCrates(curActivityDO, crateStorage);
             }
 
             return curActivityDO;

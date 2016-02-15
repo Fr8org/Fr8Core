@@ -70,9 +70,9 @@ namespace terminalSalesforce.Actions
 
             var configurationControlsCrate = CreateControlsCrate();
 
-            using (var updater = Crate.UpdateStorage(() => curActivityDO.CrateStorage))
+            using (var crateStorage = Crate.UpdateStorage(() => curActivityDO.CrateStorage))
             {
-                updater.CrateStorage = AssembleCrateStorage(availableSalesforceObjects, emptyFieldsSource, configurationControlsCrate);
+                crateStorage.Replace(AssembleCrateStorage(availableSalesforceObjects, emptyFieldsSource, configurationControlsCrate));
             }
 
             return await Task.FromResult(curActivityDO);
@@ -96,9 +96,9 @@ namespace terminalSalesforce.Actions
 
             //replace the object fields for the newly selected object name
             var queryableCriteriaFields = Crate.CreateDesignTimeFieldsCrate("Queryable Criteria", objectFieldsList.ToArray());
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.ReplaceByLabel(queryableCriteriaFields);
+                crateStorage.ReplaceByLabel(queryableCriteriaFields);
             }
 
             return await Task.FromResult(curActivityDO);
@@ -141,9 +141,9 @@ namespace terminalSalesforce.Actions
             }
 
             //update the payload with result objects
-            using (var updater = Crate.UpdateStorage(payloadCrates))
+            using (var crateStorage = Crate.GetUpdatableStorage(payloadCrates))
             {
-                updater.CrateStorage.ReplaceByLabel(Data.Crates.Crate.FromContent("Salesforce Objects", resultObjects));
+                crateStorage.ReplaceByLabel(Data.Crates.Crate.FromContent("Salesforce Objects", resultObjects));
             }
 
             return Success(payloadCrates);

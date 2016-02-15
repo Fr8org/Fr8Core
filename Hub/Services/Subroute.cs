@@ -269,9 +269,9 @@ namespace Hub.Services
                     var currentActivity = downStreamActivity;
                     bool somethingToReset = false;
 
-                    using (var updater = _crate.UpdateStorage(() => currentActivity.CrateStorage))
+                    using (var crateStorage = _crate.UpdateStorage(() => currentActivity.CrateStorage))
                     {
-                        foreach (var configurationControls in updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>())
+                        foreach (var configurationControls in crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>())
                     {
                             foreach (IResettable resettable in configurationControls.Controls)
                         {
@@ -282,7 +282,7 @@ namespace Hub.Services
 
                         if (!somethingToReset)
                     {
-                            updater.DiscardChanges();
+                            crateStorage.DiscardChanges();
                         }
                     }
                 }

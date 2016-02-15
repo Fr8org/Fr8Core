@@ -129,9 +129,9 @@ namespace terminalSalesforceTests.Intergration
             //perform post request to terminal and return the result
             var resultActionDto = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(terminalConfigureUrl, requestActionDTO);
 
-            using (var updater = Crate.UpdateStorage(resultActionDto))
+            using (var crateStorage = Crate.GetUpdatableStorage(resultActionDto))
             {
-                var controls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
+                var controls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
                 controls.Controls.OfType<TextSource>().ToList().ForEach(ctl => ctl.ValueSource = "specific");
             }
 
@@ -161,9 +161,9 @@ namespace terminalSalesforceTests.Intergration
 
         private ActivityDTO SetAccountName(ActivityDTO curActivityDto)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDto))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDto))
             {
-                var controls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
+                var controls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
 
                 var targetUrlTextBox = (TextSource)controls.Controls[0];
                 targetUrlTextBox.ValueSource = "specific";

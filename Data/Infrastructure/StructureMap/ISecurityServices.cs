@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using Data.Entities;
 using Data.Interfaces;
+using System.Net.Http;
+using System.Security.Claims;
 
 namespace Data.Infrastructure.StructureMap
 {
@@ -16,5 +18,6 @@ namespace Data.Infrastructure.StructureMap
         bool IsCurrentUserHasRole(string role);
         bool IsAuthenticated();
         void Logout();
+        ClaimsIdentity GetIdentity(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO);
     }
 }

@@ -88,9 +88,9 @@ namespace terminalFr8CoreTests.Integration
         {
             var activityDTO = await ConfigureWithUpstreamDownstreamData();
 
-            using (var updater = Crate.UpdateStorage(activityDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(activityDTO))
             {
-                var storage = updater.CrateStorage;
+                var storage = crateStorage;
                 var controls = storage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
 
                 var mappingPane = (MappingPane)controls.Controls[1];

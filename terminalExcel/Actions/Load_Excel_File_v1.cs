@@ -94,9 +94,9 @@ namespace terminalExcel.Actions
             // Add a crate of PayloadData to action's crate storage
             
             
-            using (var updater = Crate.UpdateStorage(payloadCrates))
+            using (var crateStorage = Crate.GetUpdatableStorage(payloadCrates))
             {
-                updater.CrateStorage.Add(Crate.CreatePayloadDataCrate("ExcelTableRow", "Excel Data", tableDataMS));
+                crateStorage.Add(Crate.CreatePayloadDataCrate("ExcelTableRow", "Excel Data", tableDataMS));
             }
             return Success(payloadCrates);        
         }
@@ -168,11 +168,11 @@ namespace terminalExcel.Actions
                 //Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
                 Crate upstreamFieldsCrate = await MergeUpstreamFields(curActivityDO, "Select Excel File");
 
-                using (var updater = Crate.UpdateStorage(curActivityDO))
+                using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
                 {
-                    updater.CrateStorage.Clear();
-                    updater.CrateStorage.Add(upstreamFieldsCrate);
-                    updater.CrateStorage.Add(PackControls(new ActionUi()));
+                    crateStorage.Clear();
+                    crateStorage.Add(upstreamFieldsCrate);
+                    crateStorage.Add(PackControls(new ActionUi()));
                 }
             }
             else
@@ -214,7 +214,7 @@ namespace terminalExcel.Actions
                 throw new AmbiguityException();
             }
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
             {
                 string uploadFilePath = null;
                 if (filePathsFromUserSelection.Length > 0)
@@ -241,12 +241,12 @@ namespace terminalExcel.Actions
                     }
                 }
 
-                updater.CrateStorage.Remove<StandardConfigurationControlsCM>();
-                updater.CrateStorage.Add(PackControls(new ActionUi(fileName)));
+                crateStorage.Remove<StandardConfigurationControlsCM>();
+                crateStorage.Add(PackControls(new ActionUi(fileName)));
 
                 if (!string.IsNullOrEmpty(uploadFilePath))
                 {
-                    TransformExcelFileDataToStandardTableDataCrate(updater.CrateStorage, uploadFilePath);
+                    TransformExcelFileDataToStandardTableDataCrate(crateStorage, uploadFilePath);
                 }
             }
 

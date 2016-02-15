@@ -65,9 +65,9 @@ namespace terminalIntegrationTests
                 ParentRouteNodeId =  UtilitiesTesting.Fixtures.FixtureData.TestParentPlanID()
             };
 
-            using (var updater = _crateManager.UpdateStorage(curActionDTO))
+            using (var crateStorage = _crateManager.GetUpdatableStorage(curActionDTO))
             {
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("", tableDataMS));
+                crateStorage.Add(Data.Crates.Crate.FromContent("", tableDataMS));
             }
 
             var restfulServiceClient = new Mock<IRestfulServiceClient>();

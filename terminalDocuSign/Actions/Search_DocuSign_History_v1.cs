@@ -92,11 +92,11 @@ namespace terminalDocuSign.Actions
             var docuSignAuthDto = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
             var actionUi = new ActionUi();
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
             {
-                
-                updater.CrateStorage.Add(PackControls(actionUi));
-                updater.CrateStorage.AddRange(PackDesignTimeData(docuSignAuthDto));
+
+                crateStorage.Add(PackControls(actionUi));
+                crateStorage.AddRange(PackDesignTimeData(docuSignAuthDto));
             }
 
             await ConfigureNestedActions(curActivityDO, actionUi);
@@ -111,13 +111,13 @@ namespace terminalDocuSign.Actions
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
             {
-                var configurationControls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+                var configurationControls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
                 if (configurationControls == null)
                 {
-                    updater.DiscardChanges();
+                    crateStorage.DiscardChanges();
                     return curActivityDO;
                 }
 

@@ -150,9 +150,9 @@ namespace terminalSalesforceTests.Intergration
             //perform post request to terminal and return the result
             var resultActionDto = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(terminalConfigureUrl, requestActionDTO);
 
-            using (var updater = Crate.UpdateStorage(resultActionDto))
+            using (var crateStorage = Crate.GetUpdatableStorage(resultActionDto))
             {
-                var controls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
+                var controls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
                 controls.Controls.OfType<TextSource>().ToList().ForEach(ctl => ctl.ValueSource = "specific");
             }
 
@@ -182,9 +182,9 @@ namespace terminalSalesforceTests.Intergration
 
         private ActivityDTO SetSpecificValues(ActivityDTO curActivityDto)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDto))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDto))
             {
-                var controls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
+                var controls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
 
                 controls.Controls.ForEach(control =>
                 {
@@ -205,9 +205,9 @@ namespace terminalSalesforceTests.Intergration
 
         private ActivityDTO ExcludeValue(ActivityDTO curActivityDto, string controlName)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDto))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDto))
             {
-                var controls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
+                var controls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
                 (controls.Controls.Single(c => c.Name.Equals(controlName)) as TextSource).TextValue = string.Empty;
 
             }

@@ -163,10 +163,10 @@ namespace terminalFr8CoreTests.Integration
                     dataDTO
                 );            
 
-            using (var updater = Crate.UpdateStorage(responseActionDTO))
+            using (var updatableStorage = Crate.GetUpdatableStorage(responseActionDTO))
             {
-                updater.CrateStorage.RemoveByLabel("Configuration_Controls");
-                updater.CrateStorage.Add(CreateWrongConnectionStringCrate());
+                updatableStorage.RemoveByLabel("Configuration_Controls");
+                updatableStorage.Add(CreateWrongConnectionStringCrate());
             }
             dataDTO.ActivityDTO = responseActionDTO;
             responseActionDTO =
@@ -202,11 +202,12 @@ namespace terminalFr8CoreTests.Integration
                     dataDTO
                 );
 
-            using (var updater = Crate.UpdateStorage(responseActionDTO))
+            using (var updatableStorage = Crate.GetUpdatableStorage(responseActionDTO))
             {
-                updater.CrateStorage.RemoveByLabel("Configuration_Controls");
-                updater.CrateStorage.Add(CreateConnectionStringCrate());
+                updatableStorage.RemoveByLabel("Configuration_Controls");
+                updatableStorage.Add(CreateConnectionStringCrate());
             }
+
             dataDTO.ActivityDTO = responseActionDTO;
             responseActionDTO =
                 await HttpPostAsync<Fr8DataDTO, ActivityDTO>(

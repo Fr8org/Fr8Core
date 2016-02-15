@@ -11,6 +11,8 @@ using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
 using Data.States;
 using System.Threading.Tasks;
+using Data.Helpers;
+using Hub.Helper;
 using StructureMap;
 
 namespace Hub.Managers
@@ -42,9 +44,9 @@ namespace Hub.Managers
         /// </summary>
         /// <param name="storageAccessExpression"></param>
         /// <returns></returns>
-        public ICrateStorageUpdater UpdateStorage(Expression<Func<CrateStorageDTO>> storageAccessExpression)
+        public IUpdatableCrateStorage UpdateStorage(Expression<Func<CrateStorageDTO>> storageAccessExpression)
         {
-            return new CrateStorageStorageUpdater(storageAccessExpression);
+            return new UpdatableCrateStorageStorage(storageAccessExpression);
         }
 
         /// <summary>
@@ -53,9 +55,9 @@ namespace Hub.Managers
         /// </summary>
         /// <param name="storageAccessExpression"></param>
         /// <returns></returns>
-        public ICrateStorageUpdater UpdateStorage(Expression<Func<string>> storageAccessExpression)
+        public IUpdatableCrateStorage UpdateStorage(Expression<Func<string>> storageAccessExpression)
         {
-            return new CrateStorageStorageUpdater(storageAccessExpression);
+            return new UpdatableCrateStorageStorage(storageAccessExpression);
         }
 
         public bool IsEmptyStorage(CrateStorageDTO rawStorage)
@@ -102,9 +104,9 @@ namespace Hub.Managers
                 Item = logItemList
             };
 
-            using (var updater = UpdateStorage(() => containerDO.CrateStorage))
+            using (var crateStorage = UpdateStorage(() => containerDO.CrateStorage))
             {
-                updater.CrateStorage.Add(Crate.FromContent(label, curManifestSchema));
+                crateStorage.Add(Crate.FromContent(label, curManifestSchema));
             }
         }
 
@@ -260,7 +262,7 @@ namespace Hub.Managers
                     continue;
                 }
 
-                fields.AddRange(FindFieldsRecursive(crate.Get()));
+                fields.AddRange(Fr8ReflectionHelper.FindFieldsRecursive(crate.Get()));
             }
 
             return fields;
@@ -285,47 +287,6 @@ namespace Hub.Managers
             }
 
             return tempMS;
-        }
-
-        private static IEnumerable<FieldDTO> FindFieldsRecursive(Object obj)
-        {
-            var fields = new List<FieldDTO>();
-            if (obj is IEnumerable)
-            {
-
-                var objList = obj as IEnumerable;
-                foreach (var element in objList)
-                {
-                    fields.AddRange(FindFieldsRecursive(element));
-                }
-                return fields;
-            }
-
-            var objType = obj.GetType();
-            bool isPrimitiveType = objType.IsPrimitive || objType.IsValueType || (objType == typeof(string));
-
-            if (!isPrimitiveType)
-            {
-                var field = obj as FieldDTO;
-                if (field != null)
-                {
-                    return new List<FieldDTO> { field };
-                }
-
-                var objProperties = objType.GetProperties();
-                var objFields = objType.GetFields();
-                foreach (var prop in objProperties)
-                {
-                    fields.AddRange(FindFieldsRecursive(prop.GetValue(obj)));
-                }
-
-                foreach (var prop in objFields)
-                {
-                    fields.AddRange(FindFieldsRecursive(prop.GetValue(obj)));
-                }
-            }
-
-            return fields;
         }
 
         public IEnumerable<string> GetLabelsByManifestType(IEnumerable<Crate> crates, string manifestType)

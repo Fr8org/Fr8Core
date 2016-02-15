@@ -24,7 +24,6 @@ namespace terminalAtlassian.Actions
         {
             _atlassianService = ObjectFactory.GetInstance<AtlassianService>();
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
-
         }
 
         public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
@@ -46,10 +45,10 @@ namespace terminalAtlassian.Actions
 
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.Clear();
-                updater.CrateStorage.Add(CreateControlsCrate());
+                crateStorage.Clear();
+                crateStorage.Add(CreateControlsCrate());
             }
 
             return await Task.FromResult<ActivityDO>(curActivityDO);
@@ -64,9 +63,9 @@ namespace terminalAtlassian.Actions
             string jiraKey = ExtractJiraKey(curActivityDO);
             var jiraIssue = _atlassianService.GetJiraIssue(jiraKey, authTokenDO);
 
-            using (var updater = _crateManager.UpdateStorage(payloadCrates))
+            using (var crateStorage = _crateManager.GetUpdatableStorage(payloadCrates))
             {
-                updater.CrateStorage.Add(PackCrate_JiraIssueDetails(jiraIssue));
+                crateStorage.Add(PackCrate_JiraIssueDetails(jiraIssue));
             }
 
             return Success(payloadCrates);

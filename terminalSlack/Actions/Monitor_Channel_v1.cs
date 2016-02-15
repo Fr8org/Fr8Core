@@ -57,9 +57,9 @@ namespace terminalSlack.Actions
                 return Error(payloadCrates, "Unexpected channel-id.");
             }
 
-            using (var updater = Crate.UpdateStorage(payloadCrates))
+            using (var crateStorage = Crate.GetUpdatableStorage(payloadCrates))
             {
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Slack Payload Data", new StandardPayloadDataCM(payloadFields)));
+                crateStorage.Add(Data.Crates.Crate.FromContent("Slack Payload Data", new StandardPayloadDataCM(payloadFields)));
             }
 
             return Success(payloadCrates);
@@ -116,13 +116,13 @@ namespace terminalSlack.Actions
             var crateAvailableChannels = CreateAvailableChannelsCrate(channels);
             var crateEventSubscriptions = CreateEventSubscriptionCrate();
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.Clear();
-                PackConfigurationControls(updater.CrateStorage);
-                updater.CrateStorage.Add(crateDesignTimeFields);
-                updater.CrateStorage.Add(crateAvailableChannels);
-                updater.CrateStorage.Add(crateEventSubscriptions);
+                crateStorage.Clear();
+                PackConfigurationControls(crateStorage);
+                crateStorage.Add(crateDesignTimeFields);
+                crateStorage.Add(crateAvailableChannels);
+                crateStorage.Add(crateEventSubscriptions);
             }
 
 

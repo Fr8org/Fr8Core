@@ -67,9 +67,9 @@ namespace terminalDocuSign.Actions
             var downloadedTemplate = _docuSignManager.DownloadDocuSignTemplate(docuSignAuthDTO, selectedDocusignTemplateId);
             //and add it to payload
             var templateCrate = CreateDocuSignTemplateCrateFromDto(downloadedTemplate);
-            using (var updater = Crate.UpdateStorage(payloadCrates))
+            using (var crateStorage = Crate.GetUpdatableStorage(payloadCrates))
             {
-                updater.CrateStorage.Add(templateCrate);
+                crateStorage.Add(templateCrate);
             }
             return Success(payloadCrates);
         }
@@ -103,11 +103,11 @@ namespace terminalDocuSign.Actions
             var docuSignTemplatesCrate = _docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
             var controls = CreateControlsCrate();
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.Clear();
-                updater.CrateStorage.Add(controls);
-                updater.CrateStorage.Add(docuSignTemplatesCrate);
+                crateStorage.Clear();
+                crateStorage.Add(controls);
+                crateStorage.Add(docuSignTemplatesCrate);
 
             }
 

@@ -175,9 +175,9 @@ namespace terminalDocuSignTests.Integration
                     dataDTO
                 );
 
-            using (var updater = Crate.UpdateStorage(responseActionDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(responseActionDTO))
             {
-                var controls = updater.CrateStorage
+                var controls = crateStorage
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
                     .Single();
 
@@ -186,11 +186,11 @@ namespace terminalDocuSignTests.Integration
                 var radioGroup = (RadioButtonGroup)controls.Controls[0];
                 radioGroup.Radios[0].Selected = true;
 
-                var availableEventCM = updater.CrateStorage
+                var availableEventCM = crateStorage
                     .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "AvailableEvents")
                     .Single();
 
-                var availableHandlers = updater.CrateStorage
+                var availableHandlers = crateStorage
                     .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "AvailableHandlers")
                     .Single();
 
@@ -225,9 +225,9 @@ namespace terminalDocuSignTests.Integration
                     dataDTO
                 );
 
-            using (var updater = Crate.UpdateStorage(responseActionDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(responseActionDTO))
             {
-                var controls = updater.CrateStorage
+                var controls = crateStorage
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
                     .Single();
 
@@ -236,11 +236,11 @@ namespace terminalDocuSignTests.Integration
                 var radioGroup = (RadioButtonGroup)controls.Controls[0];
                 radioGroup.Radios[0].Selected = true;
 
-                var availableEventCM = updater.CrateStorage
+                var availableEventCM = crateStorage
                     .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "AvailableEvents")
                     .Single();
 
-                var availableHandlers = updater.CrateStorage
+                var availableHandlers = crateStorage
                     .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "AvailableHandlers")
                     .Single();
 

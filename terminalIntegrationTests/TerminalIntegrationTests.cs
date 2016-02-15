@@ -435,9 +435,9 @@ namespace terminalIntegrationTests
             // Select first available DocuSign template.
             WaitForDocuSignEvent_SelectFirstTemplate(initCrateStorageDTO);
 
-            using (var updater = _crateManager.UpdateStorage(savedActionDTO))
+            using (var crateStorage = _crateManager.GetUpdatableStorage(savedActionDTO))
             {
-                updater.CrateStorage = initCrateStorageDTO;
+                crateStorage.Replace(initCrateStorageDTO);
             }
 
             // Call Configure FollowUp for WaitForDocuSignEvent action.
@@ -459,9 +459,9 @@ namespace terminalIntegrationTests
             // Select first available DocuSign template.
             WaitForDocuSignEvent_SelectFirstTemplate(initWaitForDocuSignEventCS);
 
-            using (var updater = _crateManager.UpdateStorage(waitForDocuSignEventAction))
+            using (var crateStorage = _crateManager.GetUpdatableStorage(waitForDocuSignEventAction))
             {
-                updater.CrateStorage = initWaitForDocuSignEventCS;
+                crateStorage.Replace(initWaitForDocuSignEventCS);
             }
 
             //FixActionNavProps(waitForDocuSignEventAction.Id);
@@ -515,9 +515,9 @@ namespace terminalIntegrationTests
             // Select first available DocuSign template.
             WriteToSqlServer_InputConnectionString(initCrateStorageDTO);
 
-            using (var updater = _crateManager.UpdateStorage(savedActionDTO))
+            using (var crateStorage = _crateManager.GetUpdatableStorage(savedActionDTO))
             {
-                updater.CrateStorage = initCrateStorageDTO;
+                crateStorage.Replace(initCrateStorageDTO);
             }
 
           //  FixActionNavProps(savedActionDTO.Id);

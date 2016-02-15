@@ -55,7 +55,7 @@ namespace terminalGoogleTests.Integration
         }
         private void AssertCrateTypes_OnConfiguration(ICrateStorage crateStorage)
         {
-            Assert.AreEqual(1, crateStorage.Count);
+            Assert.AreEqual(2, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
         }
 

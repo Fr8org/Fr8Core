@@ -268,6 +268,7 @@
                                 "errorMessage":null,
                                 "selected": false,
                                 "events": null,
+                                "isFocused" : false,
                                 "source": null
                             }
                         ]
@@ -286,6 +287,7 @@
                                 "errorMessage": null,
                                 "type": "DropDownList",
                                 "selected": false,
+                                "isFocused": false,
                                 "events": [
                                     {
                                         "name": "onChange",
@@ -305,6 +307,7 @@
                                 "label": null,
                                 "type": "TextSource",
                                 "errorMessage": null,
+                                "isFocused": false,
                                 "selected": false,
                                 "events": [],
                                 "source": {
@@ -326,6 +329,7 @@
                 "type": "RadioButtonGroup",
                 "selected": false,
                 "events": null,
+                "isFocused": false,
                 "source": null,
                 fieldLabel: null
             },
@@ -338,6 +342,7 @@
                 "selected": false,
                 "errorMessage": null,
                 "events": null,
+                "isFocused" : false,
                 "source": null,
                 fieldLabel: null
             },
@@ -350,6 +355,7 @@
                 "type": "DropDownList",
                 "selected": false,
                 "errorMessage": null,
+                "isFocused": false,
                 "events": [],
                 "source": {
                     "manifestType": "Standard Design-Time Fields1",
@@ -368,6 +374,7 @@
                 "value": "",
                 "label": null,
                 "type": "DropDownList",
+                "isFocused": false,
                 "errorMessage": null,
                 "selected": false,
                 "events": null,
@@ -389,6 +396,7 @@
                 "label": null,
                 "type": "TextSource",
                 "errorMessage": null,
+                "isFocused": false,
                 "selected": false,
                 "events": null,
                 "source": {

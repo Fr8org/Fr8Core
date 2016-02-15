@@ -106,9 +106,9 @@ namespace terminalAzureTests.Integration
 
             controlDefinitionDTO[0].Value = FixtureData.TestConnectionString2().Value;
 
-            using (var updater = Crate.UpdateStorage(responseActionDTO))
+            using (var updatableStorage = Crate.GetUpdatableStorage(responseActionDTO))
             {
-                updater.CrateStorage = storage;
+                updatableStorage.Replace(storage);
             }
             fr8DataDTO.ActivityDTO = responseActionDTO;
             responseActionDTO =
@@ -158,9 +158,9 @@ namespace terminalAzureTests.Integration
             //provide incorrect connection string
             controlDefinitionDTO[0].Value = FixtureData.TestConnectionString3().Value;
 
-            using (var updater = Crate.UpdateStorage(responseActionDTO))
+            using (var updatableStorage = Crate.GetUpdatableStorage(responseActionDTO))
             {
-                updater.CrateStorage = storage;
+                updatableStorage.Replace(storage);
             }
             fr8DataDTO.ActivityDTO = responseActionDTO;
             responseActionDTO =
@@ -193,9 +193,9 @@ namespace terminalAzureTests.Integration
 
             var fr8DataDTO = HealthMonitor_FixtureData.Write_To_Sql_Server_v1_InitialConfiguration_Fr8DataDTO();
 
-            using (var updater = Crate.UpdateStorage(fr8DataDTO.ActivityDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(fr8DataDTO.ActivityDTO))
             {
-                updater.CrateStorage.Add(CreateConnectionStringCrate());
+                crateStorage.Add(CreateConnectionStringCrate());
             }
 
             AddOperationalStateCrate(fr8DataDTO, new OperationalStateCM());

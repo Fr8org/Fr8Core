@@ -14,6 +14,7 @@ namespace TerminalBase.Infrastructure
     public interface IHubCommunicator
     {
         Task<PayloadDTO> GetPayload(ActivityDO activityDO, Guid containerId, string userId);
+        Task<UserDTO> GetCurrentUser(ActivityDO activityDO, Guid containerId, string userId);
         Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability, string userId);
         Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability, string userId);
         Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActivityDO activityDO, CrateDirection direction, string userId);
@@ -36,5 +37,7 @@ namespace TerminalBase.Infrastructure
         Task<FileDO> SaveFile(string name, Stream stream, string userId);
         Task<Stream> DownloadFile(int fileId, string userId);
         Task<IEnumerable<FileDTO>> GetFiles(string userId);
+        Task Configure(string terminalName);
+        bool IsConfigured { get; set; }
     }
 }

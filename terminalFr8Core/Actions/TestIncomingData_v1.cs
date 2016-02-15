@@ -245,9 +245,9 @@ namespace terminalFr8Core.Actions
             //build a controls crate to render the pane
             var configurationControlsCrate = CreateControlsCrate();
 
-            using (var updater = Crate.UpdateStorage(() => curActivityDO.CrateStorage))
+            using (var crateStorage = Crate.UpdateStorage(() => curActivityDO.CrateStorage))
             {
-                updater.CrateStorage = AssembleCrateStorage(queryFieldsCrate, configurationControlsCrate);
+                crateStorage.Replace(AssembleCrateStorage(queryFieldsCrate, configurationControlsCrate));
             }
 
             return curActivityDO;
@@ -263,10 +263,10 @@ namespace terminalFr8Core.Actions
             //2) Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
             var queryFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Queryable Criteria", curUpstreamFields);
 
-            using (var updater = Crate.UpdateStorage(() => curActivityDO.CrateStorage))
+            using (var crateStorage = Crate.UpdateStorage(() => curActivityDO.CrateStorage))
             {
-                updater.CrateStorage.RemoveByLabel("Queryable Criteria");
-                updater.CrateStorage.Add(queryFieldsCrate);
+                crateStorage.RemoveByLabel("Queryable Criteria");
+                crateStorage.Add(queryFieldsCrate);
             }
 
             return curActivityDO;

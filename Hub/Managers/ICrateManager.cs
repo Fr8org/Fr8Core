@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
-using Data.Control;
 using Data.Crates;
-using Newtonsoft.Json.Linq;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
@@ -14,9 +9,9 @@ using Data.States;
 
 namespace Hub.Managers
 {
-    public interface ICrateStorageUpdater : IDisposable
+    public interface IUpdatableCrateStorage : IDisposable, ICrateStorage
     {
-        ICrateStorage CrateStorage { get; set; }
+        void Replace(ICrateStorage crateStorage);
         void DiscardChanges();
     }
 
@@ -28,8 +23,8 @@ namespace Hub.Managers
         ICrateStorage FromDto(CrateStorageDTO storageDto);
         Crate FromDto(CrateDTO crateDto);
 
-        ICrateStorageUpdater UpdateStorage(Expression<Func<CrateStorageDTO>> storageAccessExpression);
-        ICrateStorageUpdater UpdateStorage(Expression<Func<string>> storageAccessExpression);
+        IUpdatableCrateStorage UpdateStorage(Expression<Func<CrateStorageDTO>> storageAccessExpression);
+        IUpdatableCrateStorage UpdateStorage(Expression<Func<string>> storageAccessExpression);
 
         bool IsEmptyStorage(CrateStorageDTO storageDto);
         string EmptyStorageAsStr();

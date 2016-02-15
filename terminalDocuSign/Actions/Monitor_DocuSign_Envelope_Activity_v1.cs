@@ -144,9 +144,9 @@ namespace terminalDocuSign.Actions
         /// <returns>True when validation is on/false on problem</returns>
         private void ValidateEnvelopeSelectableEvents(ActivityDO curActivityDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
             {
-                var configControls = GetConfigurationControls(updater.CrateStorage);
+                var configControls = GetConfigurationControls(crateStorage);
                 if (configControls == null) return;
                 var eventCheckBoxes = configControls.Controls.Where(c => c.Type == ControlTypes.CheckBox).ToList();
                 var anySelectedControl = eventCheckBoxes.Any(c => c.Selected);
@@ -297,14 +297,14 @@ namespace terminalDocuSign.Actions
                 }
             };
 
-            using (var updater = Crate.UpdateStorage(payloadCrates))
+            using (var crateStorage = Crate.GetUpdatableStorage(payloadCrates))
             {
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(fields)));
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Log Messages", logMessages));
+                crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(fields)));
+                crateStorage.Add(Data.Crates.Crate.FromContent("Log Messages", logMessages));
                 if (curSelectedOption == "template")
                 {
                     var userDefinedFieldsPayload = _docuSignManager.CreateActionPayload(curActivityDO, authTokenDO, envelopeId, curSelectedValue);
-                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Data", userDefinedFieldsPayload));
+                    crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Data", userDefinedFieldsPayload));
                 }
             }
 
@@ -319,15 +319,15 @@ namespace terminalDocuSign.Actions
             var crateDesignTimeFields = _docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
             var eventFields = Crate.CreateDesignTimeFieldsCrate("DocuSign Event Fields", AvailabilityType.RunTime, CreateDocuSignEventFields().ToArray());
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.Add(crateControls);
-                updater.CrateStorage.Add(crateDesignTimeFields);
-                updater.CrateStorage.Add(eventFields);
+                crateStorage.Add(crateControls);
+                crateStorage.Add(crateDesignTimeFields);
+                crateStorage.Add(eventFields);
 
                 // Remove previously added crate of "Standard Event Subscriptions" schema
-                updater.CrateStorage.Remove<EventSubscriptionCM>();
-                updater.CrateStorage.Add(PackCrate_EventSubscriptions(crateControls.Get<StandardConfigurationControlsCM>()));
+                crateStorage.Remove<EventSubscriptionCM>();
+                crateStorage.Add(PackCrate_EventSubscriptions(crateControls.Get<StandardConfigurationControlsCM>()));
             }
             return await Task.FromResult<ActivityDO>(curActivityDO);
         }
@@ -337,12 +337,12 @@ namespace terminalDocuSign.Actions
         {
             //just update the user selected envelope events in the follow up configuration
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
             {
-                UpdateSelectedEvents(updater.CrateStorage);
+                UpdateSelectedEvents(crateStorage);
                 string selectedOption, selectedValue;
                 GetTemplateRecipientPickerValue(curActivityDO, out selectedOption, out selectedValue);
-                _docuSignManager.UpdateUserDefinedFields(curActivityDO, authTokenDO, updater, selectedValue);
+                _docuSignManager.UpdateUserDefinedFields(curActivityDO, authTokenDO, crateStorage, selectedValue);
             }
 
             return Task.FromResult<ActivityDO>(curActivityDO);

@@ -108,9 +108,9 @@ namespace terminalSendGridTests.Integration
             var dataDTO = HealthMonitor_FixtureData.SendEmailViaSendGrid_v1_InitialConfiguration_Fr8DataDTO();
 
 
-            using (var updater = Crate.UpdateStorage(dataDTO.ActivityDTO))
+            using (var updatableStorage = Crate.GetUpdatableStorage(dataDTO.ActivityDTO))
             {
-                updater.CrateStorage.Add(CreateCrates());
+                updatableStorage.Add(CreateCrates());
             }
 
             AddOperationalStateCrate(dataDTO, new OperationalStateCM());

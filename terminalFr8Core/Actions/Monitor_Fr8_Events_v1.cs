@@ -41,15 +41,15 @@ namespace terminalFr8Core.Actions
             var containerExecutionComplete = Crate.CreateManifestDescriptionCrate("Available Run-Time Objects", "ContainerExecutionComplete", "13", AvailabilityType.RunTime);
             var actionExecuted = Crate.CreateManifestDescriptionCrate("Available Run-Time Objects", "ActionExecuted", "13", AvailabilityType.RunTime);
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.Add(curControlsCrate);
-                updater.CrateStorage.Add(routeActivatedCrate);
-                updater.CrateStorage.Add(routeDeactivatedCrate);
-                updater.CrateStorage.Add(containerLaunched);
-                updater.CrateStorage.Add(containerExecutionComplete);
-                updater.CrateStorage.Add(actionExecuted);
-                updater.CrateStorage.Add(eventSubscription);
+                crateStorage.Add(curControlsCrate);
+                crateStorage.Add(routeActivatedCrate);
+                crateStorage.Add(routeDeactivatedCrate);
+                crateStorage.Add(containerLaunched);
+                crateStorage.Add(containerExecutionComplete);
+                crateStorage.Add(actionExecuted);
+                crateStorage.Add(eventSubscription);
             }
 
             return await Task.FromResult(curActivityDO);
@@ -71,9 +71,9 @@ namespace terminalFr8Core.Actions
 
                 if (standardLoggingCM != null)
                 {
-                    using (var updater = Crate.UpdateStorage(payloadCrates))
+                    using (var crateStorage = Crate.GetUpdatableStorage(payloadCrates))
                     {
-                        updater.CrateStorage.Add(Data.Crates.Crate.FromContent(curEventReport.EventNames, standardLoggingCM));
+                        crateStorage.Add(Data.Crates.Crate.FromContent(curEventReport.EventNames, standardLoggingCM));
                     }
                 }
             }

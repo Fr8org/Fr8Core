@@ -55,9 +55,9 @@ namespace terminalFr8Core.Actions
             {
                 processedMappedFields = mappedFields.Select(a => { return new FieldDTO(a.Value, ExtractPayloadFieldValue(storage, a.Key, activityDO)); });
 
-                using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => processPayload.CrateStorage))
+                using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => processPayload.CrateStorage))
                 {
-                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("MappedFields", new StandardPayloadDataCM(processedMappedFields)));
+                    crateStorage.Add(Data.Crates.Crate.FromContent("MappedFields", new StandardPayloadDataCM(processedMappedFields)));
                     return Success(processPayload);
                 }
             }
@@ -122,21 +122,21 @@ namespace terminalFr8Core.Actions
             var downstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Downstream Terminal-Provided Fields", curDownstreamFields.ToList().Select(a => { a.Availability = AvailabilityType.Configuration; return a; }).ToArray());
             var upstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided Fields", curUpstreamFields.ToList().Select(a => { a.Availability = AvailabilityType.Configuration; return a; }).ToArray());
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.Clear();
+                crateStorage.Clear();
                 if (curUpstreamFields.Length == 0 || curDownstreamFields.Length == 0)
                 {
-                    AddErrorTextBlock(updater.CrateStorage);
+                    AddErrorTextBlock(crateStorage);
                 }
                 else
                 {
-                    AddInitialTextBlock(updater.CrateStorage);
-                    AddMappingPane(updater.CrateStorage);
+                    AddInitialTextBlock(crateStorage);
+                    AddMappingPane(crateStorage);
                 }
 
-                updater.CrateStorage.Add(downstreamFieldsCrate);
-                updater.CrateStorage.Add(upstreamFieldsCrate);
+                crateStorage.Add(downstreamFieldsCrate);
+                crateStorage.Add(upstreamFieldsCrate);
             }
 
             return curActivityDO;

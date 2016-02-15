@@ -79,9 +79,9 @@ namespace terminalFr8Core.Actions
 
             var convertedCrate = convertor.Convert(userSelectedFromCrate);
 
-            using (var updater = Crate.UpdateStorage(curPayloadDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curPayloadDTO))
             {
-                updater.CrateStorage.Add(convertedCrate);
+                crateStorage.Add(convertedCrate);
             }
 
             return Success(curPayloadDTO);
@@ -97,10 +97,10 @@ namespace terminalFr8Core.Actions
             //build a controls crate to render the pane
             var configurationControlsCrate = CreateControlsCrate();
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage = AssembleCrateStorage(configurationControlsCrate);
-                updater.CrateStorage.Add(GetAvailableFromManifests());
+                crateStorage.Replace(AssembleCrateStorage(configurationControlsCrate));
+                crateStorage.Add(GetAvailableFromManifests());
             }
 
             return curActivityDO;
@@ -111,12 +111,12 @@ namespace terminalFr8Core.Actions
             var controlsMS = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().Single();
             var manifestTypeDropdown = controlsMS.Controls.Single(x => x.Type == ControlTypes.DropDownList && x.Name == "Available_From_Manifests");
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.RemoveUsingPredicate(c => c.IsOfType<StandardDesignTimeFieldsCM>() && c.Label == "Available To Manifests");
+                crateStorage.RemoveUsingPredicate(c => c.IsOfType<StandardDesignTimeFieldsCM>() && c.Label == "Available To Manifests");
                 if (manifestTypeDropdown.Value != null)
                 {
-                    updater.CrateStorage.Add(GetAvailableToManifests(manifestTypeDropdown.Value));
+                    crateStorage.Add(GetAvailableToManifests(manifestTypeDropdown.Value));
                 }
             }
             

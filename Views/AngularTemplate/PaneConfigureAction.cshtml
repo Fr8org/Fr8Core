@@ -9,6 +9,7 @@
             </div>
         </div>
     </div>
+    
     <div class="pane-configure-action-returnToSolution" ng-if="currentAction.activityTemplate.category==='Solution' && mode !== 'solution'">
         <label>This solution has {{currentAction.childrenActions.length}} {{currentAction.childrenActions.length > 1 ? "parts" : "part"}}: </label>
         <div class="solution-parts">
@@ -16,7 +17,6 @@
                 {{$index +1}}. {{childAction.activityTemplate.label}}
             </label>
         </div>
-        
     </div>
     <div class="return-to-solution-container" ng-if="currentAction.activityTemplate.category==='Solution' && mode !== 'solution'">
         <a stop-click-propagation ng-click="setSolutionMode()">

@@ -61,6 +61,8 @@ namespace DockyardTest.Services
             _eventReceived = false;
             _baseTerminalAction = new BaseTerminalActivity();
             _terminal = ObjectFactory.GetInstance<Terminal>();
+
+            FixtureData.AddTestActivityTemplate();
         }
         
         // DO-1214
@@ -283,6 +285,7 @@ namespace DockyardTest.Services
                         {
                             Id = FixtureData.GetTestGuidById(addCounter + 666),
                             ParentRouteNode = a,
+                            ActivityTemplateId = 1
                         };
 
                         a.ParentRouteNode.ChildNodes.Add(newAction);
@@ -302,6 +305,7 @@ namespace DockyardTest.Services
                             {
                                 Id = FixtureData.GetTestGuidById(addCounter + 666),
                                 ParentRouteNode = a,
+                                ActivityTemplateId = 1
                             };
 
                             a.ParentRouteNode.ChildNodes.Add(newAction);
@@ -522,9 +526,9 @@ namespace DockyardTest.Services
         {
             ActivityDO activityDO = FixtureData.TestActivity23();
 
-            using (var updater = _crate.UpdateStorage(activityDO))
+            using (var crateStorage = _crate.GetUpdatableStorage(activityDO))
             {
-                updater.CrateStorage.AddRange(FixtureData.CrateStorageDTO());
+                crateStorage.AddRange(FixtureData.CrateStorageDTO());
             }
 
             Assert.IsNotEmpty(activityDO.CrateStorage);

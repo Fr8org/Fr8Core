@@ -53,11 +53,11 @@ namespace terminalTwilio.Actions
 
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.Clear();
-                updater.CrateStorage.Add(PackCrate_ConfigurationControls());
-                updater.CrateStorage.Add(await CreateAvailableFieldsCrate(curActivityDO));
+                crateStorage.Clear();
+                crateStorage.Add(PackCrate_ConfigurationControls());
+                crateStorage.Add(await CreateAvailableFieldsCrate(curActivityDO));
             }
             return await Task.FromResult(curActivityDO);
         }
@@ -130,9 +130,9 @@ namespace terminalTwilio.Actions
                     curMessage = _twilio.SendSms(smsNumber, smsBody);
                     EventManager.TwilioSMSSent(smsNumber, smsBody);
                     var curFieldDTOList = CreateKeyValuePairList(curMessage);
-                    using (var updater = Crate.UpdateStorage(payloadCrates))
+                    using (var crateStorage = Crate.GetUpdatableStorage(payloadCrates))
                     {
-                        updater.CrateStorage.Add(PackCrate_TwilioMessageDetails(curFieldDTOList));
+                        crateStorage.Add(PackCrate_TwilioMessageDetails(curFieldDTOList));
                     }
                 }
                 catch (Exception ex)
@@ -254,10 +254,10 @@ namespace terminalTwilio.Actions
         private void PackCrate_WarningMessage(ActivityDO activityDO, string warningMessage, string warningLabel)
         {
             var textBlock = GenerateTextBlock(warningLabel, warningMessage, "alert alert-warning");
-            using (var updater = Crate.UpdateStorage(activityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(activityDO))
             {
-                updater.CrateStorage.Clear();
-                updater.CrateStorage.Add(PackControlsCrate(textBlock));
+                crateStorage.Clear();
+                crateStorage.Add(PackControlsCrate(textBlock));
             }
         }
     }

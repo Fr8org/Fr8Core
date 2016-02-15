@@ -60,9 +60,9 @@ namespace terminalDocuSignTests
 
             SendDocuSignEnvelope_SelectFirstTemplate(storage);
 
-            using (var updater = _crateManager.UpdateStorage(dataDTO.ActivityDTO))
+            using (var crateStorage = _crateManager.GetUpdatableStorage(dataDTO.ActivityDTO))
             {
-                updater.CrateStorage = storage;
+                crateStorage.Replace(storage);
             }
 
             return await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
@@ -185,9 +185,9 @@ namespace terminalDocuSignTests
 
             SendDocuSignEnvelope_SelectFirstTemplate(storage);
 
-            using (var updater = _crateManager.UpdateStorage(dataDTO.ActivityDTO))
+            using (var crateStorage = _crateManager.GetUpdatableStorage(dataDTO.ActivityDTO))
             {
-                updater.CrateStorage = storage;
+                crateStorage.Replace(storage);
             }
 
             dataDTO.ActivityDTO.AuthToken = null;
@@ -209,9 +209,9 @@ namespace terminalDocuSignTests
 
             SendDocuSignEnvelope_SetSpecificRecipient(storage);
 
-            using (var updater = _crateManager.UpdateStorage(dataDTO.ActivityDTO))
+            using (var updatableStorage = _crateManager.GetUpdatableStorage(dataDTO.ActivityDTO))
             {
-                updater.CrateStorage = storage;
+                updatableStorage.Replace(storage);
             }
             
             var responsePayloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
@@ -237,9 +237,9 @@ namespace terminalDocuSignTests
 
             SendDocuSignEnvelope_SetSpecificRecipient(storage);
 
-            using (var updater = _crateManager.UpdateStorage(dataDTO.ActivityDTO))
+            using (var crateStorage = _crateManager.GetUpdatableStorage(dataDTO.ActivityDTO))
             {
-                updater.CrateStorage = storage;
+                crateStorage.Replace(storage);
             }
             dataDTO.ActivityDTO.AuthToken = null;
             await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);

@@ -74,9 +74,9 @@ namespace terminalExcelTests.Integration
 
             var storage = _crateManager.GetStorage(responseActionDTO);
 
-            using (var updater = _crateManager.UpdateStorage(dataDTO.ActivityDTO))
+            using (var crateStorage = _crateManager.GetUpdatableStorage(dataDTO.ActivityDTO))
             {
-                updater.CrateStorage = storage;
+                crateStorage.Replace(storage);
             }
 
             return await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);

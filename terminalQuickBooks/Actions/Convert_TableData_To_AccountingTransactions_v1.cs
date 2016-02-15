@@ -48,10 +48,10 @@ namespace terminalQuickBooks.Actions
         protected override Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             //Grasp the user data from the controls in the follow up configuration
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
             {
-                MemoText = GetMemoText(updater.CrateStorage);
-                DebitAccount = GetDebitAccount(updater.CrateStorage);
+                MemoText = GetMemoText(crateStorage);
+                DebitAccount = GetDebitAccount(crateStorage);
             }
             return Task.FromResult(curActivityDO);
         }
@@ -60,9 +60,9 @@ namespace terminalQuickBooks.Actions
             if (curActivityDO.Id != Guid.Empty)
             {
                 //Check the availability of ChartOfAccountsCM
-                using (var updater = Crate.UpdateStorage(curActivityDO))
+                using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
                 {
-                    var crate = updater.CrateStorage.CrateContentsOfType<ChartOfAccountsCM>();
+                    var crate = crateStorage.CrateContentsOfType<ChartOfAccountsCM>();
                     if (crate != null && crate.Any())
                         ChartOfAccountsCrate = crate.First();
                 }
@@ -92,10 +92,10 @@ namespace terminalQuickBooks.Actions
                     };
 
                 }
-                using (var updater = Crate.UpdateStorage(curActivityDO))
+                using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
                 {
-                    updater.CrateStorage.Add(PackControls(actionControls));
-                    updater.CrateStorage.AddRange(await PackSources(authTokenDO));
+                    crateStorage.Add(PackControls(actionControls));
+                    crateStorage.AddRange(await PackSources(authTokenDO));
                 }
             }
             else
@@ -126,28 +126,28 @@ namespace terminalQuickBooks.Actions
             //The check on the accounts' existence in QB is performed only once in the run method
             //ChartOfAccounts is perloaded once and the accounts are compared with the the perloaded list
             if (ChartOfAccountsCrate == null || ChartOfAccountsCrate.Accounts.Count == 0)
-                using (var updater = Crate.UpdateStorage(curActivityDO))
+                using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
                 {
-                    var crate = updater.CrateStorage.CrateContentsOfType<ChartOfAccountsCM>();
+                    var crate = crateStorage.CrateContentsOfType<ChartOfAccountsCM>();
                     ChartOfAccountsCrate = crate != null
                         ? crate.Single()
                         : _chartOfAccounts.GetChartOfAccounts(authTokenDO);
-                    curDebitAccount = GetDebitAccount(updater.CrateStorage);
-                    memoText = GetMemoText(updater.CrateStorage);
+                    curDebitAccount = GetDebitAccount(crateStorage);
+                    memoText = GetMemoText(crateStorage);
                     //Check that the required input is provided by the user
                     //Namely: debit/credit type
-                    ValidateControls(updater.CrateStorage);
+                    ValidateControls(crateStorage);
                 }
             StandardAccountingTransactionCM curStandardAccouningTransactionCM;
             if (curDebitAccount != null)
             {
                 curStandardAccouningTransactionCM = GenerateTransactionCrate(curStandardTableDataCM,
                     ChartOfAccountsCrate, curDebitAccount, memoText);
-                using (var updater = Crate.UpdateStorage(payloadCrates))
+                using (var crateStorage = Crate.GetUpdatableStorage(payloadCrates))
                 {
                     var curCrateToAdd = Crate<StandardAccountingTransactionCM>.FromContent(
                         "StandardAccountingTransactionCM", curStandardAccouningTransactionCM);
-                    updater.CrateStorage.Add(curCrateToAdd);
+                    crateStorage.Add(curCrateToAdd);
                 }
                 return Success(payloadCrates);
             }
@@ -293,7 +293,7 @@ namespace terminalQuickBooks.Actions
         }
         /// <summary>
         /// This method should update controls data
-        /// This action should be called from Crate.UpdateStorage(curActivityDO)
+        /// This action should be called from Crate.GetUpdatableStorage(curActivityDO)
         /// 1) Decide which line is debit depending on the value of the
         /// ButtonGroup with the Name "Debit/Credit", update the debitLineAccount values
         /// 2) Extract Memo from the TextBlock with Name "Transaction_Memo"

@@ -62,14 +62,14 @@ namespace terminalDocuSignTests.Integration
                     requestDataDTO
                 );
 
-            using (var updater = Crate.UpdateStorage(responseActionDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(responseActionDTO))
             {
-                var controls = updater.CrateStorage
+                var controls = crateStorage
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
                     .Single();
                 var dropDownList = (DropDownList)controls.Controls[1];
 
-                 var availableActions = updater.CrateStorage
+                 var availableActions = crateStorage
                     .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "AvailableActions")
                     .Single();
 

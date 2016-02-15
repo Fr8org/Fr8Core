@@ -57,10 +57,10 @@ namespace terminalFr8Core.Actions
             //build a controls crate to render the pane
             var configurationControlsCrate = CreateControlsCrate();
             
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage = AssembleCrateStorage(configurationControlsCrate);
-                updater.CrateStorage.Add(await GetCurrentUsersFiles());
+                crateStorage.Replace(AssembleCrateStorage(configurationControlsCrate));
+                crateStorage.Add(await GetCurrentUsersFiles());
             }
 
             return curActivityDO;
@@ -102,9 +102,9 @@ namespace terminalFr8Core.Actions
 
             var fileCrate = Data.Crates.Crate.FromContent("DownloadFile", fileDescription);
 
-            using (var updater = Crate.UpdateStorage(curPayloadDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curPayloadDTO))
             {
-                updater.CrateStorage.Add(fileCrate);
+                crateStorage.Add(fileCrate);
             }
             
             return Success(curPayloadDTO);

@@ -9,19 +9,19 @@ namespace Hub.Managers
 {
     public static class CrateManagerExtensions
     {
-        public static ICrateStorageUpdater UpdateStorage(this ICrateManager crateManager, ActivityDO activity)
+        public static IUpdatableCrateStorage GetUpdatableStorage(this ICrateManager crateManager, ActivityDO activity)
         {
             if (activity == null) throw new ArgumentNullException("activity");
             return crateManager.UpdateStorage(() => activity.CrateStorage);
         }
 
-        public static ICrateStorageUpdater UpdateStorage(this ICrateManager crateManager, ActivityDTO activity)
+        public static IUpdatableCrateStorage GetUpdatableStorage(this ICrateManager crateManager, ActivityDTO activity)
         {
             if (activity == null) throw new ArgumentNullException("action");
             return crateManager.UpdateStorage(() => activity.CrateStorage);
         }
 
-        public static ICrateStorageUpdater UpdateStorage(this ICrateManager crateManager, PayloadDTO payload)
+        public static IUpdatableCrateStorage GetUpdatableStorage(this ICrateManager crateManager, PayloadDTO payload)
         {
             if (payload == null) throw new ArgumentNullException("payload");
             return crateManager.UpdateStorage(() => payload.CrateStorage);

@@ -40,9 +40,9 @@ namespace terminalFr8Core.Actions
 
             var userDefinedPayload = JsonConvert.DeserializeObject<List<FieldDTO>>(fieldListControl.Value);
 
-            using (var updater = Crate.UpdateStorage(() => payloadCrates.CrateStorage))
+            using (var crateStorage = Crate.UpdateStorage(() => payloadCrates.CrateStorage))
             {
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("ManuallyAddedPayload", new StandardPayloadDataCM(userDefinedPayload)));
+                crateStorage.Add(Data.Crates.Crate.FromContent("ManuallyAddedPayload", new StandardPayloadDataCM(userDefinedPayload)));
             }
             //
             //            var cratePayload = Crate.Create(
@@ -67,9 +67,9 @@ namespace terminalFr8Core.Actions
             //build a controls crate to render the pane
             var configurationControlsCrate = CreateControlsCrate();
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage = AssembleCrateStorage(configurationControlsCrate);
+                crateStorage.Replace(AssembleCrateStorage(configurationControlsCrate));
             }
 
             return Task.FromResult(curActivityDO);
@@ -94,12 +94,18 @@ namespace terminalFr8Core.Actions
             if (fieldListControl.Value != null)
             {
                 var userDefinedPayload = JsonConvert.DeserializeObject<List<FieldDTO>>(fieldListControl.Value);
-                userDefinedPayload.ForEach(x => x.Value = x.Key);
-
-                using (var updater = Crate.UpdateStorage(curActivityDO))
+                userDefinedPayload.ForEach(x =>
                 {
-                    updater.CrateStorage.RemoveByLabel("ManuallyAddedPayload");
-                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("ManuallyAddedPayload", new StandardDesignTimeFieldsCM() { Fields = userDefinedPayload }));
+                    x.Value = x.Key;
+                    x.Availability = Data.States.AvailabilityType.RunTime;
+                });
+
+                using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+                {
+                    crateStorage.RemoveByLabel("ManuallyAddedPayload");
+                    var crate = Data.Crates.Crate.FromContent("ManuallyAddedPayload", new StandardDesignTimeFieldsCM() { Fields = userDefinedPayload });
+                    crate.Availability = Data.States.AvailabilityType.RunTime;
+                    crateStorage.Add(crate);
                 }
             }
 

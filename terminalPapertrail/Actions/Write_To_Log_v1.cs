@@ -58,9 +58,9 @@ namespace terminalPapertrail.Actions
 
             var curControlsCrate = PackControlsCrate(targetUrlTextBlock);
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage = new CrateStorage(curControlsCrate);
+                crateStorage.Replace(new CrateStorage(curControlsCrate));
             }
 
             return await Task.FromResult(curActivityDO);
@@ -96,17 +96,17 @@ namespace terminalPapertrail.Actions
                     logMessage.IsLogged = true;
                 });
 
-                using (var updater = Crate.UpdateStorage(curProcessPayload))
+                using (var crateStorage = Crate.GetUpdatableStorage(curProcessPayload))
                 {
-                    updater.CrateStorage.RemoveByLabel("Log Messages");
-                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Log Messages", curLogMessages));
+                    crateStorage.RemoveByLabel("Log Messages");
+                    crateStorage.Add(Data.Crates.Crate.FromContent("Log Messages", curLogMessages));
                 }
             }
 
             return Success(curProcessPayload);
         }
 
-        private void GetPapertrailTargetUrlAndPort(ActivityDO curActivityDO, out string paperrrialTargetUrl, out int papertrailTargetPort)
+        private void GetPapertrailTargetUrlAndPort(ActivityDO curActivityDO, out string papertrialTargetUrl, out int papertrailTargetPort)
         {
             //get the configuration control of the given action
             var curActionConfigControls =
@@ -122,7 +122,7 @@ namespace terminalPapertrail.Actions
             }
 
             //assgign the output value
-            paperrrialTargetUrl = targetUrlValue[0];
+            papertrialTargetUrl = targetUrlValue[0];
             papertrailTargetPort = Convert.ToInt32(targetUrlValue[1]);
         }
     }

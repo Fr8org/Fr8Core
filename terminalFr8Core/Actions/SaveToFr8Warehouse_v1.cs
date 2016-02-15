@@ -87,12 +87,12 @@ namespace terminalFr8Core.Actions
             var fields = upstreamRunTimeDescriptions.Select(c => new FieldDTO(c.Content.Name, c.Content.Id));
             var upstreamManifestsCrate = Crate.CreateDesignTimeFieldsCrate("AvailableUpstreamManifests", fields.ToArray());
 
-            using (var updater = Crate.UpdateStorage(() => curActivityDO.CrateStorage))
+            using (var crateStorage = Crate.UpdateStorage(() => curActivityDO.CrateStorage))
             {
-                updater.CrateStorage.Clear();
-                updater.CrateStorage.Add(curConfigurationControlsCrate);
-                updater.CrateStorage.Add(upstreamLabelsCrate);
-                updater.CrateStorage.Add(upstreamManifestsCrate);
+                crateStorage.Clear();
+                crateStorage.Add(curConfigurationControlsCrate);
+                crateStorage.Add(upstreamLabelsCrate);
+                crateStorage.Add(upstreamManifestsCrate);
             }
 
             return curActivityDO;

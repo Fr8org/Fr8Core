@@ -60,9 +60,9 @@ namespace terminalDocuSign.Actions
                     new FieldDTO {Key = "DocuSign Recipient", Value = "DocuSign Recipient"}
                 });
             */
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage = new CrateStorage(curControlsCrate, curEventSubscriptionsCrate, envelopeCrate, eventCrate, recipientCrate);
+                crateStorage.Replace(new CrateStorage(curControlsCrate, curEventSubscriptionsCrate, envelopeCrate, eventCrate, recipientCrate));
             }
 
             /*
@@ -174,13 +174,13 @@ namespace terminalDocuSign.Actions
                 }
                 
 
-                using (var updater = Crate.UpdateStorage(curProcessPayload))
+                using (var crateStorage = Crate.GetUpdatableStorage(curProcessPayload))
                 {
-                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope", envelope));
-                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Event", events));
+                    crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope", envelope));
+                    crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Event", events));
                     if (recipientCM != null)
                     {
-                        updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Recipient", recipientCM));
+                        crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Recipient", recipientCM));
                     }
                 }
             }

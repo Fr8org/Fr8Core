@@ -108,16 +108,16 @@ namespace terminalDocuSignTests.Integration
             
             responseActionDTO.AuthToken = HealthMonitor_FixtureData.DocuSign_AuthToken();
 
-            using (var updater = Crate.UpdateStorage(responseActionDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(responseActionDTO))
             {
-                var controls = updater.CrateStorage
+                var controls = crateStorage
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
                     .Single();
 
                 var dataSourceDropdown = (DropDownList)controls.Controls[0];
                 dataSourceDropdown.Value = childAction;
 
-                var availableTemplatesCM = updater.CrateStorage
+                var availableTemplatesCM = crateStorage
                   .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Available Templates")
                   .Single();
                 Assert.IsTrue(availableTemplatesCM.Fields.Count > 0);

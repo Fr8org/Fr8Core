@@ -33,11 +33,11 @@ namespace terminalFr8Core.Actions
 
         protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
             {
                 AddLabelControl(
 
-                    updater.CrateStorage,
+                    crateStorage,
                     "NoConfigLabel",
                     "No configuration",
                     "This activity does not require any configuration."
@@ -184,9 +184,9 @@ namespace terminalFr8Core.Actions
 
             var payloadCMCrate = Data.Crates.Crate.FromContent("Sql Query Result", payloadCM);
 
-            using (var updater = Crate.UpdateStorage(payload))
+            using (var crateStorage = Crate.GetUpdatableStorage(payload))
             {
-                updater.CrateStorage.Add(payloadCMCrate);
+                crateStorage.Add(payloadCMCrate);
             }
 
             return Success(payload);

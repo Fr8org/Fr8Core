@@ -52,9 +52,9 @@ namespace terminalFr8Core.Actions
         protected override async Task<ActivityDO> InitialConfigurationResponse(
             ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
             {
-                RemoveControl(updater.CrateStorage, "UpstreamError");
+                RemoveControl(crateStorage, "UpstreamError");
 
                 var columnDefinitions = await ExtractColumnDefinitions(curActivityDO);
                 List<FieldDTO> tablesList = null;
@@ -67,7 +67,7 @@ namespace terminalFr8Core.Actions
                 if (tablesList == null || tablesList.Count == 0)
                 {
                     AddLabelControl(
-                            updater.CrateStorage,
+                            crateStorage,
                         "UpstreamError",
                         "Unexpected error",
                         "No upstream crates found to extract table definitions."
@@ -75,45 +75,45 @@ namespace terminalFr8Core.Actions
                     return curActivityDO;
                 }
 
-                var controlsCrate = EnsureControlsCrate(updater.CrateStorage);
+                var controlsCrate = EnsureControlsCrate(crateStorage);
 
-                AddSelectObjectDdl(updater.CrateStorage);
-                AddLabelControl(updater.CrateStorage, "SelectObjectError", "No object selected", "Please select object from the list above.");
+                AddSelectObjectDdl(crateStorage);
+                AddLabelControl(crateStorage, "SelectObjectError", "No object selected", "Please select object from the list above.");
 
-                updater.CrateStorage.RemoveByLabel("Available Tables");
-                updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("Available Tables", tablesList.ToArray()));
+                crateStorage.RemoveByLabel("Available Tables");
+                crateStorage.Add(Crate.CreateDesignTimeFieldsCrate("Available Tables", tablesList.ToArray()));
             }
             return curActivityDO;
         }
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
             {
-                RemoveControl(updater.CrateStorage, "SelectObjectError");
+                RemoveControl(crateStorage, "SelectObjectError");
 
-                var selectedObject = ExtractSelectedObjectFromControl(updater.CrateStorage);
+                var selectedObject = ExtractSelectedObjectFromControl(crateStorage);
                 if (string.IsNullOrEmpty(selectedObject))
                 {
-                    AddLabelControl(updater.CrateStorage, "SelectObjectError",
+                    AddLabelControl(crateStorage, "SelectObjectError",
                     "No object selected", "Please select object from the list above.");
 
                     return curActivityDO;
                 }
                 else
                 {
-                    var prevSelectedObject = ExtractSelectedObjectFromCrate(updater.CrateStorage);
+                    var prevSelectedObject = ExtractSelectedObjectFromCrate(crateStorage);
                     if (prevSelectedObject != selectedObject)
                     {
-                        RemoveControl(updater.CrateStorage, "SelectedQuery");
-                        AddQueryBuilder(updater.CrateStorage);
+                        RemoveControl(crateStorage, "SelectedQuery");
+                        AddQueryBuilder(crateStorage);
 
-                        await UpdateQueryableCriteria(updater.CrateStorage,  curActivityDO, selectedObject);
+                        await UpdateQueryableCriteria(crateStorage,  curActivityDO, selectedObject);
                     }
                 }
 
-                UpdateSelectedObjectCrate(updater.CrateStorage, selectedObject);
-                UpdateSelectedQueryCrate(updater.CrateStorage);
+                UpdateSelectedObjectCrate(crateStorage, selectedObject);
+                UpdateSelectedQueryCrate(crateStorage);
             }
 
             return curActivityDO;
@@ -375,9 +375,9 @@ namespace terminalFr8Core.Actions
 
             var sqlQueryCrate = Crate<StandardQueryCM>.FromContent("Sql Query", sqlQueryCM);
 
-            using (var updater = Crate.UpdateStorage(payloadCrates))
+            using (var crateStorage = Crate.GetUpdatableStorage(payloadCrates))
             {
-                updater.CrateStorage.Add(sqlQueryCrate);
+                crateStorage.Add(sqlQueryCrate);
             }
 
             return Success(payloadCrates);

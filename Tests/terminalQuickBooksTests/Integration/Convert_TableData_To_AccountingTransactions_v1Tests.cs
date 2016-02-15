@@ -38,9 +38,9 @@ namespace terminalQuickBooksTests.Integration
             var curAccountsCrate = HealthMonitor_FixtureData.ChartOfAccounts_Test1();
             var curTableDataCrate = HealthMonitor_FixtureData.StandardTableData_Test1();
             AddUpstreamCrate(dataDTO, curTableDataCrate, "DocuSignTableDataMappedToQuickbooks");
-            using (var updater = Crate.UpdateStorage(dataDTO.ActivityDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(dataDTO.ActivityDTO))
             {
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("ChartOfAccounts", curAccountsCrate));
+                crateStorage.Add(Data.Crates.Crate.FromContent("ChartOfAccounts", curAccountsCrate));
             }
             //Act
             var firstResponseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
@@ -50,9 +50,9 @@ namespace terminalQuickBooksTests.Integration
 
             dataDTO.ActivityDTO = firstResponseActionDTO;
 
-            using (var updater = Crate.UpdateStorage(firstResponseActionDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(firstResponseActionDTO))
             {
-                var controls = updater.CrateStorage
+                var controls = crateStorage
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
                     .Single();
                 //Set the button group data
@@ -68,8 +68,8 @@ namespace terminalQuickBooksTests.Integration
                 //Set memo
                 var memoTextBox = controls.FindByName("Transaction_Memo");
                 memoTextBox.Value = "The testing transactions";
-                updater.CrateStorage.Remove<StandardAccountingTransactionCM>();
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("StandardConfigurationControlsCM", controls));
+                crateStorage.Remove<StandardAccountingTransactionCM>();
+                crateStorage.Add(Data.Crates.Crate.FromContent("StandardConfigurationControlsCM", controls));
                 AddOperationalStateCrate(dataDTO, new OperationalStateCM());
             }
             var payloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);

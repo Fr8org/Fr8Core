@@ -43,10 +43,10 @@ namespace terminalFr8Core.Actions
 
         protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.Clear();
-                updater.CrateStorage.Add(CreateControlsCrate());
+                crateStorage.Clear();
+                crateStorage.Add(CreateControlsCrate());
             }
 
             return Task.FromResult<ActivityDO>(curActivityDO);
@@ -67,12 +67,12 @@ namespace terminalFr8Core.Actions
 
         protected override Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
             {
-                RemoveControl(updater.CrateStorage, "ErrorLabel");
+                RemoveControl(crateStorage, "ErrorLabel");
 
 
-                updater.CrateStorage.RemoveByLabel("Sql Table Definitions");
+                crateStorage.RemoveByLabel("Sql Table Definitions");
 
             var connectionString = ExtractConnectionString(curActivityDO);
                 
@@ -104,14 +104,14 @@ namespace terminalFr8Core.Actions
                             connectionStringFieldList.ToArray()
                         );
 
-                    updater.CrateStorage.Add(tableDefinitionCrate);
-                    updater.CrateStorage.Add(columnTypesCrate);
-                    updater.CrateStorage.Add(connectionStringCrate);
+                        crateStorage.Add(tableDefinitionCrate);
+                        crateStorage.Add(columnTypesCrate);
+                        crateStorage.Add(connectionStringCrate);
                 }
                 catch
                 {
                     AddLabelControl(
-                            updater.CrateStorage,
+                            crateStorage,
                         "ErrorLabel",
                         "Unexpected error",
                         "Error occured while trying to fetch columns from database specified."

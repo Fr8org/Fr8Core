@@ -241,9 +241,9 @@ namespace DockyardTest.Services
             
             var tmp = new ActivityDO();
 
-            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(tmp))
+            using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().GetUpdatableStorage(tmp))
             {
-                updater.CrateStorage.AddRange(curCratesDTO);
+                crateStorage.AddRange(curCratesDTO);
             }
 
             return tmp.CrateStorage;

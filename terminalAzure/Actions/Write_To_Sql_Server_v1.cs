@@ -70,10 +70,10 @@ namespace terminalAzure.Actions
         //If the user provides no Connection String value, provide an empty Connection String field for the user to populate
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.Clear();
-                updater.CrateStorage.Add(CreateControlsCrate());
+                crateStorage.Clear();
+                crateStorage.Add(CreateControlsCrate());
             }
 
             return await Task.FromResult<ActivityDO>(curActivityDO);
@@ -112,11 +112,11 @@ namespace terminalAzure.Actions
             try
             {
                 contentsList = GetFieldMappings(curActivityDO);
-                using (var updater = Crate.UpdateStorage(curActivityDO))
+                using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
                 {
-                    updater.CrateStorage.RemoveByLabel("Sql Table Columns");
+                    crateStorage.RemoveByLabel("Sql Table Columns");
                     //this needs to be updated to hold Crates instead of FieldDefinitionDTO
-                    updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("Sql Table Columns", contentsList.Select(col => new FieldDTO() { Key = col, Value = col }).ToArray()));
+                    crateStorage.Add(Crate.CreateDesignTimeFieldsCrate("Sql Table Columns", contentsList.Select(col => new FieldDTO() { Key = col, Value = col }).ToArray()));
                 }
             }
             catch
@@ -203,9 +203,9 @@ namespace terminalAzure.Actions
         }
         private void AddErrorToControl(ActivityDO activityDO)
         {
-            using (var updater = Crate.UpdateStorage(activityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(activityDO))
             {
-                var controls = GetConfigurationControls(updater.CrateStorage);
+                var controls = GetConfigurationControls(crateStorage);
                 var connStringTextBox = GetControl(controls, "connection_string", ControlTypes.TextBox);
                 connStringTextBox.Value = "Incorrect Connection String";
             }

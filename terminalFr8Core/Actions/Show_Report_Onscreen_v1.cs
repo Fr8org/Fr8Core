@@ -55,10 +55,10 @@ namespace terminalFr8Core.Actions
 
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.Add(PackControls(new ActionUi()));
-                updater.CrateStorage.Add(await FindTables(curActivityDO));
+                crateStorage.Add(PackControls(new ActionUi()));
+                crateStorage.Add(await FindTables(curActivityDO));
             }
 
             return curActivityDO;
@@ -66,9 +66,9 @@ namespace terminalFr8Core.Actions
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.ReplaceByLabel(await FindTables(curActivityDO));
+                crateStorage.ReplaceByLabel(await FindTables(curActivityDO));
             }
 
             return curActivityDO;
@@ -91,13 +91,13 @@ namespace terminalFr8Core.Actions
 
             if (!string.IsNullOrWhiteSpace(actionUi.ReportSelector.SelectedLabel))
             {
-                using (var updater = Crate.UpdateStorage(payload))
+                using (var crateStorage = Crate.GetUpdatableStorage(payload))
                 {
-                    var reportTable = updater.CrateStorage.CratesOfType<StandardPayloadDataCM>().FirstOrDefault(x => x.Label == actionUi.ReportSelector.SelectedLabel);
+                    var reportTable = crateStorage.CratesOfType<StandardPayloadDataCM>().FirstOrDefault(x => x.Label == actionUi.ReportSelector.SelectedLabel);
 
                     if (reportTable != null)
                     {
-                        updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Sql Query Result", new StandardPayloadDataCM
+                        crateStorage.Add(Data.Crates.Crate.FromContent("Sql Query Result", new StandardPayloadDataCM
                         {
                             PayloadObjects = reportTable.Content.PayloadObjects
                         }));

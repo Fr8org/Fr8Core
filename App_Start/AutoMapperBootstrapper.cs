@@ -101,12 +101,12 @@ namespace HubWeb.App_Start
                 return Mapper.Map<ActivityTemplateDTO>(ad.ActivityTemplate);
             }
 
-            if (ad.ActivityTemplateId == null || ad.ActivityTemplateId == 0)
+            if (ad.ActivityTemplateId == 0)
             {
                 return null;                
             }
 
-            return Mapper.Map<ActivityTemplateDTO>(_activityTemplate.GetByKey(ad.ActivityTemplateId.Value));
+            return Mapper.Map<ActivityTemplateDTO>(_activityTemplate.GetByKey(ad.ActivityTemplateId));
         }
 
         private object GetActivityTemplateId(ActivityDTO ad)

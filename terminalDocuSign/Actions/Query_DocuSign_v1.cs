@@ -116,9 +116,9 @@ namespace terminalDocuSign.Actions
                 payloadCm.PayloadObjects.Add(row);
             }
             
-            using (var updater = Crate.UpdateStorage(payload))
+            using (var crateStorage = Crate.GetUpdatableStorage(payload))
             {
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Sql Query Result", payloadCm));
+                crateStorage.Add(Data.Crates.Crate.FromContent("Sql Query Result", payloadCm));
             }
 
             return Success(payload);
@@ -133,10 +133,10 @@ namespace terminalDocuSign.Actions
 
             var docuSignAuthDto = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.Add(PackControls(new ActionUi()));
-                updater.CrateStorage.AddRange(PackDesignTimeData(docuSignAuthDto));
+                crateStorage.Add(PackControls(new ActionUi()));
+                crateStorage.AddRange(PackDesignTimeData(docuSignAuthDto));
             }
             
             return Task.FromResult(curActivityDO);
@@ -160,9 +160,9 @@ namespace terminalDocuSign.Actions
                 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.RemoveByLabel("Queryable Criteria");
+                crateStorage.RemoveByLabel("Queryable Criteria");
                 
                 return curActivityDO;
             }

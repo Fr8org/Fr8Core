@@ -61,11 +61,11 @@ namespace terminalGoogle.Actions
                 var crateDesignTimeFields = await PackCrate_GoogleForms(authDTO);
                 var eventCrate = CreateEventSubscriptionCrate();
 
-                using (var updater = Crate.UpdateStorage(curActivityDO))
+                using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
                 {
-                    updater.CrateStorage.Add(configurationControlsCrate);
-                    updater.CrateStorage.Add(crateDesignTimeFields);
-                    updater.CrateStorage.Add(eventCrate);
+                    crateStorage.Add(configurationControlsCrate);
+                    crateStorage.Add(crateDesignTimeFields);
+                    crateStorage.Add(eventCrate);
                 }
             }
             else
@@ -138,9 +138,9 @@ namespace terminalGoogle.Actions
             var result = await _googleDrive.UploadAppScript(googleAuthDTO, formId);
 
             var fieldResult = new List<FieldDTO>(){ new FieldDTO(){ Key = result, Value = result}};
-            using (var updater = Crate.UpdateStorage(curActionDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActionDTO))
             {
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Google Form Payload Data", new StandardPayloadDataCM(fieldResult)));
+                crateStorage.Add(Data.Crates.Crate.FromContent("Google Form Payload Data", new StandardPayloadDataCM(fieldResult)));
             }
 
             return await Task.FromResult(curActionDTO);
@@ -164,9 +164,9 @@ namespace terminalGoogle.Actions
             var payloadFields = ExtractPayloadFields(payloadCrates);
             var formResponseFields = CreatePayloadFormResponseFields(payloadFields);
             
-            using (var updater = Crate.UpdateStorage(payloadCrates))
+            using (var crateStorage = Crate.GetUpdatableStorage(payloadCrates))
             {
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Google Form Payload Data", new StandardPayloadDataCM(formResponseFields)));
+                crateStorage.Add(Data.Crates.Crate.FromContent("Google Form Payload Data", new StandardPayloadDataCM(formResponseFields)));
             }
 
             return Success(payloadCrates);

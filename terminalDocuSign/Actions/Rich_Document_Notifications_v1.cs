@@ -142,14 +142,14 @@ namespace terminalDocuSign.Actions
         }
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO activityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(activityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(activityDO))
             {
-                updater.CrateStorage.Clear();
-                updater.CrateStorage.Add(PackControls(new ActionUi()));
-                updater.CrateStorage.Add(PackAvailableTemplates(authTokenDO));
-                updater.CrateStorage.Add(PackAvailableEvents());
-                updater.CrateStorage.Add(await PackAvailableHandlers(activityDO));
-                updater.CrateStorage.Add(PackAvailableRecipientEvents(activityDO));
+                crateStorage.Clear();
+                crateStorage.Add(PackControls(new ActionUi()));
+                crateStorage.Add(PackAvailableTemplates(authTokenDO));
+                crateStorage.Add(PackAvailableEvents());
+                crateStorage.Add(await PackAvailableHandlers(activityDO));
+                crateStorage.Add(PackAvailableRecipientEvents(activityDO));
             }
 
             return activityDO;
@@ -203,7 +203,7 @@ namespace terminalDocuSign.Actions
             //let's make followup configuration for monitorDocuSignEventAction
             //followup call places EventSubscription crate in storage
             var configureMonitorDocusignTask = HubCommunicator.ConfigureActivity(monitorDocuSignAction, CurrentFr8UserId);
-            
+
 
             var durationControl = (Duration)controls.FindByName("TimePeriod");
             SetControlValue(setDelayAction, "Delay_Duration", durationControl.Value);
@@ -224,9 +224,9 @@ namespace terminalDocuSign.Actions
 
         private void SetFilterUsingRunTimeActionFields(ActivityDO filterUsingRunTimeAction, string status)
         {
-            using (var updater = Crate.UpdateStorage(filterUsingRunTimeAction))
+            using (var crateStorage = Crate.GetUpdatableStorage(filterUsingRunTimeAction))
             {
-                var configControlCM = updater.CrateStorage
+                var configControlCM = crateStorage
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
                     .First();
 
@@ -244,17 +244,17 @@ namespace terminalDocuSign.Actions
                 });
 
                 var queryFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Queryable Criteria", new FieldDTO[] { new FieldDTO("Status", "Status") });
-                updater.CrateStorage.RemoveByLabel("Queryable Criteria");
-                updater.CrateStorage.Add(queryFieldsCrate);
+                crateStorage.RemoveByLabel("Queryable Criteria");
+                crateStorage.Add(queryFieldsCrate);
             }
         }
 
         private async Task SetQueryFr8WarehouseActionFields(ActivityDO queryFr8Warehouse, string recipientEmail)
         {
             //update action's duration value
-            using (var updater = Crate.UpdateStorage(queryFr8Warehouse))
+            using (var crateStorage = Crate.GetUpdatableStorage(queryFr8Warehouse))
             {
-                var configControlCM = GetConfigurationControls(updater.CrateStorage);
+                var configControlCM = GetConfigurationControls(crateStorage);
                 var radioButtonGroup = (configControlCM.Controls.First() as RadioButtonGroup);
                 radioButtonGroup.Radios[0].Selected = false;
                 radioButtonGroup.Radios[1].Selected = true;
@@ -295,7 +295,7 @@ namespace terminalDocuSign.Actions
                     Conditions = conditions
                 });
 
-                updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("Queryable Criteria", GetFieldsByObjectId(selectedObject.Id).ToArray()));
+                crateStorage.Add(Crate.CreateDesignTimeFieldsCrate("Queryable Criteria", GetFieldsByObjectId(selectedObject.Id).ToArray()));
             }
         }
 
@@ -393,17 +393,42 @@ namespace terminalDocuSign.Actions
         {
             return Success(await GetPayload(curActivityDO, containerId));
         }
-        //This method provides some documentation for the DocuSign Solution Actions
-        public Task<SolutionPageDTO> Documentation(ActivityDO activityDO)
+        /// <summary>
+        /// This method provides documentation in two forms:
+        /// SolutionPageDTO for general information and 
+        /// ActivityResponseDTO for specific Help on minicon
+        /// </summary>
+        /// <param name="activityDO"></param>
+        /// <param name="curDocumentation"></param>
+        /// <returns></returns>
+        public dynamic Documentation(ActivityDO activityDO, string curDocumentation)
         {
-            var curSolutionPage = new SolutionPageDTO
+            if (curDocumentation.Contains("MainPage"))
             {
-                Name = SolutionName,
-                Version = SolutionVersion,
-                Terminal = TerminalName,
-                Body = @"<p>This is a solution action</p>"
-            };
-            return Task.FromResult(curSolutionPage);
+                var curSolutionPage = new SolutionPageDTO
+                {
+                    Name = SolutionName,
+                    Version = SolutionVersion,
+                    Terminal = TerminalName,
+                    Body = @"<p>This is Rich Document Notification solution action</p>"
+                };
+                return Task.FromResult(curSolutionPage);
+            }
+            if (curDocumentation.Contains("HelpMenu"))
+            {
+                if (curDocumentation.Contains("ExplainRichDocumentation"))
+                {
+                    return Task.FromResult(GenerateDocumentationRepsonce(@"This solution work with notifications"));
+                }
+                if (curDocumentation.Contains("ExplainService"))
+                {
+                    return Task.FromResult(GenerateDocumentationRepsonce(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
+                }
+                return Task.FromResult(GenerateErrorRepsonce("Unknown contentPath"));
+            }
+            return
+                Task.FromResult(
+                    GenerateErrorRepsonce("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
         }
     }
 }

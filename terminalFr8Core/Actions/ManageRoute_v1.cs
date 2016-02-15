@@ -35,10 +35,8 @@ namespace terminalFr8Core.Actions
 
         protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
-
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
             {
-                var crateStorage = updater.CrateStorage;
                 AddRunNowButton(crateStorage);
             }
 

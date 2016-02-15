@@ -87,12 +87,12 @@ namespace terminalYammer.Actions
             var crateAvailableGroups = CreateAvailableGroupsCrate(groups);
             var crateAvailableFields = await CreateAvailableFieldsCrate(curActivityDO);
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.Clear();
-                updater.CrateStorage.Add(PackControls(new ActionUi()));
-                updater.CrateStorage.Add(crateAvailableGroups);
-                updater.CrateStorage.Add(crateAvailableFields);
+                crateStorage.Clear();
+                crateStorage.Add(PackControls(new ActionUi()));
+                crateStorage.Add(crateAvailableGroups);
+                crateStorage.Add(crateAvailableFields);
             }
 
             return curActivityDO;

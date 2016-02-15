@@ -92,12 +92,12 @@ namespace terminalSlack.Actions
             var oauthToken = authTokenDO.Token;
             var channels = await _slackIntegration.GetAllChannelList(oauthToken);
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.Clear();
-                updater.CrateStorage.Add(PackCrate_ConfigurationControls());
-                updater.CrateStorage.Add(CreateAvailableChannelsCrate(channels));
-                updater.CrateStorage.Add(await CreateAvailableFieldsCrate(curActivityDO, "Available Fields"));
+                crateStorage.Clear();
+                crateStorage.Add(PackCrate_ConfigurationControls());
+                crateStorage.Add(CreateAvailableChannelsCrate(channels));
+                crateStorage.Add(await CreateAvailableFieldsCrate(curActivityDO, "Available Fields"));
             }
 
             return curActivityDO;
@@ -105,9 +105,9 @@ namespace terminalSlack.Actions
 
         protected async override Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.ReplaceByLabel(await CreateAvailableFieldsCrate(curActivityDO, "Available Fields"));
+                crateStorage.ReplaceByLabel(await CreateAvailableFieldsCrate(curActivityDO, "Available Fields"));
             }
 
             return curActivityDO;

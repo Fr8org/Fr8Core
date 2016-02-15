@@ -159,9 +159,9 @@ namespace terminalSlackTests.Integration
                     }
                  }
             );
-            using (var updater = Crate.UpdateStorage(activityDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(activityDTO))
             {
-                var controls = updater.CrateStorage
+                var controls = crateStorage
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
                     .Single();
 

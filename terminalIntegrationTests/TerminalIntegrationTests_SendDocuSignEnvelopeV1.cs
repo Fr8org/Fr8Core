@@ -52,9 +52,9 @@ namespace terminalIntegrationTests
 			// Select first available DocuSign template.
 			SendDocuSignEnvelope_SelectFirstTemplate(initCrateStorageDTO);
 
-		    using (var updater = _crateManager.UpdateStorage(savedActionDTO))
+		    using (var crateStorage = _crateManager.GetUpdatableStorage(savedActionDTO))
 		    {
-                updater.CrateStorage = initCrateStorageDTO;
+                crateStorage.Replace(initCrateStorageDTO);
 		    }
 
 		   // FixActionNavProps(savedActionDTO.Id);
