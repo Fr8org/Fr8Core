@@ -20,7 +20,7 @@ namespace terminalGoogle.Actions
     public class Get_Google_Sheet_Data_v1 : BaseTerminalActivity
     {
         private readonly IGoogleSheet _google;
-
+        private const string TableCrateLabel = "Spreadsheet Rows";
         public Get_Google_Sheet_Data_v1()
         {
             _google = new GoogleSheet();
@@ -66,7 +66,7 @@ namespace terminalGoogle.Actions
             var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
             //get the data
             var data = _google.EnumerateDataRows(spreadsheetsFromUserSelection, authDTO);
-            var crate = CrateManager.CreateStandardTableDataCrate("Spreadsheet Payload Rows", true, data.ToArray());
+            var crate = CrateManager.CreateStandardTableDataCrate(TableCrateLabel, true, data.ToArray());
             using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
             {
                 crateStorage.Add(crate);
@@ -198,8 +198,8 @@ namespace terminalGoogle.Actions
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                crateStorage.Replace(AssembleCrateStorage(configurationControlsCrate));
-                crateStorage.Add(CrateManager.CreateDesignTimeFieldsCrate("Spreadsheet Column Headers", new FieldDTO[] {}));
+                crateStorage.Replace( AssembleCrateStorage(configurationControlsCrate));
+                crateStorage.Add(CrateManager.CreateStandardTableDataCrate(TableCrateLabel, false, new TableRowDTO[]{}));
             }
 
             return Task.FromResult(curActivityDO);
@@ -285,9 +285,8 @@ namespace terminalGoogle.Actions
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                const string label = "Spreadsheet Payload Rows";
-                crateStorage.RemoveByLabel(label);
-                crateStorage.Add(CrateManager.CreateStandardTableDataCrate(label, false, extractedData.ToArray()));
+                crateStorage.RemoveByLabel(TableCrateLabel);
+                crateStorage.Add(CrateManager.CreateStandardTableDataCrate(TableCrateLabel, false, extractedData.ToArray()));
             }
 
             return curActivityDO;
@@ -313,9 +312,8 @@ namespace terminalGoogle.Actions
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                const string label = "Spreadsheet Payload Rows";
-                crateStorage.RemoveByLabel(label);
-                crateStorage.Add(CrateManager.CreateStandardTableDataCrate(label, false, rows.ToArray()));
+                crateStorage.RemoveByLabel(TableCrateLabel);
+                crateStorage.Add(CrateManager.CreateStandardTableDataCrate(TableCrateLabel, false, rows.ToArray()));
             }
         }
     }

@@ -217,10 +217,10 @@ namespace terminalDocuSign.Actions
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
             // Do not tarsnfer to follow up when child actions are already present 
-            if (curActivityDO.ChildNodes.Count() > 0) return ConfigurationRequestType.Initial;
+            if (curActivityDO.ChildNodes.Any()) return ConfigurationRequestType.Initial;
 
             var storage = CrateManager.GetStorage(curActivityDO);
-            if (storage == null || storage.Count() == 0)
+            if (storage == null || !storage.Any())
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -288,7 +288,7 @@ namespace terminalDocuSign.Actions
 
             var sendDocuSignEnvActivity = await AddAndConfigureChildActivity(parentOfSendDocusignEnvelope, "Send_DocuSign_Envelope", order: orderOfSendDocusignEnvelope);
             //set docusign template
-            SetControlValue(sendDocuSignEnvActivity, "target_docusign_template", _docuSignTemplate.ListItems.Where(a => a.Key == _docuSignTemplate.selectedKey).FirstOrDefault());
+            SetControlValue(sendDocuSignEnvActivity, "target_docusign_template", _docuSignTemplate.ListItems.FirstOrDefault(a => a.Key == _docuSignTemplate.selectedKey));
 
 
             await ConfigureChildActivity(parentOfSendDocusignEnvelope, sendDocuSignEnvActivity);
