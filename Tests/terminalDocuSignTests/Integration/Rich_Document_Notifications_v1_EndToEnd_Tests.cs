@@ -62,7 +62,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test, Ignore]
-        public async void Rich_Document_Notifications_EndToEnd()
+        public async Task Rich_Document_Notifications_EndToEnd()
         {
             string baseUrl = GetHubApiBaseUrl();
             

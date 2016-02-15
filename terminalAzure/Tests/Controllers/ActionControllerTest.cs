@@ -39,7 +39,7 @@ namespace terminalAzure.Tests.Controllers
         }
 
         [Test]
-        public async void HandleDockyardRequest_TerminalTypeIsAzureSqlServer_ResponseInitialConfiguration()
+        public async Task HandleDockyardRequest_TerminalTypeIsAzureSqlServer_ResponseInitialConfiguration()
         {
             string curTerminal = "terminalAzure";
             string curActionPath = "Configure";

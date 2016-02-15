@@ -91,7 +91,7 @@ namespace terminalExcelTests.Integration
         }
 
         [Test]
-        public async void Load_Table_Data_v1_Initial_Configuration_Check_Crate_Structure()
+        public async Task Load_Table_Data_v1_Initial_Configuration_Check_Crate_Structure()
         {
             // Arrange
             var configureUrl = GetTerminalConfigureUrl();
@@ -114,7 +114,7 @@ namespace terminalExcelTests.Integration
         [ExpectedException(ExpectedException = typeof(RestfulServiceException),
             ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}"
         )]
-        public async void Load_Table_Data_v1_Initial_Configuration_GuidEmpty()
+        public async Task Load_Table_Data_v1_Initial_Configuration_GuidEmpty()
         {
             // Arrange
             var configureUrl = GetTerminalConfigureUrl();
@@ -128,7 +128,7 @@ namespace terminalExcelTests.Integration
         /// Validate correct crate-storage structure in follow-up configuration response.
         /// </summary>
         [Test]
-        public async void Load_Table_Data_v1_FollowUp_Configuration_Check_Crate_Structure()
+        public async Task Load_Table_Data_v1_FollowUp_Configuration_Check_Crate_Structure()
         {
             // Act
             var responseFollowUpActionDTO = await ConfigureFollowUp();
@@ -144,7 +144,7 @@ namespace terminalExcelTests.Integration
         }
 
         [Test]
-        public async void Load_Table_Data_v1_Run_()
+        public async Task Load_Table_Data_v1_Run_()
         {
             // Arrange
             var runUrl = GetTerminalRunUrl();
@@ -168,7 +168,7 @@ namespace terminalExcelTests.Integration
         }
 
         [Test]
-        public async void Load_Table_Data_Activate_Returns_ActionDTO()
+        public async Task Load_Table_Data_Activate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
@@ -189,7 +189,7 @@ namespace terminalExcelTests.Integration
         }
 
         [Test]
-        public async void Load_Table_Data_Deactivate_Returns_ActionDTO()
+        public async Task Load_Table_Data_Deactivate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();

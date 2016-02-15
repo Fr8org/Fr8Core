@@ -3,6 +3,8 @@ using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
 using NUnit.Framework;
 using System.Linq;
+using System.Threading.Tasks;
+
 namespace terminalGoogleTests.Integration
 {
     /// <summary>
@@ -23,7 +25,7 @@ namespace terminalGoogleTests.Integration
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
         [Test, Category("Integration.terminalGoogle")]
-        public async void Terminal_Google_Discover()
+        public async Task Terminal_Google_Discover()
         {
             var discoverUrl = GetTerminalDiscoverUrl();
 

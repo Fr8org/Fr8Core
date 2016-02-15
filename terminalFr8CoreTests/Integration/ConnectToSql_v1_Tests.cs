@@ -95,7 +95,7 @@ namespace terminalFr8CoreTests.Integration
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
         [Test]
-        public async void ConnectToSql_Initial_Configuration_Check_Crate_Structure()
+        public async Task ConnectToSql_Initial_Configuration_Check_Crate_Structure()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -120,7 +120,7 @@ namespace terminalFr8CoreTests.Integration
         /// Validate correct crate-storage structure in follow-up configuration response with error connetcion string
         /// </summary>
         [Test]
-        public async void ConnectToSql_FollowUp_Configuration_No_Connection_String_Check_Crate_Structure()
+        public async Task ConnectToSql_FollowUp_Configuration_No_Connection_String_Check_Crate_Structure()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -151,7 +151,7 @@ namespace terminalFr8CoreTests.Integration
         /// Validate correct crate-storage structure in follow-up configuration response 
         /// </summary>
         [Test]
-        public async void ConnectToSql_FollowUp_Configuration_Wrong_ConnetcioString_Check_Crate_Structure()
+        public async Task ConnectToSql_FollowUp_Configuration_Wrong_ConnetcioString_Check_Crate_Structure()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -190,7 +190,7 @@ namespace terminalFr8CoreTests.Integration
         /// Validate correct crate-storage structure in follow-up configuration response 
         /// </summary>
         [Test]
-        public async void ConnectToSql_FollowUp_Configuration_Check_Crate_Structure()
+        public async Task ConnectToSql_FollowUp_Configuration_Check_Crate_Structure()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -227,7 +227,7 @@ namespace terminalFr8CoreTests.Integration
         /// Test run-time for action Run().
         /// </summary>
         [Test]
-        public async void ConnectToSql_Run()
+        public async Task ConnectToSql_Run()
         {
             var runUrl = GetTerminalRunUrl();
 

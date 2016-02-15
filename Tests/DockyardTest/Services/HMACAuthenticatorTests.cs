@@ -115,7 +115,7 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        public async void HMACAuthenticatorService_IsValidRequest_ShouldReturnFalse_OnInvalidToken()
+        public async Task HMACAuthenticatorService_IsValidRequest_ShouldReturnFalse_OnInvalidToken()
         {
             //lets remove nonce which was used on requests before us
             MemoryCache.Default.Remove("nonce");
@@ -125,7 +125,7 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        public async void HMACAuthenticatorService_IsValidRequest_ShouldReturnTrue_ValidRequest()
+        public async Task HMACAuthenticatorService_IsValidRequest_ShouldReturnTrue_ValidRequest()
         {
             //lets remove nonce which was used on requests before us
             MemoryCache.Default.Remove("nonce");
@@ -135,7 +135,7 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        public async void HMACAuthenticatorService_IsValidRequest_ShouldReturnFalse_OnIncorrectTime()
+        public async Task HMACAuthenticatorService_IsValidRequest_ShouldReturnFalse_OnIncorrectTime()
         {
             //lets remove nonce which was used on requests before us
             MemoryCache.Default.Remove("nonce");
@@ -145,7 +145,7 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        public async void HMACAuthenticatorService_IsValidRequest_ShouldReturnFalse_OnOldTime()
+        public async Task HMACAuthenticatorService_IsValidRequest_ShouldReturnFalse_OnOldTime()
         {
             //lets remove nonce which was used on requests before us
             MemoryCache.Default.Remove("nonce");
@@ -155,7 +155,7 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        public async void HMACAuthenticatorService_IsValidRequest_ShouldReturnFalse_OnNullTerminalSecret()
+        public async Task HMACAuthenticatorService_IsValidRequest_ShouldReturnFalse_OnNullTerminalSecret()
         {
             //lets remove nonce which was used on requests before us
             MemoryCache.Default.Remove("nonce");
@@ -165,7 +165,7 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        public async void HMACAuthenticatorService_IsValidRequest_ShouldReturnFalse_OnInvalidAuthToken()
+        public async Task HMACAuthenticatorService_IsValidRequest_ShouldReturnFalse_OnInvalidAuthToken()
         {
             //lets remove nonce which was used on requests before us
             MemoryCache.Default.Remove("nonce");
