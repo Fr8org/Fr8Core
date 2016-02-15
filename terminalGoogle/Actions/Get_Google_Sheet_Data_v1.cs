@@ -66,7 +66,7 @@ namespace terminalGoogle.Actions
             var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
             //get the data
             var data = _google.EnumerateDataRows(spreadsheetsFromUserSelection, authDTO);
-            var crate = Crate.CreateStandardTableDataCrate("Spreadsheet Payload Rows", true, data.ToArray());
+            var crate = Crate.CreateStandardTableDataCrate(TableCrateLabel, true, data.ToArray());
             using (var updater = Crate.UpdateStorage(payloadCrates))
             {
                 updater.CrateStorage.Add(crate);
