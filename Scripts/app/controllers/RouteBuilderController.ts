@@ -683,6 +683,8 @@ module dockyard.controllers {
                 }
             }
 
+            
+
             // scann all actions to find actions with tag AgressiveReload in ActivityTemplate
             this.reConfigure(results);
 
@@ -701,9 +703,7 @@ module dockyard.controllers {
                 group.actions.filter(action => {
                     return action.activityTemplate.tags !== null && action.activityTemplate.tags.indexOf('AggressiveReload') !== -1;
                 }).forEach(action => {
-                    if (action !== currentAction) {
-                        results.push(action);
-                    }
+                    results.push(action);
                 });
             });
             return results;
