@@ -38,7 +38,7 @@ namespace terminalPapertrail.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -58,7 +58,7 @@ namespace terminalPapertrail.Actions
 
             var curControlsCrate = PackControlsCrate(targetUrlTextBlock);
 
-            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Replace(new CrateStorage(curControlsCrate));
             }
@@ -88,7 +88,7 @@ namespace terminalPapertrail.Actions
             if (!string.IsNullOrEmpty(curPapertrailUrl) && curPapertrailPort > 0)
             {
                 //get log message
-                var curLogMessages = Crate.GetStorage(curProcessPayload).CrateContentsOfType<StandardLoggingCM>().Single();
+                var curLogMessages = CrateManager.GetStorage(curProcessPayload).CrateContentsOfType<StandardLoggingCM>().Single();
 
                 curLogMessages.Item.Where(logMessage => !logMessage.IsLogged).ToList().ForEach(logMessage =>
                 {
@@ -96,7 +96,7 @@ namespace terminalPapertrail.Actions
                     logMessage.IsLogged = true;
                 });
 
-                using (var crateStorage = Crate.GetUpdatableStorage(curProcessPayload))
+                using (var crateStorage = CrateManager.GetUpdatableStorage(curProcessPayload))
                 {
                     crateStorage.RemoveByLabel("Log Messages");
                     crateStorage.Add(Data.Crates.Crate.FromContent("Log Messages", curLogMessages));
@@ -110,7 +110,7 @@ namespace terminalPapertrail.Actions
         {
             //get the configuration control of the given action
             var curActionConfigControls =
-                Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().Single();
+                CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().Single();
 
             //the URL is given in "URL:PortNumber" format. Parse the input value to get the URL and port number
             var targetUrlValue = curActionConfigControls.FindByName("TargetUrlTextBox").Value.Split(new char[] { ':' });

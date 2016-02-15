@@ -33,7 +33,7 @@ namespace terminalFr8Core.Actions
         public override ConfigurationRequestType ConfigurationEvaluator(
             ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -43,7 +43,7 @@ namespace terminalFr8Core.Actions
 
         protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Clear();
                 crateStorage.Add(CreateControlsCrate());
@@ -67,7 +67,7 @@ namespace terminalFr8Core.Actions
 
         protected override Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 RemoveControl(crateStorage, "ErrorLabel");
 
@@ -82,14 +82,14 @@ namespace terminalFr8Core.Actions
                 {
                     var tableDefinitions = FindObjectHelper.RetrieveColumnDefinitions(connectionString);
                     var tableDefinitionCrate = 
-                        Crate.CreateDesignTimeFieldsCrate(
+                        CrateManager.CreateDesignTimeFieldsCrate(
                             "Sql Table Definitions",
                             tableDefinitions.ToArray()
                         );
 
                     var columnTypes = FindObjectHelper.RetrieveColumnTypes(connectionString);
                     var columnTypesCrate =
-                        Crate.CreateDesignTimeFieldsCrate(
+                        CrateManager.CreateDesignTimeFieldsCrate(
                             "Sql Column Types",
                             columnTypes.ToArray()
                         );
@@ -99,7 +99,7 @@ namespace terminalFr8Core.Actions
                         new FieldDTO() { Key = connectionString, Value = connectionString }
                     };
                     var connectionStringCrate =
-                        Crate.CreateDesignTimeFieldsCrate(
+                        CrateManager.CreateDesignTimeFieldsCrate(
                             "Sql Connection String",
                             connectionStringFieldList.ToArray()
                         );
@@ -125,7 +125,7 @@ namespace terminalFr8Core.Actions
 
         private string ExtractConnectionString(ActivityDO curActivityDO)
         {
-            var configControls = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().First();
+            var configControls = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().First();
             var connectionStringControl = configControls.FindByName("ConnectionString");
 
             return connectionStringControl.Value;

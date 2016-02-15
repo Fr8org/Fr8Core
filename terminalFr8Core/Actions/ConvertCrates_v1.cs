@@ -70,7 +70,7 @@ namespace terminalFr8Core.Actions
             var convertor = ConversionMap.FirstOrDefault(c => c.Key.From == (MT)fromManifestType && c.Key.To == (MT) toManifestType).Value;
 
             //find user selected crate in payload
-            var payloadStorage = Crate.GetStorage(curPayloadDTO);
+            var payloadStorage = CrateManager.GetStorage(curPayloadDTO);
             var userSelectedFromCrate = payloadStorage.FirstOrDefault(c => c.ManifestType.Id == fromManifestType);
             if (userSelectedFromCrate == null)
             {
@@ -79,7 +79,7 @@ namespace terminalFr8Core.Actions
 
             var convertedCrate = convertor.Convert(userSelectedFromCrate);
 
-            using (var crateStorage = Crate.GetUpdatableStorage(curPayloadDTO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curPayloadDTO))
             {
                 crateStorage.Add(convertedCrate);
             }
@@ -97,7 +97,7 @@ namespace terminalFr8Core.Actions
             //build a controls crate to render the pane
             var configurationControlsCrate = CreateControlsCrate();
 
-            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Replace(AssembleCrateStorage(configurationControlsCrate));
                 crateStorage.Add(GetAvailableFromManifests());
@@ -108,10 +108,10 @@ namespace terminalFr8Core.Actions
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            var controlsMS = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().Single();
+            var controlsMS = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().Single();
             var manifestTypeDropdown = controlsMS.Controls.Single(x => x.Type == ControlTypes.DropDownList && x.Name == "Available_From_Manifests");
 
-            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.RemoveUsingPredicate(c => c.IsOfType<StandardDesignTimeFieldsCM>() && c.Label == "Available To Manifests");
                 if (manifestTypeDropdown.Value != null)
@@ -130,7 +130,7 @@ namespace terminalFr8Core.Actions
                 .Select(c => c.Key.To)
                 .Select(c => new FieldDTO(c.GetEnumDisplayName(), ((int) c).ToString(CultureInfo.InvariantCulture)));
 
-            var queryFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Available To Manifests", toManifestList.ToArray());
+            var queryFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Available To Manifests", toManifestList.ToArray());
             return queryFieldsCrate;
         }
 
@@ -141,7 +141,7 @@ namespace terminalFr8Core.Actions
                 .Select(c => c.Key)
                 .Select(c => new FieldDTO(c.GetEnumDisplayName(), ((int)c).ToString(CultureInfo.InvariantCulture)));
 
-            var queryFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Available From Manifests", toManifestList.ToArray());
+            var queryFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Available From Manifests", toManifestList.ToArray());
             return queryFieldsCrate;
         }
 
@@ -181,12 +181,12 @@ namespace terminalFr8Core.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
 
-            var controlsMS = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var controlsMS = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (controlsMS == null)
             {

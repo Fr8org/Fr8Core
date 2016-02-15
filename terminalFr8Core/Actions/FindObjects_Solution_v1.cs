@@ -32,7 +32,7 @@ namespace terminalFr8Core.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -45,7 +45,7 @@ namespace terminalFr8Core.Actions
         {
             var connectionString = GetConnectionString();
 
-            using (var crateStorage = Crate.GetUpdatableStorage(activityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(activityDO))
             {
                 crateStorage.Clear();
 
@@ -61,7 +61,7 @@ namespace terminalFr8Core.Actions
         protected async override Task<ActivityDO> FollowupConfigurationResponse(
             ActivityDO activityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var crateStorage = Crate.GetUpdatableStorage(activityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(activityDO))
             {
                 if (NeedsRemoveQueryBuilder(crateStorage))
                 {
@@ -181,7 +181,7 @@ namespace terminalFr8Core.Actions
         {
             var tableDefinitions = FindObjectHelper.RetrieveTableDefinitions(connectionString);
             var tableDefinitionCrate =
-                Crate.CreateDesignTimeFieldsCrate(
+                CrateManager.CreateDesignTimeFieldsCrate(
                     "AvailableObjects",
                     tableDefinitions.ToArray()
                 );
@@ -279,7 +279,7 @@ namespace terminalFr8Core.Actions
             var connectionString = GetConnectionString();
             var connectToSqlActionDO = await AddAndConfigureChildActivity(activityDO, "ConnectToSql");
 
-            connectToSqlActionDO.CrateStorage = Crate.CrateStorageAsStr(
+            connectToSqlActionDO.CrateStorage = CrateManager.CrateStorageAsStr(
                     new CrateStorage()
                     {
                         Crate<StandardDesignTimeFieldsCM>.FromContent(
@@ -307,12 +307,12 @@ namespace terminalFr8Core.Actions
 
         private async Task<ActivityDO> CreateBuildQueryActivity(ActivityDO activityDO)
         {
-            var crateStorage = Crate.GetStorage(activityDO);
+            var crateStorage = CrateManager.GetStorage(activityDO);
             var selectedObject = GetCurrentSelectedObject(crateStorage);
             var selectedConditions = GetCurrentSelectedConditions(crateStorage);
 
             var buildQueryActivityDO = await AddAndConfigureChildActivity(activityDO, "BuildQuery");
-            buildQueryActivityDO.CrateStorage = Crate.CrateStorageAsStr(
+            buildQueryActivityDO.CrateStorage = CrateManager.CrateStorageAsStr(
                     new CrateStorage()
                     {
                         Crate<StandardQueryCM>.FromContent(
@@ -336,7 +336,7 @@ namespace terminalFr8Core.Actions
         {
             var connectToSqlActionDO = await CreateConnectToSqlActivity(activityDO);
 
-            if (FindControl(Crate.GetStorage(activityDO), "QueryBuilder") != null)
+            if (FindControl(CrateManager.GetStorage(activityDO), "QueryBuilder") != null)
             {
                 var buildQueryActionDO = await CreateBuildQueryActivity(activityDO);
 

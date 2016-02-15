@@ -92,7 +92,7 @@ namespace terminalDocuSign.Actions
             var docuSignAuthDto = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
             var actionUi = new ActionUi();
 
-            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
 
                 crateStorage.Add(PackControls(actionUi));
@@ -111,7 +111,7 @@ namespace terminalDocuSign.Actions
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 var configurationControls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
@@ -172,7 +172,7 @@ namespace terminalDocuSign.Actions
                 curActivityDO.ChildNodes.Add(activity);
             }
 
-            activity.CrateStorage = JsonConvert.SerializeObject(Crate.ToDto(storage));
+            activity.CrateStorage = JsonConvert.SerializeObject(CrateManager.ToDto(storage));
         }
 
         private async Task<IEnumerable<ActivityTemplateDO>> FindTemplates(ActivityDO activityDO, Predicate<ActivityTemplateDO> query)
@@ -220,7 +220,7 @@ namespace terminalDocuSign.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }

@@ -59,7 +59,7 @@ namespace terminalFr8Core.Actions
         {
             var crateDesignTimeFields = PackFr8ObjectCrate();
 
-            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Clear();
                 crateStorage.Add(PackControls(new ActionUi()));
@@ -71,7 +71,7 @@ namespace terminalFr8Core.Actions
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 var configurationControls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
@@ -103,7 +103,7 @@ namespace terminalFr8Core.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -124,7 +124,7 @@ namespace terminalFr8Core.Actions
                    }
             }.ToArray();
 
-            var createDesignTimeFields = Crate.CreateDesignTimeFieldsCrate(
+            var createDesignTimeFields = CrateManager.CreateDesignTimeFieldsCrate(
                 "Select Fr8 Object",
                 fields);
             return createDesignTimeFields;
@@ -138,7 +138,7 @@ namespace terminalFr8Core.Actions
                 + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/manifests?id="
                 + Int32.Parse(fr8Object);
             var response = await client.GetAsync<CrateDTO>(new Uri(url));
-            return Crate.FromDto(response);
+            return CrateManager.FromDto(response);
 		}
 
 		#region Execution

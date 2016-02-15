@@ -31,7 +31,7 @@ namespace terminalFr8Core.Actions
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var curPayloadDTO = await GetPayload(curActivityDO, containerId);
-            var payloadStorage = Crate.GetStorage(curPayloadDTO);
+            var payloadStorage = CrateManager.GetStorage(curPayloadDTO);
             var operationsCrate = payloadStorage.CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
             if (operationsCrate == null)
             {
@@ -65,7 +65,7 @@ namespace terminalFr8Core.Actions
         public override async Task<PayloadDTO> ChildrenExecuted(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var curPayloadDTO = await GetPayload(curActivityDO, containerId);
-            var payloadStorage = Crate.GetStorage(curPayloadDTO);
+            var payloadStorage = CrateManager.GetStorage(curPayloadDTO);
             int i = IncrementLoopIndex(curActivityDO.GetLoopId(), curPayloadDTO);
             try
             {
@@ -120,7 +120,7 @@ namespace terminalFr8Core.Actions
 
         private bool ShouldBreakLoop(PayloadDTO curPayloadDTO, ActivityDO curActivityDO, Crate crateToProcess)
         {
-            var payloadStorage = Crate.GetStorage(curPayloadDTO);
+            var payloadStorage = CrateManager.GetStorage(curPayloadDTO);
 
             var loopId = curActivityDO.GetLoopId();
             var operationsCrate = payloadStorage.CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
@@ -164,7 +164,7 @@ namespace terminalFr8Core.Actions
 
         private void BreakLoop(string loopId, PayloadDTO payload)
         {
-            using (var crateStorage = Crate.GetUpdatableStorage(payload))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
                 var operationsData = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
                 operationsData.Loops.Single(l => l.Id == loopId).BreakSignalReceived = true;
@@ -173,7 +173,7 @@ namespace terminalFr8Core.Actions
 
         private void CreateLoop(string loopId, PayloadDTO payload, Crate crateToProcess)
         {
-            using (var crateStorage = Crate.GetUpdatableStorage(payload))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
                 var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
                 var loopLevel = operationalState.Loops.Count(l => l.BreakSignalReceived == false);
@@ -191,7 +191,7 @@ namespace terminalFr8Core.Actions
 
         private int IncrementLoopIndex(string loopId, PayloadDTO payload)
         {
-            using (var crateStorage = Crate.GetUpdatableStorage(payload))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
                 var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
                 operationalState.Loops.First(l => l.Id == loopId).Index += 1;
@@ -239,7 +239,7 @@ namespace terminalFr8Core.Actions
         }
         private string GetSelectedCrateManifestTypeToProcess(ActivityDO curActivityDO)
         {
-            var controlsMS = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().First();
+            var controlsMS = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().First();
             var manifestTypeDropdown = controlsMS.Controls.Single(x => x.Type == ControlTypes.DropDownList && x.Name == "Available_Manifests");
             if (manifestTypeDropdown.Value == null)
             {
@@ -250,7 +250,7 @@ namespace terminalFr8Core.Actions
 
         private string GetSelectedLabelToProcess(ActivityDO curActivityDO)
         {
-            var controlsMS = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().First();
+            var controlsMS = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().First();
             var labelDropdown = controlsMS.Controls.Single(x => x.Type == ControlTypes.DropDownList && x.Name == "Available_Labels");
             if (labelDropdown.Value == null)
             {
@@ -269,7 +269,7 @@ namespace terminalFr8Core.Actions
             //build a controls crate to render the pane
             var configurationControlsCrate = CreateControlsCrate();
 
-            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Replace(AssembleCrateStorage(configurationControlsCrate));
                 crateStorage.Add(await GetUpstreamManifestTypes(curActivityDO));
@@ -289,11 +289,11 @@ namespace terminalFr8Core.Actions
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            var controlsMS = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().Single();
+            var controlsMS = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().Single();
             var manifestTypeDropdown = controlsMS.Controls.Single(x => x.Type == ControlTypes.DropDownList && x.Name == "Available_Manifests");
 
             //refresh upstream manifest types
-            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.RemoveByLabel("Available Manifests");
                 crateStorage.Add(await GetUpstreamManifestTypes(curActivityDO));
@@ -303,7 +303,7 @@ namespace terminalFr8Core.Actions
             {
                 var labelList = await GetLabelsByManifestType(curActivityDO, manifestTypeDropdown.Value);
 
-                using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+                using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
                 {
                     crateStorage.RemoveByLabel("Available Labels");
                     crateStorage.Add(Data.Crates.Crate.FromContent("Available Labels", new StandardDesignTimeFieldsCM() { Fields = labelList }));
@@ -318,7 +318,7 @@ namespace terminalFr8Core.Actions
         {
             var upstreamCrates = await GetCratesByDirection(curActivityDO, CrateDirection.Upstream);
             var manifestTypeOptions = upstreamCrates.GroupBy(c => c.ManifestType).Select(c => new FieldDTO(c.Key.Type, c.Key.Type));
-            var queryFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Available Manifests", manifestTypeOptions.ToArray());
+            var queryFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Available Manifests", manifestTypeOptions.ToArray());
             return queryFieldsCrate;
         }
 
@@ -358,12 +358,12 @@ namespace terminalFr8Core.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
 
-            var controlsMS = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var controlsMS = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (controlsMS == null)
             {

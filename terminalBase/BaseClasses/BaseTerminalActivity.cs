@@ -35,7 +35,8 @@ namespace TerminalBase.BaseClasses
         #region Fields
 
         protected IActivity Activity;
-        protected ICrateManager Crate;
+
+        protected ICrateManager CrateManager { get; private set; }
         private readonly ITerminal _terminal;
         protected static readonly string ConfigurationControlsLabel = "Configuration_Controls";
         protected string CurrentFr8UserId { get; set; }
@@ -59,7 +60,7 @@ namespace TerminalBase.BaseClasses
 
         public BaseTerminalActivity(string actionName)
         {
-            Crate = new CrateManager();
+            CrateManager = ObjectFactory.GetInstance<ICrateManager>();
             Activity = ObjectFactory.GetInstance<IActivity>();
             _terminal = ObjectFactory.GetInstance<ITerminal>();
             HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
@@ -78,7 +79,7 @@ namespace TerminalBase.BaseClasses
         /// <returns></returns>
         protected PayloadDTO SuspendHubExecution(PayloadDTO payload)
         {
-            using (var crateStorage = Crate.GetUpdatableStorage(payload))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
                 var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
                 operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.RequestSuspend);
@@ -96,7 +97,7 @@ namespace TerminalBase.BaseClasses
         /// <returns></returns>
         protected PayloadDTO TerminateHubExecution(PayloadDTO payload)
         {
-            using (var crateStorage = Crate.GetUpdatableStorage(payload))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
                 var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
                 operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.RequestTerminate);
@@ -112,7 +113,7 @@ namespace TerminalBase.BaseClasses
         /// <returns></returns>
         protected PayloadDTO Success(PayloadDTO payload, string message = "")
         {
-            using (var crateStorage = Crate.GetUpdatableStorage(payload))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
                 var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
                 operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Success); 
@@ -124,7 +125,7 @@ namespace TerminalBase.BaseClasses
 
         protected PayloadDTO ExecuteClientAction(PayloadDTO payload, string clientActionName)
         {
-            using (var crateStorage = Crate.GetUpdatableStorage(payload))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
                 var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
                 operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.ExecuteClientAction);
@@ -141,7 +142,7 @@ namespace TerminalBase.BaseClasses
         /// <returns></returns>
         protected PayloadDTO SkipChildren(PayloadDTO payload)
         {
-            using (var crateStorage = Crate.GetUpdatableStorage(payload))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
                 var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
                 operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.SkipChildren);
@@ -161,7 +162,7 @@ namespace TerminalBase.BaseClasses
         /// <returns></returns>
         protected PayloadDTO Error(PayloadDTO payload, string errorMessage = null, ActionErrorCode? errorCode = null, string currentActivity = null, string currentTerminal = null)
         {
-            using (var crateStorage = Crate.GetUpdatableStorage(payload))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
                 var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
                 operationalState.CurrentActivityErrorCode = errorCode;
@@ -189,7 +190,7 @@ namespace TerminalBase.BaseClasses
         /// <returns></returns>
         protected PayloadDTO ReProcessChildActions(PayloadDTO payload)
         {
-            using (var crateStorage = Crate.GetUpdatableStorage(payload))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
                 var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
                 operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.ReProcessChildren);
@@ -253,7 +254,7 @@ namespace TerminalBase.BaseClasses
 
         protected StandardConfigurationControlsCM GetConfigurationControls(ActivityDO curActivityDO)
         {
-            var storage = Crate.GetStorage(curActivityDO);
+            var storage = CrateManager.GetStorage(curActivityDO);
             return GetConfigurationControls(storage);
         }
 
@@ -307,7 +308,7 @@ namespace TerminalBase.BaseClasses
 
             if (validationErrorList.Any())
             {
-                return Crate.CreateDesignTimeFieldsCrate("Validation Errors", validationErrorList.ToArray());
+                return CrateManager.CreateDesignTimeFieldsCrate("Validation Errors", validationErrorList.ToArray());
             }
 
             return null;
@@ -317,7 +318,7 @@ namespace TerminalBase.BaseClasses
         {
             var fields = designTimeFields.Fields;
             var validationList = fields.Select(f => new FieldValidationDTO(curActivityDO.Id, f.Key)).ToList();
-            return Crate.ToDto(await ValidateFields(validationList));
+            return CrateManager.ToDto(await ValidateFields(validationList));
         }
 
         //if the Action doesn't provide a specific method to override this, we just return null = no validation errors
@@ -338,7 +339,7 @@ namespace TerminalBase.BaseClasses
                 var validationErrors = await ValidateActivity(curActivityDO);
                 if (validationErrors != null)
                 {
-                    using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+                    using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
                     {
                         crateStorage.AddRange(validationErrors);
                     }
@@ -382,7 +383,7 @@ namespace TerminalBase.BaseClasses
             var validationErrors = await ValidateActivity(curActivityDO);
             if (validationErrors != null)
             {
-                using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+                using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
                 {
                     crateStorage.AddRange(validationErrors);
                 }
@@ -446,7 +447,7 @@ namespace TerminalBase.BaseClasses
             var manifestList = (await BuildUpstreamManifestList(activityDO));
             var fields = manifestList.Select(f => new FieldDTO(f.Type, f.Id.ToString())).ToArray();
 
-            return Crate.CreateDesignTimeFieldsCrate("AvailableUpstreamManifests", fields);
+            return CrateManager.CreateDesignTimeFieldsCrate("AvailableUpstreamManifests", fields);
         }
 
         public virtual async Task<Crate<StandardDesignTimeFieldsCM>> GetUpstreamCrateLabelListCrate(ActivityDO activityDO)
@@ -454,7 +455,7 @@ namespace TerminalBase.BaseClasses
             var labelList = (await BuildUpstreamCrateLabelList(activityDO));
             var fields = labelList.Select(f => new FieldDTO(f, f)).ToArray();
 
-            return Crate.CreateDesignTimeFieldsCrate("AvailableUpstreamLabels", fields);
+            return CrateManager.CreateDesignTimeFieldsCrate("AvailableUpstreamLabels", fields);
         }
 
         protected ICrateStorage AssembleCrateStorage(params Crate[] curCrates)
@@ -474,7 +475,7 @@ namespace TerminalBase.BaseClasses
 
         protected string ExtractControlFieldValue(ActivityDO curActivityDO, string fieldName)
         {
-            var storage = Crate.GetStorage(curActivityDO);
+            var storage = CrateManager.GetStorage(curActivityDO);
 
             var controlsCrateMS = storage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
@@ -512,7 +513,7 @@ namespace TerminalBase.BaseClasses
         protected async Task<Crate<StandardDesignTimeFieldsCM>> MergeUpstreamFields(ActivityDO activityDO, string label)
         {
             var curUpstreamFields = (await GetDesignTimeFields(activityDO.Id, CrateDirection.Upstream)).Fields.ToArray();
-            var upstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate(label, curUpstreamFields);
+            var upstreamFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(label, curUpstreamFields);
 
             return upstreamFieldsCrate;
         }
@@ -563,7 +564,7 @@ namespace TerminalBase.BaseClasses
                 curUpstreamFields = new StandardDesignTimeFieldsCM();
             }
 
-            var availableFieldsCrate = Crate.CreateDesignTimeFieldsCrate(
+            var availableFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(
                     crateLabel,
                     curUpstreamFields.Fields,
                     AvailabilityType.Configuration
@@ -579,7 +580,7 @@ namespace TerminalBase.BaseClasses
                 GenerateTextBlock(fieldLabel,errorMessage,"well well-lg")
             };
 
-            var crateControls = Crate.CreateStandardConfigurationControlsCrate(
+            var crateControls = CrateManager.CreateStandardConfigurationControlsCrate(
                         ConfigurationControlsLabel, controls
                     );
 
@@ -670,8 +671,8 @@ namespace TerminalBase.BaseClasses
         /// </summary>
         protected string ExtractSpecificOrUpstreamValue(ActivityDO activityDO, PayloadDTO payloadCrates, string controlName)
         {
-            var designTimeCrateStorage = Crate.GetStorage(activityDO.CrateStorage);
-            var runTimeCrateStorage = Crate.FromDto(payloadCrates.CrateStorage);
+            var designTimeCrateStorage = CrateManager.GetStorage(activityDO.CrateStorage);
+            var runTimeCrateStorage = CrateManager.FromDto(payloadCrates.CrateStorage);
 
             var controls = designTimeCrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             var control = controls.Controls.SingleOrDefault(c => c.Name == controlName);
@@ -798,7 +799,7 @@ namespace TerminalBase.BaseClasses
         /// </summary>
         protected void SetControlValue(ActivityDO activity, string controlFullName, object value)
         {
-            using (var crateStorage = Crate.GetUpdatableStorage(activity))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(activity))
             {
                 var controls = crateStorage
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
@@ -877,7 +878,7 @@ namespace TerminalBase.BaseClasses
 
             if (controlsCrate == null)
             {
-                controlsCrate = Crate.CreateStandardConfigurationControlsCrate(ConfigurationControlsLabel);
+                controlsCrate = CrateManager.CreateStandardConfigurationControlsCrate(ConfigurationControlsLabel);
                 storage.Add(controlsCrate);
             }
 
@@ -890,7 +891,7 @@ namespace TerminalBase.BaseClasses
 
             if (crate == null)
             {
-                crate = Crate.CreateDesignTimeFieldsCrate(label, fields);
+                crate = CrateManager.CreateDesignTimeFieldsCrate(label, fields);
 
                 storage.Add(crate);
             }
@@ -921,7 +922,7 @@ namespace TerminalBase.BaseClasses
                     upstreamFields = (crates as List<Data.Crates.Crate<StandardDesignTimeFieldsCM>>).Where(w => w.Content.Fields.Where(x => x.Availability != AvailabilityType.Configuration).Count() == 1).SelectMany(x => x.Content.Fields).ToArray();
 
                     availableFieldsCrate =
-                        Crate.CreateDesignTimeFieldsCrate(
+                        CrateManager.CreateDesignTimeFieldsCrate(
                             label,
                             upstreamFields
                         );
@@ -1004,7 +1005,7 @@ namespace TerminalBase.BaseClasses
             if (upstreamFields != null)
             {
                 var availableFieldsCrate =
-                        Crate.CreateDesignTimeFieldsCrate(
+                        CrateManager.CreateDesignTimeFieldsCrate(
                             label,
                             upstreamFields
                         );

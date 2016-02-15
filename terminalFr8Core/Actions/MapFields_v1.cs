@@ -32,7 +32,7 @@ namespace terminalFr8Core.Actions
         {
             var processPayload = await GetPayload(activityDO, containerId);
 
-            var curControlsMS = Crate.GetStorage(activityDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var curControlsMS = CrateManager.GetStorage(activityDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (curControlsMS == null)
             {
@@ -48,7 +48,7 @@ namespace terminalFr8Core.Actions
 
             var mappedFields = JsonConvert.DeserializeObject<List<FieldDTO>>(curMappingControl.Value);
             mappedFields = mappedFields.Where(x => x.Key != null && x.Value != null).ToList();
-            var storage = Crate.FromDto(processPayload.CrateStorage);
+            var storage = CrateManager.FromDto(processPayload.CrateStorage);
 
             IEnumerable<FieldDTO> processedMappedFields;
             try
@@ -119,10 +119,10 @@ namespace terminalFr8Core.Actions
             }
 
             //Pack the merged fields into 2 new crates that can be used to populate the dropdowns in the MapFields UI
-            var downstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Downstream Terminal-Provided Fields", curDownstreamFields.ToList().Select(a => { a.Availability = AvailabilityType.Configuration; return a; }).ToArray());
-            var upstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided Fields", curUpstreamFields.ToList().Select(a => { a.Availability = AvailabilityType.Configuration; return a; }).ToArray());
+            var downstreamFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Downstream Terminal-Provided Fields", curDownstreamFields.ToList().Select(a => { a.Availability = AvailabilityType.Configuration; return a; }).ToArray());
+            var upstreamFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided Fields", curUpstreamFields.ToList().Select(a => { a.Availability = AvailabilityType.Configuration; return a; }).ToArray());
 
-            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Clear();
                 if (curUpstreamFields.Length == 0 || curDownstreamFields.Length == 0)
@@ -167,7 +167,7 @@ namespace terminalFr8Core.Actions
         /// </summary>
         private bool NeedsConfiguration(ActivityDO curAction, FieldDTO[] curUpstreamFields, FieldDTO[] curDownstreamFields)
         {
-            ICrateStorage storage = storage = Crate.GetStorage(curAction.CrateStorage);
+            ICrateStorage storage = storage = CrateManager.GetStorage(curAction.CrateStorage);
 
             var upStreamFields = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Terminal-Provided Fields").FirstOrDefault();
             var downStreamFields = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Downstream Terminal-Provided Fields").FirstOrDefault();

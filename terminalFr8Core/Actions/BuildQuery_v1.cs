@@ -26,12 +26,12 @@ namespace terminalFr8Core.Actions
         public override ConfigurationRequestType ConfigurationEvaluator(
             ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
 
-            var controlsCrate = Crate.GetStorage(curActivityDO).CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var controlsCrate = CrateManager.GetStorage(curActivityDO).CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (controlsCrate == null)
             {
@@ -52,7 +52,7 @@ namespace terminalFr8Core.Actions
         protected override async Task<ActivityDO> InitialConfigurationResponse(
             ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 RemoveControl(crateStorage, "UpstreamError");
 
@@ -81,14 +81,14 @@ namespace terminalFr8Core.Actions
                 AddLabelControl(crateStorage, "SelectObjectError", "No object selected", "Please select object from the list above.");
 
                 crateStorage.RemoveByLabel("Available Tables");
-                crateStorage.Add(Crate.CreateDesignTimeFieldsCrate("Available Tables", tablesList.ToArray()));
+                crateStorage.Add(CrateManager.CreateDesignTimeFieldsCrate("Available Tables", tablesList.ToArray()));
             }
             return curActivityDO;
         }
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 RemoveControl(crateStorage, "SelectObjectError");
 
@@ -365,7 +365,7 @@ namespace terminalFr8Core.Actions
         {
             var payloadCrates = await GetPayload(curActivityDO, containerId);
 
-            var actionCrateStorage = Crate.GetStorage(curActivityDO);
+            var actionCrateStorage = CrateManager.GetStorage(curActivityDO);
             
             var sqlQueryCM = ExtractSelectedQueryFromCrate(actionCrateStorage);
             if (sqlQueryCM == null)
@@ -375,7 +375,7 @@ namespace terminalFr8Core.Actions
 
             var sqlQueryCrate = Crate<StandardQueryCM>.FromContent("Sql Query", sqlQueryCM);
 
-            using (var crateStorage = Crate.GetUpdatableStorage(payloadCrates))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
             {
                 crateStorage.Add(sqlQueryCrate);
             }

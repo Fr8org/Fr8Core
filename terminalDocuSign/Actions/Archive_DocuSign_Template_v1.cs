@@ -62,7 +62,7 @@ namespace terminalDocuSign.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -74,7 +74,7 @@ namespace terminalDocuSign.Actions
         {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
             var docuSignTemplatesCrate = DocuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
-            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Clear();
                 crateStorage.Add(PackControls(new ActionUi()));
@@ -151,7 +151,7 @@ namespace terminalDocuSign.Actions
 
         private void SetFileDetails(ActivityDO storeFileActivity, string fileName)
         {
-            using (var crateStorage = Crate.GetUpdatableStorage(storeFileActivity))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(storeFileActivity))
             {
                 var confControls = GetConfigurationControls(crateStorage);
                 var fileNameTextbox = (TextBox)GetControl(confControls, "File_Name", ControlTypes.TextBox);
@@ -166,7 +166,7 @@ namespace terminalDocuSign.Actions
 
         private void SetFromConversion(ActivityDO convertCratesActivity)
         {
-            using (var crateStorage = Crate.GetUpdatableStorage(convertCratesActivity))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(convertCratesActivity))
             {
                 var confControls = GetConfigurationControls(crateStorage);
                 var fromDropdown = (DropDownList)GetControl(confControls, "Available_From_Manifests", ControlTypes.DropDownList);
@@ -178,7 +178,7 @@ namespace terminalDocuSign.Actions
 
         private void SetToConversion(ActivityDO convertCratesActivity)
         {
-            using (var crateStorage = Crate.GetUpdatableStorage(convertCratesActivity))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(convertCratesActivity))
             {
                 var confControls = GetConfigurationControls(crateStorage);
                 var toDropdown = (DropDownList)GetControl(confControls, "Available_To_Manifests", ControlTypes.DropDownList);
@@ -189,7 +189,7 @@ namespace terminalDocuSign.Actions
 
         private void SetSelectedTemplate(ActivityDO docuSignActivity, DropDownList selectedTemplateDd)
         {
-            using (var crateStorage = Crate.GetUpdatableStorage(docuSignActivity))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(docuSignActivity))
             {
                 var confControls = GetConfigurationControls(crateStorage);
                 var actionDdlb = (DropDownList)GetControl(confControls, "Available_Templates", ControlTypes.DropDownList);

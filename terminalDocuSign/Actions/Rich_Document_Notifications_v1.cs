@@ -133,7 +133,7 @@ namespace terminalDocuSign.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -142,7 +142,7 @@ namespace terminalDocuSign.Actions
         }
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO activityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var crateStorage = Crate.GetUpdatableStorage(activityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(activityDO))
             {
                 crateStorage.Clear();
                 crateStorage.Add(PackControls(new ActionUi()));
@@ -157,7 +157,7 @@ namespace terminalDocuSign.Actions
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO activityDO, AuthorizationTokenDO authTokenDO)
         {
-            var controls = Crate.GetStorage(activityDO)
+            var controls = CrateManager.GetStorage(activityDO)
                 .CrateContentsOfType<StandardConfigurationControlsCM>()
                 .First();
 
@@ -224,7 +224,7 @@ namespace terminalDocuSign.Actions
 
         private void SetFilterUsingRunTimeActionFields(ActivityDO filterUsingRunTimeAction, string status)
         {
-            using (var crateStorage = Crate.GetUpdatableStorage(filterUsingRunTimeAction))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(filterUsingRunTimeAction))
             {
                 var configControlCM = crateStorage
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
@@ -243,7 +243,7 @@ namespace terminalDocuSign.Actions
                     Conditions = conditions
                 });
 
-                var queryFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Queryable Criteria", new FieldDTO[] { new FieldDTO("Status", "Status") });
+                var queryFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", new FieldDTO[] { new FieldDTO("Status", "Status") });
                 crateStorage.RemoveByLabel("Queryable Criteria");
                 crateStorage.Add(queryFieldsCrate);
             }
@@ -252,7 +252,7 @@ namespace terminalDocuSign.Actions
         private async Task SetQueryFr8WarehouseActionFields(ActivityDO queryFr8Warehouse, string recipientEmail)
         {
             //update action's duration value
-            using (var crateStorage = Crate.GetUpdatableStorage(queryFr8Warehouse))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(queryFr8Warehouse))
             {
                 var configControlCM = GetConfigurationControls(crateStorage);
                 var radioButtonGroup = (configControlCM.Controls.First() as RadioButtonGroup);
@@ -295,7 +295,7 @@ namespace terminalDocuSign.Actions
                     Conditions = conditions
                 });
 
-                crateStorage.Add(Crate.CreateDesignTimeFieldsCrate("Queryable Criteria", GetFieldsByObjectId(selectedObject.Id).ToArray()));
+                crateStorage.Add(CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", GetFieldsByObjectId(selectedObject.Id).ToArray()));
             }
         }
 
@@ -350,7 +350,7 @@ namespace terminalDocuSign.Actions
 
         private Crate PackAvailableEvents()
         {
-            var crate = Crate.CreateDesignTimeFieldsCrate(
+            var crate = CrateManager.CreateDesignTimeFieldsCrate(
                 "AvailableEvents",
                 new FieldDTO { Key = "You sent a Docusign Envelope", Value = "Event_Envelope_Sent" },
                 new FieldDTO { Key = "Someone received an Envelope you sent", Value = "Event_Envelope_Received" },
@@ -366,7 +366,7 @@ namespace terminalDocuSign.Actions
             var events = new[] { "Delivered", "Signed", "Declined", "AutoResponded" };
 
             var availableRecipientEventsCrate =
-                Crate.CreateDesignTimeFieldsCrate(
+                CrateManager.CreateDesignTimeFieldsCrate(
                     "AvailableRecipientEvents", events.Select(x => new FieldDTO(x, x)).ToArray()
                 );
 
@@ -379,7 +379,7 @@ namespace terminalDocuSign.Actions
             var taggedTemplates = templates.Where(x => x.Tags != null && x.Tags.Contains("Notifier"));
 
             var availableHandlersCrate =
-                Crate.CreateDesignTimeFieldsCrate(
+                CrateManager.CreateDesignTimeFieldsCrate(
                     "AvailableHandlers",
                     taggedTemplates.Select(x => new FieldDTO(x.Label, x.Id.ToString())).ToArray()
                 );

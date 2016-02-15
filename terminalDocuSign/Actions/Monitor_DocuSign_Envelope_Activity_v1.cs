@@ -43,7 +43,7 @@ namespace terminalDocuSign.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            return Crate.IsStorageEmpty(curActivityDO)
+            return CrateManager.IsStorageEmpty(curActivityDO)
                 ? ConfigurationRequestType.Initial
                 : ConfigurationRequestType.Followup;
         }
@@ -52,7 +52,7 @@ namespace terminalDocuSign.Actions
         private void GetTemplateRecipientPickerValue(ActivityDO curActivityDO, out string selectedOption,
                                                      out string selectedValue)
         {
-            GetTemplateRecipientPickerValue(Crate.GetStorage(curActivityDO), out selectedOption, out selectedValue);
+            GetTemplateRecipientPickerValue(CrateManager.GetStorage(curActivityDO), out selectedOption, out selectedValue);
         }
 
         private void GetTemplateRecipientPickerValue(ICrateStorage storage, out string selectedOption, out string selectedValue)
@@ -144,7 +144,7 @@ namespace terminalDocuSign.Actions
         /// <returns>True when validation is on/false on problem</returns>
         private void ValidateEnvelopeSelectableEvents(ActivityDO curActivityDO)
         {
-            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 var configControls = GetConfigurationControls(crateStorage);
                 if (configControls == null) return;
@@ -238,7 +238,7 @@ namespace terminalDocuSign.Actions
                 {
                     case "template":
                         //filter the incoming envelope by template value selected by the user
-                        var curAvailableTemplates = Crate.GetStorage(curActivityDO).CratesOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Available Templates").Single().Content;
+                        var curAvailableTemplates = CrateManager.GetStorage(curActivityDO).CratesOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Available Templates").Single().Content;
                         var selectedTemplateName = curAvailableTemplates.Fields.Single(a => a.Value == curSelectedValue).Key;
                         var incommingTemplate = GetValueForKey(payloadCrates, "TemplateName");
                         if (selectedTemplateName == incommingTemplate)
@@ -297,7 +297,7 @@ namespace terminalDocuSign.Actions
                 }
             };
 
-            using (var crateStorage = Crate.GetUpdatableStorage(payloadCrates))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
             {
                 crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(fields)));
                 crateStorage.Add(Data.Crates.Crate.FromContent("Log Messages", logMessages));
@@ -317,9 +317,9 @@ namespace terminalDocuSign.Actions
 
             var crateControls = PackCrate_ConfigurationControls();
             var crateDesignTimeFields = _docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
-            var eventFields = Crate.CreateDesignTimeFieldsCrate("DocuSign Event Fields", AvailabilityType.RunTime, CreateDocuSignEventFields().ToArray());
+            var eventFields = CrateManager.CreateDesignTimeFieldsCrate("DocuSign Event Fields", AvailabilityType.RunTime, CreateDocuSignEventFields().ToArray());
 
-            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Add(crateControls);
                 crateStorage.Add(crateDesignTimeFields);
@@ -337,7 +337,7 @@ namespace terminalDocuSign.Actions
         {
             //just update the user selected envelope events in the follow up configuration
 
-            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 UpdateSelectedEvents(crateStorage);
                 string selectedOption, selectedValue;
@@ -375,7 +375,7 @@ namespace terminalDocuSign.Actions
                 curSelectedDocuSignEvents.Remove("RecipientCompleted");
 
             //create standard event subscription crate with user selected DocuSign events
-            var curEventSubscriptionCrate = Crate.CreateStandardEventSubscriptionsCrate("Standard Event Subscriptions", "DocuSign",
+            var curEventSubscriptionCrate = CrateManager.CreateStandardEventSubscriptionsCrate("Standard Event Subscriptions", "DocuSign",
                 curSelectedDocuSignEvents.ToArray());
 
             storage.Remove<EventSubscriptionCM>();
@@ -401,7 +401,7 @@ namespace terminalDocuSign.Actions
                 }
             }
 
-            return Crate.CreateStandardEventSubscriptionsCrate(
+            return CrateManager.CreateStandardEventSubscriptionsCrate(
                 "Standard Event Subscriptions",
                 "DocuSign",
                 subscriptions.ToArray()

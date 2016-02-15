@@ -35,13 +35,13 @@ namespace terminalFr8Core.Actions
                 "This Activity doesn't require any configuration.", "well well-lg");
             var curControlsCrate = PackControlsCrate(textBlock);
 
-            var routeActivatedCrate = Crate.CreateManifestDescriptionCrate("Available Run-Time Objects", "RouteActivated", "13", AvailabilityType.RunTime);
-            var routeDeactivatedCrate = Crate.CreateManifestDescriptionCrate("Available Run-Time Objects", "RouteDeactivated", "13", AvailabilityType.RunTime);
-            var containerLaunched = Crate.CreateManifestDescriptionCrate("Available Run-Time Objects", "ContainerLaunched", "13", AvailabilityType.RunTime);
-            var containerExecutionComplete = Crate.CreateManifestDescriptionCrate("Available Run-Time Objects", "ContainerExecutionComplete", "13", AvailabilityType.RunTime);
-            var actionExecuted = Crate.CreateManifestDescriptionCrate("Available Run-Time Objects", "ActionExecuted", "13", AvailabilityType.RunTime);
+            var routeActivatedCrate = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", "RouteActivated", "13", AvailabilityType.RunTime);
+            var routeDeactivatedCrate = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", "RouteDeactivated", "13", AvailabilityType.RunTime);
+            var containerLaunched = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", "ContainerLaunched", "13", AvailabilityType.RunTime);
+            var containerExecutionComplete = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", "ContainerExecutionComplete", "13", AvailabilityType.RunTime);
+            var actionExecuted = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", "ActionExecuted", "13", AvailabilityType.RunTime);
 
-            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Add(curControlsCrate);
                 crateStorage.Add(routeActivatedCrate);
@@ -63,7 +63,7 @@ namespace terminalFr8Core.Actions
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payloadCrates = await GetPayload(curActivityDO, containerId);
-            var curEventReport = Crate.GetStorage(payloadCrates).CrateContentsOfType<EventReportCM>().First();
+            var curEventReport = CrateManager.GetStorage(payloadCrates).CrateContentsOfType<EventReportCM>().First();
 
             if (curEventReport != null)
             {
@@ -71,7 +71,7 @@ namespace terminalFr8Core.Actions
 
                 if (standardLoggingCM != null)
                 {
-                    using (var crateStorage = Crate.GetUpdatableStorage(payloadCrates))
+                    using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
                     {
                         crateStorage.Add(Data.Crates.Crate.FromContent(curEventReport.EventNames, standardLoggingCM));
                     }
@@ -90,7 +90,7 @@ namespace terminalFr8Core.Actions
             subscriptions.Add("ContainerExecutionComplete");
             subscriptions.Add("ActionExecuted");
 
-            return Crate.CreateStandardEventSubscriptionsCrate(
+            return CrateManager.CreateStandardEventSubscriptionsCrate(
                 "Standard Event Subscriptions",
                 "Fr8Core",
                 subscriptions.ToArray()
@@ -99,7 +99,7 @@ namespace terminalFr8Core.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }

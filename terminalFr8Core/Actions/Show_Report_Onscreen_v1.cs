@@ -55,7 +55,7 @@ namespace terminalFr8Core.Actions
 
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Add(PackControls(new ActionUi()));
                 crateStorage.Add(await FindTables(curActivityDO));
@@ -66,7 +66,7 @@ namespace terminalFr8Core.Actions
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.ReplaceByLabel(await FindTables(curActivityDO));
             }
@@ -78,7 +78,7 @@ namespace terminalFr8Core.Actions
         {
             var payload = await GetPayload(curActivityDO, containerId);
 
-            var configurationControls = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
+            var configurationControls = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
 
             if (configurationControls == null)
             {
@@ -91,7 +91,7 @@ namespace terminalFr8Core.Actions
 
             if (!string.IsNullOrWhiteSpace(actionUi.ReportSelector.SelectedLabel))
             {
-                using (var crateStorage = Crate.GetUpdatableStorage(payload))
+                using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
                 {
                     var reportTable = crateStorage.CratesOfType<StandardPayloadDataCM>().FirstOrDefault(x => x.Label == actionUi.ReportSelector.SelectedLabel);
 
@@ -110,7 +110,7 @@ namespace terminalFr8Core.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }

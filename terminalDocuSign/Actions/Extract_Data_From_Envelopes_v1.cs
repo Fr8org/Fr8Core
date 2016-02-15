@@ -66,7 +66,7 @@ namespace terminalDocuSign.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -76,7 +76,7 @@ namespace terminalDocuSign.Actions
 
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivtyDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var crateStorage = Crate.GetUpdatableStorage(curActivtyDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivtyDO))
             {
                 crateStorage.Clear();
                 crateStorage.Add(PackControls(new ActionUi()));
@@ -90,7 +90,7 @@ namespace terminalDocuSign.Actions
         {
             var actionUi = new ActionUi();
 
-            actionUi.ClonePropertiesFrom(Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().First());
+            actionUi.ClonePropertiesFrom(CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().First());
 
             //don't add child actions until a selection is made
             if (string.IsNullOrEmpty(actionUi.FinalActionsList.Value))
@@ -126,7 +126,7 @@ namespace terminalDocuSign.Actions
 
             var templates = await HubCommunicator.GetActivityTemplates(activityDO, ActivityCategory.Forwarders, CurrentFr8UserId);
             sources.Add(
-                Crate.CreateDesignTimeFieldsCrate(
+                CrateManager.CreateDesignTimeFieldsCrate(
                     "AvailableActions",
                     templates.Select(x => new FieldDTO(x.Label, x.Id.ToString(), AvailabilityType.Configuration)).ToArray()
                 )

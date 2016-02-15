@@ -82,7 +82,7 @@ namespace terminalExcel.Actions
 
             var tableDataMS = await GetTargetTableData(
                 curActivityDO,
-                Crate.GetStorage(curActivityDO)
+                CrateManager.GetStorage(curActivityDO)
             );
 
             if (!tableDataMS.FirstRowHeaders)
@@ -94,9 +94,9 @@ namespace terminalExcel.Actions
             // Add a crate of PayloadData to action's crate storage
             
             
-            using (var crateStorage = Crate.GetUpdatableStorage(payloadCrates))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
             {
-                crateStorage.Add(Crate.CreatePayloadDataCrate("ExcelTableRow", "Excel Data", tableDataMS));
+                crateStorage.Add(CrateManager.CreatePayloadDataCrate("ExcelTableRow", "Excel Data", tableDataMS));
             }
             return Success(payloadCrates);        
         }
@@ -168,7 +168,7 @@ namespace terminalExcel.Actions
                 //Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
                 Crate upstreamFieldsCrate = await MergeUpstreamFields(curActivityDO, "Select Excel File");
 
-                using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+                using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
                 {
                     crateStorage.Clear();
                     crateStorage.Add(upstreamFieldsCrate);
@@ -187,7 +187,7 @@ namespace terminalExcel.Actions
         /// </summary>
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -199,7 +199,7 @@ namespace terminalExcel.Actions
         protected override Task<ActivityDO> FollowupConfigurationResponse(
             ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            var storage = Crate.GetStorage(curActivityDO);
+            var storage = CrateManager.GetStorage(curActivityDO);
             var filePathsFromUserSelection = storage.CrateContentsOfType<StandardConfigurationControlsCM>()
                 .Select(x =>
                 {
@@ -214,7 +214,7 @@ namespace terminalExcel.Actions
                 throw new AmbiguityException();
             }
 
-            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 string uploadFilePath = null;
                 if (filePathsFromUserSelection.Length > 0)
@@ -291,7 +291,7 @@ namespace terminalExcel.Actions
             if (headersArray != null)
             {
                 var headers = headersArray.ToList();
-                var curCrateDTO = Crate.CreateDesignTimeFieldsCrate(
+                var curCrateDTO = CrateManager.CreateDesignTimeFieldsCrate(
                             "Spreadsheet Column Headers",
                             headers.Select(col => new FieldDTO() { Key = col, Value = col }).ToArray()
                         );
@@ -312,7 +312,7 @@ namespace terminalExcel.Actions
                 var rows = ExcelUtils.CreateTableCellPayloadObjects(rowsDictionary, headersArray);
                 if (rows != null && rows.Count > 0)
                 {
-                    storage.Add(Crate.CreateStandardTableDataCrate("Excel Payload Rows", true, rows.ToArray()));
+                    storage.Add(CrateManager.CreateStandardTableDataCrate("Excel Payload Rows", true, rows.ToArray()));
                 }
             }
         }

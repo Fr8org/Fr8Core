@@ -84,7 +84,7 @@ namespace terminalDocuSign.Actions
                 return NeedsAuthenticationError(payload);
             }
 
-            var configurationControls = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
+            var configurationControls = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
 
             if (configurationControls == null)
             {
@@ -116,7 +116,7 @@ namespace terminalDocuSign.Actions
                 payloadCm.PayloadObjects.Add(row);
             }
             
-            using (var crateStorage = Crate.GetUpdatableStorage(payload))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
                 crateStorage.Add(Data.Crates.Crate.FromContent("Sql Query Result", payloadCm));
             }
@@ -133,7 +133,7 @@ namespace terminalDocuSign.Actions
 
             var docuSignAuthDto = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 
-            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Add(PackControls(new ActionUi()));
                 crateStorage.AddRange(PackDesignTimeData(docuSignAuthDto));
@@ -160,7 +160,7 @@ namespace terminalDocuSign.Actions
                 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.RemoveByLabel("Queryable Criteria");
                 
@@ -184,7 +184,7 @@ namespace terminalDocuSign.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }

@@ -147,7 +147,7 @@ namespace terminalDocuSign.Actions
         {
             var payload = await GetPayload(curActivityDO, containerId);
 
-            var configurationControls = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
+            var configurationControls = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
 
             if (configurationControls == null)
             {
@@ -167,7 +167,7 @@ namespace terminalDocuSign.Actions
             SearchDocusignInRealTime(docuSignAuthToken, criteria, searchResult, existingEnvelopes);
 
             // Merge data from QueryMT action.
-            var payloadCrateStorage = Crate.FromDto(payload.CrateStorage);
+            var payloadCrateStorage = CrateManager.FromDto(payload.CrateStorage);
             var queryMTResult = payloadCrateStorage
                 .CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "Found MT Objects")
                 .FirstOrDefault();
@@ -175,7 +175,7 @@ namespace terminalDocuSign.Actions
             MergeMtQuery(queryMTResult, existingEnvelopes, searchResult);
 
             // Update report crate.
-            using (var crateStorage = Crate.GetUpdatableStorage(payload))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
                 crateStorage.Add(Data.Crates.Crate.FromContent("Sql Query Result", searchResult));
             }
@@ -323,7 +323,7 @@ namespace terminalDocuSign.Actions
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Add(PackControls(new ActionUi()));
                 crateStorage.AddRange(PackDesignTimeData());
@@ -340,7 +340,7 @@ namespace terminalDocuSign.Actions
 
             try
             {
-                using (var crateStorage = Crate.GetUpdatableStorage(activityDO))
+                using (var crateStorage = CrateManager.GetUpdatableStorage(activityDO))
                 {
                     crateStorage.Remove<StandardQueryCM>();
 
@@ -359,7 +359,7 @@ namespace terminalDocuSign.Actions
                     "QueryFr8Warehouse"
                 );
 
-                using (var crateStorage = Crate.GetUpdatableStorage(queryFr8WarehouseAction))
+                using (var crateStorage = CrateManager.GetUpdatableStorage(queryFr8WarehouseAction))
                 {
                     crateStorage.RemoveByLabel("Upstream Crate Label List");
 
@@ -367,7 +367,7 @@ namespace terminalDocuSign.Actions
                     {
                         new FieldDTO() { Key = QueryCrateLabel, Value = QueryCrateLabel }
                     };
-                    var upstreamLabelsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Crate Label List", fields);
+                    var upstreamLabelsCrate = CrateManager.CreateDesignTimeFieldsCrate("Upstream Crate Label List", fields);
                     crateStorage.Add(upstreamLabelsCrate);
 
                     var upstreamManifestTypes = crateStorage
@@ -403,7 +403,7 @@ namespace terminalDocuSign.Actions
                     queryFr8WarehouseAction
                 );
 
-                using (var crateStorage = Crate.GetUpdatableStorage(activityDO))
+                using (var crateStorage = CrateManager.GetUpdatableStorage(activityDO))
                 {
                     crateStorage.RemoveByManifestId((int)MT.OperationalStatus);
                 
@@ -485,7 +485,7 @@ namespace terminalDocuSign.Actions
         }
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }

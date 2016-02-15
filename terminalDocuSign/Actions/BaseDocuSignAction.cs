@@ -35,7 +35,7 @@ namespace terminalDocuSign.Actions
 
         protected string GetValueForKey(PayloadDTO curPayloadDTO, string curKey)
         {
-            var eventReportMS = Crate.GetStorage(curPayloadDTO).CrateContentsOfType<EventReportCM>().FirstOrDefault();
+            var eventReportMS = CrateManager.GetStorage(curPayloadDTO).CrateContentsOfType<EventReportCM>().FirstOrDefault();
 
             if (eventReportMS == null)
             {

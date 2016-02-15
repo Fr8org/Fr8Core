@@ -41,7 +41,7 @@ namespace terminalFr8Core.Actions
                 var curProcessPayload = await GetPayload(activityDO, containerId);
                 var manifestTypes = crateChooser.SelectedCrates.Select(c => c.ManifestType.Value);
 
-                var curCrates = Crate.FromDto(curProcessPayload.CrateStorage).CratesOfType<Manifest>().Where(c => manifestTypes.Contains(c.ManifestType.Id.ToString(CultureInfo.InvariantCulture)));
+                var curCrates = CrateManager.FromDto(curProcessPayload.CrateStorage).CratesOfType<Manifest>().Where(c => manifestTypes.Contains(c.ManifestType.Id.ToString(CultureInfo.InvariantCulture)));
 
                 //get the process payload
                 foreach (var curCrate in curCrates)
@@ -59,7 +59,7 @@ namespace terminalFr8Core.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -78,16 +78,16 @@ namespace terminalFr8Core.Actions
             var curConfigurationControlsCrate = PackControls(configControls);
             
             //TODO let's leave this like that until Alex decides what to do
-            var upstreamLabelsCrate = Crate.CreateDesignTimeFieldsCrate("AvailableUpstreamLabels", new FieldDTO[] { });
+            var upstreamLabelsCrate = CrateManager.CreateDesignTimeFieldsCrate("AvailableUpstreamLabels", new FieldDTO[] { });
             //var upstreamLabelsCrate = Crate.CreateDesignTimeFieldsCrate("AvailableUpstreamLabels", upstreamLabels);
 
 
             var upstreamDescriptions = await GetCratesByDirection<ManifestDescriptionCM>(curActivityDO, CrateDirection.Upstream);
             var upstreamRunTimeDescriptions = upstreamDescriptions.Where(c => c.Availability == AvailabilityType.RunTime);
             var fields = upstreamRunTimeDescriptions.Select(c => new FieldDTO(c.Content.Name, c.Content.Id));
-            var upstreamManifestsCrate = Crate.CreateDesignTimeFieldsCrate("AvailableUpstreamManifests", fields.ToArray());
+            var upstreamManifestsCrate = CrateManager.CreateDesignTimeFieldsCrate("AvailableUpstreamManifests", fields.ToArray());
 
-            using (var crateStorage = Crate.UpdateStorage(() => curActivityDO.CrateStorage))
+            using (var crateStorage = CrateManager.UpdateStorage(() => curActivityDO.CrateStorage))
             {
                 crateStorage.Clear();
                 crateStorage.Add(curConfigurationControlsCrate);

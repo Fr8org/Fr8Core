@@ -33,7 +33,7 @@ namespace terminalFr8Core.Actions
 
         protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 AddLabelControl(
 
@@ -53,7 +53,7 @@ namespace terminalFr8Core.Actions
 
         private QueryDTO ExtractSqlQuery(PayloadDTO payload)
         {
-            var sqlQueryCrate = Crate.FromDto(payload.CrateStorage).CratesOfType<StandardQueryCM>(x => x.Label == "Sql Query").FirstOrDefault();
+            var sqlQueryCrate = CrateManager.FromDto(payload.CrateStorage).CratesOfType<StandardQueryCM>(x => x.Label == "Sql Query").FirstOrDefault();
 
             if (sqlQueryCrate == null) { return null; }
 
@@ -184,7 +184,7 @@ namespace terminalFr8Core.Actions
 
             var payloadCMCrate = Data.Crates.Crate.FromContent("Sql Query Result", payloadCM);
 
-            using (var crateStorage = Crate.GetUpdatableStorage(payload))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
                 crateStorage.Add(payloadCMCrate);
             }

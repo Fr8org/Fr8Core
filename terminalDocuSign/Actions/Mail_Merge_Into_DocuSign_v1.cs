@@ -129,7 +129,7 @@ namespace terminalDocuSign.Actions
         {
             if (curActivityDO.Id != Guid.Empty)
             {
-                using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+                using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
                 {
                     if (authTokenDO == null || authTokenDO.Token == null)
                     {
@@ -198,7 +198,7 @@ namespace terminalDocuSign.Actions
         private void ValidateDocuSignAtLeastOneTemplate(ActivityDO curActivityDO)
         {
             //validate DocuSignTemplate for present selected template 
-            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 var docuSignTemplate = crateStorage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Available Templates").FirstOrDefault();
                 if (docuSignTemplate != null && docuSignTemplate.Fields != null && docuSignTemplate.Fields.Count != 0) return;//await Task.FromResult<CrateDTO>(null);
@@ -219,7 +219,7 @@ namespace terminalDocuSign.Actions
             // Do not tarsnfer to follow up when child actions are already present 
             if (curActivityDO.ChildNodes.Count() > 0) return ConfigurationRequestType.Initial;
 
-            var storage = Crate.GetStorage(curActivityDO);
+            var storage = CrateManager.GetStorage(curActivityDO);
             if (storage == null || storage.Count() == 0)
             {
                 return ConfigurationRequestType.Initial;
@@ -257,7 +257,7 @@ namespace terminalDocuSign.Actions
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 
             //extract fields in docusign form
-            _docuSignManager.UpdateUserDefinedFields(curActivityDO, authTokenDO, Crate.GetUpdatableStorage(curActivityDO), _docuSignTemplate.Value);
+            _docuSignManager.UpdateUserDefinedFields(curActivityDO, authTokenDO, CrateManager.GetUpdatableStorage(curActivityDO), _docuSignTemplate.Value);
 
 
             var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(curActivityDO, null))

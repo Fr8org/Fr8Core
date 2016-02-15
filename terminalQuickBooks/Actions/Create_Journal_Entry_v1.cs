@@ -39,7 +39,7 @@ namespace terminalQuickBooks.Actions
                     textBlock = GenerateTextBlock("Create a Journal Entry",
                         "This Action doesn't require any configuration.",
                         "well well-lg");
-                    using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+                    using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
                     {
                         crateStorage.Add(upstream[0]);
                     }
@@ -50,7 +50,7 @@ namespace terminalQuickBooks.Actions
                         "When this Action runs, it will be expecting to find a Crate of Standard Accounting Transactions. Right now, it doesn't detect any Upstream Actions that produce that kind of Crate. Please add an activity upstream (to the left) of this action that does so.",
                         "alert alert-warning");
                 }
-                using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+                using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
                 {
                     crateStorage.Clear();
                     crateStorage.Add(PackControlsCrate(textBlock));
@@ -69,9 +69,9 @@ namespace terminalQuickBooks.Actions
             CheckAuthentication(authTokenDO);
             var payloadCrates = await GetPayload(curActivityDO, containerId);
             //Obtain the crate of type StandardAccountingTransactionCM that holds the required information
-            var curStandardAccountingTransactionCM = Crate.GetByManifest<StandardAccountingTransactionCM>(payloadCrates);
+            var curStandardAccountingTransactionCM = CrateManager.GetByManifest<StandardAccountingTransactionCM>(payloadCrates);
             //Obtain the crate of type OperationalStateCM to extract the correct StandardAccountingTransactionDTO
-            var curOperationalStateCM = Crate.GetOperationalState(payloadCrates);
+            var curOperationalStateCM = CrateManager.GetOperationalState(payloadCrates);
             //Get the LoopId that is equal to the Action.Id for to obtain the correct StandardAccountingTransactionDTO
             var curLoopId = curActivityDO.GetLoopId();
             //Validate fields of the StandardAccountingTransactionCM crate

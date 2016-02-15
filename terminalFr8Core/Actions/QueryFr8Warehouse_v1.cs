@@ -131,7 +131,7 @@ namespace terminalFr8Core.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -146,12 +146,12 @@ namespace terminalFr8Core.Actions
             var upstreamQueryCrateManifests = GetUpstreamCrateManifestListCrate();
             var upstreamQueryCrateLabels = await ExtractUpstreamQueryCrates(curActivityDO);
 
-            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Add(PackControls(new ActionUi()));
                 crateStorage.Add(upstreamQueryCrateManifests);
                 crateStorage.Add(upstreamQueryCrateLabels);
-                crateStorage.Add(Crate.CreateDesignTimeFieldsCrate("Queryable Objects", objectList.ToArray()));
+                crateStorage.Add(CrateManager.CreateDesignTimeFieldsCrate("Queryable Objects", objectList.ToArray()));
                 crateStorage.Add(
                     Data.Crates.Crate.FromContent(
                         "Found MT Objects",
@@ -180,7 +180,7 @@ namespace terminalFr8Core.Actions
                 )
             };
 
-            var crate = Crate.CreateDesignTimeFieldsCrate("Upstream Crate ManifestType List", fields);
+            var crate = CrateManager.CreateDesignTimeFieldsCrate("Upstream Crate ManifestType List", fields);
 
             return crate;
         }
@@ -197,16 +197,16 @@ namespace terminalFr8Core.Actions
                 .Select(x => new FieldDTO() { Key = x.Label, Value = x.Label })
                 .ToList();
 
-            var crate = Crate.CreateDesignTimeFieldsCrate("Upstream Crate Label List", fields);
+            var crate = CrateManager.CreateDesignTimeFieldsCrate("Upstream Crate Label List", fields);
 
             return crate;
         }
 
         protected override Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                var ui = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
+                var ui = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
 
                 if (ui == null)
                 {
@@ -221,7 +221,7 @@ namespace terminalFr8Core.Actions
 
                 if (int.TryParse(config.AvailableObjects.Value, out selectedObjectId))
                 {
-                    crateStorage.Add(Crate.CreateDesignTimeFieldsCrate("Queryable Criteria", GetFieldsByObjectId(selectedObjectId).ToArray()));
+                    crateStorage.Add(CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", GetFieldsByObjectId(selectedObjectId).ToArray()));
                 }
             }
             return Task.FromResult(curActivityDO);
@@ -230,7 +230,7 @@ namespace terminalFr8Core.Actions
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payload = await GetPayload(curActivityDO, containerId);
-            var payloadCrateStorage = Crate.GetStorage(payload);
+            var payloadCrateStorage = CrateManager.GetStorage(payload);
 
             var ui = GetConfigurationControls(curActivityDO);
 
@@ -286,7 +286,7 @@ namespace terminalFr8Core.Actions
             {
                 var searchResult = new StandardPayloadDataCM();
 
-                using (var crateStorage = Crate.GetUpdatableStorage(payload))
+                using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
                 {
                     crateStorage.Add(Data.Crates.Crate.FromContent("Found MT Objects", searchResult));
                 }
@@ -336,7 +336,7 @@ namespace terminalFr8Core.Actions
                     searchResult.PayloadObjects.Add(converter(foundObject));
                 }
 
-                using (var crateStorage = Crate.GetUpdatableStorage(payload))
+                using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
                 {
                     crateStorage.Add(Data.Crates.Crate.FromContent("Found MT Objects", searchResult));
                 }

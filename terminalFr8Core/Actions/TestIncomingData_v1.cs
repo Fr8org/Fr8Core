@@ -43,7 +43,7 @@ namespace terminalFr8Core.Actions
                 return Error(curPayloadDTO, "No control found with Type == \"filterPane\"");
             }
 
-            var valuesCrates = Crate.FromDto(curPayloadDTO.CrateStorage).CrateContentsOfType<StandardPayloadDataCM>();
+            var valuesCrates = CrateManager.FromDto(curPayloadDTO.CrateStorage).CrateContentsOfType<StandardPayloadDataCM>();
             var curValues = new List<FieldDTO>();
 
             foreach (var valuesCrate in valuesCrates)
@@ -240,12 +240,12 @@ namespace terminalFr8Core.Actions
                 .ToArray();
 
             //2) Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
-            var queryFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Queryable Criteria", curUpstreamFields);
+            var queryFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", curUpstreamFields);
 
             //build a controls crate to render the pane
             var configurationControlsCrate = CreateControlsCrate();
 
-            using (var crateStorage = Crate.UpdateStorage(() => curActivityDO.CrateStorage))
+            using (var crateStorage = CrateManager.UpdateStorage(() => curActivityDO.CrateStorage))
             {
                 crateStorage.Replace(AssembleCrateStorage(queryFieldsCrate, configurationControlsCrate));
             }
@@ -261,9 +261,9 @@ namespace terminalFr8Core.Actions
                 .ToArray();
 
             //2) Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
-            var queryFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Queryable Criteria", curUpstreamFields);
+            var queryFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", curUpstreamFields);
 
-            using (var crateStorage = Crate.UpdateStorage(() => curActivityDO.CrateStorage))
+            using (var crateStorage = CrateManager.UpdateStorage(() => curActivityDO.CrateStorage))
             {
                 crateStorage.RemoveByLabel("Queryable Criteria");
                 crateStorage.Add(queryFieldsCrate);
@@ -274,7 +274,7 @@ namespace terminalFr8Core.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActionDataPackageDO)
         {
-            if (Crate.IsStorageEmpty(curActionDataPackageDO))
+            if (CrateManager.IsStorageEmpty(curActionDataPackageDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -295,7 +295,7 @@ namespace terminalFr8Core.Actions
 
         protected async Task<CrateDTO> ValidateAction(ActivityDO curActivityDO)
         {
-            return await ValidateByStandartDesignTimeFields(curActivityDO, Crate.GetStorage(curActivityDO).FirstCrate<StandardDesignTimeFieldsCM>(x => x.Label == "Queryable Criteria").Content);
+            return await ValidateByStandartDesignTimeFields(curActivityDO, CrateManager.GetStorage(curActivityDO).FirstCrate<StandardDesignTimeFieldsCM>(x => x.Label == "Queryable Criteria").Content);
         }
 
         /// <summary>
@@ -344,7 +344,7 @@ namespace terminalFr8Core.Actions
                 curLabel = "Configuration_Controls";
             }
 
-            return Crate.GetStorage(curActionDataPackageDO).FirstCrateOrDefault<TManifest>(x => x.Label == curLabel);
+            return CrateManager.GetStorage(curActionDataPackageDO).FirstCrateOrDefault<TManifest>(x => x.Label == curLabel);
         }
     }
 }

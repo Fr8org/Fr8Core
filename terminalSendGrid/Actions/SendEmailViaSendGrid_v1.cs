@@ -42,7 +42,7 @@ namespace terminalSendGrid.Actions
         /// </summary>
         private ConfigurationRequestType EvaluateReceivedRequest(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -53,7 +53,7 @@ namespace terminalSendGrid.Actions
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
 
-            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Clear();
                 crateStorage.Add(CreateControlsCrate());
@@ -65,7 +65,7 @@ namespace terminalSendGrid.Actions
 
         protected async override Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.ReplaceByLabel(await CreateAvailableFieldsCrate(curActivityDO));
             }
@@ -77,7 +77,7 @@ namespace terminalSendGrid.Actions
         // Refactored the action to use a single Upstream Terminal-Provided Fields crate.
         private async Task<ActivityDO> AddDesignTimeFieldsSource(ActivityDO curActivityDO)
         {
-            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.RemoveByLabel("Upstream Terminal-Provided Fields Address");
                 crateStorage.RemoveByLabel("Upstream Terminal-Provided Fields Subject");
@@ -158,7 +158,7 @@ namespace terminalSendGrid.Actions
                 CreateEmailBodyTextSourceControl()
             };
 
-            return Crate.CreateStandardConfigurationControlsCrate(ConfigurationControlsLabel, controls.ToArray());
+            return CrateManager.CreateStandardConfigurationControlsCrate(ConfigurationControlsLabel, controls.ToArray());
         }
 
         private string CreateEmailHTMLText(string emailBody)
@@ -175,13 +175,13 @@ namespace terminalSendGrid.Actions
 
             var payloadCrates = await GetPayload(curActivityDO, containerId);
 
-            var payloadCrateStorage = Crate.GetStorage(payloadCrates);
+            var payloadCrateStorage = CrateManager.GetStorage(payloadCrates);
             StandardConfigurationControlsCM configurationControls = GetConfigurationControls(curActivityDO);
 
             // A fix to support an old (wrong) crate label (FR-1972). The following block can be savely removed in Feb 2016
             if (configurationControls == null)
             {
-                var storage = Crate.GetStorage(curActivityDO);
+                var storage = CrateManager.GetStorage(curActivityDO);
                 configurationControls = storage.CrateContentsOfType<StandardConfigurationControlsCM>(c => String.Equals(c.Label, "SendGrid", StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
             }
 

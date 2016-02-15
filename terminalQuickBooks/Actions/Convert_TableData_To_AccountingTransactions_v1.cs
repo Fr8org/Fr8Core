@@ -43,12 +43,12 @@ namespace terminalQuickBooks.Actions
         }
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            return Crate.IsStorageEmpty(curActivityDO) ? ConfigurationRequestType.Initial : ConfigurationRequestType.Followup;
+            return CrateManager.IsStorageEmpty(curActivityDO) ? ConfigurationRequestType.Initial : ConfigurationRequestType.Followup;
         }
         protected override Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             //Grasp the user data from the controls in the follow up configuration
-            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 MemoText = GetMemoText(crateStorage);
                 DebitAccount = GetDebitAccount(crateStorage);
@@ -60,7 +60,7 @@ namespace terminalQuickBooks.Actions
             if (curActivityDO.Id != Guid.Empty)
             {
                 //Check the availability of ChartOfAccountsCM
-                using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+                using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
                 {
                     var crate = crateStorage.CrateContentsOfType<ChartOfAccountsCM>();
                     if (crate != null && crate.Any())
@@ -92,7 +92,7 @@ namespace terminalQuickBooks.Actions
                     };
 
                 }
-                using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+                using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
                 {
                     crateStorage.Add(PackControls(actionControls));
                     crateStorage.AddRange(await PackSources(authTokenDO));
@@ -126,7 +126,7 @@ namespace terminalQuickBooks.Actions
             //The check on the accounts' existence in QB is performed only once in the run method
             //ChartOfAccounts is perloaded once and the accounts are compared with the the perloaded list
             if (ChartOfAccountsCrate == null || ChartOfAccountsCrate.Accounts.Count == 0)
-                using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+                using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
                 {
                     var crate = crateStorage.CrateContentsOfType<ChartOfAccountsCM>();
                     ChartOfAccountsCrate = crate != null
@@ -143,7 +143,7 @@ namespace terminalQuickBooks.Actions
             {
                 curStandardAccouningTransactionCM = GenerateTransactionCrate(curStandardTableDataCM,
                     ChartOfAccountsCrate, curDebitAccount, memoText);
-                using (var crateStorage = Crate.GetUpdatableStorage(payloadCrates))
+                using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
                 {
                     var curCrateToAdd = Crate<StandardAccountingTransactionCM>.FromContent(
                         "StandardAccountingTransactionCM", curStandardAccouningTransactionCM);
@@ -275,7 +275,7 @@ namespace terminalQuickBooks.Actions
             else
                 chartOfAccounts = ChartOfAccountsCrate;
             sources.Add(
-                Crate.CreateDesignTimeFieldsCrate(
+                CrateManager.CreateDesignTimeFieldsCrate(
                     "Available ChartOfAccounts",
                 //Labda function maps AccountDTO to FieldDTO: Id->Key, Name->Value
                     chartOfAccounts.Accounts.Select(x => new FieldDTO(x.Name, x.Id)).ToArray()

@@ -45,11 +45,11 @@ namespace terminalDocuSign.Actions
             var curControlsCrate = PackControlsCrate(textBlock);
 
             //create a Standard Event Subscription crate
-            var curEventSubscriptionsCrate = Crate.CreateStandardEventSubscriptionsCrate("Standard Event Subscription", "DocuSign", DocuSignEventNames.GetAllEventNames());
+            var curEventSubscriptionsCrate = CrateManager.CreateStandardEventSubscriptionsCrate("Standard Event Subscription", "DocuSign", DocuSignEventNames.GetAllEventNames());
 
-            var envelopeCrate = Crate.CreateManifestDescriptionCrate("Available Run-Time Objects", MT.DocuSignEnvelope.ToString(), ((int)MT.DocuSignEnvelope).ToString(CultureInfo.InvariantCulture), AvailabilityType.RunTime);
-            var eventCrate = Crate.CreateManifestDescriptionCrate("Available Run-Time Objects", MT.DocuSignEvent.ToString(), ((int)MT.DocuSignEvent).ToString(CultureInfo.InvariantCulture), AvailabilityType.RunTime);
-            var recipientCrate = Crate.CreateManifestDescriptionCrate("Available Run-Time Objects", MT.DocuSignRecipient.ToString(), ((int)MT.DocuSignRecipient).ToString(CultureInfo.InvariantCulture), AvailabilityType.RunTime);
+            var envelopeCrate = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", MT.DocuSignEnvelope.ToString(), ((int)MT.DocuSignEnvelope).ToString(CultureInfo.InvariantCulture), AvailabilityType.RunTime);
+            var eventCrate = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", MT.DocuSignEvent.ToString(), ((int)MT.DocuSignEvent).ToString(CultureInfo.InvariantCulture), AvailabilityType.RunTime);
+            var recipientCrate = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", MT.DocuSignRecipient.ToString(), ((int)MT.DocuSignRecipient).ToString(CultureInfo.InvariantCulture), AvailabilityType.RunTime);
             /*
             //create Standard Design Time Fields for Available Run-Time Objects
             var curAvailableRunTimeObjectsDesignTimeCrate =
@@ -60,7 +60,7 @@ namespace terminalDocuSign.Actions
                     new FieldDTO {Key = "DocuSign Recipient", Value = "DocuSign Recipient"}
                 });
             */
-            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Replace(new CrateStorage(curControlsCrate, curEventSubscriptionsCrate, envelopeCrate, eventCrate, recipientCrate));
             }
@@ -132,7 +132,7 @@ namespace terminalDocuSign.Actions
                 return NeedsAuthenticationError(curProcessPayload);
             }
 
-            var curEventReport = Crate.GetStorage(curProcessPayload).CrateContentsOfType<EventReportCM>().First();
+            var curEventReport = CrateManager.GetStorage(curProcessPayload).CrateContentsOfType<EventReportCM>().First();
 
             if (curEventReport.EventNames.Contains("Envelope"))
             {
@@ -174,7 +174,7 @@ namespace terminalDocuSign.Actions
                 }
                 
 
-                using (var crateStorage = Crate.GetUpdatableStorage(curProcessPayload))
+                using (var crateStorage = CrateManager.GetUpdatableStorage(curProcessPayload))
                 {
                     crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope", envelope));
                     crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Event", events));

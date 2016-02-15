@@ -35,7 +35,7 @@ namespace terminalAtlassian.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -45,7 +45,7 @@ namespace terminalAtlassian.Actions
 
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Clear();
                 crateStorage.Add(CreateControlsCrate());
@@ -73,7 +73,7 @@ namespace terminalAtlassian.Actions
 
         private string ExtractJiraKey(ActivityDO curActivityDO)
         {
-            var controls = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().First().Controls;
+            var controls = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().First().Controls;
             var templateTextBox = controls.SingleOrDefault(x => x.Name == "jira_key");
 
             if (templateTextBox == null)
