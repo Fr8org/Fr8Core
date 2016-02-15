@@ -362,6 +362,10 @@ module dockyard.controllers {
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ChildActionsReconfiguration],
                 (event: ng.IAngularEvent, childActionReconfigEventArgs: pca.ChildActionReconfigurationEventArgs) => this.PaneConfigureAction_ChildActionsReconfiguration(childActionReconfigEventArgs));
 
+
+            this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_DownStreamReconfiguration],
+                (event: ng.IAngularEvent, eventArgs: pca.DownStreamReConfigureEventArgs) => this.PaneConfigureAction_ReConfigureDownStreamActivities(eventArgs));
+
             //Process Select Action Pane events
             this.$scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_ActivityTypeSelected],
                 (event: ng.IAngularEvent, eventArgs: psa.ActivityTypeSelectedEventArgs) => this.PaneSelectAction_ActivityTypeSelected(eventArgs));
@@ -437,6 +441,19 @@ module dockyard.controllers {
             this.loadRoute();
         }
 
+        private getDownstreamActions(currentAction: model.ActivityDTO) {
+            var results: Array<model.ActivityDTO> = [];
+            this.$scope.actionGroups.forEach(group => {
+                group.actions.filter((action: model.ActivityDTO) => {
+                    return action.parentRouteNodeId === currentAction.parentRouteNodeId && action.ordering > currentAction.ordering;
+                }).forEach(action => {
+                    results.push(action);
+                });
+            });
+            return results;
+            
+        }
+
         private chooseAuthToken(action: model.ActivityDTO) {
 
             var self = this;
@@ -452,10 +469,7 @@ module dockyard.controllers {
             })
                 .result
                 .then(() => {
-                    self.$scope.$broadcast(
-                        pca.MessageType[pca.MessageType.PaneConfigureAction_Reconfigure],
-                        new pca.ActionReconfigureEventArgs(action)
-                    );
+                    
                 });
         }
 
@@ -612,6 +626,12 @@ module dockyard.controllers {
             var promise = this.RouteBuilderService.saveCurrent(this.$scope.current);
         }
 
+        private PaneConfigureAction_ReConfigureDownStreamActivities(eventArgs: pca.DownStreamReConfigureEventArgs) {
+            var actionsToReconfigure = this.getDownstreamActions(<model.ActivityDTO>eventArgs.action);
+            actionsToReconfigure.splice(0, 0, <model.ActivityDTO>eventArgs.action);
+            this.reConfigure(actionsToReconfigure);
+        }
+
         /*
             Handles message 'PaneConfigureAction_ActionRemoved'
         */
@@ -655,9 +675,9 @@ module dockyard.controllers {
             ++self._longRunningActionsCounter;
 
             this.RouteService.runAndProcessClientAction(this.$scope.current.route.id)
-                .finally(function () {
-                    if (self._longRunningActionsCounter > 0) {
-                        --self._longRunningActionsCounter;
+                .finally(() => {
+                    if (this._longRunningActionsCounter > 0) {
+                        --this._longRunningActionsCounter;
                     }
                 });
         }

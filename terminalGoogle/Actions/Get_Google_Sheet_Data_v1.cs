@@ -20,7 +20,7 @@ namespace terminalGoogle.Actions
     public class Get_Google_Sheet_Data_v1 : BaseTerminalActivity
     {
         private readonly IGoogleSheet _google;
-
+        private const string TableCrateLabel = "Spreadsheet Rows";
         public Get_Google_Sheet_Data_v1()
         {
             _google = new GoogleSheet();
@@ -199,7 +199,7 @@ namespace terminalGoogle.Actions
             using (var updater = Crate.UpdateStorage(curActivityDO))
             {
                 updater.CrateStorage = AssembleCrateStorage(configurationControlsCrate);
-                updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("Spreadsheet Column Headers", new FieldDTO[] {}));
+                updater.CrateStorage.Add(Crate.CreateStandardTableDataCrate(TableCrateLabel, false, new TableRowDTO[]{}));
             }
 
             return Task.FromResult(curActivityDO);
@@ -285,9 +285,8 @@ namespace terminalGoogle.Actions
 
             using (var updater = Crate.UpdateStorage(curActivityDO))
             {
-                const string label = "Spreadsheet Payload Rows";
-                updater.CrateStorage.RemoveByLabel(label);
-                updater.CrateStorage.Add(Crate.CreateStandardTableDataCrate(label, false, extractedData.ToArray()));
+                updater.CrateStorage.RemoveByLabel(TableCrateLabel);
+                updater.CrateStorage.Add(Crate.CreateStandardTableDataCrate(TableCrateLabel, false, extractedData.ToArray()));
             }
 
             return curActivityDO;
@@ -313,9 +312,8 @@ namespace terminalGoogle.Actions
 
             using (var updater = Crate.UpdateStorage(curActivityDO))
             {
-                const string label = "Spreadsheet Payload Rows";
-                updater.CrateStorage.RemoveByLabel(label);
-                updater.CrateStorage.Add(Crate.CreateStandardTableDataCrate(label, false, rows.ToArray()));
+                updater.CrateStorage.RemoveByLabel(TableCrateLabel);
+                updater.CrateStorage.Add(Crate.CreateStandardTableDataCrate(TableCrateLabel, false, rows.ToArray()));
             }
         }
     }

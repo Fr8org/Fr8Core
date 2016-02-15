@@ -14,7 +14,9 @@ module dockyard.directives.paneConfigureAction {
         PaneConfigureAction_ConfigureCallResponse,
         PaneConfigureAction_AuthFailure,
         PaneConfigureAction_ExecutePlan,
-        PaneConfigureAction_ConfigureFocusElement
+        PaneConfigureAction_ConfigureFocusElement,
+        PaneConfigureAction_AuthCompleted,
+        PaneConfigureAction_DownStreamReconfiguration
     }
 
     export class ActionReconfigureEventArgs {
@@ -24,6 +26,12 @@ module dockyard.directives.paneConfigureAction {
             // Clone Action to prevent any issues due to possible mutation of source object
             this.action = angular.extend({}, action);
         }
+    }
+
+    export class AuthenticationCompletedEventArgs extends ActionReconfigureEventArgs{
+    }
+
+    export class DownStreamReConfigureEventArgs extends ActionReconfigureEventArgs {
     }
 
     export class ActionUpdatedEventArgs extends ActionUpdatedEventArgsBase { }
@@ -152,7 +160,8 @@ module dockyard.directives.paneConfigureAction {
             private $timeout: ng.ITimeoutService,
             private $modal,
             private $window: ng.IWindowService,
-            private $http: ng.IHttpService
+            private $http: ng.IHttpService,
+            private $q: ng.IQService
         ) {
             PaneConfigureAction.prototype.link = (
                 scope: IPaneConfigureActionScope,
@@ -162,10 +171,7 @@ module dockyard.directives.paneConfigureAction {
                 //Link function goes here
             };
             
-            PaneConfigureAction.prototype.controller = function (
-                $scope: IPaneConfigureActionScope,
-                $element: ng.IAugmentedJQuery,
-                $attrs: ng.IAttributes) {
+            PaneConfigureAction.prototype.controller = ($scope: IPaneConfigureActionScope, $element: ng.IAugmentedJQuery, $attrs: ng.IAttributes) => {
 
                 var configLoadingError: boolean = false;
 
@@ -190,6 +196,15 @@ module dockyard.directives.paneConfigureAction {
 
                     if (reConfigureActionEventArgs.action.id === $scope.currentAction.id) {
                         loadConfiguration();
+                    }
+
+                });
+
+                $scope.$on(MessageType[MessageType.PaneConfigureAction_AuthCompleted], (event: ng.IAngularEvent, authCompletedEventArgs: AuthenticationCompletedEventArgs) => {
+                    if (authCompletedEventArgs.action.id === $scope.currentAction.id) {
+                        loadConfiguration().then(() => {
+                            $scope.$emit(MessageType[MessageType.PaneConfigureAction_DownStreamReconfiguration], new DownStreamReConfigureEventArgs($scope.currentAction));
+                        });
                     }
 
                 });
@@ -337,7 +352,7 @@ module dockyard.directives.paneConfigureAction {
                         return handler == 'requestConfig';
                     }
                     else
-                        return false;
+                        return false; onControlChange
                 }
 
                 function onControlChange(event: ng.IAngularEvent, eventArgs: ChangeEventArgs) {
@@ -376,6 +391,7 @@ module dockyard.directives.paneConfigureAction {
                 // Here we look for Crate with ManifestType == 'Standard UI Controls'.
                 // We parse its contents and put it into currentAction.configurationControls structure.
                 function loadConfiguration() {
+                    var deferred = $q.defer();
                     // Block pane and show pane-level 'loading' spinner
                     $scope.processing = true;
 
@@ -405,8 +421,8 @@ module dockyard.directives.paneConfigureAction {
                                     $scope.$emit(MessageType[MessageType.PaneConfigureAction_ExecutePlan]);
                                 }
                             }
-
-                            if (res.childrenActions && res.childrenActions.length > 0) {
+                            var oldAction = $scope.currentAction;
+                            if (res.childrenActions && res.childrenActions.length > 0 &&  (!oldAction.childrenActions || oldAction.childrenActions.length < 1)) {
                                 // If the directive is used for configuring solutions,
                                 // the SolutionController would listen to this event 
                                 // and redirect user to the RouteBuilder once if is received.
@@ -434,8 +450,11 @@ module dockyard.directives.paneConfigureAction {
                             if (!childActionsDetected) {
                                 $scope.processing = false;
                             }
+
+                            deferred.resolve($scope.currentAction);
                         })
                         .catch((result) => {
+                            
                             var errorText = 'Something went wrong. Click to retry.';
                             if (result.status && result.status >= 400) {
                                 // Bad http response
@@ -451,17 +470,19 @@ module dockyard.directives.paneConfigureAction {
 
                             // Unblock pane.
                             $scope.processing = false;
+                            deferred.reject(result);
                         })
                         .finally(() => {
                             ConfigureTrackerService.configureCallFinished($scope.currentAction.id);
                             // emit ConfigureCallResponse for RouteBuilderController be able to reload actions with AgressiveReloadTag
                             $scope.$emit(MessageType[MessageType.PaneConfigureAction_ConfigureCallResponse], new CallConfigureResponseEventArgs($scope.currentAction, $scope.currentActiveElement));
                         });
+
+                    return deferred.promise;
                 };
 
                 function processConfiguration() {
                     var that = this;
-
                     // Check if authentication is required.
                     if (crateHelper.hasCrateOfManifestType($scope.currentAction.crateStorage, 'Standard Authentication')) {
                         var authCrate = crateHelper
@@ -494,11 +515,11 @@ module dockyard.directives.paneConfigureAction {
                     modalScope.actionIds = [actionId];
 
                     $modal.open({
-                        animation: true,
-                        templateUrl: '/AngularTemplate/AuthenticationDialog',
-                        controller: 'AuthenticationDialogController',
-                        scope: modalScope
-                    })
+                            animation: true,
+                            templateUrl: '/AngularTemplate/AuthenticationDialog',
+                            controller: 'AuthenticationDialogController',
+                            scope: modalScope
+                        })
                         .result
                         .then(() => loadConfiguration())
                         .catch((result) => {
@@ -529,7 +550,8 @@ module dockyard.directives.paneConfigureAction {
                 $timeout: ng.ITimeoutService,
                 $modal,
                 $window: ng.IWindowService,
-                $http: ng.IHttpService
+                $http: ng.IHttpService,
+                $q: ng.IQService
 
             ) => {
 
@@ -542,7 +564,8 @@ module dockyard.directives.paneConfigureAction {
                     $timeout,
                     $modal,
                     $window,
-                    $http
+                    $http,
+                    $q
                 );
             };
 
@@ -555,7 +578,8 @@ module dockyard.directives.paneConfigureAction {
                 '$timeout',
                 '$modal',
                 '$window',
-                '$http'
+                '$http',
+                '$q'
             ];
             return directive;
         }
