@@ -138,4 +138,96 @@ gulp.task('watch_js', ['compile_js'], function () {
     gulp.watch('Scripts/app/**/*.js', ['compile_js']);
 });
 
+
 gulp.task('default', ['bower', 'concattemplates']);
+
+var cdnizer = require("gulp-cdnizer");
+
+
+
+
+gulp.task('default2', function () {
+    return gulp.src('./Views/Shared/_AngularAppScripts.cshtml')
+        .pipe(cdnizer([
+            {
+                file: '~/bower_components/angular/angular.js',
+                package: 'angular',
+                test: 'window.angular',
+                cdn: '//ajax.googleapis.com/ajax/libs/angularjs/${ version }/angular.min.js'
+            },
+            {
+                file: '~/bower_components/angular-resource/angular-resource.js',
+                package: 'angular-resource',
+                cdn: '//ajax.googleapis.com/ajax/libs/angularjs/${ version }/angular-resource.min.js'
+            },
+            {
+                file: '~/bower_components/angular-animate/angular-animate.js',
+                package: 'angular',                
+                cdn: '//ajax.googleapis.com/ajax/libs/angularjs/${ version }/angular-animate.min.js'
+            },
+            {
+                file: '~/bower_components/angular-sanitize/angular-sanitize.js',
+                package: 'angular-sanitize',
+                cdn: '//ajax.googleapis.com/ajax/libs/angularjs/${ version }/angular-sanitize.min.js'
+            },
+            {
+                file: '~/bower_components/angular-ui-router/release/angular-ui-router.js',
+                package: 'angular-ui-router',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/${ version }/angular-ui-router.min.js'
+            },
+
+            {
+                file: '~/bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
+                package: 'ui-bootstrap',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/${ version }/ui-bootstrap-tpls.min.js'
+            },
+            {
+                file: '~/bower_components/underscore/underscore.js',
+                package: 'underscore',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/underscore.js/${ version }/underscore-min.js'
+            },
+            {
+                file: '~/bower_components/datatables/media/js/jquery.dataTables.min.js',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/datatables/1.10.11/js/jquery.dataTables.min.js'
+            },
+            {
+                file: '~/bower_components/ng-table/dist/ng-table.min.js',
+                package: 'ng-table',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/ng-table/${ version }/ng-table.min.js'
+            }
+
+
+            ,
+            {
+                file: '~/bower_components/ng-file-upload/ng-file-upload-all.min.js',
+                package: 'ng-file-upload',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/danialfarid-angular-file-upload/${ version }/ng-file-upload-all.min.js'
+            },
+            {
+                file: '~/bower_components/pusher/dist/pusher.js',
+                package: 'pusher',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/pusher/${ version }/pusher.min.js'
+            },
+            {
+                file: '~/bower_components/pusher-angular/lib/pusher-angular.js',
+                package: 'pusher-angular',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/pusher-angular/${ version }/pusher-angular.min.js'
+            },
+            {
+                file: '~/bower_components/ng-table/dist/ng-table.min.js',
+                package: 'ng-table',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/ng-table/${ version }/ng-table.min.js'
+            },
+            {
+                file: '~/bower_components/ng-table/dist/ng-table.min.js',
+                package: 'ng-table',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/ng-table/${ version }/ng-table.min.js'
+            }
+
+            
+
+
+            
+        ]))
+        .pipe(gulp.dest('./Views/Shared/Release'));
+});

@@ -157,7 +157,8 @@ namespace HubWeb.App_Start
                 .Include("~/Content/templates/metronic/assets/admin/layout3/scripts/layout.js")
                 .Include("~/Content/templates/metronic/assets/admin/layout3/scripts/demo.js")
             );
-
+#if DEBUG
+            /*
             bundles.Add(new ScriptBundle("~/bundles/js/jquery-bootstrap")
                 .Include("~/bower_components/jquery/dist/jquery.js")
                 .Include("~/bower_components/jquery-migrate/jquery-migrate.js")
@@ -166,7 +167,25 @@ namespace HubWeb.App_Start
                 .Include("~/bower_components/spin.js/spin.js")
                 .Include("~/bower_components/bootstrap-switch/dist/js/bootstrap-switch.js")
             );
-
+            */
+            bundles.Add(new ScriptBundle("~/bundles/js/jquery-bootstrap")
+                .Include("https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js")
+                .Include("~/bower_components/jquery-migrate/jquery-migrate.js")
+                .Include("~/bower_components/bootstrap/dist/js/bootstrap.js")
+                .Include("~/bower_components/bootstrap-hover-dropdown/bootstrap-hover-dropdown.js")
+                .Include("~/bower_components/spin.js/spin.js")
+                .Include("~/bower_components/bootstrap-switch/dist/js/bootstrap-switch.js")
+            );
+#elif DEV || RELEASE
+            bundles.Add(new ScriptBundle("~/bundles/js/jquery-bootstrap")
+                .Include("https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js")
+                .Include("~/bower_components/jquery-migrate/jquery-migrate.js")
+                .Include("~/bower_components/bootstrap/dist/js/bootstrap.js")
+                .Include("~/bower_components/bootstrap-hover-dropdown/bootstrap-hover-dropdown.js")
+                .Include("~/bower_components/spin.js/spin.js")
+                .Include("~/bower_components/bootstrap-switch/dist/js/bootstrap-switch.js")
+            );
+#endif
             bundles.Add(new ScriptBundle("~/bundles/js/bower")
                 .Include("~/bower_components/angular/angular.js")
                 .Include("~/bower_components/angular-resource/angular-resource.js")
@@ -176,11 +195,15 @@ namespace HubWeb.App_Start
 #if DEBUG
                 .Include("~/bower_components/angular-mocks/angular-mocks.js")
 #endif
+
                 .Include("~/bower_components/ocLazyLoad/dist/ocLazyLoad.js")
+
                 .Include("~/bower_components/angular-bootstrap/ui-bootstrap-tpls.js")
                 .Include("~/bower_components/underscore/underscore.js")
                 .Include("~/bower_components/datatables/media/js/jquery.dataTables.min.js")
+
                 .Include("~/bower_components/angular-datatables/dist/angular-datatables.js")
+
                 .Include("~/bower_components/ng-table/dist/ng-table.min.js")
                 .Include("~/bower_components/ng-file-upload/ng-file-upload-all.min.js")
                 .Include("~/bower_components/pusher/dist/pusher.js")
