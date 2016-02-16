@@ -63,15 +63,15 @@ namespace terminalSalesforce.Actions
                     new FieldDTO("Account") {Availability = AvailabilityType.Configuration},
                     new FieldDTO("Contact") {Availability = AvailabilityType.Configuration},
                     new FieldDTO("Lead") {Availability = AvailabilityType.Configuration},
-                    new FieldDTO("Opportunities") {Availability = AvailabilityType.Configuration},
-                    new FieldDTO("Forecasts") {Availability = AvailabilityType.Configuration},
-                    new FieldDTO("Contracts") {Availability = AvailabilityType.Configuration},
-                    new FieldDTO("Orders") {Availability = AvailabilityType.Configuration},
-                    new FieldDTO("Cases") {Availability = AvailabilityType.Configuration},
-                    new FieldDTO("Solutions") {Availability = AvailabilityType.Configuration},
-                    new FieldDTO("Products") {Availability = AvailabilityType.Configuration},
-                    new FieldDTO("Documents") {Availability = AvailabilityType.Configuration},
-                    new FieldDTO("Files") {Availability = AvailabilityType.Configuration}
+                    new FieldDTO("Opportunity") {Availability = AvailabilityType.Configuration},
+                    //new FieldDTO("Forecast") {Availability = AvailabilityType.Configuration},
+                    new FieldDTO("Contract") {Availability = AvailabilityType.Configuration},
+                    new FieldDTO("Order") {Availability = AvailabilityType.Configuration},
+                    new FieldDTO("Case") {Availability = AvailabilityType.Configuration},
+                    new FieldDTO("Solution") {Availability = AvailabilityType.Configuration},
+                    new FieldDTO("Product") {Availability = AvailabilityType.Configuration},
+                    new FieldDTO("Document") {Availability = AvailabilityType.Configuration}
+                    //new FieldDTO("File") {Availability = AvailabilityType.Configuration}
                 });
 
             //Note: This design time fields are used to populate the Fileter Pane controls. It has to be labelled as Queryable Criteria
