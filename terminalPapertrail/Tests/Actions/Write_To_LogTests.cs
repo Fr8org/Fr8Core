@@ -157,9 +157,9 @@ namespace terminalPapertrail.Tests.Actions
                 }
             };
 
-            using (var updater = new CrateManager().UpdateStorage(curPayload))
+            using (var crateStorage = new CrateManager().GetUpdatableStorage(curPayload))
             {
-                updater.CrateStorage.Add(Crate.FromContent("Log Messages", logMessages));
+                crateStorage.Add(Crate.FromContent("Log Messages", logMessages));
             }
 
             return curPayload;

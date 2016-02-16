@@ -82,7 +82,7 @@ namespace terminalExcel.Actions
 
             var tableDataMS = await GetTargetTableData(
                 curActivityDO,
-                Crate.GetStorage(curActivityDO)
+                CrateManager.GetStorage(curActivityDO)
             );
 
             if (!tableDataMS.FirstRowHeaders)
@@ -94,14 +94,14 @@ namespace terminalExcel.Actions
             // Add a crate of PayloadData to action's crate storage
             
             
-            using (var updater = Crate.UpdateStorage(payloadCrates))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
             {
-                updater.CrateStorage.Add(Crate.CreatePayloadDataCrate("ExcelTableRow", "Excel Data", tableDataMS));
+                crateStorage.Add(CrateManager.CreatePayloadDataCrate("ExcelTableRow", "Excel Data", tableDataMS));
             }
             return Success(payloadCrates);        
         }
 
-        private async Task<StandardTableDataCM> GetTargetTableData(ActivityDO activityDO, CrateStorage curCrateStorageDTO)
+        private async Task<StandardTableDataCM> GetTargetTableData(ActivityDO activityDO, ICrateStorage curCrateStorageDTO)
         {
             // Find crates of manifest type Standard Table Data
             var standardTableDataCrates = curCrateStorageDTO.CratesOfType<StandardTableDataCM>();
@@ -168,11 +168,11 @@ namespace terminalExcel.Actions
                 //Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
                 Crate upstreamFieldsCrate = await MergeUpstreamFields(curActivityDO, "Select Excel File");
 
-                using (var updater = Crate.UpdateStorage(curActivityDO))
+                using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
                 {
-                    updater.CrateStorage.Clear();
-                    updater.CrateStorage.Add(upstreamFieldsCrate);
-                    updater.CrateStorage.Add(PackControls(new ActionUi()));
+                    crateStorage.Clear();
+                    crateStorage.Add(upstreamFieldsCrate);
+                    crateStorage.Add(PackControls(new ActionUi()));
                 }
             }
             else
@@ -187,7 +187,7 @@ namespace terminalExcel.Actions
         /// </summary>
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -199,7 +199,7 @@ namespace terminalExcel.Actions
         protected override Task<ActivityDO> FollowupConfigurationResponse(
             ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            var storage = Crate.GetStorage(curActivityDO);
+            var storage = CrateManager.GetStorage(curActivityDO);
             var filePathsFromUserSelection = storage.CrateContentsOfType<StandardConfigurationControlsCM>()
                 .Select(x =>
                 {
@@ -214,7 +214,7 @@ namespace terminalExcel.Actions
                 throw new AmbiguityException();
             }
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 string uploadFilePath = null;
                 if (filePathsFromUserSelection.Length > 0)
@@ -241,12 +241,12 @@ namespace terminalExcel.Actions
                     }
                 }
 
-                updater.CrateStorage.Remove<StandardConfigurationControlsCM>();
-                updater.CrateStorage.Add(PackControls(new ActionUi(fileName)));
+                crateStorage.Remove<StandardConfigurationControlsCM>();
+                crateStorage.Add(PackControls(new ActionUi(fileName)));
 
                 if (!string.IsNullOrEmpty(uploadFilePath))
                 {
-                    TransformExcelFileDataToStandardTableDataCrate(updater.CrateStorage, uploadFilePath);
+                    TransformExcelFileDataToStandardTableDataCrate(crateStorage, uploadFilePath);
                 }
             }
 
@@ -269,7 +269,7 @@ namespace terminalExcel.Actions
             return uploadFilePath;
         }
 
-        private void TransformExcelFileDataToStandardTableDataCrate(CrateStorage storage, string selectedFilePath)
+        private void TransformExcelFileDataToStandardTableDataCrate(ICrateStorage storage, string selectedFilePath)
         {
             // Check if the file is an Excel file.
             string ext = Path.GetExtension(selectedFilePath);
@@ -291,7 +291,7 @@ namespace terminalExcel.Actions
             if (headersArray != null)
             {
                 var headers = headersArray.ToList();
-                var curCrateDTO = Crate.CreateDesignTimeFieldsCrate(
+                var curCrateDTO = CrateManager.CreateDesignTimeFieldsCrate(
                             "Spreadsheet Column Headers",
                             headers.Select(col => new FieldDTO() { Key = col, Value = col }).ToArray()
                         );
@@ -303,7 +303,7 @@ namespace terminalExcel.Actions
             CreatePayloadCrate_ExcelRows(storage, fileAsByteArray, headersArray, ext);
         }
 
-        private void CreatePayloadCrate_ExcelRows(CrateStorage storage, byte[] fileAsByteArray, string[] headersArray, string extension)
+        private void CreatePayloadCrate_ExcelRows(ICrateStorage storage, byte[] fileAsByteArray, string[] headersArray, string extension)
         {
             // Fetch rows in Excel file and assign them to the action's crate storage as Standard Table Data crate
             var rowsDictionary = ExcelUtils.GetTabularData(fileAsByteArray, extension);
@@ -312,7 +312,7 @@ namespace terminalExcel.Actions
                 var rows = ExcelUtils.CreateTableCellPayloadObjects(rowsDictionary, headersArray);
                 if (rows != null && rows.Count > 0)
                 {
-                    storage.Add(Crate.CreateStandardTableDataCrate("Excel Payload Rows", true, rows.ToArray()));
+                    storage.Add(CrateManager.CreateStandardTableDataCrate("Excel Payload Rows", true, rows.ToArray()));
                 }
             }
         }

@@ -2,6 +2,7 @@
 using HealthMonitor.Utility;
 using NUnit.Framework;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace terminalQuickBooksTests.Integration
 {
@@ -27,7 +28,7 @@ namespace terminalQuickBooksTests.Integration
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
         [Test, Category("Integration.terminalQuickBooks")]
-        public async void Terminal_Slack_Discover()
+        public async Task Terminal_Slack_Discover()
         {
             var discoverUrl = GetTerminalDiscoverUrl();
             var terminalDiscoverResponse = await HttpGetAsync<StandardFr8TerminalCM>(discoverUrl);

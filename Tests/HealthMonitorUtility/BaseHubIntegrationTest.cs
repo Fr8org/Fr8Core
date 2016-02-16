@@ -23,7 +23,7 @@ namespace HealthMonitor.Utility
 {
     public abstract class BaseHubIntegrationTest
     {
-        public ICrateManager _crate { get; set; }
+        public ICrateManager _crateManager { get; set; }
         public IRestfulServiceClient _restfulServiceClient { get; set; }
         public IHMACService _hmacService { get; set; }
         private string terminalSecret;
@@ -48,6 +48,7 @@ namespace HealthMonitor.Utility
 
         protected string TestUserEmail = "integration_test_runner@fr8.company";
         protected string TestUserPassword = "fr8#s@lt!";
+        protected string TestEmail;
 
         public BaseHubIntegrationTest()
         {
@@ -60,7 +61,7 @@ namespace HealthMonitor.Utility
             _httpClient.BaseAddress = GetHubBaseUrl();
             _httpClient.Timeout = TimeSpan.FromMinutes(2);
 
-            _crate = new CrateManager();
+            _crateManager = new CrateManager();
             _hmacService = new Fr8HMACService();
             _baseUrl = GetHubApiBaseUrl();
             _restfulServiceClient = new RestfulServiceClient(_httpClient);
@@ -69,13 +70,13 @@ namespace HealthMonitor.Utility
             LoginUser(TestUserEmail, TestUserPassword).Wait();
 
             // Initailize EmailAssert utility.
-            string testEmail = ConfigurationManager.AppSettings["TestEmail"];
+            string TestEmail = ConfigurationManager.AppSettings["TestEmail"];
             string hostname = ConfigurationManager.AppSettings["TestEmail_Pop3Server"];
             int port = int.Parse(ConfigurationManager.AppSettings["TestEmail_Port"]);
             bool useSsl = ConfigurationManager.AppSettings["TestEmail_UseSsl"] == "true" ? true : false;
             string username = ConfigurationManager.AppSettings["TestEmail_Username"];
             string password = ConfigurationManager.AppSettings["TestEmail_Password"];
-            EmailAssert.InitEmailAssert(testEmail, hostname, port, useSsl, username, password);
+            //EmailAssert.InitEmailAssert(TestEmail, hostname, port, useSsl, username, password);
         }
         public abstract string TerminalName { get; }
 
@@ -117,7 +118,7 @@ namespace HealthMonitor.Utility
 
         public void CheckIfPayloadHasNeedsAuthenticationError(PayloadDTO payload)
         {
-            var storage = _crate.GetStorage(payload);
+            var storage = _crateManager.GetStorage(payload);
             var operationalStateCM = storage.CrateContentsOfType<OperationalStateCM>().Single();
 
             //extract current error message from current activity response
@@ -137,6 +138,12 @@ namespace HealthMonitor.Utility
         {
             var uri = new Uri(url);
             return await _restfulServiceClient.PostAsync<TRequest, TResponse>(uri, request, null, null);
+        }
+
+        public async Task<TResponse> HttpPostAsync<TResponse>(string url, HttpContent content)
+        {
+            var uri = new Uri(url);
+            return await _restfulServiceClient.PostAsync<TResponse>(uri, content, null, null);
         }
         public async Task HttpDeleteAsync(string url)
         {

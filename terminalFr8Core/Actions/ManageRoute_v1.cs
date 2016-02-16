@@ -22,7 +22,7 @@ namespace terminalFr8Core.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
 
             {
                 return ConfigurationRequestType.Initial;
@@ -35,10 +35,8 @@ namespace terminalFr8Core.Actions
 
         protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
-
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                var crateStorage = updater.CrateStorage;
                 AddRunNowButton(crateStorage);
             }
 
@@ -46,7 +44,7 @@ namespace terminalFr8Core.Actions
 
         }
 
-        private void AddRunNowButton(CrateStorage crateStorage)
+        private void AddRunNowButton(ICrateStorage crateStorage)
         {
             AddControl(crateStorage,
                 new RunRouteButton()

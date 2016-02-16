@@ -63,25 +63,25 @@
             })
             .result
             .then(() => {
-                angular.forEach(actionIds, function (it) {
+                angular.forEach(actionIds, it => {
                     self.$rootScope.$broadcast(
-                        dockyard.directives.paneConfigureAction.MessageType[dockyard.directives.paneConfigureAction.MessageType.PaneConfigureAction_Reconfigure],
-                        new dockyard.directives.paneConfigureAction.ActionReconfigureEventArgs(<interfaces.IActivityDTO>({ id: it }))
+                        dockyard.directives.paneConfigureAction.MessageType[dockyard.directives.paneConfigureAction.MessageType.PaneConfigureAction_AuthCompleted],
+                        new dockyard.directives.paneConfigureAction.AuthenticationCompletedEventArgs(<interfaces.IActivityDTO>({ id: it }))
                     );
                 });
             })
             .catch((result) => {
-                angular.forEach(actionIds, function (it) {
+                angular.forEach(actionIds, it => {
                     self.$rootScope.$broadcast(
                         dockyard.directives.paneConfigureAction.MessageType[dockyard.directives.paneConfigureAction.MessageType.PaneConfigureAction_AuthFailure],
                         new dockyard.directives.paneConfigureAction.ActionAuthFailureEventArgs(it)
                     );
                 });
             })
-            .finally(function () {
-                self._authDialogDisplayed = false;
-                self.clear();
-            });
+            .finally(() => {
+                    this._authDialogDisplayed = false;
+                    this.clear();
+                });
         }
     }
 }

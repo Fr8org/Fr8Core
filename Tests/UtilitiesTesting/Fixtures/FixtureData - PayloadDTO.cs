@@ -17,11 +17,11 @@ namespace UtilitiesTesting.Fixtures
     {
         public static void AddOperationalStateCrate(PayloadDTO payload)
         {
-            using (var updater = new CrateManager().UpdateStorage(payload))
+            using (var crateStorage = new CrateManager().GetUpdatableStorage(payload))
             {
                 var operationalStatus = new OperationalStateCM();
                 var operationsCrate = Crate.FromContent("Operational Status", operationalStatus);
-                updater.CrateStorage.Add(operationsCrate);
+                crateStorage.Add(operationsCrate);
             }
         }
 
@@ -38,9 +38,9 @@ namespace UtilitiesTesting.Fixtures
             curEventReportMS.EventPayload.Add(Crate.FromContent("Standard Event Report", new StandardPayloadDataCM(curFields)));
             var payload = new PayloadDTO(TestContainer_Id_1());
 
-            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(payload))
+            using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().GetUpdatableStorage(payload))
             {
-                updater.CrateStorage.Add(Crate.FromContent("Standard Event Report", curEventReportMS));
+                crateStorage.Add(Crate.FromContent("Standard Event Report", curEventReportMS));
             }
 
             AddOperationalStateCrate(payload);
@@ -59,9 +59,9 @@ namespace UtilitiesTesting.Fixtures
 
             var payload = new PayloadDTO(TestContainer_Id_49());
 
-            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(payload))
+            using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().GetUpdatableStorage(payload))
             {
-                updater.CrateStorage.Add(Crate.FromContent("Standard Payload Data", standardPayload));
+                crateStorage.Add(Crate.FromContent("Standard Payload Data", standardPayload));
             }
 
             AddOperationalStateCrate(payload);

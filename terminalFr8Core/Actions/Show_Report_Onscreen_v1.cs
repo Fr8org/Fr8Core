@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Control;
+using Data.Crates;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
@@ -54,10 +55,10 @@ namespace terminalFr8Core.Actions
 
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.Add(PackControls(new ActionUi()));
-                updater.CrateStorage.Add(await FindTables(curActivityDO));
+                crateStorage.Add(PackControls(new ActionUi()));
+                crateStorage.Add(await FindTables(curActivityDO));
             }
 
             return curActivityDO;
@@ -65,9 +66,9 @@ namespace terminalFr8Core.Actions
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.ReplaceByLabel(await FindTables(curActivityDO));
+                crateStorage.ReplaceByLabel(await FindTables(curActivityDO));
             }
 
             return curActivityDO;
@@ -77,7 +78,7 @@ namespace terminalFr8Core.Actions
         {
             var payload = await GetPayload(curActivityDO, containerId);
 
-            var configurationControls = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
+            var configurationControls = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
 
             if (configurationControls == null)
             {
@@ -90,13 +91,13 @@ namespace terminalFr8Core.Actions
 
             if (!string.IsNullOrWhiteSpace(actionUi.ReportSelector.SelectedLabel))
             {
-                using (var updater = Crate.UpdateStorage(payload))
+                using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
                 {
-                    var reportTable = updater.CrateStorage.CratesOfType<StandardPayloadDataCM>().FirstOrDefault(x => x.Label == actionUi.ReportSelector.SelectedLabel);
+                    var reportTable = crateStorage.CratesOfType<StandardPayloadDataCM>().FirstOrDefault(x => x.Label == actionUi.ReportSelector.SelectedLabel);
 
                     if (reportTable != null)
                     {
-                        updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Sql Query Result", new StandardPayloadDataCM
+                        crateStorage.Add(Data.Crates.Crate.FromContent("Sql Query Result", new StandardPayloadDataCM
                         {
                             PayloadObjects = reportTable.Content.PayloadObjects
                         }));
@@ -109,7 +110,7 @@ namespace terminalFr8Core.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }

@@ -53,7 +53,7 @@
         -->
     <div ng-if='field.type == "DropDownList"'>
         <label ng-if="field.label !== null && field.label.length > 0" class='control-label'>{{::field.label}}</label>
-        <drop-down-list-box field='field' change='onChange' data-field-name='{{::field.name}}'></drop-down-list-box>
+        <drop-down-list-box field='field' click='onClick' change='onChange' data-field-name='{{::field.name}}'></drop-down-list-box>
         <div data-ng-if="field.errorMessage != null && field.errorMessage !==''" class="validationWraper">
             <span class="validation-Icon"></span><div class="validation-message">{{field.errorMessage}}</div>
         </div>
@@ -135,9 +135,9 @@
         <manage-route current-action='currentAction'></manage-route>
     </div>
 
-    @*
+    <!--
         Duration template
-    *@
+    -->
     <div ng-if='field.type == "Duration"'>
         <label ng-if="field.label !== null && field.label.length > 0" class='control-label'>{{::field.label}}</label>
         <duration field="field"></duration>

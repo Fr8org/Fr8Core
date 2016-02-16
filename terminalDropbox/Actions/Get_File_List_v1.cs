@@ -42,9 +42,9 @@ namespace terminalDropbox.Actions
 
             var fileNames = await _dropboxService.GetFileList(authTokenDO);
 
-            using (var updater = _crateManager.UpdateStorage(payloadCrates))
+            using (var crateStorage = _crateManager.GetUpdatableStorage(payloadCrates))
             {
-                updater.CrateStorage.Add(PackCrate_DropboxFileList(fileNames));
+                crateStorage.Add(PackCrate_DropboxFileList(fileNames));
             }
 
             return Success(payloadCrates);

@@ -15,6 +15,7 @@ using Newtonsoft.Json.Linq;
 using StructureMap;
 using Utilities.AutoMapper;
 using Signer = DocuSign.Integrations.Client.Signer;
+using Data.Interfaces.Manifests;
 
 namespace Data.Infrastructure.AutoMapper
 {
@@ -146,8 +147,14 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.UserId, x => x.ResolveUsing(y => y.UserID))
                 .ForMember(x => x.Id, x => x.ResolveUsing(y => y.Id.ToString()));
 
+            Mapper.CreateMap<ManifestDescriptionCM, ManifestDescriptionDTO>();
+            Mapper.CreateMap<ManifestDescriptionDTO, ManifestDescriptionCM>();
+                                    
+
             Mapper.CreateMap<TerminalDO, TerminalDTO>();
             Mapper.CreateMap<TerminalDTO, TerminalDO>();
+
+
         }
 
         private static List<RouteNodeDO> MapActions(IEnumerable<ActivityDTO> actions)

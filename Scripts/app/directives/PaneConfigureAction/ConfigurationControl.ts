@@ -66,7 +66,6 @@ module dockyard.directives.paneConfigureAction {
                     $scope.$emit("onChange", new ChangeEventArgs(field));
                 };
 
-
                 $scope.onClick = (event: any) => {
                     var field: model.ControlDefinitionDTO;
 

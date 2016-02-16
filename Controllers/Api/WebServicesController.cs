@@ -67,8 +67,9 @@ namespace HubWeb.Controllers
                 var unknwonService = uow.WebServiceRepository.GetQuery().FirstOrDefault(x => x.Name == UknownWebServiceName);
 
                 webServiceList = _activityTemplate.GetQuery()
-                    .Where(x=> x.ActivityTemplateState == ActivityTemplateState.Active)
+                    .Where(x => x.ActivityTemplateState == ActivityTemplateState.Active)
                     .Where(x => categories == null || categories.Contains(x.Category))
+                    .Where(x => x.ClientVisibility != false)
 			        .GroupBy(x => x.WebService, x => x, (key, group) => new
 			        {
 			            WebService = key,

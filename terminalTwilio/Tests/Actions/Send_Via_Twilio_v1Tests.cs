@@ -18,6 +18,7 @@ using terminalTwilio.Tests.Fixtures;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using System;
+using Data.Crates;
 
 namespace terminalTwilio.Tests.Actions
 {

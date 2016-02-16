@@ -61,11 +61,11 @@ namespace terminalSendGrid.Tests.Actions
             var payLoadDto = FixtureData.CratePayloadDTOForSendEmailViaSendGridConfiguration;
             payLoadDto.CrateStorage = activityDto.CrateStorage;
 
-            using (var updater = new CrateManager().UpdateStorage(payLoadDto))
+            using (var crateStorage = new CrateManager().GetUpdatableStorage(payLoadDto))
             {
                 var operationalStatus = new OperationalStateCM();
                 var operationsCrate = Crate.FromContent("Operational Status", operationalStatus);
-                updater.CrateStorage.Add(operationsCrate);
+                crateStorage.Add(operationsCrate);
             }
 
             var restfulServiceClient = new Mock<IRestfulServiceClient>();
@@ -142,10 +142,10 @@ namespace terminalSendGrid.Tests.Actions
             }
             var crate = Crate.CreateStandardConfigurationControlsCrate("SendGrid", standardControls.Controls.ToArray());
 
-            using (var updater = Crate.UpdateStorage(activityDO))
+            using (var crateStorage = Crate.GetUpdatableStorage(activityDO))
             {
-                updater.CrateStorage.RemoveByManifestId(6);
-                updater.CrateStorage.Add(crate);
+                crateStorage.RemoveByManifestId(6);
+                crateStorage.Add(crate);
             }
 
             var container = FixtureData.TestContainer();

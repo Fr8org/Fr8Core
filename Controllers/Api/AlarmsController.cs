@@ -40,7 +40,7 @@ namespace HubWeb.Controllers
 
         //TODO is this method called from somewhere else?
         [HttpPost]
-        public async void ExecuteTerminalWithLogging(AlarmDTO alarmDTO)
+        public async Task ExecuteTerminalWithLogging(AlarmDTO alarmDTO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

@@ -92,11 +92,11 @@ namespace terminalDocuSign.Actions
             var docuSignAuthDto = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
             var actionUi = new ActionUi();
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                
-                updater.CrateStorage.Add(PackControls(actionUi));
-                updater.CrateStorage.AddRange(PackDesignTimeData(docuSignAuthDto));
+
+                crateStorage.Add(PackControls(actionUi));
+                crateStorage.AddRange(PackDesignTimeData(docuSignAuthDto));
             }
 
             await ConfigureNestedActions(curActivityDO, actionUi);
@@ -111,13 +111,13 @@ namespace terminalDocuSign.Actions
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                var configurationControls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+                var configurationControls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
                 if (configurationControls == null)
                 {
-                    updater.DiscardChanges();
+                    crateStorage.DiscardChanges();
                     return curActivityDO;
                 }
 
@@ -172,7 +172,7 @@ namespace terminalDocuSign.Actions
                 curActivityDO.ChildNodes.Add(activity);
             }
 
-            activity.CrateStorage = JsonConvert.SerializeObject(Crate.ToDto(storage));
+            activity.CrateStorage = JsonConvert.SerializeObject(CrateManager.ToDto(storage));
         }
 
         private async Task<IEnumerable<ActivityTemplateDO>> FindTemplates(ActivityDO activityDO, Predicate<ActivityTemplateDO> query)
@@ -220,7 +220,7 @@ namespace terminalDocuSign.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
