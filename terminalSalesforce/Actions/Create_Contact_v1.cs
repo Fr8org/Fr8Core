@@ -70,9 +70,9 @@ namespace terminalSalesforce.Actions
 
         public override async Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                var configControls = GetConfigurationControls(updater.CrateStorage);
+                var configControls = GetConfigurationControls(crateStorage);
 
                 //verify the last name has a value provided
                 var lastNameControl = configControls.Controls.Single(ctl => ctl.Name.Equals("LastName"));
