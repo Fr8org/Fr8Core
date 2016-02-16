@@ -443,6 +443,7 @@
     <Compile Include="Infrastructure\Fr8HubWebHMACAuthenticateAttribute.cs" />
     <Compile Include="Infrastructure\Fr8Identity.cs" />
     <Compile Include="Infrastructure\Fr8Principle.cs" />
+    <Compile Include="Infrastructure\HtmlHelpers.cs" />
     <Compile Include="SelfHostFactory.cs" />
     <Compile Include="ViewModels\AuthenticationErrorVM.cs" />
     <Compile Include="ViewModels\DocusignLoginVM.cs" />
@@ -927,6 +928,9 @@
     <Content Include="Views\Support\Index.cshtml" />
     <Content Include="Views\AngularTemplate\ChangePassword.cshtml" />
     <Content Include="Views\Company\Jobs.cshtml" />
+    <Content Include="Views\Shared\CDN\_AngularAppScripts.cshtml" />
+    <Content Include="Views\Shared\_AngularAppStyles.cshtml" />
+    <Content Include="Views\Shared\CDN\_AngularAppStyles.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
