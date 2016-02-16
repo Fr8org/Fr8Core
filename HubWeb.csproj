@@ -473,6 +473,7 @@
   <ItemGroup>
     <Content Include="Api\EventResponse.aspx" />
     <Content Include="Api\GetEmailHTML.aspx" />
+    <Content Include="Content\img\Management\Benjamin_Black.png" />
     <Content Include="Content\css\additionalcss\bootstrap23\css\bootstrap2.3.css" />
     <Content Include="Content\css\additionalcss\bootstrap23\img\glyphicons-halflings-white.png" />
     <Content Include="Content\css\additionalcss\bootstrap23\img\glyphicons-halflings.png" />
@@ -554,7 +555,7 @@
     <Content Include="Content\img\icons\twitter.png" />
     <Content Include="Content\img\icons\vimeo.png" />
     <Content Include="Content\img\icons\youtube.png" />
-    <Content Include="Content\img\Management\alexhead.png" />
+    <Content Include="Content\img\Management\Alex_Edelstein.png" />
     <Content Include="Content\img\MicrosoftExchangelogo.png" />
     <Content Include="Content\img\minus.png" />
     <Content Include="Content\img\plus.png" />
@@ -771,6 +772,7 @@
     <Content Include="Documentation\UploadBrandProfiles.html" />
     <Content Include="Documentation\UsingBulkSendintheRESTAPI.html" />
     <Content Include="Documentation\VoidEnvelope.html" />
+    <Content Include="Content\img\Management\Rob_Bailey.png" />
     <Content Include="Scripts\ai.0.15.0-build58334.js" />
     <Content Include="Scripts\ai.0.15.0-build58334.min.js" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
