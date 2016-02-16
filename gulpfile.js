@@ -227,7 +227,7 @@ gulp.task('cdnizer-js', ['bower'], function () {
                 file: '~/bower_components/angular/angular.js',
                 package: 'angular',
                 test: 'window.angular',
-                cdn: '//ajax.googleapis.com/ajax/libs/angularjs/${ version }/angular.js'
+                cdn: '//ajax.googleapis.com/ajax/libs/angularjs/${ version }/angular.min.js'
             },
             {
                 file: '~/bower_components/angular-resource/angular-resource.js',
