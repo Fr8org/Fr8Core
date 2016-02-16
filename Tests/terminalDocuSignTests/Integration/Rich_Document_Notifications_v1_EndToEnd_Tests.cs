@@ -61,7 +61,7 @@ namespace terminalDocuSignTests.Integration
             await HttpPostAsync<string>(docusignTerminalUrl + "/terminals/terminalDocuSign/events", httpContent);
         }
 
-        [Test, Ignore]
+        [Test]
         public async Task Rich_Document_Notifications_EndToEnd()
         {
             string baseUrl = GetHubApiBaseUrl();
