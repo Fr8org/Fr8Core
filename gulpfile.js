@@ -143,21 +143,97 @@ gulp.task('watch_js', ['compile_js'], function () {
 });
 
 
-gulp.task('default', ['bower', 'concattemplates']);
+
 
 var cdnizer = require("gulp-cdnizer");
 
 
 
+gulp.task('cdnizer-css', function () {
+    return gulp.src('./Views/Shared/_AngularAppStyles.cshtml')
+        .pipe(cdnizer([
+            {
+                file: '~/bower_components/bootstrap/dist/css/bootstrap.css',
+                package: 'bootstrap',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/${ version }/css/bootstrap.min.css'
+            },
+            {
+                file: '~/bower_components/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css',
+                package: 'awesome-bootstrap-checkbox',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/awesome-bootstrap-checkbox/${ version }/awesome-bootstrap-checkbox.min.css'
+            },
+            {
+                file: '~/bower_components/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.css',
+                package: 'bootstrap-switch',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/${ version }/css/bootstrap3/bootstrap-switch.min.css'
+            },
+            {
+                file: '~/bower_components/datatables/media/css/jquery.dataTables.css',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/datatables/1.10.11/css/jquery.dataTables.min.css'
+            },
+            {
+                file: '~/bower_components/datatables/media/css/dataTables.bootstrap.min.css',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/datatables/1.10.11/css/dataTables.bootstrap.min.css'
+            },
+            {
+                file: '~/bower_components/textAngular/dist/textAngular.css',
+                package: 'textAngular',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/textAngular/${ version }/textAngular.css'
+            },
+            {
+                file: '~/bower_components/ng-table/dist/ng-table.min.css',
+                package: 'ng-table',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/ng-table/${ version }/ng-table.min.css'
+            },
+            {
+                file: '~/bower_components/angular-ui-select/dist/select.min.css',
+                package: 'angular-ui-select',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/angular-ui-select/${ version }/select.min.css'
+            }
+        ]))
+        .pipe(gulp.dest('./Views/Shared/CDN'));
+});
 
-gulp.task('default2', function () {
+
+gulp.task('cdnizer-js', function () {
     return gulp.src('./Views/Shared/_AngularAppScripts.cshtml')
         .pipe(cdnizer([
+            {
+                file: '~/bower_components/jquery/dist/jquery.js',
+                package: 'jquery',
+                test: 'window.jQuery',
+                cdn: '//ajax.googleapis.com/ajax/libs/jquery/${ version }/jquery.min.js'
+            },
+            {
+                file: '~/bower_components/jquery-migrate/jquery-migrate.js',
+                package: 'jquery-migrate',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/jquery-migrate/${ version }/jquery-migrate.min.js'
+            },
+            {
+                file: '~/bower_components/bootstrap/dist/js/bootstrap.js',
+                package: 'bootstrap',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/${ version }/js/bootstrap.min.js'
+            },
+            {
+                file: '~/bower_components/bootstrap-hover-dropdown/bootstrap-hover-dropdown.js',
+                package: 'bootstrap-hover-dropdown',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/bootstrap-hover-dropdown/${ version }/bootstrap-hover-dropdown.min.js'
+            },
+            {
+                file: '~/bower_components/spin.js/spin.js',
+                package: 'spin.js',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/spin.js/${ version }/spin.min.js'
+            },
+            {
+                file: '~/bower_components/bootstrap-switch/dist/js/bootstrap-switch.js',
+                package: 'bootstrap-switch',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/${ version }/js/bootstrap-switch.min.js'
+            },
             {
                 file: '~/bower_components/angular/angular.js',
                 package: 'angular',
                 test: 'window.angular',
-                cdn: '//ajax.googleapis.com/ajax/libs/angularjs/${ version }/angular.min.js'
+                cdn: '//ajax.googleapis.com/ajax/libs/angularjs/${ version }/angular.js'
             },
             {
                 file: '~/bower_components/angular-resource/angular-resource.js',
@@ -198,10 +274,7 @@ gulp.task('default2', function () {
                 file: '~/bower_components/ng-table/dist/ng-table.min.js',
                 package: 'ng-table',
                 cdn: '//cdnjs.cloudflare.com/ajax/libs/ng-table/${ version }/ng-table.min.js'
-            }
-
-
-            ,
+            },
             {
                 file: '~/bower_components/ng-file-upload/ng-file-upload-all.min.js',
                 package: 'ng-file-upload',
@@ -218,20 +291,49 @@ gulp.task('default2', function () {
                 cdn: '//cdnjs.cloudflare.com/ajax/libs/pusher-angular/${ version }/pusher-angular.min.js'
             },
             {
-                file: '~/bower_components/ng-table/dist/ng-table.min.js',
-                package: 'ng-table',
-                cdn: '//cdnjs.cloudflare.com/ajax/libs/ng-table/${ version }/ng-table.min.js'
+                file: '~/bower_components/rangy/rangy-core.min.js',
+                package: 'rangy',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/rangy/${ version }/rangy-core.min.js'
             },
             {
-                file: '~/bower_components/ng-table/dist/ng-table.min.js',
-                package: 'ng-table',
-                cdn: '//cdnjs.cloudflare.com/ajax/libs/ng-table/${ version }/ng-table.min.js'
+                file: '~/bower_components/rangy/rangy-selectionsaverestore.min.js',
+                package: 'rangy',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/rangy/${ version }/rangy-selectionsaverestore.min.js'
+            },
+            {
+                file: '~/bower_components/textAngular/dist/textAngular-sanitize.min.js',
+                package: 'textAngular',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/textAngular/${ version }/textAngular-sanitize.min.js'
+            },
+            {
+                file: '~/bower_components/textAngular/dist/textAngular.min.js',
+                package: 'textAngular',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/textAngular/${ version }/textAngular.min.js'
+            },
+            {
+                file: '~/bower_components/angular-ui-select/dist/select.min.js',
+                package: 'angular-ui-select',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/angular-ui-select/${ version }/select.min.js'
+            },
+            {
+                file: '~/bower_components/dndLists/angular-drag-and-drop-lists.min.js',
+                package: 'dndLists',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/angular-drag-and-drop-lists/${ version }/angular-drag-and-drop-lists.min.js'
+            },
+            {
+                file: '~/bower_components/angular-messages/angular-messages.min.js',
+                package: 'angular-messages',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/angular-messages/${ version }/angular-messages.min.js'
+            },
+            {
+                file: '~/Scripts/lib/jquery.blockui.min.js',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js'
             }
-
-            
-
-
-            
         ]))
-        .pipe(gulp.dest('./Views/Shared/Release'));
+        .pipe(gulp.dest('./Views/Shared/CDN'));
 });
+
+
+
+
+gulp.task('default', ['bower', 'concattemplates', 'cdnizer-js', 'cdnizer-css']);
