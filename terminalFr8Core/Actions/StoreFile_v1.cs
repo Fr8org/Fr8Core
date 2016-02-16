@@ -31,11 +31,11 @@ namespace terminalFr8Core.Actions
     {
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
-            var controlsMS = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var controlsMS = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (controlsMS == null)
             {
@@ -56,10 +56,10 @@ namespace terminalFr8Core.Actions
             //build a controls crate to render the pane
             var configurationControlsCrate = CreateControlsCrate();
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage = AssembleCrateStorage(configurationControlsCrate);
-                await UpdateUpstreamFileCrates(curActivityDO, updater.CrateStorage);
+                crateStorage.Replace(AssembleCrateStorage(configurationControlsCrate));
+                await UpdateUpstreamFileCrates(curActivityDO, crateStorage);
             }
 
             return curActivityDO;
@@ -68,7 +68,7 @@ namespace terminalFr8Core.Actions
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var curPayloadDTO = await GetPayload(curActivityDO, containerId);
-            var payloadStorage = Crate.GetStorage(curPayloadDTO);
+            var payloadStorage = CrateManager.GetStorage(curPayloadDTO);
 
             var configContrls = GetConfigurationControls(curActivityDO);
             var textSourceControl = (TextSource)GetControl(configContrls, "File Crate label", ControlTypes.TextSource);
@@ -114,7 +114,7 @@ namespace terminalFr8Core.Actions
             return stream;
         }
 
-        public async Task UpdateUpstreamFileCrates(ActivityDO curActivityDO, CrateStorage storage)
+        public async Task UpdateUpstreamFileCrates(ActivityDO curActivityDO, ICrateStorage storage)
         {
             // Build a crate with the list of available upstream fields
             var curUpstreamFieldsCrate = storage.SingleOrDefault(c => c.ManifestType.Id == (int)MT.StandardDesignTimeFields
@@ -128,7 +128,7 @@ namespace terminalFr8Core.Actions
 
             var curUpstreamFields = upstreamFileCrates.Select(c => new FieldDTO(c.Label, c.Label)).ToArray();
 
-            curUpstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided File Crates", curUpstreamFields);
+            curUpstreamFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided File Crates", curUpstreamFields);
             storage.Add(curUpstreamFieldsCrate);
             
         }

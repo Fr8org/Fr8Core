@@ -6,6 +6,7 @@ module dockyard.directives.dropDownListBox {
     export interface IDropDownListBoxScope extends ng.IScope {
         field: model.DropDownList;
         change: () => (field: model.ControlDefinitionDTO) => void;
+        click: () => (field: model.ControlDefinitionDTO) => void;
         selectedItem: model.FieldDTO;
         setSelectedItem: (item: model.FieldDTO) => void;
         toggle: boolean;
@@ -28,7 +29,7 @@ module dockyard.directives.dropDownListBox {
 
             $scope.toggle = false;
 
-            $scope.toggleDropDown = function ($select) {
+            $scope.toggleDropDown = $select => {
                 if (!$scope.focusOutSet) {
                     var focusElem = angular.element($select.focusInput);
                     $scope.focusOutSet = isFocusOutFunc;
@@ -39,20 +40,20 @@ module dockyard.directives.dropDownListBox {
                 $scope.toggle = !$scope.toggle;
             }
             
-            var isFocusOutFunc = function(focusElem) {
-                focusElem.focusout(function () {
+            var isFocusOutFunc = focusElem => {
+                focusElem.focusout(() => {
                     $scope.toggle = false;
                 });
             }
 
-            var findAndSetSelectedItem = function () {
+            var findAndSetSelectedItem = () => {
                 for (var i = 0; i < $scope.field.listItems.length; i++) {
                     if ($scope.field.listItems[i].selected ||
-                        ($scope.field.value == $scope.field.listItems[i].value 
+                    ($scope.field.value == $scope.field.listItems[i].value 
                         && (!$scope.field.hasOwnProperty('selectedKey')
-                            || $scope.field.hasOwnProperty('selectedKey')
+                                || $scope.field.hasOwnProperty('selectedKey')
                                 && $scope.field.selectedKey == $scope.field.listItems[i].key
-                            ))) {
+                        ))) {
                         $scope.selectedItem = $scope.field.listItems[i];
                         break;
                     }
@@ -68,7 +69,8 @@ module dockyard.directives.dropDownListBox {
             controller: controller,
             scope: {
                 field: '=',
-                change: '&'
+                change: '&',
+                click: '&'
             }
         };
     }

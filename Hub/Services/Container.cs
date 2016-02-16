@@ -39,11 +39,11 @@ namespace Hub.Services
 
         private void AddOperationalStateCrate(IUnitOfWork uow, ContainerDO curContainerDO)
         {
-            using (var updater = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
+            using (var crateStorage = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
             {
                 var operationalStatus = new OperationalStateCM();
                 var operationsCrate = Crate.FromContent("Operational Status", operationalStatus);
-                updater.CrateStorage.Add(operationsCrate);
+                crateStorage.Add(operationsCrate);
             }
 
             uow.SaveChanges();
@@ -76,9 +76,9 @@ namespace Hub.Services
         /// <param name="curContainerDo"></param>
         private void ResetActionResponse(IUnitOfWork uow, ContainerDO curContainerDo)
         {
-            using (var updater = _crate.UpdateStorage(() => curContainerDo.CrateStorage))
+            using (var crateStorage = _crate.UpdateStorage(() => curContainerDo.CrateStorage))
             {
-                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
                 operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Null);
             }
 

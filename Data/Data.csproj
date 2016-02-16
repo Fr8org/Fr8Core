@@ -243,10 +243,12 @@
     <Compile Include="Crates\CrateManifestType.cs" />
     <Compile Include="Crates\CrateManifestTypeDescriptionAttribute.cs" />
     <Compile Include="Crates\CrateStorage.cs" />
+    <Compile Include="Crates\CrateStorageExtensions.cs" />
     <Compile Include="Crates\CrateStorageSerializer.cs" />
     <Compile Include="Crates\CrateStorageSerializer.DefaultSerializer.cs" />
     <Compile Include="Crates\CrateT.cs" />
     <Compile Include="Crates\DenySerializationConverter.cs" />
+    <Compile Include="Crates\ICrateStorage.cs" />
     <Compile Include="Crates\ICrateStorageSerializer.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -309,6 +311,7 @@
     <Compile Include="Interfaces\DataTransferObjects\Fr8DataDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\LogItemDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ManageAuthTokenDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ManifestDescriptionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\MappingFieldConfigurationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\StandardAccountingTransactionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\TerminalDiscoveryDTO.cs" />

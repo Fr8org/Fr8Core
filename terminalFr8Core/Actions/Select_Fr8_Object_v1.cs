@@ -59,11 +59,11 @@ namespace terminalFr8Core.Actions
         {
             var crateDesignTimeFields = PackFr8ObjectCrate();
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.Clear();
-                updater.CrateStorage.Add(PackControls(new ActionUi()));
-                updater.CrateStorage.Add(crateDesignTimeFields);
+                crateStorage.Clear();
+                crateStorage.Add(PackControls(new ActionUi()));
+                crateStorage.Add(crateDesignTimeFields);
             }
 
             return Task.FromResult(curActivityDO);
@@ -71,9 +71,9 @@ namespace terminalFr8Core.Actions
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                var configurationControls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+                var configurationControls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
                 if (configurationControls != null)
                 {
@@ -92,8 +92,8 @@ namespace terminalFr8Core.Actions
                         // Sync changes from ActionUi to StandardConfigurationControlsCM
                         configurationControls.ClonePropertiesFrom(actionUi);
 
-                        updater.CrateStorage.RemoveByLabel(designTimeControlName);
-                        updater.CrateStorage.Add(fr8ObjectCrateDTO);
+                        crateStorage.RemoveByLabel(designTimeControlName);
+                        crateStorage.Add(fr8ObjectCrateDTO);
                     }
                 }
             }
@@ -103,7 +103,7 @@ namespace terminalFr8Core.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -124,7 +124,7 @@ namespace terminalFr8Core.Actions
                    }
             }.ToArray();
 
-            var createDesignTimeFields = Crate.CreateDesignTimeFieldsCrate(
+            var createDesignTimeFields = CrateManager.CreateDesignTimeFieldsCrate(
                 "Select Fr8 Object",
                 fields);
             return createDesignTimeFields;
@@ -138,7 +138,7 @@ namespace terminalFr8Core.Actions
                 + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/manifests?id="
                 + Int32.Parse(fr8Object);
             var response = await client.GetAsync<CrateDTO>(new Uri(url));
-            return Crate.FromDto(response);
+            return CrateManager.FromDto(response);
 		}
 
 		#region Execution

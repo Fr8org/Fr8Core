@@ -58,6 +58,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/services/WebServiceService.js',
         'Scripts/app/services/TerminalService.js',
         'Scripts/app/services/ManageAuthTokenService.js',
+        'Scripts/app/services/ManifestRegistryService.js',
         'Scripts/app/services/SolutionDocumentationService.js',
         'Scripts/app/filters/RouteState.js',
         'Scripts/app/filters/ContainerState.js',
@@ -92,6 +93,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/Controls/UpstreamFieldChooser.js',
         'Scripts/app/directives/Controls/UpstreamCrateChooser.js',
         'Scripts/app/directives/LongAjaxCursor.js',
+        'Scripts/app/directives/Validators/ManifestDescriptionValidators.js',
         'Scripts/app/directives/ActionPicker.js',
         'Scripts/app/filters/ActionNameFormatter.js',
         'Scripts/app/filters/DateTimeFormatter.js',
@@ -125,6 +127,8 @@ gulp.task('compile_js', function () {
         'Scripts/app/controllers/TerminalListController.js',
         'Scripts/app/controllers/TerminalFormController.js',
         'Scripts/app/controllers/ManageAuthTokenController.js',
+        'Scripts/app/controllers/ManifestRegistryListController.js',
+        'Scripts/app/controllers/ManifestRegistryFormController.js',
         'Scripts/app/controllers/SolutionDocumentationController.js',
         'Scripts/app/controllers/ManageUserController.js'
     ])

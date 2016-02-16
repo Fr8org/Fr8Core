@@ -191,7 +191,7 @@ namespace DockyardTest.Controllers
                 {
                     Processed++;
 
-//                    using (var storage = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
+//                    using (var storage = _crate.GetUpdatableStorage(() => curContainerDO.CrateStorage))
 //                    {
 //                        var operationalState = storage.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
 //                        operationalState.CurrentActivityResponse = ActivityResponse.Success;

@@ -421,10 +421,10 @@ namespace Hub.Services
                 {
                     var currentActivity = downStreamActivity;
 
-                    using (var updater = _crate.UpdateStorage(() => currentActivity.CrateStorage))
+                    using (var crateStorage = _crate.UpdateStorage(() => currentActivity.CrateStorage))
                     {
                         bool hasChanges = false;
-                        foreach (var configurationControls in updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>())
+                        foreach (var configurationControls in crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>())
                         {
                             foreach (IResettable resettable in configurationControls.Controls)
                             {
@@ -435,7 +435,7 @@ namespace Hub.Services
 
                         if (!hasChanges)
                         {
-                            updater.DiscardChanges();
+                            crateStorage.DiscardChanges();
                         }
                     }
                 }
@@ -482,9 +482,9 @@ namespace Hub.Services
 
             if (payload != null)
             {
-                using (var updater = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
+                using (var crateStorage = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
                 {
-                    updater.CrateStorage = _crate.FromDto(payload.CrateStorage);
+                    crateStorage.Replace(_crate.FromDto(payload.CrateStorage));
                 }
             }
 

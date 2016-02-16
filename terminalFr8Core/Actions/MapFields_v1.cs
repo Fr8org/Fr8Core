@@ -32,7 +32,7 @@ namespace terminalFr8Core.Actions
         {
             var processPayload = await GetPayload(activityDO, containerId);
 
-            var curControlsMS = Crate.GetStorage(activityDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var curControlsMS = CrateManager.GetStorage(activityDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (curControlsMS == null)
             {
@@ -48,16 +48,16 @@ namespace terminalFr8Core.Actions
 
             var mappedFields = JsonConvert.DeserializeObject<List<FieldDTO>>(curMappingControl.Value);
             mappedFields = mappedFields.Where(x => x.Key != null && x.Value != null).ToList();
-            var storage = Crate.FromDto(processPayload.CrateStorage);
+            var storage = CrateManager.FromDto(processPayload.CrateStorage);
 
             IEnumerable<FieldDTO> processedMappedFields;
             try
             {
                 processedMappedFields = mappedFields.Select(a => { return new FieldDTO(a.Value, ExtractPayloadFieldValue(storage, a.Key, activityDO)); });
 
-                using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => processPayload.CrateStorage))
+                using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => processPayload.CrateStorage))
                 {
-                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("MappedFields", new StandardPayloadDataCM(processedMappedFields)));
+                    crateStorage.Add(Data.Crates.Crate.FromContent("MappedFields", new StandardPayloadDataCM(processedMappedFields)));
                     return Success(processPayload);
                 }
             }
@@ -79,7 +79,7 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Create configuration controls crate.
         /// </summary>
-        private void AddMappingPane(CrateStorage storage)
+        private void AddMappingPane(ICrateStorage storage)
         {
             var mappingPane = new MappingPane()
             {
@@ -119,30 +119,30 @@ namespace terminalFr8Core.Actions
             }
 
             //Pack the merged fields into 2 new crates that can be used to populate the dropdowns in the MapFields UI
-            var downstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Downstream Terminal-Provided Fields", curDownstreamFields.ToList().Select(a => { a.Availability = AvailabilityType.Configuration; return a; }).ToArray());
-            var upstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided Fields", curUpstreamFields.ToList().Select(a => { a.Availability = AvailabilityType.Configuration; return a; }).ToArray());
+            var downstreamFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Downstream Terminal-Provided Fields", curDownstreamFields.ToList().Select(a => { a.Availability = AvailabilityType.Configuration; return a; }).ToArray());
+            var upstreamFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided Fields", curUpstreamFields.ToList().Select(a => { a.Availability = AvailabilityType.Configuration; return a; }).ToArray());
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.Clear();
+                crateStorage.Clear();
                 if (curUpstreamFields.Length == 0 || curDownstreamFields.Length == 0)
                 {
-                    AddErrorTextBlock(updater.CrateStorage);
+                    AddErrorTextBlock(crateStorage);
                 }
                 else
                 {
-                    AddInitialTextBlock(updater.CrateStorage);
-                    AddMappingPane(updater.CrateStorage);
+                    AddInitialTextBlock(crateStorage);
+                    AddMappingPane(crateStorage);
                 }
 
-                updater.CrateStorage.Add(downstreamFieldsCrate);
-                updater.CrateStorage.Add(upstreamFieldsCrate);
+                crateStorage.Add(downstreamFieldsCrate);
+                crateStorage.Add(upstreamFieldsCrate);
             }
 
             return curActivityDO;
         }
 
-        private void AddInitialTextBlock(CrateStorage storage)
+        private void AddInitialTextBlock(ICrateStorage storage)
         {
             var textBlock = new TextBlock()
             {
@@ -154,7 +154,7 @@ namespace terminalFr8Core.Actions
             AddControl(storage, textBlock);
         }
 
-        private void AddErrorTextBlock(CrateStorage storage)
+        private void AddErrorTextBlock(ICrateStorage storage)
         {
             var textBlock = GenerateTextBlock("Attention",
                 "In order to work this Action needs upstream and downstream Actions configured",
@@ -167,7 +167,7 @@ namespace terminalFr8Core.Actions
         /// </summary>
         private bool NeedsConfiguration(ActivityDO curAction, FieldDTO[] curUpstreamFields, FieldDTO[] curDownstreamFields)
         {
-            CrateStorage storage = storage = Crate.GetStorage(curAction.CrateStorage);
+            ICrateStorage storage = storage = CrateManager.GetStorage(curAction.CrateStorage);
 
             var upStreamFields = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Terminal-Provided Fields").FirstOrDefault();
             var downStreamFields = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Downstream Terminal-Provided Fields").FirstOrDefault();

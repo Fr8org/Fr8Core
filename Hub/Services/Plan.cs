@@ -393,9 +393,9 @@ namespace Hub.Services
 
             if (curEvent != null)
             {
-                using (var updater = _crate.UpdateStorage(() => containerDO.CrateStorage))
+                using (var crateStorage = _crate.UpdateStorage(() => containerDO.CrateStorage))
                 {
-                    updater.CrateStorage.Add(curEvent);
+                    crateStorage.Add(curEvent);
                 }
             }
 

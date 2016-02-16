@@ -21,14 +21,14 @@ namespace terminalFr8CoreTests.Integration
             get { return "terminalFr8Core"; }
         }
 
-        private void AssertCrateStructure(CrateStorage storage)
+        private void AssertCrateStructure(ICrateStorage storage)
         {
             Assert.AreEqual(1, storage.CratesOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Downstream Terminal-Provided Fields").Count());
             Assert.AreEqual(1, storage.CratesOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Terminal-Provided Fields").Count());
             Assert.AreEqual(1, storage.CratesOfType<StandardConfigurationControlsCM>(x => x.Label == "Configuration_Controls").Count());
         }
 
-        private void AssertCrateContent_Initial(CrateStorage storage)
+        private void AssertCrateContent_Initial(ICrateStorage storage)
         {
             var downstream = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Downstream Terminal-Provided Fields").Single();
             Assert.AreEqual(0, downstream.Fields.Count());
@@ -41,7 +41,7 @@ namespace terminalFr8CoreTests.Integration
             Assert.IsTrue(controls.Controls[0] is TextBlock);
         }
 
-        private void AssertCrateContent_FollowUp(CrateStorage storage)
+        private void AssertCrateContent_FollowUp(ICrateStorage storage)
         {
             var downstream = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Downstream Terminal-Provided Fields").Single();
             Assert.AreEqual(1, downstream.Fields.Count());
@@ -88,9 +88,9 @@ namespace terminalFr8CoreTests.Integration
         {
             var activityDTO = await ConfigureWithUpstreamDownstreamData();
 
-            using (var updater = Crate.UpdateStorage(activityDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(activityDTO))
             {
-                var storage = updater.CrateStorage;
+                var storage = crateStorage;
                 var controls = storage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
 
                 var mappingPane = (MappingPane)controls.Controls[1];
@@ -110,7 +110,7 @@ namespace terminalFr8CoreTests.Integration
         }
 
         [Test]
-        public async void MapFields_Configure_No_Upstream_Downstream_Data()
+        public async Task MapFields_Configure_No_Upstream_Downstream_Data()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -125,7 +125,7 @@ namespace terminalFr8CoreTests.Integration
         }
 
         [Test]
-        public async void MapFields_Configure_With_Upstream_Downstream_Data()
+        public async Task MapFields_Configure_With_Upstream_Downstream_Data()
         {
             var activityDTO = await ConfigureWithUpstreamDownstreamData();
             var crateStorage = Crate.GetStorage(activityDTO);
@@ -135,7 +135,7 @@ namespace terminalFr8CoreTests.Integration
         }
 
         [Test]
-        public async void MapFields_Configure_With_Upstream_Downstream_Control_Data()
+        public async Task MapFields_Configure_With_Upstream_Downstream_Control_Data()
         {
             var activityDTO = await ConfigureWithUpstreamDownstreamControlData();
 
@@ -159,7 +159,7 @@ namespace terminalFr8CoreTests.Integration
         }
 
         [Test]
-        public async void MapFields_Run()
+        public void MapFields_Run()
         {
             //var actionDTO = await ConfigureWithUpstreamDownstreamControlData();
 

@@ -32,11 +32,11 @@ namespace terminalDocuSignTests.Integration
             get { return "terminalDocuSign"; }
         }
 
-        ActivityDTO solution;
-        CrateStorage crateStorage;
+        ActivityDTO _solution;
+        ICrateStorage _crateStorage;
 
 
-        private void ShouldHaveCorrectCrateStructure(CrateStorage crateStorage)
+        private void ShouldHaveCorrectCrateStructure(ICrateStorage crateStorage)
         {
             Assert.True(crateStorage.CratesOfType<StandardConfigurationControlsCM>().Any(), "Crate StandardConfigurationControlsCM is missing in API response.");
             Assert.True(crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Any(c => c.Label == "AvailableTemplates"), "StandardDesignTimeFieldsCM with label \"AvailableTemplates\" is missing in API response.");
@@ -62,7 +62,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test, Ignore]
-        public async void Rich_Document_Notifications_EndToEnd()
+        public async Task Rich_Document_Notifications_EndToEnd()
         {
             string baseUrl = GetHubApiBaseUrl();
             
@@ -77,9 +77,9 @@ namespace terminalDocuSignTests.Integration
             //
             // Send configuration request without authentication token
             //
-            this.solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure?id=" + solution.Id, solution);
-            crateStorage = _crate.FromDto(this.solution.CrateStorage);
-            var stAuthCrate = crateStorage.CratesOfType<StandardAuthenticationCM>().FirstOrDefault();
+            this._solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure?id=" + solution.Id, solution);
+            _crateStorage = _crateManager.FromDto(this._solution.CrateStorage);
+            var stAuthCrate = _crateStorage.CratesOfType<StandardAuthenticationCM>().FirstOrDefault();
             bool defaultDocuSignAuthTokenExists = stAuthCrate == null;
 
             if (!defaultDocuSignAuthTokenExists)
@@ -121,13 +121,13 @@ namespace terminalDocuSignTests.Integration
             //
             // Send configuration request with authentication token
             //
-            this.solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure?id=" + solution.Id, solution);
-            crateStorage = _crate.FromDto(this.solution.CrateStorage);
+            this._solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure?id=" + solution.Id, solution);
+            _crateStorage = _crateManager.FromDto(this._solution.CrateStorage);
 
-            ShouldHaveCorrectCrateStructure(crateStorage);
-            Assert.True(this.solution.ChildrenActions.Length == 0);
+            ShouldHaveCorrectCrateStructure(_crateStorage);
+            Assert.True(this._solution.ChildrenActions.Length == 0);
 
-            var controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
+            var controlsCrate = _crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
             var controls = controlsCrate.Content.Controls;
 
             #region CHECK_CONFIGURATION_CONTROLS
@@ -160,16 +160,16 @@ namespace terminalDocuSignTests.Integration
             radioButtonGroup.Radios[1].Selected = false;
             specificRecipientOption.Controls[0].Value = "test@fr8.co";
 
-            using (var updater = _crate.UpdateStorage(this.solution))
+            using (var updater = _crateManager.GetUpdatableStorage(_solution))
             {
-                updater.CrateStorage.Remove<StandardConfigurationControlsCM>();
-                updater.CrateStorage.Add(controlsCrate);
+                updater.Remove<StandardConfigurationControlsCM>();
+                updater.Add(controlsCrate);
             }
 
-            this.solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure?id=" + this.solution.Id, this.solution);
-            crateStorage = _crate.FromDto(this.solution.CrateStorage);
-            ShouldHaveCorrectCrateStructure(crateStorage);
-            Assert.True(this.solution.ChildrenActions.Length == 0);
+            this._solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure?id=" + this._solution.Id, this._solution);
+            _crateStorage = _crateManager.FromDto(this._solution.CrateStorage);
+            ShouldHaveCorrectCrateStructure(_crateStorage);
+            Assert.True(this._solution.ChildrenActions.Length == 0);
 
             //everything seems perfect for now
             //let's force RDN for a followup configuration
@@ -181,37 +181,37 @@ namespace terminalDocuSignTests.Integration
             timePeriod.Days = 0;
             timePeriod.Hours = 0;
             timePeriod.Minutes = 0;
-            var handlersCrate = crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Single(c => c.Label == "AvailableHandlers");
+            var handlersCrate = _crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Single(c => c.Label == "AvailableHandlers");
             var emailHandler = handlersCrate.Content.Fields.Single(c => c.Key == "Send Email using SendGrid");
             notificationHandler.Value = emailHandler.Value;
             notificationHandler.selectedKey = emailHandler.Key;
-            var recipientEventsCrate = crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Single(c => c.Label == "AvailableRecipientEvents");
+            var recipientEventsCrate = _crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Single(c => c.Label == "AvailableRecipientEvents");
             recipientEvent.Value = recipientEventsCrate.Content.Fields[1].Value;
             recipientEvent.selectedKey = recipientEventsCrate.Content.Fields[1].Key;
 
-            using (var updater = _crate.UpdateStorage(this.solution))
+            using (var updatableStorage = _crateManager.GetUpdatableStorage(_solution))
             {
-                updater.CrateStorage.Remove<StandardConfigurationControlsCM>();
-                updater.CrateStorage.Add(controlsCrate);
+                updatableStorage.Remove<StandardConfigurationControlsCM>();
+                updatableStorage.Add(controlsCrate);
             }
 
-            this.solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure?id=" + this.solution.Id, this.solution);
-            crateStorage = _crate.FromDto(this.solution.CrateStorage);
+            this._solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure?id=" + this._solution.Id, this._solution);
+            _crateStorage = _crateManager.FromDto(this._solution.CrateStorage);
 
             //from now on our solution should have followup crate structure
-            Assert.True(this.solution.ChildrenActions.Length == 5, "Solution child actions failed to create.");
+            Assert.True(this._solution.ChildrenActions.Length == 5, "Solution child actions failed to create.");
 
-            Assert.True(this.solution.ChildrenActions.Any(a => a.Label == "Monitor Docusign Envelope Activity" && a.Ordering == 1));
-            Assert.True(this.solution.ChildrenActions.Any(a => a.Label == "Set Delay" && a.Ordering == 2));
-            Assert.True(this.solution.ChildrenActions.Any(a => a.Label == "Query Fr8 Warehouse" && a.Ordering == 3));
-            Assert.True(this.solution.ChildrenActions.Any(a => a.Label == "Test Incoming Data" && a.Ordering == 4));
-            Assert.True(this.solution.ChildrenActions.Any(a => a.Label == notificationHandler.selectedKey && a.Ordering == 5));
+            Assert.True(this._solution.ChildrenActions.Any(a => a.Label == "Monitor Docusign Envelope Activity" && a.Ordering == 1));
+            Assert.True(this._solution.ChildrenActions.Any(a => a.Label == "Set Delay" && a.Ordering == 2));
+            Assert.True(this._solution.ChildrenActions.Any(a => a.Label == "Query Fr8 Warehouse" && a.Ordering == 3));
+            Assert.True(this._solution.ChildrenActions.Any(a => a.Label == "Test Incoming Data" && a.Ordering == 4));
+            Assert.True(this._solution.ChildrenActions.Any(a => a.Label == notificationHandler.selectedKey && a.Ordering == 5));
 
             //let's configure email settings
-            var emailActivity = this.solution.ChildrenActions.Single(a => a.Label == notificationHandler.selectedKey && a.Ordering == 5);
+            var emailActivity = this._solution.ChildrenActions.Single(a => a.Label == notificationHandler.selectedKey && a.Ordering == 5);
             //let's configure this
             emailActivity = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure?id=" + emailActivity.Id, emailActivity);
-            var emailCrateStorage = _crate.GetStorage(emailActivity);
+            var emailCrateStorage = _crateManager.GetStorage(emailActivity);
 
             var emailControlsCrate = emailCrateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
             var emailAddress = (TextSource)emailControlsCrate.Content.Controls.Single(c => c.Name == "EmailAddress");
@@ -230,10 +230,10 @@ namespace terminalDocuSignTests.Integration
             emailBody.Value = "Fr8-RichDocumentNotificationsTest";
             emailBody.TextValue = "Fr8-RichDocumentNotificationsTest";
 
-            using (var updater = _crate.UpdateStorage(emailActivity))
+            using (var updatableStorage = _crateManager.GetUpdatableStorage(emailActivity))
             {
-                updater.CrateStorage.Remove<StandardConfigurationControlsCM>();
-                updater.CrateStorage.Add(emailControlsCrate);
+                updatableStorage.Remove<StandardConfigurationControlsCM>();
+                updatableStorage.Add(emailControlsCrate);
             }
 
             //save changes

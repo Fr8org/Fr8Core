@@ -25,7 +25,7 @@ namespace terminalDocuSignTests.Integration
             get { return "terminalDocuSign"; }
         }
 
-        private void AssertCrateTypes(CrateStorage crateStorage)
+        private void AssertCrateTypes(ICrateStorage crateStorage)
         {
             Assert.AreEqual(2, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(x => x.Label == "Configuration_Controls"));
@@ -62,14 +62,14 @@ namespace terminalDocuSignTests.Integration
                     requestDataDTO
                 );
 
-            using (var updater = Crate.UpdateStorage(responseActionDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(responseActionDTO))
             {
-                var controls = updater.CrateStorage
+                var controls = crateStorage
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
                     .Single();
                 var dropDownList = (DropDownList)controls.Controls[1];
 
-                 var availableActions = updater.CrateStorage
+                 var availableActions = crateStorage
                     .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "AvailableActions")
                     .Single();
 
@@ -84,7 +84,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async void Extract_Data_From_Envelopes_Initial_Configuration_Check_Crate_Structure()
+        public async Task Extract_Data_From_Envelopes_Initial_Configuration_Check_Crate_Structure()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -108,7 +108,7 @@ namespace terminalDocuSignTests.Integration
 
         // Validate correct crate-storage structure in follow-up configuration response.
         [Test]
-        public async void Extract_Data_From_Envelopes_FollowUp_Configuration_Check_Crate_Structure()
+        public void Extract_Data_From_Envelopes_FollowUp_Configuration_Check_Crate_Structure()
         {
                 //var configureUrl = GetTerminalConfigureUrl();
 
@@ -136,7 +136,7 @@ namespace terminalDocuSignTests.Integration
         /// Select the action at run time Extract_Data_From_Envelopes_FollowUp_Configuration_Select_Action.
         /// </summary>
         [Test]
-        public async void Extract_Data_From_Envelopes_FollowUp_Configuration_Select_Action()
+        public void Extract_Data_From_Envelopes_FollowUp_Configuration_Select_Action()
         {
             //var configureUrl = GetTerminalConfigureUrl();
             //var activityDTO = await GetActionDTO_WithSelectedAction();
@@ -154,7 +154,7 @@ namespace terminalDocuSignTests.Integration
        }
 
         [Test]
-        public async void Extract_Data_From_Envelopes_Activate_Returns_ActionDTO()
+        public async Task Extract_Data_From_Envelopes_Activate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
@@ -176,7 +176,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async void Extract_Data_From_Envelopes_Deactivate_Returns_ActionDTO()
+        public async Task Extract_Data_From_Envelopes_Deactivate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();

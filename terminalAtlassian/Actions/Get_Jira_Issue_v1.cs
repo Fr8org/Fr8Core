@@ -35,7 +35,7 @@ namespace terminalAtlassian.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -45,10 +45,10 @@ namespace terminalAtlassian.Actions
 
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.Clear();
-                updater.CrateStorage.Add(CreateControlsCrate());
+                crateStorage.Clear();
+                crateStorage.Add(CreateControlsCrate());
             }
 
             return await Task.FromResult<ActivityDO>(curActivityDO);
@@ -63,9 +63,9 @@ namespace terminalAtlassian.Actions
             string jiraKey = ExtractJiraKey(curActivityDO);
             var jiraIssue = _atlassianService.GetJiraIssue(jiraKey, authTokenDO);
 
-            using (var updater = _crateManager.UpdateStorage(payloadCrates))
+            using (var crateStorage = _crateManager.GetUpdatableStorage(payloadCrates))
             {
-                updater.CrateStorage.Add(PackCrate_JiraIssueDetails(jiraIssue));
+                crateStorage.Add(PackCrate_JiraIssueDetails(jiraIssue));
             }
 
             return Success(payloadCrates);
@@ -73,7 +73,7 @@ namespace terminalAtlassian.Actions
 
         private string ExtractJiraKey(ActivityDO curActivityDO)
         {
-            var controls = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().First().Controls;
+            var controls = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().First().Controls;
             var templateTextBox = controls.SingleOrDefault(x => x.Name == "jira_key");
 
             if (templateTextBox == null)

@@ -23,7 +23,7 @@ namespace HealthMonitor.Utility
 {
     public abstract class BaseHubIntegrationTest
     {
-        public ICrateManager _crate { get; set; }
+        public ICrateManager _crateManager { get; set; }
         public IRestfulServiceClient _restfulServiceClient { get; set; }
         public IHMACService _hmacService { get; set; }
         private string terminalSecret;
@@ -61,7 +61,7 @@ namespace HealthMonitor.Utility
             _httpClient.BaseAddress = GetHubBaseUrl();
             _httpClient.Timeout = TimeSpan.FromMinutes(2);
 
-            _crate = new CrateManager();
+            _crateManager = new CrateManager();
             _hmacService = new Fr8HMACService();
             _baseUrl = GetHubApiBaseUrl();
             _restfulServiceClient = new RestfulServiceClient(_httpClient);
@@ -118,7 +118,7 @@ namespace HealthMonitor.Utility
 
         public void CheckIfPayloadHasNeedsAuthenticationError(PayloadDTO payload)
         {
-            var storage = _crate.GetStorage(payload);
+            var storage = _crateManager.GetStorage(payload);
             var operationalStateCM = storage.CrateContentsOfType<OperationalStateCM>().Single();
 
             //extract current error message from current activity response

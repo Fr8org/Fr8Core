@@ -26,7 +26,7 @@ namespace terminalDocuSignTests.Integration
             get { return "terminalDocuSign"; }
         }
 
-        private void AssertCrateTypes(CrateStorage crateStorage)
+        private void AssertCrateTypes(ICrateStorage crateStorage)
         {
             Assert.AreEqual(4, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
@@ -139,7 +139,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async void Rich_Document_Notification_Initial_Configuration_Check_Crate_Structure()
+        public async Task Rich_Document_Notification_Initial_Configuration_Check_Crate_Structure()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -174,9 +174,9 @@ namespace terminalDocuSignTests.Integration
                     dataDTO
                 );
 
-            using (var updater = Crate.UpdateStorage(responseActionDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(responseActionDTO))
             {
-                var controls = updater.CrateStorage
+                var controls = crateStorage
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
                     .Single();
 
@@ -185,11 +185,11 @@ namespace terminalDocuSignTests.Integration
                 var radioGroup = (RadioButtonGroup)controls.Controls[0];
                 radioGroup.Radios[0].Selected = true;
 
-                var availableEventCM = updater.CrateStorage
+                var availableEventCM = crateStorage
                     .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "AvailableEvents")
                     .Single();
 
-                var availableHandlers = updater.CrateStorage
+                var availableHandlers = crateStorage
                     .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "AvailableHandlers")
                     .Single();
 
@@ -224,9 +224,9 @@ namespace terminalDocuSignTests.Integration
                     dataDTO
                 );
 
-            using (var updater = Crate.UpdateStorage(responseActionDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(responseActionDTO))
             {
-                var controls = updater.CrateStorage
+                var controls = crateStorage
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
                     .Single();
 
@@ -235,11 +235,11 @@ namespace terminalDocuSignTests.Integration
                 var radioGroup = (RadioButtonGroup)controls.Controls[0];
                 radioGroup.Radios[0].Selected = true;
 
-                var availableEventCM = updater.CrateStorage
+                var availableEventCM = crateStorage
                     .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "AvailableEvents")
                     .Single();
 
-                var availableHandlers = updater.CrateStorage
+                var availableHandlers = crateStorage
                     .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "AvailableHandlers")
                     .Single();
 
@@ -256,7 +256,7 @@ namespace terminalDocuSignTests.Integration
         /*
         // check for Follow-up configuration
         [Test]
-        public async void Rich_Document_FollowUp_Configuration_Check_Crate_Structure()
+        public async Task Rich_Document_FollowUp_Configuration_Check_Crate_Structure()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -282,7 +282,7 @@ namespace terminalDocuSignTests.Integration
         /*
         // check for child actions.
         [Test]
-        public async void Rich_Document_Notifications_FollowUp_Configuration_Check_ChildAction_WithoutDelay()
+        public async Task Rich_Document_Notifications_FollowUp_Configuration_Check_ChildAction_WithoutDelay()
         {
             var configureUrl = GetTerminalConfigureUrl();
             var actionDTO = await GetActionDTO_WithEventsValue();
@@ -304,7 +304,7 @@ namespace terminalDocuSignTests.Integration
         //This test causes timeout exception on build server. disabled for now
         /*
         [Test]
-        public async void Rich_Document_Notifications_FollowUp_Configuration_Check_ChildAction_WithDelay()
+        public async Task Rich_Document_Notifications_FollowUp_Configuration_Check_ChildAction_WithDelay()
         {
             var configureUrl = GetTerminalConfigureUrl();
             var actionDTO = await GetActionDTO_WithEventsAndDelayValue();
@@ -328,7 +328,7 @@ namespace terminalDocuSignTests.Integration
         }
         */
         [Test]
-        public async void Rich_Document_Notifications_Activate_Returns_ActionDTO()
+        public async Task Rich_Document_Notifications_Activate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
@@ -349,7 +349,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async void Rich_Document_Notifications_Deactivate_Returns_ActionDTO()
+        public async Task Rich_Document_Notifications_Deactivate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();
