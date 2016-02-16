@@ -201,7 +201,6 @@ gulp.task('cdnizer-js', function () {
             {
                 file: '~/bower_components/jquery/dist/jquery.js',
                 package: 'jquery',
-                test: 'window.jQuery',
                 cdn: '//ajax.googleapis.com/ajax/libs/jquery/${ version }/jquery.min.js'
             },
             {
