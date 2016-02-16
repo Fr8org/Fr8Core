@@ -37,7 +37,7 @@ namespace terminalSalesforce.Actions
         private ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
             //if empty crate storage, proceed with initial config
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -57,7 +57,7 @@ namespace terminalSalesforce.Actions
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             //create hard coded salesforce object names as design time fields.
-            var availableSalesforceObjects = Crate.CreateDesignTimeFieldsCrate("AvailableSalesforceObjects",
+            var availableSalesforceObjects = CrateManager.CreateDesignTimeFieldsCrate("AvailableSalesforceObjects",
                 new FieldDTO[]
                 {
                     new FieldDTO("Account") {Availability = AvailabilityType.Configuration},
@@ -66,13 +66,13 @@ namespace terminalSalesforce.Actions
                 });
 
             //Note: This design time fields are used to populate the Fileter Pane controls. It has to be labelled as Queryable Criteria
-            var emptyFieldsSource = Crate.CreateDesignTimeFieldsCrate("Queryable Criteria", new FieldDTO[] {});
+            var emptyFieldsSource = CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", new FieldDTO[] {});
 
             var configurationControlsCrate = CreateControlsCrate();
 
-            using (var updater = Crate.UpdateStorage(() => curActivityDO.CrateStorage))
+            using (var crateStorage = CrateManager.UpdateStorage(() => curActivityDO.CrateStorage))
             {
-                updater.CrateStorage = AssembleCrateStorage(availableSalesforceObjects, emptyFieldsSource, configurationControlsCrate);
+                crateStorage.Replace(AssembleCrateStorage(availableSalesforceObjects, emptyFieldsSource, configurationControlsCrate));
             }
 
             return await Task.FromResult(curActivityDO);
@@ -95,10 +95,10 @@ namespace terminalSalesforce.Actions
             var objectFieldsList = await _salesforce.GetFields(curSelectedObject, _salesforce.CreateForceClient(authTokenDO));
 
             //replace the object fields for the newly selected object name
-            var queryableCriteriaFields = Crate.CreateDesignTimeFieldsCrate("Queryable Criteria", objectFieldsList.ToArray());
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            var queryableCriteriaFields = CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", objectFieldsList.ToArray());
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.ReplaceByLabel(queryableCriteriaFields);
+                crateStorage.ReplaceByLabel(queryableCriteriaFields);
             }
 
             return await Task.FromResult(curActivityDO);
@@ -141,9 +141,9 @@ namespace terminalSalesforce.Actions
             }
 
             //update the payload with result objects
-            using (var updater = Crate.UpdateStorage(payloadCrates))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
             {
-                updater.CrateStorage.ReplaceByLabel(Data.Crates.Crate.FromContent("Salesforce Objects", resultObjects));
+                crateStorage.ReplaceByLabel(Data.Crates.Crate.FromContent("Salesforce Objects", resultObjects));
             }
 
             return Success(payloadCrates);

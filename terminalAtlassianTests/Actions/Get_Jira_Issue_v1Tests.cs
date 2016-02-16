@@ -32,6 +32,7 @@ namespace terminalDropboxTests.Actions
             ObjectFactory.Configure(cfg => cfg.For<IRestfulServiceClient>().Use(restfulServiceClient.Object));
 
             _get_Jira_Issue_v1 = new Get_Jira_Issue_v1();
+            _get_Jira_Issue_v1.HubCommunicator.Configure("terminalAtlassian");
         }
 
         [Test]

@@ -1,4 +1,4 @@
-﻿using System;
+﻿    using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -27,7 +27,7 @@ namespace HubWeb
 {
     public partial class Startup
     {
-        public async void Configuration(IAppBuilder app)
+        public void Configuration(IAppBuilder app)
         {
             Configuration(app, false);
         }
@@ -36,11 +36,12 @@ namespace HubWeb
         {
             //ConfigureDaemons();
             ConfigureAuth(app);
+
 #if DEV || RELEASE
             ConfigureHangfire(app, "DockyardDB");
 #endif 
 
-            if (!selfHostMode)
+                if (!selfHostMode)
             {
                 await RegisterTerminalActions();
             }

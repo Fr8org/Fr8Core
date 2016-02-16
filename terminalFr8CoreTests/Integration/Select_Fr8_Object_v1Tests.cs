@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Data.Control;
+using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
@@ -291,10 +292,10 @@ namespace terminalFr8CoreTests.Integration
 
 		private void SetRoutesOptionSelected(ActivityDTO responseActionDTO)
 		{
-			using (var updater = Crate.UpdateStorage(responseActionDTO))
+			using (var crateStorage = Crate.GetUpdatableStorage(responseActionDTO))
 			{
-				var controls = updater.CrateStorage
-					.CrateContentsOfType<StandardConfigurationControlsCM>()
+				var controls = crateStorage
+                    .CrateContentsOfType<StandardConfigurationControlsCM>()
 					.Single();
 
 				var dropdownList = (DropDownList)controls.Controls[0];
@@ -305,10 +306,10 @@ namespace terminalFr8CoreTests.Integration
 
 		private void SetContainersOptionSelected(ActivityDTO responseActionDTO)
 		{
-			using (var updater = Crate.UpdateStorage(responseActionDTO))
+			using (var crateStorage = Crate.GetUpdatableStorage(responseActionDTO))
 			{
-				var controls = updater.CrateStorage
-					.CrateContentsOfType<StandardConfigurationControlsCM>()
+				var controls = crateStorage
+                    .CrateContentsOfType<StandardConfigurationControlsCM>()
 					.Single();
 
 				var dropdownList = (DropDownList)controls.Controls[0];

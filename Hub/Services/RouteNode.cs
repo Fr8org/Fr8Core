@@ -363,7 +363,7 @@ namespace Hub.Services
         }
 
 
-        public IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivitiyGroups()
+        public IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivityGroups()
         {
             var curActivityTemplates = _activityTemplate
                 .GetQuery()

@@ -33,7 +33,9 @@ namespace terminalDocuSign.Actions
     public class Generate_DocuSign_Report_v1 : BaseTerminalActivity
     {
         private const string QueryCrateLabel = "DocuSign Query";
-
+        private const string SolutionName = "Generate DocuSign Report";
+        private const double SolutionVersion = 1.0;
+        private const string TerminalName = "DocuSign";
 
         // Here in this action we have query builder control to build queries against docusign API and out mt database.
         // Docusign and MT DB have different set of fileds and we want to provide ability to search by any field.
@@ -145,7 +147,7 @@ namespace terminalDocuSign.Actions
         {
             var payload = await GetPayload(curActivityDO, containerId);
 
-            var configurationControls = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
+            var configurationControls = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
 
             if (configurationControls == null)
             {
@@ -165,7 +167,7 @@ namespace terminalDocuSign.Actions
             SearchDocusignInRealTime(docuSignAuthToken, criteria, searchResult, existingEnvelopes);
 
             // Merge data from QueryMT action.
-            var payloadCrateStorage = Crate.FromDto(payload.CrateStorage);
+            var payloadCrateStorage = CrateManager.FromDto(payload.CrateStorage);
             var queryMTResult = payloadCrateStorage
                 .CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "Found MT Objects")
                 .FirstOrDefault();
@@ -173,9 +175,9 @@ namespace terminalDocuSign.Actions
             MergeMtQuery(queryMTResult, existingEnvelopes, searchResult);
 
             // Update report crate.
-            using (var updater = Crate.UpdateStorage(payload))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Sql Query Result", searchResult));
+                crateStorage.Add(Data.Crates.Crate.FromContent("Sql Query Result", searchResult));
             }
 
             return ExecuteClientAction(payload, "ShowTableReport");
@@ -321,10 +323,10 @@ namespace terminalDocuSign.Actions
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.Add(PackControls(new ActionUi()));
-                updater.CrateStorage.AddRange(PackDesignTimeData());
+                crateStorage.Add(PackControls(new ActionUi()));
+                crateStorage.AddRange(PackDesignTimeData());
             }
 
             return Task.FromResult(curActivityDO);
@@ -338,12 +340,12 @@ namespace terminalDocuSign.Actions
 
             try
             {
-                using (var updater = Crate.UpdateStorage(activityDO))
+                using (var crateStorage = CrateManager.GetUpdatableStorage(activityDO))
                 {
-                    updater.CrateStorage.Remove<StandardQueryCM>();
+                    crateStorage.Remove<StandardQueryCM>();
 
-                    var queryCrate = ExtractQueryCrate(updater.CrateStorage);
-                    updater.CrateStorage.Add(queryCrate);
+                    var queryCrate = ExtractQueryCrate(crateStorage);
+                    crateStorage.Add(queryCrate);
                 }
 
                 activityDO.ChildNodes.Clear();
@@ -357,22 +359,22 @@ namespace terminalDocuSign.Actions
                     "QueryFr8Warehouse"
                 );
 
-                using (var updater = Crate.UpdateStorage(queryFr8WarehouseAction))
+                using (var crateStorage = CrateManager.GetUpdatableStorage(queryFr8WarehouseAction))
                 {
-                    updater.CrateStorage.RemoveByLabel("Upstream Crate Label List");
+                    crateStorage.RemoveByLabel("Upstream Crate Label List");
 
                     var fields = new[]
                     {
                         new FieldDTO() { Key = QueryCrateLabel, Value = QueryCrateLabel }
                     };
-                    var upstreamLabelsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Crate Label List", fields);
-                    updater.CrateStorage.Add(upstreamLabelsCrate);
+                    var upstreamLabelsCrate = CrateManager.CreateDesignTimeFieldsCrate("Upstream Crate Label List", fields);
+                    crateStorage.Add(upstreamLabelsCrate);
 
-                    var upstreamManifestTypes = updater.CrateStorage
+                    var upstreamManifestTypes = crateStorage
                         .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Crate ManifestType List")
                         .FirstOrDefault();
 
-                    var controls = updater.CrateStorage
+                    var controls = crateStorage
                         .CrateContentsOfType<StandardConfigurationControlsCM>()
                         .FirstOrDefault();
 
@@ -401,9 +403,9 @@ namespace terminalDocuSign.Actions
                     queryFr8WarehouseAction
                 );
 
-                using (var updater = Crate.UpdateStorage(activityDO))
+                using (var crateStorage = CrateManager.GetUpdatableStorage(activityDO))
                 {
-                    updater.CrateStorage.RemoveByManifestId((int)MT.OperationalStatus);
+                    crateStorage.RemoveByManifestId((int)MT.OperationalStatus);
                 
                     var operationalStatus = new OperationalStateCM();
                     operationalStatus.CurrentActivityResponse =
@@ -411,7 +413,7 @@ namespace terminalDocuSign.Actions
                     operationalStatus.CurrentClientActionName = "ExecuteAfterConfigure";
 
                     var operationsCrate = Data.Crates.Crate.FromContent("Operational Status", operationalStatus);
-                    updater.CrateStorage.Add(operationsCrate);
+                    crateStorage.Add(operationsCrate);
                 }
 
                 // activityDO.ChildNodes.Add(new ActivityDO()
@@ -434,7 +436,7 @@ namespace terminalDocuSign.Actions
             return activityDO;
         }
 
-        private Crate<StandardQueryCM> ExtractQueryCrate(CrateStorage storage)
+        private Crate<StandardQueryCM> ExtractQueryCrate(ICrateStorage storage)
         {
             var configurationControls = storage
                 .CrateContentsOfType<StandardConfigurationControlsCM>()
@@ -481,15 +483,50 @@ namespace terminalDocuSign.Actions
                 Availability = AvailabilityType.RunTime
             }));
         }
-
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
-
             return ConfigurationRequestType.Followup;
+        }
+        /// <summary>
+        /// This method provides documentation in two forms:
+        /// SolutionPageDTO for general information and 
+        /// ActivityResponseDTO for specific Help on minicon
+        /// </summary>
+        /// <param name="activityDO"></param>
+        /// <param name="curDocumentation"></param>
+        /// <returns></returns>
+        public dynamic Documentation(ActivityDO activityDO, string curDocumentation)
+        {
+            if (curDocumentation.Contains("MainPage"))
+            {
+                var curSolutionPage = new SolutionPageDTO
+                {
+                    Name = SolutionName,
+                    Version = SolutionVersion,
+                    Terminal = TerminalName,
+                    Body = @"<p>This is Generate DocuSign Report solution action</p>"
+                };
+                return Task.FromResult(curSolutionPage);
+            }
+            if (curDocumentation.Contains("HelpMenu"))
+            {
+                if (curDocumentation.Contains("ExplainMailMerge"))
+                {
+                    return Task.FromResult(GenerateDocumentationRepsonce(@"This solution work with DocuSign Reports"));
+                }
+                if (curDocumentation.Contains("ExplainService"))
+                {
+                    return Task.FromResult(GenerateDocumentationRepsonce(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
+                }
+                return Task.FromResult(GenerateErrorRepsonce("Unknown contentPath"));
+            }
+            return
+                Task.FromResult(
+                    GenerateErrorRepsonce("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
         }
     }
 }

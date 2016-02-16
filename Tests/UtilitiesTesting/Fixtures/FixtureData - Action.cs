@@ -293,14 +293,14 @@ namespace UtilitiesTesting.Fixtures
                 ActivityTemplate = actionTemplate,
             };
 
-            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(actionDo))
+            using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().GetUpdatableStorage(actionDo))
             {
-                updater.CrateStorage.Add(GetEnvelopeIdCrate());
+                crateStorage.Add(GetEnvelopeIdCrate());
             }
 
-            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => containerDO.CrateStorage))
+            using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => containerDO.CrateStorage))
             {
-                updater.CrateStorage.Add(GetEnvelopeIdCrate());
+                crateStorage.Add(GetEnvelopeIdCrate());
             }
 
             return actionDo;
@@ -363,9 +363,9 @@ namespace UtilitiesTesting.Fixtures
                // RootRouteNode = routeDo
             };
 
-            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => containerDO.CrateStorage))
+            using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => containerDO.CrateStorage))
             {
-                updater.CrateStorage.Add(GetEnvelopeIdCrate());
+                crateStorage.Add(GetEnvelopeIdCrate());
             }
 
             return new ActivityDO
@@ -495,9 +495,9 @@ namespace UtilitiesTesting.Fixtures
                 fieldSelectDockusignTemplate
             };
 
-            using (var updater = _crate.UpdateStorage(actionDo))
+            using (var crateStorage = _crate.GetUpdatableStorage(actionDo))
             {
-                updater.CrateStorage.Add(Crate.FromContent("Configuration_Controls", new StandardConfigurationControlsCM(fields)));
+                crateStorage.Add(Crate.FromContent("Configuration_Controls", new StandardConfigurationControlsCM(fields)));
             }
 
             return actionDo;

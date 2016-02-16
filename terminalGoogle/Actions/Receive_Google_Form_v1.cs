@@ -44,7 +44,7 @@ namespace terminalGoogle.Actions
             
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -61,11 +61,11 @@ namespace terminalGoogle.Actions
                 var crateDesignTimeFields = await PackCrate_GoogleForms(authDTO);
                 var eventCrate = CreateEventSubscriptionCrate();
 
-                using (var updater = Crate.UpdateStorage(curActivityDO))
+                using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
                 {
-                    updater.CrateStorage.Add(configurationControlsCrate);
-                    updater.CrateStorage.Add(crateDesignTimeFields);
-                    updater.CrateStorage.Add(eventCrate);
+                    crateStorage.Add(configurationControlsCrate);
+                    crateStorage.Add(crateDesignTimeFields);
+                    crateStorage.Add(eventCrate);
                 }
             }
             else
@@ -102,7 +102,7 @@ namespace terminalGoogle.Actions
             var files = await _googleDrive.GetGoogleForms(authDTO);
 
             var curFields = files.Select(file => new FieldDTO() { Key = file.Value, Value = file.Key }).ToArray();
-            Crate crate = Crate.CreateDesignTimeFieldsCrate("Available Forms", curFields);
+            Crate crate = CrateManager.CreateDesignTimeFieldsCrate("Available Forms", curFields);
 
             return await Task.FromResult(crate);
         }
@@ -113,7 +113,7 @@ namespace terminalGoogle.Actions
                 "Google Form Response"
             };
 
-            return Crate.CreateStandardEventSubscriptionsCrate(
+            return CrateManager.CreateStandardEventSubscriptionsCrate(
                 "Standard Event Subscriptions",
                 "Google",
                 subscriptions.ToArray()
@@ -125,7 +125,7 @@ namespace terminalGoogle.Actions
             var googleAuthDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
 
             //get form id
-            var controlsCrate = Crate.GetStorage(curActionDTO).CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var controlsCrate = CrateManager.GetStorage(curActionDTO).CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             var standardControls = controlsCrate.Get<StandardConfigurationControlsCM>();
 
             var googleFormControl = standardControls.FindByName("Selected_Google_Form");
@@ -138,9 +138,9 @@ namespace terminalGoogle.Actions
             var result = await _googleDrive.UploadAppScript(googleAuthDTO, formId);
 
             var fieldResult = new List<FieldDTO>(){ new FieldDTO(){ Key = result, Value = result}};
-            using (var updater = Crate.UpdateStorage(curActionDTO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActionDTO))
             {
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Google Form Payload Data", new StandardPayloadDataCM(fieldResult)));
+                crateStorage.Add(Data.Crates.Crate.FromContent("Google Form Payload Data", new StandardPayloadDataCM(fieldResult)));
             }
 
             return await Task.FromResult(curActionDTO);
@@ -164,9 +164,9 @@ namespace terminalGoogle.Actions
             var payloadFields = ExtractPayloadFields(payloadCrates);
             var formResponseFields = CreatePayloadFormResponseFields(payloadFields);
             
-            using (var updater = Crate.UpdateStorage(payloadCrates))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
             {
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Google Form Payload Data", new StandardPayloadDataCM(formResponseFields)));
+                crateStorage.Add(Data.Crates.Crate.FromContent("Google Form Payload Data", new StandardPayloadDataCM(formResponseFields)));
             }
 
             return Success(payloadCrates);
@@ -201,7 +201,7 @@ namespace terminalGoogle.Actions
 
         private List<FieldDTO> ExtractPayloadFields(PayloadDTO payloadCrates)
         {
-            var eventReportMS = Crate.GetStorage(payloadCrates).CrateContentsOfType<EventReportCM>().SingleOrDefault();
+            var eventReportMS = CrateManager.GetStorage(payloadCrates).CrateContentsOfType<EventReportCM>().SingleOrDefault();
             if (eventReportMS == null)
             {
                 throw new ApplicationException("EventReportCrate is empty.");

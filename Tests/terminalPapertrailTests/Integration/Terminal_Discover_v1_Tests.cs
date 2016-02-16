@@ -1,5 +1,6 @@
 ﻿
 using System.Runtime.Remoting;
+using System.Threading.Tasks;
 using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
 using NUnit.Framework;
@@ -23,7 +24,7 @@ namespace terminalPapertrailTests.Integration
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
         [Test, Category("Integration.terminalPapertrail")]
-        public async void Terminal_Papertrail_Discover_()
+        public async Task Terminal_Papertrail_Discover_()
         {
             var discoverUrl = GetTerminalDiscoverUrl();
 

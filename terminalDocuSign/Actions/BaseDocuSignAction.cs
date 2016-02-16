@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using Data.Crates;
 using TerminalBase.BaseClasses;
 using terminalDocuSign.Infrastructure;
 using Hub.Managers;
@@ -34,7 +35,7 @@ namespace terminalDocuSign.Actions
 
         protected string GetValueForKey(PayloadDTO curPayloadDTO, string curKey)
         {
-            var eventReportMS = Crate.GetStorage(curPayloadDTO).CrateContentsOfType<EventReportCM>().FirstOrDefault();
+            var eventReportMS = CrateManager.GetStorage(curPayloadDTO).CrateContentsOfType<EventReportCM>().FirstOrDefault();
 
             if (eventReportMS == null)
             {

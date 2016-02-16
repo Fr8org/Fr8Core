@@ -53,11 +53,11 @@ namespace terminalDocuSign.Tests.Actions
 
             PayloadDTO payloadDto = new PayloadDTO(Guid.Empty);
             payloadDto.CrateStorage = new CrateStorageDTO();
-            using (var updater = new CrateManager().UpdateStorage(payloadDto))
+            using (var crateStorage = new CrateManager().GetUpdatableStorage(payloadDto))
             {
                 var operationalStatus = new OperationalStateCM();
                 var operationsCrate = Crate.FromContent("Operational Status", operationalStatus);
-                updater.CrateStorage.Add(operationsCrate);
+                crateStorage.Add(operationsCrate);
             }
 
 
@@ -116,9 +116,9 @@ namespace terminalDocuSign.Tests.Actions
 
             var activity = new ActivityDO();
             
-            using (var updater = _crateManager.UpdateStorage(activity))
+            using (var crateStorage = _crateManager.GetUpdatableStorage(activity))
             {
-                updater.CrateStorage.Add(Crate.FromContent("Config", new Query_DocuSign_v1.ActionUi
+                crateStorage.Add(Crate.FromContent("Config", new Query_DocuSign_v1.ActionUi
                 {
                     Folder = {Value = "folder_1"}
                 }));
@@ -147,9 +147,9 @@ namespace terminalDocuSign.Tests.Actions
 
             var activity = new ActivityDO();
 
-            using (var updater = _crateManager.UpdateStorage(activity))
+            using (var crateStorage = _crateManager.GetUpdatableStorage(activity))
             {
-                updater.CrateStorage.Add(Crate.FromContent("Config", new Query_DocuSign_v1.ActionUi
+                crateStorage.Add(Crate.FromContent("Config", new Query_DocuSign_v1.ActionUi
                 {
                     Folder = {Value = "<any>"}
                 }));

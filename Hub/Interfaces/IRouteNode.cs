@@ -32,7 +32,7 @@ namespace Hub.Interfaces
 
         void Delete(IUnitOfWork uow, RouteNodeDO activity);
 
-        IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivitiyGroups();
+        IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivityGroups();
 	    
         IEnumerable<ActivityTemplateDTO> GetSolutions(IUnitOfWork uow);
     }

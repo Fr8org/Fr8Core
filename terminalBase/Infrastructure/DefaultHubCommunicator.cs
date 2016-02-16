@@ -23,6 +23,7 @@ using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using AutoMapper;
+using System.Configuration;
 
 namespace TerminalBase.Infrastructure
 {
@@ -35,31 +36,59 @@ namespace TerminalBase.Infrastructure
 
         private readonly IHMACService _hmacService;
         private readonly ICrateManager _crate;
+        public bool IsConfigured { get; set; }
 
         public DefaultHubCommunicator()
         {
             _routeNode = ObjectFactory.GetInstance<IRouteNode>();
             _restfulServiceClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
-            TerminalSecret = CloudConfigurationManager.GetSetting("TerminalSecret");
-            TerminalId = CloudConfigurationManager.GetSetting("TerminalId");
+
             _crate = ObjectFactory.GetInstance<ICrateManager>();
             _hmacService = ObjectFactory.GetInstance<IHMACService>();
+        }
+
+        public Task Configure(string terminalName)
+        {
+            if (string.IsNullOrEmpty(terminalName))
+                throw new ArgumentNullException("terminalName");
+
+            TerminalSecret = CloudConfigurationManager.GetSetting("TerminalSecret");
+            TerminalId = CloudConfigurationManager.GetSetting("TerminalId");
+
+            //we might be on integration test currently
+            if (TerminalSecret == null || TerminalId == null)
+            {
+                TerminalSecret = ConfigurationManager.AppSettings[terminalName + "TerminalSecret"];
+                TerminalId = ConfigurationManager.AppSettings[terminalName + "TerminalId"];
+            }
+
+            IsConfigured = true;
+            return Task.FromResult<object>(null);
         }
 
         #region HMAC
 
         private async Task<Dictionary<string, string>> GetHMACHeader(Uri requestUri, string userId)
         {
+            if (!IsConfigured)
+                throw new InvalidOperationException("Please call Configure() before using the class.");
+
             return await _hmacService.GenerateHMACHeader(requestUri, TerminalId, TerminalSecret, userId);
         }
 
         private async Task<Dictionary<string, string>> GetHMACHeader<T>(Uri requestUri, string userId, T content)
         {
+            if (!IsConfigured)
+                throw new InvalidOperationException("Please call Configure() before using the class.");
+
             return await _hmacService.GenerateHMACHeader(requestUri, TerminalId, TerminalSecret, userId, content);
         }
 
         private async Task<Dictionary<string, string>> GetHMACHeader(Uri requestUri, string userId, HttpContent content)
         {
+            if (!IsConfigured)
+                throw new InvalidOperationException("Please call Configure() before using the class.");
+
             return await _hmacService.GenerateHMACHeader(requestUri, TerminalId, TerminalSecret, userId, content);
         }
 
@@ -74,6 +103,15 @@ namespace TerminalBase.Infrastructure
             var payloadDTOTask = await _restfulServiceClient.GetAsync<PayloadDTO>(new Uri(url, UriKind.Absolute), containerId.ToString(), await GetHMACHeader(uri, userId));
 
             return payloadDTOTask;
+        }
+        public async Task<UserDTO> GetCurrentUser(ActivityDO activityDO, Guid containerId, string userId)
+        {
+            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/user/getUserData?id="+userId;
+            var uri = new Uri(url, UriKind.Absolute);
+            var curUser = await _restfulServiceClient.GetAsync<UserDTO>(new Uri(url, UriKind.Absolute), containerId.ToString(), await GetHMACHeader(uri, userId));
+
+            return curUser;
         }
 
         public async Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActivityDO activityDO, CrateDirection direction, string userId)

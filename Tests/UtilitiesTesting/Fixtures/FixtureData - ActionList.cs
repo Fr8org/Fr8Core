@@ -92,9 +92,9 @@ namespace UtilitiesTesting.Fixtures
                 PlanId = TestRouteHealthDemo().Id
             };
 
-            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => containerDO.CrateStorage))
+            using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => containerDO.CrateStorage))
             {
-                updater.CrateStorage.Add(GetEnvelopeIdCrate());
+                crateStorage.Add(GetEnvelopeIdCrate());
             }
 
             return new ActionListDO

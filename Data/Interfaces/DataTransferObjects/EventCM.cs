@@ -12,7 +12,7 @@ namespace Data.Interfaces.DataTransferObjects
 
         public string PalletId { get; set; }
 
-        public CrateStorage CrateStorage { get; set; }
+        public ICrateStorage CrateStorage { get; set; }
 
         public EventCM() 
             : base(MT.EventOrIncidentReport)

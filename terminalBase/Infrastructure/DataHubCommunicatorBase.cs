@@ -28,6 +28,11 @@ namespace TerminalBase.Infrastructure
 
         protected abstract string LabelPrefix { get; }
 
+        public bool IsConfigured
+        {
+            get; set;            
+        }
+
         private void StripLabelPrefix(IEnumerable<Crate> crates, string prefix)
         {
             foreach (var crate in crates)
@@ -39,6 +44,11 @@ namespace TerminalBase.Infrastructure
             }
         }
 
+        public virtual Task Configure(string terminalName)
+        {
+            return Task.FromResult<object>(null);
+        }
+
         public Task<PayloadDTO> GetPayload(ActivityDO activityDO, Guid containerId, string userId)
         {
             var payload = new PayloadDTO(containerId)
@@ -47,7 +57,7 @@ namespace TerminalBase.Infrastructure
             };
 
             var crateStorage = Crate.GetStorage(ExplicitData);
-            using (var updater = Crate.UpdateStorage(payload))
+            using (var updatableStorage = Crate.GetUpdatableStorage(payload))
             {
                 var crates = crateStorage
                     .Where(x => x.Label.StartsWith(LabelPrefix + "_PayloadCrate"))
@@ -55,10 +65,15 @@ namespace TerminalBase.Infrastructure
 
                 StripLabelPrefix(crates, LabelPrefix + "_PayloadCrate");
 
-                updater.CrateStorage.AddRange(crates);
+                updatableStorage.AddRange(crates);
             }
 
             return Task.FromResult(payload);
+        }
+
+        public Task<UserDTO> GetCurrentUser(ActivityDO activityDO, Guid containerId, string userId)
+        {
+            throw new NotImplementedException();
         }
 
         public Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActivityDO activityDO, CrateDirection direction, string userId)

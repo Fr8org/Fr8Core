@@ -60,15 +60,15 @@ namespace terminalDocuSignTests
 
             SendDocuSignEnvelope_SelectFirstTemplate(storage);
 
-            using (var updater = _crateManager.UpdateStorage(dataDTO.ActivityDTO))
+            using (var crateStorage = _crateManager.GetUpdatableStorage(dataDTO.ActivityDTO))
             {
-                updater.CrateStorage = storage;
+                crateStorage.Replace(storage);
             }
 
             return await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
         }
 
-        private void AssertCrateTypes(CrateStorage crateStorage)
+        private void AssertCrateTypes(ICrateStorage crateStorage)
         {
             Assert.AreEqual(3, crateStorage.Count);
 
@@ -78,7 +78,7 @@ namespace terminalDocuSignTests
             
         }
 
-        private void AssertFollowUpCrateTypes(CrateStorage crateStorage)
+        private void AssertFollowUpCrateTypes(ICrateStorage crateStorage)
         {
             Assert.AreEqual(5, crateStorage.Count);
 
@@ -114,7 +114,7 @@ namespace terminalDocuSignTests
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
         [Test]
-        public async void Send_DocuSign_Envelope_Initial_Configuration_Check_Crate_Structure()
+        public async Task Send_DocuSign_Envelope_Initial_Configuration_Check_Crate_Structure()
         {
             var responseActionDTO = await ConfigureInitial();
 
@@ -135,7 +135,7 @@ namespace terminalDocuSignTests
             ExpectedException = typeof(RestfulServiceException),
             ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}"
         )]
-        public async void Send_DocuSign_Envelope_Initial_Configuration_NoAuth()
+        public async Task Send_DocuSign_Envelope_Initial_Configuration_NoAuth()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -152,7 +152,7 @@ namespace terminalDocuSignTests
         /// Validate correct crate-storage structure in follow-up configuration response.
         /// </summary>
         [Test]
-        public async void Send_DocuSign_Envelope_FollowUp_Configuration_Check_Crate_Structure()
+        public async Task Send_DocuSign_Envelope_FollowUp_Configuration_Check_Crate_Structure()
         {
             var responseFollowUpActionDTO = await ConfigureFollowUp();
 
@@ -173,7 +173,7 @@ namespace terminalDocuSignTests
             ExpectedException = typeof(RestfulServiceException),
             ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}"
         )]
-        public async void Send_DocuSign_Envelope_FollowUp_Configuration_NoAuth()
+        public async Task Send_DocuSign_Envelope_FollowUp_Configuration_NoAuth()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -185,9 +185,9 @@ namespace terminalDocuSignTests
 
             SendDocuSignEnvelope_SelectFirstTemplate(storage);
 
-            using (var updater = _crateManager.UpdateStorage(dataDTO.ActivityDTO))
+            using (var crateStorage = _crateManager.GetUpdatableStorage(dataDTO.ActivityDTO))
             {
-                updater.CrateStorage = storage;
+                crateStorage.Replace(storage);
             }
 
             dataDTO.ActivityDTO.AuthToken = null;
@@ -199,7 +199,7 @@ namespace terminalDocuSignTests
         /// Test run-time for action from Monitor_DocuSign_FollowUp_Configuration_TemplateValue.
         /// </summary>
         [Test]
-        public async void Send_DocuSign_Envelope_Run_With_Specific_Recipient()
+        public async Task Send_DocuSign_Envelope_Run_With_Specific_Recipient()
         {
             var runUrl = GetTerminalRunUrl();
             var configureUrl = GetTerminalConfigureUrl();
@@ -209,9 +209,9 @@ namespace terminalDocuSignTests
 
             SendDocuSignEnvelope_SetSpecificRecipient(storage);
 
-            using (var updater = _crateManager.UpdateStorage(dataDTO.ActivityDTO))
+            using (var updatableStorage = _crateManager.GetUpdatableStorage(dataDTO.ActivityDTO))
             {
-                updater.CrateStorage = storage;
+                updatableStorage.Replace(storage);
             }
             
             var responsePayloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
@@ -227,7 +227,7 @@ namespace terminalDocuSignTests
             ExpectedException = typeof(RestfulServiceException),
             ExpectedMessage = @"{""status"":""terminal_error"",""message"":""No auth token provided.""}"
         )]
-        public async void Send_DocuSign_Envelope_Run_NoAuth()
+        public async Task Send_DocuSign_Envelope_Run_NoAuth()
         {
             var runUrl = GetTerminalRunUrl();
             var configureUrl = GetTerminalConfigureUrl();
@@ -237,16 +237,16 @@ namespace terminalDocuSignTests
 
             SendDocuSignEnvelope_SetSpecificRecipient(storage);
 
-            using (var updater = _crateManager.UpdateStorage(dataDTO.ActivityDTO))
+            using (var crateStorage = _crateManager.GetUpdatableStorage(dataDTO.ActivityDTO))
             {
-                updater.CrateStorage = storage;
+                crateStorage.Replace(storage);
             }
             dataDTO.ActivityDTO.AuthToken = null;
             await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
         }
 
 
-        private void SendDocuSignEnvelope_SelectFirstTemplate(CrateStorage curCrateStorage)
+        private void SendDocuSignEnvelope_SelectFirstTemplate(ICrateStorage curCrateStorage)
         {
             // Fetch Available Template crate and parse StandardDesignTimeFieldsMS.
             var availableTemplatesCrateDTO = curCrateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Single(x => x.Label == "Available Templates");
@@ -265,7 +265,7 @@ namespace terminalDocuSignTests
             docuSignTemplateControlDTO.Value = fieldsMS.Fields.First().Value;
         }
 
-        private void SendDocuSignEnvelope_SetSpecificRecipient(CrateStorage curCrateStorage)
+        private void SendDocuSignEnvelope_SetSpecificRecipient(ICrateStorage curCrateStorage)
         {
             var controls = curCrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             var recipient = controls.Controls.Single(c => c.Name == "Recipient") as TextSource;
@@ -274,7 +274,7 @@ namespace terminalDocuSignTests
         }
 
         [Test]
-        public async void Send_DocuSign_Envelope_Activate_Returns_ActionDTO()
+        public async Task Send_DocuSign_Envelope_Activate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
@@ -295,7 +295,7 @@ namespace terminalDocuSignTests
         }
 
         [Test]
-        public async void Send_DocuSign_Envelope_Deactivate_Returns_ActionDTO()
+        public async Task Send_DocuSign_Envelope_Deactivate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();

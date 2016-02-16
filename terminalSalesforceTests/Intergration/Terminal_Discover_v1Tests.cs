@@ -33,7 +33,7 @@ namespace terminalSalesforceTests.Integration
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
         [Test, CategoryAttribute("Integration.terminalSalesforce")]
-        public async void Terminal_Salesforce_Discover()
+        public async Task Terminal_Salesforce_Discover()
         {
             var discoverUrl = GetTerminalDiscoverUrl();
 

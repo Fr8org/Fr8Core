@@ -16,11 +16,11 @@ namespace TerminalBase.Infrastructure.Behaviors
 
 
         private ICrateManager _crateManager;
-        private CrateStorage _crateStorage;
+        private ICrateStorage _crateStorage;
         private string _behaviorName;
 
         public TextSourceMappingBehavior(
-            CrateStorage crateStorage,
+            ICrateStorage crateStorage,
             string behaviorName)
         {
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
@@ -28,7 +28,7 @@ namespace TerminalBase.Infrastructure.Behaviors
             _behaviorName = behaviorName;
         }
 
-        public CrateStorage CrateStorage
+        public ICrateStorage CrateStorage
         {
             get { return _crateStorage; }
         }
@@ -66,7 +66,7 @@ namespace TerminalBase.Infrastructure.Behaviors
 
             var textSources = controlsCM
                 .Controls
-                .Where(x => IsBehaviorControl(x))
+                .Where(IsBehaviorControl)
                 .OfType<TextSource>()
                 .ToList();
 
@@ -89,33 +89,31 @@ namespace TerminalBase.Infrastructure.Behaviors
             }
         }
 
-        public IDictionary<string, string> GetValues(CrateStorage payload = null)
+        public IDictionary<string, string> GetValues(ICrateStorage payload = null)
         {
             var controlsCM = GetOrCreateStandardConfigurationControlsCM();
             var result = new Dictionary<string, string>();
 
             var textSources = controlsCM
                 .Controls
-                .Where(x => IsBehaviorControl(x))
+                .Where(IsBehaviorControl)
                 .OfType<TextSource>();
 
             foreach (var textSource in textSources)
             {
-
-
                 var fieldId = GetFieldId(textSource);
                 string value = null;
-
                 try
                 {
                     value = textSource.GetValue(payload ?? _crateStorage);
                 }
                 catch { }
-
                 result.Add(fieldId, value);
             }
 
             return result;
         }
+
+        
     }
 }

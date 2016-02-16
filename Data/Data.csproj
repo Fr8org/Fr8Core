@@ -243,10 +243,12 @@
     <Compile Include="Crates\CrateManifestType.cs" />
     <Compile Include="Crates\CrateManifestTypeDescriptionAttribute.cs" />
     <Compile Include="Crates\CrateStorage.cs" />
+    <Compile Include="Crates\CrateStorageExtensions.cs" />
     <Compile Include="Crates\CrateStorageSerializer.cs" />
     <Compile Include="Crates\CrateStorageSerializer.DefaultSerializer.cs" />
     <Compile Include="Crates\CrateT.cs" />
     <Compile Include="Crates\DenySerializationConverter.cs" />
+    <Compile Include="Crates\ICrateStorage.cs" />
     <Compile Include="Crates\ICrateStorageSerializer.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -265,6 +267,7 @@
     <Compile Include="Expressions\ExpressionTransformation.cs" />
     <Compile Include="Expressions\ExpressionTransformation.PropertyInfo.cs" />
     <Compile Include="Expressions\ExpressionTransformation.TransformationVisitor.cs" />
+    <Compile Include="Helpers\Fr8ReflectionHelper.cs" />
     <Compile Include="Infrastructure\AutoMapper\JSONToStringConverter.cs" />
     <Compile Include="Infrastructure\AutoMapper\DataAutoMapperBootstrapper.cs" />
     <Compile Include="Infrastructure\AutoMapper\RouteDOFullConverter.cs" />
@@ -308,6 +311,7 @@
     <Compile Include="Interfaces\DataTransferObjects\Fr8DataDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\LogItemDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ManageAuthTokenDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ManifestDescriptionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\MappingFieldConfigurationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\StandardAccountingTransactionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\TerminalDiscoveryDTO.cs" />
@@ -596,6 +600,18 @@
     <Compile Include="Migrations\201602121355488_RemovedNullableActivityTemplateIdFromActivityDO.cs" />
     <Compile Include="Migrations\201602121355488_RemovedNullableActivityTemplateIdFromActivityDO.Designer.cs">
       <DependentUpon>201602121355488_RemovedNullableActivityTemplateIdFromActivityDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201602122245004_Added_Footer_To_EnvelopeDO.cs" />
+    <Compile Include="Migrations\201602122245004_Added_Footer_To_EnvelopeDO.Designer.cs">
+      <DependentUpon>201602122245004_Added_Footer_To_EnvelopeDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201602141601318_Activity_AddedClientVisibility.cs" />
+    <Compile Include="Migrations\201602141601318_Activity_AddedClientVisibility.Designer.cs">
+      <DependentUpon>201602141601318_Activity_AddedClientVisibility.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201602141719533_Activity_ClientVisibilityAllowNULL.cs" />
+    <Compile Include="Migrations\201602141719533_Activity_ClientVisibilityAllowNULL.Designer.cs">
+      <DependentUpon>201602141719533_Activity_ClientVisibilityAllowNULL.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -1012,6 +1028,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201602121355488_RemovedNullableActivityTemplateIdFromActivityDO.resx">
       <DependentUpon>201602121355488_RemovedNullableActivityTemplateIdFromActivityDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602122245004_Added_Footer_To_EnvelopeDO.resx">
+      <DependentUpon>201602122245004_Added_Footer_To_EnvelopeDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602141601318_Activity_AddedClientVisibility.resx">
+      <DependentUpon>201602141601318_Activity_AddedClientVisibility.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602141719533_Activity_ClientVisibilityAllowNULL.resx">
+      <DependentUpon>201602141719533_Activity_ClientVisibilityAllowNULL.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

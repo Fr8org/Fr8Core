@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Data.Constants;
 using Data.Control;
+using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
@@ -162,10 +163,10 @@ namespace terminalFr8CoreTests.Integration
 
 		private void SetDuration(ActivityDTO responseActionDTO)
 		{
-			using (var updater = Crate.UpdateStorage(responseActionDTO))
+			using (var crateStorage = Crate.GetUpdatableStorage(responseActionDTO))
 			{
-				var controls = updater.CrateStorage
-					.CrateContentsOfType<StandardConfigurationControlsCM>()
+				var controls = crateStorage
+                    .CrateContentsOfType<StandardConfigurationControlsCM>()
 					.Single();
 
 				var duration = (Duration)controls.Controls[0];

@@ -39,13 +39,13 @@ namespace terminalAzure.Actions
         //currently many actions have two stages of configuration, and this method determines which stage should be applied
         private ConfigurationRequestType EvaluateReceivedRequest(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
                 return ConfigurationRequestType.Initial;
 
             //load configuration crates of manifest type Standard Control Crates
             //look for a text field name connection string with a value
 
-            var storage = Crate.GetStorage(curActivityDO);
+            var storage = CrateManager.GetStorage(curActivityDO);
 
             var connectionStrings = storage.CratesOfType<StandardConfigurationControlsCM>()
                 .Select(x => x.Content.FindByName("connection_string"))
@@ -70,10 +70,10 @@ namespace terminalAzure.Actions
         //If the user provides no Connection String value, provide an empty Connection String field for the user to populate
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.Clear();
-                updater.CrateStorage.Add(CreateControlsCrate());
+                crateStorage.Clear();
+                crateStorage.Add(CreateControlsCrate());
             }
 
             return await Task.FromResult<ActivityDO>(curActivityDO);
@@ -112,11 +112,11 @@ namespace terminalAzure.Actions
             try
             {
                 contentsList = GetFieldMappings(curActivityDO);
-                using (var updater = Crate.UpdateStorage(curActivityDO))
+                using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
                 {
-                    updater.CrateStorage.RemoveByLabel("Sql Table Columns");
+                    crateStorage.RemoveByLabel("Sql Table Columns");
                     //this needs to be updated to hold Crates instead of FieldDefinitionDTO
-                    updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("Sql Table Columns", contentsList.Select(col => new FieldDTO() { Key = col, Value = col }).ToArray()));
+                    crateStorage.Add(CrateManager.CreateDesignTimeFieldsCrate("Sql Table Columns", contentsList.Select(col => new FieldDTO() { Key = col, Value = col }).ToArray()));
                 }
             }
             catch
@@ -181,7 +181,7 @@ namespace terminalAzure.Actions
 
         private void ValidateControls(ActivityDO activityDO)
         {
-            var storage = Crate.GetStorage(activityDO);
+            var storage = CrateManager.GetStorage(activityDO);
 
             if (storage.Count == 0)
             {
@@ -203,9 +203,9 @@ namespace terminalAzure.Actions
         }
         private void AddErrorToControl(ActivityDO activityDO)
         {
-            using (var updater = Crate.UpdateStorage(activityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(activityDO))
             {
-                var controls = GetConfigurationControls(updater.CrateStorage);
+                var controls = GetConfigurationControls(crateStorage);
                 var connStringTextBox = GetControl(controls, "connection_string", ControlTypes.TextBox);
                 connStringTextBox.Value = "Incorrect Connection String";
             }
@@ -224,7 +224,7 @@ namespace terminalAzure.Actions
 
         private IEnumerable<Table> ConvertProcessPayloadToSqlInputs(PayloadDTO payloadCrates)
         {
-            var mappedFieldsCrate = Crate.GetStorage(payloadCrates).CratesOfType<StandardPayloadDataCM>().FirstOrDefault(x => x.Label == "MappedFields");
+            var mappedFieldsCrate = CrateManager.GetStorage(payloadCrates).CratesOfType<StandardPayloadDataCM>().FirstOrDefault(x => x.Label == "MappedFields");
 
             //            var mappedFieldsCrate = processPayload.CrateStorageDTO()
             //                .CrateDTO
@@ -237,7 +237,7 @@ namespace terminalAzure.Actions
                 throw new ApplicationException("No payload crate found with Label == MappdFields.");
             }
 
-            var valuesCrate = Crate.GetStorage(payloadCrates).CratesOfType<StandardPayloadDataCM>().FirstOrDefault(x => x.Label == "DocuSign Envelope Data");
+            var valuesCrate = CrateManager.GetStorage(payloadCrates).CratesOfType<StandardPayloadDataCM>().FirstOrDefault(x => x.Label == "DocuSign Envelope Data");
             //
             //            var valuesCrate = processPayload.CrateStorageDTO()
             //                .CrateDTO

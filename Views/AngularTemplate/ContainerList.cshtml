@@ -1,5 +1,4 @@
-﻿<!-- BEGIN PAGE BREADCRUMB -->
-<ul class="page-breadcrumb breadcrumb hide">
+﻿<ul class="page-breadcrumb breadcrumb hide"> <!-- BEGIN PAGE BREADCRUMB -->
     <li>
         <a href="#">Home</a><i class="fa fa-circle"></i>
     </li>
@@ -19,14 +18,14 @@
                     <div class="caption caption-md">
                         <i class="icon-bar-chart font-green-haze hide"></i>
                         <span class="caption-subject font-green-haze bold uppercase">Containers</span>
-                        @*<span class="caption-helper hide">weekly stats...</span>*@
+                        <!--<span class="caption-helper hide">weekly stats...</span>-->
                     </div>
                 </div>
 
                 <div class="portlet-body">
                     <div ng-show="currentAccountContainers.length == 0">You have no container yet.</div>
                     <div class="table-scrollable table-scrollable-borderless">
-                        @*Note:: reused the class table-process-templates*@
+                        <!--Note:: reused the class table-process-templates-->
                         <table datatable="ng" dt-options="dtOptionsBuilder" dt-column-defs="dtColumnDefs" class="row-border hover table table-hover table-light table-linkrows table-routes">
                             <thead>
                                 <tr>
@@ -36,8 +35,8 @@
                                     <th>Last Updated</th>
                                     <th>Name</th>
                                     <th>Container State</th>
-                                    @*<th>Current Route Node Id</th>*@
-                                    @*<th style="text-align:right">Actions</th>*@
+                                    <!--<th>Current Route Node Id</th>-->
+                                    <!--<th style="text-align:right">Actions</th>-->
                                 </tr>
                             </thead>
                             <tbody>
@@ -50,14 +49,14 @@
                                     <td>
                                        <span>{{ container.containerState | ContainerState }}</span>
                                     </td>
-                                   @* <td>{{ container.currentRouteNodeId }}</td>*@
-                                    @*<td>
+                                   <!-- <td>{{ container.currentRouteNodeId }}</td>-->
+                                    <!--<td>
                                         <div>
                                             <button type="button" class="btn btn-sm red">Execute</button>
                                             <button type="button" class="btn btn-sm red">Delete</button>
                                             <button type="button" class="btn btn-sm green">Edit</button>
                                         </div>
-                                    </td>*@
+                                    </td>-->
                                 </tr>
                             </tbody>
                         </table>

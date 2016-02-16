@@ -9,7 +9,10 @@ using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Infrastructure.StructureMap;
 using Hub.Interfaces;
-using Hub.Services;
+using System.Net.Http;
+using System.Security.Claims;
+using Microsoft.Owin.Security;
+using Microsoft.AspNet.Identity;
 
 namespace HubWeb.Controllers
 {
@@ -50,7 +53,8 @@ namespace HubWeb.Controllers
                 credentials.IsDemoAccount
             );
 
-            return Ok(new {
+            return Ok(new
+            {
                 TerminalId =
                     response.AuthorizationToken != null
                         ? response.AuthorizationToken.TerminalID
@@ -88,6 +92,38 @@ namespace HubWeb.Controllers
 
             var externalAuthUrlDTO = await _authorization.GetOAuthInitiationURL(account, terminal);
             return Ok(new { Url = externalAuthUrlDTO.Url });
+        }
+
+        [HttpPost]
+        public IHttpActionResult Login([FromUri]string username, [FromUri]string password)
+        {
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+            {
+                return BadRequest();
+            }
+
+            Request.GetOwinContext().Authentication.SignOut();
+
+            using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                Fr8AccountDO dockyardAccountDO = uow.UserRepository.FindOne(x => x.UserName == username);
+                if (dockyardAccountDO != null)
+                {
+                    var passwordHasher = new PasswordHasher();
+                    if (passwordHasher.VerifyHashedPassword(dockyardAccountDO.PasswordHash, password) ==
+                        PasswordVerificationResult.Success)
+                    {
+                        ISecurityServices security = ObjectFactory.GetInstance<ISecurityServices>();
+                        ClaimsIdentity identity = security.GetIdentity(uow, dockyardAccountDO);
+                        Request.GetOwinContext().Authentication.SignIn(new AuthenticationProperties
+                        {
+                            IsPersistent = true
+                        }, identity);
+                        return Ok();
+                    }
+                }
+            }
+            return StatusCode(System.Net.HttpStatusCode.Forbidden);
         }
     }
 }
