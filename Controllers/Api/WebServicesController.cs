@@ -70,27 +70,28 @@ namespace HubWeb.Controllers
                     .Where(x => x.ActivityTemplateState == ActivityTemplateState.Active)
                     .Where(x => categories == null || categories.Contains(x.Category))
                     .Where(x => x.ClientVisibility != false)
-			        .GroupBy(x => x.WebService, x => x, (key, group) => new
-			        {
-			            WebService = key,
-			            SortOrder = key == null ? 1 : 0,
-			            Actions = group
-			        }).OrderBy(x => x.SortOrder)
-			        .Select(x => new WebServiceActionSetDTO
-			        {
-			            WebServiceIconPath = x.WebService != null ? x.WebService.IconPath : (unknwonService != null ? unknwonService.IconPath : null),
+                    .GroupBy(x => x.WebService, x => x, (key, group) => new
+                    {
+                        WebService = key,
+                        SortOrder = key == null ? 1 : 0,
+                        Actions = group
+                    }).OrderBy(x => x.SortOrder)
+                    .Select(x => new WebServiceActionSetDTO
+                    {
+                        WebServiceIconPath = x.WebService != null ? x.WebService.IconPath : (unknwonService != null ? unknwonService.IconPath : null),
                         WebServiceName = x.WebService != null ? x.WebService.Name : string.Empty,
-			            Actions = x.Actions.Select(p => new ActivityTemplateDTO
-			            {
-			                Id = p.Id,
-			                Name = p.Name,
-			                Category = p.Category,
-			                ComponentActivities = p.ComponentActivities,
-			                Label = p.Label,
-			                MinPaneWidth = p.MinPaneWidth,
-			                TerminalId = p.Terminal.Id,
-			                Version = p.Version,
-                            Type = p.Type
+                        Actions = x.Actions.Select(p => new ActivityTemplateDTO
+                        {
+                            Id = p.Id,
+                            Name = p.Name,
+                            Category = p.Category,
+                            ComponentActivities = p.ComponentActivities,
+                            Label = p.Label,
+                            MinPaneWidth = p.MinPaneWidth,
+                            TerminalId = p.Terminal.Id,
+                            Version = p.Version,
+                            Type = p.Type,
+                            WebService = Mapper.Map<WebServiceDTO>(p.WebService)
 			            }).ToList()
 			        }).ToList();
 			}

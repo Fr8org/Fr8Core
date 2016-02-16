@@ -276,6 +276,7 @@
     <Compile Include="Infrastructure\CloudFileManager.cs" />
     <Compile Include="Infrastructure\JsonNet\ActivityTemplateActivityConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\TerminalActivityTemplateConverter.cs" />
+    <Compile Include="Infrastructure\JsonNet\WebServiceConverter.cs" />
     <Compile Include="Infrastructure\MultiTenant\IMT_Data.cs" />
     <Compile Include="Infrastructure\MultiTenant\IMT_Field.cs" />
     <Compile Include="Infrastructure\MultiTenant\IMT_FieldType.cs" />
