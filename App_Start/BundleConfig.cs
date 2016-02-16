@@ -140,6 +140,8 @@ namespace HubWeb.App_Start
             bundles.Add(new ScriptBundle("~/bundles/js/fr8")
 #if DEV || RELEASE
                 .Include("~/Scripts/templateCache.js")
+#else
+                .Include("~/Scripts/dummyTemplates.js")
 #endif
                 .Include("~/Scripts/app/app.js")
                 .Include("~/Scripts/app/_compiled.js"));

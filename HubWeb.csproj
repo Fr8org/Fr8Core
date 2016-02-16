@@ -777,6 +777,8 @@
     <Content Include="Scripts\ai.0.15.0-build58334.js" />
     <Content Include="Scripts\ai.0.15.0-build58334.min.js" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
+    <Content Include="Scripts\dummyTemplates.js" />
+    <Content Include="Scripts\templateCache.js" />
     <Content Include="_PowerShellScripts\RunIntegrationTests-DEV.ps1" />
     <Content Include="_PowerShellScripts\DEV-HealthMonitor.exe.config" />
     <Content Include="_PowerShellScripts\DeployAzureWebJob-HealthMonitor-DEV.ps1" />

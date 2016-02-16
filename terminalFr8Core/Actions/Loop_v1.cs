@@ -62,6 +62,27 @@ namespace terminalFr8Core.Actions
             return Success(curPayloadDTO);
         }
 
+        protected override async Task<ICrateStorage> ValidateActivity(ActivityDO curActivityDO)
+        {
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            {
+                var controlsMS = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+                if (controlsMS != null)
+                {
+                    var manifestTypeDropdown = controlsMS.Controls.Single(x => x.Type == ControlTypes.DropDownList && x.Name == "Available_Manifests");
+
+                    manifestTypeDropdown.ErrorMessage = string.IsNullOrEmpty(manifestTypeDropdown.Value) 
+                        ? "Please select an item from the list." : string.Empty;
+
+                    var labelDropdown = controlsMS.Controls.Single(x => x.Type == ControlTypes.DropDownList && x.Name == "Available_Labels");
+
+                    labelDropdown.ErrorMessage = string.IsNullOrEmpty(labelDropdown.Value) 
+                        ? "Please select an item from the list." : string.Empty;
+                }
+            }
+            return await Task.FromResult<ICrateStorage>(null);
+        }
+
         public override async Task<PayloadDTO> ChildrenExecuted(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var curPayloadDTO = await GetPayload(curActivityDO, containerId);
@@ -346,6 +367,7 @@ namespace terminalFr8Core.Actions
                 Label = "Crate Label",
                 Name = "Available_Labels",
                 Value = null,
+                Events = new List<ControlEvent> { ControlEvent.RequestConfig },
                 Source = new FieldSourceDTO
                 {
                     Label = "Available Labels",
