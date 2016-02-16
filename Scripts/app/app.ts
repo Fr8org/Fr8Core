@@ -2,6 +2,7 @@
 /// <reference path="../typings/metronic.d.ts" />
 
 var app = angular.module("app", [
+    "templates",
     "ui.router",
     "ui.bootstrap",
     "oc.lazyLoad",
