@@ -22,8 +22,6 @@ namespace Data.Interfaces.DataTransferObjects
         public _TerminalStatusTemplate TerminalStatusTemplate { get; set; }
         [JsonProperty("endpoint")]
         public string Endpoint { get; set; }
-        [JsonProperty("subscriptionRequired")]
-        public bool SubscriptionRequired { get; set; }
         [JsonIgnore]
         public virtual Fr8AccountDO UserDO { get; set; }
         [JsonProperty("description")]

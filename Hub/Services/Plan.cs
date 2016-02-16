@@ -19,8 +19,10 @@ using Hub.Interfaces;
 using InternalInterface = Hub.Interfaces;
 using Hub.Managers;
 using System.Threading.Tasks;
+using Data.Constants;
 using Data.Crates;
 using Data.Infrastructure;
+using Data.Interfaces.DataTransferObjects.Helpers;
 
 namespace Hub.Services
 {
@@ -49,12 +51,6 @@ namespace Hub.Services
             Guid? id = null, int? status = null)
         {
             var queryableRepo = unitOfWork.PlanRepository.GetPlanQueryUncached();
-
-            if (isAdmin)
-            {
-                queryableRepo = (id == null ? queryableRepo : queryableRepo.Where(pt => pt.Id == id));
-                return (status == null ? queryableRepo : queryableRepo.Where(pt => pt.RouteState == status)).ToList();
-            }
 
             queryableRepo = (id == null
                 ? queryableRepo.Where(pt => pt.Fr8Account.Id == account.Id)
@@ -154,14 +150,14 @@ namespace Hub.Services
                     {
                         var resultActivate = await _activity.Activate(curActionDO);
 
-                        string errorMessage;
+                        ContainerDTO errorContainerDTO;
                         result.Status = "success";
 
-                        var validationErrorChecker = CheckForExistingValidationErrors(resultActivate, out errorMessage);
+                        var validationErrorChecker = CheckForExistingValidationErrors(resultActivate, out errorContainerDTO);
                         if (validationErrorChecker)
                         {
                             result.Status = "validation_error";
-                            result.ErrorMessage = errorMessage;
+                            result.Container = errorContainerDTO;
                         }
 
                         //if the activate call is comming from the Route Builder just render again the action group with the errors
@@ -180,8 +176,7 @@ namespace Hub.Services
                     }
                     catch (Exception ex)
                     {
-                        throw new ApplicationException(
-                            string.Format("Process template activation failed for action {0}.", curActionDO.Name), ex);
+                        throw new ApplicationException(string.Format("Process template activation failed for action {0}.", curActionDO.Label), ex);
                     }
                 }
 
@@ -189,8 +184,8 @@ namespace Hub.Services
                 if (result.Status != "validation_error")
                 {
                     plan.RouteState = RouteState.Active;
-                uow.SaveChanges();
-            }
+                    uow.SaveChanges();
+                }
             }
 
             return result;
@@ -200,11 +195,11 @@ namespace Hub.Services
         /// After receiving response from terminals for activate action call, checks for existing validation errors on some controls
         /// </summary>
         /// <param name="curActivityDTO"></param>
-        /// <param name="errorMessage"></param>
+        /// <param name="containerDTO">Use containerDTO as a wrapper for the Error with proper ActivityResponse and error DTO</param>
         /// <returns></returns>
-        private bool CheckForExistingValidationErrors(ActivityDTO curActivityDTO, out string errorMessage)
+        private bool CheckForExistingValidationErrors(ActivityDTO curActivityDTO, out ContainerDTO containerDTO)
         {
-            errorMessage = string.Empty;
+            containerDTO = new ContainerDTO();
 
             var crateStorage = _crate.GetStorage(curActivityDTO);
 
@@ -215,9 +210,19 @@ namespace Hub.Services
                 var control = controlGroup.Controls.FirstOrDefault(x => !string.IsNullOrEmpty(x.ErrorMessage));
                 if (control != null)
                 {
-                    //here show only the first error as an issue to redirect back the user to the plan builder
-                    errorMessage = string.Format("There was a problem with the configuration of the action '{0}': {1}",
-                        curActivityDTO.Name, control.ErrorMessage);
+                    var containerDO = new ContainerDO() {CrateStorage = string.Empty, Name = string.Empty};
+
+                    using (var tempCrateStorage = _crate.UpdateStorage(() => containerDO.CrateStorage))
+                    {
+                        var operationalState = new OperationalStateCM();
+                        operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Error);
+                        operationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(control.ErrorMessage, ErrorType.Generic, string.Empty, null, curActivityDTO.ActivityTemplate.Name, curActivityDTO.ActivityTemplate.Terminal.Name));
+
+                        var operationsCrate = Crate.FromContent("Operational Status", operationalState);
+                        tempCrateStorage.Add(operationsCrate);
+                    }
+
+                    containerDTO = Mapper.Map<ContainerDTO>(containerDO);
                     return true;
                 }
             }
@@ -319,6 +324,11 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var root = uow.PlanRepository.GetById<PlanDO>(id);
+                if (root == null)
+                {
+                    return null;
+                }
+
                 return root.GetDescendantsOrdered().OfType<ActivityDO>().FirstOrDefault(
                     x =>
                     {
@@ -393,9 +403,9 @@ namespace Hub.Services
 
             if (curEvent != null)
             {
-                using (var updater = _crate.UpdateStorage(() => containerDO.CrateStorage))
+                using (var crateStorage = _crate.UpdateStorage(() => containerDO.CrateStorage))
                 {
-                    updater.CrateStorage.Add(curEvent);
+                    crateStorage.Add(curEvent);
                 }
             }
 

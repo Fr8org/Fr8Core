@@ -40,8 +40,11 @@ namespace terminalBaseTests.BaseClasses
             TerminalBootstrapper.ConfigureTest();
             ObjectFactory.Configure(x => x.For<IRestfulServiceClient>().Use<RestfulServiceClient>().SelectConstructor(() => new RestfulServiceClient()));
             _baseTerminalAction = new BaseTerminalActivity();
+            _baseTerminalAction.HubCommunicator.Configure("terminal");
             _coreServer = terminalBaseTests.Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
+
+            FixtureData.AddTestActivityTemplate();
         }
 
         [TearDown]
@@ -55,7 +58,7 @@ namespace terminalBaseTests.BaseClasses
         }
 
         [Test]
-        public async void ProcessConfigurationRequest_CrateStroageIsNull_ShouldCrateNullStorage()
+        public async Task ProcessConfigurationRequest_CrateStroageIsNull_ShouldCrateNullStorage()
         {
             //Arrange
             ActivityDTO curActionDTO = FixtureData.TestActionDTO1();
@@ -74,7 +77,7 @@ namespace terminalBaseTests.BaseClasses
 
 
         [Test]
-        public async void ProcessConfigurationRequest_ConfigurationRequestTypeIsFollowUp_ReturnsExistingCrateStorage()
+        public async Task ProcessConfigurationRequest_ConfigurationRequestTypeIsFollowUp_ReturnsExistingCrateStorage()
         {
             //Arrange
             ActivityDO curAction = FixtureData.TestConfigurationSettingsDTO1();
@@ -109,7 +112,7 @@ namespace terminalBaseTests.BaseClasses
 
         //TestActionTree
         [Test]
-        public async void GetDesignTimeFields_CrateDirectionIsUpstream_ReturnsMergeDesignTimeFields()
+        public async Task GetDesignTimeFields_CrateDirectionIsUpstream_ReturnsMergeDesignTimeFields()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -130,7 +133,7 @@ namespace terminalBaseTests.BaseClasses
         }
 
         [Test]
-        public async void GetDesignTimeFields_CrateDirectionIsDownstream_ReturnsMergeDesignTimeFields()
+        public async Task GetDesignTimeFields_CrateDirectionIsDownstream_ReturnsMergeDesignTimeFields()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -157,7 +160,7 @@ namespace terminalBaseTests.BaseClasses
         };
 
         [Test]
-        public async void BuildUpstreamManifestList_ReturnsListOfUpstreamManifestTypes()
+        public async Task BuildUpstreamManifestList_ReturnsListOfUpstreamManifestTypes()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -185,7 +188,7 @@ namespace terminalBaseTests.BaseClasses
         }
 
         [Test]
-        public async void BuildUpstreamCrateLabelList_ReturnsListOfUpstreamCrateLabels()
+        public async Task BuildUpstreamCrateLabelList_ReturnsListOfUpstreamCrateLabels()
         {
             ObjectFactory.Configure(x => x.Forward<IRestfulServiceClient, RestfulServiceClient>());
             ObjectFactory.Configure(x => x.For<IRestfulServiceClient>().Use<RestfulServiceClient>().SelectConstructor(() => new RestfulServiceClient()));

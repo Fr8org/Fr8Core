@@ -11,7 +11,7 @@ namespace Data.Interfaces.Manifests
         public string EventNames { get; set; }
         public string ContainerDoId { get; set; }
         public string ExternalAccountId { get; set; }
-        public CrateStorage EventPayload { get; set; }
+        public ICrateStorage EventPayload { get; set; }
         public string Manufacturer { get; set; }
         public string Source { get; set; }
 

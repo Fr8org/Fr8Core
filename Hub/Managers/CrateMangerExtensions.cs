@@ -9,30 +9,30 @@ namespace Hub.Managers
 {
     public static class CrateManagerExtensions
     {
-        public static ICrateStorageUpdater UpdateStorage(this ICrateManager crateManager, ActivityDO activity)
+        public static IUpdatableCrateStorage GetUpdatableStorage(this ICrateManager crateManager, ActivityDO activity)
         {
             if (activity == null) throw new ArgumentNullException("activity");
             return crateManager.UpdateStorage(() => activity.CrateStorage);
         }
 
-        public static ICrateStorageUpdater UpdateStorage(this ICrateManager crateManager, ActivityDTO activity)
+        public static IUpdatableCrateStorage GetUpdatableStorage(this ICrateManager crateManager, ActivityDTO activity)
         {
             if (activity == null) throw new ArgumentNullException("action");
             return crateManager.UpdateStorage(() => activity.CrateStorage);
         }
 
-        public static ICrateStorageUpdater UpdateStorage(this ICrateManager crateManager, PayloadDTO payload)
+        public static IUpdatableCrateStorage GetUpdatableStorage(this ICrateManager crateManager, PayloadDTO payload)
         {
             if (payload == null) throw new ArgumentNullException("payload");
             return crateManager.UpdateStorage(() => payload.CrateStorage);
         }
 
-        public static CrateStorage GetStorage(this ICrateManager crateManager, ActivityDO activity)
+        public static ICrateStorage GetStorage(this ICrateManager crateManager, ActivityDO activity)
         {
            return GetStorage(crateManager, activity.CrateStorage);
         }
 
-        public static CrateStorage GetStorage(this ICrateManager crateManager, string crateStorageRaw)
+        public static ICrateStorage GetStorage(this ICrateManager crateManager, string crateStorageRaw)
         {
             if (string.IsNullOrWhiteSpace(crateStorageRaw))
             {
@@ -42,12 +42,12 @@ namespace Hub.Managers
             return crateManager.FromDto(CrateStorageFromStringConverter.Convert(crateStorageRaw));
         }
 
-        public static CrateStorage GetStorage(this ICrateManager crateManager, ActivityDTO activity)
+        public static ICrateStorage GetStorage(this ICrateManager crateManager, ActivityDTO activity)
         {
             return crateManager.FromDto(activity.CrateStorage);
         }
 
-        public static CrateStorage GetStorage(this ICrateManager crateManager, PayloadDTO payload)
+        public static ICrateStorage GetStorage(this ICrateManager crateManager, PayloadDTO payload)
         {
             return crateManager.FromDto(payload.CrateStorage);
         }

@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Data.Constants;
 using HealthMonitor.Utility;
 using terminalTwilioTests.Fixture;
@@ -28,7 +29,7 @@ namespace terminalTwilioTests.Integration
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
         [Test, Category("Integration.terminalTwilio")]
-        public async void Send_Via_Twilio_Initial_Configuration_Check_Crate_Structure()
+        public async Task Send_Via_Twilio_Initial_Configuration_Check_Crate_Structure()
         {
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
@@ -55,7 +56,7 @@ namespace terminalTwilioTests.Integration
         /// Expect null when ActionDTO with no StandardConfigurationControlsCM Crate.
         /// </summary>
         [Test, Category("Integration.terminalTwilio")]
-        public async void Send_Via_Twilio_Run_With_No_SMS_Number_Provided()
+        public async Task Send_Via_Twilio_Run_With_No_SMS_Number_Provided()
         {
             //Arrange
             var runUrl = GetTerminalRunUrl();
@@ -63,7 +64,7 @@ namespace terminalTwilioTests.Integration
             //Act
             //OperationalStateCM crate is required to be added,
             //as upon return the Run method takes this crate and updates the status to "Success"
-            AddOperationalStateCrate(dataDTO.ActivityDTO, new OperationalStateCM());
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
             var payloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(
                 runUrl,
                 dataDTO
@@ -82,7 +83,7 @@ namespace terminalTwilioTests.Integration
         /// Expect that the status of the message is not fail or undelivered.
         /// </summary>
         [Test, Category("Integration.terminalTwilio")]
-        public async void Send_Via_Twilio_Run_Send_SMS_With_Correct_Number()
+        public async Task Send_Via_Twilio_Run_Send_SMS_With_Correct_Number()
         {
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
@@ -91,24 +92,25 @@ namespace terminalTwilioTests.Integration
             //Act
             var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
             var crateManager = new CrateManager();
-            using (var updater = crateManager.UpdateStorage(responseActionDTO))
+            using (var updatableStorage = crateManager.GetUpdatableStorage(responseActionDTO))
             {
                 var curNumberTextSource =
                     (TextSource)
-                        updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0];
+                        updatableStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0];
                 curNumberTextSource.ValueSource = "specific";
                 curNumberTextSource.TextValue = "+15005550006";
 
                 var curBodyTextSource =
                    (TextSource)
-                       updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[1];
+                       updatableStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[1];
                 curBodyTextSource.ValueSource = "specific";
                 curBodyTextSource.TextValue = "That is the body of the message";
             }
+            dataDTO.ActivityDTO = responseActionDTO;
             //OperationalStateCM crate is required to be added,
             //as upon return the Run method takes this crate and updates the status to "Success"
-            AddOperationalStateCrate(responseActionDTO, new OperationalStateCM());
-            dataDTO.ActivityDTO = responseActionDTO;
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
+            
             var payloadDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(runUrl, dataDTO);
             //Assert
             //After Configure Test
@@ -130,7 +132,7 @@ namespace terminalTwilioTests.Integration
         }
 
         [Test, Category("Integration.terminalTwilio")]
-        public async void Send_Via_Twilio_Activate_Returns_ActionDTO()
+        public async Task Send_Via_Twilio_Activate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
@@ -151,7 +153,7 @@ namespace terminalTwilioTests.Integration
         }
 
         [Test, Category("Integration.terminalTwilio")]
-        public async void Send_Via_Twilio_Deactivate_Returns_ActionDTO()
+        public async Task Send_Via_Twilio_Deactivate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();

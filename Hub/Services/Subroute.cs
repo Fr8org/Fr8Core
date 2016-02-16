@@ -157,7 +157,7 @@ namespace Hub.Services
             {
                 var curAction = uow.PlanRepository.GetById<ActivityDO>(actionId);
                 var downstreamActions = _routeNode.GetDownstreamActivities(uow, curAction).OfType<ActivityDO>();
-
+                var directChildren = curAction.GetDescendants().OfType<ActivityDO>();
                 //set ActivityTemplate and parentRouteNode of current action to null -> to simulate a delete
                 //int? templateIdBackup = curAction.ActivityTemplateId;
                 RouteNodeDO parentRouteNodeIdBackup = curAction.ParentRouteNode;
@@ -168,7 +168,8 @@ namespace Hub.Services
 
                 //lets start multithreaded calls
                 var configureTaskList = new List<Task<ActivityDTO>>();
-                foreach (var downstreamAction in downstreamActions)
+                // no sense of checking children of the action being deleted. We'll delete them in any case.
+                foreach (var downstreamAction in downstreamActions.Except(directChildren))
                 {
                     configureTaskList.Add(_activity.Configure(uow, userId, downstreamAction, false));
                 }
@@ -268,9 +269,9 @@ namespace Hub.Services
                     var currentActivity = downStreamActivity;
                     bool somethingToReset = false;
 
-                    using (var updater = _crate.UpdateStorage(() => currentActivity.CrateStorage))
+                    using (var crateStorage = _crate.UpdateStorage(() => currentActivity.CrateStorage))
                     {
-                        foreach (var configurationControls in updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>())
+                        foreach (var configurationControls in crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>())
                     {
                             foreach (IResettable resettable in configurationControls.Controls)
                         {
@@ -281,7 +282,7 @@ namespace Hub.Services
 
                         if (!somethingToReset)
                     {
-                            updater.DiscardChanges();
+                            crateStorage.DiscardChanges();
                         }
                     }
                 }

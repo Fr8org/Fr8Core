@@ -1,5 +1,4 @@
-﻿<!-- BEGIN PAGE BREADCRUMB -->
-<ul class="page-breadcrumb breadcrumb hide">
+﻿<ul class="page-breadcrumb breadcrumb hide"><!-- BEGIN PAGE BREADCRUMB -->
     <li>
         <a href="#">Home</a><i class="fa fa-circle"></i>
     </li>
@@ -9,7 +8,7 @@
 </ul>
 <!-- END PAGE BREADCRUMB -->
 <!-- BEGIN MAIN CONTENT -->
-<div ng-controller="RouteBuilderController" class="margin-top-10" block-if="isBusy()" stop-click-propagation>
+<div ng-controller="RouteBuilderController" class="margin-top-10" block-if="isBusy()">
     <designer-header route="current.route"></designer-header>
     <div class="route-builder-container" layout-container>
         <div ng-repeat="group in actionGroups" layout-action-group class="action-group" ng-style="{left: group.offsetLeft, top: group.offsetTop}">
@@ -31,6 +30,12 @@
                                         <a ng-click="chooseAuthToken(action);">
                                             <i class="fa fa-user"></i>
                                             Choose authentication
+                                        </a>
+                                    </li>
+                                    <li role="menuitem">
+                                        <a ng-click="reConfigureAction(action);">
+                                            <i class="fa fa-refresh"></i>
+                                            Re-Configure
                                         </a>
                                     </li>
                                     <li role="menuitem">

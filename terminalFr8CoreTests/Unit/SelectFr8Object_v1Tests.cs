@@ -54,7 +54,7 @@ namespace terminalFr8CoreTests.Unit
         }
 
         [Test]
-        public async void Evaluate_IsValidJSONResponse_For_InitialRequest()
+        public async Task Evaluate_IsValidJSONResponse_For_InitialRequest()
         {
             ActivityDTO curActionDTO = FixtureData.TestActionDTOSelectFr8ObjectInitial();
             ActivityDO curActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
@@ -66,7 +66,7 @@ namespace terminalFr8CoreTests.Unit
         }
 
         [Test]
-        public async void Evaluate_IsValidJSONResponse_For_FollowupRequest_RouteSelected()
+        public async Task Evaluate_IsValidJSONResponse_For_FollowupRequest_RouteSelected()
         {
             ActivityDTO curActionDTO = FixtureData.TestActionDTOSelectFr8ObjectFollowup("19");
             ActivityDO curActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
@@ -78,7 +78,7 @@ namespace terminalFr8CoreTests.Unit
         }
 
         [Test]
-        public async void Evaluate_IsValidJSONResponse_For_FollowupRequest_ContainerSelected()
+        public async Task Evaluate_IsValidJSONResponse_For_FollowupRequest_ContainerSelected()
         {
             ActivityDTO curActionDTO = FixtureData.TestActionDTOSelectFr8ObjectFollowup("21");
             ActivityDO curActivityDO = Mapper.Map<ActivityDO>(curActionDTO);

@@ -37,9 +37,9 @@ namespace terminalSalesforceTests.Actions
 
             PayloadDTO testPayloadDTO = new PayloadDTO(new Guid());
 
-            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(testPayloadDTO))
+            using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().GetUpdatableStorage(testPayloadDTO))
             {
-                updater.CrateStorage.Add(Crate.FromContent("Operational Status", new OperationalStateCM()));
+                crateStorage.Add(Crate.FromContent("Operational Status", new OperationalStateCM()));
             }
 
             Mock<IHubCommunicator> hubCommunicatorMock = new Mock<IHubCommunicator>(MockBehavior.Default);
@@ -61,7 +61,7 @@ namespace terminalSalesforceTests.Actions
         }
 
         [Test, Category("terminalSalesforceTests.Get_Data.Configure")]
-        public async void Configure_InitialConfig_CheckControlsCrate()
+        public async Task Configure_InitialConfig_CheckControlsCrate()
         {
             //Arrange
             var activityDO = FixtureData.GetFileListTestActionDO1();
@@ -87,7 +87,7 @@ namespace terminalSalesforceTests.Actions
         }
 
         [Test, Category("terminalSalesforceTests.Get_Data.Configure")]
-        public async void Configure_FollowUpConfig_CheckObjectFields()
+        public async Task Configure_FollowUpConfig_CheckObjectFields()
         {
             //Arrange
             var activityDO = FixtureData.GetFileListTestActionDO1();
@@ -111,7 +111,7 @@ namespace terminalSalesforceTests.Actions
         }
 
         [Test, Category("terminalSalesforceTests.Get_Data.Run")]
-        public async void Run_Check_PayloadDTO_ForObjectData()
+        public async Task Run_Check_PayloadDTO_ForObjectData()
         {
             //Arrange
             var activityDO = FixtureData.GetFileListTestActionDO1();
@@ -122,9 +122,9 @@ namespace terminalSalesforceTests.Actions
             //perform follow up configuration
             activityDO = await _getData_v1.Configure(activityDO, FixtureData.Salesforce_AuthToken());
 
-            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(activityDO))
+            using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().GetUpdatableStorage(activityDO))
             {
-                updater.CrateStorage.CratesOfType<StandardConfigurationControlsCM>()
+                crateStorage.CratesOfType<StandardConfigurationControlsCM>()
                     .Single()
                     .Content.Controls.Single(control => control.Type == ControlTypes.FilterPane)
                     .Value = JsonConvert.SerializeObject(new FilterDataDTO() {Conditions = new List<FilterConditionDTO>()});
@@ -143,9 +143,9 @@ namespace terminalSalesforceTests.Actions
 
         private ActivityDO SelectSalesforceAccount(ActivityDO curActivityDO)
         {
-            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(curActivityDO))
+            using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().GetUpdatableStorage(curActivityDO))
             {
-                var configControls = updater.CrateStorage.CratesOfType<StandardConfigurationControlsCM>().Single();
+                var configControls = crateStorage.CratesOfType<StandardConfigurationControlsCM>().Single();
                 configControls.Content.Controls.Where(control => control.Name.Equals("WhatKindOfData"))
                     .Select(control => control as DropDownList)
                     .Single()

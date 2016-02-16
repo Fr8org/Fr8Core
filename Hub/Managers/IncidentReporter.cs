@@ -48,6 +48,26 @@ namespace Hub.Managers
             EventManager.KeyVaultFailure += KeyVaultFailure;
             EventManager.EventAuthTokenSilentRevoke += AuthTokenSilentRevoke;
             EventManager.EventContainerFailed += ContainerFailed;
+            EventManager.EventUnexpectedError += UnexpectedError;
+        }
+
+        private void UnexpectedError(Exception ex)
+        {
+            var incident = new IncidentDO
+            {
+                CustomerId = "unknown",
+                Data = string.Join(
+                    "Unexpected error: ",
+                    ex.Message,
+                    ex.StackTrace ?? ""
+                ),
+                PrimaryCategory = "Error",
+                SecondaryCategory = "Unexpected",
+                Component = "Hub",
+                Activity = "Unexpected Error"
+            };
+
+            SaveAndLogIncident(incident);
         }
 
         private void KeyVaultFailure(string keyVaultMethod, Exception ex)
@@ -561,7 +581,7 @@ namespace Hub.Managers
             incidentDO.ObjectId = activity.Id.ToString();
             incidentDO.Activity = "Occured";
             incidentDO.CustomerId = curUserId;
-            incidentDO.Data = String.Format("MissingFieldInPayload: ActionName: {0}, Field name: {1}, ActionId {2}", activity.Name, fieldKey, activity.Id);
+            incidentDO.Data = String.Format("MissingFieldInPayload: ActionName: {0}, Field name: {1}, ActionId {2}", activity.ActivityTemplate.Name, fieldKey, activity.Id);
             LogIncident(incidentDO);
         }
     }

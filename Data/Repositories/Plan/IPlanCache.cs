@@ -8,6 +8,6 @@ namespace Data.Repositories.Plan
         RouteNodeDO Get(Guid id, Func<Guid, RouteNodeDO> cacheMissCallback);
         void UpdateElement(Guid id, Action<RouteNodeDO> updater);
         void UpdateElements(Action<RouteNodeDO> updater);
-        void Update(RouteNodeDO node);
+        void Update(Guid id, RouteSnapshot.Changes changes);
     }
 }

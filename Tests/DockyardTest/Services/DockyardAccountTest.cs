@@ -275,14 +275,14 @@ namespace DockyardTest.Services
         #region Test cases for Guest User Mode Operations
         
         [Test]
-        public async void CanAddAuthenticateGuestUser()
+        public async Task CanAddAuthenticateGuestUser()
         {
             LoginStatus loginStatus   = await _fr8Account.CreateAuthenticateGuestUser();
             Assert.AreEqual(loginStatus, LoginStatus.Successful);
         }
 
         [Test]
-        public async void CanRegisterAndUpdateGuestUser()
+        public async Task CanRegisterAndUpdateGuestUser()
         {
             Fr8AccountDO guestUserAccount = FixtureData.TestDockyardAccount6();
             string newEmail="fr8user@test.com";

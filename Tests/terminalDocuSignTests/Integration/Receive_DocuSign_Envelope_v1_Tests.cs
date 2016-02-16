@@ -31,7 +31,7 @@ namespace terminalDocuSignTests.Integration
         /// Validate if no upstream data is available only standard configuration controls is added
         /// </summary>
         [Test, Category("Integration.terminalDocuSign")]
-        public async void Receive_DocuSign_Envelope_Initial_Configuration_Check_Crate_Structure_Without_Upstream()
+        public async Task Receive_DocuSign_Envelope_Initial_Configuration_Check_Crate_Structure_Without_Upstream()
         {
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
@@ -60,7 +60,7 @@ namespace terminalDocuSignTests.Integration
         /// Validate if upstream data is available design field is added is configuration crates
         /// </summary>
         [Test, Category("Integration.terminalDocuSign")]
-        public async void Receive_DocuSign_Envelope_Initial_Configuration_Check_Crate_Structure_With_Upstream()
+        public async Task Receive_DocuSign_Envelope_Initial_Configuration_Check_Crate_Structure_With_Upstream()
         {
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
@@ -72,7 +72,7 @@ namespace terminalDocuSignTests.Integration
             StandardDesignTimeFieldsCM standardDesignFieldsCM = new StandardDesignTimeFieldsCM();
             standardDesignFieldsCM.Fields = fieldDTO;
 
-            base.AddUpstreamCrate<StandardDesignTimeFieldsCM>(dataDTO.ActivityDTO, standardDesignFieldsCM);
+            base.AddUpstreamCrate<StandardDesignTimeFieldsCM>(dataDTO, standardDesignFieldsCM);
 
             //Act
             var responseActionDTO =
@@ -104,7 +104,7 @@ namespace terminalDocuSignTests.Integration
             ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}",
             MatchType = MessageMatch.Contains
         )]
-        public async void Receive_DocuSign_Envelope_Configuration_NoAuth()
+        public async Task Receive_DocuSign_Envelope_Configuration_NoAuth()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -118,16 +118,16 @@ namespace terminalDocuSignTests.Integration
         /// Test run-time for action from Monitor_DocuSign_FollowUp_Configuration_RecipientValue.
         /// </summary>
         [Test, Category("Integration.terminalDocuSign")]
-        public async void Receive_DocuSign_Envelope_Run_Withpayload()
+        public async Task Receive_DocuSign_Envelope_Run_Withpayload()
         {
             var envelopeId = Guid.NewGuid().ToString();
 
             var runUrl = GetTerminalRunUrl();
 
             var activityDTO = actionDTODesignFields;
-
+            var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
             AddPayloadCrate(
-                activityDTO,
+                dataDTO,
                 new EventReportCM()
                 {
                     EventPayload = new CrateStorage()
@@ -141,7 +141,7 @@ namespace terminalDocuSignTests.Integration
                     }
                 }
             );
-            var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
+            
             var responsePayloadDTO =
                 await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
 
@@ -153,7 +153,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async void Receive_DocuSign_Envelope_Activate_Returns_ActionDTO()
+        public async Task Receive_DocuSign_Envelope_Activate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
@@ -174,7 +174,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async void Receive_DocuSign_Envelope_Deactivate_Returns_ActionDTO()
+        public async Task Receive_DocuSign_Envelope_Deactivate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();

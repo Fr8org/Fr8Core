@@ -46,12 +46,11 @@ namespace terminalAtlassianTests.Fixtures
 
             var actionDo = new ActivityDO()
             {
-                Name = "testaction",
                 Id = Guid.NewGuid()
             };
-            using (var updater = _crate.UpdateStorage(actionDo))
+            using (var crateStorage = _crate.GetUpdatableStorage(actionDo))
             {
-                updater.CrateStorage.Add(Crate.FromContent("Configuration_Controls", new StandardConfigurationControlsCM(fields)));
+                crateStorage.Add(Crate.FromContent("Configuration_Controls", new StandardConfigurationControlsCM(fields)));
             }
             return actionDo;
         }
@@ -74,11 +73,11 @@ namespace terminalAtlassianTests.Fixtures
             get
             {
                 var payloadDTO = new PayloadDTO(TestContainerGuid());
-                using (var updater = new CrateManager().UpdateStorage(payloadDTO))
+                using (var crateStorage = new CrateManager().GetUpdatableStorage(payloadDTO))
                 {
                     var operationalStatus = new OperationalStateCM();
                     var operationsCrate = Crate.FromContent("Operational Status", operationalStatus);
-                    updater.CrateStorage.Add(operationsCrate);
+                    crateStorage.Add(operationsCrate);
                 }
                 return payloadDTO;
             }

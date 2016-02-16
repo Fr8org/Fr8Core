@@ -43,13 +43,13 @@ namespace HubWeb.Controllers
 
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
-        public async Task<IHttpActionResult> Create(int actionTemplateId, string name, string label = null, int? order = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null)
+        public async Task<IHttpActionResult> Create(int actionTemplateId, string label = null, int? order = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var userId = User.Identity.GetUserId();
 
-                var result = await _activity.CreateAndConfigure(uow, userId, actionTemplateId, name, label, order, parentNodeId, createRoute, authorizationTokenId);
+                var result = await _activity.CreateAndConfigure(uow, userId, actionTemplateId, label, order, parentNodeId, createRoute, authorizationTokenId);
 
                 if (result is ActivityDO)
                 {
@@ -79,7 +79,7 @@ namespace HubWeb.Controllers
                 }
 
                 var result = await _activity.CreateAndConfigure(uow, userId,
-                    activityTemplate.Id, activityTemplate.Name, activityTemplate.Label, null, null, true);
+                    activityTemplate.Id, activityTemplate.Label, null, null, true);
                 return Ok(RouteMappingHelper.MapRouteToDto(uow, (PlanDO)result));
             }
         }
@@ -143,17 +143,26 @@ namespace HubWeb.Controllers
                 return Ok(resultActionDTO);
             }
         }
-        [HttpPost]
-        [AllowAnonymous]
-        public async Task<IHttpActionResult> Documentation([FromBody] ActivityDTO curActivityDTO)
-        {
-            var curDocSupport = curActivityDTO.DocumentationSupport;
-            //check if the DocumentationSupport comma separated string has the correct form
-            if (!ValidateDocumentationSupport(curDocSupport))
-                return BadRequest();
-            var solutionPageDTO = await _activity.GetSolutionDocumentation(curActivityDTO);
-            return Ok(solutionPageDTO);
-        }
+[HttpPost]
+[AllowAnonymous]
+public async Task<IHttpActionResult> Documentation([FromBody] ActivityDTO curActivityDTO)
+{
+    var curDocSupport = curActivityDTO.Documentation;
+    //check if the DocumentationSupport comma separated string has the correct form
+    if (!ValidateDocumentationSupport(curDocSupport))
+        return BadRequest();
+    if (curDocSupport.Contains("MainPage"))
+    {
+        var solutionPageDTO = await _activity.GetActivityDocumentation<SolutionPageDTO>(curActivityDTO, true);
+        return Ok(solutionPageDTO);
+    }
+    if (curDocSupport.Contains("HelpMenu"))
+    {
+        var activityRepsonceDTO = await _activity.GetActivityDocumentation<ActivityResponseDTO>(curActivityDTO);
+        return Ok(activityRepsonceDTO);
+    }
+    return BadRequest();
+}
         private bool ValidateDocumentationSupport(string docSupport)
         {
             var curStringArray = docSupport.Split(',');

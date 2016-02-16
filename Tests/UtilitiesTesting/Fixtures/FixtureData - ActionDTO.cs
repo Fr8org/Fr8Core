@@ -2,6 +2,7 @@
 using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using Data.Crates;
 using Hub.Managers;
 using StructureMap;
 
@@ -13,7 +14,6 @@ namespace UtilitiesTesting.Fixtures
         {
             return new ActivityDTO()
             {
-                Name = "test activity type",
                 ActivityTemplate = FixtureData.TestActivityTemplateDTO1(),
             };
         }
@@ -21,13 +21,12 @@ namespace UtilitiesTesting.Fixtures
         {
             ActivityDTO curActionDTO = new ActivityDTO()
             {
-                Name = "test activity type",
                 ActivityTemplate = FixtureData.TestActivityTemplateDTO1(),
             };
 
-            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(curActionDTO))
+            using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().GetUpdatableStorage(curActionDTO))
             {
-                updater.CrateStorage.Add(CreateStandardConfigurationControls());
+                crateStorage.Add(CreateStandardConfigurationControls());
             }
 
             return curActionDTO;
@@ -37,15 +36,14 @@ namespace UtilitiesTesting.Fixtures
         {
             ActivityDTO curActionDTO = new ActivityDTO()
             {
-                Name = "test activity type",
                 ActivityTemplate = FixtureData.TestActivityTemplateDTO1()
             };
 
-            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(curActionDTO))
+            using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().GetUpdatableStorage(curActionDTO))
             {
                 var controls = CreateStandardConfigurationControls();
-                updater.CrateStorage.Add(controls);
-                updater.CrateStorage.Add(controls);
+                crateStorage.Add(controls);
+                crateStorage.Add(controls);
             }
 
             return curActionDTO;
@@ -56,9 +54,9 @@ namespace UtilitiesTesting.Fixtures
             ActivityDTO curActionDTO = new ActivityDTO();
             var curCratesDTO = FixtureData.TestCrateDTO2();
             
-            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(curActionDTO))
+            using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().GetUpdatableStorage(curActionDTO))
             {
-                updater.CrateStorage.AddRange(curCratesDTO);
+                crateStorage.AddRange(curCratesDTO);
             }
 
             return curActionDTO;
@@ -68,7 +66,6 @@ namespace UtilitiesTesting.Fixtures
         {
             return new ActivityDTO()
             {
-                Name = "test salesforce activity",
                 ActivityTemplate = FixtureData.TestActivityTemplateSalesforce()
             };
         }
@@ -77,7 +74,6 @@ namespace UtilitiesTesting.Fixtures
         {
             return new ActivityDTO()
             {
-                Name = "SendEmailViaSendGrid",
                 ActivityTemplate = FixtureData.TestActivityTemplateSendGrid()
             };
         }
@@ -85,7 +81,6 @@ namespace UtilitiesTesting.Fixtures
         {
             ActivityDTO curActionDTO = new ActivityDTO()
             {
-                Name = "test activity type",
                 ActivityTemplate = FixtureData.ActivityTemplateDTOSelectFr8Object(),
             };
             // curActionDTO.CrateStorage.CrateDTO.Add(CreateStandardConfigurationControls());
@@ -96,13 +91,12 @@ namespace UtilitiesTesting.Fixtures
         {
             ActivityDTO curActionDTO = new ActivityDTO()
             {
-                Name = "test activity type",
                 ActivityTemplate = FixtureData.ActivityTemplateDTOSelectFr8Object(),
             };
 
-            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(curActionDTO))
+            using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().GetUpdatableStorage(curActionDTO))
             {
-                updater.CrateStorage.Add(CreateStandardConfigurationControlSelectFr8Object(selected));
+                crateStorage.Add(CreateStandardConfigurationControlSelectFr8Object(selected));
             }
             return curActionDTO;
         }

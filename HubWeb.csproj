@@ -180,6 +180,10 @@
       <HintPath>packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.Owin.Host.HttpListener, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Owin.Host.HttpListener.3.0.1\lib\net45\Microsoft.Owin.Host.HttpListener.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.Owin.Host.SystemWeb.3.0.1\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
       <Private>True</Private>
@@ -290,6 +294,10 @@
       <HintPath>packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Web.Http.Owin, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.AspNet.WebApi.Owin.5.2.3\lib\net45\System.Web.Http.Owin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Web.Http.WebHost, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.AspNet.WebApi.WebHost.5.2.3\lib\net45\System.Web.Http.WebHost.dll</HintPath>
       <Private>True</Private>
@@ -362,11 +370,14 @@
     <Compile Include="Controllers\Api\AuthenticationController.cs" />
     <Compile Include="Controllers\Api\ManageAuthTokenController.cs" />
     <Compile Include="Controllers\Api\ConfigurationController.cs" />
+    <Compile Include="Controllers\Api\ManifestRegistryController.cs" />
     <Compile Include="Controllers\Api\ManifestsController.cs" />
     <Compile Include="Controllers\Api\RoutesController.cs" />
     <Compile Include="Controllers\Api\TerminalsController.cs" />
+    <Compile Include="Controllers\CompanyController.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
     <Compile Include="Controllers\ServicesController.cs" />
+    <Compile Include="Controllers\SupportController.cs" />
     <Compile Include="Controllers\WelcomeController.cs" />
     <Compile Include="Controllers\Api\FieldController.cs" />
     <Compile Include="Controllers\Api\ActionListController.cs" />
@@ -432,6 +443,7 @@
     <Compile Include="Infrastructure\Fr8HubWebHMACAuthenticateAttribute.cs" />
     <Compile Include="Infrastructure\Fr8Identity.cs" />
     <Compile Include="Infrastructure\Fr8Principle.cs" />
+    <Compile Include="Infrastructure\HtmlHelpers.cs" />
     <Compile Include="SelfHostFactory.cs" />
     <Compile Include="ViewModels\AuthenticationErrorVM.cs" />
     <Compile Include="ViewModels\DocusignLoginVM.cs" />
@@ -577,7 +589,9 @@
     <Content Include="Content\img\welcome\fr8Terminals-howitworks.png" />
     <Content Include="Content\img\welcome\left-side-bg.jpg" />
     <Content Include="Content\img\welcome\logo.png" />
+    <Content Include="Content\img\welcome\plan_builder.png" />
     <Content Include="Content\img\welcome\plan_with_activities.png" />
+    <Content Include="Content\img\welcome\right-pane-bg.png" />
     <Content Include="Content\img\welcome\right-side-bg.jpg" />
     <Content Include="Content\img\welcome\routeBuilder.png" />
     <Content Include="Content\img\welcome\DocuSign_Logo_Purple_Yellow.png" />
@@ -762,6 +776,9 @@
     <Content Include="Documentation\VoidEnvelope.html" />
     <Content Include="Scripts\ai.0.15.0-build58334.js" />
     <Content Include="Scripts\ai.0.15.0-build58334.min.js" />
+    <None Include="Views\AngularTemplate\Messages.cshtml" />
+    <Content Include="Scripts\dummyTemplates.js" />
+    <Content Include="Scripts\templateCache.js" />
     <Content Include="_PowerShellScripts\RunIntegrationTests-DEV.ps1" />
     <Content Include="_PowerShellScripts\DEV-HealthMonitor.exe.config" />
     <Content Include="_PowerShellScripts\DeployAzureWebJob-HealthMonitor-DEV.ps1" />
@@ -776,15 +793,26 @@
     <Content Include="_PowerShellScripts\SetCloudServiceSize.ps1" />
     <Content Include="_PowerShellScripts\SetTerminalFr8CoreCS.ps1" />
     <Content Include="_PowerShellScripts\SetTerminalDocuSignCS.ps1" />
+    <Content Include="_PowerShellScripts\CloneDatabase.ps1" />
+    <Content Include="_PowerShellScripts\UpdateTerminalHostnameInDb.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryFormController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionDocumentationController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\ActionPicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamCrateChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamFieldChooser.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Validators\ManifestDescriptionValidators.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\DateTimeFormatter.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\FilterByTag.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\AuthenticationDialogController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManageAuthTokenController.ts" />
+    <TypeScriptCompile Include="Scripts\app\interfaces\IManifestRegistry.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\ManifestDescriptionDTO.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\AuthService.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\ConfigureTrackerService.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\FileDetailsService.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\ManifestRegistryService.ts" />
     <TypeScriptCompile Include="Scripts\app\model\SolutionDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\services\AuthService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ConfigureTrackerService.ts" />
@@ -891,11 +919,20 @@
     <Content Include="Views\AngularTemplate\UpstreamFieldChooser.cshtml" />
     <Content Include="Views\AngularTemplate\UsersEmailList.cshtml" />
     <Content Include="Views\AngularTemplate\FileDetails.cshtml" />
+    <Content Include="Views\AngularTemplate\ManifestRegistryList.cshtml" />
     <Content Include="Views\AngularTemplate\_Debug.cshtml" />
     <Content Include="Views\AngularTemplate\UpstreamCrateChooser.cshtml" />
     <Content Include="Views\AngularTemplate\ActionPicker.cshtml" />
     <Content Include="Views\Services\HowItWorks.cshtml" />
     <Content Include="Views\AngularTemplate\SolutionDocumentation.cshtml" />
+    <Content Include="Views\Services\Salesforce.cshtml" />
+    <Content Include="Views\Services\GoogleApps.cshtml" />
+    <Content Include="Views\Support\Index.cshtml" />
+    <Content Include="Views\AngularTemplate\ChangePassword.cshtml" />
+    <Content Include="Views\Company\Jobs.cshtml" />
+    <Content Include="Views\Shared\CDN\_AngularAppScripts.cshtml" />
+    <Content Include="Views\Shared\_AngularAppStyles.cshtml" />
+    <Content Include="Views\Shared\CDN\_AngularAppStyles.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -4145,7 +4182,6 @@
     <Compile Include="ViewModels\EventWindowVM.cs" />
     <Content Include="tsd.json" />
     <Content Include="Scripts\tests\Chutzpah.json" />
-    <Content Include="_PowerShellScripts\RunFrontEndTests - With Web Server.ps1" />
     <Content Include="_PowerShellScripts\RunFrontEndTests.ps1" />
     <None Include="Properties\PublishProfiles\test.pubxml" />
     <Content Include="Web.config">

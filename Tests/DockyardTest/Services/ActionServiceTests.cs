@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Web.Helpers;
 using AutoMapper;
 using Data.Constants;
+using Data.Crates;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -60,69 +61,71 @@ namespace DockyardTest.Services
             _eventReceived = false;
             _baseTerminalAction = new BaseTerminalActivity();
             _terminal = ObjectFactory.GetInstance<Terminal>();
+
+            FixtureData.AddTestActivityTemplate();
         }
-        
-        // DO-1214
-//        [Test]
-//        public async void Action_Configure_ExistingActionShouldBeUpdatedWithNewAction()
-//        {
-//            //Arrange
-//            ActionDO curActivityDO = FixtureData.IntegrationTestAction();
-//            UpdateDatabase(curActivityDO);
-//
-//            ActionDTO actionDto = Mapper.Map<ActionDTO>(curActivityDO);
-//
-//            //set the new name
-//            actionDto.Name = "NewActionFromServer";
-//            PluginTransmitterMock.Setup(rc => rc.CallActionAsync<ActionDTO>(It.IsAny<string>(), It.IsAny<ActionDTO>()))
-//                .Returns(() => Task.FromResult(actionDto));
-//
-//            //Act
-//            var returnedAction = await _action.Configure(curActivityDO);
-//
-//            //Assert
-//            //get the action from the database
-//            var updatedActionDO = _uow.ActionRepository.GetByKey(returnedAction.Id);
-//            Assert.IsNotNull(updatedActionDO);
-//            Assert.AreEqual(updatedActionDO.Name, actionDto.Name);
-//        }
 
         // DO-1214
-//        [Test]
-//        public void UpdateCurrentActivity_ShouldUpdateCurrentActivity()
-//        {
-//            var curActionList = FixtureData.TestActionList2();
-//
-//            // Set current activity
-//            curActionList.CurrentActivity = curActionList.Activities.Single(a => a.Id == 1);
-//            curActionList.Id = curActionList.CurrentActivity.Id;
-//
-//            Assert.AreEqual(1, curActionList.CurrentActivity.Id);
-//
-//            using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
-//            {
-//                uow.ActionListRepository.Add(curActionList);
-//                uow.SaveChanges();
-//
-//                _action.UpdateCurrentActivity(curActionList.CurrentActivityID.Value, uow);
-//
-//                Assert.AreEqual(2, curActionList.CurrentActivity.Id);
-//
-//                // Check when current action is the only action in action list (should set null)
-//                curActionList.Activities.RemoveAt(1);
-//                uow.SaveChanges();
-//
-//                _action.UpdateCurrentActivity(curActionList.CurrentActivityID.Value, uow);
-//                Assert.AreEqual(null, curActionList.CurrentActivity);
-//            }
-//        }
+        //        [Test]
+        //        public async Task Action_Configure_ExistingActionShouldBeUpdatedWithNewAction()
+        //        {
+        //            //Arrange
+        //            ActionDO curActivityDO = FixtureData.IntegrationTestAction();
+        //            UpdateDatabase(curActivityDO);
+        //
+        //            ActionDTO actionDto = Mapper.Map<ActionDTO>(curActivityDO);
+        //
+        //            //set the new name
+        //            actionDto.Name = "NewActionFromServer";
+        //            PluginTransmitterMock.Setup(rc => rc.CallActionAsync<ActionDTO>(It.IsAny<string>(), It.IsAny<ActionDTO>()))
+        //                .Returns(() => Task.FromResult(actionDto));
+        //
+        //            //Act
+        //            var returnedAction = await _action.Configure(curActivityDO);
+        //
+        //            //Assert
+        //            //get the action from the database
+        //            var updatedActionDO = _uow.ActionRepository.GetByKey(returnedAction.Id);
+        //            Assert.IsNotNull(updatedActionDO);
+        //            Assert.AreEqual(updatedActionDO.Name, actionDto.Name);
+        //        }
+
+        // DO-1214
+        //        [Test]
+        //        public void UpdateCurrentActivity_ShouldUpdateCurrentActivity()
+        //        {
+        //            var curActionList = FixtureData.TestActionList2();
+        //
+        //            // Set current activity
+        //            curActionList.CurrentActivity = curActionList.Activities.Single(a => a.Id == 1);
+        //            curActionList.Id = curActionList.CurrentActivity.Id;
+        //
+        //            Assert.AreEqual(1, curActionList.CurrentActivity.Id);
+        //
+        //            using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //            {
+        //                uow.ActionListRepository.Add(curActionList);
+        //                uow.SaveChanges();
+        //
+        //                _action.UpdateCurrentActivity(curActionList.CurrentActivityID.Value, uow);
+        //
+        //                Assert.AreEqual(2, curActionList.CurrentActivity.Id);
+        //
+        //                // Check when current action is the only action in action list (should set null)
+        //                curActionList.Activities.RemoveAt(1);
+        //                uow.SaveChanges();
+        //
+        //                _action.UpdateCurrentActivity(curActionList.CurrentActivityID.Value, uow);
+        //                Assert.AreEqual(null, curActionList.CurrentActivity);
+        //            }
+        //        }
 
 
 
 
         [Test]
         [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
-        public async void Action_Configure_WithNullActionTemplate_ThrowsArgumentNullException()
+        public async Task Action_Configure_WithNullActionTemplate_ThrowsArgumentNullException()
         {
             var _service = new Action();
 
@@ -147,7 +150,6 @@ namespace DockyardTest.Services
 
                 origActivityDO = new FixtureData(uow).TestActivity3();
 
-                origActivityDO.IsTempId = true;
                 origActivityDO.ParentRouteNodeId = subroute.Id;
 
                 uow.ActivityTemplateRepository.Add(origActivityDO.ActivityTemplate);
@@ -169,7 +171,6 @@ namespace DockyardTest.Services
                 activityDO = activity.GetById(uow, origActivityDO.Id);
             }
 
-            Assert.AreEqual(origActivityDO.Name, activityDO.Name);
             Assert.AreEqual(origActivityDO.Id, activityDO.Id);
             Assert.AreEqual(origActivityDO.CrateStorage, activityDO.CrateStorage);
 
@@ -197,14 +198,14 @@ namespace DockyardTest.Services
                 uow.PlanRepository.Add(plan);
                 uow.SaveChanges();
 
-                Visit(updatedTree, x => x.Name = string.Format("We were here {0}", x.Id));
+                Visit(updatedTree, x => x.Label = string.Format("We were here {0}", x.Id));
 
                 _activity.SaveOrUpdateActivity(uow, updatedTree);
 
                 var result = uow.PlanRepository.GetById<ActivityDO>(tree.Id);
                 Compare(updatedTree, result, (r, a) =>
                 {
-                    if (r.Name != a.Name)
+                    if (r.Label != a.Label)
                     {
                         throw new Exception("Update failed");
                     }
@@ -282,10 +283,9 @@ namespace DockyardTest.Services
                     {
                         var newAction = new ActivityDO
                         {
-                            IsTempId =true,
                             Id = FixtureData.GetTestGuidById(addCounter + 666),
                             ParentRouteNode = a,
-                            Name = "____New " + addCounter
+                            ActivityTemplateId = 1
                         };
 
                         a.ParentRouteNode.ChildNodes.Add(newAction);
@@ -303,10 +303,9 @@ namespace DockyardTest.Services
                         {
                             var newAction = new ActivityDO
                             {
-                                IsTempId = true,
                                 Id = FixtureData.GetTestGuidById(addCounter + 666),
                                 ParentRouteNode = a,
-                                Name = "____New " + addCounter
+                                ActivityTemplateId = 1
                             };
 
                             a.ParentRouteNode.ChildNodes.Add(newAction);
@@ -330,7 +329,6 @@ namespace DockyardTest.Services
                 });
             }
         }
-
 
 //        [Test]
 //        public void CreateNewAction()
@@ -391,103 +389,103 @@ namespace DockyardTest.Services
         }
 
         //[Test,Ignore("plugin transmitter in v2 doesn't allow anything except ActioDTO as input param")]
-        //public async void CanProcessDocuSignTemplate()
+        //public async Task CanProcessDocuSignTemplate()
         //{
-            // Test.
-//            Action action = new Action();
-//            var plan = FixtureData.TestRoute2();
-//            var payloadMappings = FixtureData.FieldMappings;
-//            var actionDo = FixtureData.IntegrationTestAction();
-//            actionDo.ActivityTemplate.Plugin.Endpoint = "localhost:53234";
-//            ProcessDO procesDO = FixtureData.TestProcess1();
-//            PluginTransmitterMock
-//                .Setup(m => m.CallActionAsync<ActionDataPackageDTO, ActionDTO>(
-//                    It.Is<string>(s => s == "testaction"),
-//                    It.IsAny<ActionDataPackageDTO>()))
-//                .Returns(() => Task.FromResult(Mapper.Map<ActionDTO>(actionDo)))
-//                .Verifiable();
-//
-//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-//            {
-//                uow.RouteRepository.Add(plan);
-//                uow.ActionRepository.Add(actionDo);
-//                uow.ActionListRepository.Add((ActionListDO)actionDo.ParentActivity);
-//                uow.ProcessRepository.Add(((ActionListDO)actionDo.ParentActivity).Process);
-//                uow.SaveChanges();
-//
-//                await action.PrepareToExecute(actionDo, procesDO, uow);
-//            }
-//
-//            //Ensure that no Incidents were registered
-//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-//            {
-//                Assert.IsFalse(uow.IncidentRepository.GetAll().Any(i => i.PrimaryCategory == "Envelope"));
-//            }
-//
-//            //We use a mock of IPluginTransmitter. Get that mock and check that 
-//            //CallActionAsync was called with the correct attributes
-//            // TODO: Fix this line according to v2 changes
-//            PluginTransmitterMock.Verify();
+        // Test.
+        //            Action action = new Action();
+        //            var plan = FixtureData.TestRoute2();
+        //            var payloadMappings = FixtureData.FieldMappings;
+        //            var actionDo = FixtureData.IntegrationTestAction();
+        //            actionDo.ActivityTemplate.Plugin.Endpoint = "localhost:53234";
+        //            ProcessDO procesDO = FixtureData.TestProcess1();
+        //            PluginTransmitterMock
+        //                .Setup(m => m.CallActionAsync<ActionDataPackageDTO, ActionDTO>(
+        //                    It.Is<string>(s => s == "testaction"),
+        //                    It.IsAny<ActionDataPackageDTO>()))
+        //                .Returns(() => Task.FromResult(Mapper.Map<ActionDTO>(actionDo)))
+        //                .Verifiable();
+        //
+        //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //            {
+        //                uow.RouteRepository.Add(plan);
+        //                uow.ActionRepository.Add(actionDo);
+        //                uow.ActionListRepository.Add((ActionListDO)actionDo.ParentActivity);
+        //                uow.ProcessRepository.Add(((ActionListDO)actionDo.ParentActivity).Process);
+        //                uow.SaveChanges();
+        //
+        //                await action.PrepareToExecute(actionDo, procesDO, uow);
+        //            }
+        //
+        //            //Ensure that no Incidents were registered
+        //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //            {
+        //                Assert.IsFalse(uow.IncidentRepository.GetAll().Any(i => i.PrimaryCategory == "Envelope"));
+        //            }
+        //
+        //            //We use a mock of IPluginTransmitter. Get that mock and check that 
+        //            //CallActionAsync was called with the correct attributes
+        //            // TODO: Fix this line according to v2 changes
+        //            PluginTransmitterMock.Verify();
         //}
 
         // DO-1270
-//        [Test]
-//        public void Process_ActionNotUnstarted_ThrowException()
-//        {
-//            ActionDO actionDo = FixtureData.TestAction9();
-//            Action _action = ObjectFactory.GetInstance<Action>();
-//            ProcessDO procesDo = FixtureData.TestContainer1();
-//
-//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-//            {
-//                Assert.AreEqual("Action ID: 2 status is 4.", _action.PrepareToExecute(actionDo, procesDo, uow).Exception.InnerException.Message);
-//            }
-//        }
+        //        [Test]
+        //        public void Process_ActionNotUnstarted_ThrowException()
+        //        {
+        //            ActionDO actionDo = FixtureData.TestAction9();
+        //            Action _action = ObjectFactory.GetInstance<Action>();
+        //            ProcessDO procesDo = FixtureData.TestContainer1();
+        //
+        //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //            {
+        //                Assert.AreEqual("Action ID: 2 status is 4.", _action.PrepareToExecute(actionDo, procesDo, uow).Exception.InnerException.Message);
+        //            }
+        //        }
 
-//        [Test, Ignore("Ignored execution related tests. Refactoring is going on")]
-//        public void Process_ReturnJSONDispatchError_ActionStateError()
-//        {
-//            ActionDO activityDO = FixtureData.IntegrationTestAction();
-//            ProcessDO procesDo = FixtureData.TestProcess1();
-//            var pluginClientMock = new Mock<IPluginTransmitter>();
-//            pluginClientMock.Setup(s => s.CallActionAsync<ActionDTO>(It.IsAny<string>(), It.IsAny<ActionDTO>())).ThrowsAsync(new RestfulServiceException());
-//            ObjectFactory.Configure(cfg => cfg.For<IPluginTransmitter>().Use(pluginClientMock.Object));
-//            //_action = ObjectFactory.GetInstance<IAction>();
-//
-//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-//            {
-//                _action.PrepareToExecute(activityDO, procesDo, uow);
-//            }
-//
-//            Assert.AreEqual(ActionState.Error, activityDO.ActionState);
-//        }
+        //        [Test, Ignore("Ignored execution related tests. Refactoring is going on")]
+        //        public void Process_ReturnJSONDispatchError_ActionStateError()
+        //        {
+        //            ActionDO activityDO = FixtureData.IntegrationTestAction();
+        //            ProcessDO procesDo = FixtureData.TestProcess1();
+        //            var pluginClientMock = new Mock<IPluginTransmitter>();
+        //            pluginClientMock.Setup(s => s.CallActionAsync<ActionDTO>(It.IsAny<string>(), It.IsAny<ActionDTO>())).ThrowsAsync(new RestfulServiceException());
+        //            ObjectFactory.Configure(cfg => cfg.For<IPluginTransmitter>().Use(pluginClientMock.Object));
+        //            //_action = ObjectFactory.GetInstance<IAction>();
+        //
+        //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //            {
+        //                _action.PrepareToExecute(activityDO, procesDo, uow);
+        //            }
+        //
+        //            Assert.AreEqual(ActionState.Error, activityDO.ActionState);
+        //        }
 
-//        [Test]
-//        public void Process_ReturnJSONDispatchNotError_ActionStateCompleted()
-//        {
-//            ActionDO activityDO = FixtureData.IntegrationTestAction();
-//            activityDO.ActivityTemplate.Plugin.Endpoint = "http://localhost:53234/actions/configure";
-//
-//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-//            {
-//                uow.ActivityTemplateRepository.Add(activityDO.ActivityTemplate);
-//                uow.ActionRepository.Add(activityDO);
-//                uow.SaveChanges();
-//            }
-//
-//            ProcessDO procesDO = FixtureData.TestProcess1();
-//            var pluginClientMock = new Mock<IPluginTransmitter>();
-//            pluginClientMock.Setup(s => s.CallActionAsync<ActionDTO>(It.IsAny<string>(), It.IsAny<ActionDTO>())).Returns<string, ActionDTO>((s, a) => Task.FromResult(a));
-//            ObjectFactory.Configure(cfg => cfg.For<IPluginTransmitter>().Use(pluginClientMock.Object));
-//            //_action = ObjectFactory.GetInstance<IAction>();
-//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-//            {
-//
-//                _action.PrepareToExecute(activityDO, procesDO, uow);
-//            }
-//
-//            Assert.AreEqual(ActionState.Active, activityDO.ActionState);
-//        }
+        //        [Test]
+        //        public void Process_ReturnJSONDispatchNotError_ActionStateCompleted()
+        //        {
+        //            ActionDO activityDO = FixtureData.IntegrationTestAction();
+        //            activityDO.ActivityTemplate.Plugin.Endpoint = "http://localhost:53234/actions/configure";
+        //
+        //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //            {
+        //                uow.ActivityTemplateRepository.Add(activityDO.ActivityTemplate);
+        //                uow.ActionRepository.Add(activityDO);
+        //                uow.SaveChanges();
+        //            }
+        //
+        //            ProcessDO procesDO = FixtureData.TestProcess1();
+        //            var pluginClientMock = new Mock<IPluginTransmitter>();
+        //            pluginClientMock.Setup(s => s.CallActionAsync<ActionDTO>(It.IsAny<string>(), It.IsAny<ActionDTO>())).Returns<string, ActionDTO>((s, a) => Task.FromResult(a));
+        //            ObjectFactory.Configure(cfg => cfg.For<IPluginTransmitter>().Use(pluginClientMock.Object));
+        //            //_action = ObjectFactory.GetInstance<IAction>();
+        //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //            {
+        //
+        //                _action.PrepareToExecute(activityDO, procesDO, uow);
+        //            }
+        //
+        //            Assert.AreEqual(ActionState.Active, activityDO.ActionState);
+        //        }
 
         [Test]
         public void Process_ActionUnstarted_ShouldBeCompleted()
@@ -528,59 +526,59 @@ namespace DockyardTest.Services
         {
             ActivityDO activityDO = FixtureData.TestActivity23();
 
-            using (var updater = _crate.UpdateStorage(activityDO))
+            using (var crateStorage = _crate.GetUpdatableStorage(activityDO))
             {
-                updater.CrateStorage.AddRange(FixtureData.CrateStorageDTO());
+                crateStorage.AddRange(FixtureData.CrateStorageDTO());
             }
 
             Assert.IsNotEmpty(activityDO.CrateStorage);
         }
 
-// DO-1270
-//        [Test]
-//        [ExpectedException(ExpectedMessage = "Action ID: 2 status is 4.")]
-//        public async void ActionStateActive_ThrowsException()
-//        {
-//            ActionDO actionDo = FixtureData.TestActionStateActive();
-//            Action _action = ObjectFactory.GetInstance<Action>();
-//            ProcessDO procesDo = FixtureData.TestProcess1();
-//
-//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-//            {
-//                await _action.PrepareToExecute(actionDo, procesDo, uow);
-//            }
-//        }
-//
-//        [Test]
-//        [ExpectedException(ExpectedMessage = "Action ID: 2 status is 4.")]
-//        public async void ActionStateDeactive_ThrowsException()
-//        {
-//            ActionDO actionDo = FixtureData.TestActionStateDeactive();
-//            Action _action = ObjectFactory.GetInstance<Action>();
-//            ProcessDO procesDo = FixtureData.TestProcess1();
-//
-//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-//            {
-//                await _action.PrepareToExecute(actionDo, procesDo, uow);
-//            }
-//        }
+        // DO-1270
+        //        [Test]
+        //        [ExpectedException(ExpectedMessage = "Action ID: 2 status is 4.")]
+        //        public async Task ActionStateActive_ThrowsException()
+        //        {
+        //            ActionDO actionDo = FixtureData.TestActionStateActive();
+        //            Action _action = ObjectFactory.GetInstance<Action>();
+        //            ProcessDO procesDo = FixtureData.TestProcess1();
+        //
+        //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //            {
+        //                await _action.PrepareToExecute(actionDo, procesDo, uow);
+        //            }
+        //        }
+        //
+        //        [Test]
+        //        [ExpectedException(ExpectedMessage = "Action ID: 2 status is 4.")]
+        //        public async Task ActionStateDeactive_ThrowsException()
+        //        {
+        //            ActionDO actionDo = FixtureData.TestActionStateDeactive();
+        //            Action _action = ObjectFactory.GetInstance<Action>();
+        //            ProcessDO procesDo = FixtureData.TestProcess1();
+        //
+        //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //            {
+        //                await _action.PrepareToExecute(actionDo, procesDo, uow);
+        //            }
+        //        }
 
-//        [Test]
-//        [ExpectedException(ExpectedMessage = "Action ID: 2 status is 4.")]
-//        public async void ActionStateError_ThrowsException()
-//        {
-//            ActionDO actionDo = FixtureData.TestActionStateError();
-//            Action _action = ObjectFactory.GetInstance<Action>();
-//            ProcessDO procesDo = FixtureData.TestProcess1();
-//
-//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-//            {
-//                await _action.PrepareToExecute(actionDo, procesDo, uow);
-//            }
-//        }
+        //        [Test]
+        //        [ExpectedException(ExpectedMessage = "Action ID: 2 status is 4.")]
+        //        public async Task ActionStateError_ThrowsException()
+        //        {
+        //            ActionDO actionDo = FixtureData.TestActionStateError();
+        //            Action _action = ObjectFactory.GetInstance<Action>();
+        //            ProcessDO procesDo = FixtureData.TestProcess1();
+        //
+        //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //            {
+        //                await _action.PrepareToExecute(actionDo, procesDo, uow);
+        //            }
+        //        }
 
         [Test]
-        public async void PrepareToExecute_WithMockedExecute_WithoutPayload()
+        public async Task PrepareToExecute_WithMockedExecute_WithoutPayload()
         {
             ActivityDO activityDo = FixtureData.TestActivityStateInProcess();
             activityDo.CrateStorage = JsonConvert.SerializeObject(new ActivityDTO());
@@ -615,7 +613,7 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        public async void PrepareToExecute_WithMockedExecute_WithPayload()
+        public async Task PrepareToExecute_WithMockedExecute_WithPayload()
         {
             ActivityDO activityDo = FixtureData.TestActivityStateInProcess();
             activityDo.CrateStorage = JsonConvert.SerializeObject(new ActivityDTO() { Label = "Test Action" });
@@ -657,7 +655,7 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        public async void ActionStarted_EventRaisedSuccessfully()
+        public async Task ActionStarted_EventRaisedSuccessfully()
         {
             ActivityDO activityDo = FixtureData.TestActivityStateInProcess();
             activityDo.CrateStorage = JsonConvert.SerializeObject(new ActivityDTO());

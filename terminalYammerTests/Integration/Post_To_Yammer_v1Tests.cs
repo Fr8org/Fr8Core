@@ -36,9 +36,9 @@ namespace terminalYammerTests.Integration
 
             var storage = Crate.GetStorage(responseActionDTO);
 
-            using (var updater = Crate.UpdateStorage(dataDTO.ActivityDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(dataDTO.ActivityDTO))
             {
-                updater.CrateStorage = storage;
+                crateStorage.Replace(storage);
             }
 
             return await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
@@ -54,7 +54,7 @@ namespace terminalYammerTests.Integration
             return responseActionDTO;
         }
 
-        private void AssertCrateTypes(CrateStorage crateStorage)
+        private void AssertCrateTypes(ICrateStorage crateStorage)
         {
             Assert.AreEqual(3, crateStorage.Count);
 
@@ -64,7 +64,7 @@ namespace terminalYammerTests.Integration
         }
 
         [Test]
-        public async void Post_To_Yammer_v1_Initial_Configuration_Check_Crate_Structure()
+        public async Task Post_To_Yammer_v1_Initial_Configuration_Check_Crate_Structure()
         {
             // Act
             var responseActionDTO = await ConfigureInitial();
@@ -82,7 +82,7 @@ namespace terminalYammerTests.Integration
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException)
         )]
-        public async void Post_To_Yammer_v1_Initial_Configuration_Check_Crate_Structure_NoAuth()
+        public async Task Post_To_Yammer_v1_Initial_Configuration_Check_Crate_Structure_NoAuth()
         {
             // Act
             var responseActionDTO = await ConfigureInitial(false);
@@ -90,7 +90,7 @@ namespace terminalYammerTests.Integration
 
 
         [Test]
-        public async void Post_To_Yammer_v1_FollowupConfiguration()
+        public async Task Post_To_Yammer_v1_FollowupConfiguration()
         {
             // Act
             var responseFollowUpActionDTO = await ConfigurationRequest();
@@ -105,14 +105,14 @@ namespace terminalYammerTests.Integration
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException)
         )]
-        public async void Post_To_Yammer_Run_Return_Payload()
+        public async Task Post_To_Yammer_Run_Return_Payload()
         {
             //Arrange
             var runUrl = GetTerminalRunUrl();
             var activityDTO = await ConfigurationRequest();
-
+            var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
             AddPayloadCrate(
-                activityDTO,
+                dataDTO,
                 new StandardPayloadDataCM(
                     new FieldDTO("message", "Hello")
                 ),
@@ -120,7 +120,7 @@ namespace terminalYammerTests.Integration
             );
 
             activityDTO.AuthToken = HealthMonitor_FixtureData.Yammer_AuthToken();
-            var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
+            
             //Act
             var responsePayloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
 

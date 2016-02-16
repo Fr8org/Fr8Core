@@ -18,5 +18,9 @@ namespace TerminalBase.Infrastructure
         {
             get { return "HealthMonitor"; }
         }
+
+        public TestMonitoringHubCommunicator(string explicitData) : base(explicitData)
+        {
+        }
     }
 }

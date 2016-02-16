@@ -57,9 +57,9 @@ namespace terminalSlack.Actions
                 return Error(payloadCrates, "Unexpected channel-id.");
             }
 
-            using (var updater = Crate.UpdateStorage(payloadCrates))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
             {
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Slack Payload Data", new StandardPayloadDataCM(payloadFields)));
+                crateStorage.Add(Data.Crates.Crate.FromContent("Slack Payload Data", new StandardPayloadDataCM(payloadFields)));
             }
 
             return Success(payloadCrates);
@@ -73,7 +73,7 @@ namespace terminalSlack.Actions
 
         private List<FieldDTO> ExtractPayloadFields(PayloadDTO payloadCrates)
         {
-            var eventReportMS = Crate.GetStorage(payloadCrates).CrateContentsOfType<EventReportCM>().SingleOrDefault();
+            var eventReportMS = CrateManager.GetStorage(payloadCrates).CrateContentsOfType<EventReportCM>().SingleOrDefault();
             if (eventReportMS == null)
             {
                 Error(payloadCrates, "EventReportCrate is empty.");
@@ -99,7 +99,7 @@ namespace terminalSlack.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -116,20 +116,20 @@ namespace terminalSlack.Actions
             var crateAvailableChannels = CreateAvailableChannelsCrate(channels);
             var crateEventSubscriptions = CreateEventSubscriptionCrate();
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.Clear();
-                PackConfigurationControls(updater.CrateStorage);
-                updater.CrateStorage.Add(crateDesignTimeFields);
-                updater.CrateStorage.Add(crateAvailableChannels);
-                updater.CrateStorage.Add(crateEventSubscriptions);
+                crateStorage.Clear();
+                PackConfigurationControls(crateStorage);
+                crateStorage.Add(crateDesignTimeFields);
+                crateStorage.Add(crateAvailableChannels);
+                crateStorage.Add(crateEventSubscriptions);
             }
 
 
             return await Task.FromResult<ActivityDO>(curActivityDO);
         }
 
-        private void PackConfigurationControls(CrateStorage crateStorage)
+        private void PackConfigurationControls(ICrateStorage crateStorage)
         {
             AddControl(
                 crateStorage,
@@ -169,7 +169,7 @@ namespace terminalSlack.Actions
             };
 
             var crate =
-                Crate.CreateDesignTimeFieldsCrate(
+                CrateManager.CreateDesignTimeFieldsCrate(
                     "Available Fields",
                     fields.ToArray()
                 );
@@ -180,7 +180,7 @@ namespace terminalSlack.Actions
         private Crate CreateAvailableChannelsCrate(IEnumerable<FieldDTO> channels)
         {
             var crate =
-                Crate.CreateDesignTimeFieldsCrate(
+                CrateManager.CreateDesignTimeFieldsCrate(
                     "Available Channels",
                     channels.ToArray()
                 );
@@ -194,7 +194,7 @@ namespace terminalSlack.Actions
                 "Slack Outgoing Message"
             };
 
-            return Crate.CreateStandardEventSubscriptionsCrate(
+            return CrateManager.CreateStandardEventSubscriptionsCrate(
                 "Standard Event Subscriptions",
                 "Slack",
                 subscriptions.ToArray()

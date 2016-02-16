@@ -1,4 +1,5 @@
 ﻿using Data.Control;
+using Data.Infrastructure.JsonNet;
 using Data.States;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -51,5 +52,8 @@ namespace Data.Interfaces.DataTransferObjects
       
         [JsonProperty("showDocumentation")]
         public ActivityResponseDTO ShowDocumentation { get; set; }
+
+        [JsonProperty("clientVisibility")]
+        public bool ClientVisibility { get; set; } = true;
     }
 }

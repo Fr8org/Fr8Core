@@ -23,27 +23,21 @@ namespace HubWeb.App_Start
         public void ConfigureAutoMapper()
         {
             Mapper.CreateMap<ActivityDO, ActivityDTO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
-                .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
                 .ForMember(a => a.RootRouteNodeId, opts => opts.ResolveUsing(ad => ad.RootRouteNodeId))
                 .ForMember(a => a.ParentRouteNodeId, opts => opts.ResolveUsing(ad => ad.ParentRouteNodeId))
-                .ForMember(a => a.ActivityTemplateId, opts => opts.ResolveUsing(ad => ad.ActivityTemplateId))
                 .ForMember(a => a.CurrentView, opts => opts.ResolveUsing(ad => ad.currentView))
                 .ForMember(a => a.ChildrenActions, opts => opts.ResolveUsing(ad => ad.ChildNodes.OfType<ActivityDO>().OrderBy(da => da.Ordering)))
                 .ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(GetActivityTemplate))
-                .ForMember(a => a.ExplicitData, opts => opts.ResolveUsing(ad => ad.ExplicitData))
                 .ForMember(a => a.AuthToken, opts => opts.ResolveUsing(ad => ad.AuthorizationToken));
 
             Mapper.CreateMap<ActivityDTO, ActivityDO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
-                .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
                 .ForMember(a => a.RootRouteNodeId, opts => opts.ResolveUsing(ad => ad.RootRouteNodeId))
                 .ForMember(a => a.ParentRouteNodeId, opts => opts.ResolveUsing(ad => ad.ParentRouteNodeId))
-                .ForMember(a => a.ActivityTemplateId, opts => opts.ResolveUsing(ad => ad.ActivityTemplateId))
-                .ForMember(a => a.ActivityTemplate, opts => opts.Ignore())
+                //.ForMember(a => a.ActivityTemplate, opts => opts.Ignore())
+                .ForMember(a => a.ActivityTemplateId, opts => opts.ResolveUsing(GetActivityTemplateId))
                 //.ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.SerializeObject(ad.CrateStorage)))
                 .ForMember(a => a.currentView, opts => opts.ResolveUsing(ad => ad.CurrentView))
                 .ForMember(a => a.ChildNodes, opts => opts.ResolveUsing(ad => MapActions(ad.ChildrenActions)))
-                .ForMember(a => a.IsTempId, opts => opts.ResolveUsing(ad => ad.IsTempId))
-                .ForMember(a => a.ExplicitData, opts => opts.ResolveUsing(ad => ad.ExplicitData))
                 .ForMember(a => a.AuthorizationTokenId, opts => opts.ResolveUsing(ad => ad.AuthToken != null && ad.AuthToken.Id != null ? new Guid(ad.AuthToken.Id) : (Guid?)null));
 
 
@@ -102,12 +96,27 @@ namespace HubWeb.App_Start
 
         private ActivityTemplateDTO GetActivityTemplate(ActivityDO ad)
         {
-            if (ad.ActivityTemplateId == null)
+            if (ad.ActivityTemplate != null)
+            {
+                return Mapper.Map<ActivityTemplateDTO>(ad.ActivityTemplate);
+            }
+
+            if (ad.ActivityTemplateId == 0)
+            {
+                return null;                
+            }
+
+            return Mapper.Map<ActivityTemplateDTO>(_activityTemplate.GetByKey(ad.ActivityTemplateId));
+        }
+
+        private object GetActivityTemplateId(ActivityDTO ad)
+        {
+            if (ad.ActivityTemplate == null)
             {
                 return null;
             }
 
-            return Mapper.Map<ActivityTemplateDTO>(_activityTemplate.GetByKey(ad.ActivityTemplateId.Value));
+            return _activityTemplate.GetByNameAndVersion(ad.ActivityTemplate.Name, ad.ActivityTemplate.Version).Id;
         }
     }
 }

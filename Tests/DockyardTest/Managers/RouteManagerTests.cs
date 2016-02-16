@@ -71,51 +71,28 @@ namespace DockyardTest.Managers
 
                 //setup Action Service
                 Mock<IActivity> _setupMock = new Mock<IActivity>(MockBehavior.Default);
-                //setup Action Service
 
+                //setup Action Service
                 _setupMock.Setup(
                     a => a.CreateAndConfigure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<int>(),
-                        "Monitor_Fr8_Events", It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>())).Callback(() =>
+                        It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>())).Callback(() =>
                         {
-                            /*using (var uow1 = ObjectFactory.GetInstance<IUnitOfWork>())
-                            {
-                                uow1.PlanRepository.Add(new PlanDO()
-                                {
-                                    Name = "plan1",
-                                    RouteState = RouteState.Active,
-                                    ChildNodes = { monitorFr8Action }
-                                });
-
-//                                var subRoute = uow1.SubrouteRepository.GetQuery().Single();
-//                                subRoute.ChildNodes.Add(monitorFr8Action);
-
-                                uow1.SaveChanges();
-                            }*/
-                            
                         }).Returns(Task.FromResult(monitorFr8Action as RouteNodeDO));
 
+
                 _setupMock.Setup(
-                    a => a.CreateAndConfigure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<int>(),
-                        "SaveToFr8Warehouse", It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>())).Callback(() =>
-                        {
-                           /* using (var uow1 = ObjectFactory.GetInstance<IUnitOfWork>())
-                            {
-                                uow1.PlanRepository.Add(new PlanDO()
-                            {
-                                    Name = "plan2",
-                                    RouteState = RouteState.Active,
-                                    ChildNodes = { storeMtDataAction }
-                                });
+                   a => a.CreateAndConfigure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<int>(),
+                       It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>())).Callback(() =>
+                       {
 
-                                //uow1.PlanRepository.Add(FixtureData.GetPlanByActivityId(storeMtDataAction));
-//                                uow1.ActivityRepository.Add(storeMtDataAction);
-//
-//                                var subRoute = uow1.SubrouteRepository.GetQuery().Single();
-//                                subRoute.ChildNodes.Add(storeMtDataAction);
+                       }).Returns(Task.FromResult(storeMtDataAction as RouteNodeDO));
 
-                                uow1.SaveChanges();
-                            }*/
-                        }).Returns(Task.FromResult(storeMtDataAction as RouteNodeDO));
+                _setupMock.Setup(
+                 a => a.Configure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<ActivityDO>(), It.IsAny<Boolean>())).Callback(() =>
+                 {
+                 }).Returns(Task.FromResult(new Data.Interfaces.DataTransferObjects.ActivityDTO()));
+
+                _setupMock.Setup(a => a.MapFromDTO(new Data.Interfaces.DataTransferObjects.ActivityDTO()));
 
                 ObjectFactory.Container.Inject(typeof(IActivity), _setupMock.Object);
             }

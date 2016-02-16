@@ -38,7 +38,7 @@ namespace terminalDocuSign.Tests.Actions
             var docusignFolder = new Mock<IDocuSignFolder>();
 
             docusignFolder.Setup(r => r.GetSearchFolders(It.IsAny<string>(), It.IsAny<string>())).Returns(TerminalFixtureData.GetFolders());
-            docusignFolder.Setup(r => r.Search(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>()))
+            docusignFolder.Setup(r => r.Search(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>(), It.IsAny<IEnumerable<FilterConditionDTO>>()))
                 .Returns<string, string, string, string, string, DateTime?, DateTime?>(Search);
             
             TerminalBootstrapper.ConfigureTest();
@@ -96,9 +96,9 @@ namespace terminalDocuSign.Tests.Actions
 
             var activity = new ActivityDO();
 
-            using (var updater = _crateManager.UpdateStorage(activity))
+            using (var crateStorage = _crateManager.GetUpdatableStorage(activity))
             {
-                updater.CrateStorage.Add(Crate.FromContent("UI", new Search_DocuSign_History_v1.ActionUi
+                crateStorage.Add(Crate.FromContent("UI", new Search_DocuSign_History_v1.ActionUi
                 {
                     Folder = { Value = "A"},
                     SearchText = { Value = "B"},

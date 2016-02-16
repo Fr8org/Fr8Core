@@ -24,7 +24,7 @@ namespace terminalSalesforceTests.Intergration
         }
 
         [Test, Category("intergration.terminalSalesforce")]
-        public async void Create_Account_Initial_Configuration_Check_Crate_Structure()
+        public async Task Create_Account_Initial_Configuration_Check_Crate_Structure()
         {
             //Act
             var initialConfigActionDto = await PerformInitialConfiguration();
@@ -40,7 +40,7 @@ namespace terminalSalesforceTests.Intergration
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException)
         )]
-        public async void Create_Account_Initial_Configuration_Without_AuthToken_Exception_Thrown()
+        public async Task Create_Account_Initial_Configuration_Without_AuthToken_Exception_Thrown()
         {
             //Arrange
             string terminalConfigureUrl = GetTerminalConfigureUrl();
@@ -55,13 +55,15 @@ namespace terminalSalesforceTests.Intergration
         }
 
         [Test, Category("intergration.terminalSalesforce")]
-        public async void Create_Account_Run_With_NoAuth_Check_NoAuthProvided_Error()
+        public async Task Create_Account_Run_With_NoAuth_Check_NoAuthProvided_Error()
         {
             //Arrange
             var initialConfigActionDto = await PerformInitialConfiguration();
             initialConfigActionDto = SetAccountName(initialConfigActionDto);
-            AddOperationalStateCrate(initialConfigActionDto, new OperationalStateCM());
             var dataDTO = new Fr8DataDTO { ActivityDTO = initialConfigActionDto };
+
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
+            
             //Act
             var responseOperationalState = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(GetTerminalRunUrl(), dataDTO);
 
@@ -76,13 +78,14 @@ namespace terminalSalesforceTests.Intergration
         }
 
         [Test, Category("intergration.terminalSalesforce")]
-        public async void Create_Account_Run_With_NoAccountName_Check_NoAccountNameProvided_Error()
+        public async Task Create_Account_Run_With_NoAccountName_Check_NoAccountNameProvided_Error()
         {
             //Arrange
             var initialConfigActionDto = await PerformInitialConfiguration();
             initialConfigActionDto.AuthToken = HealthMonitor_FixtureData.Salesforce_AuthToken();
-            AddOperationalStateCrate(initialConfigActionDto, new OperationalStateCM());
             var dataDTO = new Fr8DataDTO { ActivityDTO = initialConfigActionDto };
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
+            
             //Act
             var responseOperationalState = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(GetTerminalRunUrl(), dataDTO);
 
@@ -96,14 +99,15 @@ namespace terminalSalesforceTests.Intergration
         }
 
         [Test, Category("intergration.terminalSalesforce")]
-        public async void Create_Account_Run_With_ValidParameter_Check_PayloadDto_OperationalState()
+        public async Task Create_Account_Run_With_ValidParameter_Check_PayloadDto_OperationalState()
         {
             //Arrange
             var initialConfigActionDto = await PerformInitialConfiguration();
             initialConfigActionDto = SetAccountName(initialConfigActionDto);
             initialConfigActionDto.AuthToken = HealthMonitor_FixtureData.Salesforce_AuthToken();
-            AddOperationalStateCrate(initialConfigActionDto, new OperationalStateCM());
             var dataDTO = new Fr8DataDTO { ActivityDTO = initialConfigActionDto };
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
+            
             //Act
             var responseOperationalState = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(GetTerminalRunUrl(), dataDTO);
 
@@ -125,16 +129,16 @@ namespace terminalSalesforceTests.Intergration
             //perform post request to terminal and return the result
             var resultActionDto = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(terminalConfigureUrl, requestActionDTO);
 
-            using (var updater = Crate.UpdateStorage(resultActionDto))
+            using (var crateStorage = Crate.GetUpdatableStorage(resultActionDto))
             {
-                var controls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
+                var controls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
                 controls.Controls.OfType<TextSource>().ToList().ForEach(ctl => ctl.ValueSource = "specific");
             }
 
             return resultActionDto;
         }
 
-        private void AssertConfigurationControls(CrateStorage curActionCrateStorage)
+        private void AssertConfigurationControls(ICrateStorage curActionCrateStorage)
         {
             var configurationControls = curActionCrateStorage.CratesOfType<StandardConfigurationControlsCM>().Single();
 
@@ -157,9 +161,9 @@ namespace terminalSalesforceTests.Intergration
 
         private ActivityDTO SetAccountName(ActivityDTO curActivityDto)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDto))
+            using (var crateStorage = Crate.GetUpdatableStorage(curActivityDto))
             {
-                var controls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
+                var controls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
 
                 var targetUrlTextBox = (TextSource)controls.Controls[0];
                 targetUrlTextBox.ValueSource = "specific";

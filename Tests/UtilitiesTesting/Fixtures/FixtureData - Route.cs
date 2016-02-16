@@ -109,9 +109,9 @@ namespace UtilitiesTesting.Fixtures
                     ContainerState = 1
                 };
 
-                using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => containerDO.CrateStorage))
+                using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => containerDO.CrateStorage))
                 {
-                    updater.CrateStorage.Add(GetEnvelopeIdCrate());
+                    crateStorage.Add(GetEnvelopeIdCrate());
                 }
                 
                 uow.ContainerRepository.Add(containerDO);
@@ -134,8 +134,6 @@ namespace UtilitiesTesting.Fixtures
                 {
                     ParentRouteNode = planDO,
                     ParentRouteNodeId = planDO.Id,
-                    Name = "testaction",
-
                     Id = GetTestGuidById(1),
                     ActivityTemplateId = actionTemplate.Id,
                     ActivityTemplate = actionTemplate,
@@ -150,9 +148,9 @@ namespace UtilitiesTesting.Fixtures
                 eventSubscriptionMS.Subscriptions.Add("DocuSign Envelope Sent");
                 eventSubscriptionMS.Subscriptions.Add("Write to SQL AZure");
 
-                using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(actionDo))
+                using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().GetUpdatableStorage(actionDo))
                 {
-                    updater.CrateStorage.Add(Crate.FromContent("Standard Event Subscriptions", eventSubscriptionMS));
+                    crateStorage.Add(Crate.FromContent("Standard Event Subscriptions", eventSubscriptionMS));
                 }
 
                 //uow.ActivityRepository.Add(actionDo);
@@ -190,9 +188,9 @@ namespace UtilitiesTesting.Fixtures
                     ContainerState = 1
                 };
 
-                using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => containerDO.CrateStorage))
+                using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => containerDO.CrateStorage))
                 {
-                    updater.CrateStorage.Add(GetEnvelopeIdCrate());
+                    crateStorage.Add(GetEnvelopeIdCrate());
                 }
 
                 uow.ContainerRepository.Add(containerDO);
@@ -212,9 +210,6 @@ namespace UtilitiesTesting.Fixtures
 
                 var actionDo = new ActivityDO()
                 {
-                   
-                    Name = "testaction",
-
                     Id = GetTestGuidById(12+idOffset),
                     ActivityTemplateId = actionTemplate.Id,
                     ActivityTemplate = actionTemplate,
@@ -229,9 +224,9 @@ namespace UtilitiesTesting.Fixtures
                 eventSubscriptionMS.Subscriptions.Add("DocuSign Envelope Sent");
                 eventSubscriptionMS.Subscriptions.Add("Write to SQL AZure");
 
-                using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(actionDo))
+                using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().GetUpdatableStorage(actionDo))
                 {
-                    updater.CrateStorage.Add(Crate.FromContent("Standard Event Subscriptions", eventSubscriptionMS));
+                    crateStorage.Add(Crate.FromContent("Standard Event Subscriptions", eventSubscriptionMS));
                 }
 
                // uow.ActivityRepository.Add(actionDo);

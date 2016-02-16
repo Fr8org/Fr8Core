@@ -32,7 +32,7 @@ namespace terminalSlackTests.Integration
         }
 
         [Test]
-        public async void Monitor_Channel_Initial_Configuration_Check_Crate_Structure()
+        public async Task Monitor_Channel_Initial_Configuration_Check_Crate_Structure()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -69,7 +69,7 @@ namespace terminalSlackTests.Integration
             Assert.AreEqual("Info_Label", controls.Controls[1].Name);
         }
 
-        private void AssertCrateTypes(CrateStorage crateStorage)
+        private void AssertCrateTypes(ICrateStorage crateStorage)
         {
             Assert.AreEqual(4, crateStorage.Count);
 
@@ -81,7 +81,7 @@ namespace terminalSlackTests.Integration
 
         [Test]
         [ExpectedException(ExpectedException = typeof(RestfulServiceException))]
-        public async void Monitor_Channel_Initial_Configuration_NoAuth()
+        public async Task Monitor_Channel_Initial_Configuration_NoAuth()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -95,13 +95,13 @@ namespace terminalSlackTests.Integration
         }
 
         [Test]
-        public async void Monitor_Channel_Run_RightChannel_Test()
+        public async Task Monitor_Channel_Run_RightChannel_Test()
         {
             var runUrl = GetTerminalRunUrl();
 
-            ActivityDTO activityDTO = await GetConfiguredActionWithDDLBSelected("general");
-            AddOperationalStateCrate(activityDTO, new OperationalStateCM());
-            var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
+            var dataDTO = await GetConfiguredActionWithDDLBSelected("general");
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
+            
             var responsePayloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
 
             var crateStorage = Crate.GetStorage(responsePayloadDTO);
@@ -115,12 +115,12 @@ namespace terminalSlackTests.Integration
         [Test]
         //[ExpectedException(ExpectedException = typeof(RestfulServiceException),
         //    ExpectedMessage = "{\"status\":\"terminal_error\",\"message\":\"Unexpected channel-id.\"}")]
-        public async void Monitor_Channel_Run_WrongChannel_Test()
+        public async Task Monitor_Channel_Run_WrongChannel_Test()
         {
             var runUrl = GetTerminalRunUrl();
-            var activityDTO = await GetConfiguredActionWithDDLBSelected("random");
-            AddOperationalStateCrate(activityDTO, new OperationalStateCM());
-            var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
+            var dataDTO = await GetConfiguredActionWithDDLBSelected("random");
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
+            
             var responsePayloadDTO =
                await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
 
@@ -134,19 +134,19 @@ namespace terminalSlackTests.Integration
             Assert.AreEqual("Unexpected channel-id.", errorMessage.Message);
         }
 
-        private async Task<ActivityDTO> GetConfiguredActionWithDDLBSelected(string selectedChannel)
+        private async Task<Fr8DataDTO> GetConfiguredActionWithDDLBSelected(string selectedChannel)
         { 
             var configureUrl = GetTerminalConfigureUrl();
-            var requestActionDTO = HealthMonitor_FixtureData.Monitor_Channel_v1_InitialConfiguration_Fr8DataDTO();
+            var requestDataDTO = HealthMonitor_FixtureData.Monitor_Channel_v1_InitialConfiguration_Fr8DataDTO();
             var activityDTO =
                 await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    requestActionDTO
+                    requestDataDTO
                 );
-
+            requestDataDTO.ActivityDTO = activityDTO;
             activityDTO.AuthToken = HealthMonitor_FixtureData.Slack_AuthToken();
             AddPayloadCrate(
-                activityDTO,
+                requestDataDTO,
                  new EventReportCM()
                  {
                      EventPayload = new CrateStorage()
@@ -159,9 +159,9 @@ namespace terminalSlackTests.Integration
                     }
                  }
             );
-            using (var updater = Crate.UpdateStorage(activityDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(activityDTO))
             {
-                var controls = updater.CrateStorage
+                var controls = crateStorage
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
                     .Single();
 
@@ -169,16 +169,16 @@ namespace terminalSlackTests.Integration
                 var channels = await slackIntegraion.GetChannelList(HealthMonitor_FixtureData.Slack_AuthToken().Token);
 
                 var ddlb = (DropDownList)controls.Controls[0];
-                var channel = channels.Where(a => a.Key == selectedChannel).FirstOrDefault();
+                var channel = channels.FirstOrDefault(a => a.Key == selectedChannel);
                 if (channel != null)
                     ddlb.Value = channel.Value;
             }
 
-            return activityDTO;
+            return requestDataDTO;
         }
 
         [Test]
-        public async void Monitor_Channel_Activate_Returns_ActionDTO()
+        public async Task Monitor_Channel_Activate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
@@ -199,7 +199,7 @@ namespace terminalSlackTests.Integration
         }
 
         [Test]
-        public async void Monitor_Channel_Deactivate_Returns_ActionDTO()
+        public async Task Monitor_Channel_Deactivate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();

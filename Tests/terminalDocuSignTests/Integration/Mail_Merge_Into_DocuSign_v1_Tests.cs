@@ -29,18 +29,18 @@ namespace terminalDocuSignTests.Integration
             get { return "terminalDocuSign"; }
         }
 
-        private void AssertCrateTypes(CrateStorage crateStorage)
+        private void AssertCrateTypes(ICrateStorage crateStorage)
         {
             Assert.AreEqual(2, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "Available Templates"));
         }
 
-        private void AddHubActivityTemplate(ActivityDTO activityDTO)
+        private void AddHubActivityTemplate(Fr8DataDTO dataDTO)
         {
 
             AddActivityTemplate(
-              activityDTO,
+              dataDTO,
               new ActivityTemplateDTO()
               {
                   Id = 1,
@@ -51,7 +51,7 @@ namespace terminalDocuSignTests.Integration
           );
 
             AddActivityTemplate(
-                activityDTO,
+                dataDTO,
                 new ActivityTemplateDTO()
                 {
                     Id = 2,
@@ -62,7 +62,7 @@ namespace terminalDocuSignTests.Integration
             );
 
             AddActivityTemplate(
-               activityDTO,
+               dataDTO,
                new ActivityTemplateDTO()
                {
                    Id = 3,
@@ -98,7 +98,7 @@ namespace terminalDocuSignTests.Integration
 
             var requestDataDTO = HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_Fr8DataDTO();
 
-            AddHubActivityTemplate(requestDataDTO.ActivityDTO);
+            AddHubActivityTemplate(requestDataDTO);
             
             var responseActionDTO =
                 await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
@@ -108,16 +108,16 @@ namespace terminalDocuSignTests.Integration
             
             responseActionDTO.AuthToken = HealthMonitor_FixtureData.DocuSign_AuthToken();
 
-            using (var updater = Crate.UpdateStorage(responseActionDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(responseActionDTO))
             {
-                var controls = updater.CrateStorage
+                var controls = crateStorage
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
                     .Single();
 
                 var dataSourceDropdown = (DropDownList)controls.Controls[0];
                 dataSourceDropdown.Value = childAction;
 
-                var availableTemplatesCM = updater.CrateStorage
+                var availableTemplatesCM = crateStorage
                   .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Available Templates")
                   .Single();
                 Assert.IsTrue(availableTemplatesCM.Fields.Count > 0);
@@ -133,13 +133,13 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async void Mail_Merge_Into_DocuSign_Initial_Configuration_Check_Crate_Structure()
+        public async Task Mail_Merge_Into_DocuSign_Initial_Configuration_Check_Crate_Structure()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
             var requestDataDTO = HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_Fr8DataDTO();
 
-            AddHubActivityTemplate(requestDataDTO.ActivityDTO);
+            AddHubActivityTemplate(requestDataDTO);
 
             var responseActionDTO =
                 await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
@@ -157,7 +157,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async void Mail_Merge_Into_DocuSign_FollowUp_Configuration_Check_ChildAction_Load_Excel_File()
+        public void Mail_Merge_Into_DocuSign_FollowUp_Configuration_Check_ChildAction_Load_Excel_File()
         {
             //string childAction = "Load Excel File";
             //var configureUrl = GetTerminalConfigureUrl();
@@ -180,7 +180,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async void Mail_Merge_Into_DocuSign_FollowUp_Configuration_Check_ChildAction_Extract_Spreadsheet_Data()
+        public void Mail_Merge_Into_DocuSign_FollowUp_Configuration_Check_ChildAction_Extract_Spreadsheet_Data()
         {
             //string childAction = "Extract Spreadsheet Data";
             //var configureUrl = GetTerminalConfigureUrl();
@@ -203,7 +203,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async void Mail_Merge_Into_DocuSign_Activate_Returns_ActionDTO()
+        public async Task Mail_Merge_Into_DocuSign_Activate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
@@ -224,7 +224,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async void Mail_Merge_Into_DocuSign_Deactivate_Returns_ActionDTO()
+        public async Task Mail_Merge_Into_DocuSign_Deactivate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();

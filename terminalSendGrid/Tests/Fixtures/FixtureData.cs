@@ -21,7 +21,6 @@ namespace terminalSendGrid.Tests.Fixtures
 
             var activityDO = new ActivityDO()
             {
-                Name = "testaction",
                 Id = TestGuid_Id_333(),
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate,
@@ -79,11 +78,11 @@ namespace terminalSendGrid.Tests.Fixtures
             get
             {
                 var payloadDTO = new PayloadDTO(PayloadDTO_ContainerId());
-                using (var updater = new CrateManager().UpdateStorage(payloadDTO))
+                using (var crateStorage = new CrateManager().GetUpdatableStorage(payloadDTO))
                 {
                     var operationalStatus = new OperationalStateCM();
                     var operationsCrate = Crate.FromContent("Operational Status", operationalStatus);
-                    updater.CrateStorage.Add(operationsCrate);
+                    crateStorage.Add(operationsCrate);
                 }
                 return payloadDTO;
             }
