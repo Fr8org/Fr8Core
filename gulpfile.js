@@ -4,7 +4,7 @@ var concat = require('gulp-concat');
 var sourcemaps = require('gulp-sourcemaps');
 var templateCache = require('gulp-angular-templatecache');
 
-gulp.task('bower', function () {
+gulp.task('bower', function (done) {
     return bower({ layout: "byComponent" });
 });
 
@@ -142,14 +142,9 @@ gulp.task('watch_js', ['compile_js'], function () {
     gulp.watch('Scripts/app/**/*.js', ['compile_js']);
 });
 
-
-
-
 var cdnizer = require("gulp-cdnizer");
 
-
-
-gulp.task('cdnizer-css', function () {
+gulp.task('cdnizer-css', ['bower'], function () {
     return gulp.src('./Views/Shared/_AngularAppStyles.cshtml')
         .pipe(cdnizer([
             {
@@ -195,7 +190,7 @@ gulp.task('cdnizer-css', function () {
 });
 
 
-gulp.task('cdnizer-js', function () {
+gulp.task('cdnizer-js', ['bower'], function () {
     return gulp.src('./Views/Shared/_AngularAppScripts.cshtml')
         .pipe(cdnizer([
             {
@@ -331,8 +326,5 @@ gulp.task('cdnizer-js', function () {
         ]))
         .pipe(gulp.dest('./Views/Shared/CDN'));
 });
-
-
-
 
 gulp.task('default', ['bower', 'concattemplates', 'cdnizer-js', 'cdnizer-css']);
