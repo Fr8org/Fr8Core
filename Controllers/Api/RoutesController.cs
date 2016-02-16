@@ -334,9 +334,18 @@ namespace HubWeb.Controllers
                     inActive = true;
             }
 
+            string pusherChannel = String.Format("fr8pusher_{0}", User.Identity.Name);
+
             if (inActive)
             {
-                await _plan.Activate(planId, false);
+                var activateDTO = await _plan.Activate(planId, false);
+
+                if (activateDTO != null && activateDTO.Status == "validation_error")
+                {
+                    //this container holds wrapped inside the ErrorDTO
+                    return Ok(activateDTO.Container);
+                }
+
                 await eventManager.Publish("RouteActivated", ObjectFactory.GetInstance<ISecurityServices>().GetCurrentAccount
                     (ObjectFactory.GetInstance<IUnitOfWork>()).Id.ToString(), planId.ToString(), JsonConvert.SerializeObject(planId).ToString(), "Success");
             }
@@ -344,8 +353,6 @@ namespace HubWeb.Controllers
             //RUN
             CrateDTO curCrateDto;
             Crate curCrate = null;
-
-            string pusherChannel = String.Format("fr8pusher_{0}", User.Identity.Name);
 
             if (model != null)
             {
