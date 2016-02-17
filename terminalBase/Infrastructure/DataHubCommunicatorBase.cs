@@ -73,7 +73,15 @@ namespace TerminalBase.Infrastructure
 
         public Task<UserDTO> GetCurrentUser(ActivityDO activityDO, Guid containerId, string userId)
         {
-            throw new NotImplementedException();
+            return Task.FromResult<UserDTO>(
+                new UserDTO()
+                {
+                    EmailAddress = "integration_test_runner@fr8.company",
+                    FirstName = "Test",
+                    LastName = "User",
+                    UserName = "integration_test_runner@fr8.company"
+                }
+            );
         }
 
         public Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActivityDO activityDO, CrateDirection direction, string userId)
