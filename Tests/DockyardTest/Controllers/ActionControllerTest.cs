@@ -460,7 +460,7 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
-        [ExpectedException(ExpectedException = typeof(InvalidOperationException))]
+        [ExpectedException(ExpectedException = typeof(NullReferenceException))]
         public async Task ActionController_GetConfigurationSettings_ActionTemplateNameAndVersionIsMissing()
         {
             var controller = new ActionsController();

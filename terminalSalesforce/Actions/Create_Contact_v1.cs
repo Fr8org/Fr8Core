@@ -68,6 +68,24 @@ namespace terminalSalesforce.Actions
             return await Task.FromResult(curActivityDO);
         }
 
+        public override async Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        {
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            {
+                var configControls = GetConfigurationControls(crateStorage);
+
+                //verify the last name has a value provided
+                var lastNameControl = configControls.Controls.Single(ctl => ctl.Name.Equals("LastName"));
+
+                if (string.IsNullOrEmpty((lastNameControl as TextSource).ValueSource))
+                {
+                    lastNameControl.ErrorMessage = "Last Name must be provided for creating Contact.";
+                }
+            }
+
+            return await Task.FromResult(curActivityDO);
+        }
+
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payloadCrates = await GetPayload(curActivityDO, containerId);
@@ -78,11 +96,6 @@ namespace terminalSalesforce.Actions
             }
 
             var contact = _salesforce.CreateSalesforceDTO<ContactDTO>(curActivityDO, payloadCrates, ExtractSpecificOrUpstreamValue);
-            if (string.IsNullOrEmpty(contact.LastName))
-            {
-                return Error(payloadCrates, "No last name found in activity.");
-            }
-
             bool result = await _salesforce.CreateObject(contact, "Contact", _salesforce.CreateForceClient(authTokenDO));
 
             if (result)

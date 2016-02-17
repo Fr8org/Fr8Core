@@ -38,7 +38,7 @@ namespace Hub.Services
             //provide all facts if the user has admin role
 
             curFacts = uow.FactRepository.GetAll()
-                .Where(i => i.CreatedBy == curAccount)
+                //.Where(i => i.CreatedBy == curAccount)
                 .OrderByDescending(i => i.CreateDate)
                 .Take(200)
                 .ToList();
@@ -61,7 +61,7 @@ namespace Hub.Services
             //get the role id
 
             curIncidents = uow.IncidentRepository.GetAll()
-                .Where(i => i.CustomerId == curAccount.Id)
+                //.Where(i => i.CustomerId == curAccount.Id)
                 .OrderByDescending(i => i.CreateDate)
                 .Take(200).ToList();
 

@@ -584,7 +584,7 @@ form.internal-authenticate-form {
 
 /* Configure Action Pane */
 .nested-controls {
-    margin-left: 20px;
+    margin-left: 6%;
 }
 
 input[type=radio] ~ div.nested-controls {
@@ -602,10 +602,6 @@ input[type=radio]:checked ~ div.nested-controls {
 
 .page-header .container {
     width: 100%;
-    margin: 0;
-}
-
-.nested-controls {
     margin: 0;
 }
 
