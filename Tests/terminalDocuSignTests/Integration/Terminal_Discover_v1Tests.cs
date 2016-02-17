@@ -33,7 +33,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async void Discover_Check_Returned_Actions()
+        public async Task Discover_Check_Returned_Actions()
         {
             //Arrange
             var discoverUrl = GetTerminalDiscoverUrl();

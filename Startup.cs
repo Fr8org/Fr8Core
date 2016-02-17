@@ -27,7 +27,7 @@ namespace HubWeb
 {
     public partial class Startup
     {
-        public async void Configuration(IAppBuilder app)
+        public void Configuration(IAppBuilder app)
         {
             Configuration(app, false);
         }
@@ -37,9 +37,8 @@ namespace HubWeb
             //ConfigureDaemons();
             ConfigureAuth(app);
 
-#if DEV || RELEASE
+
             ConfigureHangfire(app, "DockyardDB");
-#endif 
 
                 if (!selfHostMode)
             {

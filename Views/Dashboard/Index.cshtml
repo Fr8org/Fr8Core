@@ -1,4 +1,5 @@
 ﻿@using Utilities
+@using HubWeb.Infrastructure
 <!DOCTYPE html>
 <!--[if IE 8]> <html lang="en" class="ie8 no-js" data-ng-app="app"> <![endif]-->
 <!--[if IE 9]> <html lang="en" class="ie9 no-js" data-ng-app="app"> <![endif]-->
@@ -16,7 +17,9 @@
     @* Load fonts async *@
     <link href="//fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet" type="text/css"  media="none" onload="this.media='all';"/>
     <link href="@Styles.Url("~/Content/css/font-awesome")" rel="stylesheet" type="text/css" media="none" onload="this.media='all';" />
-    @Styles.Render("~/Content/css/main")
+
+    @(Html.IsDebug() ? Html.Partial("_AngularAppStyles") : Html.Partial("CDN/_AngularAppStyles"))
+    @Styles.Render("~/Content/css/bower-no-cdn")
 
     <link id="ng_load_plugins_before" />
     <link rel='shortcut icon' type='image/x-icon' href='/Content/img/favicon.ico' />
@@ -72,9 +75,9 @@
     <script src="/Content/templates/metronic/assets/global/plugins/respond.min.js"></script>
     <script src="/Content/templates/metronic/assets/global/plugins/excanvas.min.js"></script>
     <![endif]-->
-    @Scripts.Render("~/bundles/js/jquery-bootstrap")
-    @Html.Partial("_AngularAppScripts")
-    <script type="text/javascript">
+@(Html.IsDebug() ? Html.Partial("_AngularAppScripts") : Html.Partial("CDN/_AngularAppScripts"))
+
+<script type="text/javascript">
         /* Init Metronic's core jquery plugins and layout scripts */
         $(document).ready(function () {
             Metronic.init(); // Run metronic theme

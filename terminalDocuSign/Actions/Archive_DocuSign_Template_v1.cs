@@ -22,6 +22,9 @@ namespace terminalDocuSign.Actions
 {
     public class Archive_DocuSign_Template_v1 : BaseDocuSignAction
     {
+        private const string SolutionName = "Archive DocuSign Template";
+        private const double SolutionVersion = 1.0;
+        private const string TerminalName = "DocuSign";
         private class ActionUi : StandardConfigurationControlsCM
         {
             public ActionUi()
@@ -50,7 +53,7 @@ namespace terminalDocuSign.Actions
         }
 
         private readonly DocuSignManager DocuSignManager;
-        
+
 
         public Archive_DocuSign_Template_v1()
         {
@@ -59,7 +62,7 @@ namespace terminalDocuSign.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -71,11 +74,11 @@ namespace terminalDocuSign.Actions
         {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
             var docuSignTemplatesCrate = DocuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.Clear();
-                updater.CrateStorage.Add(PackControls(new ActionUi()));
-                updater.CrateStorage.Add(docuSignTemplatesCrate);
+                crateStorage.Clear();
+                crateStorage.Add(PackControls(new ActionUi()));
+                crateStorage.Add(docuSignTemplatesCrate);
             }
 
             return Task.FromResult(curActivityDO);
@@ -84,7 +87,7 @@ namespace terminalDocuSign.Actions
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             var confControls = GetConfigurationControls(curActivityDO);
-            var selectedTemplateField = (DropDownList) GetControl(confControls, "Available_Templates", ControlTypes.DropDownList);
+            var selectedTemplateField = (DropDownList)GetControl(confControls, "Available_Templates", ControlTypes.DropDownList);
             if (string.IsNullOrEmpty(selectedTemplateField.Value))
             {
                 return curActivityDO;
@@ -131,7 +134,7 @@ namespace terminalDocuSign.Actions
         }
         private async Task<ActivityDO> CreateStoreFileActivity(ActivityTemplateDTO template, ActivityDO parentAction)
         {
-            var activity = await HubCommunicator.CreateAndConfigureActivity(template.Id, CurrentFr8UserId, "Store File", 3,parentAction.Id);
+            var activity = await HubCommunicator.CreateAndConfigureActivity(template.Id, CurrentFr8UserId, "Store File", 3, parentAction.Id);
             return Mapper.Map<ActivityDO>(activity);
         }
 
@@ -148,9 +151,9 @@ namespace terminalDocuSign.Actions
 
         private void SetFileDetails(ActivityDO storeFileActivity, string fileName)
         {
-            using (var updater = Crate.UpdateStorage(storeFileActivity))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(storeFileActivity))
             {
-                var confControls = GetConfigurationControls(updater.CrateStorage);
+                var confControls = GetConfigurationControls(crateStorage);
                 var fileNameTextbox = (TextBox)GetControl(confControls, "File_Name", ControlTypes.TextBox);
                 var fileCrateTextSource = (TextSource)GetControl(confControls, "File Crate label", ControlTypes.TextSource);
 
@@ -163,11 +166,11 @@ namespace terminalDocuSign.Actions
 
         private void SetFromConversion(ActivityDO convertCratesActivity)
         {
-            using (var updater = Crate.UpdateStorage(convertCratesActivity))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(convertCratesActivity))
             {
-                var confControls = GetConfigurationControls(updater.CrateStorage);
+                var confControls = GetConfigurationControls(crateStorage);
                 var fromDropdown = (DropDownList)GetControl(confControls, "Available_From_Manifests", ControlTypes.DropDownList);
-                
+
                 fromDropdown.Value = ((int)MT.DocuSignTemplate).ToString(CultureInfo.InvariantCulture);
                 fromDropdown.selectedKey = MT.DocuSignTemplate.GetEnumDisplayName();
             }
@@ -175,9 +178,9 @@ namespace terminalDocuSign.Actions
 
         private void SetToConversion(ActivityDO convertCratesActivity)
         {
-            using (var updater = Crate.UpdateStorage(convertCratesActivity))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(convertCratesActivity))
             {
-                var confControls = GetConfigurationControls(updater.CrateStorage);
+                var confControls = GetConfigurationControls(crateStorage);
                 var toDropdown = (DropDownList)GetControl(confControls, "Available_To_Manifests", ControlTypes.DropDownList);
                 toDropdown.Value = ((int)MT.StandardFileHandle).ToString(CultureInfo.InvariantCulture);
                 toDropdown.selectedKey = MT.StandardFileHandle.GetEnumDisplayName();
@@ -186,9 +189,9 @@ namespace terminalDocuSign.Actions
 
         private void SetSelectedTemplate(ActivityDO docuSignActivity, DropDownList selectedTemplateDd)
         {
-            using (var updater = Crate.UpdateStorage(docuSignActivity))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(docuSignActivity))
             {
-                var confControls = GetConfigurationControls(updater.CrateStorage);
+                var confControls = GetConfigurationControls(crateStorage);
                 var actionDdlb = (DropDownList)GetControl(confControls, "Available_Templates", ControlTypes.DropDownList);
                 actionDdlb.selectedKey = selectedTemplateDd.selectedKey;
                 actionDdlb.Value = selectedTemplateDd.Value;
@@ -198,6 +201,44 @@ namespace terminalDocuSign.Actions
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             return Success(await GetPayload(curActivityDO, containerId));
+        }
+
+        /// <summary>
+        /// This method provides documentation in two forms:
+        /// SolutionPageDTO for general information and 
+        /// ActivityResponseDTO for specific Help on minicon
+        /// </summary>
+        /// <param name="activityDO"></param>
+        /// <param name="curDocumentation"></param>
+        /// <returns></returns>
+        public dynamic Documentation(ActivityDO activityDO, string curDocumentation)
+        {
+            if (curDocumentation.Contains("MainPage"))
+            {
+                var curSolutionPage = new SolutionPageDTO
+                {
+                    Name = SolutionName,
+                    Version = SolutionVersion,
+                    Terminal = TerminalName,
+                    Body = @"<p>This is Archive DocuSign Template solution action</p>"
+                };
+                return Task.FromResult(curSolutionPage);
+            }
+            if (curDocumentation.Contains("HelpMenu"))
+            {
+                if (curDocumentation.Contains("ExplainArchiveTemplate"))
+                {
+                    return Task.FromResult(GenerateDocumentationRepsonce(@"This solution work with DocuSign templates"));
+                }
+                if (curDocumentation.Contains("ExplainService"))
+                {
+                    return Task.FromResult(GenerateDocumentationRepsonce(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
+                }
+                return Task.FromResult(GenerateErrorRepsonce("Unknown contentPath"));
+            }
+            return
+                Task.FromResult(
+                    GenerateErrorRepsonce("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
         }
     }
 }

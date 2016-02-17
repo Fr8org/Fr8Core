@@ -31,12 +31,12 @@ namespace terminalSalesforce.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
 
-            var storage = Crate.GetStorage(curActivityDO);
+            var storage = CrateManager.GetStorage(curActivityDO);
 
             var hasConfigurationControlsCrate = storage
                 .CratesOfType<StandardConfigurationControlsCM>(c => c.Label == "Configuration_Controls").FirstOrDefault() != null;
@@ -51,11 +51,11 @@ namespace terminalSalesforce.Actions
 
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.Clear();
+                crateStorage.Clear();
 
-                AddTextSourceControlForDTO<LeadDTO>(updater.CrateStorage, "Upstream Terminal-Provided Fields");
+                AddTextSourceControlForDTO<LeadDTO>(crateStorage, "Upstream Terminal-Provided Fields", addRequestConfigEvent:true);
             }
 
             return await Task.FromResult(curActivityDO);
@@ -64,10 +64,36 @@ namespace terminalSalesforce.Actions
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO,
                                                                                 AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.ReplaceByLabel(await CreateAvailableFieldsCrate(curActivityDO));
+                crateStorage.ReplaceByLabel(await CreateAvailableFieldsCrate(curActivityDO));
             }
+            return await Task.FromResult(curActivityDO);
+        }
+
+        public override async Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        {
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            {
+                var configControls = GetConfigurationControls(crateStorage);
+
+                //verify the last name has a value provided
+                var lastNameControl = configControls.Controls.Single(ctl => ctl.Name.Equals("LastName"));
+
+                if (string.IsNullOrEmpty((lastNameControl as TextSource).ValueSource))
+                {
+                    lastNameControl.ErrorMessage = "Last Name must be provided for creating Lead.";
+                }
+
+                //verify the company has a value provided
+                var companyControl = configControls.Controls.Single(ctl => ctl.Name.Equals("Company")); 
+
+                if (string.IsNullOrEmpty((companyControl as TextSource).ValueSource))
+                {
+                    companyControl.ErrorMessage = "Company must be provided for creating Lead.";
+                }
+            }
+
             return await Task.FromResult(curActivityDO);
         }
 
@@ -81,17 +107,6 @@ namespace terminalSalesforce.Actions
             }
 
             var lead = _salesforce.CreateSalesforceDTO<LeadDTO>(curActivityDO, payloadCrates, ExtractSpecificOrUpstreamValue);
-
-            if (string.IsNullOrEmpty(lead.LastName))
-            {
-                return Error(payloadCrates, "No last name found in activity.");
-            }
-
-            if (string.IsNullOrEmpty(lead.Company))
-            {
-                return Error(payloadCrates, "No company name found in activity.");
-            }
-
             bool result = await _salesforce.CreateObject(lead, "Lead", _salesforce.CreateForceClient(authTokenDO));
 
             if (result)

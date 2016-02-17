@@ -28,6 +28,7 @@ namespace Data.Infrastructure.JsonNet
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             var customTerminalConverter = new TerminalActivityTemplateConverter();
+            var customWebServiceConvert = new WebServiceConverter();
             var item = (ActivityTemplateDTO)value;
             writer.WriteStartObject();
             writer.WritePropertyName("name");
@@ -50,6 +51,8 @@ namespace Data.Infrastructure.JsonNet
             writer.WriteValue(item.NeedsAuthentication);
             writer.WritePropertyName("terminalId");
             writer.WriteValue(item.TerminalId);
+            writer.WritePropertyName("webService");
+            writer.WriteRawValue(JsonConvert.SerializeObject(item.WebService, customWebServiceConvert));
             writer.WriteEndObject();
             writer.Flush();
         }

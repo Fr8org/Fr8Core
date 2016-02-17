@@ -2,6 +2,7 @@
 /// <reference path="../typings/metronic.d.ts" />
 
 var app = angular.module("app", [
+    "templates",
     "ui.router",
     "ui.bootstrap",
     "oc.lazyLoad",
@@ -247,6 +248,12 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             url: "/terminals",
             templateUrl: "/AngularTemplate/TerminalList",
             data: { pageTitle: 'Terminals', pageSubTitle: '' }
+        })
+
+        .state('manifestregistry', {
+            url: "/manifestregistry",
+            templateUrl: "/AngularTemplate/ManifestRegistryList",
+            data: { pageTitle: 'Manifest Registry', pageSubTitle: '' }
         })
 
         .state('manageAuthTokens', {

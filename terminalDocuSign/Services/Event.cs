@@ -26,13 +26,11 @@ namespace terminalDocuSign.Services
     public class Event : terminalDocuSign.Interfaces.IEvent
     {
         private readonly EventReporter _alertReporter;
-        private readonly ICrateManager _crate;
         private readonly IDocuSignRoute _docuSignRoute;
 
         public Event()
         {
             _alertReporter = ObjectFactory.GetInstance<EventReporter>();
-            _crate = ObjectFactory.GetInstance<ICrateManager>();
             _docuSignRoute = ObjectFactory.GetInstance<IDocuSignRoute>();
         }
 
@@ -136,7 +134,7 @@ namespace terminalDocuSign.Services
             }
         }
 
-        private CrateStorage ExtractEventPayload(IEnumerable<DocuSignEventDTO> curEvents)
+        private ICrateStorage ExtractEventPayload(IEnumerable<DocuSignEventDTO> curEvents)
         {
             var stroage = new CrateStorage();
 

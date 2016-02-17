@@ -49,7 +49,7 @@ namespace terminalGoogle.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (!Crate.IsStorageEmpty(curActivityDO))
+            if (!CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Followup;
             }
@@ -59,10 +59,10 @@ namespace terminalGoogle.Actions
 
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.Clear();
-                updater.CrateStorage.Add(CreateControlsCrate());
+                crateStorage.Clear();
+                crateStorage.Add(CreateControlsCrate());
             }
             await AddCrateDesignTimeFieldsSource(curActivityDO);
             await AddSpreadsheetDesignTimeFieldsSource(curActivityDO, authTokenDO);
@@ -129,7 +129,7 @@ namespace terminalGoogle.Actions
                 CreateWorksheetControls()
             };
 
-            return Crate.CreateStandardConfigurationControlsCrate(ConfigurationControlsLabel, controls.ToArray());
+            return CrateManager.CreateStandardConfigurationControlsCrate(ConfigurationControlsLabel, controls.ToArray());
         }
 
         private ControlDefinitionDTO CreateSpreadsheetControls()
@@ -235,16 +235,16 @@ namespace terminalGoogle.Actions
 
         private async Task<ActivityDO> AddCrateDesignTimeFieldsSource(ActivityDO curActivityDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.RemoveByLabel("Store which Crates?");
+                crateStorage.RemoveByLabel("Store which Crates?");
 
                 var mergedUpstreamRunTimeObjects = await MergeUpstreamFields(curActivityDO, "Available Run-Time Objects");
                 FieldDTO[] upstreamLabels = mergedUpstreamRunTimeObjects.Content.
                     Fields.Select(field => new FieldDTO { Key = field.Key, Value = field.Value }).ToArray();
 
-                var upstreamLabelsCrate = Crate.CreateDesignTimeFieldsCrate("Store which Crates?", upstreamLabels);
-                updater.CrateStorage.Add(upstreamLabelsCrate);
+                var upstreamLabelsCrate = CrateManager.CreateDesignTimeFieldsCrate("Store which Crates?", upstreamLabels);
+                crateStorage.Add(upstreamLabelsCrate);
             }
 
             return curActivityDO;
@@ -256,16 +256,16 @@ namespace terminalGoogle.Actions
             var spreadsheets = _googleSheet.EnumerateSpreadsheetsUris(authDTO);
 
             var fields = spreadsheets.Select(x => new FieldDTO() { Key = x.Value, Value = x.Key, Availability = AvailabilityType.Configuration }).ToArray();
-            var createDesignTimeFields = Crate.CreateDesignTimeFieldsCrate(
+            var createDesignTimeFields = CrateManager.CreateDesignTimeFieldsCrate(
                 "Spreadsheet Fields",
                 AvailabilityType.Configuration,
                 fields);
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.RemoveByLabel("Spreadsheet Fields");
+                crateStorage.RemoveByLabel("Spreadsheet Fields");
 
-                updater.CrateStorage.Add(createDesignTimeFields);
+                crateStorage.Add(createDesignTimeFields);
             }
 
             return await Task.FromResult<ActivityDO>(curActivityDO);
@@ -277,16 +277,16 @@ namespace terminalGoogle.Actions
             var worksheet = _googleSheet.EnumerateWorksheet(_spreedsheetUri, authDTO);
 
             var fields = worksheet.Select(x => new FieldDTO() { Key = x.Value, Value = x.Key, Availability = AvailabilityType.Configuration }).ToArray();
-            var createDesignTimeFields = Crate.CreateDesignTimeFieldsCrate(
+            var createDesignTimeFields = CrateManager.CreateDesignTimeFieldsCrate(
                 "Worksheet Fields",
                 AvailabilityType.Configuration,
                 fields);
 
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.RemoveByLabel("Worksheet Fields");
+                crateStorage.RemoveByLabel("Worksheet Fields");
 
-                updater.CrateStorage.Add(createDesignTimeFields);
+                crateStorage.Add(createDesignTimeFields);
             }
 
             return await Task.FromResult<ActivityDO>(curActivityDO);
@@ -296,11 +296,11 @@ namespace terminalGoogle.Actions
         {
             //add upstream crates 
             var manifest = await GetUpstreamManifestListCrate(curActivityDO);
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.RemoveByLabel("AvailableUpstreamManifests");
+                crateStorage.RemoveByLabel("AvailableUpstreamManifests");
 
-                updater.CrateStorage.Add(manifest);
+                crateStorage.Add(manifest);
             }
 
             return curActivityDO;
@@ -309,11 +309,11 @@ namespace terminalGoogle.Actions
         private async Task<ActivityDO> AddUpstreamLabelSource(ActivityDO curActivityDO)
         {
             var labels = await GetUpstreamCrateLabelListCrate(curActivityDO);
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.RemoveByLabel("AvailableUpstreamLabels");
+                crateStorage.RemoveByLabel("AvailableUpstreamLabels");
 
-                updater.CrateStorage.Add(labels);
+                crateStorage.Add(labels);
             }
 
             return curActivityDO;
@@ -444,7 +444,7 @@ namespace terminalGoogle.Actions
             return uploadedWorksheet;
         }
 
-        private async void UpdateWorksheetFields(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        private async Task UpdateWorksheetFields(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             StandardConfigurationControlsCM configurationControls = GetConfigurationControls(curActivityDO);
             if (configurationControls != null)
@@ -460,12 +460,12 @@ namespace terminalGoogle.Actions
                     if (existingSpreadsheetRadioOption.Selected == false)
                     {
                         //if spreadsheet is new Clear out worksheet dropdown and select new worksheet
-                        using (var updater = Crate.UpdateStorage(curActivityDO))
+                        using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
                         {
-                            updater.CrateStorage.RemoveByLabel("Worksheet Fields");
+                            crateStorage.RemoveByLabel("Worksheet Fields");
 
                             configurationControls.Controls[2] = CreateWorksheetControls();
-                            updater.CrateStorage.ReplaceByLabel(Crate.CreateStandardConfigurationControlsCrate(ConfigurationControlsLabel, configurationControls.Controls.ToArray()));
+                            crateStorage.ReplaceByLabel(CrateManager.CreateStandardConfigurationControlsCrate(ConfigurationControlsLabel, configurationControls.Controls.ToArray()));
                         }
                     }
                     else
@@ -474,9 +474,9 @@ namespace terminalGoogle.Actions
                         if (!String.IsNullOrEmpty(dropDownSpreadsheet.Value))
                         {
                             _spreedsheetUri = dropDownSpreadsheet.Value;
-                            using (var updater = Crate.UpdateStorage(curActivityDO))
+                            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
                             {
-                                updater.CrateStorage.RemoveByLabel("Worksheet Fields");
+                                crateStorage.RemoveByLabel("Worksheet Fields");
 
                             }
                             await AddWorksheetDesignTimeFieldsSource(curActivityDO, authTokenDO);

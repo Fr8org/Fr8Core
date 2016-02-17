@@ -33,7 +33,7 @@ namespace terminalFr8Core.Actions
         public override ConfigurationRequestType ConfigurationEvaluator(
             ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -43,10 +43,10 @@ namespace terminalFr8Core.Actions
 
         protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.Clear();
-                updater.CrateStorage.Add(CreateControlsCrate());
+                crateStorage.Clear();
+                crateStorage.Add(CreateControlsCrate());
             }
 
             return Task.FromResult<ActivityDO>(curActivityDO);
@@ -67,12 +67,12 @@ namespace terminalFr8Core.Actions
 
         protected override Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                RemoveControl(updater.CrateStorage, "ErrorLabel");
+                RemoveControl(crateStorage, "ErrorLabel");
 
 
-                updater.CrateStorage.RemoveByLabel("Sql Table Definitions");
+                crateStorage.RemoveByLabel("Sql Table Definitions");
 
             var connectionString = ExtractConnectionString(curActivityDO);
                 
@@ -82,14 +82,14 @@ namespace terminalFr8Core.Actions
                 {
                     var tableDefinitions = FindObjectHelper.RetrieveColumnDefinitions(connectionString);
                     var tableDefinitionCrate = 
-                        Crate.CreateDesignTimeFieldsCrate(
+                        CrateManager.CreateDesignTimeFieldsCrate(
                             "Sql Table Definitions",
                             tableDefinitions.ToArray()
                         );
 
                     var columnTypes = FindObjectHelper.RetrieveColumnTypes(connectionString);
                     var columnTypesCrate =
-                        Crate.CreateDesignTimeFieldsCrate(
+                        CrateManager.CreateDesignTimeFieldsCrate(
                             "Sql Column Types",
                             columnTypes.ToArray()
                         );
@@ -99,19 +99,19 @@ namespace terminalFr8Core.Actions
                         new FieldDTO() { Key = connectionString, Value = connectionString }
                     };
                     var connectionStringCrate =
-                        Crate.CreateDesignTimeFieldsCrate(
+                        CrateManager.CreateDesignTimeFieldsCrate(
                             "Sql Connection String",
                             connectionStringFieldList.ToArray()
                         );
 
-                    updater.CrateStorage.Add(tableDefinitionCrate);
-                    updater.CrateStorage.Add(columnTypesCrate);
-                    updater.CrateStorage.Add(connectionStringCrate);
+                        crateStorage.Add(tableDefinitionCrate);
+                        crateStorage.Add(columnTypesCrate);
+                        crateStorage.Add(connectionStringCrate);
                 }
                 catch
                 {
                     AddLabelControl(
-                            updater.CrateStorage,
+                            crateStorage,
                         "ErrorLabel",
                         "Unexpected error",
                         "Error occured while trying to fetch columns from database specified."
@@ -125,7 +125,7 @@ namespace terminalFr8Core.Actions
 
         private string ExtractConnectionString(ActivityDO curActivityDO)
         {
-            var configControls = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().First();
+            var configControls = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().First();
             var connectionStringControl = configControls.FindByName("ConnectionString");
 
             return connectionStringControl.Value;

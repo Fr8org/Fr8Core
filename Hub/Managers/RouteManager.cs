@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Data.Crates;
 using Utilities.Configuration.Azure;
 using Utilities.Logging;
 
@@ -125,9 +126,9 @@ namespace Hub.Managers
         {
             if (storeMTDataActivity.CrateStorage != null)
             {
-                using (var updater = _crateManager.UpdateStorage(() => storeMTDataActivity.CrateStorage))
+                using (var crateStorage = _crateManager.UpdateStorage(() => storeMTDataActivity.CrateStorage))
                 {
-                    var configControlCM = updater.CrateStorage
+                    var configControlCM = crateStorage
                         .CrateContentsOfType<StandardConfigurationControlsCM>()
                         .First();
 

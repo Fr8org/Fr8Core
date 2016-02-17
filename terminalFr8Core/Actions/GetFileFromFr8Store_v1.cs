@@ -32,11 +32,11 @@ namespace terminalFr8Core.Actions
     {
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
-            var controlsMS = Crate.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var controlsMS = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (controlsMS == null)
             {
@@ -57,10 +57,10 @@ namespace terminalFr8Core.Actions
             //build a controls crate to render the pane
             var configurationControlsCrate = CreateControlsCrate();
             
-            using (var updater = Crate.UpdateStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage = AssembleCrateStorage(configurationControlsCrate);
-                updater.CrateStorage.Add(await GetCurrentUsersFiles());
+                crateStorage.Replace(AssembleCrateStorage(configurationControlsCrate));
+                crateStorage.Add(await GetCurrentUsersFiles());
             }
 
             return curActivityDO;
@@ -69,7 +69,7 @@ namespace terminalFr8Core.Actions
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var curPayloadDTO = await GetPayload(curActivityDO, containerId);
-            var payloadStorage = Crate.GetStorage(curPayloadDTO);
+            var payloadStorage = CrateManager.GetStorage(curPayloadDTO);
 
             var configContrls = GetConfigurationControls(curActivityDO);
             var fileSelector = configContrls.FindByName<DropDownList>("FileSelector");
@@ -102,9 +102,9 @@ namespace terminalFr8Core.Actions
 
             var fileCrate = Data.Crates.Crate.FromContent("DownloadFile", fileDescription);
 
-            using (var updater = Crate.UpdateStorage(curPayloadDTO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curPayloadDTO))
             {
-                updater.CrateStorage.Add(fileCrate);
+                crateStorage.Add(fileCrate);
             }
             
             return Success(curPayloadDTO);
@@ -125,7 +125,7 @@ namespace terminalFr8Core.Actions
             var curAccountFileList = await HubCommunicator.GetFiles(CurrentFr8UserId);
             //TODO where tags == Docusign files
             var fileFields = curAccountFileList.Select(c => new FieldDTO(c.OriginalFileName, c.Id.ToString(CultureInfo.InvariantCulture)));
-            return Crate.CreateDesignTimeFieldsCrate("AvailableFiles", fileFields.ToArray());
+            return CrateManager.CreateDesignTimeFieldsCrate("AvailableFiles", fileFields.ToArray());
         }
 
         private Crate CreateControlsCrate()

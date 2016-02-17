@@ -28,7 +28,7 @@ namespace terminalExcel.Actions
             [JsonIgnore]
             public readonly ControlDefinitionDTO select_file;
 
-            public ActionUi(string uploadedFileName = null)
+            public ActionUi(string uploadedFileName = null, string uploadedFilePath = null)
             {
                 Controls = new List<ControlDefinitionDTO>();
 
@@ -46,6 +46,7 @@ namespace terminalExcel.Actions
                         Label = "Select an Excel file",
                         ManifestType = CrateManifestTypes.StandardConfigurationControls
                     },
+                    Value = uploadedFilePath,
                 }));
 
                 if (!string.IsNullOrEmpty(uploadedFileName))
@@ -63,7 +64,7 @@ namespace terminalExcel.Actions
                     Label = "",
                     Value = "This Action will try to extract a table of rows from the first spreadsheet in the file. The rows should have a header row.",
                     CssClass = "well well-lg TextBlockClass"
-                });                
+                });
             }
         }
 
@@ -78,11 +79,16 @@ namespace terminalExcel.Actions
 
         private async Task<PayloadDTO> CreateStandardPayloadDataFromStandardTableData(ActivityDO curActivityDO, Guid containerId)
         {
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            {
+                CreatePayloadCrate_ExcelRows(crateStorage);
+            }
+
             var payloadCrates = await GetPayload(curActivityDO, containerId);
 
             var tableDataMS = await GetTargetTableData(
                 curActivityDO,
-                Crate.GetStorage(curActivityDO)
+                CrateManager.GetStorage(curActivityDO)
             );
 
             if (!tableDataMS.FirstRowHeaders)
@@ -93,15 +99,14 @@ namespace terminalExcel.Actions
             // Create a crate of payload data by using Standard Table Data manifest and use its contents to tranform into a Payload Data manifest.
             // Add a crate of PayloadData to action's crate storage
             
-            
-            using (var updater = Crate.UpdateStorage(payloadCrates))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
             {
-                updater.CrateStorage.Add(Crate.CreatePayloadDataCrate("ExcelTableRow", "Excel Data", tableDataMS));
+                crateStorage.Add(CrateManager.CreatePayloadDataCrate("ExcelTableRow", "Excel Data", tableDataMS));
             }
-            return Success(payloadCrates);        
+            return Success(payloadCrates);
         }
 
-        private async Task<StandardTableDataCM> GetTargetTableData(ActivityDO activityDO, CrateStorage curCrateStorageDTO)
+        private async Task<StandardTableDataCM> GetTargetTableData(ActivityDO activityDO, ICrateStorage curCrateStorageDTO)
         {
             // Find crates of manifest type Standard Table Data
             var standardTableDataCrates = curCrateStorageDTO.CratesOfType<StandardTableDataCM>();
@@ -168,11 +173,11 @@ namespace terminalExcel.Actions
                 //Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
                 Crate upstreamFieldsCrate = await MergeUpstreamFields(curActivityDO, "Select Excel File");
 
-                using (var updater = Crate.UpdateStorage(curActivityDO))
+                using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
                 {
-                    updater.CrateStorage.Clear();
-                    updater.CrateStorage.Add(upstreamFieldsCrate);
-                    updater.CrateStorage.Add(PackControls(new ActionUi()));
+                    crateStorage.Clear();
+                    crateStorage.Add(upstreamFieldsCrate);
+                    crateStorage.Add(PackControls(new ActionUi()));
                 }
             }
             else
@@ -187,7 +192,7 @@ namespace terminalExcel.Actions
         /// </summary>
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -199,29 +204,11 @@ namespace terminalExcel.Actions
         protected override Task<ActivityDO> FollowupConfigurationResponse(
             ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            var storage = Crate.GetStorage(curActivityDO);
-            var filePathsFromUserSelection = storage.CrateContentsOfType<StandardConfigurationControlsCM>()
-                .Select(x =>
-                {
-                    var actionUi = new ActionUi();
-                    actionUi.ClonePropertiesFrom(x);
-                    return actionUi;
-                })
-                 .Where(x => !string.IsNullOrEmpty(x.select_file.Value)).ToArray();
+            var storage = CrateManager.GetStorage(curActivityDO);
+            var uploadFilePath = GetUploadFilePath(storage);
 
-            if (filePathsFromUserSelection.Length > 1)
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                throw new AmbiguityException();
-            }
-
-            using (var updater = Crate.UpdateStorage(curActivityDO))
-            {
-                string uploadFilePath = null;
-                if (filePathsFromUserSelection.Length > 0)
-                {
-                    uploadFilePath = filePathsFromUserSelection[0].select_file.Value;
-                }
-
                 string fileName = null;
                 if (!string.IsNullOrEmpty(uploadFilePath))
                 {
@@ -241,12 +228,12 @@ namespace terminalExcel.Actions
                     }
                 }
 
-                updater.CrateStorage.Remove<StandardConfigurationControlsCM>();
-                updater.CrateStorage.Add(PackControls(new ActionUi(fileName)));
+                crateStorage.Remove<StandardConfigurationControlsCM>();
+                crateStorage.Add(PackControls(new ActionUi(fileName, uploadFilePath)));
 
                 if (!string.IsNullOrEmpty(uploadFilePath))
                 {
-                    TransformExcelFileDataToStandardTableDataCrate(updater.CrateStorage, uploadFilePath);
+                    TransformExcelFileHeadersToStandardTableDataCrate(crateStorage, uploadFilePath);
                 }
             }
 
@@ -269,7 +256,7 @@ namespace terminalExcel.Actions
             return uploadFilePath;
         }
 
-        private void TransformExcelFileDataToStandardTableDataCrate(CrateStorage storage, string selectedFilePath)
+        private void TransformExcelFileHeadersToStandardTableDataCrate(ICrateStorage storage, string selectedFilePath)
         {
             // Check if the file is an Excel file.
             string ext = Path.GetExtension(selectedFilePath);
@@ -291,7 +278,7 @@ namespace terminalExcel.Actions
             if (headersArray != null)
             {
                 var headers = headersArray.ToList();
-                var curCrateDTO = Crate.CreateDesignTimeFieldsCrate(
+                var curCrateDTO = CrateManager.CreateDesignTimeFieldsCrate(
                             "Spreadsheet Column Headers",
                             headers.Select(col => new FieldDTO() { Key = col, Value = col }).ToArray()
                         );
@@ -299,12 +286,34 @@ namespace terminalExcel.Actions
                 storage.RemoveByLabel("Spreadsheet Column Headers");
                 storage.Add(curCrateDTO);
             }
-
-            CreatePayloadCrate_ExcelRows(storage, fileAsByteArray, headersArray, ext);
         }
 
-        private void CreatePayloadCrate_ExcelRows(CrateStorage storage, byte[] fileAsByteArray, string[] headersArray, string extension)
+        private void CreatePayloadCrate_ExcelRows(ICrateStorage storage)
         {
+            var uploadFilePath = GetUploadFilePath(storage);
+
+            string fileName = null;
+            if (!string.IsNullOrEmpty(uploadFilePath))
+            {
+                fileName = ExtractFileName(uploadFilePath);
+            }
+            else
+            {
+                return;
+            }
+
+            string extension = Path.GetExtension(uploadFilePath);
+
+            FileDO curFileDO = new FileDO()
+            {
+                CloudStorageUrl = uploadFilePath,
+            };
+
+            IFile file = ObjectFactory.GetInstance<IFile>();
+            // Read file from repository
+            var fileAsByteArray = file.Retrieve(curFileDO);
+            var headersArray = ExcelUtils.GetColumnHeaders(fileAsByteArray, extension);
+
             // Fetch rows in Excel file and assign them to the action's crate storage as Standard Table Data crate
             var rowsDictionary = ExcelUtils.GetTabularData(fileAsByteArray, extension);
             if (rowsDictionary != null && rowsDictionary.Count > 0)
@@ -312,9 +321,35 @@ namespace terminalExcel.Actions
                 var rows = ExcelUtils.CreateTableCellPayloadObjects(rowsDictionary, headersArray);
                 if (rows != null && rows.Count > 0)
                 {
-                    storage.Add(Crate.CreateStandardTableDataCrate("Excel Payload Rows", true, rows.ToArray()));
+                    storage.Add(CrateManager.CreateStandardTableDataCrate("Excel Payload Rows", true, rows.ToArray()));
                 }
             }
+        }
+
+        private string GetUploadFilePath(ICrateStorage storage)
+        {
+
+            var filePathsFromUserSelection = storage.CrateContentsOfType<StandardConfigurationControlsCM>()
+                .Select(x =>
+                {
+                    var actionUi = new ActionUi();
+                    actionUi.ClonePropertiesFrom(x);
+                    return actionUi;
+                })
+                 .Where(x => !string.IsNullOrEmpty(x.select_file.Value)).ToArray();
+
+            if (filePathsFromUserSelection.Length > 1)
+            {
+                throw new AmbiguityException();
+            }
+
+            string uploadFilePath = null;
+            if (filePathsFromUserSelection.Length > 0)
+            {
+                uploadFilePath = filePathsFromUserSelection[0].select_file.Value;
+            }
+
+            return uploadFilePath;
         }
     }
 

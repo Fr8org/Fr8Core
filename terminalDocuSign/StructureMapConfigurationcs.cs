@@ -31,6 +31,7 @@ namespace terminalDocuSign
             public LiveMode()
             {
                 For<IDocuSignFolder>().Use<DocuSignFolder>();
+                For<IDocuSignRoute>().Use<DocuSignRoute>();
             }
         }
 

@@ -342,7 +342,7 @@ namespace Hub.Services
 
         public void AddAuthenticationCrate(ActivityDTO activityDTO, int authType)
         {
-            using (var updater = _crate.UpdateStorage(() => activityDTO.CrateStorage))
+            using (var crateStorage = _crate.UpdateStorage(() => activityDTO.CrateStorage))
             {
                 AuthenticationMode mode = authType == AuthenticationType.Internal ? AuthenticationMode.InternalMode : AuthenticationMode.ExternalMode;
 
@@ -363,23 +363,23 @@ namespace Hub.Services
                         break;
                 }
 
-                updater.CrateStorage.Add(_crate.CreateAuthenticationCrate("RequiresAuthentication", mode));
+                crateStorage.Add(_crate.CreateAuthenticationCrate("RequiresAuthentication", mode));
             }
         }
 
         public void RemoveAuthenticationCrate(ActivityDTO activityDTO)
         {
-            using (var updater = _crate.UpdateStorage(() => activityDTO.CrateStorage))
+            using (var crateStorage = _crate.UpdateStorage(() => activityDTO.CrateStorage))
             {
-                updater.CrateStorage.RemoveByManifestId((int)MT.StandardAuthentication);
+                crateStorage.RemoveByManifestId((int)MT.StandardAuthentication);
             }
         }
 
         private void AddAuthenticationLabel(ActivityDTO activityDTO)
         {
-            using (var updater = _crate.UpdateStorage(activityDTO))
+            using (var crateStorage = _crate.GetUpdatableStorage(activityDTO))
             {
-                var controlsCrate = updater.CrateStorage
+                var controlsCrate = crateStorage
                     .CratesOfType<StandardConfigurationControlsCM>()
                     .FirstOrDefault();
 
@@ -388,7 +388,7 @@ namespace Hub.Services
                     controlsCrate = Crate<StandardConfigurationControlsCM>
                         .FromContent("Configuration_Controls", new StandardConfigurationControlsCM());
 
-                    updater.CrateStorage.Add(controlsCrate);
+                    crateStorage.Add(controlsCrate);
                 }
 
                 controlsCrate.Content.Controls.Add(
@@ -402,9 +402,9 @@ namespace Hub.Services
 
         private void RemoveAuthenticationLabel(ActivityDTO activityDTO)
         {
-            using (var updater = _crate.UpdateStorage(activityDTO))
+            using (var crateStorage = _crate.GetUpdatableStorage(activityDTO))
             {
-                var controlsCrate = updater.CrateStorage
+                var controlsCrate = crateStorage
                     .CratesOfType<StandardConfigurationControlsCM>()
                     .FirstOrDefault();
                 if (controlsCrate == null) { return; }
@@ -416,7 +416,7 @@ namespace Hub.Services
 
                 if (controlsCrate.Content.Controls.Count == 0)
                 {
-                    updater.CrateStorage.Remove(controlsCrate);
+                    crateStorage.Remove(controlsCrate);
                 }
             }
         }
@@ -517,23 +517,8 @@ namespace Hub.Services
 
                 //var token = uow.AuthorizationTokenRepository.FindOne(x => x.Terminal.Id == activityTemplate.Terminal.Id && x.UserDO.Id == account.Id);
 
-                if (token != null)
-                {
-                    activityDO.AuthorizationTokenId = null;
-                    uow.SaveChanges();
-
-                    uow.AuthorizationTokenRepository.Remove(token);
-
-                    //If an exception occurs during removal, it means that the token is used in another action -- no prob, ignore it
-                    try
-                    {
-                        uow.SaveChanges();
-                    }
-                    catch (DbUpdateException)
-                    {
-
-                    }
-                }
+                System.Diagnostics.Debug.WriteLine("Token is being invalidated.");
+                RemoveToken(uow, token);
 
                 RemoveAuthenticationCrate(curActivityDto);
                 RemoveAuthenticationLabel(curActivityDto);

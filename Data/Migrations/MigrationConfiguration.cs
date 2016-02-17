@@ -80,6 +80,22 @@ namespace Data.Migrations
 
             AddWebServices(uow);
 
+            AddTestUser(uow);
+
+            UpdateTerminalClientVisibility(uow);
+        }
+
+        private void UpdateTerminalClientVisibility(UnitOfWork uow)
+        {
+            var activities = uow.ActivityTemplateRepository.GetAll();
+            foreach (var activity in activities)
+            {
+                if (activity.Name == "Monitor_DocuSign_Envelope_Activity")
+                    activity.ClientVisibility = false;
+                else
+                    activity.ClientVisibility = true;
+            }
+            uow.SaveChanges();
         }
 
         //Method to let us seed into memory as well
@@ -573,6 +589,41 @@ namespace Data.Migrations
             }
 
             uow.SaveChanges();
+        }
+
+        private void AddTestUser(IUnitOfWork uow)
+        {
+            const string email = "integration_test_runner@fr8.company";
+            const string password = "fr8#s@lt!";
+
+            Fr8AccountDO newDockyardAccountDO = null;
+            //check if we know this email address
+
+            var existingEmailAddressDO =
+                uow.EmailAddressRepository.GetQuery().FirstOrDefault(ea => ea.Address == email);
+            if (existingEmailAddressDO != null)
+            {
+                var existingUserDO = uow.UserRepository
+                    .GetQuery()
+                    .FirstOrDefault(u => u.EmailAddressID == existingEmailAddressDO.Id);
+
+                newDockyardAccountDO = RegisterTestUser(uow, email, email, email, password, Roles.Customer);
+            }
+            else
+            {
+                newDockyardAccountDO = RegisterTestUser(uow, email, email, email, password, Roles.Customer);
+            }
+
+            uow.SaveChanges();
+        }
+
+        private Fr8AccountDO RegisterTestUser(IUnitOfWork uow, string userName,
+            string firstName, string lastName, string password, string roleID)
+        {
+            var userDO = uow.UserRepository.GetOrCreateUser(userName, roleID);
+            uow.UserRepository.UpdateUserCredentials(userDO, userName, password);
+            uow.AspNetUserRolesRepository.AssignRoleToUser(roleID, userDO.Id);
+            return userDO;
         }
 
         private void AddWebService(IUnitOfWork uow, string name, string iconPath)

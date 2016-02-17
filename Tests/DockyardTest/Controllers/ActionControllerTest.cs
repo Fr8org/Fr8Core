@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Results;
 using AutoMapper;
@@ -193,7 +194,7 @@ namespace DockyardTest.Controllers
         [Test]
 
         [Ignore("The real server is not in execution in AppVeyor. Remove these tests once Jasmine Front End integration tests are added.")]
-        public async void ActionController_Configure_WithoutConnectionString_ShouldReturnOneEmptyConnectionString()
+        public void ActionController_Configure_WithoutConnectionString_ShouldReturnOneEmptyConnectionString()
         {
 //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 //            {
@@ -232,7 +233,7 @@ namespace DockyardTest.Controllers
         [Test]
 
         [Ignore("The real server is not in execution in AppVeyor. Remove these tests once Jasmine Front End integration tests are added.")]
-        public async void ActionController_Configure_WithConnectionString_ShouldReturnDataFields()
+        public void ActionController_Configure_WithConnectionString_ShouldReturnDataFields()
         {
 //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 //            {
@@ -266,7 +267,7 @@ namespace DockyardTest.Controllers
 
         [Test]
         [Ignore("The real server is not in execution in AppVeyor. Remove these tests once Jasmine Front End integration tests are added.")]
-        public async void ActionController_Configure_WithConnectionStringAndDataFields_ShouldReturnUpdatedDataFields()
+        public void ActionController_Configure_WithConnectionStringAndDataFields_ShouldReturnUpdatedDataFields()
         {
 //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 //            {
@@ -306,7 +307,7 @@ namespace DockyardTest.Controllers
 
         [Test]
 
-        public async void ActionController_Delete()
+        public async Task ActionController_Delete()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -423,7 +424,7 @@ namespace DockyardTest.Controllers
 
         [Test, Ignore]
 
-        public async void ActionController_GetConfigurationSettings_ValidActionDesignDTO()
+        public async Task ActionController_GetConfigurationSettings_ValidActionDesignDTO()
         {
             
             var controller = new ActionsController();
@@ -442,7 +443,7 @@ namespace DockyardTest.Controllers
 
         [Test]
         [ExpectedException(ExpectedException = typeof(ApplicationException), ExpectedMessage = "Could not find Action.")]
-        public async void ActionController_GetConfigurationSettings_IdIsMissing()
+        public async Task ActionController_GetConfigurationSettings_IdIsMissing()
         {
             var controller = new ActionsController();
             ActivityDTO actionDesignDTO = CreateActionWithId(FixtureData.GetTestGuidById(2));
@@ -459,8 +460,8 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
-        [ExpectedException(ExpectedException = typeof(InvalidOperationException))]
-        public async void ActionController_GetConfigurationSettings_ActionTemplateNameAndVersionIsMissing()
+        [ExpectedException(ExpectedException = typeof(NullReferenceException))]
+        public async Task ActionController_GetConfigurationSettings_ActionTemplateNameAndVersionIsMissing()
         {
             var controller = new ActionsController();
             ActivityDTO actionDesignDTO = CreateActionWithId(FixtureData.GetTestGuidById(2));

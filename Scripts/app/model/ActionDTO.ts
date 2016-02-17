@@ -11,7 +11,7 @@
         childrenActions: Array<interfaces.IActivityDTO>;
         height: number = 300;
         ordering: number;
-        documentationSupport: string;
+        documentation: string;
         constructor(
             rootRouteNodeId: string,
             parentRouteNodeId: string,

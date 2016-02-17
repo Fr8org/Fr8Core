@@ -47,10 +47,10 @@ namespace terminalTwilioTests.Fixture
         public ActivityDTO Send_Via_Twilio_v1_Preconfigured_Crate_With_No_SMS_Number()
         {
             var dataDTO = Send_Via_Twilio_v1_InitialConfiguration_Fr8DataDTO();
-            using (var updater = CrateManager.UpdateStorage(dataDTO.ActivityDTO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(dataDTO.ActivityDTO))
             {
                 var curCrate = No_SMS_Number_Controls();
-                updater.CrateStorage.Add(curCrate);
+                crateStorage.Add(curCrate);
             }
             return dataDTO.ActivityDTO;
         }
