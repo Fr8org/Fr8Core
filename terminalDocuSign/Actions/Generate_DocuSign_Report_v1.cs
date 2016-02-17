@@ -340,92 +340,101 @@ namespace terminalDocuSign.Actions
 
             try
             {
+                var continueClicked = false;
+
                 using (var crateStorage = CrateManager.GetUpdatableStorage(activityDO))
                 {
                     crateStorage.Remove<StandardQueryCM>();
 
                     var queryCrate = ExtractQueryCrate(crateStorage);
                     crateStorage.Add(queryCrate);
-                }
-
-                activityDO.ChildNodes.Clear();
-
-                var queryFr8WarehouseActivityTemplate = activityTemplates
-                    .FirstOrDefault(x => x.Name == "QueryFr8Warehouse");
-                if (queryFr8WarehouseActivityTemplate == null) { return activityDO; }
-
-                var queryFr8WarehouseAction = await AddAndConfigureChildActivity(
-                    activityDO,
-                    "QueryFr8Warehouse"
-                );
-
-                using (var crateStorage = CrateManager.GetUpdatableStorage(queryFr8WarehouseAction))
-                {
-                    crateStorage.RemoveByLabel("Upstream Crate Label List");
-
-                    var fields = new[]
-                    {
-                        new FieldDTO() { Key = QueryCrateLabel, Value = QueryCrateLabel }
-                    };
-                    var upstreamLabelsCrate = CrateManager.CreateDesignTimeFieldsCrate("Upstream Crate Label List", fields);
-                    crateStorage.Add(upstreamLabelsCrate);
-
-                    var upstreamManifestTypes = crateStorage
-                        .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Crate ManifestType List")
-                        .FirstOrDefault();
 
                     var controls = crateStorage
                         .CrateContentsOfType<StandardConfigurationControlsCM>()
                         .FirstOrDefault();
 
-                    var radioButtonGroup = controls
-                        .FindByName<RadioButtonGroup>("QueryPicker");
-
-                    UpstreamCrateChooser upstreamCrateChooser = null;
-                    if (radioButtonGroup != null
-                        && radioButtonGroup.Radios.Count > 0
-                        && radioButtonGroup.Radios[0].Controls.Count > 0)
+                    var continueButton = controls.FindByName<Button>("Continue");
+                    if (continueButton != null)
                     {
-                        upstreamCrateChooser = radioButtonGroup.Radios[0].Controls[0] as UpstreamCrateChooser;
-                    }
+                        continueClicked = continueButton.Clicked;
 
-                    if (upstreamCrateChooser != null)
-                    {
-                        upstreamCrateChooser.SelectedCrates[0].ManifestType.selectedKey = upstreamManifestTypes.Fields[0].Key;
-                        upstreamCrateChooser.SelectedCrates[0].ManifestType.Value = upstreamManifestTypes.Fields[0].Value;
-                        upstreamCrateChooser.SelectedCrates[0].Label.selectedKey = QueryCrateLabel;
-                        upstreamCrateChooser.SelectedCrates[0].Label.Value = QueryCrateLabel;
+                        if (continueButton.Clicked)
+                        {
+                            continueButton.Clicked = false;
+                        }
                     }
                 }
 
-                queryFr8WarehouseAction = await ConfigureChildActivity(
-                    activityDO,
-                    queryFr8WarehouseAction
-                );
-
-                using (var crateStorage = CrateManager.GetUpdatableStorage(activityDO))
+                if (continueClicked)
                 {
-                    crateStorage.RemoveByManifestId((int)MT.OperationalStatus);
-                
-                    var operationalStatus = new OperationalStateCM();
-                    operationalStatus.CurrentActivityResponse =
-                        ActivityResponseDTO.Create(ActivityResponse.ExecuteClientAction);
-                    operationalStatus.CurrentClientActionName = "ExecuteAfterConfigure";
+                    activityDO.ChildNodes.Clear();
 
-                    var operationsCrate = Data.Crates.Crate.FromContent("Operational Status", operationalStatus);
-                    crateStorage.Add(operationsCrate);
+                    var queryFr8WarehouseActivityTemplate = activityTemplates
+                        .FirstOrDefault(x => x.Name == "QueryFr8Warehouse");
+                    if (queryFr8WarehouseActivityTemplate == null) { return activityDO; }
+
+                    var queryFr8WarehouseAction = await AddAndConfigureChildActivity(
+                        activityDO,
+                        "QueryFr8Warehouse"
+                    );
+
+                    using (var crateStorage = CrateManager.GetUpdatableStorage(queryFr8WarehouseAction))
+                    {
+                        crateStorage.RemoveByLabel("Upstream Crate Label List");
+
+                        var fields = new[]
+                        {
+                            new FieldDTO() { Key = QueryCrateLabel, Value = QueryCrateLabel }
+                        };
+                        var upstreamLabelsCrate = CrateManager.CreateDesignTimeFieldsCrate("Upstream Crate Label List", fields);
+                        crateStorage.Add(upstreamLabelsCrate);
+
+                        var upstreamManifestTypes = crateStorage
+                            .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Crate ManifestType List")
+                            .FirstOrDefault();
+
+                        var controls = crateStorage
+                            .CrateContentsOfType<StandardConfigurationControlsCM>()
+                            .FirstOrDefault();
+
+                        var radioButtonGroup = controls
+                            .FindByName<RadioButtonGroup>("QueryPicker");
+
+                        UpstreamCrateChooser upstreamCrateChooser = null;
+                        if (radioButtonGroup != null
+                            && radioButtonGroup.Radios.Count > 0
+                            && radioButtonGroup.Radios[0].Controls.Count > 0)
+                        {
+                            upstreamCrateChooser = radioButtonGroup.Radios[0].Controls[0] as UpstreamCrateChooser;
+                        }
+
+                        if (upstreamCrateChooser != null)
+                        {
+                            upstreamCrateChooser.SelectedCrates[0].ManifestType.selectedKey = upstreamManifestTypes.Fields[0].Key;
+                            upstreamCrateChooser.SelectedCrates[0].ManifestType.Value = upstreamManifestTypes.Fields[0].Value;
+                            upstreamCrateChooser.SelectedCrates[0].Label.selectedKey = QueryCrateLabel;
+                            upstreamCrateChooser.SelectedCrates[0].Label.Value = QueryCrateLabel;
+                        }
+                    }
+
+                    queryFr8WarehouseAction = await ConfigureChildActivity(
+                        activityDO,
+                        queryFr8WarehouseAction
+                    );
+
+                    using (var crateStorage = CrateManager.GetUpdatableStorage(activityDO))
+                    {
+                        crateStorage.RemoveByManifestId((int)MT.OperationalStatus);
+
+                        var operationalStatus = new OperationalStateCM();
+                        operationalStatus.CurrentActivityResponse =
+                            ActivityResponseDTO.Create(ActivityResponse.ExecuteClientAction);
+                        operationalStatus.CurrentClientActionName = "ExecuteAfterConfigure";
+
+                        var operationsCrate = Data.Crates.Crate.FromContent("Operational Status", operationalStatus);
+                        crateStorage.Add(operationsCrate);
+                    }
                 }
-
-                // activityDO.ChildNodes.Add(new ActivityDO()
-                // {
-                //     ActivityTemplateId = queryFr8WarehouseAction.Id,
-                //     IsTempId = true,
-                //     Name = queryFr8WarehouseAction.Name,
-                //     Label = queryFr8WarehouseAction.Label,
-                //     CrateStorage = Crate.EmptyStorageAsStr(),
-                //     ParentRouteNode = activityDO,
-                //     Ordering = 1
-                // });
             }
             catch (Exception)
             {
