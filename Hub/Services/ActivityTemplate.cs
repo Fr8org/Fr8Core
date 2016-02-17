@@ -255,7 +255,7 @@ namespace Hub.Services
 
             lock (_activityTemplates)
             {
-                return _activityTemplates.Values.Single(x => x.Name == name && x.Version == version);
+                return _activityTemplates.Values.FirstOrDefault(x => x.Name == name && x.Version == version);
             }
         }
     }

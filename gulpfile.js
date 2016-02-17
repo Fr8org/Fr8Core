@@ -9,14 +9,24 @@ gulp.task('bower', function (done) {
 });
 
 gulp.task('concattemplates', function () {
-    return gulp.src('Views/AngularTemplate/**/*.cshtml')
-      .pipe(templateCache('templateCache.js', {
-          module: 'templates', standalone: true, transformUrl: function (url) {
-              //remove .cshtml extension and /AngularTemplate/ prefix
-              return '/AngularTemplate/' + url.slice(0, -7);
-          }
-      }))
-      .pipe(gulp.dest('Scripts/tests/templates'));
+    return gulp.src(['Views/AngularTemplate/**/*.cshtml',
+        /*we are excluding those files - because they contain razor code*/
+        '!Views/AngularTemplate/TerminalList.cshtml',
+        '!Views/AngularTemplate/RouteList.cshtml',
+        '!Views/AngularTemplate/MyAccountPage.cshtml',
+        '!Views/AngularTemplate/Header.cshtml',
+        '!Views/AngularTemplate/ChangePassword.cshtml',
+        '!Views/AngularTemplate/AccountList.cshtml'])
+        .pipe(templateCache('templateCache.js', {
+            module: 'templates',
+            standalone: true,
+            transformUrl: function(url) {
+                //remove .cshtml extension and /AngularTemplate/ prefix
+                return '/AngularTemplate/' + url.slice(0, -7);
+            }
+        }))
+        .pipe(gulp.dest('Scripts/tests/templates'))
+        .pipe(gulp.dest('Scripts'));
 });
 
 gulp.task('compile_js', function () {
@@ -227,7 +237,7 @@ gulp.task('cdnizer-js', ['bower'], function () {
                 file: '~/bower_components/angular/angular.js',
                 package: 'angular',
                 test: 'window.angular',
-                cdn: '//ajax.googleapis.com/ajax/libs/angularjs/${ version }/angular.js'
+                cdn: '//ajax.googleapis.com/ajax/libs/angularjs/${ version }/angular.min.js'
             },
             {
                 file: '~/bower_components/angular-resource/angular-resource.js',

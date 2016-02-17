@@ -38,10 +38,10 @@ namespace Hub.Services
             //provide all facts if the user has admin role
             if (curAccountRoles.Any(x => x.RoleId == adminRoleId))
             {
-                curFacts = uow.FactRepository.GetAll()
-                    .OrderByDescending(i => i.CreateDate)
-                    .Take(200)
-                    .ToList();
+            curFacts = uow.FactRepository.GetAll()
+                .OrderByDescending(i => i.CreateDate)
+                .Take(200)
+                .ToList();
             }
             return curFacts;
         }
@@ -61,7 +61,7 @@ namespace Hub.Services
             var adminRoleId = uow.AspNetRolesRepository.GetAll().Single(r => r.Name == "Admin").Id;
             //get the role id
             if (curAccountRoles.Any(x => x.RoleId == adminRoleId))
-                curIncidents = uow.IncidentRepository.GetAll()
+            curIncidents = uow.IncidentRepository.GetAll()
                 .OrderByDescending(i => i.CreateDate)
                 .Take(200).ToList();
             return curIncidents;
