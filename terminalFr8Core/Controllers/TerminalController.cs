@@ -159,7 +159,7 @@ namespace terminalFr8Core.Controllers
             result.Add(new ActivityTemplateDTO()
             {
                 Name = "Loop",
-                Label = "Fr8 Core Loop",
+                Label = "Loop",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 WebService = webService,
