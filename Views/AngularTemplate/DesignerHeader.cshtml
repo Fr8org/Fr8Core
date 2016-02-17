@@ -1,7 +1,9 @@
 ﻿<div class="page-head designer-header container">
     <div class="designer-header-title col-md-8 page-title" ng-class="{'design-header-title-editing': editing}"><h1><div class="route-name" ng-click="editTitle()">{{route.name}}</div><input class="design-header-title-editField" type="text" ng-model="route.name" ng-blur="onTitleChange()" input-focus="editing" /><span class="glyphicon glyphicon-pencil designer-header-glyphicon" aria-hidden="true" ng-click="editTitle()"></span></h1></div>
     <div class="designer-header-status col-md-4">
-        <button type="button" class="btn btn-primary" style="width: 120px;" ng-click="runRoute()">Run</button>
+        <button type="button" class="btn btn-primary" style="width: 120px;" ng-click="runRoute()" ng-show="route.routeState === 1">Run</button>
+        <button type="button" class="btn btn-warning" style="width: 120px;" ng-click="deactivatePlan()" ng-show="route.routeState === 2">Deactivate</button>
+        <span class="label label-pill label-danger">Status: {{route.routeState | RouteState}}</span>
         <!--
         <span class="designer-header-statusLabel">Status:</span><input bs-switch ng-model="route.routeState" type="checkbox" switch-on-text="Active" switch-off-text="Inactive" ng-true-value="2" ng-false-value="1">
         -->
