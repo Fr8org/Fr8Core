@@ -23,7 +23,7 @@ namespace terminalDocuSign
 
         public void Configuration(IAppBuilder app, bool selfHost)
         {
-            ObjectFactory.GetInstance<DbContext>().Database.Initialize(true);
+            //ObjectFactory.GetInstance<DbContext>().Database.Initialize(true);
 
             ConfigureProject(selfHost, TerminalDocusignStructureMapBootstrapper.LiveConfiguration);
             TerminalDataAutoMapperBootStrapper.ConfigureAutoMapper();
