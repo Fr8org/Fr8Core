@@ -85,7 +85,7 @@ namespace terminalAzureTests.Integration
         /// <summary>
         /// Validate correct crate-storage structure in follow-up configuration response 
         /// </summary>
-        [Test]
+        [Test, Ignore]
         public async Task Write_To_Sql_Server_FollowUp_Configuration_Check_Crate_Structure()
         {
             var configureUrl = GetTerminalConfigureUrl();
