@@ -55,6 +55,11 @@ namespace HealthMonitor
             }
         }
 
+        /// <summary>
+        /// Determine directory where Hub Launcher utility is located. 
+        /// It depends on the current build configuration.
+        /// </summary>
+        /// <returns></returns>
         private string GetHubLauncherDirectory()
         {
             const string CONFIG =
@@ -69,6 +74,12 @@ namespace HealthMonitor
             return Path.Combine(directory.FullName, "HealthMonitor.HubLauncher\\bin\\", CONFIG);
         }
 
+        /// <summary>
+        /// The function spins off a new process to lanuch the Hub. This is necessary in order 
+        /// to avoid component configuration for the Hub and terminals mixing up. 
+        /// </summary>
+        /// <param name="hub"></param>
+        /// <param name="connectionString"></param>
         private void StartHub(SelfHostedTerminalsElement hub, string connectionString)
         {
             Console.WriteLine("Starting HubLauncher...");
@@ -96,6 +107,7 @@ namespace HealthMonitor
                 throw new Exception("Cannot start HubLauncher for an unknown reason. Test runner aborted.");
             }
 
+            // Wait for the message from HubLauncher indicating that the Hub has been launched. 
             _waitHandle.Wait(new TimeSpan(0, 3, 0));
             Console.WriteLine("Proceeding to Tests");
 
@@ -105,6 +117,7 @@ namespace HealthMonitor
         {
             if (e.Data == null) return;
 
+            // Hub Launcher posts  "Listening..." to the standard output when the Hub is ready. 
             if (e.Data.IndexOf("Listening...") > -1)
             {
                 // HubLauncher is ready, can start tests
