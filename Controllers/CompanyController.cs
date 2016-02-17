@@ -8,12 +8,10 @@ namespace HubWeb.Controllers
         {
             return View();
         }
-    }
-
-
-    // GET: Company
-    public ActionResult Index()
-    {
-        return View();
+        // GET: Company
+        public ActionResult Index()
+        {
+            return View();
+        }
     }
 }

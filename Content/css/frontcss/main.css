@@ -477,11 +477,15 @@ header#site-header {
     font-size: 0.75em;
 }
 
-.team-member .col-xs-2 .img {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
+.team-member {
+    height: 10em;
 }
+
+    .team-member .col-xs-2 .img {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+    }
 
 #team .inner-bg {
     background-image: url('/Content/img/backgrounds/contact-bg.jpg');
@@ -489,7 +493,7 @@ header#site-header {
 
 #team .container {
     position: relative;
-    z-index: 2;
+    z-index: 3;
     text-align: center;
 }
 
@@ -502,6 +506,7 @@ header#site-header {
         margin-bottom: 2rem;
         font-size: 1.5rem;
     }
+
 /*Location Section*/
 #location .inner-bg {
     background-image: url('/Content/img/backgrounds/contact-bg.jpg');
