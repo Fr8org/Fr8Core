@@ -198,9 +198,50 @@ namespace terminalDocuSign.Actions
                 var id = queryMtObject.GetValue("EnvelopeId");
                 if (!existingEnvelopes.Contains(id))
                 {
-                    searchResult.PayloadObjects.Add(queryMtObject);
+                    searchResult.PayloadObjects.Add(ConvertQueryMtToRealTimeData(queryMtObject));
                 }
             }
+        }
+
+        private static readonly List<Tuple<string, string>> RealTimeToMtMap =
+            new List<Tuple<string, string>>()
+            {
+                new Tuple<string, string>("EnvelopeId", "EnvelopeId"),
+                new Tuple<string, string>("Name", null),
+                new Tuple<string, string>("Subject", null),
+                new Tuple<string, string>("Status", "Status"),
+                new Tuple<string, string>("OwnerName", null),
+                new Tuple<string, string>("SenderName", "ExternalAccountId"),
+                new Tuple<string, string>("SenderEmail", null),
+                new Tuple<string, string>("Shared", null),
+                new Tuple<string, string>("CompletedDate", "CompletedDate"),
+                new Tuple<string, string>("CreatedDate", "CreateDate")
+            };
+
+        private static PayloadObjectDTO ConvertQueryMtToRealTimeData(PayloadObjectDTO obj)
+        {
+            var result = new PayloadObjectDTO();
+            foreach (var map in RealTimeToMtMap)
+            {
+                if (map.Item2 == null)
+                {
+                    result.PayloadObject.Add(new FieldDTO(map.Item1, ""));
+                }
+                else
+                {
+                    string temp;
+                    if (obj.TryGetValue(map.Item2, false, false, out temp))
+                    {
+                        result.PayloadObject.Add(new FieldDTO(map.Item1, temp ?? ""));
+                    }
+                    else
+                    {
+                        result.PayloadObject.Add(new FieldDTO(map.Item1, ""));
+                    }
+                }
+            }
+
+            return result;
         }
 
         private void SearchDocusignInRealTime(DocuSignAuthTokenDTO docuSignAuthToken, List<FilterConditionDTO> criteria, StandardPayloadDataCM searchResult, HashSet<string> existingEnvelopes)
