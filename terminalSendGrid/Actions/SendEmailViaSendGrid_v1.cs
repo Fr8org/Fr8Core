@@ -22,13 +22,11 @@ namespace terminalSendGrid.Actions
         // moved the EmailPackager ObjectFactory here since the basepluginAction will be called by others and the dependency is defiend in pluginsendGrid
         private IConfigRepository _configRepository;
         private IEmailPackager _emailPackager;
-        private readonly  List<string> _excludedCrates;
 
         public SendEmailViaSendGrid_v1()
         {
             _configRepository = ObjectFactory.GetInstance<IConfigRepository>();
             _emailPackager = ObjectFactory.GetInstance<IEmailPackager>();
-            _excludedCrates = new List<string>() { "AvailableActions" };
         }
 
         public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
