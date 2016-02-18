@@ -101,7 +101,7 @@ namespace HealthMonitor
 
         public void RunStarted(string name, int testCount)
         {
-            Trace.Write(Environment.NewLine);
+                Trace.Write(Environment.NewLine);
         }
 
         public void SuiteFinished(TestResult result)
