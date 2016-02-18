@@ -255,8 +255,6 @@ namespace Hub.Services
                 {
                     uow.SaveChanges();
                 }
-                //todo: check clear of container for main activity
-
                 //we should clear values of configuration controls
 
                 foreach (var downStreamActivity in downStreamActivities)
@@ -280,6 +278,22 @@ namespace Hub.Services
                             crateStorage.DiscardChanges();
                         }
                     }
+
+                    // Detach containers from action, where CurrentRouteNodeId == id.
+                    var containersWithCurrentRouteNode = uow.ContainerRepository
+                        .GetQuery()
+                        .Where(x => x.CurrentRouteNodeId == downStreamActivity.Id)
+                        .ToList();
+
+                    containersWithCurrentRouteNode.ForEach(x => x.CurrentRouteNodeId = null);
+
+                    // Detach containers from action, where NextRouteNodeId == id.
+                    var containersWithNextRouteNode = uow.ContainerRepository
+                        .GetQuery()
+                        .Where(x => x.NextRouteNodeId == downStreamActivity.Id)
+                        .ToList();
+
+                    containersWithNextRouteNode.ForEach(x => x.NextRouteNodeId = null);
                 }
 
                 uow.SaveChanges();
