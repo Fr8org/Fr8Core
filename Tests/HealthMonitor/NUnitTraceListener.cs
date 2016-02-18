@@ -28,8 +28,8 @@ namespace HealthMonitor
 
             if (!string.IsNullOrEmpty(appInsightsInstrumentationKey))
             {
+                Microsoft.ApplicationInsights.Extensibility.TelemetryConfiguration.Active.InstrumentationKey = appInsightsInstrumentationKey;
                 _telemetry = new TelemetryClient();
-                _telemetry.InstrumentationKey = appInsightsInstrumentationKey;
             }
         }
 
