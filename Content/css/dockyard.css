@@ -824,3 +824,7 @@ div[dnd-list].dndDragover {
 .push-footer {
     background: #eff3f8
 }
+
+.form-inline-sourceable {
+    margin-bottom: 20px;
+}

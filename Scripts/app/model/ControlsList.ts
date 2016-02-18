@@ -161,4 +161,11 @@
         selectedLabel: string;
         selectedFieldType: string;
     }
+    
+    export class SourceableCriteria extends DropDownList{
+        fieldList: Array<DropDownListItem>;
+        comparatorList: Array<DropDownListItem>;
+        valueSource: string;
+        textValue: string;
+    }
 }

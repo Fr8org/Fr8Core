@@ -29,98 +29,13 @@ namespace terminalFr8Core.Actions
         public class ActionUi : StandardConfigurationControlsCM
         {
             [JsonIgnore]
-            public DropDownList AvailableObjects { get; set; }
-
-            [JsonIgnore]
-            public FilterPane Filter { get; set; }
-
-            [JsonIgnore]
-            public RadioButtonGroup QueryPicker { get; set; }
-
-            public UpstreamCrateChooser UpstreamCrateChooser { get; set; }
+            public SourceableCriteria SourceableTest { get; set; }
 
             public ActionUi()
             {
                 Controls = new List<ControlDefinitionDTO>();
 
-                Controls.Add(QueryPicker = new RadioButtonGroup()
-                {
-                    Label = "Select query to use:",
-                    GroupName = "QueryPickerGroup",
-                    Name = "QueryPicker",
-                    Radios = new List<RadioButtonOption>()
-                    {
-                        new RadioButtonOption()
-                        {
-                            Selected = true,
-                            Name = "ExistingQuery",
-                            Value = "Use existing Query",
-                            Controls = new List<ControlDefinitionDTO>()
-                            {
-                                (UpstreamCrateChooser = new UpstreamCrateChooser()
-                                {
-                                    Name = "UpstreamCrateChooser",
-                                    SelectedCrates = new List<CrateDetails>()
-                                    {
-                                        new CrateDetails()
-                                        {
-                                            ManifestType = new DropDownList()
-                                            {
-                                                Name = "UpstreamCrateManifestTypeDdl",
-                                                Source = new FieldSourceDTO(
-                                                    CrateManifestTypes.StandardDesignTimeFields,
-                                                    "Upstream Crate ManifestType List"
-                                                )
-                                            },
-                                            Label = new DropDownList()
-                                            {
-                                                Name = "UpstreamCrateLabelDdl",
-                                                Source = new FieldSourceDTO(
-                                                    CrateManifestTypes.StandardDesignTimeFields,
-                                                    "Upstream Crate Label List"
-                                                )
-                                            }
-                                        }
-                                    },
-                                    MultiSelection = false
-                                })
-                            }
-                        },
-
-                        new RadioButtonOption()
-                        {
-                            Selected = false,
-                            Name = "NewQuery",
-                            Value = "Use new Query",
-                            Controls = new List<ControlDefinitionDTO>()
-                            {
-                                (AvailableObjects = new DropDownList
-                                {
-                                    Label = "Object List",
-                                    Name = "AvailableObjects",
-                                    Value = null,
-                                    Events = new List<ControlEvent> { ControlEvent.RequestConfig },
-                                    Source = new FieldSourceDTO
-                                    {
-                                        Label = "Queryable Objects",
-                                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                                    }
-                                }),
-                                (Filter = new FilterPane
-                                {
-                                    Label = "Find all Fields where:",
-                                    Name = "Filter",
-                                    Required = true,
-                                    Source = new FieldSourceDTO
-                                    {
-                                        Label = "Queryable Criteria",
-                                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                                    }
-                                })
-                            }
-                        }
-                    }
-                });
+                Controls.Add(SourceableTest = new SourceableCriteria());
             }
         }
 
@@ -218,11 +133,6 @@ namespace terminalFr8Core.Actions
                 int selectedObjectId;
 
                 crateStorage.RemoveByLabel("Queryable Criteria");
-
-                if (int.TryParse(config.AvailableObjects.Value, out selectedObjectId))
-                {
-                    crateStorage.Add(CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", GetFieldsByObjectId(selectedObjectId).ToArray()));
-                }
             }
             return Task.FromResult(curActivityDO);
         }
