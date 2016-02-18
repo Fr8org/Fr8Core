@@ -14,6 +14,7 @@ namespace Hub.Interfaces
     {
         void Update(IUnitOfWork uow, SubrouteDO subroute);
         void Delete(IUnitOfWork uow, Guid id);
+        Task<bool> DeleteAllChildNodes(Guid activityId);
         /// <summary>
         /// Backups current action and calls configure on downstream actions
         /// if there are validation errors restores current action and returns false

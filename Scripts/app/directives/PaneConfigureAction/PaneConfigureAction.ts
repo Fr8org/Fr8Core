@@ -16,7 +16,8 @@ module dockyard.directives.paneConfigureAction {
         PaneConfigureAction_ExecutePlan,
         PaneConfigureAction_ConfigureFocusElement,
         PaneConfigureAction_AuthCompleted,
-        PaneConfigureAction_DownStreamReconfiguration
+        PaneConfigureAction_DownStreamReconfiguration,
+        PaneConfigureAction_SolutionClearChildrenAction
     }
 
     export class ActionReconfigureEventArgs {
@@ -211,6 +212,13 @@ module dockyard.directives.paneConfigureAction {
 
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_ReloadAction], (event: ng.IAngularEvent, reloadActionEventArgs: ReloadActionEventArgs) => {
                     reloadAction(reloadActionEventArgs);
+                });
+
+                $scope.$on(MessageType[MessageType.PaneConfigureAction_SolutionClearChildrenAction], (event: ng.IAngularEvent) => {
+                    //used for the logic of loadConfiguration for solutions
+                    if ($scope.currentAction.childrenActions && $scope.currentAction.childrenActions.length > 0) {
+                        $scope.currentAction.childrenActions = [];
+                    }
                 });
 
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_ConfigureFocusElement], (event: ng.IAngularEvent, configureFocusElementArgs: ConfigureFocusElementArgs) => {
@@ -437,6 +445,7 @@ module dockyard.directives.paneConfigureAction {
                             if ($scope.currentAction.childrenActions) {
                                 if (angular.toJson($scope.currentAction.childrenActions) != angular.toJson(res.childrenActions)) {
                                     $scope.reconfigureChildrenActions = true;
+                                    $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsDetected]);
                                 }
                             }
 

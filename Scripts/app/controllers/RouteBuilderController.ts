@@ -148,7 +148,7 @@ module dockyard.controllers {
                     if (realAction.ordering <= index) {
                         index -= 1;
                     }
-                }
+                } 
 
                 //now we should inject it to proper position and get downstream actions
                 downstreamActions = downstreamActions.concat(this.insertActionToParent(realAction, index));
@@ -337,6 +337,11 @@ module dockyard.controllers {
         }
 
         private loadRoute(mode = 'route') {
+            if (mode === 'solution') {
+                //in case of solution mode clear current action children
+                this.$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_SolutionClearChildrenAction]);
+            }
+
             var routePromise = this.RouteService.getFull({ id: this.$scope.planId });
             routePromise.$promise.then(this.onRouteLoad.bind(this, mode));
         }

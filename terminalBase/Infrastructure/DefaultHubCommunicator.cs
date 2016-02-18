@@ -307,6 +307,15 @@ namespace TerminalBase.Infrastructure
             return await _restfulServiceClient.GetAsync<IEnumerable<RouteFullDTO>>(uri, null, await GetHMACHeader(uri, userId));
         }
 
+        public async Task DeleteExistingChildNodesFromActivity(Guid curActivityId, string userId)
+        {
+            var hubAlarmsUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/actions/deletechildnodes?activityId=" + curActivityId;
+            var uri = new Uri(hubAlarmsUrl);
+
+            await _restfulServiceClient.DeleteAsync(uri, null, await GetHMACHeader(uri, userId));
+        }
+
         public static byte[] ReadFully(Stream input)
         {
             var buffer = new byte[16 * 1024];
