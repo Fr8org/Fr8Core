@@ -337,11 +337,6 @@ module dockyard.controllers {
         }
 
         private loadRoute(mode = 'route') {
-            if (mode === 'solution') {
-                //in case of solution mode clear current action children
-                this.$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_SolutionClearChildrenAction]);
-            }
-
             var routePromise = this.RouteService.getFull({ id: this.$scope.planId });
             routePromise.$promise.then(this.onRouteLoad.bind(this, mode));
         }
@@ -707,9 +702,7 @@ module dockyard.controllers {
                     return;
                 }
             }
-
             
-
             // scann all actions to find actions with tag AgressiveReload in ActivityTemplate
             this.reConfigure(results);
 
