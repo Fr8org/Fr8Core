@@ -3,6 +3,46 @@
 module dockyard.directives {
     'use strict';
 
+    export interface IQueryField {
+        name: string;
+        label: string;
+        fieldType: string;
+        control: model.ControlDefinitionDTO;
+    }
+
+    export interface IQueryOperator {
+        text: string;
+        value: string;
+    }
+
+    export interface IQueryCondition {
+        field: IQueryField;
+        operator: string;
+        configurationControlScope: any;
+    }
+
+    export interface IQueryBuilderScope extends ng.IScope {
+        currentAction: model.ActivityDTO;
+        field: any;
+        fields: Array<IQueryField>;
+        operators: Array<IQueryOperator>;
+        defaultOperator: string;
+        conditions: Array<IQueryCondition>;
+
+        addCondition: () => void;
+        removeCondition: (index: number) => void;
+    }
+
+    export interface IQueryBuilderConditionScope extends ng.IScope {
+        currentAction: model.ActivityDTO;
+        fields: Array<IQueryField>;
+        operators: Array<IQueryOperator>;
+        condition: IQueryCondition;
+        fieldSelected: () => void;
+
+        rootElem: any;
+    }
+
     export function QueryBuilder(): ng.IDirective {
         return {
             restrict: 'E',
@@ -16,7 +56,7 @@ module dockyard.directives {
                     $scope: IQueryBuilderScope,
                     $timeout: ng.ITimeoutService,
                     crateHelper: services.CrateHelper
-                    ) {
+                ) {
 
                     $scope.operators = [
                         { text: '>', value: 'gt' },
@@ -29,61 +69,70 @@ module dockyard.directives {
 
                     $scope.defaultOperator = '';
 
-                    var extractType = function (field) {
-                        if (!field.tags) {
-                            return 'string';
-                        }
+                    // TODO: remove.
+                    // var extractType = function (field) {
+                    //     if (!field.tags) {
+                    //         return 'string';
+                    //     }
+                    // 
+                    //     var predefinedTypes = ['string', 'date'];
+                    //     if (!predefinedTypes.indexOf(field.tags)) {
+                    //         return 'string';
+                    //     }
+                    // 
+                    //     return field.tags;
+                    // };
 
-                        var predefinedTypes = ['string', 'date'];
-                        if (!predefinedTypes.indexOf(field.tags)) {
-                            return 'string';
-                        }
-
-                        return field.tags;
-                    };
-
-                    $scope.$watch('currentAction', function (newValue: model.ActivityDTO) {
+                    $scope.$watch('currentAction', (newValue: model.ActivityDTO) => {
                         if (newValue && newValue.crateStorage) {
                             var crate = crateHelper.findByManifestTypeAndLabel(
-                                newValue.crateStorage, 'Standard Design-Time Fields', 'Queryable Criteria');
-
+                                newValue.crateStorage,
+                                'Standard Query Fields',
+                                'Queryable Criteria'
+                            );
+                    
                             $scope.fields = [];
                             if (crate != null) {
-                                var crateJson = <any> (crate.contents);
+                                var crateJson = <any>(crate.contents);
                                 angular.forEach(crateJson.Fields, function (it) {
-                                    $scope.fields.push({ name: it.key, key: it.key, type: extractType(it) });
+                                    $scope.fields.push({
+                                        name: it.Name,
+                                        label: it.Label,
+                                        fieldType: it.FieldType,
+                                        control: it.Control
+                                    });
                                 });
                             }
                         }
                     });
 
-                    $scope.$watch('field', function (newValue: any) {
-                        if (newValue && newValue.value) {
-                            var jsonValue = angular.fromJson(newValue.value);
-                            $scope.conditions = <Array<interfaces.ICondition>>jsonValue;
-                        }
-                        else {
-                            $scope.conditions = [
-                                new model.Condition(
-                                    null,
-                                    $scope.defaultOperator,
-                                    null)
-                            ];
-                        }
-                    });
+                    // $scope.$watch('field', (newValue: any) => {
+                    //     if (newValue && newValue.value) {
+                    //         var jsonValue = angular.fromJson(newValue.value);
+                    //         // $scope.conditions = <Array<interfaces.ICondition>>jsonValue;
+                    //     }
+                    //     else {
+                    //         // $scope.conditions = [
+                    //         //     new model.Condition(
+                    //         //         null,
+                    //         //         $scope.defaultOperator,
+                    //         //         null)
+                    //         // ];
+                    //     }
+                    // });
 
-                    var findField = function (name) {
-                        var i;
-                        for (i = 0; i < $scope.fields.length; ++i) {
-                            if ($scope.fields[i].key === name) {
-                                return $scope.fields[i];
-                            }
-                        }
+                    var findField = (name) => {
+                        // var i;
+                        // for (i = 0; i < $scope.fields.length; ++i) {
+                        //     if ($scope.fields[i].key === name) {
+                        //         return $scope.fields[i];
+                        //     }
+                        // }
 
                         return null;
                     };
 
-                    var isValidDate = function (value) {
+                    var isValidDate = (value) => {
                         if (!value) { return true; }
 
                         var tokens = value.split('-');
@@ -104,7 +153,7 @@ module dockyard.directives {
                         return true;
                     };
 
-                    var extractConditionValue = function (cond: interfaces.ICondition) {
+                    var extractConditionValue = (cond: interfaces.ICondition) => {
                         var field = findField(cond.field);
                         if (field === null) {
                             return null;
@@ -128,34 +177,101 @@ module dockyard.directives {
                         return result;
                     };
 
-                    var updateFieldValue = function () {
+                    var updateFieldValue = () => {
                         var toBeSerialized = [];
-                        angular.forEach($scope.conditions, function (cond) {
-                            toBeSerialized.push({
-                                field: cond.field,
-                                operator: cond.operator,
-                                value: extractConditionValue(cond)
-                            });
-                        });
+                        // angular.forEach($scope.conditions, function (cond) {
+                        //     toBeSerialized.push({
+                        //         field: cond.field,
+                        //         operator: cond.operator,
+                        //         value: extractConditionValue(cond)
+                        //     });
+                        // });
 
                         $scope.field.value = angular.toJson(toBeSerialized);
                     };
 
-                    $scope.$watch('conditions', function () {
+                    $scope.$watch('conditions', () => {
                         updateFieldValue();
                     }, true);
+
+                    $scope.addCondition = () => {
+                        if (!$scope.conditions) {
+                            $scope.conditions = [];
+                        }
+
+                        var condition = {
+                            field: null,
+                            operator: $scope.defaultOperator,
+                            configurationControlScope: null
+                        };
+
+                        $scope.conditions.push(condition);
+                    };
+
+                    $scope.removeCondition = (index: number) => {
+                        $scope.conditions.splice(index, 1);
+                    };
                 }
             ]
-        }
+        };
     }
 
-    export interface IQueryBuilderScope extends ng.IScope {
-        field: any;
-        fields: Array<any>;
-        operators: Array<interfaces.IOperator>;
-        defaultOperator: string;
-        conditions: Array<interfaces.ICondition>;
+    export function QueryBuilderCondition(): ng.IDirective {
+        return {
+            restrict: 'A',
+            replace: true,
+            templateUrl: '/AngularTemplate/QueryBuilderCondition',
+            scope: {
+                currentAction: '=',
+                condition: '=',
+                fields: '=',
+                operators: '='
+            },
+            link: (scope: IQueryBuilderConditionScope,
+                elem: ng.IAugmentedJQuery,
+                attr: ng.IAttributes) => {
+
+                scope.rootElem = elem;
+            },
+            controller: ['$rootScope', '$scope', '$compile',
+                ($rootScope: ng.IRootScopeService,
+                    $scope: IQueryBuilderConditionScope,
+                    $compile: ng.ICompileService) => {
+
+                    var attachControl = () => {
+                        $('.condition-control', $scope.rootElem).empty();
+
+                        if ($scope.condition.configurationControlScope) {
+                            $scope.condition.configurationControlScope.$destroy();
+                            $scope.condition.configurationControlScope = null;
+                        }
+
+                        if (!$scope.condition.field) {
+                            return;
+                        }
+                        
+                        var configurationControlScope = $rootScope.$new();
+                        (<any>configurationControlScope).control =
+                            angular.copy($scope.condition.field.control);
+                        (<any>configurationControlScope).currentAction = $scope.currentAction;
+
+                        $scope.condition.configurationControlScope = true;
+
+                        $compile('<configuration-control current-action="currentAction" field="control" />')
+                            (configurationControlScope, (markup, scope) => {
+                                console.log(markup);
+                                $('.condition-control', $scope.rootElem).append(markup);
+                            });
+                    };
+
+                    $scope.fieldSelected = () => {
+                        attachControl();
+                    };
+                }
+            ]
+        };
     }
 }
 
 app.directive('queryBuilder', dockyard.directives.QueryBuilder);
+app.directive('queryBuilderCondition', dockyard.directives.QueryBuilderCondition);

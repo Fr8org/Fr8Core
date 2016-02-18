@@ -933,6 +933,7 @@
     <Content Include="Views\Shared\CDN\_AngularAppScripts.cshtml" />
     <Content Include="Views\Shared\_AngularAppStyles.cshtml" />
     <Content Include="Views\Shared\CDN\_AngularAppStyles.cshtml" />
+    <Content Include="Views\AngularTemplate\QueryBuilderCondition.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
