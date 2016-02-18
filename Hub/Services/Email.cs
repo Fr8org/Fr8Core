@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Mail;
+using System.Threading.Tasks;
 using FluentValidation;
 using StructureMap;
 using Data.Entities;
@@ -11,6 +12,7 @@ using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
 using Data.Validations;
+using Hub.Managers.APIManagers.Packagers;
 using Utilities;
 using Utilities.Logging;
 
@@ -51,6 +53,19 @@ namespace Hub.Services
             uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
             uow.SaveChanges();
         }
+
+        public async Task SendAsync(IUnitOfWork uow, string subject, string message, string fromAddress, string toAddress)
+        {
+            if (uow == null)
+                throw new ArgumentNullException("uow");
+            var curEmail = GenerateBasicMessage(uow, subject, message, fromAddress, toAddress);
+
+            uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
+            uow.SaveChanges();
+
+            await ObjectFactory.GetInstance<IEmailPackager>().Send(new EnvelopeDO { Email = curEmail });
+        }
+        
 
         public void Send(IUnitOfWork uow, string subject, string message, string fromAddress, string toAddress)
         {
