@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Linq;
 using NUnit.Core;
 using HealthMonitor.Configuration;
+using System.IO;
 
 namespace HealthMonitor
 {
@@ -113,10 +114,12 @@ namespace HealthMonitor
                 }
             }
 
-            var testResult = testSuite.Run(new NullListener(), new NUnitTestRunnerFilter());
-            var testReport = GenerateTestReport(testResult);
-
-            return testReport;
+            using (NUnitTraceListener listener = new NUnitTraceListener())
+            {
+                var testResult = testSuite.Run(listener, new NUnitTestRunnerFilter());
+                var testReport = GenerateTestReport(testResult);
+                return testReport;
+            }
         }
 
         private TestReport GenerateTestReport(TestResult testResult)

@@ -68,15 +68,6 @@ namespace HubWeb
             var db = ObjectFactory.GetInstance<DbContext>();
             db.Database.Initialize(true);
 
-            // A HACK. In self-hosted mode after calling db.Database.Initialize StructureMap mappings
-            // mess up for some reason. So we need to repeat configuration of StructureMap and then 
-            // again Automapper. 
-            if (selfHostMode)
-            {
-                StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE);
-                ObjectFactory.GetInstance<AutoMapperBootStrapper>().ConfigureAutoMapper();
-            }
-
             Utilities.Server.IsProduction = ObjectFactory.GetInstance<IConfigRepository>().Get<bool>("IsProduction");
             Utilities.Server.IsDevMode = ObjectFactory.GetInstance<IConfigRepository>().Get<bool>("IsDev", true);
 

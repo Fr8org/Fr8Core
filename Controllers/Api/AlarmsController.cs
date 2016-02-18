@@ -26,11 +26,19 @@ namespace HubWeb.Controllers
             //TODO what happens to AlarmsController? does it stay in memory all this time?
             //TODO inspect this and change callback function to a static function if necessary
             Expression<Action> action = () => ExecuteTerminalWithLogging(alarmDTO);
+
+            try { 
 #if DEBUG
             BackgroundJob.Schedule(action, DateTime.Now.AddSeconds(10));
 #else
             BackgroundJob.Schedule(action, alarmDTO.StartTime);
 #endif
+            }catch(Exception e)
+            {
+                new List<Exception>().Add(e);
+                throw;
+            }
+        
 
             //TODO: Commented as part of DO - 1520. Need to rethink about this.
             //var eventController = new EventController();
@@ -40,12 +48,13 @@ namespace HubWeb.Controllers
 
         //TODO is this method called from somewhere else?
         [HttpPost]
-        public async Task ExecuteTerminalWithLogging(AlarmDTO alarmDTO)
+        public void ExecuteTerminalWithLogging(AlarmDTO alarmDTO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var _plan = ObjectFactory.GetInstance<IPlan>();
-                await _plan.Continue(alarmDTO.ContainerId);
+                var continueTask = _plan.Continue(alarmDTO.ContainerId);
+                Task.WaitAll(continueTask);
                 //TODO report output to somewhere to pusher service maybe
 
                 /*
