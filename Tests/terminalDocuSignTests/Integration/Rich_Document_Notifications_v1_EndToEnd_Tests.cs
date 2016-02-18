@@ -182,7 +182,7 @@ namespace terminalDocuSignTests.Integration
             timePeriod.Hours = 0;
             timePeriod.Minutes = 0;
             var handlersCrate = _crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Single(c => c.Label == "AvailableHandlers");
-            var emailHandler = handlersCrate.Content.Fields.Single(c => c.Key == "Send Email using SendGrid");
+            var emailHandler = handlersCrate.Content.Fields.Single(c => c.Key.Contains("Send Email"));
             notificationHandler.Value = emailHandler.Value;
             notificationHandler.selectedKey = emailHandler.Key;
             var recipientEventsCrate = _crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Single(c => c.Label == "AvailableRecipientEvents");
