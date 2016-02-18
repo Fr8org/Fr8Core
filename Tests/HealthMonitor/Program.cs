@@ -20,6 +20,7 @@ namespace HealthMonitor
             var selfHosting = false;
             var connectionString = string.Empty;
             var specificTest = string.Empty;
+            var appInsightsInstrumentationKey = string.Empty;
             int errorCount = 0;
 
             Debug.AutoFlush = true;
@@ -52,6 +53,10 @@ namespace HealthMonitor
                     {
                         specificTest = args[i];
                     }
+                    else if (i > 0 && args[i - 1] == "--aiik" && args[i] != null)
+                    {
+                        appInsightsInstrumentationKey = args[i];
+                    }
                 }
 
                 if (selfHosting)
@@ -79,7 +84,7 @@ namespace HealthMonitor
 
             try
             {
-                errorCount = new Program().Run(ensureTerminalsStartup, sendEmailReport, appName, specificTest);
+                errorCount = new Program().Run(ensureTerminalsStartup, sendEmailReport, appName, specificTest, appInsightsInstrumentationKey);
             }
             catch (Exception)
             {
@@ -149,7 +154,8 @@ namespace HealthMonitor
             bool ensureTerminalsStartup,
             bool sendEmailReport,
             string appName,
-            string test)
+            string test,
+            string appInsightsInstrumentationKey)
         {
             CoreExtensions.Host.InitializeService();
 
@@ -158,7 +164,7 @@ namespace HealthMonitor
                 EnsureTerminalsStartUp();
             }
 
-            var testRunner = new NUnitTestRunner();
+            var testRunner = new NUnitTestRunner(appInsightsInstrumentationKey);
             var report = testRunner.Run(test);
 
             if (sendEmailReport)
