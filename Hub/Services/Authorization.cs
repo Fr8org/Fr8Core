@@ -517,23 +517,8 @@ namespace Hub.Services
 
                 //var token = uow.AuthorizationTokenRepository.FindOne(x => x.Terminal.Id == activityTemplate.Terminal.Id && x.UserDO.Id == account.Id);
 
-                if (token != null)
-                {
-                    activityDO.AuthorizationTokenId = null;
-                    uow.SaveChanges();
-
-                    uow.AuthorizationTokenRepository.Remove(token);
-
-                    //If an exception occurs during removal, it means that the token is used in another action -- no prob, ignore it
-                    try
-                    {
-                        uow.SaveChanges();
-                    }
-                    catch (DbUpdateException)
-                    {
-
-                    }
-                }
+                System.Diagnostics.Debug.WriteLine("Token is being invalidated.");
+                RemoveToken(uow, token);
 
                 RemoveAuthenticationCrate(curActivityDto);
                 RemoveAuthenticationLabel(curActivityDto);
