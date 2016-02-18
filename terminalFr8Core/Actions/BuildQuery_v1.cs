@@ -334,6 +334,8 @@ namespace terminalFr8Core.Actions
         private async Task UpdateQueryableCriteria(ICrateStorage storage, ActivityDO activityDO, string selectedObject)
         {
             var matchedColumns = await MatchColumnsForSelectedObject(activityDO, selectedObject);
+
+            // TODO: FR-2347, fix here.
             UpdateDesignTimeCrateValue(storage, "Queryable Criteria", matchedColumns.ToArray());
         }
 

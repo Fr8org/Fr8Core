@@ -49,15 +49,21 @@ namespace terminalDocuSign.Actions
         // This little class is storing information about how certian field displayed in Query Builder controls is routed to the backed
         class FieldBackedRoutingInfo
         {
-            public readonly string FieldType;
+            public readonly QueryFieldType FieldType;
             public readonly string DocusignQueryName;
             public readonly string MtDbPropertyName;
+            public readonly Func<string, ControlDefinitionDTO> ControlFactory;
 
-            public FieldBackedRoutingInfo(string fieldType, string docusignQueryName, string mtDbPropertyName)
+            public FieldBackedRoutingInfo(
+                QueryFieldType fieldType,
+                string docusignQueryName,
+                string mtDbPropertyName,
+                Func<string, ControlDefinitionDTO> controlFactory)
             {
                 FieldType = fieldType;
                 DocusignQueryName = docusignQueryName;
                 MtDbPropertyName = mtDbPropertyName;
+                ControlFactory = controlFactory;
             }
         }
 
@@ -80,9 +86,9 @@ namespace terminalDocuSign.Actions
                 var queryFields = GetFieldListForQueryBuilder();
                 var filterConditions = new[]
                 {
-                    new FilterConditionDTO { Field = queryFields[0].Key, Operator = "eq" },
-                    new FilterConditionDTO { Field = queryFields[1].Key, Operator = "eq" },
-                    new FilterConditionDTO { Field = queryFields[2].Key, Operator = "eq" }
+                    new FilterConditionDTO { Field = queryFields[0].Name, Operator = "eq" },
+                    new FilterConditionDTO { Field = queryFields[1].Name, Operator = "eq" },
+                    new FilterConditionDTO { Field = queryFields[2].Name, Operator = "eq" }
                 };
 
                 string initialQuery = JsonConvert.SerializeObject(filterConditions);
@@ -94,7 +100,7 @@ namespace terminalDocuSign.Actions
                     Source = new FieldSourceDTO
                     {
                         Label = "Queryable Criteria",
-                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
+                        ManifestType = CrateManifestTypes.StandardQueryFields
                     }
                 }));
 
@@ -114,16 +120,34 @@ namespace terminalDocuSign.Actions
         private static readonly Dictionary<string, FieldBackedRoutingInfo> QueryBuilderFields = 
             new Dictionary<string, FieldBackedRoutingInfo>
             {
-                { "Envelope Text", new FieldBackedRoutingInfo("string", "SearchText", null) },
-                { "Folder", new FieldBackedRoutingInfo("string", "Folder", null) },
-                { "Status", new FieldBackedRoutingInfo("string", "Status", "Status") },
-                { "CreateDate", new FieldBackedRoutingInfo("date", "CreatedDateTime", "CreateDate") },
-                { "SentDate", new FieldBackedRoutingInfo("date", "SentDateTime", "SentDate") },
-                // Did not find in FolderItem.
-                // { "DeliveredDate", new FieldBackedRoutingInfo("DeliveredDate", "DeliveredDate") },
-                // { "Recipient", new FieldBackedRoutingInfo("Recipient", "Recipient") },
-                { "CompletedDate", new FieldBackedRoutingInfo("date", "CompletedDateTime", "CompletedDate") },
-                { "EnvelopeId", new FieldBackedRoutingInfo("string", "EnvelopeId", "EnvelopeId") }
+                {
+                    "Envelope Text",
+                    new FieldBackedRoutingInfo(QueryFieldType.String, "SearchText", null, CreateTextBoxQueryControl)
+                },
+                {
+                    "Folder",
+                    new FieldBackedRoutingInfo(QueryFieldType.String, "Folder", null, CreateTextBoxQueryControl)
+                },
+                {
+                    "Status",
+                    new FieldBackedRoutingInfo(QueryFieldType.String, "Status", "Status", CreateTextBoxQueryControl)
+                },
+                {
+                    "CreateDate",
+                    new FieldBackedRoutingInfo(QueryFieldType.Date, "CreatedDateTime", "CreateDate", CreateTextBoxQueryControl)
+                },
+                {
+                    "SentDate",
+                    new FieldBackedRoutingInfo(QueryFieldType.Date, "SentDateTime", "SentDate", CreateTextBoxQueryControl)
+                },
+                {
+                    "CompletedDate",
+                    new FieldBackedRoutingInfo(QueryFieldType.Date, "CompletedDateTime", "CompletedDate", CreateTextBoxQueryControl)
+                },
+                {
+                    "EnvelopeId",
+                    new FieldBackedRoutingInfo(QueryFieldType.String, "EnvelopeId", "EnvelopeId", CreateTextBoxQueryControl)
+                }
             };
 
         private readonly DocuSignManager _docuSignManager;
@@ -515,17 +539,31 @@ namespace terminalDocuSign.Actions
             return Crate<StandardQueryCM>.FromContent(QueryCrateLabel, queryCM);
         }
 
-        public static FieldDTO[] GetFieldListForQueryBuilder()
+        public static QueryFieldDTO[] GetFieldListForQueryBuilder()
         {
             return QueryBuilderFields
-                .Keys
-                .Select(x => new FieldDTO(x, x) { Tags = QueryBuilderFields[x].FieldType })
+                .Select(x =>
+                    new QueryFieldDTO(
+                        x.Key,
+                        x.Key,
+                        x.Value.FieldType,
+                        x.Value.ControlFactory(x.Key)
+                    )
+                )
                 .ToArray();
+        }
+
+        private static ControlDefinitionDTO CreateTextBoxQueryControl(string key)
+        {
+            return new TextBox()
+            {
+                Name = "QueryField_" + key
+            };
         }
 
         private IEnumerable<Crate> PackDesignTimeData()
         {
-            yield return Data.Crates.Crate.FromContent("Queryable Criteria", new StandardDesignTimeFieldsCM(GetFieldListForQueryBuilder()));
+            yield return Data.Crates.Crate.FromContent("Queryable Criteria", new StandardQueryFieldsCM(GetFieldListForQueryBuilder()));
             yield return Data.Crates.Crate.FromContent("DocuSign Envelope Report", new StandardDesignTimeFieldsCM(new FieldDTO
             {
                 Key = "DocuSign Envelope Report",

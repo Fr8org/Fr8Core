@@ -237,6 +237,7 @@ namespace terminalFr8Core.Actions
             var criteria = new List<FieldDTO>();
             if (!string.IsNullOrEmpty(currentSelectedObject))
             {
+                // TODO: FR-2347, fix here.
                 var columns = FindObjectHelper.MatchColumnsForSelectedObject(GetConnectionString(), currentSelectedObject);
                 criteria.AddRange(columns);
             }
