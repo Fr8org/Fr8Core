@@ -26,7 +26,8 @@ namespace terminalDocuSign.Services
         {
             var accout = _packager.Login(login, password);
 
-            return MakeRequest<FolderListResponse>("/folders", accout).Folders;
+            var response = MakeRequest<FolderListResponse>("/folders", accout);
+            return response.Folders;
         }
 
 

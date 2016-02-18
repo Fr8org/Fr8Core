@@ -6,6 +6,7 @@ using NUnit.Core;
 using HealthMonitor.Configuration;
 using System.Configuration;
 using System.Diagnostics;
+using System.IO;
 
 namespace HealthMonitor
 {

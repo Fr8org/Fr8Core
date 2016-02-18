@@ -52,35 +52,36 @@ namespace Data.Migrations
             //    System.Diagnostics.Debugger.Launch();
             //}
 
-            // If not running inside web application (i.e. running "Update-Database" in NuGet Package Manager Console),
-            // then register IDBContext and IUnitOfWork in StructureMap DI.
-            if (HttpContext.Current == null)
+
+            using (var migrationContainer = new Container())
             {
-                ObjectFactory.Initialize(x => x.AddRegistry<MigrationConsoleSeedRegistry>());
+                migrationContainer.Configure(x => x.AddRegistry<MigrationConsoleSeedRegistry>());
+
+                var uow = new UnitOfWork(context, migrationContainer);
+
+                UpdateRootRouteNodeId(uow);
+
+                SeedIntoMockDb(uow);
+
+                AddRoles(uow);
+                AddAdmins(uow);
+                AddDockyardAccounts(uow);
+                AddProfiles(uow);
+                AddTestAccounts(uow);
+                //Addterminals(uow);
+
+                //AddAuthorizationTokens(uow);
+                uow.SaveChanges();
+                Fr8AccountDO fr8AccountDO = GetFr8Account(uow, "alex@edelstein.org");
+                AddContainerDOForTestingApi(uow, fr8AccountDO);
+
+                AddWebServices(uow);
+
+                AddTestUser(uow);
+
+                UpdateTerminalClientVisibility(uow);
+
             }
-
-            var uow = new UnitOfWork(context, ObjectFactory.Container);
-
-            UpdateRootRouteNodeId(uow);
-
-            SeedIntoMockDb(uow);
-
-            AddRoles(uow);
-            AddAdmins(uow);
-            AddDockyardAccounts(uow);
-            AddProfiles(uow);
-            AddTestAccounts(uow);
-            //Addterminals(uow);
-
-
-            //AddAuthorizationTokens(uow);
-            uow.SaveChanges();
-            Fr8AccountDO fr8AccountDO = GetFr8Account(uow, "alex@edelstein.org");
-            AddContainerDOForTestingApi(uow, fr8AccountDO);
-
-            AddWebServices(uow);
-
-            UpdateTerminalClientVisibility(uow);
         }
 
         private void UpdateTerminalClientVisibility(UnitOfWork uow)
@@ -587,6 +588,41 @@ namespace Data.Migrations
             }
 
             uow.SaveChanges();
+        }
+
+        private void AddTestUser(IUnitOfWork uow)
+        {
+            const string email = "integration_test_runner@fr8.company";
+            const string password = "fr8#s@lt!";
+
+            Fr8AccountDO newDockyardAccountDO = null;
+            //check if we know this email address
+
+            var existingEmailAddressDO =
+                uow.EmailAddressRepository.GetQuery().FirstOrDefault(ea => ea.Address == email);
+            if (existingEmailAddressDO != null)
+            {
+                var existingUserDO = uow.UserRepository
+                    .GetQuery()
+                    .FirstOrDefault(u => u.EmailAddressID == existingEmailAddressDO.Id);
+
+                newDockyardAccountDO = RegisterTestUser(uow, email, email, email, password, Roles.Customer);
+            }
+            else
+            {
+                newDockyardAccountDO = RegisterTestUser(uow, email, email, email, password, Roles.Customer);
+            }
+
+            uow.SaveChanges();
+        }
+
+        private Fr8AccountDO RegisterTestUser(IUnitOfWork uow, string userName,
+            string firstName, string lastName, string password, string roleID)
+        {
+            var userDO = uow.UserRepository.GetOrCreateUser(userName, roleID);
+            uow.UserRepository.UpdateUserCredentials(userDO, userName, password);
+            uow.AspNetUserRolesRepository.AssignRoleToUser(roleID, userDO.Id);
+            return userDO;
         }
 
         private void AddWebService(IUnitOfWork uow, string name, string iconPath)
