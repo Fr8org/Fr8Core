@@ -63,7 +63,7 @@ namespace HealthMonitor
 
         public void TestStarted(TestName testName)
         {
-            Trace.Write((testName.Name + "... ").PadRight(90));
+            Trace.Write((testName.Name + "... ").PadRight(100));
         }
 
         public void TestOutput(TestOutput testOutput)
