@@ -614,6 +614,10 @@
     <Compile Include="Migrations\201602141719533_Activity_ClientVisibilityAllowNULL.Designer.cs">
       <DependentUpon>201602141719533_Activity_ClientVisibilityAllowNULL.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201602170735431_RemoveMTActivitiesAndRemoveFr8CoreWebServices.cs" />
+    <Compile Include="Migrations\201602170735431_RemoveMTActivitiesAndRemoveFr8CoreWebServices.Designer.cs">
+      <DependentUpon>201602170735431_RemoveMTActivitiesAndRemoveFr8CoreWebServices.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryBase.cs" />
@@ -1038,6 +1042,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201602141719533_Activity_ClientVisibilityAllowNULL.resx">
       <DependentUpon>201602141719533_Activity_ClientVisibilityAllowNULL.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602170735431_RemoveMTActivitiesAndRemoveFr8CoreWebServices.resx">
+      <DependentUpon>201602170735431_RemoveMTActivitiesAndRemoveFr8CoreWebServices.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
