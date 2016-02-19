@@ -825,6 +825,8 @@ div[dnd-list].dndDragover {
     background: #eff3f8
 }
 
-.form-inline-sourceable {
-    margin-bottom: 20px;
+.label-than {
+    font-weight: 400;
+    font-size: 14px;
+    margin-bottom: 5px;
 }
