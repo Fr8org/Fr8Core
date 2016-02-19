@@ -437,6 +437,8 @@ module dockyard.directives.paneConfigureAction {
                             if ($scope.currentAction.childrenActions) {
                                 if (angular.toJson($scope.currentAction.childrenActions) != angular.toJson(res.childrenActions)) {
                                     $scope.reconfigureChildrenActions = true;
+                                    //in case of reconfiguring the solution check the child actions again
+                                    $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsDetected]);
                                 }
                             }
 
