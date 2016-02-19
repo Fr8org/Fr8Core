@@ -121,7 +121,7 @@ namespace HealthMonitor
 
                 foreach (var terminalName in failedToStart)
                 {
-                    Console.WriteLine(terminalName);
+                    Console.WriteLine("{0}: {1}", terminalName, ConfigurationManager.AppSettings[terminalName]);
                 }
 
                 Environment.Exit(failedToStart.Count);
