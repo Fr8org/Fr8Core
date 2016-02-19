@@ -18,7 +18,13 @@ module dockyard.directives {
     export interface IQueryCondition {
         field: IQueryField;
         operator: string;
-        configurationControlScope: any;
+        value: string;
+    }
+
+    export interface ISerializedCondition {
+        field: string;
+        operator: string;
+        value: string;
     }
 
     export interface IQueryBuilderScope extends ng.IScope {
@@ -38,7 +44,11 @@ module dockyard.directives {
         fields: Array<IQueryField>;
         operators: Array<IQueryOperator>;
         condition: IQueryCondition;
+        isSingle: boolean;
+        hasConfigurationControl: boolean;
+
         fieldSelected: () => void;
+        onRemoveCondition: () => void;
 
         rootElem: any;
     }
@@ -106,76 +116,97 @@ module dockyard.directives {
                         }
                     });
 
-                    // $scope.$watch('field', (newValue: any) => {
-                    //     if (newValue && newValue.value) {
-                    //         var jsonValue = angular.fromJson(newValue.value);
-                    //         // $scope.conditions = <Array<interfaces.ICondition>>jsonValue;
-                    //     }
-                    //     else {
-                    //         // $scope.conditions = [
-                    //         //     new model.Condition(
-                    //         //         null,
-                    //         //         $scope.defaultOperator,
-                    //         //         null)
-                    //         // ];
-                    //     }
-                    // });
+                    $scope.$watch('field', (newValue: any) => {
+                        if (newValue && newValue.value) {
+                            var jsonValue = angular.fromJson(newValue.value);
+                            var serializedConditions = <Array<ISerializedCondition>>jsonValue;
 
-                    var findField = (name) => {
-                        // var i;
-                        // for (i = 0; i < $scope.fields.length; ++i) {
-                        //     if ($scope.fields[i].key === name) {
-                        //         return $scope.fields[i];
-                        //     }
-                        // }
+                            var conditions: Array<IQueryCondition> = [];
+
+                            angular.forEach(serializedConditions, (cond) => {
+                                conditions.push({
+                                    field: findField(cond.field),
+                                    operator: cond.operator,
+                                    value: null
+                                });
+                            });
+
+                            $scope.conditions = conditions;
+                        }
+                        else {
+                            addEmptyCondition();
+                        }
+                    });
+
+                    var addEmptyCondition = () => {
+                        if (!$scope.conditions) {
+                            $scope.conditions = [];
+                        }
+
+                        var condition = {
+                            field: null,
+                            operator: $scope.defaultOperator,
+                            value: null
+                        };
+
+                        $scope.conditions.push(condition);
+                    };
+
+                    var findField = (name): IQueryField => {
+                        var i;
+                        for (i = 0; i < $scope.fields.length; ++i) {
+                            if ($scope.fields[i].name === name) {
+                                return $scope.fields[i];
+                            }
+                        }
 
                         return null;
                     };
 
-                    var isValidDate = (value) => {
-                        if (!value) { return true; }
+                    // var isValidDate = (value) => {
+                    //     if (!value) { return true; }
+                    // 
+                    //     var tokens = value.split('-');
+                    //     if (tokens.length !== 3) { return false; }
+                    // 
+                    //     if (tokens[0].length !== 2
+                    //         || tokens[1].length !== 2
+                    //         || tokens[2].length !== 4) {
+                    //         return false;
+                    //     }
+                    // 
+                    //     var days = parseInt(tokens[0]);
+                    //     if (days < 1 || days > 31) { return false; }
+                    // 
+                    //     var months = parseInt(tokens[1]);
+                    //     if (months < 1 || months > 12) { return false; }
+                    // 
+                    //     return true;
+                    // };
 
-                        var tokens = value.split('-');
-                        if (tokens.length !== 3) { return false; }
-
-                        if (tokens[0].length !== 2
-                            || tokens[1].length !== 2
-                            || tokens[2].length !== 4) {
-                            return false;
-                        }
-
-                        var days = parseInt(tokens[0]);
-                        if (days < 1 || days > 31) { return false; }
-
-                        var months = parseInt(tokens[1]);
-                        if (months < 1 || months > 12) { return false; }
-
-                        return true;
-                    };
-
-                    var extractConditionValue = (cond: interfaces.ICondition) => {
-                        var field = findField(cond.field);
-                        if (field === null) {
-                            return null;
-                        }
-
-                        var result = null;
-
-                        if (field.type === 'date') {
-                            if (isValidDate(cond.value)) {
-                                result = cond.value;
-                                cond.valueError = null;
-                            }
-                            else {
-                                cond.valueError = 'Date format: "dd-mm-yyyy"';
-                            }
-                        }
-                        else {
-                            result = cond.value;
-                        }
-
-                        return result;
-                    };
+                    // var extractConditionValue = (cond: interfaces.ICondition) => {
+                    //     var field = findField(cond.field);
+                    //     if (field === null) {
+                    //         return null;
+                    //     }
+                    // 
+                    //     var result = null;
+                    // 
+                    //     if (field.type === 'date') {
+                    //         if (isValidDate(cond.value)) {
+                    //             result = cond.value;
+                    //             cond.valueError = null;
+                    //         }
+                    //         else {
+                    //             cond.valueError = 'Date format: "dd-mm-yyyy"';
+                    //         }
+                    //     }
+                    //     else {
+                    //         result = cond.value;
+                    //     }
+                    // 
+                    //     return result;
+                    // };
 
                     var updateFieldValue = () => {
                         var toBeSerialized = [];
@@ -192,20 +223,11 @@ module dockyard.directives {
 
                     $scope.$watch('conditions', () => {
                         updateFieldValue();
+                        console.log($scope.conditions);
                     }, true);
 
                     $scope.addCondition = () => {
-                        if (!$scope.conditions) {
-                            $scope.conditions = [];
-                        }
-
-                        var condition = {
-                            field: null,
-                            operator: $scope.defaultOperator,
-                            configurationControlScope: null
-                        };
-
-                        $scope.conditions.push(condition);
+                        addEmptyCondition();
                     };
 
                     $scope.removeCondition = (index: number) => {
@@ -225,7 +247,9 @@ module dockyard.directives {
                 currentAction: '=',
                 condition: '=',
                 fields: '=',
-                operators: '='
+                operators: '=',
+                isSingle: '=',
+                onRemoveCondition: '&'
             },
             link: (scope: IQueryBuilderConditionScope,
                 elem: ng.IAugmentedJQuery,
@@ -238,35 +262,56 @@ module dockyard.directives {
                     $scope: IQueryBuilderConditionScope,
                     $compile: ng.ICompileService) => {
 
-                    var attachControl = () => {
-                        $('.condition-control', $scope.rootElem).empty();
+                    var configurationControl = null;
 
-                        if ($scope.condition.configurationControlScope) {
-                            $scope.condition.configurationControlScope.$destroy();
-                            $scope.condition.configurationControlScope = null;
+                    var attachControl = () => {
+                        if (configurationControl) {
+                            configurationControl.scope.$destroy();
+                            configurationControl.markup.remove();
+
+                            configurationControl = null;
+                            $scope.hasConfigurationControl = false;
                         }
 
                         if (!$scope.condition.field) {
                             return;
                         }
-                        
-                        var configurationControlScope = $rootScope.$new();
+
+                        var configurationControlScope = $scope.$new();
                         (<any>configurationControlScope).control =
                             angular.copy($scope.condition.field.control);
+
+                        (<any>configurationControlScope).control.value = $scope.condition.value;
                         (<any>configurationControlScope).currentAction = $scope.currentAction;
 
-                        $scope.condition.configurationControlScope = true;
+                        $scope.hasConfigurationControl = true;
 
                         $compile('<configuration-control current-action="currentAction" field="control" />')
                             (configurationControlScope, (markup, scope) => {
-                                console.log(markup);
                                 $('.condition-control', $scope.rootElem).append(markup);
+
+                                scope.$watch('control', function (newValue: any) {
+                                    $scope.condition.value = newValue.value;
+                                }, true);
+
+                                configurationControl = {
+                                    scope: scope,
+                                    markup: markup
+                                };
                             });
                     };
 
                     $scope.fieldSelected = () => {
                         attachControl();
                     };
+
+                    $scope.$watch('condition.value', function (value) {
+                        if (configurationControl) {
+                            configurationControl.scope.control.value = value;
+                        }
+                    });
+
+                    attachControl();
                 }
             ]
         };

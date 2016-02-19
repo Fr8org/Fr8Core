@@ -8,16 +8,16 @@
         <select class="form-control" ng-options="op.value as op.text for op in operators" ng-model="condition.operator" ng-disabled="!condition.field"></select>
     </td>
     <td>
-        <div ng-if="condition.configurationControlScope" class="condition-control">
+        <div class="condition-control">
         </div>
-        <div ng-if="!condition.configurationControlScope" style="padding: 3px; border: 1px solid #acacac;">
-            First select a field
+        <div ng-if="!hasConfigurationControl" style="padding: 3px; border: 1px solid #acacac;">
+            Select a field
         </div>
     </td>
     <td>
         <img src="~/Content/img/RouteBuilder/delete-icon.png" width="15" height="15"
-                ng-show="conditions.length > 1"
-                ng-click="removeCondition($index)"
+                ng-show="!isSingle"
+                ng-click="onRemoveCondition()"
                 class="query-builder-delete-button" />
     </td>
 </tr>

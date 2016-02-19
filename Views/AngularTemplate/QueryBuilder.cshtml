@@ -23,7 +23,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="condition in conditions" query-builder-condition current-action="currentAction" condition="condition" fields="fields" operators="operators">
+                    <tr ng-repeat="condition in conditions track by $index" query-builder-condition current-action="currentAction" condition="condition" is-single="conditions.length <= 1" fields="fields" operators="operators" on-remove-condition="removeCondition($index)">
                     </tr>
                     
                     <!--
