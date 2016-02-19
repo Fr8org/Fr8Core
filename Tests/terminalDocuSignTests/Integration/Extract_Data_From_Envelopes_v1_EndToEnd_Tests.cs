@@ -84,15 +84,12 @@ namespace terminalDocuSignTests.Integration
             await HttpPostAsync<object, RouteFullDTO>(_baseUrl + "routes?id=" + plan.Id,
                 new { id = plan.Id, name = newName });
 
-            // Assert.Equals(newName, plan.Name);
-
             //
             // Configure Monitor DocuSign Envelope action
             //
             var monitorDocuSignAction = _solution.ChildrenActions.Single(a => a.Label == "Monitor DocuSign Envelope Activity");
             _crateStorage = _crateManager.FromDto(monitorDocuSignAction.CrateStorage);
-            await ResolveAuth(monitorDocuSignAction, _crateStorage);
-            
+                        
             controlsCrate = _crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
             
             var checkbox = (CheckBox)controlsCrate.Content.Controls.Single(c => c.Type == ControlTypes.CheckBox && c.Name == "Event_Envelope_Sent");
