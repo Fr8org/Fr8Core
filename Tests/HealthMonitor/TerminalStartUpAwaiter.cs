@@ -10,7 +10,7 @@ namespace HealthMonitor
     public class TerminalStartUpAwaiter
     {
         private const int MaxHttpTimeout = 5000;
-        private const int MaxAwaitPeriod = 18000;
+        private const int MaxAwaitPeriod = 60000;
 
         public List<string> AwaitStartUp()
         {
