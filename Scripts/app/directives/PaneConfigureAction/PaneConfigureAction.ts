@@ -110,6 +110,8 @@ module dockyard.directives.paneConfigureAction {
         reconfigureChildrenActions: boolean;
         setSolutionMode: () => void;
         currentActiveElement: model.ControlDefinitionDTO;
+        collapsed: boolean;
+        resize: () => void;
     }
     
     export class CancelledEventArgs extends CancelledEventArgsBase { }
@@ -174,6 +176,7 @@ module dockyard.directives.paneConfigureAction {
             PaneConfigureAction.prototype.controller = ($scope: IPaneConfigureActionScope, $element: ng.IAugmentedJQuery, $attrs: ng.IAttributes) => {
 
                 var configLoadingError: boolean = false;
+                $scope.collapsed = false;
 
                 $scope.$on("onChange", onControlChange);
                 $scope.$on("onClick", onClickEvent);
@@ -185,6 +188,10 @@ module dockyard.directives.paneConfigureAction {
                 $scope.onConfigurationChanged = onConfigurationChanged;
                 $scope.processConfiguration = processConfiguration;
                 $scope.setSolutionMode = setSolutionMode;
+
+                $scope.resize = () => {
+                    $scope.collapsed = !$scope.collapsed;
+                };
 
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Reconfigure], (event: ng.IAngularEvent, reConfigureActionEventArgs: ActionReconfigureEventArgs) => {
                     //this might be a general reconfigure command
