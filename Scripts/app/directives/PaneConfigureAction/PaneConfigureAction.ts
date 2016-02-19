@@ -110,6 +110,8 @@ module dockyard.directives.paneConfigureAction {
         reconfigureChildrenActions: boolean;
         setSolutionMode: () => void;
         currentActiveElement: model.ControlDefinitionDTO;
+        collapsed: boolean;
+        resize: () => void;
     }
     
     export class CancelledEventArgs extends CancelledEventArgsBase { }
@@ -174,6 +176,7 @@ module dockyard.directives.paneConfigureAction {
             PaneConfigureAction.prototype.controller = ($scope: IPaneConfigureActionScope, $element: ng.IAugmentedJQuery, $attrs: ng.IAttributes) => {
 
                 var configLoadingError: boolean = false;
+                $scope.collapsed = false;
 
                 $scope.$on("onChange", onControlChange);
                 $scope.$on("onClick", onClickEvent);
@@ -185,6 +188,10 @@ module dockyard.directives.paneConfigureAction {
                 $scope.onConfigurationChanged = onConfigurationChanged;
                 $scope.processConfiguration = processConfiguration;
                 $scope.setSolutionMode = setSolutionMode;
+
+                $scope.resize = () => {
+                    $scope.collapsed = !$scope.collapsed;
+                };
 
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Reconfigure], (event: ng.IAngularEvent, reConfigureActionEventArgs: ActionReconfigureEventArgs) => {
                     //this might be a general reconfigure command
@@ -437,6 +444,8 @@ module dockyard.directives.paneConfigureAction {
                             if ($scope.currentAction.childrenActions) {
                                 if (angular.toJson($scope.currentAction.childrenActions) != angular.toJson(res.childrenActions)) {
                                     $scope.reconfigureChildrenActions = true;
+                                    //in case of reconfiguring the solution check the child actions again
+                                    $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsDetected]);
                                 }
                             }
 

@@ -80,6 +80,8 @@ app.controller('FooterController', ['$scope', function ($scope) {
 /* Set Application Insights */
 app.config(['applicationInsightsServiceProvider', function (applicationInsightsServiceProvider) {
     var options;
+    //Temporary instr key (for local instances) until the real one is loaded
+    applicationInsightsServiceProvider.configure('e08e940f-1491-440c-8d39-f38e9ff053db', options, true);
 
     $.get('/api/v1/configuration/appinsights').then((appInsightsInstrKey: string) => {
         console.log(appInsightsInstrKey);

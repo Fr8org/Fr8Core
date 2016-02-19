@@ -199,7 +199,6 @@
     box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 3px 0px, rgba(0, 0, 0, 0.137255) 0px 1px 1px 0px, rgba(0, 0, 0, 0.117647) 0px 2px 1px -1px;
     display: inline-block;
     height: auto;
-    min-height: 330px;
     margin-bottom: 5px;
     vertical-align: top;
     width: 330px;
@@ -829,4 +828,11 @@ div[dnd-list].dndDragover {
     font-weight: 400;
     font-size: 14px;
     margin-bottom: 5px;
+}
+
+.resize-pane{
+    float: right;
+    padding-bottom: 6%;
+    margin-right: 1%;
+    margin-bottom: 1%;
 }

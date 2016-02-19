@@ -217,7 +217,7 @@ namespace terminalDocuSign.Actions
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
             // Do not tarsnfer to follow up when child actions are already present 
-            if (curActivityDO.ChildNodes.Any()) return ConfigurationRequestType.Initial;
+            //if (curActivityDO.ChildNodes.Any()) return ConfigurationRequestType.Initial;
 
             var storage = CrateManager.GetStorage(curActivityDO);
             if (storage == null || !storage.Any())
@@ -256,9 +256,15 @@ namespace terminalDocuSign.Actions
         {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 
+            if (curActivityDO.ChildNodes.Any())
+            {
+                await HubCommunicator.DeleteExistingChildNodesFromActivity(curActivityDO.Id, CurrentFr8UserId);
+
+                curActivityDO.ChildNodes = new List<RouteNodeDO>();
+            }
+
             //extract fields in docusign form
             _docuSignManager.UpdateUserDefinedFields(curActivityDO, authTokenDO, CrateManager.GetUpdatableStorage(curActivityDO), _docuSignTemplate.Value);
-
 
             var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(curActivityDO, null))
                 .Select(x => Mapper.Map<ActivityTemplateDO>(x))
@@ -276,7 +282,7 @@ namespace terminalDocuSign.Actions
             if (DoesActivityTemplateGenerateTableData(selectedReceiver))
             {
                 //we need to configure this but it is hard to do
-                var loopActivity = await AddAndConfigureChildActivity(curActivityDO, "Loop", order: 2);
+                var loopActivity = await AddAndConfigureChildActivity(curActivityDO, "Loop", "Loop", "Loop", 2);
                 parentOfSendDocusignEnvelope = loopActivity;
                 orderOfSendDocusignEnvelope = 1;
             }
