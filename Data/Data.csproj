@@ -618,6 +618,10 @@
     <Compile Include="Migrations\201602170735431_RemoveMTActivitiesAndRemoveFr8CoreWebServices.Designer.cs">
       <DependentUpon>201602170735431_RemoveMTActivitiesAndRemoveFr8CoreWebServices.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201602191529576_RemoveActivityTemplateDupesAndAddConstaints.cs" />
+    <Compile Include="Migrations\201602191529576_RemoveActivityTemplateDupesAndAddConstaints.Designer.cs">
+      <DependentUpon>201602191529576_RemoveActivityTemplateDupesAndAddConstaints.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryBase.cs" />
@@ -1045,6 +1049,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201602170735431_RemoveMTActivitiesAndRemoveFr8CoreWebServices.resx">
       <DependentUpon>201602170735431_RemoveMTActivitiesAndRemoveFr8CoreWebServices.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602191529576_RemoveActivityTemplateDupesAndAddConstaints.resx">
+      <DependentUpon>201602191529576_RemoveActivityTemplateDupesAndAddConstaints.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
