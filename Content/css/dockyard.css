@@ -823,6 +823,13 @@ div[dnd-list].dndDragover {
 .push-footer {
     background: #eff3f8
 }
+
+.label-than {
+    font-weight: 400;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
 .resize-pane{
     float: right;
     padding-bottom: 6%;
