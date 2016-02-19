@@ -276,7 +276,7 @@ namespace terminalDocuSignTests.Integration
             //
             // Delete plan
             //
-            //await HttpDeleteAsync(baseUrl + "routes?id=" + plan.Id);
+            await HttpDeleteAsync(baseUrl + "routes?id=" + plan.Id);
 
             EmailAssert.RecentMsgThreshold = TimeSpan.FromSeconds(45);
             EmailAssert._timeout = TimeSpan.FromSeconds(45);
