@@ -127,7 +127,7 @@ module dockyard.directives {
                                 conditions.push({
                                     field: findField(cond.field),
                                     operator: cond.operator,
-                                    value: null
+                                    value: cond.value
                                 });
                             });
 
@@ -210,13 +210,13 @@ module dockyard.directives {
 
                     var updateFieldValue = () => {
                         var toBeSerialized = [];
-                        // angular.forEach($scope.conditions, function (cond) {
-                        //     toBeSerialized.push({
-                        //         field: cond.field,
-                        //         operator: cond.operator,
-                        //         value: extractConditionValue(cond)
-                        //     });
-                        // });
+                        angular.forEach($scope.conditions, function (cond) {
+                            toBeSerialized.push({
+                                field: cond.field.name,
+                                operator: cond.operator,
+                                value: cond.value
+                            });
+                        });
 
                         $scope.field.value = angular.toJson(toBeSerialized);
                     };
