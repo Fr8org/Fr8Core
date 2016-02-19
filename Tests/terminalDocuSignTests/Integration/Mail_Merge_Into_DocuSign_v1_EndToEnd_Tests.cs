@@ -180,7 +180,7 @@ namespace terminalDocuSignTests.Integration
                 apmAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "actions/configure", apmAction);
                 Assert.AreEqual(1, apmAction.Ordering, "Failed to reoder the action Add Payload Manually");
 
-                var fr8CoreLoop = this.solution.ChildrenActions.Single(a => a.Label == "Fr8 Core Loop");
+                var fr8CoreLoop = this.solution.ChildrenActions.Single(a =>  a.Label.Equals("loop", StringComparison.InvariantCultureIgnoreCase));
 
                 fr8CoreLoop = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "actions/configure", fr8CoreLoop);
                 //we should update fr8Core loop to loop through manually added payload
