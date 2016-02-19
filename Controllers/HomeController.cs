@@ -1,5 +1,6 @@
 using System;
 using System.Net.Mail;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using FluentValidation;
 using Microsoft.AspNet.Identity;
@@ -151,7 +152,7 @@ namespace HubWeb.Controllers
 
         //  EmailAddress  is valid then send mail .    
         // return "success" or  error 
-        public ActionResult ProcessSubmittedEmail(string name, string emailId, string message)
+        public async Task<ActionResult> ProcessSubmittedEmail(string name, string emailId, string message)
         {
             string result = "";
             try
@@ -167,7 +168,7 @@ namespace HubWeb.Controllers
 
                     // EmailDO emailDO = email.GenerateBasicMessage(emailAddressDO, message);
                     string subject = "Customer query";
-                    _email.Send(uow, subject, message, fromAddress, toRecipient);
+                    await _email.SendAsync(uow, subject, message, fromAddress, toRecipient);
                     //uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
                     uow.SaveChanges();
                 }
