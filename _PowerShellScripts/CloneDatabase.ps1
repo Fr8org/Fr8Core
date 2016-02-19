@@ -1,6 +1,6 @@
 ﻿param(
     [string]$connectionString,
-	[string]	,
+	[string]$sourceDbName,
 	[string]$targetDbName,
 	[string]$serverName
 )
