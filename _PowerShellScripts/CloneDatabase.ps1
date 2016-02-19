@@ -1,6 +1,6 @@
 ﻿param(
     [string]$connectionString,
-	[string]$sourceDbName,
+	[string]	,
 	[string]$targetDbName,
 	[string]$serverName
 )
@@ -24,7 +24,7 @@ if ($command.ExecuteNonQuery() -ne -1)
 }
 Write-Host "Successfully deleted old target database."
 
-$commandText = "CREATE DATABASE $($targetDbName) AS COPY OF $($serverName).$($sourceDbName)"
+$commandText = "CREATE DATABASE $($targetDbName) AS COPY OF $($serverName).$($sourceDbName) SERVICE_OBJECTIVE = 'S0'"
 Write-Host $commandText
 $command.CommandText = $commandText
 if ($command.ExecuteNonQuery() -ne -1)
