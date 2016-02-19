@@ -23,7 +23,7 @@ if ($command.ExecuteNonQuery() -ne -1)
 }
 Write-Host "Successfully deleted old staging database."
 
-$commandText = "CREATE DATABASE $($databaseName)Staging AS COPY OF $($serverName).$($databaseName) (SERVICE_OBJECTIVE = 'basic');"
+$commandText = "CREATE DATABASE $($databaseName)Staging AS COPY OF $($serverName).$($databaseName) (EDITION='basic', SERVICE_OBJECTIVE = 'basic');"
 Write-Host $commandText
 $command.CommandText = $commandText
 if ($command.ExecuteNonQuery() -ne -1)
