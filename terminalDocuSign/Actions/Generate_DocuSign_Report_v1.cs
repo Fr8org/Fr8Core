@@ -52,13 +52,13 @@ namespace terminalDocuSign.Actions
             public readonly QueryFieldType FieldType;
             public readonly string DocusignQueryName;
             public readonly string MtDbPropertyName;
-            public readonly Func<string, ControlDefinitionDTO> ControlFactory;
+            public readonly Func<string, DocuSignAuthTokenDTO, ControlDefinitionDTO> ControlFactory;
 
             public FieldBackedRoutingInfo(
                 QueryFieldType fieldType,
                 string docusignQueryName,
                 string mtDbPropertyName,
-                Func<string, ControlDefinitionDTO> controlFactory)
+                Func<string, DocuSignAuthTokenDTO, ControlDefinitionDTO> controlFactory)
             {
                 FieldType = fieldType;
                 DocusignQueryName = docusignQueryName;
@@ -83,12 +83,11 @@ namespace terminalDocuSign.Actions
                     Value = "<p>Search for DocuSign Envelopes where the following are true:</p>"
                 });
 
-                var queryFields = GetFieldListForQueryBuilder();
                 var filterConditions = new[]
                 {
-                    new FilterConditionDTO { Field = queryFields[0].Name, Operator = "eq" },
-                    new FilterConditionDTO { Field = queryFields[1].Name, Operator = "eq" },
-                    new FilterConditionDTO { Field = queryFields[2].Name, Operator = "eq" }
+                    new FilterConditionDTO { Field = "Envelope Text", Operator = "eq" },
+                    new FilterConditionDTO { Field = "Folder", Operator = "eq" },
+                    new FilterConditionDTO { Field = "Status", Operator = "eq" }
                 };
 
                 string initialQuery = JsonConvert.SerializeObject(filterConditions);
@@ -117,38 +116,24 @@ namespace terminalDocuSign.Actions
         }
 
         // Mapping between quiery builder control field names and information about how this field is routed to the backed 
-        private static readonly Dictionary<string, FieldBackedRoutingInfo> QueryBuilderFields = 
-            new Dictionary<string, FieldBackedRoutingInfo>
-            {
-                {
-                    "Envelope Text",
-                    new FieldBackedRoutingInfo(QueryFieldType.String, "SearchText", null, CreateTextBoxQueryControl)
-                },
-                {
-                    "Folder",
-                    new FieldBackedRoutingInfo(QueryFieldType.String, "Folder", null, CreateTextBoxQueryControl)
-                },
-                {
-                    "Status",
-                    new FieldBackedRoutingInfo(QueryFieldType.String, "Status", "Status", CreateTextBoxQueryControl)
-                },
-                {
-                    "CreateDate",
-                    new FieldBackedRoutingInfo(QueryFieldType.Date, "CreatedDateTime", "CreateDate", CreateTextBoxQueryControl)
-                },
-                {
-                    "SentDate",
-                    new FieldBackedRoutingInfo(QueryFieldType.Date, "SentDateTime", "SentDate", CreateTextBoxQueryControl)
-                },
-                {
-                    "CompletedDate",
-                    new FieldBackedRoutingInfo(QueryFieldType.Date, "CompletedDateTime", "CompletedDate", CreateTextBoxQueryControl)
-                },
-                {
-                    "EnvelopeId",
-                    new FieldBackedRoutingInfo(QueryFieldType.String, "EnvelopeId", "EnvelopeId", CreateTextBoxQueryControl)
-                }
-            };
+        private Dictionary<string, FieldBackedRoutingInfo> _queryBuilderFields;
+
+        private static readonly string[] Statuses = new[]
+        {
+            "Created",
+            "Deleted",
+            "Sent",
+            "Delivered",
+            "Signed",
+            "Completed",
+            "Declined",
+            "Voided",
+            "TimedOut",
+            "AuthoritativeCopy",
+            "TransferCompleted",
+            "Template",
+            "Correct"
+        };
 
         private readonly DocuSignManager _docuSignManager;
         private readonly IDocuSignFolder _docuSignFolder;
@@ -157,6 +142,43 @@ namespace terminalDocuSign.Actions
         {
             _docuSignManager = ObjectFactory.GetInstance<DocuSignManager>();
             _docuSignFolder = ObjectFactory.GetInstance<IDocuSignFolder>();
+
+            InitQueryBuilderFields();
+        }
+
+        private void InitQueryBuilderFields()
+        {
+            _queryBuilderFields = new Dictionary<string, FieldBackedRoutingInfo>
+            {
+                {
+                    "Envelope Text",
+                    new FieldBackedRoutingInfo(QueryFieldType.String, "SearchText", null, CreateTextBoxQueryControl)
+                },
+                {
+                    "Folder",
+                    new FieldBackedRoutingInfo(QueryFieldType.String, "Folder", null, CreateFolderDropDownListControl)
+                },
+                {
+                    "Status",
+                    new FieldBackedRoutingInfo(QueryFieldType.String, "Status", "Status", CreateStatusDropDownListControl)
+                },
+                {
+                    "CreateDate",
+                    new FieldBackedRoutingInfo(QueryFieldType.Date, "CreatedDateTime", "CreateDate", CreateDatePickerQueryControl)
+                },
+                {
+                    "SentDate",
+                    new FieldBackedRoutingInfo(QueryFieldType.Date, "SentDateTime", "SentDate", CreateDatePickerQueryControl)
+                },
+                {
+                    "CompletedDate",
+                    new FieldBackedRoutingInfo(QueryFieldType.Date, "CompletedDateTime", "CompletedDate", CreateDatePickerQueryControl)
+                },
+                {
+                    "EnvelopeId",
+                    new FieldBackedRoutingInfo(QueryFieldType.String, "EnvelopeId", "EnvelopeId", CreateTextBoxQueryControl)
+                }
+            };
         }
 
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
@@ -334,7 +356,7 @@ namespace terminalDocuSign.Actions
             {
                 FieldBackedRoutingInfo fieldBackedRoutingInfo;
 
-                if (!QueryBuilderFields.TryGetValue(condition.Field, out fieldBackedRoutingInfo) || fieldBackedRoutingInfo.DocusignQueryName == null)
+                if (!_queryBuilderFields.TryGetValue(condition.Field, out fieldBackedRoutingInfo) || fieldBackedRoutingInfo.DocusignQueryName == null)
                 {
                     continue;
                 }
@@ -381,17 +403,21 @@ namespace terminalDocuSign.Actions
             return query;
         }
 
-        protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override Task<ActivityDO> InitialConfigurationResponse(
+            ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             if (NeedsAuthentication(authTokenDO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
+            var docuSignAuthToken = JsonConvert
+                .DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
+
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Add(PackControls(new ActionUi()));
-                crateStorage.AddRange(PackDesignTimeData());
+                crateStorage.AddRange(PackDesignTimeData(docuSignAuthToken));
             }
 
             return Task.FromResult(curActivityDO);
@@ -539,21 +565,22 @@ namespace terminalDocuSign.Actions
             return Crate<StandardQueryCM>.FromContent(QueryCrateLabel, queryCM);
         }
 
-        public static QueryFieldDTO[] GetFieldListForQueryBuilder()
+        public QueryFieldDTO[] GetFieldListForQueryBuilder(DocuSignAuthTokenDTO authToken)
         {
-            return QueryBuilderFields
+            return _queryBuilderFields
                 .Select(x =>
                     new QueryFieldDTO(
                         x.Key,
                         x.Key,
                         x.Value.FieldType,
-                        x.Value.ControlFactory(x.Key)
+                        x.Value.ControlFactory(x.Key, authToken)
                     )
                 )
                 .ToArray();
         }
 
-        private static ControlDefinitionDTO CreateTextBoxQueryControl(string key)
+        private static ControlDefinitionDTO CreateTextBoxQueryControl(
+            string key, DocuSignAuthTokenDTO authToken)
         {
             return new TextBox()
             {
@@ -561,16 +588,59 @@ namespace terminalDocuSign.Actions
             };
         }
 
-        private IEnumerable<Crate> PackDesignTimeData()
+        private ControlDefinitionDTO CreateFolderDropDownListControl(
+            string key, DocuSignAuthTokenDTO authToken)
         {
-            yield return Data.Crates.Crate.FromContent("Queryable Criteria", new StandardQueryFieldsCM(GetFieldListForQueryBuilder()));
-            yield return Data.Crates.Crate.FromContent("DocuSign Envelope Report", new StandardDesignTimeFieldsCM(new FieldDTO
+            return new DropDownList()
             {
-                Key = "DocuSign Envelope Report",
-                Value = "Table",
-                Availability = AvailabilityType.RunTime
-            }));
+                Name = "QueryField_" + key,
+                ListItems = _docuSignFolder.GetFolders(authToken.Email, authToken.ApiPassword)
+                    .Select(x => new ListItem() { Key = x.Name, Value = x.Name })
+                    .ToList()
+            };
         }
+
+        private ControlDefinitionDTO CreateStatusDropDownListControl(
+            string key, DocuSignAuthTokenDTO authToken)
+        {
+            return new DropDownList()
+            {
+                Name = "QueryField_" + key,
+                ListItems = Statuses
+                    .Select(x => new ListItem() { Key = x, Value = x })
+                    .ToList()
+            };
+        }
+
+        private ControlDefinitionDTO CreateDatePickerQueryControl(
+            string key, DocuSignAuthTokenDTO authToken)
+        {
+            return new DatePicker()
+            {
+                Name = "QueryField_" + key
+            };
+        }
+
+        private IEnumerable<Crate> PackDesignTimeData(DocuSignAuthTokenDTO authToken)
+        {
+            yield return Data.Crates.Crate.FromContent(
+                "Queryable Criteria",
+                new StandardQueryFieldsCM(GetFieldListForQueryBuilder(authToken))
+            );
+
+            yield return Data.Crates.Crate.FromContent(
+                "DocuSign Envelope Report",
+                new StandardDesignTimeFieldsCM(
+                    new FieldDTO
+                    {
+                        Key = "DocuSign Envelope Report",
+                        Value = "Table",
+                        Availability = AvailabilityType.RunTime
+                    }
+                )
+            );
+        }
+
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
             if (CrateManager.IsStorageEmpty(curActivityDO))

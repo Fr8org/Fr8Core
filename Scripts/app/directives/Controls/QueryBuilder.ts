@@ -79,20 +79,6 @@ module dockyard.directives {
 
                     $scope.defaultOperator = '';
 
-                    // TODO: remove.
-                    // var extractType = function (field) {
-                    //     if (!field.tags) {
-                    //         return 'string';
-                    //     }
-                    // 
-                    //     var predefinedTypes = ['string', 'date'];
-                    //     if (!predefinedTypes.indexOf(field.tags)) {
-                    //         return 'string';
-                    //     }
-                    // 
-                    //     return field.tags;
-                    // };
-
                     $scope.$watch('currentAction', (newValue: model.ActivityDTO) => {
                         if (newValue && newValue.crateStorage) {
                             var crate = crateHelper.findByManifestTypeAndLabel(
@@ -163,54 +149,11 @@ module dockyard.directives {
                         return null;
                     };
 
-                    // var isValidDate = (value) => {
-                    //     if (!value) { return true; }
-                    // 
-                    //     var tokens = value.split('-');
-                    //     if (tokens.length !== 3) { return false; }
-                    // 
-                    //     if (tokens[0].length !== 2
-                    //         || tokens[1].length !== 2
-                    //         || tokens[2].length !== 4) {
-                    //         return false;
-                    //     }
-                    // 
-                    //     var days = parseInt(tokens[0]);
-                    //     if (days < 1 || days > 31) { return false; }
-                    // 
-                    //     var months = parseInt(tokens[1]);
-                    //     if (months < 1 || months > 12) { return false; }
-                    // 
-                    //     return true;
-                    // };
-
-                    // var extractConditionValue = (cond: interfaces.ICondition) => {
-                    //     var field = findField(cond.field);
-                    //     if (field === null) {
-                    //         return null;
-                    //     }
-                    // 
-                    //     var result = null;
-                    // 
-                    //     if (field.type === 'date') {
-                    //         if (isValidDate(cond.value)) {
-                    //             result = cond.value;
-                    //             cond.valueError = null;
-                    //         }
-                    //         else {
-                    //             cond.valueError = 'Date format: "dd-mm-yyyy"';
-                    //         }
-                    //     }
-                    //     else {
-                    //         result = cond.value;
-                    //     }
-                    // 
-                    //     return result;
-                    // };
-
                     var updateFieldValue = () => {
                         var toBeSerialized = [];
                         angular.forEach($scope.conditions, function (cond) {
+                            if (!cond.field) { return; }
+
                             toBeSerialized.push({
                                 field: cond.field.name,
                                 operator: cond.operator,
@@ -223,7 +166,6 @@ module dockyard.directives {
 
                     $scope.$watch('conditions', () => {
                         updateFieldValue();
-                        console.log($scope.conditions);
                     }, true);
 
                     $scope.addCondition = () => {
@@ -281,6 +223,7 @@ module dockyard.directives {
                         (<any>configurationControlScope).control =
                             angular.copy($scope.condition.field.control);
 
+                        (<any>configurationControlScope).control.selectedKey = $scope.condition.value;
                         (<any>configurationControlScope).control.value = $scope.condition.value;
                         (<any>configurationControlScope).currentAction = $scope.currentAction;
 
@@ -305,13 +248,17 @@ module dockyard.directives {
                         attachControl();
                     };
 
+                    $scope.$watch('condition', function () {
+                        attachControl();
+                    });
+
                     $scope.$watch('condition.value', function (value) {
                         if (configurationControl) {
                             configurationControl.scope.control.value = value;
                         }
                     });
 
-                    attachControl();
+                    // attachControl();
                 }
             ]
         };

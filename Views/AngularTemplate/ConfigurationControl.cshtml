@@ -178,5 +178,10 @@
         <sourceable-criteria change="onChange" data-field-name='{{::field.name}}' field="field"></sourceable-criteria>
     </div>
 
+    <!-- DatePicker -->
+    <div ng-if='field.type == "DatePicker"'>
+        <date-picker field="field" />
+    </div>
+
     <!-- Add more configuration field templates below -->
 </div>
