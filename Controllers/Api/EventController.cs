@@ -18,6 +18,7 @@ using Hub.Services;
 using Newtonsoft.Json;
 using System.Xml.Linq;
 using Data.Interfaces.Manifests;
+using Hangfire;
 
 namespace HubWeb.Controllers
 {
@@ -95,6 +96,13 @@ namespace HubWeb.Controllers
             
         }
 
+        public static void ProcessEventsInternal(CrateDTO raw)
+        {
+            var curCrateStandardEventReport = ObjectFactory.GetInstance<ICrateManager>().FromDto(raw);
+            var eventTask = ObjectFactory.GetInstance<IEvent>().ProcessInboundEvents(curCrateStandardEventReport);
+            Task.WaitAll(eventTask);
+        }
+
         [HttpPost]
         [ActionName("processevents")]
         public async Task<IHttpActionResult> ProcessEvents(CrateDTO raw)
@@ -112,7 +120,18 @@ namespace HubWeb.Controllers
             if (curCrateStandardEventReport.Get() == null)
                 throw new ArgumentNullException("CrateDTO Content is empty.");
 
-            await _event.ProcessInboundEvents(curCrateStandardEventReport);
+            var eventReportMS = curCrateStandardEventReport.Get<EventReportCM>();
+
+            if (eventReportMS.EventPayload == null)
+            {
+                throw new ArgumentException("EventReport can't have a null payload");
+            }
+            if (eventReportMS.ExternalAccountId == null)
+            {
+                throw new ArgumentException("EventReport can't have a null ExternalAccountId");
+            }
+
+            BackgroundJob.Enqueue(() => ProcessEventsInternal(raw));
 
             return Ok();
         }
