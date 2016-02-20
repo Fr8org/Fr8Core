@@ -451,7 +451,12 @@ header#site-header {
         border-bottom-color: #697882;
     }
 /*Company Page Style*/
-
+.company-h1 {
+    padding: 0 0 1rem;
+    margin: 0;
+    font-size: 1.8rem;
+    color: #4db3a4;
+}
 /*Vision Section*/
 #vision .inner-bg {
     background-image: url('/Content/img/backgrounds/contact-bg.jpg');
@@ -475,25 +480,36 @@ header#site-header {
 /*Team Section*/
 .bio {
     font-size: 0.75em;
+    text-align: left;
+}
+
+.top-buffer {
+    margin-top: 20px;
 }
 
 .team-member {
-    height: 10em;
+    height: 100%;
+    display: inline-block;
+    background-color: white;
 }
 
-    .team-member .col-xs-2 .img {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
+    .team-member .col-xs-2 img {
+        max-width: 100%;
+        float: right;
     }
 
-#team .inner-bg {
-    background-image: url('/Content/img/backgrounds/contact-bg.jpg');
-}
+    .team-member h3 {
+        text-align: left;
+        font-size: 1.2em;
+    }
+
+    .team-member span {
+        font-style: italic;
+    }
 
 #team .container {
     position: relative;
-    z-index: 3;
+    z-index: 2;
     text-align: center;
 }
 
