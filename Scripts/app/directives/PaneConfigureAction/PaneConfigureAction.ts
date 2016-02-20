@@ -372,37 +372,6 @@ module dockyard.directives.paneConfigureAction {
                 
                         $scope.loadConfiguration();
                     }
-                    //if (eventArgs.field.handler === 'focusConfig') {
-                    //    var cccc = $scope.currentAction.crateStorage;
-                    //    angular.forEach(cccc.crates, function (value, keys) {
-                    //        if (value.label == "Configuration_Controls") {
-                    //            var textArea;
-                    //            var dropDown;
-                    //            var textAreaIndex;
-                    //            angular.forEach(value.contents, function (val, key) {
-                    //                angular.forEach(val, function (i, j) {
-                    //                    if (i.type == "TextArea") {
-                    //                        textArea = i.value;
-                    //                        textAreaIndex = j;
-                    //                    }
-                    //                    if (i.type == "DropDownList") {
-                    //                        dropDown = i.selectedKey;
-                    //                        val[textAreaIndex].value = val[textAreaIndex].value + '[' + dropDown + ']';
-                    //                    }
-                    //                });
-                    //            });
-                    //        }
-                    //    });
-                        
-
-                    //    crateHelper.mergeControlListCrate(
-                    //        $scope.currentAction.configurationControls,
-                    //        $scope.currentAction.crateStorage
-                    //        );
-                    //    $scope.currentAction.crateStorage.crateDTO = $scope.currentAction.crateStorage.crates //backend expects crates on CrateDTO field
-                
-                    //    $scope.loadConfiguration();
-                    //}
                 }
 
                 function onClickEvent(event: ng.IAngularEvent, eventArgs: ChangeEventArgs) {
