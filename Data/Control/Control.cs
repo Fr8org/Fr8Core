@@ -47,6 +47,7 @@ namespace Data.Control
         public const string UpstreamDataChooser = "UpstreamDataChooser";
         public const string UpstreamFieldChooser = "UpstreamFieldChooser";
         public const string UpstreamCrateChooser = "UpstreamCrateChooser";
+        public const string DatePicker = "DatePicker";
     }
 
     public class CheckBox : ControlDefinitionDTO
@@ -100,6 +101,14 @@ namespace Data.Control
         public TextBox()
         {
             Type = ControlTypes.TextBox;
+        }
+    }
+
+    public class DatePicker : ControlDefinitionDTO
+    {
+        public DatePicker()
+        {
+            Type = ControlTypes.DatePicker;
         }
     }
 

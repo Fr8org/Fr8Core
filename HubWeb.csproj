@@ -476,6 +476,8 @@
   <ItemGroup>
     <Content Include="Api\EventResponse.aspx" />
     <Content Include="Api\GetEmailHTML.aspx" />
+    <Content Include="Content\img\Management\Alex_Edelstein_Round.png" />
+    <Content Include="Content\img\Management\Benjamin_Black.png" />
     <Content Include="Content\css\additionalcss\bootstrap23\css\bootstrap2.3.css" />
     <Content Include="Content\css\additionalcss\bootstrap23\img\glyphicons-halflings-white.png" />
     <Content Include="Content\css\additionalcss\bootstrap23\img\glyphicons-halflings.png" />
@@ -557,7 +559,7 @@
     <Content Include="Content\img\icons\twitter.png" />
     <Content Include="Content\img\icons\vimeo.png" />
     <Content Include="Content\img\icons\youtube.png" />
-    <Content Include="Content\img\Management\alexhead.png" />
+    <Content Include="Content\img\Management\Alex_Edelstein.png" />
     <Content Include="Content\img\MicrosoftExchangelogo.png" />
     <Content Include="Content\img\minus.png" />
     <Content Include="Content\img\plus.png" />
@@ -774,6 +776,7 @@
     <Content Include="Documentation\UploadBrandProfiles.html" />
     <Content Include="Documentation\UsingBulkSendintheRESTAPI.html" />
     <Content Include="Documentation\VoidEnvelope.html" />
+    <Content Include="Content\img\Management\Rob_Bailey.png" />
     <Content Include="Scripts\ai.0.15.0-build58334.js" />
     <Content Include="Scripts\ai.0.15.0-build58334.min.js" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
@@ -800,6 +803,7 @@
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionDocumentationController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\ActionPicker.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\DatePicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\SourceableCriteria.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamCrateChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamFieldChooser.ts" />
@@ -930,10 +934,11 @@
     <Content Include="Views\Services\GoogleApps.cshtml" />
     <Content Include="Views\Support\Index.cshtml" />
     <Content Include="Views\AngularTemplate\ChangePassword.cshtml" />
-    <Content Include="Views\Company\Jobs.cshtml" />
+    <Content Include="Views\Company\Index.cshtml" />
     <Content Include="Views\Shared\CDN\_AngularAppScripts.cshtml" />
     <Content Include="Views\Shared\_AngularAppStyles.cshtml" />
     <Content Include="Views\Shared\CDN\_AngularAppStyles.cshtml" />
+    <Content Include="Views\AngularTemplate\QueryBuilderCondition.cshtml" />
     <Content Include="Views\AngularTemplate\SourceableCriteria.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
