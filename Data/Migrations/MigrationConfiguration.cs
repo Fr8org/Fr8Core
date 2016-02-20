@@ -47,42 +47,43 @@ namespace Data.Migrations
 
 
             // Uncomment four following lines to debug Seed method (in case running from NuGet Package Manager Console).
-            //if (System.Diagnostics.Debugger.IsAttached == false)
-            //{
-            //    System.Diagnostics.Debugger.Launch();
-            //}
+            // if (System.Diagnostics.Debugger.IsAttached == false)
+            // {
+            //     System.Diagnostics.Debugger.Launch();
+            // }
 
-            // If not running inside web application (i.e. running "Update-Database" in NuGet Package Manager Console),
-            // then register IDBContext and IUnitOfWork in StructureMap DI.
-            if (HttpContext.Current == null)
+            using (var migrationContainer = new Container())
             {
-                ObjectFactory.Initialize(x => x.AddRegistry<MigrationConsoleSeedRegistry>());
+                migrationContainer.Configure(x => x.AddRegistry<MigrationConsoleSeedRegistry>());
+
+                var uow = new UnitOfWork(context, migrationContainer);
+
+                UpdateRootRouteNodeId(uow);
+
+                SeedIntoMockDb(uow);
+
+                AddRoles(uow);
+                AddAdmins(uow);
+                AddDockyardAccounts(uow);
+                AddProfiles(uow);
+                AddTestAccounts(uow);
+                //Addterminals(uow);
+
+                //AddAuthorizationTokens(uow);
+                uow.SaveChanges();
+                Fr8AccountDO fr8AccountDO = GetFr8Account(uow, "alex@edelstein.org");
+
+                // TODO: to be fixed, crashes when resolving IUnitOfWork out of global ObjectFactory container.
+                // Commented out by yakov.gnusin.
+                // AddContainerDOForTestingApi(uow, fr8AccountDO);
+
+                AddWebServices(uow);
+
+                AddTestUser(uow);
+
+                UpdateTerminalClientVisibility(uow);
+
             }
-
-            var uow = new UnitOfWork(context, ObjectFactory.Container);
-
-            UpdateRootRouteNodeId(uow);
-
-            SeedIntoMockDb(uow);
-
-            AddRoles(uow);
-            AddAdmins(uow);
-            AddDockyardAccounts(uow);
-            AddProfiles(uow);
-            AddTestAccounts(uow);
-            //Addterminals(uow);
-
-
-            //AddAuthorizationTokens(uow);
-            uow.SaveChanges();
-            Fr8AccountDO fr8AccountDO = GetFr8Account(uow, "alex@edelstein.org");
-            AddContainerDOForTestingApi(uow, fr8AccountDO);
-
-            AddWebServices(uow);
-
-            AddTestUser(uow);
-
-            UpdateTerminalClientVisibility(uow);
         }
 
         private void UpdateTerminalClientVisibility(UnitOfWork uow)

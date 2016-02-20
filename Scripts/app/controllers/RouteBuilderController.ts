@@ -148,7 +148,7 @@ module dockyard.controllers {
                     if (realAction.ordering <= index) {
                         index -= 1;
                     }
-                }
+                } 
 
                 //now we should inject it to proper position and get downstream actions
                 downstreamActions = downstreamActions.concat(this.insertActionToParent(realAction, index));
@@ -702,9 +702,7 @@ module dockyard.controllers {
                     return;
                 }
             }
-
             
-
             // scann all actions to find actions with tag AgressiveReload in ActivityTemplate
             this.reConfigure(results);
 

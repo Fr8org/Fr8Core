@@ -61,6 +61,17 @@ namespace terminalDocuSignTests.Integration
             await HttpPostAsync<string>(docusignTerminalUrl + "/terminals/terminalDocuSign/events", httpContent);
         }
 
+        /// <summary>
+        /// This is for manual testing only
+        /// Please don't delete this method. i (bahadir) use this to quick test docusign events
+        /// </summary>
+        /// <returns></returns>
+        [Test, Ignore]
+        public async Task SendFakeEvent()
+        {
+            await PostFakeEvent();
+        }
+
         [Test]
         public async Task Rich_Document_Notifications_EndToEnd()
         {
@@ -182,7 +193,7 @@ namespace terminalDocuSignTests.Integration
             timePeriod.Hours = 0;
             timePeriod.Minutes = 0;
             var handlersCrate = _crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Single(c => c.Label == "AvailableHandlers");
-            var emailHandler = handlersCrate.Content.Fields.Single(c => c.Key == "Send Email using SendGrid");
+            var emailHandler = handlersCrate.Content.Fields.Single(c => c.Key.Contains("Send Email"));
             notificationHandler.Value = emailHandler.Value;
             notificationHandler.selectedKey = emailHandler.Key;
             var recipientEventsCrate = _crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Single(c => c.Label == "AvailableRecipientEvents");
@@ -219,8 +230,8 @@ namespace terminalDocuSignTests.Integration
             var emailBody = (TextSource)emailControlsCrate.Content.Controls.Single(c => c.Name == "EmailBody");
             
             emailAddress.ValueSource = "specific";
-            emailAddress.Value = "freight.testing@gmail.com";
-            emailAddress.TextValue = "freight.testing@gmail.com";
+            emailAddress.Value = "bahadir.bb@gmail.com";
+            emailAddress.TextValue = "bahadir.bb@gmail.com";
 
             emailSubject.ValueSource = "specific";
             emailSubject.Value = "Fr8-RichDocumentNotificationsTest";

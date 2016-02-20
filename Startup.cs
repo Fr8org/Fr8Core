@@ -50,7 +50,6 @@ namespace HubWeb
         {
             GlobalConfiguration.Configuration
                 .UseSqlServerStorage(connectionString);
-
             app.UseHangfireDashboard();
             app.UseHangfireServer();
         }

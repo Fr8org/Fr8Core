@@ -97,7 +97,10 @@ namespace Data.Constants
         ChartOfAccounts = 29,
 
         [Display(Name = "Manifest Description")]
-        ManifestDescription = 30
+        ManifestDescription = 30,
+
+        [Display(Name = "Standard Query Fields")]
+        StandardQueryFields = 31
     }
 }
 
