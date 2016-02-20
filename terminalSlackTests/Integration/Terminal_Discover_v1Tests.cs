@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
 using NUnit.Framework;
@@ -11,7 +12,7 @@ namespace terminalSlackTests.Integration
     /// but allows to trigger that class from HealthMonitor.
     /// </summary>
     [Explicit]
-    public class Terminal_Discover_v1Tests : BaseHealthMonitorTest
+    public class Terminal_Discover_v1Tests : BaseTerminalIntegrationTest
     {
         private const int ActionCount = 2;
         private const string Monitor_Channel_Action_Name = "Monitor_Channel";
@@ -25,7 +26,7 @@ namespace terminalSlackTests.Integration
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
         [Test, CategoryAttribute("Integration.terminalSlack")]
-        public async void Terminal_Slack_Discover()
+        public async Task Terminal_Slack_Discover()
         {
             var discoverUrl = GetTerminalDiscoverUrl();
 

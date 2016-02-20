@@ -1,5 +1,6 @@
 using System;
 using System.Net.Mail;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using FluentValidation;
 using Microsoft.AspNet.Identity;
@@ -19,20 +20,13 @@ namespace HubWeb.Controllers
     {
         private readonly EmailAddress _emailAddress;
         private readonly Email _email;
-
+        private readonly IConfigRepository _configRepository;
         public HomeController()
         {
             _emailAddress = ObjectFactory.GetInstance<EmailAddress>();
             _email = ObjectFactory.GetInstance<Email>();
+            _configRepository = ObjectFactory.GetInstance<IConfigRepository>();
         }
-
-
-
-        public ActionResult DocuSign()
-        {
-            return View();
-        }
-
         public ActionResult Index(string emailAddress)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -71,11 +65,8 @@ namespace HubWeb.Controllers
             }
         }
 
-
         public ActionResult Index_Docusign()
         {
-         
-
             return View();
         }
 
@@ -152,22 +143,16 @@ namespace HubWeb.Controllers
         [HttpPost]
         public ActionResult ProcessHomePageBookingRequest(string emailAddress, string meetingInfo)
         {
-
-
             RegexUtilities.ValidateEmailAddress(emailAddress);
             if (meetingInfo.Trim().Length < 30)
                 return Json(new { Message = "Meeting information must have at least 30 characters" });
 
             return RedirectToAction("CreateViaHomePage", "BookingRequest", new { emailAddress = emailAddress, meetingInfo = meetingInfo });
-
-
         }
-
-
 
         //  EmailAddress  is valid then send mail .    
         // return "success" or  error 
-        public ActionResult ProcessSubmittedEmail(string name, string emailId, string message)
+        public async Task<ActionResult> ProcessSubmittedEmail(string name, string emailId, string message)
         {
             string result = "";
             try
@@ -178,12 +163,12 @@ namespace HubWeb.Controllers
                 using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     _emailAddress.ConvertFromMailAddress(uow, new MailAddress(emailId, name));
-                    string toRecipient = "info@fr8.co";
+                    string toRecipient = _configRepository.Get("CustomerSupportEmail");
                     string fromAddress = emailId;
 
                     // EmailDO emailDO = email.GenerateBasicMessage(emailAddressDO, message);
                     string subject = "Customer query";
-                    _email.Send(uow, subject, message, fromAddress, toRecipient);
+                    await _email.SendAsync(uow, subject, message, fromAddress, toRecipient);
                     //uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
                     uow.SaveChanges();
                 }

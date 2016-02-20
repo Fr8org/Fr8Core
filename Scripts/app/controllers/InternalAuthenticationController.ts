@@ -16,18 +16,23 @@
             $scope.authErrorText = null;
             $scope.mode = $scope.mode;
 
-            // 3 - AuthenticationMode.InternalModeWithDomain
-            $scope.showDomain = $scope.mode == 3 ? 1 : 0;
+            // 4 - AuthenticationMode.InternalModeWithDomain
+            $scope.showDomain = $scope.mode == 4 ? 1 : 0;
 
             $scope.formData = {
                 username: 'docusign_developer@dockyard.company',
                 password: 'grolier34',
-                domain: "dockyard.company"
+                domain: "dockyard.company",
+                isDemoAccount: false
             };
 
             $scope.isLoading = function () {
                 return _loading;
             };
+
+            $scope.hasDemoService = function () {
+                return $scope.terminalName == "terminalDocuSign";
+            }
 
             $scope.submitForm = function () {
                 if (!$scope.form.$valid) {
@@ -38,7 +43,8 @@
                     TerminalId: $scope.terminalId,
                     Username: $scope.formData.username,
                     Password: $scope.formData.password,
-                    Domain: $scope.formData.domain
+                    Domain: $scope.formData.domain,
+                    IsDemoAccount: $scope.formData.isDemoAccount
                 };
 
                 _loading = true;

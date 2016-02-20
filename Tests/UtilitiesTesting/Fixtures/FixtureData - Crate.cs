@@ -285,6 +285,7 @@ namespace UtilitiesTesting.Fixtures
             curEventReportMS.EventNames = "DocuSign Envelope Sent";
             curEventReportMS.EventPayload.Add(FixtureData.GetEnvelopeIdCrate());
             curEventReportMS.ExternalAccountId = externalAccountId;
+            curEventReportMS.Manufacturer = "DocuSign";
             var curEventReport = Crate.FromContent("Standard Event Report", curEventReportMS);
             return new CrateManager().ToDto(curEventReport);
         }

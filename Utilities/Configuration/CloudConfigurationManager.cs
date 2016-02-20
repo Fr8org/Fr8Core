@@ -56,7 +56,7 @@ namespace Utilities.Configuration.Azure
         /// <summary>
         /// Gets application settings.
         /// </summary>
-        internal static IApplicationSettings AppSettings
+        public static IApplicationSettings AppSettings
         {
             get
             {

@@ -50,99 +50,100 @@ namespace terminalBaseTests.BaseClasses
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public async void HandleFr8Request_NullActionDTO_ThrowsException()
+        public async Task HandleFr8Request_NullActionDTO_ThrowsException()
         {
             await _baseTerminalController.HandleFr8Request(terminalName, "", null);
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentException))]
-        public async void HandleFr8Request_NullActivityTemplate_ThrowsException()
+        public async Task HandleFr8Request_NullActivityTemplate_ThrowsException()
         {
-            var actionDTO = Fixture_HandleRequest.terminalMockActionDTO();
-            actionDTO.ActivityTemplate = null;
-            await _baseTerminalController.HandleFr8Request(terminalName, "", actionDTO);
+            var activityDTO = Fixture_HandleRequest.terminalMockActionDTO();
+            activityDTO.ActivityTemplate = null;
+            var fr8Data = new Fr8DataDTO { ActivityDTO = activityDTO };
+            await _baseTerminalController.HandleFr8Request(terminalName, "", fr8Data);
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentException))]
-        public async void HandleFr8Request_TerminalNotExist_ThrowsException()
+        public async Task HandleFr8Request_TerminalNotExist_ThrowsException()
         {
-            ActionDTO actionDTO = new ActionDTO();
-            actionDTO.ActivityTemplate = new ActivityTemplateDTO() { Name = "terminalDummy", Version = "1.1" };
-
-            await _baseTerminalController.HandleFr8Request(terminalName, "", actionDTO);
+            ActivityDTO activityDTO = new ActivityDTO();
+            activityDTO.ActivityTemplate = new ActivityTemplateDTO() { Name = "terminalDummy", Version = "1.1" };
+            var fr8Data = new Fr8DataDTO { ActivityDTO = activityDTO };
+            await _baseTerminalController.HandleFr8Request(terminalName, "", fr8Data);
         }
 
         [Test]
-        public async void HandleFr8Request_Configure_ReturnsActionDTO()
+        public async Task HandleFr8Request_Configure_ReturnsActionDTO()
         {
-            var result = await _baseTerminalController.HandleFr8Request(terminalName, "configure", Fixture_HandleRequest.terminalMockActionDTO());
+            var result = await _baseTerminalController.HandleFr8Request(terminalName, "configure", Fixture_HandleRequest.terminalMockFr8DataDTO());
 
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf(typeof(ActionDTO), result);
+            Assert.IsInstanceOf(typeof(ActivityDTO), result);
 
-            var crateStorage = CrateManagerHelper.FromDto(((ActionDTO)result).CrateStorage);
+            var crateStorage = CrateManagerHelper.FromDto(((ActivityDTO)result).CrateStorage);
             var crateResult = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
 
-            Assert.Greater(crateResult.Controls.Where(x => x.Label.ToLower() == "configure").Count(), 0);
+            Assert.Greater(crateResult.Controls.Count(x => x.Label.ToLower() == "configure"), 0);
         }
 
         [Test]
-        public async void HandleFr8Request_Run_ReturnsPayloadDTO()
+        public async Task HandleFr8Request_Run_ReturnsPayloadDTO()
         {
-            var result = await _baseTerminalController.HandleFr8Request(terminalName, "run", Fixture_HandleRequest.terminalMockActionDTOTest());
+            var result = await _baseTerminalController.HandleFr8Request(terminalName, "run", Fixture_HandleRequest.terminalMockFr8DataDTO());
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOf(typeof(PayloadDTO), result);
         }
 
         [Test]
-        public async void HandleFr8Request_ChildrenExecuted_ReturnsPayloadDTO()
+        public async Task HandleFr8Request_ChildrenExecuted_ReturnsPayloadDTO()
         {
-            var result = await _baseTerminalController.HandleFr8Request(terminalName, "childrenexecuted", Fixture_HandleRequest.terminalMockActionDTOTest());
+            var result = await _baseTerminalController.HandleFr8Request(terminalName, "childrenexecuted", Fixture_HandleRequest.terminalMockFr8DataDTO());
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOf(typeof(PayloadDTO), result);
         }
 
         [Test]
-        public async void HandleFr8Request_Activate_ReturnsActionDTO()
+        public async Task HandleFr8Request_Activate_ReturnsActionDTO()
         {
-            var result = await _baseTerminalController.HandleFr8Request(terminalName, "activate", Fixture_HandleRequest.terminalMockActionDTO());
+            var result = await _baseTerminalController.HandleFr8Request(terminalName, "activate", Fixture_HandleRequest.terminalMockFr8DataDTO());
 
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf(typeof(ActionDTO), result);
+            Assert.IsInstanceOf(typeof(ActivityDTO), result);
 
-            var crateStorage = CrateManagerHelper.FromDto(((ActionDTO)result).CrateStorage);
+            var crateStorage = CrateManagerHelper.FromDto(((ActivityDTO)result).CrateStorage);
             var crateResult = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
 
             Assert.Greater(crateResult.Controls.Where(x => x.Label.ToLower() == "activate").Count(), 0);
         }
 
         [Test]
-        public async void HandleFr8Request_Deactivate_ReturnsActionDTO()
+        public async Task HandleFr8Request_Deactivate_ReturnsActionDTO()
         {
-            var result = await _baseTerminalController.HandleFr8Request(terminalName, "deactivate", Fixture_HandleRequest.terminalMockActionDTO());
+            var result = await _baseTerminalController.HandleFr8Request(terminalName, "deactivate", Fixture_HandleRequest.terminalMockFr8DataDTO());
 
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf(typeof(ActionDTO), result);
+            Assert.IsInstanceOf(typeof(ActivityDTO), result);
 
-            var crateStorage = CrateManagerHelper.FromDto(((ActionDTO)result).CrateStorage);
+            var crateStorage = CrateManagerHelper.FromDto(((ActivityDTO)result).CrateStorage);
             var crateResult = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
 
             Assert.Greater(crateResult.Controls.Where(x => x.Label.ToLower() == "deactivate").Count(), 0);
         }
 
         [Test]
-        public async void HandleFr8Request_Othermethod_ReturnsActionDTO()
+        public async Task HandleFr8Request_Othermethod_ReturnsActionDTO()
         {
-            var result = await _baseTerminalController.HandleFr8Request(terminalName, "OtherMethod", Fixture_HandleRequest.terminalMockActionDTO());
+            var result = await _baseTerminalController.HandleFr8Request(terminalName, "OtherMethod", Fixture_HandleRequest.terminalMockFr8DataDTO());
 
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf(typeof(ActionDTO), result);
+            Assert.IsInstanceOf(typeof(ActivityDTO), result);
 
-            var crateStorage = CrateManagerHelper.FromDto(((ActionDTO)result).CrateStorage);
+            var crateStorage = CrateManagerHelper.FromDto(((ActivityDTO)result).CrateStorage);
             var crateResult = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
 
             Assert.Greater(crateResult.Controls.Where(x => x.Label.ToLower() == "othermethod").Count(), 0);

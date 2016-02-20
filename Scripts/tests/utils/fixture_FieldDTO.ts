@@ -14,7 +14,9 @@ module dockyard.tests.utils.fixtures {
             fieldLabel: 'FilePicker Test',
             name: 'FilePickerTest',
             events: [],
-            value: null
+            value: null,
+            errorMessage: null,
+            isFocused: false
         };
 
         public static textField: model.TextBox = {
@@ -23,6 +25,8 @@ module dockyard.tests.utils.fixtures {
             fieldLabel: 'test',
             name: 'test',
             events: [],
+            errorMessage: null,
+            isFocused: false,
             value: 'test'
         };
 
@@ -38,8 +42,10 @@ module dockyard.tests.utils.fixtures {
             type: 'DropDownList',
             fieldLabel: 'DropDownList Test',
             name: 'DropDownList',
+            isFocused: false,
             events: [],
             value: 'value3',
+            errorMessage: null,
             selectedKey: 'test3'
         };
 
@@ -53,13 +59,17 @@ module dockyard.tests.utils.fixtures {
                     type: "RadioButtonGroup",
                     fieldLabel: null,
                     events: null,
+                    errorMessage: null,
+                    isFocused: false,
                     controls: [
                         {
                             name: 'SMS_Number',
                             value: null,
                             fieldLabel: null,
                             type: "TextBox",
-                            events: null
+                            events: null,
+                            errorMessage: null,
+                            isFocused: false
                         }
                     ]
                 },
@@ -70,13 +80,17 @@ module dockyard.tests.utils.fixtures {
                     type: "RadioButtonGroup",
                     fieldLabel: null,
                     events: null,
+                    errorMessage: null,
+                    isFocused: false,
                     controls: [
                         {
                             name: 'SMS_Number2',
                             value: null,
                             fieldLabel: null,
                             type: "TextBox",
-                            events: null
+                            events: null,
+                            isFocused: false,
+                            errorMessage: null,
                         }
                     ]
                 }
@@ -85,6 +99,8 @@ module dockyard.tests.utils.fixtures {
             value: null,
             fieldLabel: "For the SMS Number use:",
             type: "RadioButtonGroup",
+            errorMessage: null,
+            isFocused: false,
             events: null
         };
 
@@ -106,6 +122,8 @@ module dockyard.tests.utils.fixtures {
             initialLabel: 'test label',
             value: null,
             textValue: null,
+            errorMessage: null,
+            isFocused: false,
             source: {
                 manifestType: 'testManifest',
                 label: 'testLabel',

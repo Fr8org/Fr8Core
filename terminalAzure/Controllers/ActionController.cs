@@ -7,6 +7,7 @@ using Data.Entities;
 using Data.States;
 using TerminalBase.BaseClasses;
 using AutoMapper;
+using TerminalBase.Infrastructure;
 
 namespace terminalAzure.Controllers
 {    
@@ -16,9 +17,11 @@ namespace terminalAzure.Controllers
         private const string curTerminal = "terminalAzure";
 
         [HttpPost]
-        public Task<object> Execute([FromUri] String actionType, [FromBody] ActionDTO curActionDTO)
+        [fr8TerminalHMACAuthenticate(curTerminal)]
+        [Authorize]
+        public Task<object> Execute([FromUri] String actionType, [FromBody] Fr8DataDTO curDataDTO)
         {
-            return HandleFr8Request(curTerminal, actionType, curActionDTO);
+            return HandleFr8Request(curTerminal, actionType, curDataDTO);
         }
 
         //----------------------------------------------------------
@@ -27,7 +30,7 @@ namespace terminalAzure.Controllers
         [HttpPost]
         [Route("Write_To_Sql_Server")]
         [Obsolete]
-        public IHttpActionResult Process(ActionDO curActionDO)
+        public IHttpActionResult Process(ActivityDO curActivityDO)
         {
             //var _actionHandler = ObjectFactory.GetInstance<Write_To_Sql_Server_v1>();
             //ActionDO curAction = Mapper.Map<ActionDO>(curActionDTO);
@@ -39,7 +42,7 @@ namespace terminalAzure.Controllers
 
         [HttpPost]
         [Route("Write_To_Sql_Server/{path}")]
-        public IHttpActionResult Process(string path, ActionDO curActionDO)
+        public IHttpActionResult Process(string path, ActivityDO curActivityDO)
 
         {
             //ActionDO curAction = Mapper.Map<ActionDO>(curActionDTO);

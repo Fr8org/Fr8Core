@@ -1,65 +1,52 @@
 ﻿module dockyard.model {
-    export class ActionDTO implements interfaces.IActionDTO {
+    export class ActivityDTO implements interfaces.IActivityDTO {
+        rootRouteNodeId: string;
         parentRouteNodeId: string;
         id: string;
-        isTempId: boolean;
-        name: string;
         label: string;
         crateStorage: model.CrateStorage;
         configurationControls: model.ControlsList;
-        activityTemplateId: number;
         activityTemplate: ActivityTemplate;
         currentView: string;
-        childrenActions: Array<interfaces.IActionDTO>;
+        childrenActions: Array<interfaces.IActivityDTO>;
         height: number = 300;
         ordering: number;
-
+        documentation: string;
         constructor(
-            parentActivityId: string,
-            id: string,
-            isTempId: boolean
+            rootRouteNodeId: string,
+            parentRouteNodeId: string,
+            id: string
         ) {
-            this.parentRouteNodeId = parentActivityId;
+            this.rootRouteNodeId = rootRouteNodeId;
+            this.parentRouteNodeId = parentRouteNodeId;
             this.id = id;
-            this.isTempId = isTempId;
-            this.activityTemplateId = 0;
             this.configurationControls = new ControlsList();
         }
 
         toActionVM(): interfaces.IActionVM {
-            return <interfaces.IActionVM> {
-                id: this.id,
-                isTempId: this.isTempId,
-                parentRouteNodeId: this.parentRouteNodeId,
-                name: this.name,
-                label: this.label,
-                crateStorage: this.crateStorage,
-                configurationControls: this.configurationControls,
-                ordering: this.ordering
-            };
+            return <interfaces.IActionVM>angular.extend({}, this);
         }
 
-        clone(): ActionDTO {
-            var result = new ActionDTO(this.parentRouteNodeId, this.id, this.isTempId);
-            result.name = this.name;
-            result.name = this.label;
+        clone(): ActivityDTO {
+            var result = new ActivityDTO(
+                this.rootRouteNodeId,
+                this.parentRouteNodeId,
+                this.id
+            );
             result.ordering = this.ordering;
             return result;
         }
 
         static isActionValid(action: interfaces.IActionVM) {
-            return action && action.$resolved && !action.isTempId;
+            return action && action.$resolved;
         }
 
-        static create(dataObject: interfaces.IActionDTO): ActionDTO {
-            var result = new ActionDTO('', '', false);
-            result.activityTemplateId = dataObject.activityTemplateId;
+        static create(dataObject: interfaces.IActivityDTO): ActivityDTO {
+            var result = new ActivityDTO('', '', '');
             result.activityTemplate = dataObject.activityTemplate;
             result.crateStorage = dataObject.crateStorage;
             result.configurationControls = dataObject.configurationControls;
             result.id = dataObject.id;
-            result.isTempId = dataObject.isTempId;
-            result.name = dataObject.name;
             result.label = dataObject.label;
             result.parentRouteNodeId = dataObject.parentRouteNodeId;
             result.ordering = dataObject.ordering;

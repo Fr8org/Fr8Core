@@ -1,5 +1,6 @@
 ﻿/// <reference path="../_all.ts" />
 
+// TODO: FR-2347 possibly remove this.
 module dockyard.interfaces {
 
     export interface IOperator {

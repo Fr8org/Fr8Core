@@ -20,7 +20,7 @@
         }
 
         private intervalHandler() {
-            if (!this.ConfigureTrackerService.hasPendingConfigureCalls()) {
+            if (!this.ConfigureTrackerService.hasPendingConfigureAuthCalls()) {
                 var actionIds: Array<string> = [];
                 var key;
                 for (key in this._pendingActionIds) {
@@ -63,24 +63,25 @@
             })
             .result
             .then(() => {
-                angular.forEach(actionIds, function (it) {
+                angular.forEach(actionIds, it => {
                     self.$rootScope.$broadcast(
-                        dockyard.directives.paneConfigureAction.MessageType[dockyard.directives.paneConfigureAction.MessageType.PaneConfigureAction_Reconfigure],
-                        new dockyard.directives.paneConfigureAction.ActionReconfigureEventArgs(<interfaces.IActionDTO>({ id: it }))
-                        );
+                        dockyard.directives.paneConfigureAction.MessageType[dockyard.directives.paneConfigureAction.MessageType.PaneConfigureAction_AuthCompleted],
+                        new dockyard.directives.paneConfigureAction.AuthenticationCompletedEventArgs(<interfaces.IActivityDTO>({ id: it }))
+                    );
                 });
             })
-            .finally(function () {
-                self._authDialogDisplayed = false;
-                self.clear();
-            });
-            // .catch((result) => {
-            //     var errorText = 'Authentication unsuccessful. Click to try again.';
-            //     var control = new model.TextBlock(errorText, 'well well-lg alert-danger');
-            //     control.name = 'AuthUnsuccessfulLabel';
-            //     $scope.currentAction.configurationControls = new model.ControlsList();
-            //     $scope.currentAction.configurationControls.fields = [control];
-            // });
+            .catch((result) => {
+                angular.forEach(actionIds, it => {
+                    self.$rootScope.$broadcast(
+                        dockyard.directives.paneConfigureAction.MessageType[dockyard.directives.paneConfigureAction.MessageType.PaneConfigureAction_AuthFailure],
+                        new dockyard.directives.paneConfigureAction.ActionAuthFailureEventArgs(it)
+                    );
+                });
+            })
+            .finally(() => {
+                    this._authDialogDisplayed = false;
+                    this.clear();
+                });
         }
     }
 }

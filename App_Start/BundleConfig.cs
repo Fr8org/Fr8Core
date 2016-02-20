@@ -101,9 +101,9 @@ namespace HubWeb.App_Start
                 "~/Content/css/frontcss/main.css", new CssRewriteUrlTransform()
                 ));
 
-            bundles.Add(new StyleBundle("~/bundles/css/backendcss").Include(
-                "~/Content/css/backendcss/default.css", new CssRewriteUrlTransform()
-                ));
+            bundles.Add(new StyleBundle("~/bundles/css/backendcss")
+                .Include("~/Content/css/backendcss/default.css", new CssRewriteUrlTransform())
+                );
 
             bundles.Add(new StyleBundle("~/bundles/css/fontawesome").Include(
                 "~/Content/css/additionalcss/font-awesome/font-awesome.css", new CssRewriteUrlTransform()
@@ -113,6 +113,22 @@ namespace HubWeb.App_Start
                "~/bower_components/select2/select2.css", new CssRewriteUrlTransform()
                ));
 
+            bundles.Add(new StyleBundle("~/Content/css/font-awesome")
+                .Include("~/bower_components/font-awesome-min/css/font-awesome.min.css", new CssRewriteUrlTransform())
+            );
+
+            bundles.Add(new StyleBundle("~/Content/css/bower-no-cdn")
+                .Include("~/bower_components/angular-datatables/dist/plugins/bootstrap/datatables.bootstrap.min.css", new CssRewriteUrlTransform())
+                .Include("~/bower_components/ngToast/dist/ngToast.min.css", new CssRewriteUrlTransform())
+                //DOC: To use 'rounded corners' style just load 'components-rounded.css' stylesheet instead of 'components.css' in the below style tag
+                .Include("~/Content/templates/metronic/assets/global/css/components.css", new CssRewriteUrlTransform())
+                .Include("~/Content/templates/metronic/assets/global/css/plugins.css", new CssRewriteUrlTransform())
+                .Include("~/Content/templates/metronic/assets/admin/layout3/css/layout.css", new CssRewriteUrlTransform())
+                .Include("~/Content/templates/metronic/assets/admin/layout3/css/themes/default.css", new CssRewriteUrlTransform())
+                .Include("~/Content/templates/metronic/assets/admin/layout3/css/custom.css", new CssRewriteUrlTransform())
+                .Include("~/Content/css/dockyard.css", new CssRewriteUrlTransform())
+            );
+
             bundles.Add(new ScriptBundle("~/bundles/jsunittests")
                 .IncludeDirectory("~/Scripts/tests/utils/", "*.js", true)
                 .IncludeDirectory("~/Scripts/tests/unit/", "*.js", true));
@@ -120,6 +136,39 @@ namespace HubWeb.App_Start
             bundles.Add(new ScriptBundle("~/bundles/jsintegrationtests")
                 .IncludeDirectory("~/Scripts/tests/utils/", "*.js", true)
                 .IncludeDirectory("~/Scripts/tests/integration/", "*.js", true));
+
+            bundles.Add(new ScriptBundle("~/bundles/js/fr8")
+#if DEV || RELEASE
+                .Include("~/Scripts/templateCache.js")
+#else
+                .Include("~/Scripts/dummyTemplates.js")
+#endif
+                .Include("~/Scripts/app/app.js")
+                .Include("~/Scripts/app/_compiled.js"));
+
+            bundles.Add(new ScriptBundle("~/bundles/js/metronic")
+                .Include("~/Content/templates/metronic/assets/global/scripts/metronic.js")
+                .Include("~/Content/templates/metronic/assets/admin/layout3/scripts/layout.js")
+                .Include("~/Content/templates/metronic/assets/admin/layout3/scripts/demo.js")
+            );
+
+            
+
+            bundles.Add(new ScriptBundle("~/bundles/js/bower-no-cdn")
+#if DEBUG
+                .Include("~/bower_components/angular-mocks/angular-mocks.js")
+#endif
+                .Include("~/bower_components/ocLazyLoad/dist/ocLazyLoad.js") //not found on cdn
+                .Include("~/bower_components/angular-datatables/dist/angular-datatables.js")//not found on cdn
+                .Include("~/bower_components/ngToast/dist/ngToast.min.js")//not found on cdn
+                .Include("~/bower_components/mb-scrollbar/mb-scrollbar.min.js")//not found on cdn
+                .Include("~/bower_components/angular-bootstrap-switch/dist/angular-bootstrap-switch.js")//not found on cdn
+                .Include("~/bower_components/angular-applicationinsights/dist/angular-applicationinsights.min.js")//not found on cdn
+            );
+
+#if RELEASE || DEV
+            BundleTable.EnableOptimizations = true;
+#endif
 
             //bundles.Add(new StyleBundle("~/bundles/css/temp").Include(
             //   "~/Content/css/temp/temp.css", new CssRewriteUrlTransform()

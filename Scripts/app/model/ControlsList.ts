@@ -11,8 +11,10 @@
         type: string;
         fieldLabel: string;
         name: string;
+        errorMessage : string;
         events: Array<ControlEvent>;
         value: string;
+        isFocused: boolean;
     }
 
     export class ControlEvent {
@@ -21,11 +23,17 @@
     }
 
     export class CheckBox extends ControlDefinitionDTO {
-        checked: boolean;
+        selected: boolean;
     }
 
     export class Button extends ControlDefinitionDTO {
         checked: boolean;
+
+        constructor(label: string) {
+            super();
+            this.type = 'Button';
+            (<any>this).label = label;
+        }
     }
 
     export class TextBox extends ControlDefinitionDTO {
@@ -66,7 +74,7 @@
         public sourceCrateManifest: {
             Id: string;
             Type: string;
-        }
+        };
     }
 
     export enum AvailabilityType {
@@ -91,6 +99,16 @@
         selectedKey: string;
     }
 
+    export class CrateDetails {
+        manifestType: model.DropDownList;
+        label: model.DropDownList;
+    }
+
+    export class UpstreamCrateChooser extends ControlDefinitionDTO {
+        selectedCrates: Array<CrateDetails>;
+        multiSelection: boolean;
+    }
+
     export class TextSource extends DropDownList {
         initialLabel: string;
         valueSource: string;
@@ -110,7 +128,7 @@
 
     export class RoutingControlGroup extends ControlDefinitionDTO {
         sourceField: string;
-        routes: Array<Route>
+        routes: Array<Route>;
     }
 
     export class Route extends ControlDefinitionDTO {
@@ -135,11 +153,19 @@
         days: number;
         hours: number;
         minutes: number;
+        innerLabel: string;
     }
 
     export class UpstreamDataChooser extends ControlDefinitionDTO {
         selectedManifest: string;
         selectedLabel: string;
         selectedFieldType: string;
+    }
+    
+    export class SourceableCriteria extends DropDownList{
+        fieldList: Array<DropDownListItem>;
+        comparatorList: Array<DropDownListItem>;
+        valueSource: string;
+        textValue: string;
     }
 }

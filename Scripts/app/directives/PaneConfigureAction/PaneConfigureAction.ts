@@ -11,16 +11,27 @@ module dockyard.directives.paneConfigureAction {
         PaneConfigureAction_ChildActionsReconfiguration,
         PaneConfigureAction_ReloadAction,
         PaneConfigureAction_SetSolutionMode,
-        PaneConfigureAction_ConfigureCallResponse
+        PaneConfigureAction_ConfigureCallResponse,
+        PaneConfigureAction_AuthFailure,
+        PaneConfigureAction_ExecutePlan,
+        PaneConfigureAction_ConfigureFocusElement,
+        PaneConfigureAction_AuthCompleted,
+        PaneConfigureAction_DownStreamReconfiguration
     }
 
     export class ActionReconfigureEventArgs {
-        public action: interfaces.IActionDTO
+        public action: interfaces.IActivityDTO
 
-        constructor(action: interfaces.IActionDTO) {
+        constructor(action: interfaces.IActivityDTO) {
             // Clone Action to prevent any issues due to possible mutation of source object
             this.action = angular.extend({}, action);
         }
+    }
+
+    export class AuthenticationCompletedEventArgs extends ActionReconfigureEventArgs{
+    }
+
+    export class DownStreamReConfigureEventArgs extends ActionReconfigureEventArgs {
     }
 
     export class ActionUpdatedEventArgs extends ActionUpdatedEventArgsBase { }
@@ -41,19 +52,27 @@ module dockyard.directives.paneConfigureAction {
         }
     }
 
-    export class RenderEventArgs {
-        public action: interfaces.IActionDTO
+    export class ConfigureFocusElementArgs {
+        public fieldName: model.ControlDefinitionDTO;
 
-        constructor(action: interfaces.IActionDTO) {
+        constructor(fieldName: model.ControlDefinitionDTO) {
+            this.fieldName = fieldName;
+        }
+    }
+
+    export class RenderEventArgs {
+        public action: interfaces.IActivityDTO
+
+        constructor(action: interfaces.IActivityDTO) {
             // Clone Action to prevent any issues due to possible mutation of source object
             this.action = angular.extend({}, action);
         }
     }
 
     export class MapFieldsClickedEventArgs {
-        action: model.ActionDTO;
+        action: model.ActivityDTO;
 
-        constructor(action: model.ActionDTO) {
+        constructor(action: model.ActivityDTO) {
             this.action = action;
         }
     }
@@ -65,6 +84,14 @@ module dockyard.directives.paneConfigureAction {
         constructor(id: number, isTempId: boolean) {
             this.id = id;
             this.isTempId = isTempId;
+        }
+    }
+
+    export class ActionAuthFailureEventArgs {
+        public id: string;
+
+        constructor(id: string) {
+            this.id = id;
         }
     }
 
@@ -82,29 +109,33 @@ module dockyard.directives.paneConfigureAction {
         mode: string;
         reconfigureChildrenActions: boolean;
         setSolutionMode: () => void;
+        currentActiveElement: model.ControlDefinitionDTO;
+        collapsed: boolean;
+        resize: () => void;
     }
-
-
+    
     export class CancelledEventArgs extends CancelledEventArgsBase { }
 
     export class ReloadActionEventArgs {
-        public action: interfaces.IActionDTO;
-        constructor(action: interfaces.IActionDTO) {
+        public action: interfaces.IActivityDTO;
+        constructor(action: interfaces.IActivityDTO) {
             this.action = action;
         }
     }
 
     export class ChildActionReconfigurationEventArgs {
-        public actions: Array<interfaces.IActionDTO>;
-        constructor(actions: Array<interfaces.IActionDTO>) {
+        public actions: Array<interfaces.IActivityDTO>;
+        constructor(actions: Array<interfaces.IActivityDTO>) {
             this.actions = actions;
         }
     }
 
     export class CallConfigureResponseEventArgs {
-        public action: interfaces.IActionDTO;
-        constructor(action:interfaces.IActionDTO) {
+        public action: interfaces.IActivityDTO;
+        public focusElement: model.ControlDefinitionDTO;
+        constructor(action: interfaces.IActivityDTO, focusElement: model.ControlDefinitionDTO) {
             this.action = action;
+            this.focusElement = focusElement;
         }
     }
 
@@ -120,6 +151,8 @@ module dockyard.directives.paneConfigureAction {
         };
         public restrict = 'E';
 
+        private ignoreConfigurationChange = false;
+         
         constructor(
             private ActionService: services.IActionService,
             private AuthService: services.AuthService,
@@ -129,7 +162,8 @@ module dockyard.directives.paneConfigureAction {
             private $timeout: ng.ITimeoutService,
             private $modal,
             private $window: ng.IWindowService,
-            private $http: ng.IHttpService
+            private $http: ng.IHttpService,
+            private $q: ng.IQService
         ) {
             PaneConfigureAction.prototype.link = (
                 scope: IPaneConfigureActionScope,
@@ -138,13 +172,11 @@ module dockyard.directives.paneConfigureAction {
 
                 //Link function goes here
             };
-
-            PaneConfigureAction.prototype.controller = function (
-                $scope: IPaneConfigureActionScope,
-                $element: ng.IAugmentedJQuery,
-                $attrs: ng.IAttributes) {
+            
+            PaneConfigureAction.prototype.controller = ($scope: IPaneConfigureActionScope, $element: ng.IAugmentedJQuery, $attrs: ng.IAttributes) => {
 
                 var configLoadingError: boolean = false;
+                $scope.collapsed = false;
 
                 $scope.$on("onChange", onControlChange);
                 $scope.$on("onClick", onClickEvent);
@@ -156,6 +188,10 @@ module dockyard.directives.paneConfigureAction {
                 $scope.onConfigurationChanged = onConfigurationChanged;
                 $scope.processConfiguration = processConfiguration;
                 $scope.setSolutionMode = setSolutionMode;
+
+                $scope.resize = () => {
+                    $scope.collapsed = !$scope.collapsed;
+                };
 
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Reconfigure], (event: ng.IAngularEvent, reConfigureActionEventArgs: ActionReconfigureEventArgs) => {
                     //this might be a general reconfigure command
@@ -171,8 +207,21 @@ module dockyard.directives.paneConfigureAction {
 
                 });
 
+                $scope.$on(MessageType[MessageType.PaneConfigureAction_AuthCompleted], (event: ng.IAngularEvent, authCompletedEventArgs: AuthenticationCompletedEventArgs) => {
+                    if (authCompletedEventArgs.action.id === $scope.currentAction.id) {
+                        loadConfiguration().then(() => {
+                            $scope.$emit(MessageType[MessageType.PaneConfigureAction_DownStreamReconfiguration], new DownStreamReConfigureEventArgs($scope.currentAction));
+                        });
+                    }
+
+                });
+
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_ReloadAction], (event: ng.IAngularEvent, reloadActionEventArgs: ReloadActionEventArgs) => {
                     reloadAction(reloadActionEventArgs);
+                });
+
+                $scope.$on(MessageType[MessageType.PaneConfigureAction_ConfigureFocusElement], (event: ng.IAngularEvent, configureFocusElementArgs: ConfigureFocusElementArgs) => {
+                    $scope.currentActiveElement = configureFocusElementArgs.fieldName;
                 });
 
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_RenderConfiguration],
@@ -180,8 +229,29 @@ module dockyard.directives.paneConfigureAction {
                     () => $timeout(() => processConfiguration(), 300)
                 );
 
-                // Get configuration settings template from the server if the current action does not contain those             
-                if ($scope.currentAction.activityTemplateId > 0) {
+                $scope.$on(
+                    MessageType[MessageType.PaneConfigureAction_AuthFailure],
+                    (event: ng.IAngularEvent, authFailureArgs: ActionAuthFailureEventArgs) => {
+                        if (authFailureArgs.id != $scope.currentAction.id) {
+                            return;
+                        }
+
+                        var onClickEvent = new model.ControlEvent();
+                        onClickEvent.name = 'onClick';
+                        onClickEvent.handler = 'requestConfig';
+
+                        var button = new model.Button('Authentication unsuccessful, try again');
+                        button.name = 'AuthUnsuccessfulLabel';
+                        button.events = [onClickEvent];
+
+                        $scope.currentAction.configurationControls = new model.ControlsList();
+                        $scope.currentAction.configurationControls.fields = [button];
+                    }
+                );
+
+                // Get configuration settings template from the server if the current action does not contain those       
+                //TODO check this     
+                if ($scope.currentAction.activityTemplate != null) {
                     if ($scope.currentAction.crateStorage == null || !$scope.currentAction.crateStorage.crates.length) {
                         $scope.loadConfiguration();
                     } else {
@@ -205,10 +275,54 @@ module dockyard.directives.paneConfigureAction {
                     }
                 }
 
+                // The function compares two instances of a configuration control and 
+                // determines if user's selection or entered value has changed 
+                function controlValuesChanged(control1: model.ControlDefinitionDTO, control2: model.ControlDefinitionDTO) {
+                    if (control1.name != control2.name) {
+                        throw Error("Control1 and control2 represent different controls.");
+                    }
+
+                    if (control1.value != undefined
+                        && control1.value != control2.value)
+                        return true;
+
+                    if ((<model.CheckBox>control1).selected != undefined
+                        && (<model.CheckBox>control1).selected != (<model.CheckBox>control2).selected)
+                        return true;
+
+                    if ((<model.DropDownList>control1).selectedKey != undefined
+                        && (<model.DropDownList>control1).selectedKey != (<model.DropDownList>control2).selectedKey)
+                        return true;
+
+                    if ((<model.TextSource>control1).valueSource != undefined
+                        && (<model.TextSource>control1).valueSource != (<model.TextSource>control2).valueSource)
+                        return true;
+
+                    return false;
+                }
+
                 function onConfigurationChanged(newValue: model.ControlsList, oldValue: model.ControlsList) {
                     if (!newValue || !newValue.fields) {
-                         return;
+                        return;
                     }
+
+                    if (this.ignoreConfigurationChange) {
+                        this.ignoreConfigurationChange = false;
+                        return;
+                    }
+
+                    for (var i = 0; i < newValue.fields.length; i++) {
+                        if (!controlValuesChanged(newValue.fields[i], oldValue.fields[i])) {
+                            continue;
+                        }
+
+                        if (hasRequestConfigHandler(newValue.fields[i])) {
+                            // Don't need to save separately; requestConfig event handler will initiate reconfiguration
+                            // which will also save the action
+                            return;
+                        }
+                    }
+
                     crateHelper.mergeControlListCrate(
                         $scope.currentAction.configurationControls,
                         $scope.currentAction.crateStorage
@@ -224,21 +338,32 @@ module dockyard.directives.paneConfigureAction {
                                     $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsReconfiguration], new ChildActionReconfigurationEventArgs($scope.currentAction.childrenActions));
                                 }
                             }
-                    });
+                        });
                 };
 
-                function onControlChange(event: ng.IAngularEvent, eventArgs: ChangeEventArgs) {
+                function getControlEventHandler(control: model.ControlDefinitionDTO, eventName: string) {
+                    if (control.events === null) return;
 
-                    var field = eventArgs.field;
-                    if (field.events === null) return;
-                    // Find the onChange event object
-                    var eventHandlerList = <Array<model.ControlEvent>>$filter('filter')(field.events, { name: 'onChange' }, true);
+                    var eventHandlerList = <Array<model.ControlEvent>>$filter('filter')(control.events, { name: eventName }, true);
                     if (typeof eventHandlerList === 'undefined' || eventHandlerList === null || eventHandlerList.length === 0) {
-                        return;
+                        return null;
                     }
-                    var fieldEvent = eventHandlerList[0];
+                    else {
+                        return eventHandlerList[0].handler;
+                    }
+                }
 
-                    if (fieldEvent.handler === 'requestConfig') {
+                function hasRequestConfigHandler(control: model.ControlDefinitionDTO): boolean {
+                    var handler = getControlEventHandler(control, 'onChange');
+                    if (handler != null) {
+                        return handler == 'requestConfig';
+                    }
+                    else
+                        return false; onControlChange
+                }
+
+                function onControlChange(event: ng.IAngularEvent, eventArgs: ChangeEventArgs) {
+                    if (hasRequestConfigHandler(eventArgs.field)) {
                         crateHelper.mergeControlListCrate(
                             $scope.currentAction.configurationControls,
                             $scope.currentAction.crateStorage
@@ -247,58 +372,50 @@ module dockyard.directives.paneConfigureAction {
                 
                         $scope.loadConfiguration();
                     }
-                    if (fieldEvent.handler === 'focusConfig') {
-                        var cccc = $scope.currentAction.crateStorage;
-                        angular.forEach(cccc.crates, function (value, keys) {
-                            if (value.label == "Configuration_Controls") {
-                                var textArea;
-                                var dropDown;
-                                var textAreaIndex;
-                                angular.forEach(value.contents, function (val, key) {
-                                    angular.forEach(val, function (i, j) {
-                                        if (i.type == "TextArea") {
-                                            textArea = i.value;
-                                            textAreaIndex = j;
-                                        }
-                                        if (i.type == "DropDownList") {
-                                            dropDown = i.selectedKey;
-                                            val[textAreaIndex].value = val[textAreaIndex].value + '[' + dropDown + ']';
-                                        }
-                                    });
-                                });
-                            }
-                        });
+                    //if (eventArgs.field.handler === 'focusConfig') {
+                    //    var cccc = $scope.currentAction.crateStorage;
+                    //    angular.forEach(cccc.crates, function (value, keys) {
+                    //        if (value.label == "Configuration_Controls") {
+                    //            var textArea;
+                    //            var dropDown;
+                    //            var textAreaIndex;
+                    //            angular.forEach(value.contents, function (val, key) {
+                    //                angular.forEach(val, function (i, j) {
+                    //                    if (i.type == "TextArea") {
+                    //                        textArea = i.value;
+                    //                        textAreaIndex = j;
+                    //                    }
+                    //                    if (i.type == "DropDownList") {
+                    //                        dropDown = i.selectedKey;
+                    //                        val[textAreaIndex].value = val[textAreaIndex].value + '[' + dropDown + ']';
+                    //                    }
+                    //                });
+                    //            });
+                    //        }
+                    //    });
                         
 
-                        crateHelper.mergeControlListCrate(
-                            $scope.currentAction.configurationControls,
-                            $scope.currentAction.crateStorage
-                            );
-                        $scope.currentAction.crateStorage.crateDTO = $scope.currentAction.crateStorage.crates //backend expects crates on CrateDTO field
+                    //    crateHelper.mergeControlListCrate(
+                    //        $scope.currentAction.configurationControls,
+                    //        $scope.currentAction.crateStorage
+                    //        );
+                    //    $scope.currentAction.crateStorage.crateDTO = $scope.currentAction.crateStorage.crates //backend expects crates on CrateDTO field
                 
-                        $scope.loadConfiguration();
-                    }
+                    //    $scope.loadConfiguration();
+                    //}
                 }
 
                 function onClickEvent(event: ng.IAngularEvent, eventArgs: ChangeEventArgs) {
                     var scope = <IPaneConfigureActionScope>event.currentScope;
-                    var field = eventArgs.field;
 
-                    // Find the onChange event object
-                    var eventHandlerList = <Array<model.ControlEvent>>$filter('filter')(field.events, { name: 'onClick' }, true);
-                    if (!eventHandlerList || eventHandlerList.length == 0) {
-                        return;
-                    }
-                    else {
-                        var fieldEvent = eventHandlerList[0];
-                        if (fieldEvent.handler != null) {
-                            crateHelper.mergeControlListCrate(
-                                scope.currentAction.configurationControls,
-                                scope.currentAction.crateStorage
-                            );
-                            scope.currentAction.crateStorage.crateDTO = scope.currentAction.crateStorage.crates; //backend expects crates on CrateDTO field
-                            loadConfiguration();
-                        }
+                    // Find the onClick event object
+                    if (getControlEventHandler(eventArgs.field, 'onClick')) {
+                        crateHelper.mergeControlListCrate(
+                            scope.currentAction.configurationControls,
+                            scope.currentAction.crateStorage
+                        );
+                        scope.currentAction.crateStorage.crateDTO = scope.currentAction.crateStorage.crates; //backend expects crates on CrateDTO field
+                        loadConfiguration();
                     }
                 }
 
@@ -312,26 +429,38 @@ module dockyard.directives.paneConfigureAction {
                 // Here we look for Crate with ManifestType == 'Standard UI Controls'.
                 // We parse its contents and put it into currentAction.configurationControls structure.
                 function loadConfiguration() {
+                    var deferred = $q.defer();
                     // Block pane and show pane-level 'loading' spinner
                     $scope.processing = true;
-
-
 
                     if ($scope.configurationWatchUnregisterer) {
                         $scope.configurationWatchUnregisterer();
                     }
 
-                    ConfigureTrackerService.configureCallStarted($scope.currentAction.id);
+                    ConfigureTrackerService.configureCallStarted(
+                        $scope.currentAction.id,
+                        $scope.currentAction.activityTemplate.needsAuthentication
+                    );
 
                     ActionService.configure($scope.currentAction).$promise
                         .then((res: interfaces.IActionVM) => {
-
-                            // emit ConfigureCallResponse for RouteBuilderController be able to reload actions with AgressiveReloadTag
-                            $scope.$emit(MessageType[MessageType.PaneConfigureAction_ConfigureCallResponse], new CallConfigureResponseEventArgs($scope.currentAction));
-
                             var childActionsDetected = false;
 
-                            if (res.childrenActions && res.childrenActions.length > 0) {
+                            // Detect OperationalState crate with CurrentClientActionName = 'ExecuteAfterConfigure'.
+                            if (crateHelper.hasCrateOfManifestType(res.crateStorage, 'Operational State')) {
+                                var operationalStatus = crateHelper
+                                    .findByManifestType(res.crateStorage, 'Operational State');
+
+                                var contents = <any>operationalStatus.contents;
+
+                                if (contents.CurrentActivityResponse.type === 'ExecuteClientAction'
+                                    && contents.CurrentClientActionName === 'ExecuteAfterConfigure') {
+
+                                    $scope.$emit(MessageType[MessageType.PaneConfigureAction_ExecutePlan]);
+                                }
+                            }
+                            var oldAction = $scope.currentAction;
+                            if (res.childrenActions && res.childrenActions.length > 0 &&  (!oldAction.childrenActions || oldAction.childrenActions.length < 1)) {
                                 // If the directive is used for configuring solutions,
                                 // the SolutionController would listen to this event 
                                 // and redirect user to the RouteBuilder once if is received.
@@ -346,6 +475,8 @@ module dockyard.directives.paneConfigureAction {
                             if ($scope.currentAction.childrenActions) {
                                 if (angular.toJson($scope.currentAction.childrenActions) != angular.toJson(res.childrenActions)) {
                                     $scope.reconfigureChildrenActions = true;
+                                    //in case of reconfiguring the solution check the child actions again
+                                    $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsDetected]);
                                 }
                             }
 
@@ -359,8 +490,11 @@ module dockyard.directives.paneConfigureAction {
                             if (!childActionsDetected) {
                                 $scope.processing = false;
                             }
+
+                            deferred.resolve($scope.currentAction);
                         })
                         .catch((result) => {
+                            
                             var errorText = 'Something went wrong. Click to retry.';
                             if (result.status && result.status >= 400) {
                                 // Bad http response
@@ -376,13 +510,19 @@ module dockyard.directives.paneConfigureAction {
 
                             // Unblock pane.
                             $scope.processing = false;
+                            deferred.reject(result);
                         })
                         .finally(() => {
                             ConfigureTrackerService.configureCallFinished($scope.currentAction.id);
+                            // emit ConfigureCallResponse for RouteBuilderController be able to reload actions with AgressiveReloadTag
+                            $scope.$emit(MessageType[MessageType.PaneConfigureAction_ConfigureCallResponse], new CallConfigureResponseEventArgs($scope.currentAction, $scope.currentActiveElement));
                         });
+
+                    return deferred.promise;
                 };
 
                 function processConfiguration() {
+                    var that = this;
                     // Check if authentication is required.
                     if (crateHelper.hasCrateOfManifestType($scope.currentAction.crateStorage, 'Standard Authentication')) {
                         var authCrate = crateHelper
@@ -392,13 +532,20 @@ module dockyard.directives.paneConfigureAction {
                         AuthService.enqueue($scope.currentAction.id);
                     }
 
+                    // if (crateHelper.hasCrateOfManifestType(
+
                     $scope.currentAction.configurationControls =
                         crateHelper.createControlListFromCrateStorage($scope.currentAction.crateStorage);
+
+                    // Before setting up watcher on configuration change, make sure that the first invokation of the handler 
+                    // is ignored: watcher always triggers after having been set up, and we don't want to handle that 
+                    // useless call.
+                    this.ignoreConfigurationChange = true;
 
                     $timeout(() => { // let the control list create, we don't want false change notification during creation process
                         $scope.configurationWatchUnregisterer = $scope.$watch<model.ControlsList>(
                             (scope: IPaneConfigureActionScope) => $scope.currentAction.configurationControls,
-                            $scope.onConfigurationChanged,
+                            <any>angular.bind(that, $scope.onConfigurationChanged),
                             true);
                     }, 1000);
                 }
@@ -408,26 +555,28 @@ module dockyard.directives.paneConfigureAction {
                     modalScope.actionIds = [actionId];
 
                     $modal.open({
-                        animation: true,
-                        templateUrl: '/AngularTemplate/AuthenticationDialog',
-                        controller: 'AuthenticationDialogController',
-                        scope: modalScope
-                    })
-                    .result
-                    .then(() => loadConfiguration())
-                    .catch((result) => {
-                        var errorText = 'Authentication unsuccessful. Click to try again.';
-                        var control = new model.TextBlock(errorText, 'well well-lg alert-danger');
-                        control.name = 'AuthUnsuccessfulLabel';
-                        $scope.currentAction.configurationControls = new model.ControlsList();
-                        $scope.currentAction.configurationControls.fields = [control];
-                    });
+                            animation: true,
+                            templateUrl: '/AngularTemplate/AuthenticationDialog',
+                            controller: 'AuthenticationDialogController',
+                            scope: modalScope
+                        })
+                        .result
+                        .then(() => loadConfiguration())
+                        .catch((result) => {
+                            var errorText = 'Authentication unsuccessful. Click to try again.';
+                            var control = new model.TextBlock(errorText, 'well well-lg alert-danger');
+                            control.name = 'AuthUnsuccessfulLabel';
+                            $scope.currentAction.configurationControls = new model.ControlsList();
+                            $scope.currentAction.configurationControls.fields = [control];
+                        });
                 }
 
                 function setSolutionMode() {
                     $scope.$emit(MessageType[MessageType.PaneConfigureAction_SetSolutionMode]);
                 }
-            }
+            };
+
+            PaneConfigureAction.prototype.controller['$inject'] = ['$scope', '$element', '$attrs'];
         }    
 
         //The factory function returns Directive object as per Angular requirements
@@ -441,7 +590,9 @@ module dockyard.directives.paneConfigureAction {
                 $timeout: ng.ITimeoutService,
                 $modal,
                 $window: ng.IWindowService,
-                $http: ng.IHttpService
+                $http: ng.IHttpService,
+                $q: ng.IQService
+
             ) => {
 
                 return new PaneConfigureAction(
@@ -453,7 +604,8 @@ module dockyard.directives.paneConfigureAction {
                     $timeout,
                     $modal,
                     $window,
-                    $http
+                    $http,
+                    $q
                 );
             };
 
@@ -466,7 +618,8 @@ module dockyard.directives.paneConfigureAction {
                 '$timeout',
                 '$modal',
                 '$window',
-                '$http'
+                '$http',
+                '$q'
             ];
             return directive;
         }

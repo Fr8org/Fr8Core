@@ -2,6 +2,7 @@
 /// <reference path="../typings/metronic.d.ts" />
 
 var app = angular.module("app", [
+    "templates",
     "ui.router",
     "ui.bootstrap",
     "oc.lazyLoad",
@@ -17,7 +18,9 @@ var app = angular.module("app", [
     "frapontillo.bootstrap-switch",
     "ApplicationInsightsModule",
     "dndLists",
-    "ngTable"
+    "ngTable",
+    "mb-scrollbar",
+    "ngMessages"
 ]);
 
 /* For compatibility with older versions of script files. Can be safely deleted later. */
@@ -77,6 +80,8 @@ app.controller('FooterController', ['$scope', function ($scope) {
 /* Set Application Insights */
 app.config(['applicationInsightsServiceProvider', function (applicationInsightsServiceProvider) {
     var options;
+    //Temporary instr key (for local instances) until the real one is loaded
+    applicationInsightsServiceProvider.configure('e08e940f-1491-440c-8d39-f38e9ff053db', options, true);
 
     $.get('/api/v1/configuration/appinsights').then((appInsightsInstrKey: string) => {
         console.log(appInsightsInstrKey);
@@ -104,7 +109,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
     $httpProvider.interceptors.push('fr8VersionInterceptor');
 
     // Install a HTTP request interceptor that causes 'Processing...' message to display
-    $httpProvider.interceptors.push(($q: ng.IQService, $window: ng.IWindowService) => {
+    $httpProvider.interceptors.push(['$q','$window',($q: ng.IQService, $window: ng.IWindowService) => {
         return {
             request: function (config: ng.IRequestConfig) {
                 // Show page spinner If there is no request parameter suppressSpinner.
@@ -130,7 +135,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
                 return $q.reject(config);
             }
         }
-    });
+    }]);
 
     // Redirect any unmatched url
     $urlRouterProvider.otherwise("/myaccount");
@@ -143,21 +148,21 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
         })
     // Route list
         .state('routeList', {
-            url: "/routes",
+            url: "/plans",
             templateUrl: "/AngularTemplate/RouteList",
             data: { pageTitle: 'Routes', pageSubTitle: 'This page displays all Routes' }
         })
 
     // Route form
         .state('routeForm', {
-            url: "/routes/{id}",
+            url: "/plans/{id}",
             templateUrl: "/AngularTemplate/RouteForm",
             data: { pageTitle: 'Route', pageSubTitle: 'Add a new Route' },
         })
 
     // Process Builder framework
         .state('routeBuilder', {
-            url: "/routes/{id}/builder",
+            url: "/plans/{id}/builder",
             templateUrl: "/AngularTemplate/RouteBuilder",
             data: { pageTitle: '' },
         })
@@ -247,10 +252,22 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             data: { pageTitle: 'Terminals', pageSubTitle: '' }
         })
 
+        .state('manifestregistry', {
+            url: "/manifestregistry",
+            templateUrl: "/AngularTemplate/ManifestRegistryList",
+            data: { pageTitle: 'Manifest Registry', pageSubTitle: '' }
+        })
+
         .state('manageAuthTokens', {
             url: '/manageAuthTokens',
             templateUrl: '/AngularTemplate/ManageAuthTokens',
             data: { pageTitle: 'Manage Auth Tokens', pageSubTitle: '' }
+        })
+
+        .state('changePassword', {
+            url: '/changePassword',
+            templateUrl: '/AngularTemplate/ChangePassword',
+            data: { pageTitle: 'Change Password', pageSubTitle: '' }
         });
 }]);
 

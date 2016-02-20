@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Data.Control;
+using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
@@ -15,7 +16,7 @@ using StructureMap.Util;
 namespace terminalFr8CoreTests.Integration
 {
     [Explicit]
-    public class ExecuteSql_v1_Tests : BaseHealthMonitorTest
+    public class ExecuteSql_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {
@@ -38,14 +39,14 @@ namespace terminalFr8CoreTests.Integration
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
         [Test]
-        public async void ExecuteSql_Initial_Configuration_Check_Crate_Structure()
+        public async Task ExecuteSql_Initial_Configuration_Check_Crate_Structure()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = FixtureData.ExecuteSql_InitialConfiguration_ActionDTO();
+            var requestActionDTO = FixtureData.ExecuteSql_InitialConfiguration_Fr8DataDTO();
 
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -65,15 +66,15 @@ namespace terminalFr8CoreTests.Integration
         /// Test run-time for action Run().
         /// </summary>
         [Test]
-        public async void ExecuteSql_Run()
+        public async Task ExecuteSql_Run()
         {
 
             var runUrl = GetTerminalRunUrl();
 
-            var actionDTO = FixtureData.ExecuteSql_InitialConfiguration_ActionDTO();
+            var dataDTO = FixtureData.ExecuteSql_InitialConfiguration_Fr8DataDTO();
             
             AddPayloadCrate(
-               actionDTO,
+               dataDTO,
                new StandardQueryCM()
                {
                    Queries = new List<QueryDTO>() { new QueryDTO() { Name = "Customer" } }
@@ -86,7 +87,7 @@ namespace terminalFr8CoreTests.Integration
             lstFields.Add(new FieldDTO() { Key = "Customer.Physician", Value = "String" });
             lstFields.Add(new FieldDTO() { Key = "Customer.CurrentMedicalCondition", Value = "String" });
             AddUpstreamCrate(
-                actionDTO,
+                dataDTO,
                 new StandardDesignTimeFieldsCM(lstFields),
                 "Sql Column Types"
             );
@@ -94,15 +95,15 @@ namespace terminalFr8CoreTests.Integration
             lstFields.Clear();
             lstFields.Add(new FieldDTO() { Key = UtilitiesTesting.Fixtures.FixtureData.TestConnectionString2().Value, Value = "value" });
             AddUpstreamCrate(
-                actionDTO,
+                dataDTO,
                 new StandardDesignTimeFieldsCM(lstFields),
                 "Sql Connection String"
             );
 
-            AddOperationalStateCrate(actionDTO, new OperationalStateCM());
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
 
             var responsePayloadDTO =
-                await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+                await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
 
             Assert.NotNull(responsePayloadDTO);
             Assert.NotNull(responsePayloadDTO.CrateStorage);

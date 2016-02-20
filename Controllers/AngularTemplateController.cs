@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
+using HubWeb.Infrastructure;
 
 namespace HubWeb.Controllers
 {
     public class AngularTemplateController : Controller
     {
+#if RELEASE
+        // [OutputCache(Duration = 3600, VaryByParam = "nocache,template")]
+        [AngularTemplateCache]
+#endif
         public ActionResult Markup(string template)
         {
             try

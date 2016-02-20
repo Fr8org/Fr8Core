@@ -4,11 +4,23 @@ using System.Configuration;
 using System.Linq;
 using NUnit.Core;
 using HealthMonitor.Configuration;
+using System.IO;
 
 namespace HealthMonitor
 {
     public class NUnitTestRunner
     {
+        string _appInsightsInstrumentationKey;
+
+        public NUnitTestRunner()
+        {
+        }
+
+        public NUnitTestRunner(string appInsightsInstrumentationKey)
+        {
+            _appInsightsInstrumentationKey = appInsightsInstrumentationKey;
+        }
+        
         public class NUnitTestRunnerFilter : ITestFilter
         {
             public bool IsEmpty { get { return false; } }
@@ -43,7 +55,7 @@ namespace HealthMonitor
             return testSuites;
         }
 
-        public TestReport Run()
+        public TestReport Run(string specificTestName = null)
         {
             var testSuiteTypes = GetTestSuiteTypes();
             if (testSuiteTypes == null || testSuiteTypes.Length == 0)
@@ -59,16 +71,66 @@ namespace HealthMonitor
 
             TestExecutionContext.CurrentContext.TestPackage = testPackage;
 
-            foreach (var testSuiteType in testSuiteTypes)
+            if (string.IsNullOrEmpty(specificTestName))
             {
-                var test = TestFixtureBuilder.BuildFrom(testSuiteType);
-                testSuite.Tests.Add(test);
+                foreach (var testSuiteType in testSuiteTypes)
+                {
+                    var test = TestFixtureBuilder.BuildFrom(testSuiteType);
+                    testSuite.Tests.Add(test);
+                }
+            }
+            else
+            {
+                Test specificTest = null;
+                string specificTestMethod = null;
+
+                if (specificTestName.Contains("#"))
+                {
+                    var tokens = specificTestName.Split('#');
+
+                    specificTestName = tokens[0];
+                    specificTestMethod = tokens[1];
+                }
+
+                var specificTestType = testSuiteTypes.FirstOrDefault(x => x.FullName == specificTestName);
+                if (specificTestType != null)
+                {
+                    specificTest = TestFixtureBuilder.BuildFrom(specificTestType);
+                }
+
+                if (specificTest != null && !string.IsNullOrEmpty(specificTestMethod))
+                {
+                    var testsToRemove = new List<Test>();
+                    foreach (Test test in specificTest.Tests)
+                    {
+                        var testMethod = test as TestMethod;
+                        if (testMethod != null)
+                        {
+                            if (testMethod.Method.Name != specificTestMethod)
+                            {
+                                testsToRemove.Add(test);
+                            }
+                        }
+                    }
+
+                    foreach (var test in testsToRemove)
+                    {
+                        specificTest.Tests.Remove(test);
+                    }
+                }
+
+                if (specificTest != null)
+                {
+                    testSuite.Tests.Add(specificTest);
+                }
             }
 
-            var testResult = testSuite.Run(new NullListener(), new NUnitTestRunnerFilter());
-            var testReport = GenerateTestReport(testResult);
-
-            return testReport;
+            using (NUnitTraceListener listener = new NUnitTraceListener(_appInsightsInstrumentationKey))
+            {
+                var testResult = testSuite.Run(listener, new NUnitTestRunnerFilter());
+                var testReport = GenerateTestReport(testResult);
+                return testReport;
+            }
         }
 
         private TestReport GenerateTestReport(TestResult testResult)

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace terminalSendGridTests.Integration
 {
     [Explicit]
-    public class Terminal_Discover_v1Tests : BaseHealthMonitorTest
+    public class Terminal_Discover_v1Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {
@@ -21,7 +21,7 @@ namespace terminalSendGridTests.Integration
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
         [Test, CategoryAttribute("Integration.terminalSendGrid")]
-        public async void Terminal_SendGrid_Discover()
+        public async Task Terminal_SendGrid_Discover()
         {
             var discoverUrl = GetTerminalDiscoverUrl();
 

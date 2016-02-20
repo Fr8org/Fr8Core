@@ -14,13 +14,16 @@ namespace Data.Entities
     {
         public TerminalDO()
         {
-            this.AuthenticationType = States.AuthenticationType.None;
-            this.SubscriptionRequired = true;
+            this.AuthenticationType = States.AuthenticationType.None;            
         }
 
         [Key]
         public int Id { get; set; }
 
+        public string PublicIdentifier { get; set; }
+
+        public string Secret { get; set; }
+        
         [Required]
         public string Name { get; set; }
 
@@ -37,9 +40,7 @@ namespace Data.Entities
         //public string BaseEndPoint { get; set; }
 
         public string Endpoint { get; set; }
-
-        public bool SubscriptionRequired { get; set; }
-
+        
         public virtual Fr8AccountDO UserDO { get; set; }
 
         public string Description { get; set; }

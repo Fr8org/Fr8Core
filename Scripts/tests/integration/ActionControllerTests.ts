@@ -4,7 +4,7 @@
 module dockyard.tests.controller {
     import fx = utils.fixtures; // just an alias
 
-    describe("Action Controller ", function () {
+    describe("Activity Controller ", function () {
         var testData = {};
 
         var errorHandler = function (response, done) {
@@ -71,15 +71,12 @@ module dockyard.tests.controller {
         beforeEach(function (done) {
             // First POST, create a dummy entry
 
-            var actions: interfaces.IActionDTO =
+            var actions: interfaces.IActivityDTO =
             {
-                    name: "test action type",
-                    configurationControls: fx.ActionDTO.configurationControls,
+                    configurationControls: fx.ActivityDTO.configurationControls,
                     crateStorage: null,
                     parentRouteNodeId: '89EBF277-0CC4-4D6D-856B-52457F10C686',
                     activityTemplate: null,
-                    activityTemplateId: 1,
-                    isTempId: false,
                     id: '00000000-0000-0000-0000-000000000000',
                     childrenActions: null,
                     ordering: 0
@@ -97,21 +94,18 @@ module dockyard.tests.controller {
         describe("Action#GetConfigurationSettings", function () {
             var endpoint = "/actions";
 
-            var currentActionDesignDTO: interfaces.IActionDTO =
+            var currentActionDesignDTO: interfaces.IActivityDTO =
                     {
-                        name: "test action type",
-                        configurationControls: fx.ActionDTO.configurationControls,
+                        configurationControls: fx.ActivityDTO.configurationControls,
                         crateStorage: null,
                         parentRouteNodeId: '89EBF277-0CC4-4D6D-856B-52457F10C686',
                         activityTemplate: null,
-                        activityTemplateId: 1,
-                        isTempId: false,
                         id: '89EBF277-0CC4-4D6D-856B-52457F10C686',
                         childrenActions: null,
                         ordering: 0
                 };
 
-            beforeAll(function () {
+            beforeAll(() => {
                 $(document).ajaxError(errorHandler);
                 $.ajaxSetup({ async: false, url: endpoint, dataType: "json", contentType: "text/json" });
             });

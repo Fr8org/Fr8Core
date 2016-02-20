@@ -6,6 +6,7 @@ using Data.Exceptions;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Hub.Interfaces;
 using Hub.Services;
 using Utilities;
 using Utilities.Logging;
@@ -14,12 +15,15 @@ namespace Hub.Managers
 {
     public class IncidentReporter
     {
-        private EventReporter _eventReporter;
+        private readonly EventReporter _eventReporter;
+        private readonly ITerminal _terminal;
 
-        public IncidentReporter()
+        public IncidentReporter(EventReporter eventReporter, ITerminal terminal)
         {
-            _eventReporter = new EventReporter();
+            _eventReporter = eventReporter;
+            _terminal = terminal;
         }
+
         public void SubscribeToAlerts()
         {
             EventManager.AlertEmailProcessingFailure += ProcessAlert_EmailProcessingFailure;
@@ -41,6 +45,103 @@ namespace Hub.Managers
             EventManager.IncidentOAuthAuthenticationFailed += OAuthAuthenticationFailed;
             EventManager.IncidentMissingFieldInPayload += IncidentMissingFieldInPayload;
             EventManager.ExternalEventReceived += LogExternalEventReceivedIncident;
+            EventManager.KeyVaultFailure += KeyVaultFailure;
+            EventManager.EventAuthTokenSilentRevoke += AuthTokenSilentRevoke;
+            EventManager.EventContainerFailed += ContainerFailed;
+            EventManager.EventUnexpectedError += UnexpectedError;
+        }
+
+        private void UnexpectedError(Exception ex)
+        {
+            var incident = new IncidentDO
+            {
+                CustomerId = "unknown",
+                Data = string.Join(
+                    "Unexpected error: ",
+                    ex.Message,
+                    ex.StackTrace ?? ""
+                ),
+                PrimaryCategory = "Error",
+                SecondaryCategory = "Unexpected",
+                Component = "Hub",
+                Activity = "Unexpected Error"
+            };
+
+            SaveAndLogIncident(incident);
+        }
+
+        private void KeyVaultFailure(string keyVaultMethod, Exception ex)
+        {
+            var incident = new IncidentDO
+            {
+                CustomerId = "unknown",
+                Data = string.Join(
+                    Environment.NewLine,
+                    "KeyVault method: " + keyVaultMethod,
+                    ex.Message,
+                    ex.StackTrace ?? ""
+                ),
+                PrimaryCategory = "KeyVault",
+                SecondaryCategory = "QuerySecurePartAsync",
+                Component = "Hub",
+                Activity = "KeyVault Failed"
+            };
+
+            SaveAndLogIncident(incident);
+        }
+
+        private string FormatTerminalName(AuthorizationTokenDO authorizationToken)
+        {
+            var terminal = _terminal.GetByKey(authorizationToken.TerminalID);
+
+            if (terminal != null)
+            {
+                return terminal.Name;
+            }
+
+            return authorizationToken.TerminalID.ToString();
+        }
+
+        private void AuthTokenSilentRevoke(AuthorizationTokenDO authToken)
+        {
+            var incident = new IncidentDO
+            {
+                CustomerId = "unknown",
+                Data = string.Join(
+                    Environment.NewLine,
+                    "AuthToken method: Silent Revoke",
+                    "User Id: " + authToken.UserID.ToString(),
+                    "Terminal name: " + FormatTerminalName(authToken),
+                    "External AccountId: " + authToken.ExternalAccountId
+                ),
+                PrimaryCategory = "AuthToken",
+                SecondaryCategory = "Silent Revoke",
+                Component = "Hub",
+                Activity = "AuthToken Silent Revoke"
+            };
+
+            SaveAndLogIncident(incident);
+        }
+
+        private void ContainerFailed(PlanDO plan, Exception ex)
+        {
+            var incident = new IncidentDO
+            {
+                CustomerId = "unknown",
+                Data = string.Join(
+                    Environment.NewLine,
+                    "Container failure.",
+                    "Plan: " + (plan != null ? plan.Name : "unknown"),
+                    ex.Message,
+                    ex.StackTrace ?? ""
+                ),
+                PrimaryCategory = "Container",
+                SecondaryCategory = "Execution",
+                Component = "Hub",
+                Activity = "Container failure"
+            };
+
+            SaveAndLogIncident(incident);
         }
 
         private void ProcessIncidentTerminalActionActivationFailed(string terminalUrl, string curActionDTO, string objectId)
@@ -472,22 +573,16 @@ namespace Hub.Managers
             }
         }
 
-        public void IncidentMissingFieldInPayload(string fieldKey, ActionDO action, string curUserId)
+        public void IncidentMissingFieldInPayload(string fieldKey, ActivityDO activity, string curUserId)
         {
-            using (var _uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                IncidentDO incidentDO = new IncidentDO();
-                incidentDO.PrimaryCategory = "Process Execution";
-                incidentDO.SecondaryCategory = "Action";
-                incidentDO.ObjectId = action.Id.ToString();
-                incidentDO.Activity = "Occured";
-                incidentDO.CustomerId = curUserId;
-                incidentDO.Data = String.Format("MissingFieldInPayload: ActionName: {0}, Field name: {1}, ActionId {2}", action.Name, fieldKey, action.Id);
-                _uow.IncidentRepository.Add(incidentDO);
-                Logger.GetLogger().Warn(incidentDO.Data);
-                _uow.SaveChanges();
-            }
+            IncidentDO incidentDO = new IncidentDO();
+            incidentDO.PrimaryCategory = "Process Execution";
+            incidentDO.SecondaryCategory = "Action";
+            incidentDO.ObjectId = activity.Id.ToString();
+            incidentDO.Activity = "Occured";
+            incidentDO.CustomerId = curUserId;
+            incidentDO.Data = String.Format("MissingFieldInPayload: ActionName: {0}, Field name: {1}, ActionId {2}", activity.ActivityTemplate.Name, fieldKey, activity.Id);
+            LogIncident(incidentDO);
         }
-
     }
 }

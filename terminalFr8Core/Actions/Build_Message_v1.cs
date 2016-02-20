@@ -17,11 +17,11 @@ using System.Text.RegularExpressions;
 
 namespace terminalFr8Core.Actions
 {
-    public class Build_Message_v1 : BaseTerminalAction
+    public class Build_Message_v1 : BaseTerminalActivity
     {
-        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActionDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -31,22 +31,22 @@ namespace terminalFr8Core.Actions
             }
         }
 
-        protected async override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected async override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActionDO))
+            using (var updater = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.Clear();
-                updater.CrateStorage.Add(CreateControlsCrate());
+                updater.Clear();
+                updater.Add(CreateControlsCrate());
             }
 
-            AddNameDesignTimeField(curActionDO);
-            return await AddDesignTimeFieldsSource(curActionDO);
+            AddNameDesignTimeField(curActivityDO);
+            return await AddDesignTimeFieldsSource(curActivityDO);
         }
 
-        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            AddNameDesignTimeField(curActionDO);
-            return await base.FollowupConfigurationResponse(curActionDO, authTokenDO);
+            AddNameDesignTimeField(curActivityDO);
+            return await base.FollowupConfigurationResponse(curActivityDO, authTokenDO);
         }
 
         private Crate CreateControlsCrate()
@@ -84,42 +84,42 @@ namespace terminalFr8Core.Actions
                 }
             };
 
-            return Crate.CreateStandardConfigurationControlsCrate("Craft a Message", controls.ToArray());
+            return CrateManager.CreateStandardConfigurationControlsCrate("Craft a Message", controls.ToArray());
         }
 
-        private async Task<ActionDO> AddDesignTimeFieldsSource(ActionDO curActionDO)
+        private async Task<ActivityDO> AddDesignTimeFieldsSource(ActivityDO curActivityDO)
         {
-            using (var updater = Crate.UpdateStorage(curActionDO))
+            using (var updater = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.RemoveByLabel("Available Fields");
+                updater.RemoveByLabel("Available Fields");
 
-                var upstreamFieldsAddress = await MergeUpstreamFields<StandardDesignTimeFieldsCM>(curActionDO, "Available Fields");
+                var upstreamFieldsAddress = await MergeUpstreamFields<StandardDesignTimeFieldsCM>(curActivityDO, "Available Fields");
                 if (upstreamFieldsAddress != null)
-                    updater.CrateStorage.Add(upstreamFieldsAddress);
+                    updater.Add(upstreamFieldsAddress);
             }
 
-            return curActionDO;
+            return curActivityDO;
         }
 
-        private void AddNameDesignTimeField(ActionDO curActionDO)
+        private void AddNameDesignTimeField(ActivityDO curActivityDO)
         {
-            var storage = Crate.GetStorage(curActionDO);
+            var storage = CrateManager.GetStorage(curActivityDO);
             var buildMsgConfigurationControls = storage.CrateContentsOfType<StandardConfigurationControlsCM>(c => String.Equals(c.Label, "Craft a Message", StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
             var key = ((TextBox)GetControl(buildMsgConfigurationControls, "Name")).Value;
-            using (var updater = Crate.UpdateStorage(curActionDO))
+            using (var updater = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.RemoveByLabel("Build Message");
+                updater.RemoveByLabel("Build Message");
 
                 FieldDTO[] bodyFieldDTO = new FieldDTO[] { new FieldDTO() { Key = key, Value = key } };
-                updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("Build Message", bodyFieldDTO));
+                updater.Add(CrateManager.CreateDesignTimeFieldsCrate("Build Message", bodyFieldDTO));
             }
         }
 
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var payloadCrates = await GetPayload(curActionDO, containerId);
+            var payloadCrates = await GetPayload(curActivityDO, containerId);
 
-            var payloadCrateStorage = Crate.GetStorage(payloadCrates);
+            var payloadCrateStorage = CrateManager.GetStorage(payloadCrates);
             var payloadDataObjects = payloadCrateStorage.CratesOfType<StandardPayloadDataCM>().ToList();
 
             if (payloadDataObjects.Count > 0)
@@ -129,7 +129,7 @@ namespace terminalFr8Core.Actions
                 if (fieldsDTO.Count > 0)
                 {
                     //get build message configuration controls for interpolation
-                    var storage = Crate.GetStorage(curActionDO);
+                    var storage = CrateManager.GetStorage(curActivityDO);
                     var buildMsgConfigurationControls = storage.CrateContentsOfType<StandardConfigurationControlsCM>(c => String.Equals(c.Label, "Craft a Message", StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
 
                     if (buildMsgConfigurationControls != null)
@@ -162,9 +162,9 @@ namespace terminalFr8Core.Actions
                         _fieldDTO.Value = bodyMsgInterpolated;
                         payloadFieldDTO.Add(_fieldDTO);
 
-                        using (var updater = Crate.UpdateStorage(payloadCrates))
+                        using (var updater = CrateManager.GetUpdatableStorage(payloadCrates))
                         {
-                            updater.CrateStorage.Add(Data.Crates.Crate.FromContent("BuildAMessage", new StandardPayloadDataCM(payloadFieldDTO)));
+                            updater.Add(Data.Crates.Crate.FromContent("BuildAMessage", new StandardPayloadDataCM(payloadFieldDTO)));
                         }
                     }
                 }

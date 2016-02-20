@@ -4,6 +4,9 @@ using System.Linq;
 using System.Threading;
 using NUnit.Core;
 using HealthMonitor.Configuration;
+using System.Configuration;
+using System.Diagnostics;
+using System.IO;
 
 namespace HealthMonitor
 {
@@ -15,6 +18,12 @@ namespace HealthMonitor
             var appName = "Unspecified App";
             var ensureTerminalsStartup = false;
             var selfHosting = false;
+            var connectionString = string.Empty;
+            var specificTest = string.Empty;
+            var appInsightsInstrumentationKey = string.Empty;
+            int errorCount = 0;
+
+            Debug.AutoFlush = true;
 
             if (args != null)
             {
@@ -32,22 +41,54 @@ namespace HealthMonitor
                     {
                         appName = args[i];
                     }
-                    if (args[i] == "--self-hosting")
+                    else if (i > 0 && args[i - 1] == "--connectionString" && args[i] != null)
+                    {
+                        connectionString = args[i];
+                    }
+                    else if (args[i] == "--self-hosting")
                     {
                         selfHosting = true;
                     }
+                    else if (i > 0 && args[i - 1] == "--test" && args[i] != null)
+                    {
+                        specificTest = args[i];
+                    }
+                    else if (i > 0 && args[i - 1] == "--aiik" && args[i] != null)
+                    {
+                        appInsightsInstrumentationKey = args[i];
+                    }
+                }
+
+                if (selfHosting)
+                {
+                    if (string.IsNullOrEmpty(connectionString))
+                    {
+                        throw new ArgumentException("You should specify --connectionString \"{Name}={Value}\" argument when using self host mode.");
+                    }
+
+                    var regex = new System.Text.RegularExpressions.Regex("([\\w\\d]{1,})=([\\s\\S]+)");
+                    var match = regex.Match(connectionString);
+                    if (match == null || !match.Success || match.Groups.Count != 3)
+                    {
+                        throw new ArgumentException("Please specify connection string in the following format: \"{Name}={Value}\".");
+                    }
+                    UpdateConnectionString(match.Groups[1].Value, match.Groups[2].Value);
                 }
             }
 
             var selfHostInitializer = new SelfHostInitializer();
             if (selfHosting)
             {
-                selfHostInitializer.Initialize();
+                selfHostInitializer.Initialize(connectionString);
             }
 
             try
             {
-                new Program().Run(ensureTerminalsStartup, sendEmailReport, appName);
+                errorCount = new Program().Run(ensureTerminalsStartup, sendEmailReport, appName, specificTest, appInsightsInstrumentationKey);
+            }
+            catch (Exception)
+            {
+
             }
             finally
             {
@@ -56,6 +97,16 @@ namespace HealthMonitor
                     selfHostInitializer.Dispose();
                 }
             }
+            Environment.Exit(errorCount);
+        }
+
+        private static void UpdateConnectionString(string key, string value)
+        {
+            System.Configuration.Configuration configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            configuration.ConnectionStrings.ConnectionStrings[key].ConnectionString = value;
+            configuration.Save();
+
+            ConfigurationManager.RefreshSection("connectionStrings");
         }
 
         private void EnsureTerminalsStartUp()
@@ -70,7 +121,7 @@ namespace HealthMonitor
 
                 foreach (var terminalName in failedToStart)
                 {
-                    Console.WriteLine(terminalName);
+                    Console.WriteLine("{0}: {1}", terminalName, ConfigurationManager.AppSettings[terminalName]);
                 }
 
                 Environment.Exit(failedToStart.Count);
@@ -99,7 +150,12 @@ namespace HealthMonitor
             }
         }
 
-        private void Run(bool ensureTerminalsStartup, bool sendEmailReport, string appName)
+        private int Run(
+            bool ensureTerminalsStartup,
+            bool sendEmailReport,
+            string appName,
+            string test,
+            string appInsightsInstrumentationKey)
         {
             CoreExtensions.Host.InitializeService();
 
@@ -108,8 +164,8 @@ namespace HealthMonitor
                 EnsureTerminalsStartUp();
             }
 
-            var testRunner = new NUnitTestRunner();
-            var report = testRunner.Run();
+            var testRunner = new NUnitTestRunner(appInsightsInstrumentationKey);
+            var report = testRunner.Run(test);
 
             if (sendEmailReport)
             {
@@ -124,9 +180,7 @@ namespace HealthMonitor
             }
 
             ReportToConsole(appName, report);
-
-            var errorCount = report.Tests.Count(x => !x.Success);
-            Environment.Exit(errorCount);
+            return report.Tests.Count(x => !x.Success);
         }
     }
 }

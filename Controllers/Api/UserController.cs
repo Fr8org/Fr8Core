@@ -10,6 +10,7 @@ using AutoMapper.Internal;
 using Microsoft.AspNet.Identity.EntityFramework;
 using StructureMap;
 using Data.Entities;
+using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
@@ -17,6 +18,7 @@ using Hub.Managers;
 using Hub.Managers.APIManagers.Authorizers;
 using Hub.Services;
 using HubWeb.ViewModels;
+using Microsoft.AspNet.Identity;
 using Utilities;
 using Utilities.Logging;
 
@@ -55,7 +57,7 @@ namespace HubWeb.Controllers
         {
             return GetCallbackUrl(providerName, Utilities.Server.ServerUrl);
         }
-        
+
         public static string GetCallbackUrl(string providerName, string serverUrl)
         {
             if (String.IsNullOrEmpty(serverUrl))
@@ -380,8 +382,8 @@ namespace HubWeb.Controllers
                 var userDTOList = users.Select(user =>
                 {
                     var dto = _mappingEngine.Map<Fr8AccountDO, UserDTO>(user);
-                dto.Role = ConvertRolesToRoleString(uow.AspNetUserRolesRepository.GetRoles(user.Id).Select(r => r.Name).ToArray());
-                return dto;
+                    dto.Role = ConvertRolesToRoleString(uow.AspNetUserRolesRepository.GetRoles(user.Id).Select(r => r.Name).ToArray());
+                    return dto;
                 }).ToList();
 
                 return Ok(userDTOList);
@@ -395,7 +397,8 @@ namespace HubWeb.Controllers
             {
                 var user = uow.UserRepository.FindOne(u => u.Id == id);
                 var userDTO = _mappingEngine.Map<Fr8AccountDO, UserDTO>(user);
-                userDTO.Role = ConvertRolesToRoleString(uow.AspNetUserRolesRepository.GetRoles(userDTO.Id).Select(r => r.Name).ToArray());
+                userDTO.Role = ConvertRolesToRoleString(uow.AspNetUserRolesRepository
+                    .GetRoles(userDTO.Id).Select(r => r.Name).ToArray());
                 return Ok(userDTO);
             }
         }
@@ -411,6 +414,42 @@ namespace HubWeb.Controllers
                 userDTO.Role = ConvertRolesToRoleString(uow.AspNetUserRolesRepository.GetRoles(userDTO.Id).Select(r => r.Name).ToArray());
                 return Ok(userDTO);
             }
+        }
+        //[Route("api/user/getUserData?id=")]
+        [HttpGet]
+        public IHttpActionResult GetUserData(string id)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var user = uow.UserRepository.FindOne(u => u.Id == id);
+                return Ok(new UserDTO { FirstName = user.FirstName, LastName = user.LastName });
+            }
+        }
+
+
+        [HttpPost]
+        public IHttpActionResult UpdatePassword(string oldPassword, string newPassword, string confirmPassword)
+        {
+            if (string.IsNullOrEmpty(oldPassword))
+                throw new Exception("Old password is required.");
+            if (!string.Equals(newPassword, confirmPassword, StringComparison.OrdinalIgnoreCase))
+                throw new Exception("New password and confirm password did not match.");
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var user = uow.UserRepository.FindOne(u => u.EmailAddress.Address == User.Identity.Name);
+
+                Fr8Account fr8Account = new Fr8Account();
+                if (fr8Account.IsValidHashedPassword(user, oldPassword))
+                {
+                    fr8Account.UpdatePassword(uow, user, newPassword);
+                    uow.SaveChanges();
+                }
+                else
+                    throw new Exception("Invalid current password.");
+            }
+
+            return Ok();
         }
     }
 }

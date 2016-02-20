@@ -22,20 +22,20 @@ namespace terminalDropbox.Controllers
 
         [HttpPost]
         [Route("token")]
-        public Task<AuthorizationTokenDTO> GenerateOAuthToken(
+        public async Task<AuthorizationTokenDTO> GenerateOAuthToken(
          ExternalAuthenticationDTO externalAuthDTO)
         {
             try
             {
-                return Task.FromResult(_authentication.Authenticate(externalAuthDTO));
+                return await _authentication.Authenticate(externalAuthDTO);
             }
             catch (Exception ex)
             {
                 ReportTerminalError(curTerminal, ex);
-                return Task.FromResult(
+                return await Task.FromResult(
                     new AuthorizationTokenDTO()
                     {
-                        Error = "An error occured while trying to authenticate, please try again later."
+                        Error = "An error occurred while trying to authorize, please try again later."
                     }
                 );
             }

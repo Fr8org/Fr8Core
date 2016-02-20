@@ -30,20 +30,16 @@
                     id: '89EBF277-0CC4-4D6D-856B-52457F10C686',
                     isTempId: false,
                     name: 'Processnode Template 1',
-                    actions: [
-                        <model.ActionDTO> {
+                    activities: [
+                        <model.ActivityDTO> {
                             id: '89EBF277-0CC4-4D6D-856B-52457F10C686',
-                            name: 'Action 1',
-                            activityTemplateId: 1,
                             activityTemplate: {
                                 id: 1
                             },
                             parentRouteNodeId: '89EBF277-0CC4-4D6D-856B-52457F10C686'
                         },
-                        <model.ActionDTO>{
+                        <model.ActivityDTO>{
                             id: '82B62831-687F-4BC8-AB64-B421985D5CF3',
-                            name: 'Action 2',
-                            activityTemplateId: 1,
                             activityTemplate: {
                                 id: 1
                             },

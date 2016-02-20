@@ -24,7 +24,7 @@ namespace terminalExcelTests.Integration
     /// </summary>
     [Explicit]
     [Category("terminalExcel.Integration")]
-    public class Load_Excel_File_v1_Tests : BaseHealthMonitorTest
+    public class Load_Excel_File_v1_Tests : BaseTerminalIntegrationTest
     {
         public ICrateManager _crateManager;
 
@@ -40,7 +40,7 @@ namespace terminalExcelTests.Integration
             get { return "terminalExcel"; }
         }
 
-        private void AssertCrateTypes(CrateStorage crateStorage)
+        private void AssertCrateTypes(ICrateStorage crateStorage)
         {
             Assert.AreEqual(crateStorage.Count, 2);
             Assert.AreEqual(crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(), 1);
@@ -64,25 +64,25 @@ namespace terminalExcelTests.Integration
             Assert.AreEqual(controls.Controls[1].Name, null);
         }
 
-        private async Task<ActionDTO> ConfigureFollowUp()
+        private async Task<ActivityDTO> ConfigureFollowUp()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Load_Table_Data_v1_InitialConfiguration_ActionDTO(Guid.NewGuid());
+            var dataDTO = HealthMonitor_FixtureData.Load_Table_Data_v1_InitialConfiguration_Fr8DataDTO(Guid.NewGuid());
 
-            var responseActionDTO = await HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, requestActionDTO);
+            var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
 
             var storage = _crateManager.GetStorage(responseActionDTO);
 
-            using (var updater = _crateManager.UpdateStorage(requestActionDTO))
+            using (var crateStorage = _crateManager.GetUpdatableStorage(dataDTO.ActivityDTO))
             {
-                updater.CrateStorage = storage;
+                crateStorage.Replace(storage);
             }
 
-            return await HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, requestActionDTO);
+            return await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
         }
 
-        private void AssertFollowUpCrateTypes(CrateStorage crateStorage)
+        private void AssertFollowUpCrateTypes(ICrateStorage crateStorage)
         {
             Assert.AreEqual(crateStorage.Count, 2);
 
@@ -91,14 +91,14 @@ namespace terminalExcelTests.Integration
         }
 
         [Test]
-        public async void Load_Table_Data_v1_Initial_Configuration_Check_Crate_Structure()
+        public async Task Load_Table_Data_v1_Initial_Configuration_Check_Crate_Structure()
         {
             // Arrange
             var configureUrl = GetTerminalConfigureUrl();
-            var requestActionDTO = HealthMonitor_FixtureData.Load_Table_Data_v1_InitialConfiguration_ActionDTO(Guid.NewGuid());
+            var requestActionDTO = HealthMonitor_FixtureData.Load_Table_Data_v1_InitialConfiguration_Fr8DataDTO(Guid.NewGuid());
 
             // Act
-            var responseActionDTO = await HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, requestActionDTO);
+            var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, requestActionDTO);
 
             // Assert
             Assert.NotNull(responseActionDTO);
@@ -114,21 +114,21 @@ namespace terminalExcelTests.Integration
         [ExpectedException(ExpectedException = typeof(RestfulServiceException),
             ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}"
         )]
-        public async void Load_Table_Data_v1_Initial_Configuration_GuidEmpty()
+        public async Task Load_Table_Data_v1_Initial_Configuration_GuidEmpty()
         {
             // Arrange
             var configureUrl = GetTerminalConfigureUrl();
-            var requestActionDTO = HealthMonitor_FixtureData.Load_Table_Data_v1_InitialConfiguration_ActionDTO(Guid.Empty);
+            var requestActionDTO = HealthMonitor_FixtureData.Load_Table_Data_v1_InitialConfiguration_Fr8DataDTO(Guid.Empty);
 
             // Act
-            await HttpPostAsync<ActionDTO, JToken>(configureUrl, requestActionDTO);
+            await HttpPostAsync<Fr8DataDTO, JToken>(configureUrl, requestActionDTO);
         }
 
         /// <summary>
         /// Validate correct crate-storage structure in follow-up configuration response.
         /// </summary>
         [Test]
-        public async void Load_Table_Data_v1_FollowUp_Configuration_Check_Crate_Structure()
+        public async Task Load_Table_Data_v1_FollowUp_Configuration_Check_Crate_Structure()
         {
             // Act
             var responseFollowUpActionDTO = await ConfigureFollowUp();
@@ -144,14 +144,14 @@ namespace terminalExcelTests.Integration
         }
 
         [Test]
-        public async void Load_Table_Data_v1_Run_()
+        public async Task Load_Table_Data_v1_Run_()
         {
             // Arrange
             var runUrl = GetTerminalRunUrl();
 
-            var actionDTO = HealthMonitor_FixtureData.Load_Table_Data_v1_InitialConfiguration_ActionDTO(Guid.NewGuid());
+            var dataDTO = HealthMonitor_FixtureData.Load_Table_Data_v1_InitialConfiguration_Fr8DataDTO(Guid.NewGuid());
             AddPayloadCrate(
-                actionDTO,
+                dataDTO,
                 new StandardTableDataCM()
                 {
                     FirstRowHeaders = true,
@@ -160,7 +160,7 @@ namespace terminalExcelTests.Integration
             );
 
             // Act
-            var responsePayloadDTO = await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+            var responsePayloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
 
             // Assert
             var crateStorage = Crate.GetStorage(responsePayloadDTO);
@@ -168,17 +168,17 @@ namespace terminalExcelTests.Integration
         }
 
         [Test]
-        public async void Load_Table_Data_Activate_Returns_ActionDTO()
+        public async Task Load_Table_Data_Activate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = HealthMonitor_FixtureData.Load_Table_Data_v1_InitialConfiguration_ActionDTO(Guid.NewGuid());
+            var requestActionDTO = HealthMonitor_FixtureData.Load_Table_Data_v1_InitialConfiguration_Fr8DataDTO(Guid.NewGuid());
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -189,17 +189,17 @@ namespace terminalExcelTests.Integration
         }
 
         [Test]
-        public async void Load_Table_Data_Deactivate_Returns_ActionDTO()
+        public async Task Load_Table_Data_Deactivate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = HealthMonitor_FixtureData.Load_Table_Data_v1_InitialConfiguration_ActionDTO(Guid.NewGuid());
+            var requestActionDTO = HealthMonitor_FixtureData.Load_Table_Data_v1_InitialConfiguration_Fr8DataDTO(Guid.NewGuid());
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );

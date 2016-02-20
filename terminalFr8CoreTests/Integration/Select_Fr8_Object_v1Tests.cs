@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Data.Control;
+using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
@@ -17,8 +19,8 @@ namespace terminalFr8CoreTests.Integration
 	/// but allows to trigger that class from HealthMonitor.
 	/// </summary>
 	[Explicit]
-	public class Select_Fr8_Object_v1Tests : BaseHealthMonitorTest
-	{
+	public class Select_Fr8_Object_v1Tests : BaseTerminalIntegrationTest
+    {
 		public override string TerminalName
 		{
 			get { return "terminalFr8Core"; }
@@ -31,7 +33,7 @@ namespace terminalFr8CoreTests.Integration
 
 			var requestActionDTO = CreateRequestActionFixture();
 
-			var responseActionDTO = HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, requestActionDTO).Result;
+			var responseActionDTO = HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, requestActionDTO).Result;
 
 			Assert.NotNull(responseActionDTO);
 			Assert.NotNull(responseActionDTO.CrateStorage);
@@ -64,11 +66,11 @@ namespace terminalFr8CoreTests.Integration
 
 			var requestActionDTO = CreateRequestActionFixture();
 
-			var responseActionDTO = HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, requestActionDTO).Result;
+			var responseActionDTO = HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, requestActionDTO).Result;
 
 			SetRoutesOptionSelected(responseActionDTO);
 
-			responseActionDTO = HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, responseActionDTO).Result;
+			responseActionDTO = HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, responseActionDTO).Result;
 
 			Assert.NotNull(responseActionDTO);
 			Assert.NotNull(responseActionDTO.CrateStorage);
@@ -139,11 +141,11 @@ namespace terminalFr8CoreTests.Integration
 
 			var requestActionDTO = CreateRequestActionFixture();
 
-			var responseActionDTO = HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, requestActionDTO).Result;
+			var responseActionDTO = HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, requestActionDTO).Result;
 
 			SetContainersOptionSelected(responseActionDTO);
 
-			responseActionDTO = HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, responseActionDTO).Result;
+			responseActionDTO = HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, responseActionDTO).Result;
 
 			Assert.NotNull(responseActionDTO);
 			Assert.NotNull(responseActionDTO.CrateStorage);
@@ -205,13 +207,17 @@ namespace terminalFr8CoreTests.Integration
 
 			var requestActionDTO = CreateRequestActionFixture();
 
-			var responseActionDTO = HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, requestActionDTO).Result;
+            var dataDTO = new Fr8DataDTO { ActivityDTO = requestActionDTO };
+
+            var responseActionDTO = HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO).Result;
 
 			SetRoutesOptionSelected(responseActionDTO);
 
 			var runUrl = GetTerminalRunUrl();
 
-			AddPayloadCrate(responseActionDTO, new StandardFr8RoutesCM
+		    dataDTO.ActivityDTO = responseActionDTO;
+
+            AddPayloadCrate(dataDTO, new StandardFr8RoutesCM
 			{
 				CreateDate = DateTime.UtcNow,
 				LastUpdated = DateTime.UtcNow,
@@ -222,7 +228,7 @@ namespace terminalFr8CoreTests.Integration
 				SubRoutes = new List<SubrouteDTO>()
 			});
 
-			var runResponse = HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, requestActionDTO).Result;
+			var runResponse = HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO).Result;
 
 			Assert.NotNull(runResponse);
 		}
@@ -234,13 +240,17 @@ namespace terminalFr8CoreTests.Integration
 
 			var requestActionDTO = CreateRequestActionFixture();
 
-			var responseActionDTO = HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, requestActionDTO).Result;
+            var dataDTO = new Fr8DataDTO { ActivityDTO = requestActionDTO };
+
+            var responseActionDTO = HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO).Result;
 
 			SetContainersOptionSelected(responseActionDTO);
 
 			var runUrl = GetTerminalRunUrl();
 
-			AddPayloadCrate(responseActionDTO, new StandardFr8ContainersCM()
+            dataDTO.ActivityDTO = responseActionDTO;
+
+            AddPayloadCrate(dataDTO, new StandardFr8ContainersCM()
 			{
 				Name = "Some name",
 				Description = "Some description",
@@ -248,7 +258,7 @@ namespace terminalFr8CoreTests.Integration
 				CreatedDate = DateTime.UtcNow
 			});
 
-			var runResponse = HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, requestActionDTO).Result;
+			var runResponse = HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO).Result;
 
 			Assert.NotNull(runResponse);
 		}
@@ -265,29 +275,27 @@ namespace terminalFr8CoreTests.Integration
 			return activityTemplate;
 		}
 
-		private ActionDTO CreateRequestActionFixture()
+		private ActivityDTO CreateRequestActionFixture()
 		{
 			var activityTemplate = CreateActivityTemplateFixture();
 
-			var requestActionDTO = new ActionDTO
+			var requestActionDTO = new ActivityDTO
 			{
 				Id = Guid.NewGuid(),
-				Name = "Select_Fr8_Object",
 				Label = "Select Fr8 Object",
 				ActivityTemplate = activityTemplate,
-				ActivityTemplateId = activityTemplate.Id,
 				AuthToken = null
 			};
 
 			return requestActionDTO;
 		}
 
-		private void SetRoutesOptionSelected(ActionDTO responseActionDTO)
+		private void SetRoutesOptionSelected(ActivityDTO responseActionDTO)
 		{
-			using (var updater = Crate.UpdateStorage(responseActionDTO))
+			using (var crateStorage = Crate.GetUpdatableStorage(responseActionDTO))
 			{
-				var controls = updater.CrateStorage
-					.CrateContentsOfType<StandardConfigurationControlsCM>()
+				var controls = crateStorage
+                    .CrateContentsOfType<StandardConfigurationControlsCM>()
 					.Single();
 
 				var dropdownList = (DropDownList)controls.Controls[0];
@@ -296,12 +304,12 @@ namespace terminalFr8CoreTests.Integration
 			}
 		}
 
-		private void SetContainersOptionSelected(ActionDTO responseActionDTO)
+		private void SetContainersOptionSelected(ActivityDTO responseActionDTO)
 		{
-			using (var updater = Crate.UpdateStorage(responseActionDTO))
+			using (var crateStorage = Crate.GetUpdatableStorage(responseActionDTO))
 			{
-				var controls = updater.CrateStorage
-					.CrateContentsOfType<StandardConfigurationControlsCM>()
+				var controls = crateStorage
+                    .CrateContentsOfType<StandardConfigurationControlsCM>()
 					.Single();
 
 				var dropdownList = (DropDownList)controls.Controls[0];

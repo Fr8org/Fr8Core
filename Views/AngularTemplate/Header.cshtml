@@ -1,5 +1,4 @@
-<!-- BEGIN HEADER TOP -->
-<div class="page-header-top">
+<div class="page-header-top"> <!-- BEGIN HEADER TOP -->
 	<div class="container">
 		<!-- BEGIN LOGO -->
 		<div class="page-logo">
@@ -26,22 +25,49 @@
 				            <li class="dropdown dropdown-user dropdown-dark">
 					        <a href="javascript:;" class="dropdown-toggle" dropdown-menu-hover data-toggle="dropdown" data-close-others="true">
                                 @*<img alt="" class="img-circle" src="/Content/templates/metronic/assets/admin/layout3/img/avatar1.jpg" />*@
-					        <span class="username username-hide-mobile">Hello  @User.Identity.GetUserName()!</span>
+
+					        <span class="username username-hide-mobile">Hello 
+                                @if(User.IsInRole("Guest")){
+                                    <text>Guest User</text>
+                                }
+                                else
+                                {
+                                    <text>@User.Identity.GetUserName()</text>
+                                }! 
+                                
+                                </span>
 					        </a>
-					        <ul class="dropdown-menu dropdown-menu-default">
-						        <li>
-                                    <a href="/Dashboard#/myaccount">
-                                        <i class="icon-user"></i> My Profile
-                                    </a>
-						        </li>
-						        <li>
-                                    <a href="/DockyardAccount/Logoff">
-                                        <i class="icon-key"></i> Log Out
-                                    </a>
-						        </li>
-					        </ul>
+
+                            @if(!User.IsInRole("Guest")){
+					            <ul class="dropdown-menu dropdown-menu-default">
+						            <li>
+                                        <a href="/Dashboard#/myaccount">
+                                            <i class="icon-user"></i> My Profile
+                                        </a>
+						            </li>
+                                    <li>
+                                        <a href="#/changePassword">
+                                            <i class="icon-key"></i> Change Password
+                                        </a>
+                                    </li>
+						            <li>
+                                        <a href="/DockyardAccount/Logoff">
+                                            <i class="icon-key"></i> Log Out
+                                        </a>
+						            </li>
+					            </ul>
+                            }
+
 				        </li>
-				<!-- END USER LOGIN DROPDOWN -->
+                        <!-- END USER LOGIN DROPDOWN -->
+                        if (@User.IsInRole("Guest"))
+                        {
+                            <li class="have-account-login-guest visible-lg visible-md visible-sm">
+                                <a href="/DockyardAccount/Logoff">
+                                    <span>Have an Account? Login</span>
+                                </a>
+                            </li>
+                        }
                 }
 			</ul>
 		</div>
@@ -66,7 +92,7 @@
                     <a href="#" data-toggle="dropdown" class="dropdown-toggle">Solutions <i class="fa fa-angle-down"></i></a>
                     <ul class="dropdown-menu pull-left" ng-controller="SolutionListController">
                         <li class="dropdown-submenu">
-                            <a href="javascript:;" class="dropdown-toggle">DocuSign</a>
+                            <a href="/Services/DocuSign" class="dropdown-toggle">DocuSign</a>
                             <ul class="dropdown-menu">
                                 <li ng-repeat="activity in (activityCategories | filter: {name: 'Solution'})[0].activities | filter: { terminal: { name: 'terminalDocuSign' } }">
                                     <a ui-sref="configureSolution({solutionName: activity.name})" ui-sref-opts="{reload: true}">{{activity.label}}</a>
@@ -85,11 +111,11 @@
                 </li>
 								
                 <li class="menu-dropdown classic-menu-dropdown">
-                    <a data-toggle="dropdown" href="#" class="dropdown-toggle">Routes <i class="fa fa-angle-down"></i></a>
+                    <a data-toggle="dropdown" href="#" class="dropdown-toggle">Plans <i class="fa fa-angle-down"></i></a>
                     <ul class="dropdown-menu">
 
-                        <li><a href="#/routes">Show All</a></li>
-                        <li><a href="#/routes/add">Add</a></li>
+                        <li><a href="#/plans">Show All</a></li>
+                        <li><a href="#/plans/add">Add</a></li>
                         <li><a href="#/findObjects/create">Find Objects</a></li>
 
                     </ul>
@@ -129,7 +155,9 @@
                     <a data-toggle="dropdown" href="javascript:;" class="dropdown-toggle">Developer <i class="fa fa-angle-down"></i></a>
                     <ul class="dropdown-menu">
 
-                        <li><a href="#/terminals">Developer Home</a></li>
+                        <li><a href="http://documentation.fr8.co">Developer Home</a></li>
+                        <li><a href="/Documentation/RestAPIGuide.html">Fr8 Development Resources - DocuSign</a></li>
+                        
                     </ul>
                 </li>
 
@@ -140,14 +168,32 @@
                         <ul class="dropdown-menu">
 
                             <li><a href="#/form-tools">Create Accounts</a></li>
-                            <li><a href="#/accounts">Manage Dockyard Accounts</a></li>
+                            <li><a href="#/accounts">Manage Fr8 Accounts</a></li>
                             <li><a href="#/webservices">Show Web Services</a></li>
+                            <li><a href="#/manifestregistry">Manage ManifestRegistry</a></li>
 
                         </ul>
                     </li>
                 }
+                
+                @if (User.IsInRole("Guest"))
+                {
+                    <li class="visible-xs">
+                        <a href="/DockyardAccount/Logoff">
+                            Have an Account? Login
+                        </a>
+                    </li>
+                }
+
 			</ul>
+           
 		</div>
+        @if (User.IsInRole("Guest"))
+        {
+            <ul class="nav navbar-nav navbar-right pull-right">
+                <li class="pull-right register-guest-user" style="background-color: crimson;">@Html.ActionLink("Register!", "RegisterGuestUser", "DockyardAccount")</li>
+            </ul>
+        }
 		<!-- END MEGA MENU -->
 	</div>
 </div>

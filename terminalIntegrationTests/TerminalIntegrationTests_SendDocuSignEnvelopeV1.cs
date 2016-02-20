@@ -52,34 +52,33 @@ namespace terminalIntegrationTests
 			// Select first available DocuSign template.
 			SendDocuSignEnvelope_SelectFirstTemplate(initCrateStorageDTO);
 
-		    using (var updater = _crateManager.UpdateStorage(savedActionDTO))
+		    using (var crateStorage = _crateManager.GetUpdatableStorage(savedActionDTO))
 		    {
-                updater.CrateStorage = initCrateStorageDTO;
+                crateStorage.Replace(initCrateStorageDTO);
 		    }
 
-		    FixActionNavProps(savedActionDTO.Id);
+		   // FixActionNavProps(savedActionDTO.Id);
 
 			// Call Configure FollowUp for SendDocuSignEnvelope action.
 			await SendDocuSignEnvelope_ConfigureFollowUp(savedActionDTO);
 
 		}
-		private async Task<CrateStorage> SendDocuSignEnvelope_ConfigureInitial(ActionDTO curActionDTO)
+		private async Task<ICrateStorage> SendDocuSignEnvelope_ConfigureInitial(ActivityDTO curActionDTO)
 		{
 			// Fill values as it would be on front-end.
-			curActionDTO.ActivityTemplateId = _sendDocuSignEnvelopeActivityTemplate.Id;
 		    curActionDTO.CrateStorage = new CrateStorageDTO();
 
 			// Send initial configure request.
 			var curActionController = CreateActionController();
-			var actionDTO = await curActionController.Configure(curActionDTO)
-				 as OkNegotiatedContentResult<ActionDTO>;
+			var activityDTO = await curActionController.Configure(curActionDTO)
+				 as OkNegotiatedContentResult<ActivityDTO>;
 
 			// Assert initial configuration returned in CrateStorage.
-			Assert.NotNull(actionDTO);
-			Assert.NotNull(actionDTO.Content);
-			Assert.NotNull(actionDTO.Content.CrateStorage);
+			Assert.NotNull(activityDTO);
+			Assert.NotNull(activityDTO.Content);
+			Assert.NotNull(activityDTO.Content.CrateStorage);
 
-            var storage = _crateManager.GetStorage(actionDTO.Content);
+            var storage = _crateManager.GetStorage(activityDTO.Content);
 
             Assert.AreEqual(storage.Count, 3);
             Assert.True((storage.CratesOfType<StandardConfigurationControlsCM>().Any(x => x.Label == "Configuration_Controls")));
@@ -88,7 +87,7 @@ namespace terminalIntegrationTests
 			return storage;
 		}
 		
-        private void SendDocuSignEnvelope_SelectFirstTemplate(CrateStorage curCrateStorage)
+        private void SendDocuSignEnvelope_SelectFirstTemplate(ICrateStorage curCrateStorage)
 		{
 			// Fetch Available Template crate and parse StandardDesignTimeFieldsMS.
             var availableTemplatesCrateDTO = curCrateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Single(x => x.Label == "Available Templates");
@@ -107,19 +106,19 @@ namespace terminalIntegrationTests
 			docuSignTemplateControlDTO.Value = fieldsMS.Fields.First().Value;
 		}
 
-		private async Task<CrateStorage> SendDocuSignEnvelope_ConfigureFollowUp(ActionDTO curActionDTO)
+		private async Task<ICrateStorage> SendDocuSignEnvelope_ConfigureFollowUp(ActivityDTO curActionDTO)
 		{
 			var curActionController = CreateActionController();
 
-			var actionDTO = await curActionController.Configure(curActionDTO)
-				 as OkNegotiatedContentResult<ActionDTO>;
+			var activityDTO = await curActionController.Configure(curActionDTO)
+				 as OkNegotiatedContentResult<ActivityDTO>;
 
 			// Assert FollowUp Configure result.
-			Assert.NotNull(actionDTO);
-			Assert.NotNull(actionDTO.Content);
-			Assert.NotNull(actionDTO.Content.CrateStorage);
+			Assert.NotNull(activityDTO);
+			Assert.NotNull(activityDTO.Content);
+			Assert.NotNull(activityDTO.Content.CrateStorage);
 
-            var storage = _crateManager.GetStorage(actionDTO.Content);
+            var storage = _crateManager.GetStorage(activityDTO.Content);
 
             Assert.AreEqual(storage.Count, 2);
             Assert.True((storage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "DocuSignTemplateUserDefinedFields")));

@@ -30,7 +30,7 @@ namespace terminalDocuSign.Tests.Actions
     [Category("terminalDocuSign")]
     public class Query_DocuSign_Tests : BaseTest
     {
-        Query_DocuSign_v1 _action;
+        Query_DocuSign_v1 _activity;
         private ICrateManager _crateManager;
 
         public override void SetUp()
@@ -39,8 +39,8 @@ namespace terminalDocuSign.Tests.Actions
 
             var docusignFolder = new Mock<IDocuSignFolder>();
 
-            docusignFolder.Setup(r => r.GetFolders(It.IsAny<string>(), It.IsAny<string>())).Returns(TerminalFixtureData.GetFolders());
-            docusignFolder.Setup(r => r.Search(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>()))
+            docusignFolder.Setup(r => r.GetSearchFolders(It.IsAny<string>(), It.IsAny<string>())).Returns(TerminalFixtureData.GetFolders());
+            docusignFolder.Setup(r => r.Search(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>(), It.IsAny<IEnumerable<FilterConditionDTO>>()))
                 .Returns<string, string, string, string, string, DateTime?, DateTime?>(Search);
 
             
@@ -53,11 +53,11 @@ namespace terminalDocuSign.Tests.Actions
 
             PayloadDTO payloadDto = new PayloadDTO(Guid.Empty);
             payloadDto.CrateStorage = new CrateStorageDTO();
-            using (var updater = new CrateManager().UpdateStorage(payloadDto))
+            using (var crateStorage = new CrateManager().GetUpdatableStorage(payloadDto))
             {
                 var operationalStatus = new OperationalStateCM();
                 var operationsCrate = Crate.FromContent("Operational Status", operationalStatus);
-                updater.CrateStorage.Add(operationsCrate);
+                crateStorage.Add(operationsCrate);
             }
 
 
@@ -66,7 +66,7 @@ namespace terminalDocuSign.Tests.Actions
                 .Returns(Task.FromResult(payloadDto));
             ObjectFactory.Configure(cfg => cfg.For<IRestfulServiceClient>().Use(restfulServiceClient.Object));
 
-            _action = new Query_DocuSign_v1();
+            _activity = new Query_DocuSign_v1();
             
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
         }
@@ -95,7 +95,7 @@ namespace terminalDocuSign.Tests.Actions
         {
             var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(new AuthorizationTokenDTO() {Token = JsonConvert.SerializeObject(TerminalFixtureData.TestDocuSignAuthDTO1())});
 
-            var result = await _action.Configure(new ActionDO(), curAuthTokenDO);
+            var result = await _activity.Configure(new ActivityDO(), curAuthTokenDO);
             var storage = _crateManager.GetStorage(result);
 
             var foldersCrate = storage.CratesOfType<StandardDesignTimeFieldsCM>().Where(x => x.Label == "Folders").Select(x => x.Content).FirstOrDefault();
@@ -114,17 +114,17 @@ namespace terminalDocuSign.Tests.Actions
             
             var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(new AuthorizationTokenDTO() { Token = JsonConvert.SerializeObject(TerminalFixtureData.TestDocuSignAuthDTO1()) });
 
-            var action = new ActionDO();
+            var activity = new ActivityDO();
             
-            using (var updater = _crateManager.UpdateStorage(action))
+            using (var crateStorage = _crateManager.GetUpdatableStorage(activity))
             {
-                updater.CrateStorage.Add(Crate.FromContent("Config", new Query_DocuSign_v1.ActionUi
+                crateStorage.Add(Crate.FromContent("Config", new Query_DocuSign_v1.ActionUi
                 {
                     Folder = {Value = "folder_1"}
                 }));
             }
 
-            var result = await _action.Run(action, Guid.NewGuid(), curAuthTokenDO);
+            var result = await _activity.Run(activity, Guid.NewGuid(), curAuthTokenDO);
             var storage = _crateManager.GetStorage(result);
 
             var payload = storage.CrateContentsOfType<StandardPayloadDataCM>().FirstOrDefault();
@@ -145,17 +145,17 @@ namespace terminalDocuSign.Tests.Actions
         {
             var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(new AuthorizationTokenDTO() { Token = JsonConvert.SerializeObject(TerminalFixtureData.TestDocuSignAuthDTO1()) });
 
-            var action = new ActionDO();
+            var activity = new ActivityDO();
 
-            using (var updater = _crateManager.UpdateStorage(action))
+            using (var crateStorage = _crateManager.GetUpdatableStorage(activity))
             {
-                updater.CrateStorage.Add(Crate.FromContent("Config", new Query_DocuSign_v1.ActionUi
+                crateStorage.Add(Crate.FromContent("Config", new Query_DocuSign_v1.ActionUi
                 {
                     Folder = {Value = "<any>"}
                 }));
             }
 
-            var result = await _action.Run(action, Guid.NewGuid(), curAuthTokenDO);
+            var result = await _activity.Run(activity, Guid.NewGuid(), curAuthTokenDO);
             var storage = _crateManager.GetStorage(result);
 
             var payload = storage.CrateContentsOfType<StandardPayloadDataCM>().FirstOrDefault();

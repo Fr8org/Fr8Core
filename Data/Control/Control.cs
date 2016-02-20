@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using Data.Constants;
 using Data.Crates;
+using Data.Helpers;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
@@ -43,6 +46,8 @@ namespace Data.Control
         public const string RunRouteButton = "RunRouteButton";
         public const string UpstreamDataChooser = "UpstreamDataChooser";
         public const string UpstreamFieldChooser = "UpstreamFieldChooser";
+        public const string UpstreamCrateChooser = "UpstreamCrateChooser";
+        public const string DatePicker = "DatePicker";
     }
 
     public class CheckBox : ControlDefinitionDTO
@@ -69,7 +74,7 @@ namespace Data.Control
         [JsonProperty("selectedKey")]
         public string selectedKey { get; set; }
 
-        public DropDownList()
+        public DropDownList() : base()
         {
             ListItems = new List<ListItem>();
             Type = "DropDownList";
@@ -96,6 +101,14 @@ namespace Data.Control
         public TextBox()
         {
             Type = ControlTypes.TextBox;
+        }
+    }
+
+    public class DatePicker : ControlDefinitionDTO
+    {
+        public DatePicker()
+        {
+            Type = ControlTypes.DatePicker;
         }
     }
 
@@ -216,12 +229,12 @@ namespace Data.Control
         [JsonProperty("valueSource")]
         public string ValueSource;
 
-        public TextSource() 
+        public TextSource() : base()
         {
             Type = ControlTypes.TextSource;
         }
 
-        public TextSource(string initialLabel, string upstreamSourceLabel, string name)
+        public TextSource(string initialLabel, string upstreamSourceLabel, string name) : base()
         {
             Type = ControlTypes.TextSource;
             this.InitialLabel = initialLabel;
@@ -233,7 +246,7 @@ namespace Data.Control
             };
         }
 
-        public string GetValue(CrateStorage payloadCrateStorage)
+        public string GetValue(ICrateStorage payloadCrateStorage, bool ignoreCase = false, MT? manifestType = null, string label = null)
         {
             switch (ValueSource)
             {
@@ -241,27 +254,97 @@ namespace Data.Control
                     return TextValue;
 
                 case "upstream":
-                    return ExtractPayloadFieldValue(payloadCrateStorage);
+                    return GetPayloadValue(payloadCrateStorage, ignoreCase, manifestType, label);
 
                 default:
-                    throw new ApplicationException("Could not extract recipient, unknown recipient mode.");
+                    return null;
             }
+        }
+
+        public string GetPayloadValue(ICrateStorage payloadStorage, bool ignoreCase = false, MT? manifestType = null, string label = null)
+        {
+            //search through every crate except operational state crate
+            Expression<Func<Crate, bool>> defaultSearchArguments = (c) => c.ManifestType.Id != (int)MT.OperationalStatus;
+
+            //apply label criteria if not null
+            if (label != null)
+            {
+                Expression<Func<Crate, bool>> andLabel = (c) => c.Label == label;
+                defaultSearchArguments = Expression.Lambda<Func<Crate, bool>>(Expression.AndAlso(defaultSearchArguments, andLabel), defaultSearchArguments.Parameters);
+            }
+
+            //apply manifest criteria if not null
+            if (manifestType != null)
+            {
+                Expression<Func<Crate, bool>> andManifestType = (c) => c.ManifestType.Id == (int)manifestType;
+                defaultSearchArguments = Expression.Lambda<Func<Crate, bool>>(Expression.AndAlso(defaultSearchArguments, andManifestType), defaultSearchArguments.Parameters);
+            }
+
+            //find user requested crate
+            var foundCrates = payloadStorage.Where(defaultSearchArguments.Compile()).ToList();
+            if (!foundCrates.Any())
+            {
+                return null;
+            }
+
+            //get operational state crate to check for loops
+            var operationalState = payloadStorage.CrateContentsOfType<OperationalStateCM>().Single();
+            //iterate through found crates to find the payload
+            foreach (var foundCrate in foundCrates)
+            {
+                var foundField = FindField(operationalState, foundCrate);
+                if (foundField != null)
+                {
+                    return foundField.Value;
+                }
+            }
+
+            return null;
+        }
+
+
+        private FieldDTO FindField(OperationalStateCM operationalState, Crate crate)
+        {
+            object searchArea = null;
+            //let's check if we are in a loop
+            //and this is a loop data?
+            //check if this crate is loop related
+            var deepestLoop = operationalState.Loops.OrderByDescending(l => l.Level).FirstOrDefault(l => !l.BreakSignalReceived && l.Label == crate.Label && l.CrateManifest == crate.ManifestType.Type);
+            if (deepestLoop != null) //this is a loop related data request
+            {
+                //find current element
+                var dataList = Fr8ReflectionHelper.FindFirstArray(crate.Get());
+                //we will search requested field in current element
+                searchArea = dataList[deepestLoop.Index];
+            }
+            else
+            {
+                //hmmm this is a regular data request
+                //lets search in complete crate
+                searchArea = crate;
+            }
+
+            //we should find first related field and return
+            var fields = Fr8ReflectionHelper.FindFieldsRecursive(searchArea);
+            var fieldMatch = fields.FirstOrDefault(f => f.Key == this.selectedKey);
+            //let's return first match
+            return fieldMatch;
         }
 
         /// <summary>
         /// Extracts crate with specified label and ManifestType = Standard Design Time,
         /// then extracts field with specified fieldKey.
         /// </summary>
-        private string ExtractPayloadFieldValue(CrateStorage payloadCrateStorage)
+        private string ExtractPayloadFieldValue(ICrateStorage payloadCrateStorage, bool ignoreCase)
         {
-            var fieldValues = payloadCrateStorage.CratesOfType<StandardPayloadDataCM>().SelectMany(x => x.Content.GetValues(selectedKey))
+            var fieldValues = payloadCrateStorage.CratesOfType<StandardPayloadDataCM>().SelectMany(x => x.Content.GetValues(selectedKey, ignoreCase))
                 .Where(s => !string.IsNullOrEmpty(s))
                 .ToArray();
 
             if (fieldValues.Length > 0)
                 return fieldValues[0];
 
-            throw new ApplicationException("No field found with specified key.");
+            throw new ApplicationException(string.Format("No field found with specified key: {0}.", selectedKey));
         }
     }
 
@@ -288,6 +371,7 @@ namespace Data.Control
         public Duration()
         {
             Type = ControlTypes.Duration;
+            InnerLabel = "Choose duration:";
         }
 
         [JsonProperty("value")]
@@ -298,6 +382,9 @@ namespace Data.Control
                 return new TimeSpan(this.Days, this.Hours, this.Minutes, 0);
             }
         }
+
+        [JsonProperty("innerLabel")]
+        public string InnerLabel { get; set; }
 
         [JsonProperty("days")]
         public Int32 Days { get; set; }
@@ -310,8 +397,8 @@ namespace Data.Control
 
     }
 
-    
- 
+
+
 
     public class FieldSourceDTO
     {
@@ -342,6 +429,14 @@ namespace Data.Control
             get
             {
                 return new ControlEvent("onChange", "requestConfig");
+            }
+        }
+
+        public static ControlEvent RequestConfigOnClick
+        {
+            get
+            {
+                return new ControlEvent("onClick", "requestConfig");
             }
         }
 
@@ -402,7 +497,7 @@ namespace Data.Control
         public string Value { get; set; }
     }
 
-    public class UpstreamDataChooser: ControlDefinitionDTO
+    public class UpstreamDataChooser : ControlDefinitionDTO
     {
         public UpstreamDataChooser()
         {
@@ -419,7 +514,31 @@ namespace Data.Control
         public string SelectedFieldType { get; set; }
     }
 
-    public class UpstreamFieldChooser: ControlDefinitionDTO
+    public class CrateDetails
+    {
+        [JsonProperty("manifestType")]
+        public DropDownList ManifestType { get; set; }
+
+        [JsonProperty("label")]
+        public DropDownList Label { get; set; }
+    }
+
+    public class UpstreamCrateChooser : ControlDefinitionDTO
+    {
+        public UpstreamCrateChooser()
+        {
+            Type = ControlTypes.UpstreamCrateChooser;
+        }
+
+        [JsonProperty("selectedCrates")]
+        public List<CrateDetails> SelectedCrates { get; set; }
+
+        [JsonProperty("multiSelection")]
+        public bool MultiSelection { get; set; }
+
+    }
+
+    public class UpstreamFieldChooser : ControlDefinitionDTO
     {
         public UpstreamFieldChooser()
         {
@@ -427,18 +546,29 @@ namespace Data.Control
         }
     }
 
-    public class HelpControlDTO
+    public class DocumentationDTO
     {
-        public HelpControlDTO(string helpPath, string documentationSupport)
+        public DocumentationDTO(string displayMechanism, string contentPath)
         {
-            this.HelpPath = helpPath;
-            this.DocumentationSupport = documentationSupport;
+            this.DisplayMechanism = displayMechanism;
+            this.ContentPath = contentPath;
         }
 
-        [JsonProperty("helpPath")]
-        public string HelpPath { get; set; }
+        [JsonProperty("displayMechanism")]
+        public string DisplayMechanism { get; set; }
 
-        [JsonProperty("documentationSupport")]
-        public string DocumentationSupport { get; set; }
+        [JsonProperty("contentPath")]
+        public string ContentPath { get; set; }
+
+        [JsonProperty("url")]
+        public string URL
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(ContentPath))
+                    return "/actions/documentation";
+                return string.Format("/actions/documentation/{0}", ContentPath);
+            }
+        }
     }
 }

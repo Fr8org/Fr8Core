@@ -15,19 +15,19 @@ namespace UtilitiesTesting.Fixtures
 {
     public partial class FixtureData
     {
-        public static CrateStorage TestConfigurationSettings_healthdemo()
+        public static ICrateStorage TestConfigurationSettings_healthdemo()
         {
             return CrateStorageDTO();
         }
 
-        public static CrateStorage CrateStorageDTO()
+        public static ICrateStorage CrateStorageDTO()
         {
             var fieldDTO = new TextBox();
             fieldDTO.Name = "connection_string";
             fieldDTO.Required = true;
             fieldDTO.Label = "SQL Connection String";
 
-            CrateStorage curCrateStorage = new CrateStorage();
+            ICrateStorage curCrateStorage = new CrateStorage();
             ICrateManager crate = ObjectFactory.GetInstance<ICrateManager>();
             curCrateStorage.Add(crate.CreateStandardConfigurationControlsCrate("Configuration Data for WriteToAzureSqlServer", fieldDTO));
             return curCrateStorage;
@@ -42,7 +42,16 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static CrateStorage TestCrateStorage()
+        public static ControlDefinitionDTO TestConnectionString3()
+        {
+            return new TextBlock()
+            {
+                Name = "Connection_String",
+                Value = @"This is incorrect database connection string!"
+            };
+        }
+
+        public static ICrateStorage TestCrateStorage()
         {
             ICrateManager crate = ObjectFactory.GetInstance<ICrateManager>();
             var curConfigurationStore = new CrateStorage
@@ -67,18 +76,18 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static ActionDO TestConfigurationSettingsDTO1()
+        public static ActivityDO TestConfigurationSettingsDTO1()
         {
-            ActionDO curAction = FixtureData.TestAction1();
+            ActivityDO curAction = FixtureData.TestActivity1();
             ICrateManager crate = ObjectFactory.GetInstance<ICrateManager>();
 
             //create connection string value crates with a vald connection string
             
-            using (var updater = crate.UpdateStorage(curAction))
+            using (var crateStorage = crate.GetUpdatableStorage(curAction))
             {
-               updater.CrateStorage = TestCrateStorage();
+                crateStorage.Replace(TestCrateStorage());
 
-               var connectionStringFields = updater.CrateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
+               var connectionStringFields = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
                 
                 connectionStringFields.Content.Controls[0].Value = @"Data Source=s79ifqsqga.database.windows.net;Initial Catalog=demodb_health;User ID=alexeddodb;Password=Thales89";
             }

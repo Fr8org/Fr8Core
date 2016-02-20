@@ -56,68 +56,65 @@ namespace terminalSalesforceTests.Fixtures
             {
                 Version = "1",
                 Name = "Get_Data_TEST",
-                Label = "Get Data",
+                Label = "Get Data from Salesforce.com",
                 NeedsAuthentication = true
             };
         }
 
-        public static ActionDTO Create_Account_v1_InitialConfiguration_ActionDTO()
+        public static Fr8DataDTO Create_Account_v1_InitialConfiguration_Fr8DataDTO()
         {
             var activityTemplate = Create_Account_v1_ActivityTemplate();
 
-            return new ActionDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Create_Account",
                 Label = "Create Account",
                 AuthToken = Salesforce_AuthToken(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
+
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
 
-        public static ActionDTO Create_Contact_v1_InitialConfiguration_ActionDTO()
+        public static Fr8DataDTO Create_Contact_v1_InitialConfiguration_Fr8DataDTO()
         {
             var activityTemplate = Create_Contact_v1_ActivityTemplate();
 
-            return new ActionDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Create_Contact",
                 Label = "Create Contact",
                 AuthToken = Salesforce_AuthToken(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
+
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
 
-        public static ActionDTO Create_Lead_v1_InitialConfiguration_ActionDTO()
+        public static Fr8DataDTO Create_Lead_v1_InitialConfiguration_Fr8DataDTO()
         {
             var activityTemplate = Create_Lead_v1_ActivityTemplate();
 
-            return new ActionDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Create_Lead",
                 Label = "Create Lead",
                 AuthToken = Salesforce_AuthToken(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
 
-        public static ActionDTO Get_Data_v1_InitialConfiguration_ActionDTO()
+        public static ActivityDTO Get_Data_v1_InitialConfiguration_ActionDTO()
         {
             var activityTemplate = Get_Data_v1_ActivityTemplate();
 
-            return new ActionDTO()
+            return new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Get_Data",
-                Label = "Get Data",
+                Label = "Get Data from Salesforce.com",
                 AuthToken = Salesforce_AuthToken(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
         }
     }

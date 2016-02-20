@@ -11,11 +11,11 @@ namespace terminalTwilio
         protected void Application_Start()
         {
             const StructureMapBootStrapper.DependencyType dependencyType = StructureMapBootStrapper.DependencyType.LIVE;
-
+            StructureMapBootStrapper.ConfigureDependencies(dependencyType).ConfigureTwilioDependencies(dependencyType);
             GlobalConfiguration.Configure(RoutesConfig.Register);
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
             // StructureMap Dependencies configuration
-            StructureMapBootStrapper.ConfigureDependencies(dependencyType).ConfigureTwilioDependencies(dependencyType);
+            
             TerminalBootstrapper.ConfigureLive();
         }
     }

@@ -2,6 +2,7 @@
 using HealthMonitor.Utility;
 using NUnit.Framework;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace terminalQuickBooksTests.Integration
 {
@@ -11,7 +12,7 @@ namespace terminalQuickBooksTests.Integration
     /// but allows to trigger that class from HealthMonitor.
     /// </summary>
     [Explicit]
-    public class Terminal_Discover_v1Tests : BaseHealthMonitorTest
+    public class Terminal_Discover_v1Tests : BaseTerminalIntegrationTest
     {
         private const int ActionCount = 2;
         private const string Create_Journal_Entry_Action_Name = "Create_Journal_Entry";
@@ -27,7 +28,7 @@ namespace terminalQuickBooksTests.Integration
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
         [Test, Category("Integration.terminalQuickBooks")]
-        public async void Terminal_Slack_Discover()
+        public async Task Terminal_Slack_Discover()
         {
             var discoverUrl = GetTerminalDiscoverUrl();
             var terminalDiscoverResponse = await HttpGetAsync<StandardFr8TerminalCM>(discoverUrl);
@@ -36,11 +37,11 @@ namespace terminalQuickBooksTests.Integration
             Assert.AreEqual(ActionCount, terminalDiscoverResponse.Actions.Count, "Not all terminal slack actions were loaded");
             //Action Create_Journal_Entry
             Assert.AreEqual(terminalDiscoverResponse.Actions.Any(a => a.Name == Create_Journal_Entry_Action_Name), true, "Action " + Create_Journal_Entry_Action_Name + " was not loaded");
-            Assert.AreEqual("QuickBooks", terminalDiscoverResponse.Actions[0].WebService.Name, "No WebService set for action " + Create_Journal_Entry_Action_Name);
+            Assert.AreEqual("QuickBooks", terminalDiscoverResponse.Actions[0].WebService.Name, "No WebService set for activity " + Create_Journal_Entry_Action_Name);
             //Action Convert_TableData_To_AccountingTransactions
             Assert.AreEqual(terminalDiscoverResponse.Actions.Any(a => a.Name == Convert_TableData_To_AccountingTransactions_Action_Name), 
                 true, "Action " + Convert_TableData_To_AccountingTransactions_Action_Name + " was not loaded");
-            Assert.AreEqual("QuickBooks", terminalDiscoverResponse.Actions[1].WebService.Name, "No WebService set for action " + Convert_TableData_To_AccountingTransactions_Action_Name);
+            Assert.AreEqual("QuickBooks", terminalDiscoverResponse.Actions[1].WebService.Name, "No WebService set for activity " + Convert_TableData_To_AccountingTransactions_Action_Name);
         }
     }
 }

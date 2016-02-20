@@ -14,11 +14,11 @@ namespace Hub.Services
             ObjectFactory.GetInstance<IActivityTemplate>();
 
 
-        public RouteDO CreateRoute(IUnitOfWork uow, Fr8AccountDO account)
+        public PlanDO CreatePlan(IUnitOfWork uow, Fr8AccountDO account)
         {
             var generatedRouteName = GenerateFindObjectsRouteName(uow, account);
 
-            var route = new RouteDO()
+            var plan = new PlanDO()
             {
                 Id = Guid.NewGuid(),
                 Name = generatedRouteName,
@@ -31,75 +31,61 @@ namespace Hub.Services
             var subroute = new SubrouteDO()
             {
                 Id = Guid.NewGuid(),
-                ParentRouteNode = route
+                ParentRouteNode = plan
             };
 
             var connectToSqlActivityTemplate = _activityTemplate.GetByName(uow, "ConnectToSql_v1");
-            var connectToSqlAction = new ActionDO()
+            var connectToSqlAction = new ActivityDO()
             {
                 Id = Guid.NewGuid(),
-                ParentRouteNode = subroute,
                 Ordering = 1,
-                ActivityTemplate = connectToSqlActivityTemplate,
-                Name = connectToSqlActivityTemplate.Name,
+                ActivityTemplateId = connectToSqlActivityTemplate.Id,
                 Label = connectToSqlActivityTemplate.Name
             };
 
             var buildQueryActivityTemplate = _activityTemplate.GetByName(uow, "BuildQuery_v1");
-            var buildQueryAction = new ActionDO()
+            var buildQueryAction = new ActivityDO()
             {
                 Id = Guid.NewGuid(),
-                ParentRouteNode = subroute,
                 Ordering = 2,
-                ActivityTemplate = buildQueryActivityTemplate,
-                Name = buildQueryActivityTemplate.Name,
+                ActivityTemplateId = buildQueryActivityTemplate.Id,
                 Label = buildQueryActivityTemplate.Name
             };
 
             var executeSqlActivityTemplate = _activityTemplate.GetByName(uow, "ExecuteSql_v1");
-            var executeSqlAction = new ActionDO()
+            var executeSqlAction = new ActivityDO()
             {
                 Id = Guid.NewGuid(),
-                ParentRouteNode = subroute,
                 Ordering = 3,
-                ActivityTemplate = executeSqlActivityTemplate,
-                Name = executeSqlActivityTemplate.Name,
+                ActivityTemplateId = executeSqlActivityTemplate.Id,
                 Label = executeSqlActivityTemplate.Name
             };
 
             var manageRouteActivityTemplate = _activityTemplate.GetByName(uow, "ManageRoute_v1");
-            var manageRouteAction = new ActionDO()
+            var manageRouteAction = new ActivityDO()
             {
                 Id = Guid.NewGuid(),
-                ParentRouteNode = subroute,
                 Ordering = 4,
-                ActivityTemplate = manageRouteActivityTemplate,
-                Name = manageRouteActivityTemplate.Name,
+                ActivityTemplateId = manageRouteActivityTemplate.Id,
                 Label = manageRouteActivityTemplate.Name
             };
 
-            route.ChildNodes.Add(subroute);
+            plan.ChildNodes.Add(subroute);
             subroute.StartingSubroute = true;
             subroute.ChildNodes.Add(connectToSqlAction);
             subroute.ChildNodes.Add(buildQueryAction);
             subroute.ChildNodes.Add(executeSqlAction);
             subroute.ChildNodes.Add(manageRouteAction);
 
-            uow.RouteNodeRepository.Add(route);
-            uow.RouteNodeRepository.Add(subroute);
-            uow.RouteNodeRepository.Add(connectToSqlAction);
-            uow.RouteNodeRepository.Add(buildQueryAction);
-            uow.RouteNodeRepository.Add(executeSqlAction);
-            uow.RouteNodeRepository.Add(manageRouteAction);
+            uow.PlanRepository.Add(plan);
 
-            return route;
+            return plan;
         }
 
         private string GenerateFindObjectsRouteName(
             IUnitOfWork uow, Fr8AccountDO account)
         {
-            var findObjectRoutes = uow.RouteRepository
-                .GetQuery()
+            var findObjectRoutes = uow.PlanRepository.GetPlanQueryUncached()
                 .Where(x => x.Fr8Account.Id == account.Id)
                 .Where(x => x.Name.StartsWith("FindObjects #"))
                 .ToList();

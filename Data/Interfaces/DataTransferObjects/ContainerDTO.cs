@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Data.Constants;
 using Data.Entities;
 
 namespace Data.Interfaces.DataTransferObjects
@@ -14,7 +15,7 @@ namespace Data.Interfaces.DataTransferObjects
         [Required]
         public Guid Id { get; set; }
         public string Name { get; set; }
-        public Guid RouteId { get; set; }
+        public Guid PlanId { get; set; }
         public int ContainerState;
 
         public Guid? CurrentRouteNodeId { get; set; }
@@ -24,5 +25,8 @@ namespace Data.Interfaces.DataTransferObjects
 
         public DateTimeOffset CreateDate { get; set; }
 
+        public ActivityResponse? CurrentActivityResponse { get; set; }
+        public string CurrentClientActionName { get; set; }
+        public ErrorDTO Error { get; set; }
     }
 }

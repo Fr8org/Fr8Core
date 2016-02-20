@@ -39,16 +39,16 @@ namespace terminalAzure.Tests.Controllers
         }
 
         [Test]
-        public async void HandleDockyardRequest_TerminalTypeIsAzureSqlServer_ResponseInitialConfiguration()
+        public async Task HandleDockyardRequest_TerminalTypeIsAzureSqlServer_ResponseInitialConfiguration()
         {
             string curTerminal = "terminalAzure";
             string curActionPath = "Configure";
 
-            ActionDTO curActionDTO = FixtureData.TestActionDTO1();
-
-            object response = await _baseTerminalController.HandleFr8Request(curTerminal, curActionPath, curActionDTO);
-            ActionDTO actionDTO = (ActionDTO) response;
-            Assert.AreEqual("Standard UI Controls", _crateManager.FromDto(actionDTO.CrateStorage).First().ManifestType.Type);
+            ActivityDTO curActionDTO = FixtureData.TestActionDTO1();
+            var fr8Data = new Fr8DataDTO { ActivityDTO = curActionDTO };
+            object response = await _baseTerminalController.HandleFr8Request(curTerminal, curActionPath, fr8Data);
+            ActivityDTO activityDTO = (ActivityDTO) response;
+            Assert.AreEqual("Standard UI Controls", _crateManager.FromDto(activityDTO.CrateStorage).First().ManifestType.Type);
         }
     }
 }

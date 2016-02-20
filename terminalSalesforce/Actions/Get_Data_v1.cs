@@ -18,7 +18,7 @@ using Data.Interfaces.DataTransferObjects;
 
 namespace terminalSalesforce.Actions
 {
-    public class Get_Data_v1 : BaseTerminalAction
+    public class Get_Data_v1 : BaseTerminalActivity
     {
         private ISalesforceManager _salesforce;
 
@@ -27,24 +27,24 @@ namespace terminalSalesforce.Actions
             _salesforce = ObjectFactory.GetInstance<ISalesforceManager>();
         }
 
-        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             CheckAuthentication(authTokenDO);
 
-            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
+            return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
         }
 
-        private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        private ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
             //if empty crate storage, proceed with initial config
-            if (Crate.IsStorageEmpty(curActionDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
 
             //if no salesforce object is selected, proceed with initial config
             string selectedSalesForceObject =
-                ((DropDownList) GetControl(curActionDO, "WhatKindOfData", ControlTypes.DropDownList)).selectedKey;
+                ((DropDownList) GetControl(curActivityDO, "WhatKindOfData", ControlTypes.DropDownList)).selectedKey;
             if (string.IsNullOrEmpty(selectedSalesForceObject))
             {
                 return ConfigurationRequestType.Initial;
@@ -54,66 +54,75 @@ namespace terminalSalesforce.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             //create hard coded salesforce object names as design time fields.
-            var availableSalesforceObjects = Crate.CreateDesignTimeFieldsCrate("AvailableSalesforceObjects",
+            var availableSalesforceObjects = CrateManager.CreateDesignTimeFieldsCrate("AvailableSalesforceObjects",
                 new FieldDTO[]
                 {
                     new FieldDTO("Account") {Availability = AvailabilityType.Configuration},
                     new FieldDTO("Contact") {Availability = AvailabilityType.Configuration},
-                    new FieldDTO("Lead") {Availability = AvailabilityType.Configuration}
+                    new FieldDTO("Lead") {Availability = AvailabilityType.Configuration},
+                    new FieldDTO("Opportunity") {Availability = AvailabilityType.Configuration},
+                    //new FieldDTO("Forecast") {Availability = AvailabilityType.Configuration},
+                    new FieldDTO("Contract") {Availability = AvailabilityType.Configuration},
+                    new FieldDTO("Order") {Availability = AvailabilityType.Configuration},
+                    new FieldDTO("Case") {Availability = AvailabilityType.Configuration},
+                    new FieldDTO("Solution") {Availability = AvailabilityType.Configuration},
+                    new FieldDTO("Product2") {Availability = AvailabilityType.Configuration},
+                    new FieldDTO("Document") {Availability = AvailabilityType.Configuration}
+                    //new FieldDTO("File") {Availability = AvailabilityType.Configuration}
                 });
 
             //Note: This design time fields are used to populate the Fileter Pane controls. It has to be labelled as Queryable Criteria
-            var emptyFieldsSource = Crate.CreateDesignTimeFieldsCrate("Queryable Criteria", new FieldDTO[] {});
+            var emptyFieldsSource = CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", new FieldDTO[] {});
 
             var configurationControlsCrate = CreateControlsCrate();
 
-            using (var updater = Crate.UpdateStorage(() => curActionDO.CrateStorage))
+            using (var crateStorage = CrateManager.UpdateStorage(() => curActivityDO.CrateStorage))
             {
-                updater.CrateStorage = AssembleCrateStorage(availableSalesforceObjects, emptyFieldsSource, configurationControlsCrate);
+                crateStorage.Replace(AssembleCrateStorage(availableSalesforceObjects, emptyFieldsSource, configurationControlsCrate));
             }
 
-            return await Task.FromResult(curActionDO);
+            return await Task.FromResult(curActivityDO);
         }
 
-        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO,
+        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO,
                                                                               AuthorizationTokenDO authTokenDO)
         {
             //get the current user selected salesforce object from the drop down list
             string curSelectedObject =
-                ((DropDownList) GetControl(curActionDO, "WhatKindOfData", ControlTypes.DropDownList)).selectedKey;
+                ((DropDownList) GetControl(curActivityDO, "WhatKindOfData", ControlTypes.DropDownList)).selectedKey;
 
             //if current selected object is empty , do not do anything
             if (string.IsNullOrEmpty(curSelectedObject))
             {
-                return await Task.FromResult(curActionDO);
+                return await Task.FromResult(curActivityDO);
             }
 
             //get fields of selected salesforce object
             var objectFieldsList = await _salesforce.GetFields(curSelectedObject, _salesforce.CreateForceClient(authTokenDO));
 
             //replace the object fields for the newly selected object name
-            var queryableCriteriaFields = Crate.CreateDesignTimeFieldsCrate("Queryable Criteria", objectFieldsList.ToArray());
-            using (var updater = Crate.UpdateStorage(curActionDO))
+            var queryableCriteriaFields = CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", objectFieldsList.ToArray());
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.ReplaceByLabel(queryableCriteriaFields);
+                crateStorage.ReplaceByLabel(queryableCriteriaFields);
             }
 
-            return await Task.FromResult(curActionDO);
+            return await Task.FromResult(curActivityDO);
         }
 
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             CheckAuthentication(authTokenDO);
 
             //get payload data
-            var payloadCrates = await GetPayload(curActionDO, containerId);
+            var payloadCrates = await GetPayload(curActivityDO, containerId);
 
             //get currect selected Salesforce object
             string curSelectedSalesForceObject =
-                ((DropDownList)GetControl(curActionDO, "WhatKindOfData", ControlTypes.DropDownList)).selectedKey;
+                ((DropDownList)GetControl(curActivityDO, "WhatKindOfData", ControlTypes.DropDownList)).selectedKey;
 
             if (string.IsNullOrEmpty(curSelectedSalesForceObject))
             {
@@ -121,13 +130,13 @@ namespace terminalSalesforce.Actions
             }
 
             //get filters
-            var filterValue = ExtractControlFieldValue(curActionDO, "SelectedFilter");
-            var filterDataDTO = JsonConvert.DeserializeObject<FilterDataDTO>(filterValue);
+            var filterValue = ExtractControlFieldValue(curActivityDO, "SelectedQuery");
+            var filterDataDTO = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(filterValue);
 
             //if without filter, just get all selected objects
             //else prepare SOQL query to filter the objects based on the filter conditions
             StandardPayloadDataCM resultObjects;
-            if (filterDataDTO.ExecutionType == FilterExecutionType.WithoutFilter)
+            if (filterDataDTO.First().Field == null)
             {
                 resultObjects = await _salesforce.GetObjectByQuery(curSelectedSalesForceObject, string.Empty, _salesforce.CreateForceClient(authTokenDO));
             }
@@ -135,15 +144,16 @@ namespace terminalSalesforce.Actions
             {
                 EventManager.CriteriaEvaluationStarted(containerId);
 
-                string parsedCondition = ParseFilters(filterDataDTO);
+
+                string parsedCondition = ParsedCondition(filterDataDTO);
 
                 resultObjects = await _salesforce.GetObjectByQuery(curSelectedSalesForceObject, parsedCondition, _salesforce.CreateForceClient(authTokenDO));
             }
 
             //update the payload with result objects
-            using (var updater = Crate.UpdateStorage(payloadCrates))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
             {
-                updater.CrateStorage.ReplaceByLabel(Data.Crates.Crate.FromContent("Salesforce Objects", resultObjects));
+                crateStorage.ReplaceByLabel(Data.Crates.Crate.FromContent("Salesforce Objects", resultObjects));
             }
 
             return Success(payloadCrates);
@@ -156,7 +166,7 @@ namespace terminalSalesforce.Actions
             {
                 Name = "WhatKindOfData",
                 Required = true,
-                Label = "What kind of Salesforce object do you want to get data?",
+                Label = "Get Which Object?",
                 Source = new FieldSourceDTO
                 {
                     Label = "AvailableSalesforceObjects",
@@ -166,10 +176,10 @@ namespace terminalSalesforce.Actions
             };
 
             //Filter Pane control for the user to filter objects based on their fields values
-            var fieldFilterPane = new FilterPane()
+            var queryBuilderPane = new QueryBuilder()
             {
-                Label = "Get Salesforce Object Data by filtering Fields values",
-                Name = "SelectedFilter",
+                Label = "Meeting which conditions?",
+                Name = "SelectedQuery",
                 Required = true,
                 Source = new FieldSourceDTO
                 {
@@ -178,14 +188,23 @@ namespace terminalSalesforce.Actions
                 }
             };
 
-            return PackControlsCrate(whatKindOfData, fieldFilterPane);
+            var textArea = new TextArea()
+            {
+                IsReadOnly = true,
+                Label = "",
+                Value = "<p>Meeting which conditions?</p>"
+            };
+
+            //var textBlock = GenerateTextBlock("Meeting which conditions?","", "w");
+
+            return PackControlsCrate(whatKindOfData, textArea, queryBuilderPane);
         }
 
-        private string ParseFilters(FilterDataDTO filterData)
+        private string ParsedCondition(List<FilterConditionDTO> filterData)
         {
             var parsedConditions = new List<string>();
 
-            filterData.Conditions.ForEach(condition =>
+            filterData.ForEach(condition =>
             {
                 string parsedCondition = condition.Field;
 

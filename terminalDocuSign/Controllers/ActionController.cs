@@ -12,6 +12,7 @@ using Newtonsoft.Json.Linq;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 using terminalDocuSign.DataTransferObjects;
 using Utilities.Configuration.Azure;
 
@@ -21,17 +22,12 @@ namespace terminalDocuSign.Controllers
     public class ActionController : BaseTerminalController
     {
         private const string curTerminal = "terminalDocuSign";
-
         [HttpPost]
-        public Task<object> Execute([FromUri] String actionType, [FromBody] ActionDTO curActionDTO)
+        [fr8TerminalHMACAuthenticate(curTerminal)]
+        [Authorize]
+        public Task<object> Execute([FromUri] String actionType, [FromBody] Fr8DataDTO curDataDTO)
         {
-            return HandleFr8Request(curTerminal, actionType, curActionDTO);
-        }
-
-        [HttpPost]
-        public HttpResponseMessage Documentation(string helpPath)
-        {
-            return GetActionDocumentation(helpPath);
+             return HandleFr8Request(curTerminal, actionType, curDataDTO);
         }
     }
 }

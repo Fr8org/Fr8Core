@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -15,59 +16,65 @@ using terminalDocuSign.Infrastructure;
 using TerminalBase.BaseClasses;
 using Data.Entities;
 using Utilities.Configuration.Azure;
+using Data.Constants;
+using Data.States;
 
 namespace terminalDocuSign.Actions
 {
-    public class Record_DocuSign_Events_v1 : BaseTerminalAction
+    public class Record_DocuSign_Events_v1 : BaseTerminalActivity
     {
         /// <summary>
         /// //For this action, both Initial and Followup configuration requests are same. Hence it returns Initial config request type always.
         /// </summary>
-        /// <param name="curActionDO"></param>
+        /// <param name="curActivityDO"></param>
         /// <returns></returns>
-        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             CheckAuthentication(authTokenDO);
 
-            return await ProcessConfigurationRequest(curActionDO, x => ConfigurationRequestType.Initial,authTokenDO);
+            return await ProcessConfigurationRequest(curActivityDO, x => ConfigurationRequestType.Initial,authTokenDO);
         }
 
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             /*
              * Discussed with Alexei and it is required to have empty Standard UI Control in the crate.
              * So we create a text block which informs the user that this particular aciton does not require any configuration.
              */
-            var textBlock = GenerateTextBlock("Monitor All DocuSign events",
-                "This Action doesn't require any configuration.", "well well-lg");
+            var textBlock = GenerateTextBlock("Monitor All DocuSign events", "This Action doesn't require any configuration.", "well well-lg");
             var curControlsCrate = PackControlsCrate(textBlock);
 
             //create a Standard Event Subscription crate
-            var curEventSubscriptionsCrate = Crate.CreateStandardEventSubscriptionsCrate("Standard Event Subscription", DocuSignEventNames.GetAllEventNames());
+            var curEventSubscriptionsCrate = CrateManager.CreateStandardEventSubscriptionsCrate("Standard Event Subscription", "DocuSign", DocuSignEventNames.GetAllEventNames());
 
+            var envelopeCrate = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", MT.DocuSignEnvelope.ToString(), ((int)MT.DocuSignEnvelope).ToString(CultureInfo.InvariantCulture), AvailabilityType.RunTime);
+            var eventCrate = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", MT.DocuSignEvent.ToString(), ((int)MT.DocuSignEvent).ToString(CultureInfo.InvariantCulture), AvailabilityType.RunTime);
+            var recipientCrate = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", MT.DocuSignRecipient.ToString(), ((int)MT.DocuSignRecipient).ToString(CultureInfo.InvariantCulture), AvailabilityType.RunTime);
+            /*
             //create Standard Design Time Fields for Available Run-Time Objects
             var curAvailableRunTimeObjectsDesignTimeCrate =
                 Crate.CreateDesignTimeFieldsCrate("Available Run-Time Objects", new FieldDTO[]
                 {
-                    new FieldDTO {Key = "DocuSign Envelope", Value = string.Empty},
-                    new FieldDTO {Key = "DocuSign Event", Value = string.Empty}
+                    new FieldDTO {Key = "DocuSign Envelope", Value = "DocuSign Envelope"},
+                    new FieldDTO {Key = "DocuSign Event", Value = "DocuSign Event"},
+                    new FieldDTO {Key = "DocuSign Recipient", Value = "DocuSign Recipient"}
                 });
-
-            using (var updater = Crate.UpdateStorage(curActionDO))
+            */
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage = new CrateStorage(curControlsCrate, curEventSubscriptionsCrate, curAvailableRunTimeObjectsDesignTimeCrate);
+                crateStorage.Replace(new CrateStorage(curControlsCrate, curEventSubscriptionsCrate, envelopeCrate, eventCrate, recipientCrate));
             }
 
             /*
              * Note: We should not call Activate at the time of Configuration. For this action, it may be valid use case.
              * Because this particular action will be used internally, it would be easy to execute the Process directly.
              */
-            await Activate(curActionDO, null);
+            await Activate(curActivityDO, null);
 
-            return await Task.FromResult(curActionDO);
+            return await Task.FromResult(curActivityDO);
         }
 
-        public override Task<ActionDO> Activate(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        public override Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             DocuSignAccount curDocuSignAccount = new DocuSignAccount();
             var curConnectProfile = curDocuSignAccount.GetDocuSignConnectProfiles();
@@ -96,10 +103,10 @@ namespace terminalDocuSign.Actions
             {
 
             }
-            return Task.FromResult<ActionDO>(curActionDO);
+            return Task.FromResult<ActivityDO>(curActivityDO);
         }
 
-        public override Task<ActionDO> Deactivate(ActionDO curActionDO)
+        public override Task<ActivityDO> Deactivate(ActivityDO curActivityDO)
         {
             DocuSignAccount curDocuSignAccount = new DocuSignAccount();
             var curConnectProfile = curDocuSignAccount.GetDocuSignConnectProfiles();
@@ -113,26 +120,26 @@ namespace terminalDocuSign.Actions
                 }
             }
 
-            return Task.FromResult<ActionDO>(curActionDO);
+            return Task.FromResult<ActivityDO>(curActivityDO);
         }
 
-        public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var curProcessPayload = await GetPayload(actionDO, containerId);
+            var curProcessPayload = await GetPayload(activityDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
             {
                 return NeedsAuthenticationError(curProcessPayload);
             }
 
-            var curEventReport = Crate.GetStorage(curProcessPayload).CrateContentsOfType<EventReportCM>().First();
+            var curEventReport = CrateManager.GetStorage(curProcessPayload).CrateContentsOfType<EventReportCM>().First();
 
             if (curEventReport.EventNames.Contains("Envelope"))
             {
                 var docuSignFields = curEventReport.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().First();
 
-                    DocuSignEnvelopeCM envelope = new DocuSignEnvelopeCM
-                    {
+                var envelope = new DocuSignEnvelopeCM
+                {
                     CompletedDate = docuSignFields.GetValueOrDefault("CompletedDate"), //.First(field => field.Key.Equals("CompletedDate")).Value,
                     CreateDate = docuSignFields.GetValueOrDefault("CreateDate"),//.First(field => field.Key.Equals("CreateDate")).Value,
                     DeliveredDate = docuSignFields.GetValueOrDefault("DeliveredDate"),//First(field => field.Key.Equals("DeliveredDate")).Value,
@@ -140,23 +147,42 @@ namespace terminalDocuSign.Actions
                     ExternalAccountId = docuSignFields.GetValueOrDefault("HolderEmail"),//First(field => field.Key.Equals("Email")).Value,
                     SentDate = docuSignFields.GetValueOrDefault("SentDate"),//First(field => field.Key.Equals("SentDate")).Value,
                     Status = docuSignFields.GetValueOrDefault("Status"),//First(field => field.Key.Equals("Status")).Value
-                    };
+                };
 
-                    DocuSignEventCM events = new DocuSignEventCM
-                    {
+                var events = new DocuSignEventCM
+                {
                     EnvelopeId = docuSignFields.GetValueOrDefault("EnvelopeId"),//First(field => field.Key.Equals("EnvelopeId")).Value,
                     EventId = docuSignFields.GetValueOrDefault("EventId"),//First(field => field.Key.Equals("EventId")).Value,
                     Object = docuSignFields.GetValueOrDefault("Object"),//First(field => field.Key.Equals("Object")).Value,
                     RecepientId = docuSignFields.GetValueOrDefault("RecipientId"),//First(field => field.Key.Equals("RecipientId")).Value,
                     Status = docuSignFields.GetValueOrDefault("Status"),//First(field => field.Key.Equals("Status")).Value,
                     ExternalAccountId = docuSignFields.GetValueOrDefault("HolderEmail"),//First(field => field.Key.Equals("Email")).Value
-                    };
+                };
 
-                    using (var updater = Crate.UpdateStorage(curProcessPayload))
+                DocuSignRecipientCM recipientCM = null;
+                if (events.RecepientId != null)
+                {
+                    recipientCM = new DocuSignRecipientCM
                     {
-                        updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Manifest", envelope));
-                        updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Event Manifest", events));
+                        RecipientId = events.RecepientId,
+                        RecipientEmail = docuSignFields.GetValueOrDefault("RecipientEmail"),
+                        Status = events.Status,
+                        Object = docuSignFields.GetValueOrDefault("Object"),
+                        EnvelopeId = docuSignFields.GetValueOrDefault("EnvelopeId"),
+                        DocuSignAccountId = docuSignFields.GetValueOrDefault("HolderEmail")
+                    };
+                }
+                
+
+                using (var crateStorage = CrateManager.GetUpdatableStorage(curProcessPayload))
+                {
+                    crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope", envelope));
+                    crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Event", events));
+                    if (recipientCM != null)
+                    {
+                        crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Recipient", recipientCM));
                     }
+                }
             }
 
             return Success(curProcessPayload);

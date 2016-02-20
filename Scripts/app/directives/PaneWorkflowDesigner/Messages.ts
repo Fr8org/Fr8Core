@@ -93,11 +93,11 @@ module dockyard.directives.paneWorkflowDesigner {
 
     export class AddActionEventArgs {
         public criteriaId: string;
-        public action: model.ActionDTO;
+        public action: model.ActivityDTO;
         public doNotRaiseSelectedEvent: boolean;
 
         constructor(criteriaId: string,
-            action: model.ActionDTO,
+            action: model.ActivityDTO,
             doNotRaiseSelectedEvent?: boolean) {
 
             this.criteriaId = criteriaId;
@@ -133,16 +133,6 @@ module dockyard.directives.paneWorkflowDesigner {
     }
 
     export class TemplateSelectedEventArgs {
-    }
-
-    export class ActionNameUpdatedEventArgs {
-        public id: string;
-        public name: string;
-
-        constructor(id: string, name: string) {
-            this.id = id;
-            this.name = name;
-        }
     }
 
     export class ReplaceTempIdForProcessNodeTemplateEventArgs {

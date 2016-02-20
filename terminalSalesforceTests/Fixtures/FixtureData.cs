@@ -27,25 +27,24 @@ namespace terminalSalesforceTests.Fixtures
             {
                 Version = "1",
                 Name = "Get_Data",
-                Label = "Get Data",
+                Label = "Get Data from Salesforce.com",
                 NeedsAuthentication = true
             };
         }
 
-        public static ActionDO GetFileListTestActionDO1()
+        public static ActivityDO GetFileListTestActionDO1()
         {
             var actionTemplate = GetDataActivityTemplateDO();
 
-            var actionDO = new ActionDO()
+            var activityDO = new ActivityDO()
             {
-                Name = "testaction",
                 Id = new Guid("8339DC87-F011-4FB1-B47C-FEC406E4100A"),
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate,
                 CrateStorage = "",
 
             };
-            return actionDO;
+            return activityDO;
         }
     }
 }

@@ -7,6 +7,7 @@ using Data.States;
 using System;
 using System.Threading.Tasks;
 using AutoMapper;
+using TerminalBase.Infrastructure;
 
 namespace terminalExcel.Controllers
 {
@@ -16,9 +17,11 @@ namespace terminalExcel.Controllers
         private const string curTerminal = "terminalExcel";
 
         [HttpPost]
-        public Task<object> Execute([FromUri] String actionType, [FromBody] ActionDTO curActionDTO)
+        [fr8TerminalHMACAuthenticate(curTerminal)]
+        [Authorize]
+        public Task<object> Execute([FromUri] String actionType, [FromBody] Fr8DataDTO curDataDTO)
         {
-            return HandleFr8Request(curTerminal, actionType, curActionDTO);
+            return HandleFr8Request(curTerminal, actionType, curDataDTO);
         }
     }
 }

@@ -1,38 +1,65 @@
-﻿<div class="modal-header">
-	<h3 class="modal-title">Add an Action To Your Route</h3>
+﻿<div style="display: flex">
+    <div>
+        <div data-ng-repeat="actionCategory in actionCategories" style="display: flex; align-items: center; margin-right: 16px;">
+            <i class="fa fa-{{actionCategory.icon}}"
+               data-ng-click="setActive(actionCategory.id)"
+               style="background: white; border-radius: 50%; font-size: 24px; padding: 16px; line-height: 24px; margin: 8px;"></i>
+            <div for="checkbox_{{actionCategory.id}}">{{actionCategory.name}}</div>
+        </div>
+    </div>
+    <div>
+        <div
+            data-ng-repeat="webServiceAction in webServiceActionList"
+            data-ng-click="setActiveTerminal($index)">
+            <img src="{{webServiceAction.webServiceIconPath}}" style="max-width: 64px; max-width: 64px"/>
+        </div>
+    </div>
+    <div>
+        <div
+            style="padding: 8px 16px"
+            data-ng-repeat="action in webServiceActionList[activeTerminal].actions"
+            data-ng-click="selectAction(action)">
+            {{action.label}}
+        </div>
+    </div>
+</div>
+<!--
+<div class="modal-header">
+    <h3 class="modal-title">Add an Action To Your Route</h3>
 </div>
 <div class="modal-body" style="border-bottom: 1px solid #e5e5e5;">
-	<table style="width: 100%;">
-		<tr>
-			<td>
-				<span style="margin-right: 12px;">Show Actions:</span>
-			</td>
-			<td>
-				<div class="checkbox" data-ng-repeat="actionCategory in actionCategories">
-					<input type="checkbox" id="checkbox_{{actionCategory.id}}" style="margin-right: 12px;" data-ng-model="actionCategories[$index].checked" data-ng-click="toggleFilter()">
-					<label for="checkbox_{{actionCategory.id}}">{{actionCategory.name}} &ndash; {{actionCategory.description}}</label>
-				</div>
-			</td>
-		</tr>
-	</table>
+    <table style="width: 100%;">
+        <tr>
+            <td>
+                <span style="margin-right: 12px;">Show Actions:</span>
+            </td>
+            <td>
+                <div class="checkbox" data-ng-repeat="actionCategory in actionCategories">
+                    <input type="checkbox" id="checkbox_{{actionCategory.id}}" style="margin-right: 12px;" data-ng-model="actionCategories[$index].checked" data-ng-click="toggleFilter()">
+                    <label for="checkbox_{{actionCategory.id}}">{{actionCategory.name}} &ndash; {{actionCategory.description}}</label>
+                </div>
+            </td>
+        </tr>
+    </table>
 </div>
 <div class="modal-body" data-ng-show="webServiceActionList.length == 0" style="text-align: center;">
-	There are no actions to show.
+    There are no actions to show.
 </div>
 <div class="modal-body" data-ng-show="webServiceActionList.length > 0" data-ng-repeat="webServiceAction in webServiceActionList">
-	<table style="text-align: center;">
-		<tr>
-			<td style="width: 120px;">
-				<img src="{{webServiceAction.webServiceIconPath}}" style="max-width: 64px; max-width: 64px" />
-			</td>
-			<td style="width: 300px;">
-				<div style="border-top: 1px solid #e5e5e5; border-left: 1px solid #e5e5e5; border-right: 1px solid #e5e5e5; cursor: pointer;">
-					<div style="border-bottom: 1px solid #e5e5e5; padding: 4px 0;" data-ng-repeat="action in webServiceAction.actions" data-ng-click="selectAction(action)">{{action.label}}</div>
-				</div>
-			</td>
-		</tr>
-	</table>
+    <table style="text-align: center;">
+        <tr>
+            <td style="width: 120px;">
+                <img src="{{webServiceAction.webServiceIconPath}}" style="max-width: 64px; max-width: 64px" />
+            </td>
+            <td style="width: 300px;">
+                <div style="border-top: 1px solid #e5e5e5; border-left: 1px solid #e5e5e5; border-right: 1px solid #e5e5e5; cursor: pointer;">
+                    <div style="border-bottom: 1px solid #e5e5e5; padding: 4px 0;" data-ng-repeat="action in webServiceAction.actions" data-ng-click="selectAction(action)">{{action.label}}</div>
+                </div>
+            </td>
+        </tr>
+    </table>
 </div>
 <div class="modal-footer">
-	<button class="btn btn-warning" type="button" data-ng-click="close()">Close</button>
+    <button class="btn btn-warning" type="button" data-ng-click="close()">Close</button>
 </div>
+-->

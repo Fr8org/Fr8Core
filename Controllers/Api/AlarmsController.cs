@@ -4,6 +4,7 @@ using Data.States;
 using Hangfire;
 using Hub.Interfaces;
 using Hub.Managers;
+using HubWeb.Infrastructure;
 using StructureMap;
 using System;
 using System.Collections.Generic;
@@ -18,26 +19,34 @@ namespace HubWeb.Controllers
     public class AlarmsController : ApiController
     {
         [HttpPost]
+        [Fr8HubWebHMACAuthenticate]
+        [Fr8ApiAuthorize]
         public async Task<IHttpActionResult> Post(AlarmDTO alarmDTO)
         {
             //TODO what happens to AlarmsController? does it stay in memory all this time?
             //TODO inspect this and change callback function to a static function if necessary
             Expression<Action> action = () => ExecuteTerminalWithLogging(alarmDTO);
+#if DEBUG
+            BackgroundJob.Schedule(action, DateTime.Now.AddSeconds(10));
+#else
             BackgroundJob.Schedule(action, alarmDTO.StartTime);
-
+#endif
+            
             //TODO: Commented as part of DO - 1520. Need to rethink about this.
             //var eventController = new EventController();
             //return await eventController.ProcessIncomingEvents(alarmDTO.TerminalName, alarmDTO.TerminalVersion);
             return Ok();
         }
 
+        //TODO is this method called from somewhere else?
         [HttpPost]
-        public async void ExecuteTerminalWithLogging(AlarmDTO alarmDTO)
+        public void ExecuteTerminalWithLogging(AlarmDTO alarmDTO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var _route = ObjectFactory.GetInstance<IRoute>();
-                await _route.Continue(alarmDTO.ContainerId);
+                var _plan = ObjectFactory.GetInstance<IPlan>();
+                var continueTask = _plan.Continue(alarmDTO.ContainerId);
+                Task.WaitAll(continueTask);
                 //TODO report output to somewhere to pusher service maybe
 
                 /*

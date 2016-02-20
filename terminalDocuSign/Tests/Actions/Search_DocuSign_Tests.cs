@@ -28,7 +28,7 @@ namespace terminalDocuSign.Tests.Actions
     [Category("terminalDocuSign")]
     public class Search_DocuSign_Tests : BaseTest
     {
-        Search_DocuSign_History_v1 _action;
+        Search_DocuSign_History_v1 _activity;
         private ICrateManager _crateManager;
 
         public override void SetUp()
@@ -37,8 +37,8 @@ namespace terminalDocuSign.Tests.Actions
 
             var docusignFolder = new Mock<IDocuSignFolder>();
 
-            docusignFolder.Setup(r => r.GetFolders(It.IsAny<string>(), It.IsAny<string>())).Returns(TerminalFixtureData.GetFolders());
-            docusignFolder.Setup(r => r.Search(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>()))
+            docusignFolder.Setup(r => r.GetSearchFolders(It.IsAny<string>(), It.IsAny<string>())).Returns(TerminalFixtureData.GetFolders());
+            docusignFolder.Setup(r => r.Search(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>(), It.IsAny<IEnumerable<FilterConditionDTO>>()))
                 .Returns<string, string, string, string, string, DateTime?, DateTime?>(Search);
             
             TerminalBootstrapper.ConfigureTest();
@@ -50,8 +50,8 @@ namespace terminalDocuSign.Tests.Actions
 
 
             var hubCommunicator = new Mock<IHubCommunicator>();
-            hubCommunicator.Setup(r => r.GetPayload(It.IsAny<ActionDO>(), It.IsAny<Guid>())).Returns(Task.FromResult(new PayloadDTO(Guid.Empty) { CrateStorage = new CrateStorageDTO() }));
-            hubCommunicator.Setup(r => r.GetActivityTemplates(It.IsAny<ActionDO>())).Returns(Task.FromResult(new List<ActivityTemplateDTO>()
+            hubCommunicator.Setup(r => r.GetPayload(It.IsAny<ActivityDO>(), It.IsAny<Guid>(), It.IsAny<string>())).Returns(Task.FromResult(new PayloadDTO(Guid.Empty) { CrateStorage = new CrateStorageDTO() }));
+            hubCommunicator.Setup(r => r.GetActivityTemplates(It.IsAny<ActivityDO>(), It.IsAny<string>())).Returns(Task.FromResult(new List<ActivityTemplateDTO>()
             {
                 new ActivityTemplateDTO()
                 {
@@ -61,7 +61,7 @@ namespace terminalDocuSign.Tests.Actions
 
             ObjectFactory.Configure(cfg => cfg.For<IHubCommunicator>().Use(hubCommunicator.Object));
             
-            _action = new Search_DocuSign_History_v1();
+            _activity = new Search_DocuSign_History_v1();
             
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
         }
@@ -76,7 +76,7 @@ namespace terminalDocuSign.Tests.Actions
         {
             var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(new AuthorizationTokenDTO() {Token = JsonConvert.SerializeObject(TerminalFixtureData.TestDocuSignAuthDTO1())});
 
-            var result = await _action.Configure(new ActionDO(), curAuthTokenDO);
+            var result = await _activity.Configure(new ActivityDO(), curAuthTokenDO);
             var storage = _crateManager.GetStorage(result);
 
             var foldersCrate = storage.CratesOfType<StandardDesignTimeFieldsCM>().Where(x => x.Label == "Folders").Select(x => x.Content).FirstOrDefault();
@@ -94,11 +94,11 @@ namespace terminalDocuSign.Tests.Actions
         {
             var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(new AuthorizationTokenDTO() { Token = JsonConvert.SerializeObject(TerminalFixtureData.TestDocuSignAuthDTO1()) });
 
-            var action = new ActionDO();
+            var activity = new ActivityDO();
 
-            using (var updater = _crateManager.UpdateStorage(action))
+            using (var crateStorage = _crateManager.GetUpdatableStorage(activity))
             {
-                updater.CrateStorage.Add(Crate.FromContent("UI", new Search_DocuSign_History_v1.ActionUi
+                crateStorage.Add(Crate.FromContent("UI", new Search_DocuSign_History_v1.ActionUi
                 {
                     Folder = { Value = "A"},
                     SearchText = { Value = "B"},
@@ -106,13 +106,13 @@ namespace terminalDocuSign.Tests.Actions
                 }));
             }
 
-            var result = await _action.Configure(action, curAuthTokenDO);
+            var result = await _activity.Configure(activity, curAuthTokenDO);
 
             Assert.AreEqual(1, result.ChildNodes.Count);
-            Assert.AreEqual("Query_DocuSign", ((ActionDO) result.ChildNodes[0]).ActivityTemplate.Name);
+            Assert.AreEqual("Query_DocuSign", ((ActivityDO) result.ChildNodes[0]).ActivityTemplate.Name);
 
 
-            var storage = _crateManager.GetStorage(((ActionDO) result.ChildNodes[0]).CrateStorage);
+            var storage = _crateManager.GetStorage(((ActivityDO) result.ChildNodes[0]).CrateStorage);
             var configurationControls = storage.CrateContentsOfType<StandardConfigurationControlsCM>().First();
             var actionUi = new Query_DocuSign_v1.ActionUi();
             

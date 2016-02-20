@@ -12,6 +12,8 @@
         tags: string;
         minPaneWidth: number;
         terminal: TerminalDTO;
+        needsAuthentication: boolean;
+        webService: WebServiceDTO; 
 
         constructor(
             id: number,
@@ -22,7 +24,8 @@
             category: string,
             label?: string,
             minPaneWidth?: number,
-            type?: string) {
+            type?: string,
+            webService?: WebServiceDTO) {
 
             this.id = id;
             this.name = name;
@@ -32,6 +35,7 @@
             this.componentActivities = componentActivities;
             this.category = category;
             this.type = type;
+            this.webService = webService;
             //this.parentPluginRegistration = parentPluginRegistration;  the client shouldn't know anything about plugins
         }
 
@@ -45,7 +49,8 @@
                 this.componentActivities,
                 this.category,
                 this.minPaneWidth,
-                this.type
+                this.type,
+                this.webService
             // this.parentPluginRegistration
                 );
 

@@ -1,5 +1,4 @@
-﻿<!-- BEGIN PAGE BREADCRUMB -->
-<ul class="page-breadcrumb breadcrumb hide">
+﻿<ul class="page-breadcrumb breadcrumb hide"><!-- BEGIN PAGE BREADCRUMB -->
     <li>
         <a href="#">Home</a><i class="fa fa-circle"></i>
     </li>
@@ -9,7 +8,7 @@
 </ul>
 <!-- END PAGE BREADCRUMB -->
 <!-- BEGIN MAIN CONTENT -->
-<div ng-controller="RouteBuilderController" class="margin-top-10" block-if="isBusy()" stop-click-propagation>
+<div ng-controller="RouteBuilderController" class="margin-top-10" block-if="isBusy()">
     <designer-header route="current.route"></designer-header>
     <div class="route-builder-container" layout-container>
         <div ng-repeat="group in actionGroups" layout-action-group class="action-group" ng-style="{left: group.offsetLeft, top: group.offsetTop}">
@@ -34,6 +33,12 @@
                                         </a>
                                     </li>
                                     <li role="menuitem">
+                                        <a ng-click="reConfigureAction(action);">
+                                            <i class="fa fa-refresh"></i>
+                                            Re-Configure
+                                        </a>
+                                    </li>
+                                    <li role="menuitem">
                                         <a ng-click="deleteAction(action);">
                                             <i class="fa fa-trash-o"></i>
                                             Delete
@@ -54,12 +59,10 @@
                         <div class="action-arrow-right"></div>
                     </div>
                 </div>
-                <div class="action-to-add" ng-click="addAction(group)">
-                    <p class="action-name">Click to add action</p>
-                </div>
+                <action-Picker>
+                </action-Picker>
             </div>
         </div>
     </div>
     <!-- END MAIN CONTENT -->
-    <pane-select-action></pane-select-action>
 </div>

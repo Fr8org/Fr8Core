@@ -33,7 +33,7 @@
 
             $scope.terminals = [];
 
-            $scope.linkAccount = function (terminal) {
+            $scope.linkAccount = (terminal) => {
                 if (terminal.authenticationType === 2 || terminal.authenticationType === 4) {
                     _authenticateInternal(terminal);
                 }
@@ -42,7 +42,7 @@
                 }
             };
 
-            $scope.apply = function () {
+            $scope.apply = () => {
                 if (!$scope.isAllSelected()) {
                     return;
                 }
@@ -68,10 +68,10 @@
                 _loading = true;
 
                 $http.post(urlPrefix + '/ManageAuthToken/apply', data)
-                    .then(function (res) {
+                    .then((res) => {
                         $scope.$close();
                     })
-                    .finally(function () {
+                    .finally(() => {
                         _loading = false;
                     });
             };
@@ -95,6 +95,7 @@
                 var modalScope = <any>$scope.$new(true);
                 modalScope.terminalId = terminal.id;
                 modalScope.mode = terminal.authenticationType;
+                modalScope.terminalName = terminal.name;
 
                 $modal.open({
                     animation: true,

@@ -12,7 +12,7 @@ using terminalFr8Core.Infrastructure;
 namespace terminalFr8Core.Actions
 {
 
-    public class ManageRoute_v1 : BaseTerminalAction
+    public class ManageRoute_v1 : BaseTerminalActivity
 
     {
         private readonly FindObjectHelper _findObjectHelper = new FindObjectHelper();
@@ -20,9 +20,9 @@ namespace terminalFr8Core.Actions
 
         #region Configuration.
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActionDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
 
             {
                 return ConfigurationRequestType.Initial;
@@ -33,33 +33,31 @@ namespace terminalFr8Core.Actions
             }
         }
 
-        protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActionDO))
-
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                var crateStorage = updater.CrateStorage;
                 AddRunNowButton(crateStorage);
             }
 
-            return Task.FromResult(curActionDO);
+            return Task.FromResult(curActivityDO);
 
         }
 
-        private void AddRunNowButton(CrateStorage crateStorage)
+        private void AddRunNowButton(ICrateStorage crateStorage)
         {
             AddControl(crateStorage,
                 new RunRouteButton()
                 {
                     Name = "RunRoute",
-                    Label = "Run Route",
+                    Label = "Run Plan",
                 });
 
             AddControl(crateStorage,
                 new ControlDefinitionDTO(ControlTypes.ManageRoute)
                 {
                     Name = "ManageRoute",
-                    Label = "Manage Route"
+                    Label = "Manage Plan"
                 });
         }
 
@@ -68,7 +66,7 @@ namespace terminalFr8Core.Actions
 
         #region Execution.
 
-        public async Task<PayloadDTO> Run(ActionDO curActionDTO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActivityDO curActionDTO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             return Success(await GetPayload(curActionDTO, containerId));
         }

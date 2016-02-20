@@ -20,6 +20,7 @@ using terminalDocuSign.Services;
 using TerminalBase.BaseClasses;
 using Utilities.Configuration.Azure;
 using Data.States;
+using Data.Interfaces.DataTransferObjects.Helpers;
 
 namespace terminalDocuSign.Actions
 {
@@ -33,28 +34,28 @@ namespace terminalDocuSign.Actions
         private const string DocuSignOnEnvelopeReceivedEvent = "Delivered";
         private const string DocuSignOnEnvelopeSignedEvent = "Completed";
 
-        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             CheckAuthentication(authTokenDO);
 
-            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
+            return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            return Crate.IsStorageEmpty(curActionDO)
+            return CrateManager.IsStorageEmpty(curActivityDO)
                 ? ConfigurationRequestType.Initial
                 : ConfigurationRequestType.Followup;
         }
 
 
-        private void GetTemplateRecipientPickerValue(ActionDO curActionDO, out string selectedOption,
+        private void GetTemplateRecipientPickerValue(ActivityDO curActivityDO, out string selectedOption,
                                                      out string selectedValue)
         {
-            GetTemplateRecipientPickerValue(Crate.GetStorage(curActionDO), out selectedOption, out selectedValue);
+            GetTemplateRecipientPickerValue(CrateManager.GetStorage(curActivityDO), out selectedOption, out selectedValue);
         }
 
-        private void GetTemplateRecipientPickerValue(CrateStorage storage, out string selectedOption, out string selectedValue)
+        private void GetTemplateRecipientPickerValue(ICrateStorage storage, out string selectedOption, out string selectedValue)
         {
             var controls = storage.FirstCrate<StandardConfigurationControlsCM>(x => x.Label == "Configuration_Controls");
 
@@ -83,9 +84,9 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        private void GetUserSelectedEnvelopeEvents(ActionDO curActionDO, out bool youSent, out bool someoneReceived, out bool recipientSigned)
+        private void GetUserSelectedEnvelopeEvents(ActivityDO curActivityDO, out bool youSent, out bool someoneReceived, out bool recipientSigned)
         {
-            var configControls = GetConfigurationControls(curActionDO);
+            var configControls = GetConfigurationControls(curActivityDO);
             var eventCheckBoxes = configControls.Controls.Where(c => c.Type == ControlTypes.CheckBox).ToList();
             youSent = eventCheckBoxes.Any(c => c.Name == "Event_Envelope_Sent" && c.Selected);
             someoneReceived = eventCheckBoxes.Any(c => c.Name == "Event_Envelope_Received" && c.Selected);
@@ -98,16 +99,23 @@ namespace terminalDocuSign.Actions
             return "http://" + endPoint + "/terminals/terminalDocuSign/events";
         }
 
-        public override Task<ActionDO> Activate(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        public override Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
+            ValidateEnvelopeSelectableEvents(curActivityDO);
             //create DocuSign account, publish URL and other user selected options
             bool youSent, someoneReceived, recipientSigned;
-            GetUserSelectedEnvelopeEvents(curActionDO, out youSent, out someoneReceived, out recipientSigned);
+            GetUserSelectedEnvelopeEvents(curActivityDO, out youSent, out someoneReceived, out recipientSigned);
 
             //create or update the DocuSign connect profile configuration
             CreateOrUpdateDocuSignConnectConfiguration(youSent, someoneReceived, recipientSigned);
 
-            return Task.FromResult<ActionDO>(curActionDO);
+            return Task.FromResult<ActivityDO>(curActivityDO);
+        }
+
+        protected override async Task<ICrateStorage> ValidateActivity(ActivityDO curActivityDO)
+        {
+            ValidateEnvelopeSelectableEvents(curActivityDO);
+            return await Task.FromResult<ICrateStorage>(null);
         }
 
         /// <summary>
@@ -127,6 +135,38 @@ namespace terminalDocuSign.Actions
             //if nothing found, return NULL
             return null;
         }
+
+        /// <summary>
+        /// Validate that at least one checkbox has been selected for envelope events
+        /// Validate that at least one radiobutton has been selected for 
+        /// </summary>
+        /// <param name="curActivityDO"></param>
+        /// <returns>True when validation is on/false on problem</returns>
+        private void ValidateEnvelopeSelectableEvents(ActivityDO curActivityDO)
+        {
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            {
+                var configControls = GetConfigurationControls(crateStorage);
+                if (configControls == null) return;
+                var eventCheckBoxes = configControls.Controls.Where(c => c.Type == ControlTypes.CheckBox).ToList();
+                var anySelectedControl = eventCheckBoxes.Any(c => c.Selected);
+
+                var checkBoxControl = eventCheckBoxes.FirstOrDefault(x => x.Name == "Event_Recipient_Signed");
+                if (checkBoxControl != null) checkBoxControl.ErrorMessage = string.Empty;
+                if (!anySelectedControl && checkBoxControl != null)
+                {
+                    //show the error under the third checkbox because checkboxes are rendered like separate controls
+                    checkBoxControl.ErrorMessage = "At least one notification checkbox must be checked.";
+                }
+
+                var groupControl = configControls.Controls.OfType<RadioButtonGroup>().FirstOrDefault();
+                if (groupControl == null) return;
+
+                groupControl.ErrorMessage = !groupControl.Radios.Any(x => x.Selected) ?
+                    "One option from the radio buttons must be selected." : string.Empty;
+            }
+        }
+
 
         /// <summary>
         /// Creates or Updates a Docusign connect configuration named "DocuSignConnectName" for current user
@@ -161,7 +201,7 @@ namespace terminalDocuSign.Actions
             DocuSignAccount.CreateOrUpdateDefaultDocuSignConnectConfiguration(envelopeEvents);
         }
 
-        public override Task<ActionDO> Deactivate(ActionDO curActionDO)
+        public override Task<ActivityDO> Deactivate(ActivityDO curActivityDO)
         {
             //get existing DocuSign connect profile
             var docuSignAccount = new DocuSignAccount();
@@ -173,12 +213,12 @@ namespace terminalDocuSign.Actions
                 docuSignAccount.DeleteDocuSignConnectProfile(existingConfig.connectId);
             }
 
-            return Task.FromResult<ActionDO>(curActionDO);
+            return Task.FromResult<ActivityDO>(curActivityDO);
         }
 
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var payloadCrates = await GetPayload(curActionDO, containerId);
+            var payloadCrates = await GetPayload(curActivityDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
             {
@@ -187,8 +227,7 @@ namespace terminalDocuSign.Actions
 
             //get currently selected option and its value
             string curSelectedOption, curSelectedValue;
-            GetTemplateRecipientPickerValue(curActionDO, out curSelectedOption, out curSelectedValue);
-
+            GetTemplateRecipientPickerValue(curActivityDO, out curSelectedOption, out curSelectedValue);
 
             string envelopeId = string.Empty;
 
@@ -199,12 +238,17 @@ namespace terminalDocuSign.Actions
                 {
                     case "template":
                         //filter the incoming envelope by template value selected by the user
-                        var curAvailableTemplates = Crate.GetStorage(curActionDO).CratesOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Available Templates").Single().Content;
+                        var curAvailableTemplates = CrateManager.GetStorage(curActivityDO).CratesOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Available Templates").Single().Content;
                         var selectedTemplateName = curAvailableTemplates.Fields.Single(a => a.Value == curSelectedValue).Key;
                         var incommingTemplate = GetValueForKey(payloadCrates, "TemplateName");
                         if (selectedTemplateName == incommingTemplate)
                         {
                             envelopeId = GetValueForKey(payloadCrates, "EnvelopeId");
+                        }
+                        else if (incommingTemplate != null)//possible Run is comming from unify activate/run
+                        {
+                            //this event isn't about us let's stop execution
+                            return TerminateHubExecution(payloadCrates);
                         }
 
                         break;
@@ -213,9 +257,14 @@ namespace terminalDocuSign.Actions
                         var curRecipientEmail = GetValueForKey(payloadCrates, "RecipientEmail");
 
                         //if the incoming envelope's recipient is user specified one, get the envelope ID
-                        if (curRecipientEmail.Equals(curSelectedValue))
+                        if (curRecipientEmail != null && curRecipientEmail.Equals(curSelectedValue))
                         {
                             envelopeId = GetValueForKey(payloadCrates, "EnvelopeId");
+                        }
+                        else if (curSelectedValue != null)
+                        {
+                            //this event isn't about us let's stop execution
+                            return TerminateHubExecution(payloadCrates);
                         }
                         break;
                 }
@@ -224,9 +273,9 @@ namespace terminalDocuSign.Actions
             // Make sure that it exists
             if (string.IsNullOrEmpty(envelopeId))
             {
-                return Error(payloadCrates, "EnvelopeId", ActionErrorCode.PAYLOAD_DATA_MISSING);
+                await Activate(curActivityDO, authTokenDO);
+                return Success(payloadCrates, "Route successfully activated. It will wait and respond to specified DocuSign Event messages");
             }
-
 
             //Create run-time fields
             var fields = CreateDocuSignEventFields();
@@ -242,93 +291,68 @@ namespace terminalDocuSign.Actions
                 {
                     new LogItemDTO
                     {
-                        Data = "Monitor DocuSign action successfully recieved an envelope ID " + envelopeId,
+                        Data = "Monitor DocuSign activity successfully recieved an envelope ID " + envelopeId,
                         IsLogged = false
                     }
                 }
             };
 
-            using (var updater = Crate.UpdateStorage(payloadCrates))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
             {
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(fields)));
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Log Messages", logMessages));
+                crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(fields)));
+                crateStorage.Add(Data.Crates.Crate.FromContent("Log Messages", logMessages));
                 if (curSelectedOption == "template")
                 {
-                    var userDefinedFieldsPayload = _docuSignManager.CreateActionPayload(curActionDO, authTokenDO, curSelectedValue);
-                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Data", userDefinedFieldsPayload));
+                    var userDefinedFieldsPayload = _docuSignManager.CreateActionPayload(curActivityDO, authTokenDO, envelopeId, curSelectedValue);
+                    crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Data", userDefinedFieldsPayload));
                 }
             }
 
             return Success(payloadCrates);
         }
 
-        private string GetValueForKey(PayloadDTO curPayloadDTO, string curKey)
-        {
-            var eventReportMS = Crate.GetStorage(curPayloadDTO).CrateContentsOfType<EventReportCM>().FirstOrDefault();
-
-            if (eventReportMS == null)
-            {
-                return null;
-            }
-
-            var crate = eventReportMS.EventPayload.CratesOfType<StandardPayloadDataCM>().First();
-
-            if (crate == null)
-            {
-                return null;
-            }
-
-            var fields = crate.Content.AllValues().ToArray();
-            if (fields == null || fields.Length == 0) return null;
-
-            var envelopeIdField = fields.SingleOrDefault(f => f.Key == curKey);
-            if (envelopeIdField == null) return null;
-
-            return envelopeIdField.Value;
-        }
-
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 
             var crateControls = PackCrate_ConfigurationControls();
             var crateDesignTimeFields = _docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
-            var eventFields = Crate.CreateDesignTimeFieldsCrate("DocuSign Event Fields", CreateDocuSignEventFields().ToArray());
+            var eventFields = CrateManager.CreateDesignTimeFieldsCrate("DocuSign Event Fields", AvailabilityType.RunTime, CreateDocuSignEventFields().ToArray());
 
-            using (var updater = Crate.UpdateStorage(curActionDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.Add(crateControls);
-                updater.CrateStorage.Add(crateDesignTimeFields);
-                updater.CrateStorage.Add(eventFields);
+                crateStorage.Add(crateControls);
+                crateStorage.Add(crateDesignTimeFields);
+                crateStorage.Add(eventFields);
 
                 // Remove previously added crate of "Standard Event Subscriptions" schema
-                updater.CrateStorage.Remove<EventSubscriptionCM>();
-                updater.CrateStorage.Add(PackCrate_EventSubscriptions(crateControls.Get<StandardConfigurationControlsCM>()));
+                crateStorage.Remove<EventSubscriptionCM>();
+                crateStorage.Add(PackCrate_EventSubscriptions(crateControls.Get<StandardConfigurationControlsCM>()));
             }
-            return await Task.FromResult<ActionDO>(curActionDO);
+            return await Task.FromResult<ActivityDO>(curActivityDO);
         }
 
-        protected override Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO,
+        protected override Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO,
                                                                         AuthorizationTokenDO authTokenDO)
         {
             //just update the user selected envelope events in the follow up configuration
 
-            using (var updater = Crate.UpdateStorage(curActionDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                UpdateSelectedEvents(updater.CrateStorage);
+                UpdateSelectedEvents(crateStorage);
                 string selectedOption, selectedValue;
-                GetTemplateRecipientPickerValue(curActionDO, out selectedOption, out selectedValue);
-                _docuSignManager.UpdateUserDefinedFields(curActionDO, authTokenDO, updater, selectedValue);
+                GetTemplateRecipientPickerValue(curActivityDO, out selectedOption, out selectedValue);
+                _docuSignManager.UpdateUserDefinedFields(curActivityDO, authTokenDO, crateStorage, selectedValue);
             }
 
-            return Task.FromResult<ActionDO>(curActionDO);
+            return Task.FromResult<ActivityDO>(curActivityDO);
         }
 
         /// <summary>
         /// Updates event subscriptions list by user checked check boxes.
         /// </summary>
         /// <remarks>The configuration controls include check boxes used to get the selected DocuSign event subscriptions</remarks>
-        private void UpdateSelectedEvents(CrateStorage storage)
+        private void UpdateSelectedEvents(ICrateStorage storage)
         {
             //get the config controls manifest
 
@@ -338,10 +362,20 @@ namespace terminalDocuSign.Actions
             var curSelectedDocuSignEvents =
                 curConfigControlsCrate.Controls
                     .Where(configControl => configControl.Type.Equals(ControlTypes.CheckBox) && configControl.Selected && configControl.Name.StartsWith("Event_"))
-                    .Select(checkBox => checkBox.Name.Substring("Event_".Length).Replace("_", ""));
+                    .Select(checkBox => checkBox.Name.Substring("Event_".Length).Replace("_", "")).ToList();
+
+            if (curSelectedDocuSignEvents.Any(e => e == "RecipientSigned"))
+            {
+                if (curSelectedDocuSignEvents.Any(e => e != "RecipientCompleted"))
+                {
+                    curSelectedDocuSignEvents.Add("RecipientCompleted");
+                }
+            }
+            else
+                curSelectedDocuSignEvents.Remove("RecipientCompleted");
 
             //create standard event subscription crate with user selected DocuSign events
-            var curEventSubscriptionCrate = Crate.CreateStandardEventSubscriptionsCrate("Standard Event Subscriptions",
+            var curEventSubscriptionCrate = CrateManager.CreateStandardEventSubscriptionsCrate("Standard Event Subscriptions", "DocuSign",
                 curSelectedDocuSignEvents.ToArray());
 
             storage.Remove<EventSubscriptionCM>();
@@ -360,11 +394,16 @@ namespace terminalDocuSign.Actions
                 if (eventCheckBox.Selected)
                 {
                     subscriptions.Add(eventCheckBox.Name.Substring("Event_".Length).Replace("_", ""));
+                    if (eventCheckBox.Name.Equals("Event_Recipient_Signed", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        subscriptions.Add("RecipientCompleted");
+                    }
                 }
             }
 
-            return Crate.CreateStandardEventSubscriptionsCrate(
+            return CrateManager.CreateStandardEventSubscriptionsCrate(
                 "Standard Event Subscriptions",
+                "DocuSign",
                 subscriptions.ToArray()
                 );
         }
@@ -407,7 +446,6 @@ namespace terminalDocuSign.Actions
                     new ControlEvent("onChange", "requestConfig")
                 }
             };
-
 
             // remove by FR-1766
             //var fieldEventRecipientSent = new CheckBox()
@@ -471,7 +509,7 @@ namespace terminalDocuSign.Actions
                                     ManifestType = CrateManifestTypes.StandardDesignTimeFields
                                 },
                                 Events = new List<ControlEvent> {new ControlEvent("onChange", "requestConfig")},
-                                Help = new HelpControlDTO("Monitor_DocuSign_Envelope_DocuSignTemplateHelp", "Minicon")
+                                ShowDocumentation = ActivityResponseDTO.CreateDocumentationResponse("Minicon", "ExplainMonitoring")
                             }
                         }
                     }
@@ -479,23 +517,6 @@ namespace terminalDocuSign.Actions
             };
 
             return templateRecipientPicker;
-        }
-
-
-        private List<FieldDTO> CreateDocuSignEventFields()
-        {
-            return new List<FieldDTO>(){
-                new FieldDTO("RecipientEmail") {Tags = "EmailAddress" },
-                new FieldDTO("DocumentName"),
-                new FieldDTO("TemplateName"),
-                new FieldDTO("Status"),
-                new FieldDTO("CreateDate") {Tags = "Date" },
-                new FieldDTO("SentDate") {Tags = "Date" },
-                new FieldDTO("DeliveredDate") {Tags = "Date" },
-                new FieldDTO("CompletedDate") {Tags = "Date" },
-                new FieldDTO("HolderEmail") {Tags = "EmailAddress" },
-                new FieldDTO("Subject")
-                };
         }
     }
 }

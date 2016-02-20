@@ -53,7 +53,6 @@ namespace Data.Infrastructure
             //this.Database.Log = (trace) => telemetry.TrackEvent("Database Access", new Dictionary<string, string> { { "SQL trace", trace }});
         }
 
-
         public List<PropertyChangeInformation> GetEntityModifications<T>(T entity)
             where T : class
         {
@@ -99,9 +98,7 @@ namespace Data.Infrastructure
             List<DbEntityEntry<IModifyHook>> modifyHooks = ChangeTracker.Entries<IModifyHook>().Where(e => e.State == EntityState.Modified).ToList();
             List<DbEntityEntry<IDeleteHook>> deleteHooks = ChangeTracker.Entries<IDeleteHook>().Where(e => e.State == EntityState.Deleted).ToList();
             List<DbEntityEntry<ISaveHook>> allHooks = ChangeTracker.Entries<ISaveHook>().Where(e => e.State != EntityState.Unchanged).ToList();
-
-            var uow = new UnitOfWork(this);
-
+            
             foreach (DbEntityEntry<ISaveHook> entity in allHooks)
             {
                 entity.Entity.BeforeSave();
@@ -269,8 +266,8 @@ namespace Data.Infrastructure
             modelBuilder.Entity<ProfileNodeAncestorsCTE>().ToTable("ProfileNodeAncestorsCTEView");
             modelBuilder.Entity<ProfileNodeDescendantsCTE>().ToTable("ProfileNodeDescendantsCTEView");
             modelBuilder.Entity<ExpectedResponseDO>().ToTable("ExpectedResponses");
-            modelBuilder.Entity<RouteDO>().ToTable("Routes");
-            modelBuilder.Entity<ActionDO>().ToTable("Actions");
+            modelBuilder.Entity<PlanDO>().ToTable("Routes");
+            modelBuilder.Entity<ActivityDO>().ToTable("Actions");
             modelBuilder.Entity<ProcessNodeDO>().ToTable("ProcessNodes");
             modelBuilder.Entity<SubrouteDO>().ToTable("Subroutes");
             modelBuilder.Entity<EnvelopeDO>().ToTable("Envelopes");

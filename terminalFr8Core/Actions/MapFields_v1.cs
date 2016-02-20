@@ -19,16 +19,20 @@ using TerminalBase.BaseClasses;
 
 namespace terminalFr8Core.Actions
 {
-    public class MapFields_v1 : BaseTerminalAction
+    public class MapFields_v1 : BaseTerminalActivity
     {
+        public MapFields_v1() : base("terminalFr8Core.MapFields v1")
+        {
+            
+        }
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var processPayload = await GetPayload(actionDO, containerId);
+            var processPayload = await GetPayload(activityDO, containerId);
 
-            var curControlsMS = Crate.GetStorage(actionDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var curControlsMS = CrateManager.GetStorage(activityDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (curControlsMS == null)
             {
@@ -44,30 +48,38 @@ namespace terminalFr8Core.Actions
 
             var mappedFields = JsonConvert.DeserializeObject<List<FieldDTO>>(curMappingControl.Value);
             mappedFields = mappedFields.Where(x => x.Key != null && x.Value != null).ToList();
-            var storage = Crate.FromDto(processPayload.CrateStorage);
+            var storage = CrateManager.FromDto(processPayload.CrateStorage);
 
-
-            var processedMappedFields = mappedFields.Select(a => { return new FieldDTO(a.Value, ExtractPayloadFieldValue(storage, a.Key, actionDO)); });
-
-            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => processPayload.CrateStorage))
+            IEnumerable<FieldDTO> processedMappedFields;
+            try
             {
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("MappedFields", new StandardPayloadDataCM(processedMappedFields)));
-                return Success(processPayload);
+                processedMappedFields = mappedFields.Select(a => { return new FieldDTO(a.Value, ExtractPayloadFieldValue(storage, a.Key, activityDO)); });
+
+                using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => processPayload.CrateStorage))
+                {
+                    crateStorage.Add(Data.Crates.Crate.FromContent("MappedFields", new StandardPayloadDataCM(processedMappedFields)));
+                    return Success(processPayload);
+                }
+            }
+            catch (ApplicationException exception)
+            {
+                //in case of problem with extract payload field values raise and Error alert to the user
+                return Error(processPayload, exception.Message, null, "Map Fields", "Fr8Core");
             }
         }
 
         /// <summary>
         /// Configure infrastructure.
         /// </summary>
-        public override async Task<ActionDO> Configure(ActionDO actionDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActivityDO> Configure(ActivityDO activityDO, AuthorizationTokenDO authTokenDO)
         {
-            return await ProcessConfigurationRequest(actionDO, ConfigurationEvaluator, authTokenDO);
+            return await ProcessConfigurationRequest(activityDO, ConfigurationEvaluator, authTokenDO);
         }
 
         /// <summary>
         /// Create configuration controls crate.
         /// </summary>
-        private void AddMappingPane(CrateStorage storage)
+        private void AddMappingPane(ICrateStorage storage)
         {
             var mappingPane = new MappingPane()
             {
@@ -81,62 +93,70 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Looks for upstream and downstream Creates.
         /// </summary>
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> InitialConfigurationResponse(
+            ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             //Filter the upstream fields by Availability flag as this action takes the run time data (left DDLBs) to the fidles (right DDLBs)
-            var curUpstreamFields =
-                (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
-                .Fields.Where(field => field.Availability != AvailabilityType.Configuration)
-                .ToArray();
+            var curUpstreamFieldsTask = GetDesignTimeFields(curActivityDO, CrateDirection.Upstream);
 
             //Get all the downstream fields to be mapped (right DDLBs)
-            var curDownstreamFields =
-                (await GetDesignTimeFields(curActionDO, CrateDirection.Downstream))
-                .Fields.Where(field => field.Availability != AvailabilityType.Configuration)
+            var curDownstreamFieldsTask = GetDesignTimeFields(curActivityDO, CrateDirection.Downstream);
+
+            var curUpstreamFields = (await curUpstreamFieldsTask)
+                .Fields
+                .Where(field => field.Availability != AvailabilityType.Configuration)
                 .ToArray();
 
-            if (!(NeedsConfiguration(curActionDO, curUpstreamFields, curDownstreamFields)))
-                return curActionDO;
+            var curDownstreamFields = (await curDownstreamFieldsTask)
+                .Fields
+                .Where(field => field.Availability != AvailabilityType.Configuration)
+                .ToArray();
+
+
+            if (!(NeedsConfiguration(curActivityDO, curUpstreamFields, curDownstreamFields)))
+            {
+                return curActivityDO;
+            }
 
             //Pack the merged fields into 2 new crates that can be used to populate the dropdowns in the MapFields UI
-            var downstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Downstream Terminal-Provided Fields", curDownstreamFields.ToList().Select(a => { a.Availability = AvailabilityType.Configuration; return a; }).ToArray());
-            var upstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided Fields", curUpstreamFields.ToList().Select(a => { a.Availability = AvailabilityType.Configuration; return a; }).ToArray());
+            var downstreamFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Downstream Terminal-Provided Fields", curDownstreamFields.ToList().Select(a => { a.Availability = AvailabilityType.Configuration; return a; }).ToArray());
+            var upstreamFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided Fields", curUpstreamFields.ToList().Select(a => { a.Availability = AvailabilityType.Configuration; return a; }).ToArray());
 
-            using (var updater = Crate.UpdateStorage(curActionDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.Clear();
+                crateStorage.Clear();
                 if (curUpstreamFields.Length == 0 || curDownstreamFields.Length == 0)
                 {
-                    AddErrorTextBlock(updater.CrateStorage);
+                    AddErrorTextBlock(crateStorage);
                 }
                 else
                 {
-                    AddInitialTextBlock(updater.CrateStorage);
-                    AddMappingPane(updater.CrateStorage);
+                    AddInitialTextBlock(crateStorage);
+                    AddMappingPane(crateStorage);
                 }
 
-                updater.CrateStorage.Add(downstreamFieldsCrate);
-                updater.CrateStorage.Add(upstreamFieldsCrate);
+                crateStorage.Add(downstreamFieldsCrate);
+                crateStorage.Add(upstreamFieldsCrate);
             }
 
-            return curActionDO;
+            return curActivityDO;
         }
 
-        private void AddInitialTextBlock(CrateStorage storage)
+        private void AddInitialTextBlock(ICrateStorage storage)
         {
             var textBlock = new TextBlock()
             {
                 Name = "InfoBlock",
-                Value = "When this route is executed, the values found in the fields on the left will be used for the fields on the right",
+                Value = "When this plan is executed, the values found in the fields on the left will be used for the fields on the right",
                 CssClass = "well well-lg"
             };
 
             AddControl(storage, textBlock);
         }
 
-        private void AddErrorTextBlock(CrateStorage storage)
+        private void AddErrorTextBlock(ICrateStorage storage)
         {
-            var textBlock = GenerateTextBlock("Error",
+            var textBlock = GenerateTextBlock("Attention",
                 "In order to work this Action needs upstream and downstream Actions configured",
                 "well well-lg", "MapFieldsErrorMessage");
             AddControl(storage, textBlock);
@@ -145,9 +165,9 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Check if initial configuration was requested.
         /// </summary>
-        private bool NeedsConfiguration(ActionDO curAction, FieldDTO[] curUpstreamFields, FieldDTO[] curDownstreamFields)
+        private bool NeedsConfiguration(ActivityDO curAction, FieldDTO[] curUpstreamFields, FieldDTO[] curDownstreamFields)
         {
-            CrateStorage storage = storage = Crate.GetStorage(curAction.CrateStorage);
+            ICrateStorage storage = storage = CrateManager.GetStorage(curAction.CrateStorage);
 
             var upStreamFields = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Terminal-Provided Fields").FirstOrDefault();
             var downStreamFields = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Downstream Terminal-Provided Fields").FirstOrDefault();
@@ -177,7 +197,7 @@ namespace terminalFr8Core.Actions
         /// ConfigurationEvaluator always returns Initial,
         /// since Initial and FollowUp phases are the same for current action.
         /// </summary>
-        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
             return ConfigurationRequestType.Initial;
 

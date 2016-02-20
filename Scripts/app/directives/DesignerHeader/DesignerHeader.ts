@@ -7,6 +7,9 @@ module dockyard.directives.designerHeader {
         editing: boolean;
         editTitle(): void;
         onTitleChange(): void;
+        runRoute(): void;
+        deactivatePlan(): void;
+
         route: model.RouteDTO;
     }
 
@@ -14,7 +17,13 @@ module dockyard.directives.designerHeader {
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
     class DesignerHeader implements ng.IDirective {
         public link: (scope: IDesignerHeaderScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
-        public controller: ($scope: IDesignerHeaderScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
+        public controller: (
+            $scope: IDesignerHeaderScope,
+            element: ng.IAugmentedJQuery,
+            attrs: ng.IAttributes,
+            ngToast: any,
+            RouteService: services.IRouteService
+        ) => void;
 
         public templateUrl = '/AngularTemplate/DesignerHeader';
         public scope = {
@@ -34,7 +43,9 @@ module dockyard.directives.designerHeader {
             DesignerHeader.prototype.controller = (
                 $scope: IDesignerHeaderScope,
                 $element: ng.IAugmentedJQuery,
-                $attrs: ng.IAttributes) => {
+                $attrs: ng.IAttributes,
+                ngToast: any,
+                RouteService: services.IRouteService) => {
 
                 $scope.editTitle = () => {
                     $scope.editing = true;
@@ -46,22 +57,30 @@ module dockyard.directives.designerHeader {
                     result.$promise.then(() => { });
                 };
 
-                var currentState: number;
-                $scope.$watch('route.routeState', () => {
-                    if ($scope.route) {
-                        if (currentState === undefined) currentState = $scope.route.routeState;
+                $scope.runRoute = () => {
+                    var promise = RouteService.runAndProcessClientAction($scope.route.id);
+                    promise.then(() => {
+                        // mark plan as active
+                        $scope.route.routeState = 2;
+                    });
+                };
 
-                        if (currentState !== $scope.route.routeState) {
-                            if ($scope.route.routeState === model.RouteState.Inactive) {
-                                RouteService.deactivate($scope.route);
-                            } else if ($scope.route.routeState === model.RouteState.Active) {
-                                RouteService.activate($scope.route);
-                            }
-                        }
-                    }
-                });
-
+                $scope.deactivatePlan = () => {
+                    var result = RouteService.deactivate({ planId: $scope.route.id });
+                    result.$promise.then((data) => {
+                        // mark plan as inactive
+                        $scope.route.routeState = 1;
+                        var messageToShow = "Plan successfully deactivated";
+                        ngToast.success(messageToShow);
+                    })
+                        .catch((err: any) => {
+                            var messageToShow = "Failed to toggle Plan Status";
+                            ngToast.danger(messageToShow);
+                        });
+                };
             };
+
+            DesignerHeader.prototype.controller['$inject'] = ['$scope', '$element', '$attrs', 'ngToast', 'RouteService'];
         }
 
         //The factory function returns Directive object as per Angular requirements

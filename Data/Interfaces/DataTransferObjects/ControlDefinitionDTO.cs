@@ -9,13 +9,16 @@ namespace Data.Interfaces.DataTransferObjects
     // But Wait_For_DocuSign_Event_v1.FollowupConfigurationResponse() directly write to this property !
     public class ControlDefinitionDTO : IResettable
     {
-        public ControlDefinitionDTO() { }
+        public ControlDefinitionDTO()
+        {
+            Events = new List<ControlEvent>();
+        }
 
-        public ControlDefinitionDTO(string type)
+        public ControlDefinitionDTO(string type) : base()
         {
             Type = type;
         }
-        
+
         [JsonProperty("name")]
         public string Name { get; set; }
 
@@ -40,8 +43,11 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("source")]
         public FieldSourceDTO Source { get; set; }
 
-        [JsonProperty("help")]
-        public HelpControlDTO Help { get; set; }
+        [JsonProperty("showDocumentation")]
+        public ActivityResponseDTO ShowDocumentation { get; set; }
+
+        [JsonProperty("errorMessage")]
+        public string ErrorMessage { get; set; }
 
         public virtual void Reset(List<string> fieldNames)
         {

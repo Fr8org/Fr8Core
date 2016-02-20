@@ -11,12 +11,15 @@ using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
 using Data.States;
 using System.Threading.Tasks;
+using Data.Helpers;
+using Hub.Helper;
+using StructureMap;
 
 namespace Hub.Managers
 {
     public partial class CrateManager : ICrateManager
     {
-        public CrateStorageDTO ToDto(CrateStorage storage)
+        public CrateStorageDTO ToDto(ICrateStorage storage)
         {
             return CrateStorageSerializer.Default.ConvertToDto(storage);
         }
@@ -31,7 +34,7 @@ namespace Hub.Managers
             return crate != null ? CrateStorageSerializer.Default.ConvertFromDto(crate) : null;
         }
 
-        public CrateStorage FromDto(CrateStorageDTO crateStorage)
+        public ICrateStorage FromDto(CrateStorageDTO crateStorage)
         {
             return CrateStorageSerializer.Default.ConvertFromDto(crateStorage);
         }
@@ -41,9 +44,9 @@ namespace Hub.Managers
         /// </summary>
         /// <param name="storageAccessExpression"></param>
         /// <returns></returns>
-        public ICrateStorageUpdater UpdateStorage(Expression<Func<CrateStorageDTO>> storageAccessExpression)
+        public IUpdatableCrateStorage UpdateStorage(Expression<Func<CrateStorageDTO>> storageAccessExpression)
         {
-            return new CrateStorageStorageUpdater(storageAccessExpression);
+            return new UpdatableCrateStorageStorage(storageAccessExpression);
         }
 
         /// <summary>
@@ -52,9 +55,9 @@ namespace Hub.Managers
         /// </summary>
         /// <param name="storageAccessExpression"></param>
         /// <returns></returns>
-        public ICrateStorageUpdater UpdateStorage(Expression<Func<string>> storageAccessExpression)
+        public IUpdatableCrateStorage UpdateStorage(Expression<Func<string>> storageAccessExpression)
         {
-            return new CrateStorageStorageUpdater(storageAccessExpression);
+            return new UpdatableCrateStorageStorage(storageAccessExpression);
         }
 
         public bool IsEmptyStorage(CrateStorageDTO rawStorage)
@@ -72,7 +75,7 @@ namespace Hub.Managers
             return CrateStorageAsStr(new CrateStorage());
         }
 
-        public string CrateStorageAsStr(CrateStorage storage)
+        public string CrateStorageAsStr(ICrateStorage storage)
         {
             return JsonConvert.SerializeObject(CrateStorageSerializer.Default.ConvertToDto(storage));
         }
@@ -101,9 +104,9 @@ namespace Hub.Managers
                 Item = logItemList
             };
 
-            using (var updater = UpdateStorage(() => containerDO.CrateStorage))
+            using (var crateStorage = UpdateStorage(() => containerDO.CrateStorage))
             {
-                updater.CrateStorage.Add(Crate.FromContent(label, curManifestSchema));
+                crateStorage.Add(Crate.FromContent(label, curManifestSchema));
             }
         }
 
@@ -112,17 +115,36 @@ namespace Hub.Managers
             return Crate<StandardDesignTimeFieldsCM>.FromContent(label, new StandardDesignTimeFieldsCM() { Fields = fields.ToList() });
         }
 
+        public Crate<ManifestDescriptionCM> CreateManifestDescriptionCrate(string label, string name, string id, AvailabilityType availability)
+        {
+            return Crate<ManifestDescriptionCM>.FromContent(label, new ManifestDescriptionCM() { Name = name, Id = id }, availability);
+        }
+
+        public Crate<StandardDesignTimeFieldsCM> CreateDesignTimeFieldsCrate(string label, AvailabilityType availability, params FieldDTO[] fields)
+        {
+            return Crate<StandardDesignTimeFieldsCM>.FromContent(label, new StandardDesignTimeFieldsCM() { Fields = fields.ToList() }, availability);
+        }
+
+        public Crate<StandardDesignTimeFieldsCM> CreateDesignTimeFieldsCrate(string label, List<FieldDTO> fields, AvailabilityType availability)
+        {
+            return Crate<StandardDesignTimeFieldsCM>.FromContent(label, new StandardDesignTimeFieldsCM() { Fields = fields }, availability);
+        }
+
+        public Crate<StandardDesignTimeFieldsCM> CreateDesignTimeFieldsCrate(string label, List<FieldDTO> fields)
+        {
+            return Crate<StandardDesignTimeFieldsCM>.FromContent(label, new StandardDesignTimeFieldsCM() { Fields = fields }, AvailabilityType.NotSet);
+        }
+
         public Crate<StandardConfigurationControlsCM> CreateStandardConfigurationControlsCrate(string label, params ControlDefinitionDTO[] controls)
         {
-            return Crate<StandardConfigurationControlsCM>.FromContent(label, new StandardConfigurationControlsCM() { Controls = controls.ToList() });
+            return Crate<StandardConfigurationControlsCM>.FromContent(label,  new StandardConfigurationControlsCM() { Controls = controls.ToList() }, AvailabilityType.Configuration);
         }
 
-        public Crate CreateStandardEventSubscriptionsCrate(string label, params string[] subscriptions)
+        public Crate CreateStandardEventSubscriptionsCrate(string label, string manufacturer, params string[] subscriptions )
         {
-            return Crate.FromContent(label, new EventSubscriptionCM() { Subscriptions = subscriptions.ToList() });
+            return Crate.FromContent(label, new EventSubscriptionCM() { Subscriptions = subscriptions.ToList(), Manufacturer = manufacturer});
         }
-
-
+        
         public Crate CreateStandardEventReportCrate(string label, EventReportCM eventReport)
         {
             return Crate.FromContent(label, eventReport);
@@ -133,12 +155,13 @@ namespace Hub.Managers
             return Crate.FromContent(label, new StandardTableDataCM() { Table = table.ToList(), FirstRowHeaders = firstRowHeaders });
         }
 
+
+
         public Crate CreateOperationalStatusCrate(string label, OperationalStateCM operationalStatus)
         {
             return Crate.FromContent(label, operationalStatus);
         }
-
-
+        
         public Crate CreatePayloadDataCrate(string payloadDataObjectType, string crateLabel, StandardTableDataCM tableDataMS)
         {
             return Crate.FromContent(crateLabel, TransformStandardTableDataToStandardPayloadData(payloadDataObjectType, tableDataMS));
@@ -205,7 +228,7 @@ namespace Hub.Managers
                 if (crateContentType != null)
                 {
                     if (crateContentType is StandardPayloadDataCM)
-                        (crateContentType as StandardPayloadDataCM).TryGetValue(findKey, true, out key);
+                        (crateContentType as StandardPayloadDataCM).TryGetValue(findKey, true, false, out key);
                     else
                         throw new Exception("Manifest type GetFieldByKey implementation is missing");
                 }
@@ -216,14 +239,14 @@ namespace Hub.Managers
 
         public OperationalStateCM GetOperationalState(PayloadDTO payloadDTO)
         {
-            CrateStorage curCrateStorage = FromDto(payloadDTO.CrateStorage);
+            ICrateStorage curCrateStorage = FromDto(payloadDTO.CrateStorage);
             OperationalStateCM curOperationalState = curCrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
             return curOperationalState;
         }
         //This method returns one crate of the specified Manifest Type from the payload
         public T GetByManifest<T>(PayloadDTO payloadDTO) where T : Manifest
         {
-            CrateStorage curCrateStorage = FromDto(payloadDTO.CrateStorage);
+            ICrateStorage curCrateStorage = FromDto(payloadDTO.CrateStorage);
             var curCrate = curCrateStorage.CratesOfType<T>().Single().Content;
             return curCrate;
         }
@@ -239,51 +262,31 @@ namespace Hub.Managers
                     continue;
                 }
 
-                fields.AddRange(FindFieldsRecursive(crate.Get()));
+                fields.AddRange(Fr8ReflectionHelper.FindFieldsRecursive(crate.Get()));
             }
 
             return fields;
         }
 
-        private static IEnumerable<FieldDTO> FindFieldsRecursive(Object obj)
+        public StandardDesignTimeFieldsCM MergeContentFields(List<Crate<StandardDesignTimeFieldsCM>> curCrates)
         {
-            var fields = new List<FieldDTO>();
-            if (obj is IEnumerable)
+            StandardDesignTimeFieldsCM tempMS = new StandardDesignTimeFieldsCM();
+            foreach (var curCrate in curCrates)
             {
+                //extract the fields
+                StandardDesignTimeFieldsCM curStandardDesignTimeFieldsCrate = curCrate.Content;
 
-                var objList = obj as IEnumerable;
-                foreach (var element in objList)
+                foreach (var field in curStandardDesignTimeFieldsCrate.Fields)
                 {
-                    fields.AddRange(FindFieldsRecursive(element));
+                    field.SourceCrateLabel = curCrate.Label;
+                    field.SourceCrateManifest = curCrate.ManifestType;
                 }
-                return fields;
+
+                //add them to the pile
+                tempMS.Fields.AddRange(curStandardDesignTimeFieldsCrate.Fields);
             }
 
-            var objType = obj.GetType();
-            bool isPrimitiveType = objType.IsPrimitive || objType.IsValueType || (objType == typeof(string));
-
-            if (!isPrimitiveType)
-            {
-                var field = obj as FieldDTO;
-                if (field != null)
-                {
-                    return new List<FieldDTO> { field };
-                }
-
-                var objProperties = objType.GetProperties();
-                var objFields = objType.GetFields();
-                foreach (var prop in objProperties)
-                {
-                    fields.AddRange(FindFieldsRecursive(prop.GetValue(obj)));
-                }
-
-                foreach (var prop in objFields)
-                {
-                    fields.AddRange(FindFieldsRecursive(prop.GetValue(obj)));
-                }
-            }
-
-            return fields;
+            return tempMS;
         }
 
         public IEnumerable<string> GetLabelsByManifestType(IEnumerable<Crate> crates, string manifestType)
@@ -291,6 +294,14 @@ namespace Hub.Managers
             return crates.Where(c => c.ManifestType.Type == manifestType)
                     .GroupBy(c => c.Label)
                     .Select(c => c.Key).ToList();
+        }
+
+        public T GetContentType<T>(string crate) where T : class
+        {
+            ICrateManager _crate = ObjectFactory.GetInstance<ICrateManager>();
+            return _crate.GetStorage(crate)
+                            .CrateContentsOfType<T>()
+                            .FirstOrDefault();
         }
     }
 }

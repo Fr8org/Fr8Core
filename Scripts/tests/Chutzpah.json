@@ -39,7 +39,9 @@
     {
       "Path": "../../bower_components/ng-table/dist/ng-table.min.js"
     },
-
+    {
+      "Path": "../../bower_components/mb-scrollbar/mb-scrollbar.min.js"
+    },
     {
       "Path": "../../bower_components/ng-file-upload/ng-file-upload-all.min.js"
     },
@@ -148,7 +150,10 @@
       "Includes": [ "*.js" ],
       "Excludes": [ "*.ts" ]
     },
-    { "Path": "../tests/templates/templateCache.js" }
+    { "Path": "../tests/templates/templateCache.js" },
+     {
+      "Path": "../../bower_components/angular-messages/angular-messages.min.js"
+    }
   ],
   "Tests": [{ "Include": "*.js" }],
   "RootReferencePathMode": "SettingsFileDirectory"

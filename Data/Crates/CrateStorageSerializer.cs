@@ -91,7 +91,7 @@ namespace Data.Crates
         /// </summary>
         /// <param name="rawStorage"></param>
         /// <returns></returns>
-        public CrateStorage ConvertFromDto(CrateStorageDTO rawStorage)
+        public ICrateStorage ConvertFromDto(CrateStorageDTO rawStorage)
         {
             var storage = new CrateStorage();
 
@@ -108,11 +108,11 @@ namespace Data.Crates
 
         /**********************************************************************************/
         /// <summary>
-        /// Convert CrateStorage ot DTO
+        /// Convert CrateStorage to DTO
         /// </summary>
         /// <param name="storage"></param>
         /// <returns></returns>
-        public CrateStorageDTO ConvertToDto(CrateStorage storage)
+        public CrateStorageDTO ConvertToDto(ICrateStorage storage)
         {
             var storageSerializationProxy = new CrateStorageDTO
             {
@@ -161,7 +161,7 @@ namespace Data.Crates
             }
 
             crate.Label = proxy.Label;
-
+            crate.Availability = proxy.Availability;
             return crate;
         }
 
@@ -180,6 +180,7 @@ namespace Data.Crates
                 Label = crate.Label,
                 ManifestId = crate.ManifestType.Id,
                 ManifestType = crate.ManifestType.Type,
+                Availability = crate.Availability
             };
 
             if (serializer != null)

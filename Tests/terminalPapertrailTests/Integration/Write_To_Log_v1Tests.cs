@@ -7,6 +7,7 @@ using Data.Constants;
 using Data.Control;
 using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.DataTransferObjects.Helpers;
 using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
 using Hub.Managers;
@@ -22,7 +23,7 @@ namespace terminalPapertrailTests.Integration
     /// but allows to trigger that class from HealthMonitor.
     /// </summary>
     [Explicit]
-    public class Write_To_Log_v1Tests : BaseHealthMonitorTest
+    public class Write_To_Log_v1Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {
@@ -33,16 +34,16 @@ namespace terminalPapertrailTests.Integration
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
         [Test, Category("Integration.terminalPapertrail")]
-        public async void Write_To_Log_Initial_Configuration_Check_Crate_Structure()
+        public async Task Write_To_Log_Initial_Configuration_Check_Crate_Structure()
         {
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Write_To_Log_v1_InitialConfiguration_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Write_To_Log_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -61,24 +62,24 @@ namespace terminalPapertrailTests.Integration
         /// Validate correct crate-storage structure in followup configuration response.
         /// </summary>
         [Test, Category("Integration.terminalPapertrail")]
-        public async void Write_To_Log_FollowUp_Configuration_Check_Crate_Structure()
+        public async Task Write_To_Log_FollowUp_Configuration_Check_Crate_Structure()
         {
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Write_To_Log_v1_InitialConfiguration_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Write_To_Log_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
             //Call first time for the initial configuration
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
 
             //Call second time for the follow up configuration
             responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -100,16 +101,16 @@ namespace terminalPapertrailTests.Integration
         /// Should successfully log the message
         /// </summary>
         [Test, Category("Integration.terminalPapertrail")]
-        public async void Write_To_Log_Run_WithUpstreamActionLog_ValidTargetUrl_ShouldLogMessage()
+        public async Task Write_To_Log_Run_WithUpstreamActionLog_ValidTargetUrl_ShouldLogMessage()
         {
             //Arrange
             var runUrl = GetTerminalRunUrl();
 
             //prepare action DTO with valid target URL
-            var actionDTO = await GetActionDTO_LogToPapertrailIntegrationTest();
-
+            var activityDTO = await GetActionDTO_LogToPapertrailIntegrationTest();
+            var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
             //add the log message in upstream action
-            AddPayloadCrate(actionDTO,
+            AddPayloadCrate(dataDTO,
                 new StandardLoggingCM
                 {
                     Item =
@@ -119,11 +120,11 @@ namespace terminalPapertrailTests.Integration
                         }
                 });
 
-            AddOperationalStateCrate(actionDTO, new OperationalStateCM());
-
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
+            
             //Act
             var responsePayloadDTO =
-                await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+                await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
 
             //Assert the returned paylod contains the log messages with IsLogged is set to True.
             var loggedMessageCrate = Crate.GetStorage(responsePayloadDTO).Single(x => x.Label.Equals("Log Messages"));
@@ -141,25 +142,25 @@ namespace terminalPapertrailTests.Integration
         /// Should throw exception
         /// </summary>
         [Test]
-        public async void Write_To_Log_Run_WithInvalidPapertrailUrl_ShouldReturnError()
+        public async Task Write_To_Log_Run_WithInvalidPapertrailUrl_ShouldReturnError()
         {
             //Arrange
             var runUrl = GetTerminalRunUrl();
 
             //prepare the action DTO with valid target URL
-            var actionDTO = await GetActionDTO_LogToPapertrailIntegrationTest();
-
+            var activityDTO = await GetActionDTO_LogToPapertrailIntegrationTest();
+            var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
             //make the target URL as invalid
-            using (var updater = Crate.UpdateStorage(actionDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(activityDTO))
             {
-                var controls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
+                var controls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
 
                 var targetUrlTextBox = (TextBox)controls.Controls[0];
                 targetUrlTextBox.Value = "InvalidUrl";
             }
 
             //add the Log Message in upstream action
-            AddPayloadCrate(actionDTO,
+            AddPayloadCrate(dataDTO,
                 new StandardLoggingCM
                 {
                     Item =
@@ -169,16 +170,18 @@ namespace terminalPapertrailTests.Integration
                         }
                 });
 
-            AddOperationalStateCrate(actionDTO, new OperationalStateCM());
-
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
+            
             //Act
-            var payload = await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+            var payload = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
 
             var storage = Crate.GetStorage(payload);
             var operationalStateCM = storage.CrateContentsOfType<OperationalStateCM>().Single();
+            ErrorDTO errorMessage;
+            operationalStateCM.CurrentActivityResponse.TryParseErrorDTO(out errorMessage);
 
-            Assert.AreEqual(ActionResponse.Error, operationalStateCM.CurrentActionResponse);
-            Assert.AreEqual("Papertrail URL and PORT are not in the correct format. The given URL is InvalidUrl", operationalStateCM.CurrentActionErrorMessage);
+            Assert.AreEqual(ActivityResponse.Error.ToString(), operationalStateCM.CurrentActivityResponse.Type);
+            Assert.AreEqual("Papertrail URL and PORT are not in the correct format. The given URL is InvalidUrl", errorMessage.Message);
         }
 
         /// <summary>
@@ -193,19 +196,19 @@ namespace terminalPapertrailTests.Integration
             ExpectedMessage = @"{""status"":""terminal_error"",""message"":""Sequence contains no elements""}",
             MatchType = MessageMatch.Contains
             )]
-        public async void Write_To_Log_Run_WithoutLogMessageInUpstreamAction_ShouldThrowException()
+        public async Task Write_To_Log_Run_WithoutLogMessageInUpstreamAction_ShouldThrowException()
         {
             //Arrange
             var runUrl = GetTerminalRunUrl();
 
             //prepare action DTO with valid target URL
-            var actionDTO = await GetActionDTO_LogToPapertrailIntegrationTest();
-
+            var activityDTO = await GetActionDTO_LogToPapertrailIntegrationTest();
+            var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
             //Act
-            var responsePayloadDTO = await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+            var responsePayloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
         }
 
-        private void AssertCrateTypes(CrateStorage crateStorage)
+        private void AssertCrateTypes(ICrateStorage crateStorage)
         {
             Assert.AreEqual(1, crateStorage.Count,
                 "There should be only one crate storage in initial and follow up configuration of Write To Log action.");
@@ -229,21 +232,21 @@ namespace terminalPapertrailTests.Integration
             //Assert.AreEqual("requestConfig", controls.Controls[0].Events[0].Handler, "requestConfig is not configured when onChange event.");
         }
 
-        private async Task<ActionDTO> GetActionDTO_LogToPapertrailIntegrationTest()
+        private async Task<ActivityDTO> GetActionDTO_LogToPapertrailIntegrationTest()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Write_To_Log_v1_InitialConfiguration_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Write_To_Log_v1_InitialConfiguration_Fr8DataDTO();
 
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
 
-            using (var updater = Crate.UpdateStorage(responseActionDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(responseActionDTO))
             {
-                var controls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
+                var controls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
 
                 var targetUrlTextBox = (TextBox) controls.Controls[0];
                 targetUrlTextBox.Value = "logs3.papertrailapp.com:22529";
@@ -253,17 +256,17 @@ namespace terminalPapertrailTests.Integration
         }
 
         [Test, Category("Integration.terminalPapertrail")]
-        public async void Write_To_Log_Activate_Returns_ActionDTO()
+        public async Task Write_To_Log_Activate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = HealthMonitor_FixtureData.Write_To_Log_v1_InitialConfiguration_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Write_To_Log_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -274,17 +277,17 @@ namespace terminalPapertrailTests.Integration
         }
 
         [Test, Category("Integration.terminalPapertrail")]
-        public async void Write_To_Log_Deactivate_Returns_ActionDTO()
+        public async Task Write_To_Log_Deactivate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = HealthMonitor_FixtureData.Write_To_Log_v1_InitialConfiguration_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Write_To_Log_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );

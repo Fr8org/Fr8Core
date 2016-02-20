@@ -98,6 +98,14 @@ namespace HubTests.Managers
         }
 
         [Test]
+        public void MergeContentFields_ReturnsStandardDesignTimeFieldsMS()
+        {
+            var result = _crateManager.MergeContentFields(FixtureData.TestCrateDTO1());
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Fields.Count);
+        }
+
+        [Test]
         public void CrateWithNonRegisteredManifest_GetContentReturnsNull()
         {
             var crate = Crate.FromJson(new CrateManifestType("Unknown type", 66666666), "unknown value");
@@ -213,24 +221,24 @@ namespace HubTests.Managers
         [Test]
         public void UpdateStorageDtoRewrite_Works()
         {
-            var actionDto = new ActionDTO();
+            var activityDto = new ActivityDTO();
 
-            actionDto.CrateStorage = GetKnownManifestsStorageDto();
+            activityDto.CrateStorage = GetKnownManifestsStorageDto();
 
             var newCrateStorageDto = GetKnownManifestsStorageDto("newValue");
             var newCrateStorage = _crateManager.FromDto(newCrateStorageDto);
 
-            using (var updater = _crateManager.UpdateStorage(actionDto))
+            using (var crateStorage = _crateManager.GetUpdatableStorage(activityDto))
             {
-                updater.CrateStorage.Clear();
+                crateStorage.Clear();
 
                 foreach (var crates in newCrateStorage)
                 {
-                    updater.CrateStorage.Add(crates);
+                    crateStorage.Add(crates);
                 }
             }
 
-            CheckStorageDTOs(newCrateStorageDto, actionDto.CrateStorage);
+            CheckStorageDTOs(newCrateStorageDto, activityDto.CrateStorage);
         }
 
         [Test]
@@ -258,20 +266,20 @@ namespace HubTests.Managers
         [Test]
         public void UpdateStorageStringRewrite_Works()
         {
-            var actionDo = new ActionDO();
+            var actionDo = new ActivityDO();
 
             actionDo.CrateStorage = JsonConvert.SerializeObject(GetKnownManifestsStorageDto());
 
             var newCrateStorageDto = GetKnownManifestsStorageDto("newValue");
             var newCrateStorage = _crateManager.FromDto(newCrateStorageDto);
 
-            using (var updater = _crateManager.UpdateStorage(actionDo))
+            using (var crateStorage = _crateManager.GetUpdatableStorage(actionDo))
             {
-                updater.CrateStorage.Clear();
+                crateStorage.Clear();
 
                 foreach (var crates in newCrateStorage)
                 {
-                    updater.CrateStorage.Add(crates);
+                    crateStorage.Add(crates);
                 }
             }
 

@@ -34,11 +34,11 @@ namespace terminalTwilio.Controllers
             var sendViaTwilioTemplate = new ActivityTemplateDTO
             {
                 Name = "Send_Via_Twilio",
-                Label = "Send Via Twilio",
-                Tags = "Twillio",
+                Label = "Send SMS",
+                Tags = "Twillio,Notifier",
                 Category = ActivityCategory.Forwarders,
                 Version = "1",
-                Description = "Send Via Twilio: Description",
+                Description = "Send SMS: Description",
                 Terminal = terminal,
                 MinPaneWidth = 330,
                 WebService = webService

@@ -7,7 +7,9 @@ using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
+using HubWeb.Infrastructure;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 using Data.Entities;
@@ -22,7 +24,7 @@ using AutoMapper;
 
 namespace HubWeb.Controllers
 {
-    [Fr8ApiAuthorize]
+    //
     public class FilesController : ApiController
     {
         private readonly IFile _fileService;
@@ -40,13 +42,15 @@ namespace HubWeb.Controllers
 
         [HttpPost]
         [ActionName("files")]
+        [Fr8HubWebHMACAuthenticate]
+        [Fr8ApiAuthorize]
         public async Task<IHttpActionResult> Post()
         {
             FileDO fileDO = null;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var account = _security.GetCurrentAccount(uow);
+                var currentUserId = _security.GetCurrentUser();
 
                 await Request.Content.ReadAsMultipartAsync<MultipartMemoryStreamProvider>(new MultipartMemoryStreamProvider()).ContinueWith((tsk) =>
                 {
@@ -58,7 +62,7 @@ namespace HubWeb.Controllers
                         var fileName = ctnt.Headers.ContentDisposition.FileName.Replace("\"", string.Empty);
                         fileDO = new FileDO
                         {
-                            DockyardAccountID = account.Id
+                            DockyardAccountID = currentUserId
                         };
 
                         _fileService.Store(uow, fileDO, stream, fileName);
@@ -97,6 +101,44 @@ namespace HubWeb.Controllers
             return Ok(fileDto);
         }
 
+        /// <summary>
+        /// Downloads user's given file
+        /// </summary>
+        /// <param name="id">id of requested file</param>
+        /// <returns>Filestream</returns>
+        [Fr8HubWebHMACAuthenticate]
+        [Fr8ApiAuthorize]
+        [HttpGet]
+        public IHttpActionResult Download(int id)
+        {
+            FileDO fileDO = null;
+            if (_security.IsCurrentUserHasRole(Roles.Admin))
+            {
+                fileDO = _fileService.GetFileByAdmin(id);
+            }
+            else
+            {
+                string userId;
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    userId = _security.GetCurrentAccount(uow).Id;
+                }
+                fileDO = _fileService.GetFile(id, userId);
+            }
+            if (fileDO == null)
+            {
+                return NotFound();
+            }
+            var file = _fileService.Retrieve(fileDO);
+            return new FileActionResult(file);
+        }
+
+        /// <summary>
+        /// Gets all files current user stored on Fr8
+        /// </summary>
+        /// <returns>List of FileDTO</returns>
+        [Fr8HubWebHMACAuthenticate]
+        [Fr8ApiAuthorize]
         public IHttpActionResult Get()
         {
             IList<FileDTO> fileList;

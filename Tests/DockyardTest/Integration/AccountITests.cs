@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Hub.Managers.APIManagers.Packagers;
 using Moq;
 using NUnit.Framework;
@@ -9,6 +10,9 @@ using Data.Interfaces;
 using Hub.Services;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
+using Hub.StructureMap;
+using Hub.Security;
+using Microsoft.Owin.Security.DataProtection;
 
 namespace DockyardTest.Integration
 {
@@ -18,8 +22,11 @@ namespace DockyardTest.Integration
     {
         [Test]
         [Category("IntegrationTests")]
-        public async void ITest_CanResetPassword()
+        public async Task ITest_CanResetPassword()
         {
+            // DataProtectionProvider property is not getting initialised through startup
+            // So Initiliaze it explicitly. DpapiDataProtectionProvider is used for test cases only
+            DockyardIdentityManager.DataProtectionProvider = new DpapiDataProtectionProvider("fr8");
             string email;
             string id;
             // SETUP

@@ -243,10 +243,12 @@
     <Compile Include="Crates\CrateManifestType.cs" />
     <Compile Include="Crates\CrateManifestTypeDescriptionAttribute.cs" />
     <Compile Include="Crates\CrateStorage.cs" />
+    <Compile Include="Crates\CrateStorageExtensions.cs" />
     <Compile Include="Crates\CrateStorageSerializer.cs" />
     <Compile Include="Crates\CrateStorageSerializer.DefaultSerializer.cs" />
     <Compile Include="Crates\CrateT.cs" />
     <Compile Include="Crates\DenySerializationConverter.cs" />
+    <Compile Include="Crates\ICrateStorage.cs" />
     <Compile Include="Crates\ICrateStorageSerializer.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -265,12 +267,16 @@
     <Compile Include="Expressions\ExpressionTransformation.cs" />
     <Compile Include="Expressions\ExpressionTransformation.PropertyInfo.cs" />
     <Compile Include="Expressions\ExpressionTransformation.TransformationVisitor.cs" />
+    <Compile Include="Helpers\Fr8ReflectionHelper.cs" />
     <Compile Include="Infrastructure\AutoMapper\JSONToStringConverter.cs" />
     <Compile Include="Infrastructure\AutoMapper\DataAutoMapperBootstrapper.cs" />
     <Compile Include="Infrastructure\AutoMapper\RouteDOFullConverter.cs" />
     <Compile Include="Entities\ActivityTemplateDO.cs" />
     <Compile Include="Infrastructure\AutoMapper\StringToJSONConverter.cs" />
     <Compile Include="Infrastructure\CloudFileManager.cs" />
+    <Compile Include="Infrastructure\JsonNet\ActivityTemplateActivityConverter.cs" />
+    <Compile Include="Infrastructure\JsonNet\TerminalActivityTemplateConverter.cs" />
+    <Compile Include="Infrastructure\JsonNet\WebServiceConverter.cs" />
     <Compile Include="Infrastructure\MultiTenant\IMT_Data.cs" />
     <Compile Include="Infrastructure\MultiTenant\IMT_Field.cs" />
     <Compile Include="Infrastructure\MultiTenant\IMT_FieldType.cs" />
@@ -280,14 +286,17 @@
     <Compile Include="Infrastructure\MultiTenant\MT_FieldType.cs" />
     <Compile Include="Infrastructure\MultiTenant\MT_Object.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDataPackageDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ActivateActionsDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ActivityResponseDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\AlarmDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\AuthenticateResponse.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\EventLoggingDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FactDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\QueryFieldType.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldValidationDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ActionDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ActionDTOBase.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ActivityDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionPayloadDTO.cs" />
-    <Compile Include="Entities\ActionDO.cs" />
+    <Compile Include="Entities\ActivityDO.cs" />
     <Compile Include="Entities\AuthorizationTokenDO.cs" />
     <Compile Include="Entities\BaseDO.cs" />
     <Compile Include="Entities\CriteriaDO.cs" />
@@ -298,10 +307,15 @@
     <Compile Include="Interfaces\DataTransferObjects\ExternalAuthUrlDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FileDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FilterConditionDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\FilterDataDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FinancialLineDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\Helpers\ActivityResponseHelper.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\Fr8DataDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\LogItemDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ManageAuthTokenDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ManifestDescriptionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\MappingFieldConfigurationDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\QueryFieldDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\StandardAccountingTransactionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\TerminalDiscoveryDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionProcessResultDTO.cs" />
@@ -325,6 +339,7 @@
     <Compile Include="Interfaces\DataTransferObjects\ContainerDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\QueryDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\SubrouteDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\SolutionPageDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\RouteEmptyDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\SlackPayloadDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\TerminalDTO.cs" />
@@ -338,10 +353,12 @@
     <Compile Include="Interfaces\IMTObjectRepository.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ControlDefinitionDTOConverter.cs" />
     <Compile Include="Interfaces\ITrackingChangesRepository.cs" />
+    <Compile Include="Interfaces\Manifests\ManifestDescriptionCM.cs" />
     <Compile Include="Interfaces\Manifests\ChartOfAccountsCM.cs" />
     <Compile Include="Interfaces\Manifests\CrateManifestTypes.cs" />
     <Compile Include="Interfaces\Manifests\DocuSignTemplateCM.cs" />
     <Compile Include="Interfaces\Manifests\DocuSignRecipientCM.cs" />
+    <Compile Include="Interfaces\Manifests\MtPrimaryKeyAttribute.cs" />
     <Compile Include="Interfaces\Manifests\StandardAccountingTransactionCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFileListCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFr8RoutesCM .cs" />
@@ -357,6 +374,7 @@
     <Compile Include="Interfaces\Manifests\StandardLoggingCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardParsingRecordCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardQueryCM.cs" />
+    <Compile Include="Interfaces\Manifests\StandardQueryFieldsCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardRoutingDirectiveCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFileHandle.cs" />
     <Compile Include="Interfaces\Manifests\OperationalStateCM.cs" />
@@ -542,6 +560,67 @@
     <Compile Include="Migrations\201601031440042_Added_Tag_And_FileTags.Designer.cs">
       <DependentUpon>201601031440042_Added_Tag_And_FileTags.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201601150502349_RouteNodeDO_RootId.cs" />
+    <Compile Include="Migrations\201601150502349_RouteNodeDO_RootId.Designer.cs">
+      <DependentUpon>201601150502349_RouteNodeDO_RootId.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201601151838550_AddedPublicIdentifierAndSecretoToTerminalDO.cs" />
+    <Compile Include="Migrations\201601151838550_AddedPublicIdentifierAndSecretoToTerminalDO.Designer.cs">
+      <DependentUpon>201601151838550_AddedPublicIdentifierAndSecretoToTerminalDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201601201708533_Added_Fr8Account_2RouteNode.cs" />
+    <Compile Include="Migrations\201601201708533_Added_Fr8Account_2RouteNode.Designer.cs">
+      <DependentUpon>201601201708533_Added_Fr8Account_2RouteNode.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201601201734569_Removed_Fr8Account_From_Route.cs" />
+    <Compile Include="Migrations\201601201734569_Removed_Fr8Account_From_Route.Designer.cs">
+      <DependentUpon>201601201734569_Removed_Fr8Account_From_Route.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201601211438483_Add_Test_User.cs" />
+    <Compile Include="Migrations\201601240842409_EmptyMigration.cs" />
+    <Compile Include="Migrations\201601240842409_EmptyMigration.Designer.cs">
+      <DependentUpon>201601240842409_EmptyMigration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201601240908090_RenameActionToActivity.cs" />
+    <Compile Include="Migrations\201601240908090_RenameActionToActivity.Designer.cs">
+      <DependentUpon>201601240908090_RenameActionToActivity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201601241443338_RenameRouteToPlan.cs" />
+    <Compile Include="Migrations\201601241443338_RenameRouteToPlan.Designer.cs">
+      <DependentUpon>201601241443338_RenameRouteToPlan.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201602051229214_Add_Test_User_2.cs" />
+    <Compile Include="Migrations\201602051229214_Add_Test_User_2.Designer.cs">
+      <DependentUpon>201602051229214_Add_Test_User_2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201602071156179_RemoveSubscriptionRequiredAndName.cs" />
+    <Compile Include="Migrations\201602071156179_RemoveSubscriptionRequiredAndName.Designer.cs">
+      <DependentUpon>201602071156179_RemoveSubscriptionRequiredAndName.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201602031204174_MergeMigration.cs" />
+    <Compile Include="Migrations\201602031204174_MergeMigration.Designer.cs">
+      <DependentUpon>201602031204174_MergeMigration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201602121355488_RemovedNullableActivityTemplateIdFromActivityDO.cs" />
+    <Compile Include="Migrations\201602121355488_RemovedNullableActivityTemplateIdFromActivityDO.Designer.cs">
+      <DependentUpon>201602121355488_RemovedNullableActivityTemplateIdFromActivityDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201602122245004_Added_Footer_To_EnvelopeDO.cs" />
+    <Compile Include="Migrations\201602122245004_Added_Footer_To_EnvelopeDO.Designer.cs">
+      <DependentUpon>201602122245004_Added_Footer_To_EnvelopeDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201602141601318_Activity_AddedClientVisibility.cs" />
+    <Compile Include="Migrations\201602141601318_Activity_AddedClientVisibility.Designer.cs">
+      <DependentUpon>201602141601318_Activity_AddedClientVisibility.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201602141719533_Activity_ClientVisibilityAllowNULL.cs" />
+    <Compile Include="Migrations\201602141719533_Activity_ClientVisibilityAllowNULL.Designer.cs">
+      <DependentUpon>201602141719533_Activity_ClientVisibilityAllowNULL.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201602170735431_RemoveMTActivitiesAndRemoveFr8CoreWebServices.cs" />
+    <Compile Include="Migrations\201602170735431_RemoveMTActivitiesAndRemoveFr8CoreWebServices.Designer.cs">
+      <DependentUpon>201602170735431_RemoveMTActivitiesAndRemoveFr8CoreWebServices.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryBase.cs" />
@@ -560,13 +639,26 @@
     <Compile Include="Repositories\MultiTenant\Queryable\MtQueryExecutor.cs" />
     <Compile Include="Expressions\ReplaceParameterVisitor.cs" />
     <Compile Include="Repositories\MultiTenant\Queryable\MtWhere.cs" />
-    <Compile Include="Repositories\RouteNodeRepository.cs" />
+    <Compile Include="Interfaces\IPlanRepository.cs" />
+    <Compile Include="Repositories\Plan\Expiration.cs" />
+    <Compile Include="Repositories\Plan\IPlanCache.cs" />
+    <Compile Include="Repositories\Plan\PlanStorage.cs" />
+    <Compile Include="Repositories\Plan\IPlanStorageProvider.cs" />
+    <Compile Include="Repositories\Plan\LoadedRoute.cs" />
+    <Compile Include="Repositories\Plan\PlanCache.cs" />
+    <Compile Include="Repositories\Plan\PlanRepository.cs" />
+    <Compile Include="Repositories\Plan\PlanStorageProviderMockedDb.cs" />
+    <Compile Include="Repositories\Plan\PlanStorageProviderEf.cs" />
+    <Compile Include="Repositories\Plan\RouteSnapshot.cs" />
+    <Compile Include="Repositories\Plan\RouteTreeHelper.cs" />
+    <Compile Include="Repositories\Plan\Internal\RouteNodeRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\MultiTenant\MTDataRepository.cs" />
     <Compile Include="Repositories\MultiTenant\MTFieldRepository.cs" />
     <Compile Include="Repositories\MultiTenant\MTFieldTypeRepository.cs" />
     <Compile Include="Repositories\MultiTenant\MTObjectRepository.cs" />
     <Compile Include="Repositories\MultiTenant\MultiTenantObjectRepository.cs" />
+    <Compile Include="Repositories\Plan\SlidingExpirationStrategy.cs" />
     <Compile Include="Repositories\TagRepository.cs" />
     <Compile Include="Repositories\TerminalRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
@@ -587,7 +679,7 @@
     <Compile Include="Entities\TerminalDO.cs" />
     <Compile Include="Entities\ContainerDO.cs" />
     <Compile Include="Entities\ProcessNodeDO.cs" />
-    <Compile Include="Entities\RouteDO.cs" />
+    <Compile Include="Entities\PlanDO.cs" />
     <Compile Include="Entities\SlipDO.cs" />
     <Compile Include="Entities\SubscriptionDO.cs" />
     <Compile Include="Exceptions\EntityNotFoundException.cs" />
@@ -612,13 +704,13 @@
     <Compile Include="Migrations\DockyardDbMigration.cs" />
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
     <Compile Include="Repositories\ActivityTemplateRepository.cs" />
-    <Compile Include="Repositories\ActionRepository.cs" />
+    <Compile Include="Repositories\Plan\Internal\ActivityRepository.cs" />
     <Compile Include="Repositories\CriteriaRepository.cs" />
     <Compile Include="Repositories\EmailStatusRepository.cs" />
     <Compile Include="Repositories\EnvelopeRepository.cs" />
     <Compile Include="Repositories\ProcessNodeRepository.cs" />
-    <Compile Include="Repositories\SubrouteRepository.cs" />
-    <Compile Include="Repositories\RouteRepository.cs" />
+    <Compile Include="Repositories\Plan\Internal\SubrouteRepository.cs" />
+    <Compile Include="Repositories\Plan\Internal\RouteRepository.cs" />
     <Compile Include="Repositories\HistoryRepository.cs" />
     <Compile Include="Repositories\ContainerRepository.cs" />
     <Compile Include="Repositories\MetaflowRepository.cs" />
@@ -744,6 +836,7 @@
     <Compile Include="States\UserState.cs" />
     <Compile Include="Crates\Helpers\LoggingDataCrateFactory.cs" />
     <Compile Include="Utility\JoinClasses\FileTags.cs" />
+    <Compile Include="Utility\CopyPropertiesHelper.cs" />
     <Compile Include="Utility\TagDO.cs" />
     <Compile Include="Validations\ActionValidator.cs" />
     <Compile Include="Validations\ContainerValidator.cs" />
@@ -773,7 +866,6 @@
   <ItemGroup>
     <Folder Include="Authentication\" />
     <Folder Include="Entities\Enumerations\" />
-    <Folder Include="Infrastructure\JsonNet\" />
     <Folder Include="Wrappers\" />
   </ItemGroup>
   <ItemGroup>
@@ -908,6 +1000,54 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201601031440042_Added_Tag_And_FileTags.resx">
       <DependentUpon>201601031440042_Added_Tag_And_FileTags.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201601150502349_RouteNodeDO_RootId.resx">
+      <DependentUpon>201601150502349_RouteNodeDO_RootId.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201601151838550_AddedPublicIdentifierAndSecretoToTerminalDO.resx">
+      <DependentUpon>201601151838550_AddedPublicIdentifierAndSecretoToTerminalDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201601211438483_Add_Test_User.resx">
+      <DependentUpon>201601211438483_Add_Test_User.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201601201708533_Added_Fr8Account_2RouteNode.resx">
+      <DependentUpon>201601201708533_Added_Fr8Account_2RouteNode.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201601201734569_Removed_Fr8Account_From_Route.resx">
+      <DependentUpon>201601201734569_Removed_Fr8Account_From_Route.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201601240842409_EmptyMigration.resx">
+      <DependentUpon>201601240842409_EmptyMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201601240908090_RenameActionToActivity.resx">
+      <DependentUpon>201601240908090_RenameActionToActivity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201601241443338_RenameRouteToPlan.resx">
+      <DependentUpon>201601241443338_RenameRouteToPlan.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602031204174_MergeMigration.resx">
+      <DependentUpon>201602031204174_MergeMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602051229214_Add_Test_User_2.resx">
+      <DependentUpon>201602051229214_Add_Test_User_2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602071156179_RemoveSubscriptionRequiredAndName.resx">
+      <DependentUpon>201602071156179_RemoveSubscriptionRequiredAndName.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602121355488_RemovedNullableActivityTemplateIdFromActivityDO.resx">
+      <DependentUpon>201602121355488_RemovedNullableActivityTemplateIdFromActivityDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602122245004_Added_Footer_To_EnvelopeDO.resx">
+      <DependentUpon>201602122245004_Added_Footer_To_EnvelopeDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602141601318_Activity_AddedClientVisibility.resx">
+      <DependentUpon>201602141601318_Activity_AddedClientVisibility.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602141719533_Activity_ClientVisibilityAllowNULL.resx">
+      <DependentUpon>201602141719533_Activity_ClientVisibilityAllowNULL.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602170735431_RemoveMTActivitiesAndRemoveFr8CoreWebServices.resx">
+      <DependentUpon>201602170735431_RemoveMTActivitiesAndRemoveFr8CoreWebServices.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

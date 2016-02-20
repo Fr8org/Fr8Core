@@ -20,9 +20,9 @@ namespace terminalSendGridTests.Integration
     /// but allows to trigger that class from HealthMonitor.
     /// </summary>
     [Explicit]
-    public class SendEmailViaSendGrid_v1Tests : BaseHealthMonitorTest
+    public class SendEmailViaSendGrid_v1Tests : BaseTerminalIntegrationTest
     {
-        ActionDTO actionDTOInit = new ActionDTO();
+        ActivityDTO actionDTOInit = new ActivityDTO();
 
         public override string TerminalName
         {
@@ -33,16 +33,16 @@ namespace terminalSendGridTests.Integration
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
         [Test, Category("Integration.terminalSendGrid")]
-        public async void SendEmailViaSendGrid_Initial_Configuration_Check_Crate_Structure()
+        public async Task SendEmailViaSendGrid_Initial_Configuration_Check_Crate_Structure()
         {
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.SendEmailViaSendGrid_v1_InitialConfiguration_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.SendEmailViaSendGrid_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -55,7 +55,7 @@ namespace terminalSendGridTests.Integration
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             actionDTOInit = responseActionDTO;
             Assert.IsNotNull(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault());
-            Assert.AreEqual(3, crateStorage.CrateContentsOfType<StandardDesignTimeFieldsCM>().Count());
+            Assert.AreEqual(1, crateStorage.CrateContentsOfType<StandardDesignTimeFieldsCM>().Count());
 
             var standardConfigurationControlCM = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>();
             Assert.AreEqual(1, standardConfigurationControlCM.Where(w => w.FindByName("EmailAddress") != null).Count());
@@ -67,26 +67,26 @@ namespace terminalSendGridTests.Integration
         /// Validate correct crate-storage structure in followup configuration response.
         /// </summary>
         [Test, Category("Integration.terminalSendGrid")]
-        public async void SendEmailViaSendGrid_FollowUp_Configuration_Check_Crate_Structure()
+        public async Task SendEmailViaSendGrid_FollowUp_Configuration_Check_Crate_Structure()
         {
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.SendEmailViaSendGrid_v1_InitialConfiguration_ActionDTO();
+            var dataDTO = HealthMonitor_FixtureData.SendEmailViaSendGrid_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
             //Call first time for the initial configuration
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    requestActionDTO
+                    dataDTO
                 );
-
+            dataDTO.ActivityDTO = responseActionDTO;
             //Call second time for the follow up configuration
             responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    responseActionDTO
+                    dataDTO
                 );
 
             //Assert
@@ -96,35 +96,33 @@ namespace terminalSendGridTests.Integration
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
 
-            Assert.AreEqual(1, crateStorage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Terminal-Provided Fields Body").Count());
-            Assert.AreEqual(1, crateStorage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Terminal-Provided Fields Subject").Count());
-            Assert.AreEqual(1, crateStorage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Terminal-Provided Fields Address").Count());
+            Assert.AreEqual(1, crateStorage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Terminal-Provided Fields").Count());
         }
 
         [Test, Category("Integration.terminalSendGrid")]
-        public async void SendEmailViaSendGrid_Run_Returns_Payload()
+        public async Task SendEmailViaSendGrid_Run_Returns_Payload()
         {
             //Arrange
             var runUrl = GetTerminalRunUrl();
 
-            var actionDTO = HealthMonitor_FixtureData.SendEmailViaSendGrid_v1_InitialConfiguration_ActionDTO();
+            var dataDTO = HealthMonitor_FixtureData.SendEmailViaSendGrid_v1_InitialConfiguration_Fr8DataDTO();
 
 
-            using (var updater = Crate.UpdateStorage(actionDTO))
+            using (var updatableStorage = Crate.GetUpdatableStorage(dataDTO.ActivityDTO))
             {
-                updater.CrateStorage.Add(CreateCrates());
+                updatableStorage.Add(CreateCrates());
             }
 
-            AddOperationalStateCrate(actionDTO, new OperationalStateCM());
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
 
             AddPayloadCrate(
-               actionDTO,
+               dataDTO,
                new StandardPayloadDataCM() { }
             );
 
             //Act
             var responsePayloadDTO =
-                await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+                await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
 
             //Assert
             var crateStorage = Crate.FromDto(responsePayloadDTO.CrateStorage);
@@ -167,17 +165,17 @@ namespace terminalSendGridTests.Integration
         }
 
         [Test, Category("Integration.terminalSendGrid")]
-        public async void SendEmailViaSendGrid_Activate_Returns_ActionDTO()
+        public async Task SendEmailViaSendGrid_Activate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = HealthMonitor_FixtureData.SendEmailViaSendGrid_v1_InitialConfiguration_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.SendEmailViaSendGrid_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -188,17 +186,17 @@ namespace terminalSendGridTests.Integration
         }
 
         [Test, Category("Integration.terminalSendGrid")]
-        public async void SendEmailViaSendGrid_Deactivate_Returns_ActionDTO()
+        public async Task SendEmailViaSendGrid_Deactivate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = HealthMonitor_FixtureData.SendEmailViaSendGrid_v1_InitialConfiguration_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.SendEmailViaSendGrid_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );

@@ -1,4 +1,6 @@
-﻿namespace Data.Interfaces
+﻿using System;
+
+namespace Data.Interfaces
 {
     public interface ITerminalDO : IBaseDO
     {

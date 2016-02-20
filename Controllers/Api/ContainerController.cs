@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using AutoMapper;
+using HubWeb.Infrastructure;
+using Microsoft.AspNet.Identity;
 using StructureMap;
 // This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
 using InternalInterface = Hub.Interfaces;
@@ -31,7 +33,10 @@ namespace HubWeb.Controllers
         }
 
         [HttpGet]
-        public IHttpActionResult Get(Guid id)
+        [Fr8HubWebHMACAuthenticate]
+        [Fr8ApiAuthorize]
+        [ActionName("payload")]
+        public IHttpActionResult GetPayload(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

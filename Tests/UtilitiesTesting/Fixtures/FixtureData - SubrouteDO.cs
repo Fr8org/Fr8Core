@@ -21,6 +21,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = GetTestGuidById(50),
                 ParentRouteNodeId = GetTestGuidById(23),
+                RootRouteNodeId = GetTestGuidById(23),
                 NodeTransitions = "[{'TransitionKey':'true','ProcessNodeId':'2'}]"
             };
             return SubrouteDO;
@@ -30,11 +31,12 @@ namespace UtilitiesTesting.Fixtures
         {
             SubrouteDO SubrouteDO = new SubrouteDO()
             {
-                Id = GetTestGuidById(50),
+                Id = GetTestGuidById(51),
                 Name = "TestName",
                 NodeTransitions =
                     "[{'TransitionKey':'true','ProcessNodeId':'1'},{'TransitionKey':'false','ProcessNodeId':'2'}]",
                 ParentRouteNodeId = GetTestGuidById(50),
+                RootRouteNodeId = GetTestGuidById(50),
                 StartingSubroute = true
             };
             return SubrouteDO;

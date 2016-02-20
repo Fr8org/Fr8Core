@@ -10,8 +10,8 @@ using NUnit.Framework;
 namespace terminalDropboxTests.Integration
 {
         [Explicit]
-        public class Terminal_Discover_v1Tests : BaseHealthMonitorTest
-        {
+        public class Terminal_Discover_v1Tests : BaseTerminalIntegrationTest
+    {
             private const int ActionCount = 1;
             private const string Get_File_List_Action_Name = "Get_File_List";
 
@@ -22,7 +22,7 @@ namespace terminalDropboxTests.Integration
             }
 
             [Test, CategoryAttribute("Integration.terminalDropbox")]
-            public async void Discover_Check_Returned_Actions()
+            public async Task Discover_Check_Returned_Actions()
             {
                 //Arrange
                 var discoverUrl = GetTerminalDiscoverUrl();

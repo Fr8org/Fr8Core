@@ -19,22 +19,20 @@ using terminalFr8Core.Infrastructure;
 
 namespace terminalFr8Core.Actions
 {
-    public class FindObjects_Solution_v1 : BaseTerminalAction
+    public class FindObjects_Solution_v1 : BaseTerminalActivity
     {
         public FindObjectHelper FindObjectHelper { get; set; }
-        public ExplicitConfigurationHelper ExplicitConfigurationHelper { get; set; }
 
         public FindObjects_Solution_v1()
         {
             FindObjectHelper = new FindObjectHelper();
-            ExplicitConfigurationHelper = new ExplicitConfigurationHelper();
         }
 
         #region Configration.
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActionDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -42,53 +40,51 @@ namespace terminalFr8Core.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        protected override Task<ActionDO> InitialConfigurationResponse(
-            ActionDO actionDO, AuthorizationTokenDO authTokenDO)
+        protected override Task<ActivityDO> InitialConfigurationResponse(
+            ActivityDO activityDO, AuthorizationTokenDO authTokenDO)
         {
             var connectionString = GetConnectionString();
 
-            using (var updater = Crate.UpdateStorage(actionDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(activityDO))
             {
-                updater.CrateStorage.Clear();
+                crateStorage.Clear();
 
-                AddSelectObjectDdl(updater);
-                AddAvailableObjects(updater, connectionString);
+                AddSelectObjectDdl(crateStorage);
+                AddAvailableObjects(crateStorage, connectionString);
 
-                UpdatePrevSelectedObject(updater);
+                UpdatePrevSelectedObject(crateStorage);
             }
 
-            return Task.FromResult(actionDO);
+            return Task.FromResult(activityDO);
         }
 
-        protected async override Task<ActionDO> FollowupConfigurationResponse(
-            ActionDO actionDO, AuthorizationTokenDO authTokenDO)
+        protected async override Task<ActivityDO> FollowupConfigurationResponse(
+            ActivityDO activityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(actionDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(activityDO))
             {
-                var crateStorage = updater.CrateStorage;
-
                 if (NeedsRemoveQueryBuilder(crateStorage))
                 {
-                    RemoveQueryBuilder(updater);
-                    RemoveRunButton(updater);
+                    RemoveQueryBuilder(crateStorage);
+                    RemoveRunButton(crateStorage);
                 }
 
                 if (NeedsCreateQueryBuilder(crateStorage))
                 {
-                    AddQueryBuilder(updater);
-                    AddRunButton(updater);
-                    UpdateQueryableCriteriaCrate(updater);
+                    AddQueryBuilder(crateStorage);
+                    AddRunButton(crateStorage);
+                    UpdateQueryableCriteriaCrate(crateStorage);
                 }
 
-                UpdatePrevSelectedObject(updater);
+                UpdatePrevSelectedObject(crateStorage);
             }
 
-            await UpdateChildActions(actionDO);
+            await UpdateChildActions(activityDO);
 
-            return actionDO;
+            return activityDO;
         }
 
-        private string GetCurrentSelectedObject(CrateStorage storage)
+        private string GetCurrentSelectedObject(ICrateStorage storage)
         {
             var selectObjectDdl = FindControl(storage, "SelectObjectDdl") as DropDownList;
             if (selectObjectDdl == null)
@@ -99,7 +95,7 @@ namespace terminalFr8Core.Actions
             return selectObjectDdl.Value;
         }
 
-        private List<FilterConditionDTO> GetCurrentSelectedConditions(CrateStorage storage)
+        private List<FilterConditionDTO> GetCurrentSelectedConditions(ICrateStorage storage)
         {
             var queryBuilder = FindControl(storage, "QueryBuilder");
             if (queryBuilder == null || queryBuilder.Value == null)
@@ -114,7 +110,7 @@ namespace terminalFr8Core.Actions
             return conditions;
         }
 
-        private bool NeedsCreateQueryBuilder(CrateStorage storage)
+        private bool NeedsCreateQueryBuilder(ICrateStorage storage)
         {
             var currentSelectedObject = GetCurrentSelectedObject(storage);
 
@@ -131,7 +127,7 @@ namespace terminalFr8Core.Actions
             return false;
         }
 
-        private bool NeedsRemoveQueryBuilder(CrateStorage storage)
+        private bool NeedsRemoveQueryBuilder(ICrateStorage storage)
         {
             var currentSelectedObject = GetCurrentSelectedObject(storage);
 
@@ -163,10 +159,10 @@ namespace terminalFr8Core.Actions
             return false;
         }
 
-        private void AddSelectObjectDdl(ICrateStorageUpdater updater)
+        private void AddSelectObjectDdl(IUpdatableCrateStorage updater)
         {
             AddControl(
-                updater.CrateStorage,
+                updater,
                 new DropDownList()
                 {
                     Name = "SelectObjectDdl",
@@ -181,33 +177,33 @@ namespace terminalFr8Core.Actions
             );
         }
 
-        private void AddAvailableObjects(ICrateStorageUpdater updater, string connectionString)
+        private void AddAvailableObjects(IUpdatableCrateStorage updater, string connectionString)
         {
             var tableDefinitions = FindObjectHelper.RetrieveTableDefinitions(connectionString);
             var tableDefinitionCrate =
-                Crate.CreateDesignTimeFieldsCrate(
+                CrateManager.CreateDesignTimeFieldsCrate(
                     "AvailableObjects",
                     tableDefinitions.ToArray()
                 );
 
-            updater.CrateStorage.Add(tableDefinitionCrate);
+            updater.Add(tableDefinitionCrate);
         }
 
-        private void UpdatePrevSelectedObject(ICrateStorageUpdater updater)
+        private void UpdatePrevSelectedObject(IUpdatableCrateStorage updater)
         {
-            var currentSelectedObject = GetCurrentSelectedObject(updater.CrateStorage) ?? "";
+            var currentSelectedObject = GetCurrentSelectedObject(updater) ?? "";
 
             UpdateDesignTimeCrateValue(
-                updater.CrateStorage,
+                updater,
                 "PrevSelectedObject",
                 new FieldDTO("PrevSelectedObject", currentSelectedObject)
             );
         }
 
-        private void AddQueryBuilder(ICrateStorageUpdater updater)
+        private void AddQueryBuilder(IUpdatableCrateStorage updater)
         {
             AddControl(
-                updater.CrateStorage,
+                updater,
                 new QueryBuilder()
                 {
                     Name = "QueryBuilder",
@@ -222,12 +218,12 @@ namespace terminalFr8Core.Actions
             );
         }
 
-        private void RemoveQueryBuilder(ICrateStorageUpdater updater)
+        private void RemoveQueryBuilder(IUpdatableCrateStorage updater)
         {
-            RemoveControl(updater.CrateStorage, "QueryBuilder");
+            RemoveControl(updater, "QueryBuilder");
         }
 
-        private void UpdateQueryableCriteriaCrate(ICrateStorageUpdater updater)
+        private void UpdateQueryableCriteriaCrate(IUpdatableCrateStorage updater)
         {
             var supportedColumnTypes = new HashSet<DbType>()
             {
@@ -236,37 +232,38 @@ namespace terminalFr8Core.Actions
                 DbType.Boolean
             };
 
-            var currentSelectedObject = GetCurrentSelectedObject(updater.CrateStorage);
+            var currentSelectedObject = GetCurrentSelectedObject(updater);
 
             var criteria = new List<FieldDTO>();
             if (!string.IsNullOrEmpty(currentSelectedObject))
             {
+                // TODO: FR-2347, fix here.
                 var columns = FindObjectHelper.MatchColumnsForSelectedObject(GetConnectionString(), currentSelectedObject);
                 criteria.AddRange(columns);
             }
 
             UpdateDesignTimeCrateValue(
-                updater.CrateStorage,
+                updater,
                 "Queryable Criteria",
                 criteria.ToArray()
             );
         }
 
-        private void AddRunButton(ICrateStorageUpdater updater)
+        private void AddRunButton(IUpdatableCrateStorage updater)
         {
             AddControl(
-                updater.CrateStorage,
+                updater,
                 new RunRouteButton()
                 {
                     Name = "RunRoute",
-                    Label = "Run Route",
+                    Label = "Run Plan",
                 }
             );
         }
 
-        private void RemoveRunButton(ICrateStorageUpdater updater)
+        private void RemoveRunButton(IUpdatableCrateStorage updater)
         {
-            RemoveControl(updater.CrateStorage, "RunRoute");
+            RemoveControl(updater, "RunRoute");
         }
 
         private string GetConnectionString()
@@ -278,32 +275,12 @@ namespace terminalFr8Core.Actions
 
         #region Child action management.
 
-        private async Task<ActivityTemplateDTO> ExtractActivityTemplate(ActionDO actionDO, string name)
-        {
-            var activityTemplate =
-                (await HubCommunicator.GetActivityTemplates(actionDO))
-                .FirstOrDefault(x => x.Name == name);
-
-            return activityTemplate;
-        }
-
-        private async Task<ActionDO> CreateConnectToSqlAction(ActionDO actionDO)
+        private async Task<ActivityDO> CreateConnectToSqlActivity(ActivityDO activityDO)
         {
             var connectionString = GetConnectionString();
+            var connectToSqlActionDO = await AddAndConfigureChildActivity(activityDO, "ConnectToSql");
 
-            var activityTemplateName = "ConnectToSql";
-            var activityTemplateDTO = await ExtractActivityTemplate(actionDO, activityTemplateName);
-
-            if (activityTemplateDTO == null)
-            {
-                throw new Exception(string.Format("ActivityTemplate {0} was not found", activityTemplateName));
-            }
-
-            var connectToSqlActionDO = new ActionDO()
-            {
-                IsTempId = true,
-                ActivityTemplateId = activityTemplateDTO.Id,
-                CrateStorage = Crate.CrateStorageAsStr(
+            connectToSqlActionDO.CrateStorage = CrateManager.CrateStorageAsStr(
                     new CrateStorage()
                     {
                         Crate<StandardDesignTimeFieldsCM>.FromContent(
@@ -324,36 +301,19 @@ namespace terminalFr8Core.Actions
                                 FindObjectHelper.RetrieveColumnTypes(connectionString)
                             )
                         )
-                    }
-                ),
-                CreateDate = DateTime.Now,
-                Ordering = 1,
-                Name = "Connect To Sql",
-                Label = "Connect To Sql"
-            };
+                    });
 
             return connectToSqlActionDO;
         }
 
-        private async Task<ActionDO> CreateBuildQueryAction(ActionDO actionDO)
+        private async Task<ActivityDO> CreateBuildQueryActivity(ActivityDO activityDO)
         {
-            var crateStorage = Crate.GetStorage(actionDO);
+            var crateStorage = CrateManager.GetStorage(activityDO);
             var selectedObject = GetCurrentSelectedObject(crateStorage);
             var selectedConditions = GetCurrentSelectedConditions(crateStorage);
 
-            var activityTemplateName = "BuildQuery";
-            var activityTemplateDTO = await ExtractActivityTemplate(actionDO, activityTemplateName);
-
-            if (activityTemplateDTO == null)
-            {
-                throw new Exception(string.Format("ActivityTemplate {0} was not found", activityTemplateName));
-            }
-
-            var buildQueryActionDO = new ActionDO()
-            {
-                IsTempId = true,
-                ActivityTemplateId = activityTemplateDTO.Id,
-                CrateStorage = Crate.CrateStorageAsStr(
+            var buildQueryActivityDO = await AddAndConfigureChildActivity(activityDO, "BuildQuery");
+            buildQueryActivityDO.CrateStorage = CrateManager.CrateStorageAsStr(
                     new CrateStorage()
                     {
                         Crate<StandardQueryCM>.FromContent(
@@ -363,54 +323,25 @@ namespace terminalFr8Core.Actions
                             )
                         )
                     }
-                ),
-                CreateDate = DateTime.Now,
-                Ordering = 2,
-                Name = "Build Query",
-                Label = "Build Query"
-            };
-
-            return buildQueryActionDO;
+                );
+            
+            return buildQueryActivityDO;
         }
 
-        private async Task<ActionDO> CreateExecuteSqlAction(ActionDO actionDO)
+        private async Task<ActivityDO> CreateExecuteSqlAction(ActivityDO activityDO)
         {
-            var activityTemplateName = "ExecuteSql";
-            var activityTemplateDTO = await ExtractActivityTemplate(actionDO, activityTemplateName);
-
-            if (activityTemplateDTO == null)
-            {
-                throw new Exception(string.Format("ActivityTemplate {0} was not found", activityTemplateName));
-            }
-
-            var executeSqlActionDO = new ActionDO()
-            {
-                IsTempId = true,
-                ActivityTemplateId = activityTemplateDTO.Id,
-                CrateStorage = Crate.EmptyStorageAsStr(),
-                CreateDate = DateTime.Now,
-                Ordering = 3,
-                Name = "Execute Sql",
-                Label = "Execute Sql"
-            };
-
-            return executeSqlActionDO;
+            return await AddAndConfigureChildActivity(activityDO, "ExecuteSql");
         }
 
-        private async Task UpdateChildActions(ActionDO actionDO)
+        private async Task UpdateChildActions(ActivityDO activityDO)
         {
-            actionDO.ChildNodes = new List<RouteNodeDO>();
+            var connectToSqlActionDO = await CreateConnectToSqlActivity(activityDO);
 
-            var connectToSqlActionDO = await CreateConnectToSqlAction(actionDO);
-            actionDO.ChildNodes.Add(connectToSqlActionDO);
-
-            if (FindControl(Crate.GetStorage(actionDO), "QueryBuilder") != null)
+            if (FindControl(CrateManager.GetStorage(activityDO), "QueryBuilder") != null)
             {
-                var buildQueryActionDO = await CreateBuildQueryAction(actionDO);
-                actionDO.ChildNodes.Add(buildQueryActionDO);
+                var buildQueryActionDO = await CreateBuildQueryActivity(activityDO);
 
-                var executeSqlActionDO = await CreateExecuteSqlAction(actionDO);
-                actionDO.ChildNodes.Add(executeSqlActionDO);
+                var executeSqlActionDO = await CreateExecuteSqlAction(activityDO);
             }
         }
 
@@ -418,9 +349,9 @@ namespace terminalFr8Core.Actions
 
         #region Execution
 
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            return Success(await GetPayload(curActionDO, containerId));
+            return Success(await GetPayload(curActivityDO, containerId));
         }
 
         #endregion

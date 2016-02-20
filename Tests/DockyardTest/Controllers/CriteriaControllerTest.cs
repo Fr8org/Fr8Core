@@ -22,6 +22,12 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
+        public void CriteriaController_ShouldHaveFr8ApiAuthorize()
+        {
+            ShouldHaveFr8ApiAuthorize(typeof(CriteriaController));
+        }
+
+        [Test]
         public void CriteriaController_GetBySubrouteId()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -43,19 +49,15 @@ namespace DockyardTest.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
 
-                //Add a template
-                var curRoute = FixtureData.TestRoute1();
-                uow.RouteRepository.Add(curRoute);
-                uow.SaveChanges();
 
                 //Add a template
-                var route = FixtureData.TestRoute1();
-                uow.RouteRepository.Add(route);
-                uow.SaveChanges();
-                //Add a processnodetemplate to route 
+                var plan = FixtureData.TestRoute1();
+                uow.PlanRepository.Add(plan);
+                //Add a processnodetemplate to plan 
                 _curSubroute = FixtureData.TestSubrouteDO1();
-                _curSubroute.ParentRouteNodeId = route.Id;
-                uow.SubrouteRepository.Add(_curSubroute);
+                _curSubroute.ParentRouteNodeId = plan.Id;
+                plan.ChildNodes.Add(_curSubroute);
+                
                 uow.SaveChanges();
 
                 /*_curSubroute = FixtureData.TestSubrouteDO1();

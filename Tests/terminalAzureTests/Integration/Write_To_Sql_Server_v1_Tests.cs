@@ -11,11 +11,12 @@ using StructureMap;
 using terminalAzureTests.Fixtures;
 using UtilitiesTesting.Fixtures;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace terminalAzureTests.Integration
 {
     [Explicit]
-    public class Write_To_Sql_Server_v1_Tests : BaseHealthMonitorTest
+    public class Write_To_Sql_Server_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {
@@ -24,7 +25,8 @@ namespace terminalAzureTests.Integration
 
         private void AssertConfigureControls(StandardConfigurationControlsCM control)
         {
-            Assert.AreEqual(1, control.Controls.Count);
+            //Now there are two ControlsDefinitionDTO: TextBox for connnection string and Button "Continue"
+            Assert.AreEqual(2, control.Controls.Count);
 
             // Assert that first control is a TextBox 
             // with Label == "SQL Connection String"
@@ -34,7 +36,7 @@ namespace terminalAzureTests.Integration
             Assert.AreEqual("connection_string", control.Controls[0].Name);
         }
 
-        private void AssertConfigureCrate(CrateStorage crateStorage)
+        private void AssertConfigureCrate(ICrateStorage crateStorage)
         {
             Assert.AreEqual(1, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
@@ -50,7 +52,7 @@ namespace terminalAzureTests.Integration
 
             return PackControlsCrate(control);
         }
-        
+
         private Crate<StandardConfigurationControlsCM> PackControlsCrate(params ControlDefinitionDTO[] controlsList)
         {
             return Crate<StandardConfigurationControlsCM>.FromContent("Configuration_Controls", new StandardConfigurationControlsCM(controlsList));
@@ -60,14 +62,14 @@ namespace terminalAzureTests.Integration
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
         [Test]
-        public async void Write_To_Sql_Server_Initial_Configuration_Check_Crate_Structure()
+        public async Task Write_To_Sql_Server_Initial_Configuration_Check_Crate_Structure()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Write_To_Sql_Server_v1_InitialConfiguration_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Write_To_Sql_Server_v1_InitialConfiguration_Fr8DataDTO();
 
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -83,19 +85,19 @@ namespace terminalAzureTests.Integration
         /// <summary>
         /// Validate correct crate-storage structure in follow-up configuration response 
         /// </summary>
-        [Test]
-        public async void Write_To_Sql_Server_FollowUp_Configuration_Check_Crate_Structure()
+        [Test, Ignore]
+        public async Task Write_To_Sql_Server_FollowUp_Configuration_Check_Crate_Structure()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Write_To_Sql_Server_v1_InitialConfiguration_ActionDTO();
+            var fr8DataDTO = HealthMonitor_FixtureData.Write_To_Sql_Server_v1_InitialConfiguration_Fr8DataDTO();
 
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    requestActionDTO
+                    fr8DataDTO
                 );
-            
+
 
             var storage = Crate.GetStorage(responseActionDTO);
 
@@ -105,15 +107,15 @@ namespace terminalAzureTests.Integration
 
             controlDefinitionDTO[0].Value = FixtureData.TestConnectionString2().Value;
 
-            using (var updater = Crate.UpdateStorage(responseActionDTO))
+            using (var updatableStorage = Crate.GetUpdatableStorage(responseActionDTO))
             {
-                updater.CrateStorage = storage;
+                updatableStorage.Replace(storage);
             }
-
+            fr8DataDTO.ActivityDTO = responseActionDTO;
             responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    responseActionDTO
+                    fr8DataDTO
                 );
 
             Assert.NotNull(responseActionDTO);
@@ -132,24 +134,74 @@ namespace terminalAzureTests.Integration
         }
 
         /// <summary>
+        /// Validate correct crate-storage structure in follow-up configuration response 
+        /// with incorrect connection string
+        /// </summary>
+        [Test]
+        public async Task Write_To_Sql_Server_FollowUp_Configuration_Check_Crate_Structure_Incorrect_ConnectionString()
+        {
+            var configureUrl = GetTerminalConfigureUrl();
+
+            var fr8DataDTO = HealthMonitor_FixtureData.Write_To_Sql_Server_v1_InitialConfiguration_Fr8DataDTO();
+
+            var responseActionDTO =
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
+                    configureUrl,
+                    fr8DataDTO
+                );
+
+
+            var storage = Crate.GetStorage(responseActionDTO);
+
+            var controlDefinitionDTO =
+                storage.CratesOfType<StandardConfigurationControlsCM>()
+                    .Select(x => x.Content.FindByName("connection_string")).ToArray();
+            //provide incorrect connection string
+            controlDefinitionDTO[0].Value = FixtureData.TestConnectionString3().Value;
+
+            using (var updatableStorage = Crate.GetUpdatableStorage(responseActionDTO))
+            {
+                updatableStorage.Replace(storage);
+            }
+            fr8DataDTO.ActivityDTO = responseActionDTO;
+            responseActionDTO =
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
+                    configureUrl,
+                    fr8DataDTO
+                );
+
+            Assert.NotNull(responseActionDTO);
+            Assert.NotNull(responseActionDTO.CrateStorage);
+            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
+            var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
+            //There will be no DesignTimeCrate only Configuration crate
+            Assert.AreEqual(1, crateStorage.Count);
+            Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
+            var controls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
+            AssertConfigureControls(controls);
+            //Check that Error message is shown
+            var connStringTextBox = (TextBox)controls.Controls[0];
+            Assert.AreEqual("Incorrect Connection String", connStringTextBox.Value);
+        }
+
+        /// <summary>
         /// Test run-time for action Run().
         /// </summary>
         [Test]
-        public async void Write_To_Sql_Server_Run()
+        public async Task Write_To_Sql_Server_Run()
         {
             var runUrl = GetTerminalRunUrl();
 
-            var actionDTO = HealthMonitor_FixtureData.Write_To_Sql_Server_v1_InitialConfiguration_ActionDTO();
-            
-            using (var updater = Crate.UpdateStorage(actionDTO))
+            var fr8DataDTO = HealthMonitor_FixtureData.Write_To_Sql_Server_v1_InitialConfiguration_Fr8DataDTO();
+
+            using (var crateStorage = Crate.GetUpdatableStorage(fr8DataDTO.ActivityDTO))
             {
-                updater.CrateStorage.Add(CreateConnectionStringCrate());
+                crateStorage.Add(CreateConnectionStringCrate());
             }
 
-            AddOperationalStateCrate(actionDTO, new OperationalStateCM());
+            AddOperationalStateCrate(fr8DataDTO, new OperationalStateCM());
 
-            AddPayloadCrate(
-               actionDTO,
+            AddPayloadCrate(fr8DataDTO,
                new StandardPayloadDataCM(
                     new FieldDTO("Field1", "[Customer].[Physician]"),
                     new FieldDTO("Field2", "[Customer].[CurrentMedicalCondition]")
@@ -157,8 +209,7 @@ namespace terminalAzureTests.Integration
                "MappedFields"
             );
 
-            AddPayloadCrate(
-                actionDTO,
+            AddPayloadCrate(fr8DataDTO,
                 new StandardPayloadDataCM(
                     new FieldDTO("Field1", "test physician"),
                     new FieldDTO("Field2", "teststring")
@@ -166,8 +217,7 @@ namespace terminalAzureTests.Integration
                "DocuSign Envelope Data"
             );
 
-            var responsePayloadDTO =
-                await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+            var responsePayloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, fr8DataDTO);
 
             Assert.NotNull(responsePayloadDTO);
             Assert.NotNull(responsePayloadDTO.CrateStorage);
@@ -175,19 +225,19 @@ namespace terminalAzureTests.Integration
         }
 
         [Test]
-        public async void Write_To_Sql_Server_Activate_Returns_ActionDTO()
+        public async Task Write_To_Sql_Server_Activate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = HealthMonitor_FixtureData.Write_To_Sql_Server_v1_InitialConfiguration_ActionDTO();
+            var fr8DataDTO = HealthMonitor_FixtureData.Write_To_Sql_Server_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    requestActionDTO
+                    fr8DataDTO
                 );
 
             //Assert
@@ -196,19 +246,19 @@ namespace terminalAzureTests.Integration
         }
 
         [Test]
-        public async void Write_To_Sql_Server_Deactivate_Returns_ActionDTO()
+        public async Task Write_To_Sql_Server_Deactivate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = HealthMonitor_FixtureData.Write_To_Sql_Server_v1_InitialConfiguration_ActionDTO();
+            var fr8DataDTO = HealthMonitor_FixtureData.Write_To_Sql_Server_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    requestActionDTO
+                    fr8DataDTO
                 );
 
             //Assert

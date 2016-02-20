@@ -265,8 +265,10 @@
                                 "value": null,
                                 "label": null,
                                 "type": "TextBox",
+                                "errorMessage":null,
                                 "selected": false,
                                 "events": null,
+                                "isFocused" : false,
                                 "source": null
                             }
                         ]
@@ -282,8 +284,10 @@
                                 "required": false,
                                 "value": null,
                                 "label": null,
+                                "errorMessage": null,
                                 "type": "DropDownList",
                                 "selected": false,
+                                "isFocused": false,
                                 "events": [
                                     {
                                         "name": "onChange",
@@ -302,6 +306,8 @@
                                 "value": null,
                                 "label": null,
                                 "type": "TextSource",
+                                "errorMessage": null,
+                                "isFocused": false,
                                 "selected": false,
                                 "events": [],
                                 "source": {
@@ -317,11 +323,13 @@
                 ],
                 "name": null,
                 "required": false,
+                "errorMessage": null,
                 "value": null,
                 "label": "For the SMS Number use:",
                 "type": "RadioButtonGroup",
                 "selected": false,
                 "events": null,
+                "isFocused": false,
                 "source": null,
                 fieldLabel: null
             },
@@ -332,7 +340,9 @@
                 "label": "SMS Body",
                 "type": "TextBox",
                 "selected": false,
+                "errorMessage": null,
                 "events": null,
+                "isFocused" : false,
                 "source": null,
                 fieldLabel: null
             },
@@ -344,6 +354,8 @@
                 "label": null,
                 "type": "DropDownList",
                 "selected": false,
+                "errorMessage": null,
+                "isFocused": false,
                 "events": [],
                 "source": {
                     "manifestType": "Standard Design-Time Fields1",
@@ -362,6 +374,8 @@
                 "value": "",
                 "label": null,
                 "type": "DropDownList",
+                "isFocused": false,
+                "errorMessage": null,
                 "selected": false,
                 "events": null,
                 "source": {
@@ -381,6 +395,8 @@
                 "value": "",
                 "label": null,
                 "type": "TextSource",
+                "errorMessage": null,
+                "isFocused": false,
                 "selected": false,
                 "events": null,
                 "source": {
@@ -389,7 +405,7 @@
                     "filterByTag": "NoAddress"
                 }
             }
-        ]
+        ];
 
     }
 

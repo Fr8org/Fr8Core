@@ -17,13 +17,13 @@ using Data.Control;
 
 namespace terminalFr8Core.Actions
 {
-    public class AddPayloadManually_v1 : BaseTerminalAction
+    public class AddPayloadManually_v1 : BaseTerminalActivity
     {
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var payloadCrates = await GetPayload(curActionDO, containerId);
+            var payloadCrates = await GetPayload(curActivityDO, containerId);
 
-            var controlsMS = Crate.GetStorage(curActionDO.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var controlsMS = CrateManager.GetStorage(curActivityDO.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (controlsMS == null)
             {
@@ -40,9 +40,9 @@ namespace terminalFr8Core.Actions
 
             var userDefinedPayload = JsonConvert.DeserializeObject<List<FieldDTO>>(fieldListControl.Value);
 
-            using (var updater = Crate.UpdateStorage(() => payloadCrates.CrateStorage))
+            using (var crateStorage = CrateManager.UpdateStorage(() => payloadCrates.CrateStorage))
             {
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("ManuallyAddedPayload", new StandardPayloadDataCM(userDefinedPayload)));
+                crateStorage.Add(Data.Crates.Crate.FromContent("ManuallyAddedPayload", new StandardPayloadDataCM(userDefinedPayload)));
             }
             //
             //            var cratePayload = Crate.Create(
@@ -57,27 +57,27 @@ namespace terminalFr8Core.Actions
             return Success(payloadCrates);
         }
 
-        public override async Task<ActionDO> Configure(ActionDO curActionDataPackageDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActivityDO> Configure(ActivityDO curActionDataPackageDO, AuthorizationTokenDO authTokenDO)
         {
             return await ProcessConfigurationRequest(curActionDataPackageDO, ConfigurationEvaluator, authTokenDO);
         }
 
-        protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             //build a controls crate to render the pane
             var configurationControlsCrate = CreateControlsCrate();
 
-            using (var updater = Crate.UpdateStorage(curActionDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage = AssembleCrateStorage(configurationControlsCrate);
+                crateStorage.Replace(AssembleCrateStorage(configurationControlsCrate));
             }
 
-            return Task.FromResult(curActionDO);
+            return Task.FromResult(curActivityDO);
         }
 
-        protected override Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            var controlsMS = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var controlsMS = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (controlsMS == null)
             {
@@ -94,16 +94,22 @@ namespace terminalFr8Core.Actions
             if (fieldListControl.Value != null)
             {
                 var userDefinedPayload = JsonConvert.DeserializeObject<List<FieldDTO>>(fieldListControl.Value);
-                userDefinedPayload.ForEach(x => x.Value = x.Key);
-
-                using (var updater = Crate.UpdateStorage(curActionDO))
+                userDefinedPayload.ForEach(x =>
                 {
-                    updater.CrateStorage.RemoveByLabel("ManuallyAddedPayload");
-                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("ManuallyAddedPayload", new StandardDesignTimeFieldsCM() { Fields = userDefinedPayload }));
+                    x.Value = x.Key;
+                    x.Availability = Data.States.AvailabilityType.RunTime;
+                });
+
+                using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+                {
+                    crateStorage.RemoveByLabel("ManuallyAddedPayload");
+                    var crate = Data.Crates.Crate.FromContent("ManuallyAddedPayload", new StandardDesignTimeFieldsCM() { Fields = userDefinedPayload });
+                    crate.Availability = Data.States.AvailabilityType.RunTime;
+                    crateStorage.Add(crate);
                 }
             }
 
-            return Task.FromResult(curActionDO);
+            return Task.FromResult(curActivityDO);
         }
 
         private Crate CreateControlsCrate()
@@ -119,9 +125,9 @@ namespace terminalFr8Core.Actions
             return PackControlsCrate(fieldFilterPane);
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (Crate.IsStorageEmpty(curActionDO))
+            if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
             }

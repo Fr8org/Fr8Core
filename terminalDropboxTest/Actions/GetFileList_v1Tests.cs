@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Hub.Interfaces;
 using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -33,16 +34,17 @@ namespace terminalDropboxTests.Actions
             ObjectFactory.Configure(cfg => cfg.For<IRestfulServiceClient>().Use(restfulServiceClient.Object));
 
             _getFileList_v1 = ObjectFactory.GetInstance<Get_File_List_v1>();
+            _getFileList_v1.HubCommunicator.Configure("terminalDropbox");
         }
 
         [Test]
         public void Run_ReturnsPayloadDTO()
         {
             //Arrange
-            var curActionDO = FixtureData.GetFileListTestActionDO1();
+            var curActivityDO = FixtureData.GetFileListTestActionDO1();
             var container = FixtureData.TestContainer();
             //Act
-            var payloadDTOResult = _getFileList_v1.Run(curActionDO, container.Id, FixtureData.DropboxAuthorizationToken()).Result;
+            var payloadDTOResult = _getFileList_v1.Run(curActivityDO, container.Id, FixtureData.DropboxAuthorizationToken()).Result;
             var jsonData = ((JValue)(payloadDTOResult.CrateStorage.Crates[1].Contents)).Value.ToString();
             var dropboxFileList = JsonConvert.DeserializeObject<List<string>>(jsonData);
             
