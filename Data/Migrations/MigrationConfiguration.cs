@@ -47,11 +47,10 @@ namespace Data.Migrations
 
 
             // Uncomment four following lines to debug Seed method (in case running from NuGet Package Manager Console).
-            //if (System.Diagnostics.Debugger.IsAttached == false)
-            //{
-            //    System.Diagnostics.Debugger.Launch();
-            //}
-
+            // if (System.Diagnostics.Debugger.IsAttached == false)
+            // {
+            //     System.Diagnostics.Debugger.Launch();
+            // }
 
             using (var migrationContainer = new Container())
             {
@@ -73,7 +72,10 @@ namespace Data.Migrations
                 //AddAuthorizationTokens(uow);
                 uow.SaveChanges();
                 Fr8AccountDO fr8AccountDO = GetFr8Account(uow, "alex@edelstein.org");
-                AddContainerDOForTestingApi(uow, fr8AccountDO);
+
+                // TODO: to be fixed, crashes when resolving IUnitOfWork out of global ObjectFactory container.
+                // Commented out by yakov.gnusin.
+                // AddContainerDOForTestingApi(uow, fr8AccountDO);
 
                 AddWebServices(uow);
 
