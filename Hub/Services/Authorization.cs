@@ -369,7 +369,7 @@ namespace Hub.Services
 
         public void RemoveAuthenticationCrate(ActivityDTO activityDTO)
         {
-            using (var crateStorage = _crate.UpdateStorage(() => activityDTO.CrateStorage))
+            using (var crateStorage = _crate.GetUpdatableStorage(activityDTO))
             {
                 crateStorage.RemoveByManifestId((int)MT.StandardAuthentication);
             }

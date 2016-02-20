@@ -23,7 +23,7 @@
         Textbox template
         -->
     <div ng-if='field.type == "TextBox"'>
-        <label class='control-label'>{{::field.label}}</label>
+        <label class='control-label' ng-if="field.label">{{::field.label}}</label>
         <input type='text' ng-model='field.value' ng-model-options="{ updateOn: 'default blur', debounce: { 'default': 500, 'blur': 0 } }"
                ng-blur="onChange($event)" ng-required='field.required' data-field-name='{{::field.name}}' id='pca__txt__{{::field.name | validId}}'
                class='form-control form-control-focus' name='pca__txt__{{::field.name | validId}}' stop-click-propagation>
@@ -176,6 +176,11 @@
         -->
     <div ng-if='field.type == "SourceableCriteria"'>
         <sourceable-criteria change="onChange" data-field-name='{{::field.name}}' field="field"></sourceable-criteria>
+    </div>
+
+    <!-- DatePicker -->
+    <div ng-if='field.type == "DatePicker"'>
+        <date-picker field="field" />
     </div>
 
     <!-- Add more configuration field templates below -->
