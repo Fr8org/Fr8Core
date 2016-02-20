@@ -8,6 +8,7 @@ module dockyard.directives.designerHeader {
         editTitle(): void;
         onTitleChange(): void;
         runRoute(): void;
+        deactivatePlan(): void;
 
         route: model.RouteDTO;
     }
@@ -20,6 +21,7 @@ module dockyard.directives.designerHeader {
             $scope: IDesignerHeaderScope,
             element: ng.IAugmentedJQuery,
             attrs: ng.IAttributes,
+            ngToast: any,
             RouteService: services.IRouteService
         ) => void;
 
@@ -42,6 +44,7 @@ module dockyard.directives.designerHeader {
                 $scope: IDesignerHeaderScope,
                 $element: ng.IAugmentedJQuery,
                 $attrs: ng.IAttributes,
+                ngToast: any,
                 RouteService: services.IRouteService) => {
 
                 $scope.editTitle = () => {
@@ -55,11 +58,29 @@ module dockyard.directives.designerHeader {
                 };
 
                 $scope.runRoute = () => {
-                    RouteService.runAndProcessClientAction($scope.route.id);
+                    var promise = RouteService.runAndProcessClientAction($scope.route.id);
+                    promise.then(() => {
+                        // mark plan as active
+                        $scope.route.routeState = 2;
+                    });
+                };
+
+                $scope.deactivatePlan = () => {
+                    var result = RouteService.deactivate({ planId: $scope.route.id });
+                    result.$promise.then((data) => {
+                        // mark plan as inactive
+                        $scope.route.routeState = 1;
+                        var messageToShow = "Plan successfully deactivated";
+                        ngToast.success(messageToShow);
+                    })
+                        .catch((err: any) => {
+                            var messageToShow = "Failed to toggle Plan Status";
+                            ngToast.danger(messageToShow);
+                        });
                 };
             };
 
-            DesignerHeader.prototype.controller['$inject'] = ['$scope', '$element', '$attrs', 'RouteService'];
+            DesignerHeader.prototype.controller['$inject'] = ['$scope', '$element', '$attrs', 'ngToast', 'RouteService'];
         }
 
         //The factory function returns Directive object as per Angular requirements

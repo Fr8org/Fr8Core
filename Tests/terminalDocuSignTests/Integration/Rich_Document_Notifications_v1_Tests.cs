@@ -130,7 +130,7 @@ namespace terminalDocuSignTests.Integration
                 {
                     Id = 9,
                     Name = "Send Email_Via_Send_Grid",
-                    Label = "Send Email using SendGrid",
+                    Label = "Send Email",
                     Tags = "Notifier",
                     Version = "1",
                     Terminal = terminal

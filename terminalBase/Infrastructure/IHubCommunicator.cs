@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Data.Crates;
 using Data.Entities;
@@ -39,5 +40,6 @@ namespace TerminalBase.Infrastructure
         Task<IEnumerable<FileDTO>> GetFiles(string userId);
         Task Configure(string terminalName);
         bool IsConfigured { get; set; }
+        Task DeleteExistingChildNodesFromActivity(Guid curActivityId, string userId);
     }
 }

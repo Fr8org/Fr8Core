@@ -800,6 +800,7 @@
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionDocumentationController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\ActionPicker.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\SourceableCriteria.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamCrateChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamFieldChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Validators\ManifestDescriptionValidators.ts" />
@@ -934,6 +935,7 @@
     <Content Include="Views\Shared\_AngularAppStyles.cshtml" />
     <Content Include="Views\Shared\CDN\_AngularAppStyles.cshtml" />
     <Content Include="Views\AngularTemplate\QueryBuilderCondition.cshtml" />
+    <Content Include="Views\AngularTemplate\SourceableCriteria.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

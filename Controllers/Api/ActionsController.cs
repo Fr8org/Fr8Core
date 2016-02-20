@@ -130,6 +130,21 @@ namespace HubWeb.Controllers
         }
 
         /// <summary>
+        /// DELETE: Remove all child Nodes and clear activity values
+        /// </summary>
+        [HttpDelete]
+        [Fr8HubWebHMACAuthenticate]
+        public async Task<IHttpActionResult> DeleteChildNodes(Guid activityId)
+        {
+            var isDeleted = await _subRoute.DeleteAllChildNodes(activityId);
+            if (!isDeleted)
+            {
+                return ResponseMessage(new HttpResponseMessage(HttpStatusCode.PreconditionFailed));
+            }
+            return Ok();
+        }
+
+        /// <summary>
         /// POST : Saves or updates the given action
         /// </summary>
         [HttpPost]

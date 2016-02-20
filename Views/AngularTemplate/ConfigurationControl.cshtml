@@ -171,5 +171,12 @@
         <upstream-crate-chooser field="field" current-action="currentAction" change="onChange"></upstream-crate-chooser>
     </div>
 
+    <!--
+    SourceableCriteria template
+        -->
+    <div ng-if='field.type == "SourceableCriteria"'>
+        <sourceable-criteria change="onChange" data-field-name='{{::field.name}}' field="field"></sourceable-criteria>
+    </div>
+
     <!-- Add more configuration field templates below -->
 </div>

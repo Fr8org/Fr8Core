@@ -229,6 +229,79 @@ namespace Hub.Services
             return true;
         }
 
+        public async Task<bool> DeleteAllChildNodes(Guid activityId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curAction = uow.PlanRepository.GetById<RouteNodeDO>(activityId);
+                RouteNodeDO currentAction = curAction;
+                var downStreamActivities = _routeNode.GetDownstreamActivities(uow, curAction).OfType<ActivityDO>();
+
+                   bool hasChanges = false;
+                 
+                do
+                {
+                    currentAction = _routeNode.GetNextActivity(currentAction, curAction);
+                    if (currentAction != null)
+                    {
+                        hasChanges = true;
+                        currentAction.RemoveFromParent();
+                    }
+
+                } while (currentAction != null);
+
+
+                if (hasChanges)
+                {
+                    uow.SaveChanges();
+                }
+                //we should clear values of configuration controls
+
+                foreach (var downStreamActivity in downStreamActivities)
+                {
+                    var currentActivity = downStreamActivity;
+                    bool somethingToReset = false;
+
+                    using (var crateStorage = _crate.UpdateStorage(() => currentActivity.CrateStorage))
+                    {
+                        foreach (var configurationControls in crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>())
+                        {
+                            foreach (IResettable resettable in configurationControls.Controls)
+                            {
+                                resettable.Reset();
+                                somethingToReset = true;
+                            }
+                        }
+
+                        if (!somethingToReset)
+                        {
+                            crateStorage.DiscardChanges();
+                        }
+                    }
+
+                    // Detach containers from action, where CurrentRouteNodeId == id.
+                    var containersWithCurrentRouteNode = uow.ContainerRepository
+                        .GetQuery()
+                        .Where(x => x.CurrentRouteNodeId == downStreamActivity.Id)
+                        .ToList();
+
+                    containersWithCurrentRouteNode.ForEach(x => x.CurrentRouteNodeId = null);
+
+                    // Detach containers from action, where NextRouteNodeId == id.
+                    var containersWithNextRouteNode = uow.ContainerRepository
+                        .GetQuery()
+                        .Where(x => x.NextRouteNodeId == downStreamActivity.Id)
+                        .ToList();
+
+                    containersWithNextRouteNode.ForEach(x => x.NextRouteNodeId = null);
+                }
+
+                uow.SaveChanges();
+            }
+
+            return await Task.FromResult(true);
+        }
+
         protected void DeleteActionKludge(Guid id)
         {
             //Kludge solution

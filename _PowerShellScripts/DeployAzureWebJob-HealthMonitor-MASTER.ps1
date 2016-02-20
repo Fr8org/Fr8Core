@@ -50,7 +50,7 @@ Compress-Archive -Path $archiveFiles -DestinationPath $outputArchiveFile -Force
 
 # Deploy AzureWebsiteJob.
 Write-Host "Deploying AzureWebsiteJob"
-$site = Get-AzureWebsite -Name "fr8"
+$site = Get-AzureWebsite -Name "fr8" -Slot "production"
 # $site = Get-AzureWebsite -Name "fr8dev"
 
 New-AzureWebsiteJob -Name $site[0].Name `
