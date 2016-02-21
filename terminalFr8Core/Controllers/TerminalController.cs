@@ -41,6 +41,16 @@ namespace terminalFr8Core.Controllers
 
             result.Add(new ActivityTemplateDTO
             {
+                Name = "Build_Message",
+                Label = "Build a Message",
+                Category = ActivityCategory.Processors,
+                Terminal = terminal,
+                WebService = webService,
+                Version = "1"
+            });
+
+            result.Add(new ActivityTemplateDTO
+            {
                 Name = "TestIncomingData",
                 Label = "Test Incoming Data",
                 Category = ActivityCategory.Processors,
@@ -159,7 +169,7 @@ namespace terminalFr8Core.Controllers
             result.Add(new ActivityTemplateDTO()
             {
                 Name = "Loop",
-                Label = "Fr8 Core Loop",
+                Label = "Loop",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 WebService = webService,

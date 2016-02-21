@@ -21,7 +21,7 @@ namespace terminalSalesforce.Infrastructure
                                           "Order",
                                           "Case",
                                           "Solution",
-                                          "Product",
+                                          "Product2",
                                           "Document"
                                           //"File"
                                         };
@@ -68,7 +68,7 @@ namespace terminalSalesforce.Infrastructure
                 case "Solution":
                     salesforceObject = new Solution();
                     break;
-                case "Product":
+                case "Product2":
                     salesforceObject = new Product();
                     break;
                 case "Document":

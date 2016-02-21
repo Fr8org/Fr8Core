@@ -26,7 +26,7 @@ namespace terminalSalesforce.Infrastructure
         protected override string GetSelectAllQuery()
         {
             //return the query to select all accounts
-            return "select CurrencyIsoCode, Name, DefaultPrice from Product";
+            return "select ProductCode, Name, Description from Product2";
         }
 
         protected override IList<PayloadObjectDTO> ParseQueryResult(QueryResult<object> queryResult)
@@ -49,9 +49,9 @@ namespace terminalSalesforce.Infrastructure
                             PayloadObject =
                                 new List<FieldDTO>
                                 {
-                                    new FieldDTO {Key = "CurrencyIsoCode", Value = product.CurrencyIsoCode},
+                                    new FieldDTO {Key = "ProductCode", Value = product.ProductCode},
                                     new FieldDTO {Key = "Name", Value = product.Name},
-                                    new FieldDTO {Key = "DefaultPrice", Value = product.DefaultPrice}
+                                    new FieldDTO {Key = "Description", Value = product.Description}
                                 }
                         }));
 

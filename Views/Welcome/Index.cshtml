@@ -37,17 +37,35 @@
                 </a>
             </div>
             <div class="HomeRightSide">
-                <a href="~/dashboard#/myaccount">
-                    <div class="HomeRightSideWrapper">
-                        <img src="/Content/img/welcome/logo.png">
-                        <div class="docusing-right-pane">
-                            <span class="docusign-header">Build Fr8 Plan</span>
-                            <p>Create powerful web workflows with a few mouse clicks</p>
+
+                @using Microsoft.AspNet.Identity
+                @if (Request.IsAuthenticated)
+                {
+                    <a href="~/dashboard#/myaccount">
+                        <div class="HomeRightSideWrapper">
+                            <img src="/Content/img/welcome/logo.png">
+                            <div class="docusing-right-pane">
+                                <span class="docusign-header">Build Fr8 Plan</span>
+                                <p>Create powerful web workflows with a few mouse clicks</p>
+                            </div>
+                            <img src="/Content/img/welcome/plan_builder.png" class="hidden-sm hidden-xs">
                         </div>
-                        <p><span class="btn btn-warning btn-md">Try Now</span></></p>
-                        <img src="/Content/img/welcome/plan_builder.png" class="hidden-sm hidden-xs">
-                    </div>
-                </a>
+                    </a>
+                }
+                else {
+                    <a href="/DockyardAccount/ProcessGuestUserMode">
+                        <div class="HomeRightSideWrapper">
+                            <img src="/Content/img/welcome/logo.png">
+                            <div class="docusing-right-pane">
+                                <span class="docusign-header">Build Fr8 Plan</span>
+                                <p>Create powerful web workflows with a few mouse clicks</p>
+                            </div>
+                            <p><span class="btn btn-warning btn-md">Try Now</span></p>
+                            <img src="/Content/img/welcome/plan_builder.png" class="hidden-sm hidden-xs">
+                        </div>
+                    </a>
+                }
+
             </div>
             <div class="clearfix"></div>
         </div>

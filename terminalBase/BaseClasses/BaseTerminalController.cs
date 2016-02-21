@@ -53,12 +53,6 @@ namespace TerminalBase.BaseClasses
             if (_integrationTestMode)
                 return Ok();
 
-            // Wirte exception to App Insights
-            var telemetry = new Microsoft.ApplicationInsights.TelemetryClient();
-            var prop = new System.Collections.Generic.Dictionary<string, string>();
-            prop.Add("Terminal", terminalName);
-            telemetry.TrackException(terminalError);
-
             var exceptionMessage = terminalError.GetFullExceptionMessage() + "      \r\n" + terminalError.ToString();//string.Format("{0}\r\n{1}", terminalError.Message, terminalError.StackTrace);
             try
             {

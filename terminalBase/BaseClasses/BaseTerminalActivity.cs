@@ -803,58 +803,82 @@ namespace TerminalBase.BaseClasses
             {
                 var controls = crateStorage
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
-                    .First().Controls;
+                    .FirstOrDefault();
 
-                var control = TraverseNestedControls(controls, controlFullName);
-                if (control == null) return;
-
-                switch (control.Type)
+                if (controls != null)
                 {
-                    case "TextBlock":
-                    case "TextBox":
-                        control.Value = (string)value;
-                        break;
-                    case "CheckBox":
-                        control.Selected = true;
-                        break;
-                    case "DropDownList":
-                        var ddlb = control as DropDownList;
-                        var val = value as ListItem;
-                        ddlb.selectedKey = val.Key;
-                        ddlb.Value = val.Value;
-                        //ddlb.ListItems are not loaded yet
-                        break;
-                    case "Duration":
-                        var duration = control as Duration;
-                        var timespan = (TimeSpan)value;
-                        duration.Days = timespan.Days;
-                        duration.Hours = timespan.Hours;
-                        duration.Minutes = timespan.Minutes;
-                        break;
-                    default:
-                        throw new NotImplementedException();
+                    var control = TraverseNestedControls(controls.Controls, controlFullName);
+
+                    if (control != null)
+                    {
+                        switch (control.Type)
+                        {
+                            case "TextBlock":
+                            case "TextBox":
+                                control.Value = (string)value;
+                                break;
+                            case "CheckBox":
+                                control.Selected = true;
+                                break;
+                            case "DropDownList":
+                                var ddlb = control as DropDownList;
+                                var val = value as ListItem;
+                                ddlb.selectedKey = val.Key;
+                                ddlb.Value = val.Value;
+                                //ddlb.ListItems are not loaded yet
+                                break;
+                            case "Duration":
+                                var duration = control as Duration;
+                                var timespan = (TimeSpan)value;
+                                duration.Days = timespan.Days;
+                                duration.Hours = timespan.Hours;
+                                duration.Minutes = timespan.Minutes;
+                                break;
+                            default:
+                                throw new NotImplementedException();
+                        }
+                    }
                 }
             }
         }
 
         private ControlDefinitionDTO TraverseNestedControls(List<ControlDefinitionDTO> controls, string childControl)
         {
+            ControlDefinitionDTO controlDefinitionDTO = null;
             var controlNames = childControl.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
-            var control = controls.FirstOrDefault(a => a.Name == controlNames[0]);
-            if (controlNames.Count() == 1) return control;
-
-            List<ControlDefinitionDTO> nestedControls = null;
-
-            if (control.Type == "RadioButtonGroup")
+            if (controlNames.Length > 0 && controls.Count > 0)
             {
-                var radio = (control as RadioButtonGroup).Radios.FirstOrDefault(a => a.Name == controlNames[1]);
-                radio.Selected = true;
-                nestedControls = radio.Controls.ToList();
-                return TraverseNestedControls(nestedControls, string.Join(".", controlNames.Skip(2)));
+                var control = controls.FirstOrDefault(a => a.Name == controlNames[0]);
+
+                if (control != null)
+                {
+                    if (controlNames.Count() == 1)
+                    {
+                        controlDefinitionDTO = control;
+                    }
+                    else
+                    {
+                        List<ControlDefinitionDTO> nestedControls = null;
+
+                        if (control.Type == "RadioButtonGroup")
+                        {
+                            var radio = (control as RadioButtonGroup).Radios.FirstOrDefault(a => a.Name == controlNames[1]);
+                            if (radio != null)
+                            {
+                                radio.Selected = true;
+                                nestedControls = radio.Controls.ToList();
+
+                                controlDefinitionDTO = TraverseNestedControls(nestedControls, string.Join(".", controlNames.Skip(2)));
+                            }
+                        }
+                        //TODO: Add support for future controls with nested child controls
+                        else
+                            throw new NotImplementedException("Can't search for controls inside of " + control.Type);
+                    }
+                }
             }
-            //TODO: Add support for future controls with nested child controls
-            else
-                throw new NotImplementedException("Can't search for controls inside of " + control.Type);
+
+            return controlDefinitionDTO;
         }
 
         protected void RemoveControl(ICrateStorage storage, string name)
@@ -919,7 +943,7 @@ namespace TerminalBase.BaseClasses
                 Crate availableFieldsCrate = null;
                 if (crates is List<Data.Crates.Crate<StandardDesignTimeFieldsCM>>)
                 {
-                    upstreamFields = (crates as List<Data.Crates.Crate<StandardDesignTimeFieldsCM>>).Where(w => w.Content.Fields.Where(x => x.Availability != AvailabilityType.Configuration).Count() == 1).SelectMany(x => x.Content.Fields).ToArray();
+                    upstreamFields = (crates as List<Data.Crates.Crate<StandardDesignTimeFieldsCM>>).SelectMany(x => x.Content.Fields).Where(a => a.Availability != AvailabilityType.Configuration).ToArray();
 
                     availableFieldsCrate =
                         CrateManager.CreateDesignTimeFieldsCrate(
@@ -950,7 +974,7 @@ namespace TerminalBase.BaseClasses
                 FieldDTO[] upstreamFields = null;
                 if (crates is List<Data.Crates.Crate<StandardDesignTimeFieldsCM>>)
                 {
-                    upstreamFields = (crates as List<Data.Crates.Crate<StandardDesignTimeFieldsCM>>).Where(w => w.Content.Fields.Where(x => x.Availability != AvailabilityType.Configuration).Count() == 1).SelectMany(x => x.Content.Fields).ToArray();
+                    upstreamFields = (crates as List<Data.Crates.Crate<StandardDesignTimeFieldsCM>>).SelectMany(x => x.Content.Fields).Where(a => a.Availability != AvailabilityType.Configuration).ToArray();
                 }
 
                 return await Task.FromResult(upstreamFields);

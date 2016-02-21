@@ -69,7 +69,7 @@ namespace terminalSalesforce.Actions
                     new FieldDTO("Order") {Availability = AvailabilityType.Configuration},
                     new FieldDTO("Case") {Availability = AvailabilityType.Configuration},
                     new FieldDTO("Solution") {Availability = AvailabilityType.Configuration},
-                    new FieldDTO("Product") {Availability = AvailabilityType.Configuration},
+                    new FieldDTO("Product2") {Availability = AvailabilityType.Configuration},
                     new FieldDTO("Document") {Availability = AvailabilityType.Configuration}
                     //new FieldDTO("File") {Availability = AvailabilityType.Configuration}
                 });
@@ -130,13 +130,13 @@ namespace terminalSalesforce.Actions
             }
 
             //get filters
-            var filterValue = ExtractControlFieldValue(curActivityDO, "SelectedFilter");
-            var filterDataDTO = JsonConvert.DeserializeObject<FilterDataDTO>(filterValue);
+            var filterValue = ExtractControlFieldValue(curActivityDO, "SelectedQuery");
+            var filterDataDTO = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(filterValue);
 
             //if without filter, just get all selected objects
             //else prepare SOQL query to filter the objects based on the filter conditions
             StandardPayloadDataCM resultObjects;
-            if (filterDataDTO.ExecutionType == FilterExecutionType.WithoutFilter)
+            if (filterDataDTO.First().Field == null)
             {
                 resultObjects = await _salesforce.GetObjectByQuery(curSelectedSalesForceObject, string.Empty, _salesforce.CreateForceClient(authTokenDO));
             }
@@ -144,7 +144,8 @@ namespace terminalSalesforce.Actions
             {
                 EventManager.CriteriaEvaluationStarted(containerId);
 
-                string parsedCondition = ParseFilters(filterDataDTO);
+
+                string parsedCondition = ParsedCondition(filterDataDTO);
 
                 resultObjects = await _salesforce.GetObjectByQuery(curSelectedSalesForceObject, parsedCondition, _salesforce.CreateForceClient(authTokenDO));
             }
@@ -165,7 +166,7 @@ namespace terminalSalesforce.Actions
             {
                 Name = "WhatKindOfData",
                 Required = true,
-                Label = "What kind of Salesforce object do you want to get data?",
+                Label = "Get Which Object?",
                 Source = new FieldSourceDTO
                 {
                     Label = "AvailableSalesforceObjects",
@@ -175,10 +176,10 @@ namespace terminalSalesforce.Actions
             };
 
             //Filter Pane control for the user to filter objects based on their fields values
-            var fieldFilterPane = new FilterPane()
+            var queryBuilderPane = new QueryBuilder()
             {
-                Label = "Get Salesforce Object Data by filtering Fields values",
-                Name = "SelectedFilter",
+                Label = "Meeting which conditions?",
+                Name = "SelectedQuery",
                 Required = true,
                 Source = new FieldSourceDTO
                 {
@@ -187,14 +188,23 @@ namespace terminalSalesforce.Actions
                 }
             };
 
-            return PackControlsCrate(whatKindOfData, fieldFilterPane);
+            var textArea = new TextArea()
+            {
+                IsReadOnly = true,
+                Label = "",
+                Value = "<p>Meeting which conditions?</p>"
+            };
+
+            //var textBlock = GenerateTextBlock("Meeting which conditions?","", "w");
+
+            return PackControlsCrate(whatKindOfData, textArea, queryBuilderPane);
         }
 
-        private string ParseFilters(FilterDataDTO filterData)
+        private string ParsedCondition(List<FilterConditionDTO> filterData)
         {
             var parsedConditions = new List<string>();
 
-            filterData.Conditions.ForEach(condition =>
+            filterData.ForEach(condition =>
             {
                 string parsedCondition = condition.Field;
 

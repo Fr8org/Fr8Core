@@ -122,11 +122,11 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<string, CrateStorageDTO>()
                 .ConvertUsing<CrateStorageFromStringConverter>();
             Mapper.CreateMap<FileDO, FileDTO>();
-            
+
             Mapper.CreateMap<ContainerDO, ContainerDTO>()
                 .ForMember(
                     x => x.CurrentActivityResponse,
-                    x => x.ResolveUsing(y => ExtractOperationStateData(y, z => Enum.Parse(typeof(Data.Constants.ActivityResponse), z.CurrentActivityResponse.Type)))
+                    x => x.ResolveUsing(y => ExtractOperationStateData(y, z => z.CurrentActivityResponse != null ? Enum.Parse(typeof(Data.Constants.ActivityResponse), z.CurrentActivityResponse.Type) : null))
                 )
                 .ForMember(
                     x => x.CurrentClientActionName,
