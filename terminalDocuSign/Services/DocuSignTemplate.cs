@@ -49,12 +49,13 @@ namespace terminalDocuSign.Services
         public IEnumerable<TemplateInfo> GetTemplateNames(string email, string apiPassword)
         {
             List<TemplateInfo> templates = null;
-            if (!TemplatesStorage.UserTemplates.TryGetValue(email, out templates))
+            // Do not use caching for now because we have no mechanisms to keep this chache in sync with docusign.
+            //if (!TemplatesStorage.UserTemplates.TryGetValue(email, out templates))
             {
                 //no templates cached for this email
                 Login = _docusignPackager.Login(email, apiPassword);
                 templates = GetTemplates();
-                TemplatesStorage.UserTemplates.TryAdd(email, templates);
+                //TemplatesStorage.UserTemplates.TryAdd(email, templates);
             }
 
             return templates;
