@@ -18,11 +18,7 @@ namespace Data.Migrations
 
               --Delete Activity
               DELETE FROM ActivityTemplate
-              WHERE Id IN (@QueryMTDatabase, @StoreMTDataId)
-
-              --Delete WebService
-              DELETE FROM WebServices
-              WHERE Id = @frCore");
+              WHERE Id IN (@QueryMTDatabase, @StoreMTDataId)");
         }
         
         public override void Down()
