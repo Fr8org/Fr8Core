@@ -327,25 +327,7 @@ namespace terminalDocuSign.Actions
 
             return row;
         }
-
-        private static PayloadObjectDTO CreatePayloadObjectFromEnvelope(DocuSignEnvelopeCM envelope)
-        {
-            var row = new PayloadObjectDTO();
-
-            row.PayloadObject.Add(new FieldDTO("EnvelopeId", envelope.EnvelopeId));
-            row.PayloadObject.Add(new FieldDTO("Name", string.Empty));
-            row.PayloadObject.Add(new FieldDTO("Subject", string.Empty));
-            row.PayloadObject.Add(new FieldDTO("Status", envelope.Status));
-            row.PayloadObject.Add(new FieldDTO("OwnerName", string.Empty));
-            row.PayloadObject.Add(new FieldDTO("SenderName", string.Empty));
-            row.PayloadObject.Add(new FieldDTO("SenderEmail", string.Empty));
-            row.PayloadObject.Add(new FieldDTO("Shared", string.Empty));
-            row.PayloadObject.Add(new FieldDTO("CompletedDate", envelope.CompletedDate));
-            row.PayloadObject.Add(new FieldDTO("CreatedDate", envelope.CreateDate));
-
-            return row;
-        }
-
+        
         public DocusignQuery BuildDocusignQuery(DocuSignAuthTokenDTO authToken, List<FilterConditionDTO> conditions)
         {
             var query = new DocusignQuery();

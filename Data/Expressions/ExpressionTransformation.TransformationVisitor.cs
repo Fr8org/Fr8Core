@@ -46,12 +46,64 @@ namespace Data.Expressions
 
             /**********************************************************************************/
 
+            protected override Expression VisitMember(MemberExpression node)
+            {
+                var expr = (MemberExpression)node;
+
+                while (expr.Expression is MemberExpression)
+                {
+                    expr = (MemberExpression)expr.Expression;
+                }
+
+                Type propType;
+
+                if (!typeof(TSource).IsAssignableFrom(expr.Member.DeclaringType))
+                {
+                    return base.VisitMember(node);
+                }
+
+                if (expr.Member is System.Reflection.PropertyInfo)
+                {
+                    propType = ((System.Reflection.PropertyInfo)expr.Member).PropertyType;
+                }
+                else if (expr.Member is FieldInfo)
+                {
+                    propType = ((FieldInfo)expr.Member).FieldType;
+                }
+                else
+                {
+                    throw new NotSupportedException(string.Format("Member {0} has unsupported member type {1}", expr.Member.Name, expr.Member.GetType().Name));
+                }
+
+                _discoveredProperties.Add(new PropertyInfo(expr.Member.Name, propType));
+
+                return GetMtPropertyExpression(expr.Member.Name, propType, _paramExpr);
+            }
+
+            /**********************************************************************************/
+            /*
             public override Expression Visit(Expression node)
             {
-                if (node.NodeType == ExpressionType.MemberAccess)
+                if (node == null)
+                {
+                    return null;
+                }
+
+                if (node != null && node.NodeType == ExpressionType.MemberAccess)
                 {
                     var expr = (MemberExpression)node;
+
+                    while (expr.Expression is MemberExpression)
+                    {
+                        expr = (MemberExpression)expr.Expression;
+                    }
+
                     Type propType;
+
+                    if (!typeof (TSource).IsAssignableFrom(expr.Member.DeclaringType))
+                    {
+                        return null;
+                    }
 
                     if (expr.Member is System.Reflection.PropertyInfo)
                     {
@@ -72,7 +124,7 @@ namespace Data.Expressions
                 }
 
                 return base.Visit(node);
-            }
+            }*/
 
             /**********************************************************************************/
         }

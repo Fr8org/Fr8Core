@@ -251,6 +251,7 @@
     <Compile Include="Infrastructure\DataContracts\FolderItem.cs" />
     <Compile Include="Infrastructure\DataContracts\FolderListResponse.cs" />
     <Compile Include="Infrastructure\DataContracts\FolderSearchResults.cs" />
+    <Compile Include="Infrastructure\DateTimeHelper.cs" />
     <Compile Include="Infrastructure\Exceptions\DocusginRestException.cs" />
     <Compile Include="Infrastructure\DocuSignConnectParser.cs" />
     <Compile Include="Services\DocusignFolder.cs" />

@@ -97,8 +97,8 @@ namespace terminalDocuSign.Tests.Actions
             {
                 EnvelopeId = folderItem.EnvelopeId,
                 Status = folderItem.Status,
-                CompletedDate = folderItem.CompletedDateTime.ToString(CultureInfo.InvariantCulture),
-                CreateDate = folderItem.CreatedDateTime.ToString(CultureInfo.InvariantCulture)
+                CompletedDate = folderItem.CompletedDateTime,
+                CreateDate = folderItem.CreatedDateTime
             };
         }
 

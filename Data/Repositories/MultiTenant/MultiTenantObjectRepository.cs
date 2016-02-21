@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -341,7 +342,7 @@ namespace Data.Repositories
 
                 if (IsOfPrimitiveType(val))
                 {
-                    corrDataCell.SetValue(data, val);
+                    corrDataCell.SetValue(data, Convert.ChangeType(val, typeof(string), CultureInfo.InvariantCulture));
                 }
                 else
                 {
@@ -370,6 +371,18 @@ namespace Data.Repositories
             return PrimitiveTypes.Contains(type);
         }
 
+        private static bool TryGetNullableType(Type orignalType, out Type underlyingType)
+        {
+            if (orignalType.IsGenericType && orignalType.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                underlyingType = orignalType.GetGenericArguments()[0];
+                return true;
+            }
+
+            underlyingType = orignalType;
+            return false;
+        }
+
         //instantiate object from MTData
         private T MapMTDataToManifest<T>(Entities.MT_Data data, Entities.MT_Object correspondingDTObject)
         {
@@ -386,17 +399,25 @@ namespace Data.Repositories
                 {
                     var correspondingProperty = properties.FirstOrDefault(a => a.Name == DTField.Name);
                     var valueCell = dataValueCells.FirstOrDefault(a => a.Name == "Value" + DTField.FieldColumnOffset);
+                    Type manifestPropType;
 
+                    bool isNullable = TryGetNullableType(correspondingProperty.PropertyType, out manifestPropType);
                     object val = null;
-                    if (!correspondingProperty.PropertyType.IsValueType)
-                        val = valueCell.GetValue(data);
-                    else
-                    {
-                        object boxedObject = RuntimeHelpers.GetObjectValue(correspondingProperty);
-                    }
 
-                    if (IsOfPrimitiveType(correspondingProperty.PropertyType))
+                    val = valueCell.GetValue(data);
+
+                    if (IsOfPrimitiveType(manifestPropType))
                     {
+                        if (val != null)
+                        {
+                            val  = Convert.ChangeType(val, manifestPropType, CultureInfo.InvariantCulture);
+
+                            if (isNullable)
+                            {
+                                val = Activator.CreateInstance(typeof(Nullable<>).MakeGenericType(manifestPropType), new object[] {val});
+                            }
+                        }
+
                         correspondingProperty.SetValue(obj, val);
                     }
                     else
