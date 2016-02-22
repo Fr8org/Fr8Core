@@ -168,7 +168,7 @@ namespace terminalExcelTests.Integration
         }
 
         [Test]
-        public async Task Load_Table_Data_Activate_Returns_ActionDTO()
+        public async Task Load_Table_Data_Activate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
@@ -189,7 +189,7 @@ namespace terminalExcelTests.Integration
         }
 
         [Test]
-        public async Task Load_Table_Data_Deactivate_Returns_ActionDTO()
+        public async Task Load_Table_Data_Deactivate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();

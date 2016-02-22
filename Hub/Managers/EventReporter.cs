@@ -66,10 +66,10 @@ namespace Hub.Managers
             EventManager.EventProcessNodeCreated += LogEventProcessNodeCreated;
             EventManager.EventCriteriaEvaluationStarted += LogEventCriteriaEvaluationStarted;
             EventManager.EventCriteriaEvaluationFinished += LogEventCriteriaEvaluationFinished;
-            EventManager.EventActionStarted += LogEventActionStarted;
-            EventManager.EventActionDispatched += LogEventActionDispatched;
+            EventManager.EventActivityStarted += LogEventActivityStarted;
+            EventManager.EventActivityDispatched += LogEventActivityDispatched;
             EventManager.TerminalEventReported += LogTerminalEvent;
-            EventManager.TerminalActionActivated += TerminalActionActivated;
+            EventManager.TerminalActivityActivated += TerminalActivityActivated;
             EventManager.EventProcessRequestReceived += EventManagerOnEventProcessRequestReceived;
             EventManager.EventContainerCreated += LogEventContainerCreated;
             EventManager.EventContainerSent += LogEventContainerSent;
@@ -110,10 +110,10 @@ namespace Hub.Managers
             EventManager.EventProcessNodeCreated -= LogEventProcessNodeCreated;
             EventManager.EventCriteriaEvaluationStarted -= LogEventCriteriaEvaluationStarted;
             EventManager.EventCriteriaEvaluationFinished -= LogEventCriteriaEvaluationFinished;
-            EventManager.EventActionStarted -= LogEventActionStarted;
-            EventManager.EventActionDispatched -= LogEventActionDispatched;
+            EventManager.EventActivityStarted -= LogEventActivityStarted;
+            EventManager.EventActivityDispatched -= LogEventActivityDispatched;
             EventManager.TerminalEventReported -= LogTerminalEvent;
-            EventManager.TerminalActionActivated -= TerminalActionActivated;
+            EventManager.TerminalActivityActivated -= TerminalActivityActivated;
             EventManager.EventContainerCreated -= LogEventContainerCreated;
             EventManager.EventContainerSent -= LogEventContainerSent;
             EventManager.EventContainerReceived -= LogEventContainerReceived;
@@ -818,7 +818,7 @@ namespace Hub.Managers
             SaveAndLogFact(fact);
         }
 
-        private void LogEventActionStarted(ActivityDO curActivity)
+        private void LogEventActivityStarted(ActivityDO curActivity)
         {
             ContainerDO containerInExecution;
             FactDO fact;
@@ -844,7 +844,7 @@ namespace Hub.Managers
         }
 
         // Commented by Vladimir. DO-1214. If one action can have only one Process?
-        private void LogEventActionDispatched(ActivityDO curActivity, Guid processId)
+        private void LogEventActivityDispatched(ActivityDO curActivity, Guid processId)
         {
             ContainerDO containerInExecution;
             FactDO fact;
@@ -885,7 +885,7 @@ namespace Hub.Managers
         }
 
         // Commented by Vladimir. DO-1214. If one action can have only one Process?
-        private void TerminalActionActivated(ActivityDO curActivity)
+        private void TerminalActivityActivated(ActivityDO curActivity)
         {
 //            ProcessDO processInExecution;
 //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

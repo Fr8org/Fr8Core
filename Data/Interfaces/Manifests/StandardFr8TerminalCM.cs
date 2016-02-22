@@ -12,7 +12,7 @@ namespace Data.Interfaces.Manifests
     {
         public TerminalDTO Definition { get; set; }
 
-        public List<ActivityTemplateDTO> Actions { get; set; }
+        public List<ActivityTemplateDTO> Activities { get; set; }
 
         public StandardFr8TerminalCM():base(Constants.MT.StandardFr8Terminal){
         }

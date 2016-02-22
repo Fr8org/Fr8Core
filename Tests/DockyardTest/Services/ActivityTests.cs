@@ -182,12 +182,12 @@ namespace DockyardTest.Services
         {
             _activity = ObjectFactory.GetInstance<IRouteNode>();
             var containerDO = FixtureData.TestContainer1();
-            Task result = _activity.Process(It.IsAny<Guid>(), It.IsAny<ActionState>(), containerDO);
+            Task result = _activity.Process(It.IsAny<Guid>(), It.IsAny<ActivityState>(), containerDO);
             Assert.AreEqual(result.Exception.InnerException.Message, "Cannot find Activity with the supplied curActivityId");
         }
 
         [Test]
-        public void Process_curActivityDOIsActionDO()
+        public void Process_curActivityDOIsActivityDO()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -206,7 +206,7 @@ namespace DockyardTest.Services
 
                 ContainerDO containerDO = FixtureData.TestContainer1();
                 _activity = ObjectFactory.GetInstance<IRouteNode>();
-                _activity.Process(FixtureData.GetTestGuidById(1), It.IsAny<ActionState>(), containerDO);
+                _activity.Process(FixtureData.GetTestGuidById(1), It.IsAny<ActivityState>(), containerDO);
             }
         }
 

@@ -239,7 +239,7 @@ namespace TerminalBase.Infrastructure
         public async Task<ActivityDTO> ConfigureActivity(ActivityDTO activityDTO, string userId)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                      + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/actions/configure";
+                      + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/activities/configure";
             var uri = new Uri(url);
             return await _restfulServiceClient.PostAsync<ActivityDTO, ActivityDTO>(uri, activityDTO, null, await GetHMACHeader(uri, userId, activityDTO));
         }
@@ -247,7 +247,7 @@ namespace TerminalBase.Infrastructure
         public async Task<ActivityDTO> CreateAndConfigureActivity(int templateId, string userId, string label = null, int? order = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                      + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/actions/create";
+                      + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/activities/create";
             
             
             var postUrl = "?actionTemplateId={0}&createRoute={1}";
@@ -310,7 +310,7 @@ namespace TerminalBase.Infrastructure
         public async Task DeleteExistingChildNodesFromActivity(Guid curActivityId, string userId)
         {
             var hubAlarmsUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/actions/deletechildnodes?activityId=" + curActivityId;
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/activities/deletechildnodes?activityId=" + curActivityId;
             var uri = new Uri(hubAlarmsUrl);
 
             await _restfulServiceClient.DeleteAsync(uri, null, await GetHMACHeader(uri, userId));

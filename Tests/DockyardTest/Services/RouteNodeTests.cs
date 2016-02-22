@@ -36,7 +36,7 @@ namespace DockyardTest.Services
             var route = new PlanDO();
             route.Name = "sdfasdfasdf";
             route.RouteState = RouteState.Active;
-            var testActionTree = FixtureData.TestActionTree();
+            var testActionTree = FixtureData.TestActivity2Tree();
             
             route.ChildNodes.Add(testActionTree);
             

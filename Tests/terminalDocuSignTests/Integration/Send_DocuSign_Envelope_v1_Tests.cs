@@ -274,7 +274,7 @@ namespace terminalDocuSignTests
         }
 
         [Test]
-        public async Task Send_DocuSign_Envelope_Activate_Returns_ActionDTO()
+        public async Task Send_DocuSign_Envelope_Activate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
@@ -295,7 +295,7 @@ namespace terminalDocuSignTests
         }
 
         [Test]
-        public async Task Send_DocuSign_Envelope_Deactivate_Returns_ActionDTO()
+        public async Task Send_DocuSign_Envelope_Deactivate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();

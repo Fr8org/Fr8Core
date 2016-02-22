@@ -29,7 +29,7 @@ namespace terminalTests.Fixtures
             };
         }
 
-        public static ActivityDTO terminalMockActionDTOTest()
+        public static ActivityDTO terminalMockActivityDTOTest()
         {
             var activityTemplate = ActivityTemplateTest();
 
@@ -49,11 +49,11 @@ namespace terminalTests.Fixtures
         {
             return new Fr8DataDTO
             {
-                ActivityDTO = terminalMockActionDTO()
+                ActivityDTO = terminalMockActivityDTO()
             };
         }
 
-        public static ActivityDTO terminalMockActionDTO()
+        public static ActivityDTO terminalMockActivityDTO()
         {
             var activityTemplate = ActivityTemplate();
 

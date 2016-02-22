@@ -22,7 +22,7 @@ namespace terminalSendGridTests.Integration
     [Explicit]
     public class SendEmailViaSendGrid_v1Tests : BaseTerminalIntegrationTest
     {
-        ActivityDTO actionDTOInit = new ActivityDTO();
+        ActivityDTO activityDTOInit = new ActivityDTO();
 
         public override string TerminalName
         {
@@ -53,7 +53,7 @@ namespace terminalSendGridTests.Integration
             Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
-            actionDTOInit = responseActionDTO;
+            activityDTOInit = responseActionDTO;
             Assert.IsNotNull(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault());
             Assert.AreEqual(1, crateStorage.CrateContentsOfType<StandardDesignTimeFieldsCM>().Count());
 
@@ -165,7 +165,7 @@ namespace terminalSendGridTests.Integration
         }
 
         [Test, Category("Integration.terminalSendGrid")]
-        public async Task SendEmailViaSendGrid_Activate_Returns_ActionDTO()
+        public async Task SendEmailViaSendGrid_Activate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
@@ -186,7 +186,7 @@ namespace terminalSendGridTests.Integration
         }
 
         [Test, Category("Integration.terminalSendGrid")]
-        public async Task SendEmailViaSendGrid_Deactivate_Returns_ActionDTO()
+        public async Task SendEmailViaSendGrid_Deactivate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();

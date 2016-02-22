@@ -9,7 +9,7 @@ module dockyard.services {
 			getActions: {
 				method: "POST",
 				isArray: true,
-                url: "/api/webservices/actions"
+                url: "/api/webservices/activities"
 			}
 		})
 	]);

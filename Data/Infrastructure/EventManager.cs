@@ -32,11 +32,11 @@ namespace Data.Infrastructure
         public delegate void IncidentTerminalInternalFailureHandler(string terminalUrl, string curActionDTO, Exception e, string objectId);
         public static event IncidentTerminalInternalFailureHandler IncidentTerminalInternalFailureOccurred;
 
-        public delegate void IncidentTerminalActionActivationPOSTFailureHandler(string terminalUrl, string curActionDTO, string objectId);
-        public static event IncidentTerminalActionActivationPOSTFailureHandler IncidentTerminalActionActivationFailed;
+        public delegate void IncidentTerminalActivityActivationPOSTFailureHandler(string terminalUrl, string curActivityDTO, string objectId);
+        public static event IncidentTerminalActivityActivationPOSTFailureHandler IncidentTerminalActivityActivationFailed;
 
-        public delegate void TerminalActionActivatedHandler(ActivityDO activity);
-        public static event TerminalActionActivatedHandler TerminalActionActivated;
+        public delegate void TerminalActivityActivatedHandler(ActivityDO activity);
+        public static event TerminalActivityActivatedHandler TerminalActivityActivated;
 
 
         public delegate void ExplicitCustomerCreatedHandler(string curUserId);
@@ -126,11 +126,11 @@ namespace Data.Infrastructure
         public delegate void EventCriteriaEvaluationFinishedHandler(Guid processId);
         public static event EventCriteriaEvaluationFinishedHandler EventCriteriaEvaluationFinished;
 
-        public delegate void EventActionStartedHandler(ActivityDO activity);
-        public static event EventActionStartedHandler EventActionStarted;
+        public delegate void EventActivityStartedHandler(ActivityDO activity);
+        public static event EventActivityStartedHandler EventActivityStarted;
 
-        public delegate void EventActionDispatchedHandler(ActivityDO curActivity, Guid processId);
-        public static event EventActionDispatchedHandler EventActionDispatched;
+        public delegate void EventActivityDispatchedHandler(ActivityDO curActivity, Guid processId);
+        public static event EventActivityDispatchedHandler EventActivityDispatched;
 
         public delegate void TerminalEventHandler(LoggingDataCm eventDataCm);
         public static event TerminalEventHandler TerminalEventReported;
@@ -238,9 +238,9 @@ namespace Data.Infrastructure
             if (handler != null) handler(terminalUrl, activityDTO, e, objectId);
         }
 
-        public static void TerminalActionActivationFailed(string terminalUrl, string activityDTO, string objectId)
+        public static void TerminalActivityActivationFailed(string terminalUrl, string activityDTO, string objectId)
         {
-            IncidentTerminalActionActivationPOSTFailureHandler handler = IncidentTerminalActionActivationFailed;
+            IncidentTerminalActivityActivationPOSTFailureHandler handler = IncidentTerminalActivityActivationFailed;
             if (handler != null) handler(terminalUrl, activityDTO, objectId);
         }
 
@@ -483,15 +483,15 @@ namespace Data.Infrastructure
             if (handler != null) handler(processId);
         }
 
-        public static void ActionStarted(ActivityDO activity)
+        public static void ActivityStarted(ActivityDO activity)
         {
-            var handler = EventActionStarted;
+            var handler = EventActivityStarted;
             if (handler != null) handler(activity);
         }
 
-        public static void ActionDispatched(ActivityDO curActivity, Guid processId)
+        public static void ActivityDispatched(ActivityDO curActivity, Guid processId)
         {
-            var handler = EventActionDispatched;
+            var handler = EventActivityDispatched;
             if (handler != null) handler(curActivity, processId);
         }
 
@@ -530,9 +530,9 @@ namespace Data.Infrastructure
             if (handler != null) handler(requestQueryString, errorMessage);
         }
 
-        public static void ActionActivated(ActivityDO activity)
+        public static void ActivityActivated(ActivityDO activity)
         {
-            var handler = TerminalActionActivated;
+            var handler = TerminalActivityActivated;
             if (handler != null) handler(activity);
         }
 

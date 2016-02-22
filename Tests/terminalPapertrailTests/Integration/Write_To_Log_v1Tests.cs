@@ -101,13 +101,13 @@ namespace terminalPapertrailTests.Integration
         /// Should successfully log the message
         /// </summary>
         [Test, Category("Integration.terminalPapertrail")]
-        public async Task Write_To_Log_Run_WithUpstreamActionLog_ValidTargetUrl_ShouldLogMessage()
+        public async Task Write_To_Log_Run_WithUpstreamActivityLog_ValidTargetUrl_ShouldLogMessage()
         {
             //Arrange
             var runUrl = GetTerminalRunUrl();
 
             //prepare action DTO with valid target URL
-            var activityDTO = await GetActionDTO_LogToPapertrailIntegrationTest();
+            var activityDTO = await GetActivityDTO_LogToPapertrailIntegrationTest();
             var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
             //add the log message in upstream action
             AddPayloadCrate(dataDTO,
@@ -148,7 +148,7 @@ namespace terminalPapertrailTests.Integration
             var runUrl = GetTerminalRunUrl();
 
             //prepare the action DTO with valid target URL
-            var activityDTO = await GetActionDTO_LogToPapertrailIntegrationTest();
+            var activityDTO = await GetActivityDTO_LogToPapertrailIntegrationTest();
             var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
             //make the target URL as invalid
             using (var crateStorage = Crate.GetUpdatableStorage(activityDTO))
@@ -196,13 +196,13 @@ namespace terminalPapertrailTests.Integration
             ExpectedMessage = @"{""status"":""terminal_error"",""message"":""Sequence contains no elements""}",
             MatchType = MessageMatch.Contains
             )]
-        public async Task Write_To_Log_Run_WithoutLogMessageInUpstreamAction_ShouldThrowException()
+        public async Task Write_To_Log_Run_WithoutLogMessageInUpstreamActivity_ShouldThrowException()
         {
             //Arrange
             var runUrl = GetTerminalRunUrl();
 
             //prepare action DTO with valid target URL
-            var activityDTO = await GetActionDTO_LogToPapertrailIntegrationTest();
+            var activityDTO = await GetActivityDTO_LogToPapertrailIntegrationTest();
             var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
             //Act
             var responsePayloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
@@ -232,7 +232,7 @@ namespace terminalPapertrailTests.Integration
             //Assert.AreEqual("requestConfig", controls.Controls[0].Events[0].Handler, "requestConfig is not configured when onChange event.");
         }
 
-        private async Task<ActivityDTO> GetActionDTO_LogToPapertrailIntegrationTest()
+        private async Task<ActivityDTO> GetActivityDTO_LogToPapertrailIntegrationTest()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -256,7 +256,7 @@ namespace terminalPapertrailTests.Integration
         }
 
         [Test, Category("Integration.terminalPapertrail")]
-        public async Task Write_To_Log_Activate_Returns_ActionDTO()
+        public async Task Write_To_Log_Activate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
@@ -277,7 +277,7 @@ namespace terminalPapertrailTests.Integration
         }
 
         [Test, Category("Integration.terminalPapertrail")]
-        public async Task Write_To_Log_Deactivate_Returns_ActionDTO()
+        public async Task Write_To_Log_Deactivate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();

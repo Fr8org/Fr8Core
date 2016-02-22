@@ -52,7 +52,7 @@ namespace terminalDocuSignTests.Integration
         public async Task Mail_Merge_Into_DocuSign_EndToEnd()
         {
             try {
-                var solutionCreateUrl = _baseUrl + "actions/create?solutionName=Mail_Merge_Into_DocuSign";
+                var solutionCreateUrl = _baseUrl + "activities/create?solutionName=Mail_Merge_Into_DocuSign";
 
                 //
                 // Create solution
@@ -63,7 +63,7 @@ namespace terminalDocuSignTests.Integration
                 //
                 // Send configuration request without authentication token
                 //
-                this.solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "actions/configure?id=" + solution.Id, solution);
+                this.solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure?id=" + solution.Id, solution);
                 crateStorage = _crateManager.FromDto(this.solution.CrateStorage);
                 var stAuthCrate = crateStorage.CratesOfType<StandardAuthenticationCM>().FirstOrDefault();
                 bool defaultDocuSignAuthTokenExists = stAuthCrate == null;
@@ -100,7 +100,7 @@ namespace terminalDocuSignTests.Integration
                 //
                 // Send configuration request with authentication token
                 //
-                this.solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "actions/configure?id=" + solution.Id, solution);
+                this.solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure?id=" + solution.Id, solution);
                 crateStorage = _crateManager.FromDto(this.solution.CrateStorage);
                 Assert.True(crateStorage.CratesOfType<StandardConfigurationControlsCM>().Any(), "Crate StandardConfigurationControlsCM is missing in API response.");
                 Assert.True(crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Any(), "Crate StandardDesignTimeFieldsCM is missing in API response.");
@@ -134,17 +134,17 @@ namespace terminalDocuSignTests.Integration
                     crateStorage.Remove<StandardConfigurationControlsCM>();
                     crateStorage.Add(controlsCrate);
                 }
-                this.solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "actions/configure?id=" + this.solution.Id, this.solution);
+                this.solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure?id=" + this.solution.Id, this.solution);
                 crateStorage = _crateManager.FromDto(this.solution.CrateStorage);
-                Assert.AreEqual(2, this.solution.ChildrenActions.Count(), "Solution child actions failed to create.");
+                Assert.AreEqual(2, this.solution.ChildrenActivities.Count(), "Solution child actions failed to create.");
 
                 // Delete Google action 
-                await HttpDeleteAsync(_baseUrl + "actions?id=" + this.solution.ChildrenActions[0].Id);
+                await HttpDeleteAsync(_baseUrl + "actions?id=" + this.solution.ChildrenActivities[0].Id);
 
                 // Add Add Payload Manually action
                 var activityCategoryParam = new ActivityCategory[] { ActivityCategory.Processors };
-                var activityTemplates = await HttpPostAsync<ActivityCategory[], List<WebServiceActionSetDTO>>(_baseUrl + "webservices/actions", activityCategoryParam);
-                var apmActivityTemplate = activityTemplates.SelectMany(a => a.Actions).Single(a => a.Name == "AddPayloadManually");
+                var activityTemplates = await HttpPostAsync<ActivityCategory[], List<WebServiceActivitySetDTO>>(_baseUrl + "webservices/activities", activityCategoryParam);
+                var apmActivityTemplate = activityTemplates.SelectMany(a => a.Activities).Single(a => a.Name == "AddPayloadManually");
 
                 var apmAction = new ActivityDTO()
                 {
@@ -153,7 +153,7 @@ namespace terminalDocuSignTests.Integration
                     ParentRouteNodeId = this.solution.Id,
                     RootRouteNodeId = plan.Id
                 };
-                apmAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "actions/save", apmAction);
+                apmAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", apmAction);
                 Assert.NotNull(apmAction, "Add Payload Manually action failed to create");
                 Assert.IsTrue(apmAction.Id != default(Guid), "Add Payload Manually action failed to create");
 
@@ -162,7 +162,7 @@ namespace terminalDocuSignTests.Integration
                 //
 
                 //Add rows to Add Payload Manually action
-                apmAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "actions/configure", apmAction);
+                apmAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure", apmAction);
                 crateStorage = _crateManager.FromDto(apmAction.CrateStorage);
                 controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
                 var fieldList = controlsCrate.Content.Controls.OfType<FieldList>().First();
@@ -176,13 +176,13 @@ namespace terminalDocuSignTests.Integration
 
                 // Move Add Payload Manually action to the beginning of the plan
                 apmAction.Ordering = 1;
-                apmAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "actions/save", apmAction);
-                apmAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "actions/configure", apmAction);
+                apmAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", apmAction);
+                apmAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure", apmAction);
                 Assert.AreEqual(1, apmAction.Ordering, "Failed to reoder the action Add Payload Manually");
 
-                var fr8CoreLoop = this.solution.ChildrenActions.Single(a =>  a.Label.Equals("loop", StringComparison.InvariantCultureIgnoreCase));
+                var fr8CoreLoop = this.solution.ChildrenActivities.Single(a =>  a.Label.Equals("loop", StringComparison.InvariantCultureIgnoreCase));
 
-                fr8CoreLoop = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "actions/configure", fr8CoreLoop);
+                fr8CoreLoop = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure", fr8CoreLoop);
                 //we should update fr8Core loop to loop through manually added payload
                 var fr8CoreLoopCrateStorage = _crateManager.FromDto(fr8CoreLoop.CrateStorage);
                 var loopConfigCrate = fr8CoreLoopCrateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
@@ -199,12 +199,12 @@ namespace terminalDocuSignTests.Integration
                     updatableStorage.Add(loopConfigCrate);
                 }
 
-                fr8CoreLoop = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "actions/save", fr8CoreLoop);
+                fr8CoreLoop = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", fr8CoreLoop);
 
                 //
                 // Configure Send DocuSign Envelope action
                 //
-                var sendEnvelopeAction = fr8CoreLoop.ChildrenActions.Single(a => a.Label == "Send DocuSign Envelope");
+                var sendEnvelopeAction = fr8CoreLoop.ChildrenActivities.Single(a => a.Label == "Send DocuSign Envelope");
 
                 crateStorage = _crateManager.FromDto(sendEnvelopeAction.CrateStorage);
                 controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
@@ -224,8 +224,8 @@ namespace terminalDocuSignTests.Integration
                     updatableStorage.Remove<StandardConfigurationControlsCM>();
                     updatableStorage.Add(controlsCrate);
                 }
-                sendEnvelopeAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "actions/save", sendEnvelopeAction);
-                sendEnvelopeAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "actions/configure", sendEnvelopeAction);
+                sendEnvelopeAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", sendEnvelopeAction);
+                sendEnvelopeAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure", sendEnvelopeAction);
 
                 crateStorage = _crateManager.FromDto(sendEnvelopeAction.CrateStorage);
                 controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();

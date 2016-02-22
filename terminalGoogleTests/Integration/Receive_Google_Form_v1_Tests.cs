@@ -167,7 +167,7 @@ namespace terminalGoogleTests.Unit
         }
 
         [Test, Category("Integration.terminalGoogle")]
-        public async Task Receive_Google_Form_Activate_Returns_ActionDTO()
+        public async Task Receive_Google_Form_Activate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
@@ -188,7 +188,7 @@ namespace terminalGoogleTests.Unit
         }
 
         [Test, Category("Integration.terminalGoogle")]
-        public async Task Receive_Google_Form_Deactivate_Returns_ActionDTO()
+        public async Task Receive_Google_Form_Deactivate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();
@@ -239,7 +239,7 @@ namespace terminalGoogleTests.Unit
             var runUrl = GetTerminalRunUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var activityDTO = fixture.Receive_Google_Form_v1_Run_ActionDTO();
+            var activityDTO = fixture.Receive_Google_Form_v1_Run_ActivityDTO();
 
             var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
 

@@ -109,7 +109,7 @@ namespace DockyardTest.Services
             throw new NotImplementedException();
         }
 
-        public Task Process(Guid curActivityId, ActionState curActionState, ContainerDO curContainerDO)
+        public Task Process(Guid curActivityId, ActivityState curActionState, ContainerDO curContainerDO)
         {
             if (RouteTreeHelper.Linearize(_planNodes[curActivityId]).OfType<ActivityDO>().Any(x => x.Id == curActivityId))
             {

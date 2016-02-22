@@ -26,7 +26,7 @@ namespace Data.Interfaces.DataTransferObjects
         public DateTimeOffset CreateDate { get; set; }
 
         public ActivityResponse? CurrentActivityResponse { get; set; }
-        public string CurrentClientActionName { get; set; }
+        public string CurrentClientActivityName { get; set; }
         public ErrorDTO Error { get; set; }
     }
 }

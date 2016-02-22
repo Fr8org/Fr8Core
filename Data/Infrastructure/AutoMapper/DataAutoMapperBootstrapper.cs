@@ -23,7 +23,7 @@ namespace Data.Infrastructure.AutoMapper
     {
         public static void ConfigureAutoMapper()
         {
-            Mapper.CreateMap<ActionNameDTO, ActivityTemplateDO>()
+            Mapper.CreateMap<ActivityNameDTO, ActivityTemplateDO>()
                 .ForMember(activityTemplateDO => activityTemplateDO.Name, opts => opts.ResolveUsing(e => e.Name))
                 .ForMember(activityTemplateDO => activityTemplateDO.Version, opts => opts.ResolveUsing(e => e.Version));
 
@@ -45,7 +45,7 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(a => a.ParentRouteNodeId, opts => opts.ResolveUsing(ad => ad.ParentRouteNodeId))
                 //.ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => ad.CrateStorage == null ? null : JsonConvert.DeserializeObject(ad.CrateStorage)))
                 .ForMember(a => a.CurrentView, opts => opts.ResolveUsing(ad => ad.currentView))
-                .ForMember(a => a.ChildrenActions, opts => opts.ResolveUsing(ad => ad.ChildNodes.OfType<ActivityDO>().OrderBy(da => da.Ordering)))
+                .ForMember(a => a.ChildrenActivities, opts => opts.ResolveUsing(ad => ad.ChildNodes.OfType<ActivityDO>().OrderBy(da => da.Ordering)))
                 .ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(ad => ad.ActivityTemplate))
                 .ForMember(a => a.AuthToken, opts => opts.ResolveUsing(ad => ad.AuthorizationToken))
                 .ForMember(a => a.Fr8AccountId, opts => opts.ResolveUsing(ad => ad.Fr8AccountId));
@@ -57,7 +57,7 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(ad => ad.ActivityTemplate))
                 //.ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.SerializeObject(ad.CrateStorage)))
                 .ForMember(a => a.currentView, opts => opts.ResolveUsing(ad => ad.CurrentView))
-                .ForMember(a => a.ChildNodes, opts => opts.ResolveUsing(ad => MapActions(ad.ChildrenActions)))
+                .ForMember(a => a.ChildNodes, opts => opts.ResolveUsing(ad => MapActivities(ad.ChildrenActivities)))
                 .ForMember(a => a.AuthorizationTokenId, opts => opts.ResolveUsing(ad => ad.AuthToken != null && ad.AuthToken.Id != null ? new Guid(ad.AuthToken.Id) : (Guid?)null))
                 .ForMember(a => a.Fr8AccountId, opts => opts.ResolveUsing(ad => ad.Fr8AccountId));
 
@@ -129,8 +129,8 @@ namespace Data.Infrastructure.AutoMapper
                     x => x.ResolveUsing(y => ExtractOperationStateData(y, z => z.CurrentActivityResponse != null ? Enum.Parse(typeof(Data.Constants.ActivityResponse), z.CurrentActivityResponse.Type) : null))
                 )
                 .ForMember(
-                    x => x.CurrentClientActionName,
-                    x => x.ResolveUsing(y => ExtractOperationStateData(y, z => z.CurrentClientActionName))
+                    x => x.CurrentClientActivityName,
+                    x => x.ResolveUsing(y => ExtractOperationStateData(y, z => z.CurrentClientActivityName))
                 )
                 .ForMember(
                     x => x.Error,
@@ -157,7 +157,7 @@ namespace Data.Infrastructure.AutoMapper
 
         }
 
-        private static List<RouteNodeDO> MapActions(IEnumerable<ActivityDTO> actions)
+        private static List<RouteNodeDO> MapActivities(IEnumerable<ActivityDTO> actions)
         {
             var list = new List<RouteNodeDO>();
 

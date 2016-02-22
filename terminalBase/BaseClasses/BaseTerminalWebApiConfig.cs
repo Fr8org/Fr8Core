@@ -20,8 +20,8 @@ namespace TerminalBase.BaseClasses
                 defaults: new { id = RouteParameter.Optional }
             );
             curTerminalConfiguration.Routes.MapHttpRoute(
-                name: string.Format("Terminal{0}ActionCatchAll", curTerminalName),
-                routeTemplate: "actions/{*actionType}",
+                name: string.Format("Terminal{0}ActivityCatchAll", curTerminalName),
+                routeTemplate: "activities/{*actionType}",
                 defaults: new { controller = "Action", action = "Execute", terminal = name }); //It calls ActionController#Execute in an MVC style
             
             //add Web API Exception Filter

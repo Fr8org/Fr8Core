@@ -231,9 +231,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Constants\ActionErrorCode.cs" />
-    <Compile Include="Constants\ActionResponse.cs" />
-    <Compile Include="Constants\ActionState.cs" />
+    <Compile Include="Constants\ActivityErrorCode.cs" />
+    <Compile Include="Constants\ActivityResponse.cs" />
+    <Compile Include="Constants\ActivityState.cs" />
     <Compile Include="Constants\FieldValidationResult.cs" />
     <Compile Include="Constants\ActivityDirection.cs" />
     <Compile Include="Constants\ManifestIdEnum.cs" />
@@ -285,8 +285,8 @@
     <Compile Include="Infrastructure\MultiTenant\MT_Field.cs" />
     <Compile Include="Infrastructure\MultiTenant\MT_FieldType.cs" />
     <Compile Include="Infrastructure\MultiTenant\MT_Object.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ActionDataPackageDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ActivateActionsDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ActivityDataPackageDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ActivateActivitiesDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActivityResponseDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\AlarmDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\AuthenticateResponse.cs" />
@@ -295,7 +295,7 @@
     <Compile Include="Interfaces\DataTransferObjects\QueryFieldType.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldValidationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActivityDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ActionPayloadDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ActivityPayloadDTO.cs" />
     <Compile Include="Entities\ActivityDO.cs" />
     <Compile Include="Entities\AuthorizationTokenDO.cs" />
     <Compile Include="Entities\BaseDO.cs" />
@@ -318,10 +318,10 @@
     <Compile Include="Interfaces\DataTransferObjects\QueryFieldDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\StandardAccountingTransactionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\TerminalDiscoveryDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ActionProcessResultDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ActionTemplateDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ActionNameDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ActionNameListDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ActivityProcessResultDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ActivityTemplateDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ActivityNameDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ActivityNameListDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ComponentActivitiesDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\CrateStorageDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\CrateDTO.cs" />
@@ -344,7 +344,7 @@
     <Compile Include="Interfaces\DataTransferObjects\SlackPayloadDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\TerminalDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\UserDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\WebServiceActionSetDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\WebServiceActivitySetDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\WebServiceDTO.cs" />
     <Compile Include="Interfaces\IFileRepository.cs" />
     <Compile Include="Interfaces\IMTDataRepository.cs" />
@@ -684,7 +684,7 @@
     <Compile Include="Entities\SubscriptionDO.cs" />
     <Compile Include="Exceptions\EntityNotFoundException.cs" />
     <Compile Include="Infrastructure\EntityExtensions.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ActionTypeListDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ActivityTypeListDTO.cs" />
     <Compile Include="Interfaces\IBaseDO.cs" />
     <Compile Include="Entities\ExpectedResponseDO.cs" />
     <Compile Include="Entities\InvitationDO.cs" />

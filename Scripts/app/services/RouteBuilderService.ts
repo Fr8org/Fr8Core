@@ -233,7 +233,7 @@ module dockyard.services {
         ActivityDTO CRUD service.
     */
     app.factory('ActionService', ['$resource', ($resource: ng.resource.IResourceService): IActionService =>
-        <IActionService>$resource('/api/actions?id=:id',
+        <IActionService>$resource('/api/activities?id=:id',
                 {
                     id: '@id'
                 },
@@ -241,7 +241,7 @@ module dockyard.services {
                 'save': {
                     method: 'POST',
                     isArray: false,
-                    url: '/api/actions/save',
+                    url: '/api/activities/save',
                     params: {
                         suppressSpinner: true // Do not show page-level spinner since we have one within the Configure Action pane
                     }
@@ -256,27 +256,27 @@ module dockyard.services {
                 'delete': { method: 'DELETE' },
                 'configure': {
                     method: 'POST',
-                    url: '/api/actions/configure',
+                    url: '/api/activities/configure',
                     params: {
                         suppressSpinner: true // Do not show page-level spinner since we have one within the Configure Action pane
                     }
                 },
                 'getByRoute': {
                     method: 'GET',
-                    url: '/api/actions/bypt',
+                    url: '/api/activities/bypt',
                     isArray: true
                 },
                 'deleteById': {
                     method: 'DELETE',
-                    url: '/api/actions?id=:id&confirmed=:confirmed'
+                    url: '/api/activities?id=:id&confirmed=:confirmed'
                 },
                 'create': {
                     method: 'POST',
-                    url: '/api/actions/create'
+                    url: '/api/activities/create'
                 },
                 'createSolution': {
                     method: 'POST',
-                    url: '/api/actions/create',
+                    url: '/api/activities/create',
                     params: {
                         solutionName: '@solutionName'
                     }
