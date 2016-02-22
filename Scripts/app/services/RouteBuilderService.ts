@@ -7,7 +7,7 @@ module dockyard.services {
     export interface IRouteService extends ng.resource.IResourceClass<interfaces.IRouteVM> {
         getbystatus: (id: { id: number; status: number; }) => Array<interfaces.IRouteVM>;
         getFull: (id: Object) => interfaces.IRouteVM;
-        getByAction: (id: { id: string }) => interfaces.IRouteVM;
+        getByActivity: (id: { id: string }) => interfaces.IRouteVM;
         execute: (id: { id: number }, payload: { payload: string }, success: any, error: any) => void;
         activate: (data :{planId: string, routeBuilderActivate : boolean}) => any;
         deactivate: (data: { planId: string }) => ng.resource.IResource<string>;
@@ -101,10 +101,10 @@ module dockyard.services {
                             status: '@status'
                         }
                     },
-                    'getByAction': {
+                    'getByActivity': {
                         method: 'GET',
                         isArray: false,
-                        url: '/api/routes/getByAction/:id',
+                        url: '/api/routes/getByActivity/:id',
                         params: {
                             id: '@id'
                         }

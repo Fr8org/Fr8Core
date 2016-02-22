@@ -24,7 +24,7 @@ module dockyard.directives {
 
                     $scope.setActive = <() => void> function (actionCategoryId) {
                         $scope.activeCategory == actionCategoryId ? $scope.activeCategory = NaN : $scope.activeCategory = actionCategoryId;
-                        $scope.webServiceActionList = webServiceService.getActions([$scope.activeCategory]);
+                        $scope.webServiceActionList = webServiceService.getActivities([$scope.activeCategory]);
                         $scope.activeTerminal = NaN;
                         console.log($scope.webServiceActionList);
                     };
