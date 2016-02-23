@@ -116,13 +116,13 @@ module dockyard.directives.crateChooser {
                     if (scope.node.isCategory) {
                         return;
                     }
-
+                    var currentState = scope.node.selected;
                     if (singleSelection) {
                         //deselect previous selections first
                         ivhTreeviewMgr.deselectAll(scope.trvw.root());
                     }
 
-                    ivhTreeviewMgr.select(scope.trvw.root(), scope.node, !scope.node.selected);
+                    ivhTreeviewMgr.select(scope.trvw.root(), scope.node, !currentState);
                     scope.$apply();
                 });
             }
