@@ -124,7 +124,7 @@ namespace terminalDocuSign.Controllers
                 MinPaneWidth = 380
             };
 
-            var richDocumentNotificationsSolution = new ActivityTemplateDTO
+            var trackDocuSignRecipientsSolution = new ActivityTemplateDTO
             {
                 Name = "Track_DocuSign_Recipients",
                 Label = "Track DocuSign Recipients",
@@ -194,7 +194,7 @@ namespace terminalDocuSign.Controllers
                 recordDocuSignEvents,
                 mailMergeActionTemplate,
                 collectFormDataSolution,
-                richDocumentNotificationsSolution,
+                trackDocuSignRecipientsSolution,
                 queryDocusign,
                 generateDocusignReport,
                 searchDocusignHistory,

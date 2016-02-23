@@ -234,12 +234,12 @@ namespace terminalDocuSignTests.Integration
             emailAddress.TextValue = "bahadir.bb@gmail.com";
 
             emailSubject.ValueSource = "specific";
-            emailSubject.Value = "Fr8-RichDocumentNotificationsTest";
-            emailSubject.TextValue = "Fr8-RichDocumentNotificationsTest";
+            emailSubject.Value = "Fr8-TrackDocuSignRecipientsTest";
+            emailSubject.TextValue = "Fr8-TrackDocuSignRecipientsTest";
 
             emailBody.ValueSource = "specific";
-            emailBody.Value = "Fr8-RichDocumentNotificationsTest";
-            emailBody.TextValue = "Fr8-RichDocumentNotificationsTest";
+            emailBody.Value = "Fr8-TrackDocuSignRecipientsTest";
+            emailBody.TextValue = "Fr8-TrackDocuSignRecipientsTest";
 
             using (var updatableStorage = _crateManager.GetUpdatableStorage(emailActivity))
             {
@@ -281,8 +281,8 @@ namespace terminalDocuSignTests.Integration
             EmailAssert.RecentMsgThreshold = TimeSpan.FromSeconds(45);
             EmailAssert._timeout = TimeSpan.FromSeconds(45);
             // Verify that test email has been received
-            //EmailAssert.EmailReceived("fr8ops@fr8.company", "Fr8-RichDocumentNotificationsTest");
-            
+            //EmailAssert.EmailReceived("fr8ops@fr8.company", "Fr8-TrackDocuSignRecipientsTest");
+
         }
     }
 }
