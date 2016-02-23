@@ -433,7 +433,10 @@ module dockyard.directives.paneConfigureAction {
                                 // If the directive is used for configuring solutions,
                                 // the SolutionController would listen to this event 
                                 // and redirect user to the RouteBuilder once if is received.
-                                // It means that solution configuration is complete. 
+                                // It means that solution configuration is complete.
+                                
+                                // not needed in case of Loop action reconfigure
+                                
                                 $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsDetected]);
 
                                 childActionsDetected = true;
@@ -445,7 +448,11 @@ module dockyard.directives.paneConfigureAction {
                                 if (angular.toJson($scope.currentAction.childrenActions) != angular.toJson(res.childrenActions)) {
                                     $scope.reconfigureChildrenActions = true;
                                     //in case of reconfiguring the solution check the child actions again
-                                    $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsDetected]);
+
+                                    //not needed in case of Loop action
+                                    if ($scope.currentAction.label !== "Loop") {
+                                        $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsDetected]);
+                                    }
                                 }
                             }
 
