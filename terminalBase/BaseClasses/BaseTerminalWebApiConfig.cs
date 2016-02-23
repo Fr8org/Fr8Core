@@ -22,7 +22,7 @@ namespace TerminalBase.BaseClasses
             curTerminalConfiguration.Routes.MapHttpRoute(
                 name: string.Format("Terminal{0}ActivityCatchAll", curTerminalName),
                 routeTemplate: "activities/{*actionType}",
-                defaults: new { controller = "Action", action = "Execute", terminal = name }); //It calls ActionController#Execute in an MVC style
+                defaults: new { controller = "Activity", action = "Execute", terminal = name }); //It calls ActionController#Execute in an MVC style
             
             //add Web API Exception Filter
             curTerminalConfiguration.Filters.Add(new WebApiExceptionFilterAttribute());

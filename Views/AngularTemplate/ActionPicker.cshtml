@@ -22,7 +22,7 @@
             </div><div class="slide">
                 <div data-ng-click="deactivateTerminal()" class="action-action"><i class="fa fa-arrow-left"></i> Back</div>
                 <div style="height:100%" mb-scrollbar="scrollbar('vertical', true)">
-                    <div data-ng-repeat="action in webServiceActionList[activeTerminal].activites"
+                    <div data-ng-repeat="action in webServiceActionList[activeTerminal].activities"
                          data-ng-click="setActiveAction(action, group)"
                          class="action-action">
                         {{action.label}}

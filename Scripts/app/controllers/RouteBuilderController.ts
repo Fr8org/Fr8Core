@@ -185,7 +185,7 @@ module dockyard.controllers {
                             RouteService.activate(<any>{ planId: $scope.current.route.id, routeBuilderActivate: true })
                                     .$promise.then((result) => {
                                     if (result != null && result.status === "validation_error") {
-                                        this.renderActions(result.activitesCollection);
+                                        this.renderActions(result.activitiesCollection);
                                         $scope.current.route.routeState = model.RouteState.Inactive;
                                     }
                             });
@@ -405,9 +405,9 @@ module dockyard.controllers {
             this.$scope.actionGroups = this.LayoutService.placeActions(actions, curRoute.startingSubrouteId);
         }
 
-        private renderActions(activitesCollection: model.ActivityDTO[]) {
-            if (activitesCollection != null && activitesCollection.length != 0) {
-                this.$scope.actionGroups = this.LayoutService.placeActions(activitesCollection,
+        private renderActions(activitiesCollection: model.ActivityDTO[]) {
+            if (activitiesCollection != null && activitiesCollection.length != 0) {
+                this.$scope.actionGroups = this.LayoutService.placeActions(activitiesCollection,
                     this.$scope.current.route.startingSubrouteId);  
             }
         }
