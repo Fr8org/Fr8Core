@@ -1,4 +1,5 @@
 ﻿using Data.Interfaces.DataTransferObjects;
+using Data.States;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -19,6 +20,21 @@ namespace Data.Infrastructure.JsonNet
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             var jsonObject = JObject.Load(reader);
+
+            JToken availabilityObj = null;
+            var availabilityStr = "availability";
+            bool hasAvailability = jsonObject.TryGetValue(availabilityStr, out availabilityObj);
+            if (hasAvailability)
+            {
+                if (availabilityObj.Value<int?>() == null)
+                {
+                    AvailabilityType availability = AvailabilityType.NotSet;
+                    JToken availabilityJToken = JToken.FromObject(availability);
+                    jsonObject.Remove(availabilityStr);
+                    jsonObject.Add(availabilityStr, availabilityJToken);
+                }                
+            }
+
             var instance = (CrateDTO)Activator.CreateInstance(objectType);
             serializer.Populate(jsonObject.CreateReader(), instance);
             return instance;
@@ -45,7 +61,14 @@ namespace Data.Infrastructure.JsonNet
             writer.WritePropertyName("createTime");
             writer.WriteValue(item.CreateTime);
             writer.WritePropertyName("availability");
-            writer.WriteValue(item.Availability);
+            if (item.Availability == AvailabilityType.NotSet)
+            {
+                writer.WriteValue((int?)null);
+            }
+            else
+            {
+                writer.WriteValue(item.Availability);
+            }
             writer.WriteEndObject();
             writer.Flush();
         }

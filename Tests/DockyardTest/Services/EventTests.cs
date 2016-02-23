@@ -104,7 +104,7 @@ namespace DockyardTest.Services
             throw new NotImplementedException();
         }
 
-        public StandardDesignTimeFieldsCM GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType? availability)
+        public FieldDescriptionsCM GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType? availability)
         {
             throw new NotImplementedException();
         }

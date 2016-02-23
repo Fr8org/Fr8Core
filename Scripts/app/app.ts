@@ -20,7 +20,8 @@ var app = angular.module("app", [
     "dndLists",
     "ngTable",
     "mb-scrollbar",
-    "ngMessages"
+    "ngMessages",
+    "ivh.treeview"
 ]);
 
 /* For compatibility with older versions of script files. Can be safely deleted later. */
@@ -88,8 +89,7 @@ app.config(['applicationInsightsServiceProvider', function (applicationInsightsS
         if (appInsightsInstrKey.indexOf('0000') == -1) { // if not local instance ('Debug' configuration)
             options = { applicationName: 'HubWeb' };
             applicationInsightsServiceProvider.configure(appInsightsInstrKey, options, true);
-        }
-        else {
+        } else {
             // don't send telemetry 
             options = {
                 applicationName: '',
@@ -100,7 +100,7 @@ app.config(['applicationInsightsServiceProvider', function (applicationInsightsS
             };
             applicationInsightsServiceProvider.configure(appInsightsInstrKey, options, false);
         }
-    })
+    });
 }]);
 
 /* Setup Rounting For All Pages */
@@ -289,4 +289,14 @@ app.factory('fr8VersionInterceptor', ['fr8ApiVersion', (fr8ApiVersion: string) =
             return config;
         }
     };
+}]);
+
+
+app.config(['ivhTreeviewOptionsProvider', ivhTreeviewOptionsProvider => {
+    ivhTreeviewOptionsProvider.set({
+        twistieCollapsedTpl: '<span class="glyphicon glyphicon-chevron-right"></span>',
+        twistieExpandedTpl: '<span class="glyphicon glyphicon-chevron-down"></span>',
+        twistieLeafTpl: '<span class="glyphicon glyphicon-tasks"></span>',
+        defaultSelectedState: false
+    });
 }]);

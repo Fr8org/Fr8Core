@@ -110,9 +110,9 @@ namespace Hub.Managers
             }
         }
 
-        public Crate<StandardDesignTimeFieldsCM> CreateDesignTimeFieldsCrate(string label, params FieldDTO[] fields)
+        public Crate<FieldDescriptionsCM> CreateDesignTimeFieldsCrate(string label, params FieldDTO[] fields)
         {
-            return Crate<StandardDesignTimeFieldsCM>.FromContent(label, new StandardDesignTimeFieldsCM() { Fields = fields.ToList() });
+            return Crate<FieldDescriptionsCM>.FromContent(label, new FieldDescriptionsCM() { Fields = fields.ToList() });
         }
 
         public Crate<ManifestDescriptionCM> CreateManifestDescriptionCrate(string label, string name, string id, AvailabilityType availability)
@@ -120,19 +120,19 @@ namespace Hub.Managers
             return Crate<ManifestDescriptionCM>.FromContent(label, new ManifestDescriptionCM() { Name = name, Id = id }, availability);
         }
 
-        public Crate<StandardDesignTimeFieldsCM> CreateDesignTimeFieldsCrate(string label, AvailabilityType availability, params FieldDTO[] fields)
+        public Crate<FieldDescriptionsCM> CreateDesignTimeFieldsCrate(string label, AvailabilityType availability, params FieldDTO[] fields)
         {
-            return Crate<StandardDesignTimeFieldsCM>.FromContent(label, new StandardDesignTimeFieldsCM() { Fields = fields.ToList() }, availability);
+            return Crate<FieldDescriptionsCM>.FromContent(label, new FieldDescriptionsCM() { Fields = fields.ToList() }, availability);
         }
 
-        public Crate<StandardDesignTimeFieldsCM> CreateDesignTimeFieldsCrate(string label, List<FieldDTO> fields, AvailabilityType availability)
+        public Crate<FieldDescriptionsCM> CreateDesignTimeFieldsCrate(string label, List<FieldDTO> fields, AvailabilityType availability)
         {
-            return Crate<StandardDesignTimeFieldsCM>.FromContent(label, new StandardDesignTimeFieldsCM() { Fields = fields }, availability);
+            return Crate<FieldDescriptionsCM>.FromContent(label, new FieldDescriptionsCM() { Fields = fields }, availability);
         }
 
-        public Crate<StandardDesignTimeFieldsCM> CreateDesignTimeFieldsCrate(string label, List<FieldDTO> fields)
+        public Crate<FieldDescriptionsCM> CreateDesignTimeFieldsCrate(string label, List<FieldDTO> fields)
         {
-            return Crate<StandardDesignTimeFieldsCM>.FromContent(label, new StandardDesignTimeFieldsCM() { Fields = fields }, null);
+            return Crate<FieldDescriptionsCM>.FromContent(label, new FieldDescriptionsCM() { Fields = fields }, AvailabilityType.NotSet);
         }
 
         public Crate<StandardConfigurationControlsCM> CreateStandardConfigurationControlsCrate(string label, params ControlDefinitionDTO[] controls)
@@ -268,22 +268,22 @@ namespace Hub.Managers
             return fields;
         }
 
-        public StandardDesignTimeFieldsCM MergeContentFields(List<Crate<StandardDesignTimeFieldsCM>> curCrates)
+        public FieldDescriptionsCM MergeContentFields(List<Crate<FieldDescriptionsCM>> curCrates)
         {
-            StandardDesignTimeFieldsCM tempMS = new StandardDesignTimeFieldsCM();
+            FieldDescriptionsCM tempMS = new FieldDescriptionsCM();
             foreach (var curCrate in curCrates)
             {
                 //extract the fields
-                StandardDesignTimeFieldsCM curStandardDesignTimeFieldsCrate = curCrate.Content;
+                FieldDescriptionsCM curFieldDescriptionsCrate = curCrate.Content;
 
-                foreach (var field in curStandardDesignTimeFieldsCrate.Fields)
+                foreach (var field in curFieldDescriptionsCrate.Fields)
                 {
                     field.SourceCrateLabel = curCrate.Label;
                     field.SourceCrateManifest = curCrate.ManifestType;
                 }
 
                 //add them to the pile
-                tempMS.Fields.AddRange(curStandardDesignTimeFieldsCrate.Fields);
+                tempMS.Fields.AddRange(curFieldDescriptionsCrate.Fields);
             }
 
             return tempMS;

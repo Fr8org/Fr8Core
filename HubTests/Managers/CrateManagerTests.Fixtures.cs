@@ -64,9 +64,9 @@ namespace HubTests.Managers
             };
         }
 
-        private static StandardDesignTimeFieldsCM TestManifest(string value = "value")
+        private static FieldDescriptionsCM TestManifest(string value = "value")
         {
-            return new StandardDesignTimeFieldsCM
+            return new FieldDescriptionsCM
             {
                 Fields = new List<FieldDTO>
                 {

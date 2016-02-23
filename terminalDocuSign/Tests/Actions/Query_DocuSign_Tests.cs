@@ -98,7 +98,7 @@ namespace terminalDocuSign.Tests.Actions
             var result = await _activity.Configure(new ActivityDO(), curAuthTokenDO);
             var storage = _crateManager.GetStorage(result);
 
-            var foldersCrate = storage.CratesOfType<StandardDesignTimeFieldsCM>().Where(x => x.Label == "Folders").Select(x => x.Content).FirstOrDefault();
+            var foldersCrate = storage.CratesOfType<FieldDescriptionsCM>().Where(x => x.Label == "Folders").Select(x => x.Content).FirstOrDefault();
             Assert.IsNotNull(foldersCrate);
 
             foreach (var f in TerminalFixtureData.GetFolders())

@@ -81,17 +81,17 @@ namespace terminalSendGrid.Actions
                 crateStorage.RemoveByLabel("Upstream Terminal-Provided Fields Subject");
                 crateStorage.RemoveByLabel("Upstream Terminal-Provided Fields Body");
 
-                var fieldsDTO = await GetCratesFieldsDTO<StandardDesignTimeFieldsCM>(curActivityDO, CrateDirection.Upstream);
+                var fieldsDTO = await GetCratesFieldsDTO<FieldDescriptionsCM>(curActivityDO, CrateDirection.Upstream);
 
-                var upstreamFieldsAddress = MergeUpstreamFields<StandardDesignTimeFieldsCM>(curActivityDO, "Upstream Terminal-Provided Fields Address", fieldsDTO);
+                var upstreamFieldsAddress = MergeUpstreamFields<FieldDescriptionsCM>(curActivityDO, "Upstream Terminal-Provided Fields Address", fieldsDTO);
                 if (upstreamFieldsAddress != null)
                     crateStorage.Add(upstreamFieldsAddress);
 
-                var upstreamFieldsSubject = MergeUpstreamFields<StandardDesignTimeFieldsCM>(curActivityDO, "Upstream Terminal-Provided Fields Subject", fieldsDTO);
+                var upstreamFieldsSubject = MergeUpstreamFields<FieldDescriptionsCM>(curActivityDO, "Upstream Terminal-Provided Fields Subject", fieldsDTO);
                 if (upstreamFieldsSubject != null)
                     crateStorage.Add(upstreamFieldsSubject);
 
-                var upstreamFieldsBody = MergeUpstreamFields<StandardDesignTimeFieldsCM>(curActivityDO, "Upstream Terminal-Provided Fields Body", fieldsDTO);
+                var upstreamFieldsBody = MergeUpstreamFields<FieldDescriptionsCM>(curActivityDO, "Upstream Terminal-Provided Fields Body", fieldsDTO);
                 if (upstreamFieldsBody != null)
                     crateStorage.Add(upstreamFieldsBody);
             }

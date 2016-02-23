@@ -55,7 +55,7 @@ namespace terminalTwilio.Tests.Actions
             var activity = FixtureData.ConfigureTwilioAction();
             var baseTerminalAction = new Mock<BaseTerminalActivity>();
             baseTerminalAction
-                .Setup(c => c.GetDesignTimeFields(It.IsAny<Guid>(), CrateDirection.Upstream, null))
+                .Setup(c => c.GetDesignTimeFields(It.IsAny<Guid>(), CrateDirection.Upstream, AvailabilityType.NotSet))
                 .Returns(Task.FromResult(FixtureData.TestFields()));
             ObjectFactory.Configure(cfg => cfg.For<BaseTerminalActivity>().Use(baseTerminalAction.Object));
 

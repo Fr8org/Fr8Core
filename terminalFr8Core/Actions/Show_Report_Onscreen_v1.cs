@@ -42,7 +42,7 @@ namespace terminalFr8Core.Actions
         {
             var fields = new List<FieldDTO>();
 
-            foreach (var table in (await GetCratesByDirection<StandardDesignTimeFieldsCM>(curActivityDO, CrateDirection.Upstream))
+            foreach (var table in (await GetCratesByDirection<FieldDescriptionsCM>(curActivityDO, CrateDirection.Upstream))
                                              .Select(x => x.Content)
                                              .SelectMany(x => x.Fields)
                                              .Where(x => x.Availability == AvailabilityType.RunTime && x.Value == "Table"))
@@ -50,7 +50,7 @@ namespace terminalFr8Core.Actions
                 fields.Add(new FieldDTO(table.Key, table.Key));    
             }
 
-            return Data.Crates.Crate.FromContent("Upstream Crate Label List", new StandardDesignTimeFieldsCM(fields));
+            return Data.Crates.Crate.FromContent("Upstream Crate Label List", new FieldDescriptionsCM(fields));
         }
 
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)

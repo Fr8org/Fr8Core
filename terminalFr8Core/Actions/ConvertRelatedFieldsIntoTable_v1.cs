@@ -43,7 +43,7 @@ namespace terminalFr8Core.Actions
             var storage = CrateManager.GetStorage(curActionDataPackageDO);
             var hasControlsCrate = GetConfigurationControls(storage) != null;
 
-            var hasManifestTypeList = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Manifest Type List").Any();
+            var hasManifestTypeList = storage.CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "Upstream Manifest Type List").Any();
 
             if (hasControlsCrate && hasManifestTypeList)
             {
@@ -90,7 +90,7 @@ namespace terminalFr8Core.Actions
                 using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
                 {
                     crateStorage.RemoveByLabel("Upstream Crate Label List");
-                    crateStorage.Add(Data.Crates.Crate.FromContent("Upstream Crate Label List", new StandardDesignTimeFieldsCM() { Fields = labelList }));
+                    crateStorage.Add(Data.Crates.Crate.FromContent("Upstream Crate Label List", new FieldDescriptionsCM() { Fields = labelList }));
                 }
             }
 

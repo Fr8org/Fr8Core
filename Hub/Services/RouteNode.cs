@@ -83,9 +83,9 @@ namespace Hub.Services
             }
         }
 
-        public StandardDesignTimeFieldsCM GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType? availability)
+        public FieldDescriptionsCM GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType? availability)
         {
-            StandardDesignTimeFieldsCM mergedFields = new StandardDesignTimeFieldsCM();
+            FieldDescriptionsCM mergedFields = new FieldDescriptionsCM();
 
             Func<FieldDTO, bool> fieldPredicate;
             if (availability == null)
@@ -97,14 +97,14 @@ namespace Hub.Services
                 fieldPredicate = (FieldDTO f) => f.Availability == availability;
             }
 
-            Func<Crate<StandardDesignTimeFieldsCM>, bool> cratePredicate;
+            Func<Crate<FieldDescriptionsCM>, bool> cratePredicate;
             if (availability == null)
             {
-                cratePredicate = (Crate<StandardDesignTimeFieldsCM> f) => true;
+                cratePredicate = (Crate<FieldDescriptionsCM> f) => true;
             }
             else
             {
-                cratePredicate = (Crate<StandardDesignTimeFieldsCM> f) =>
+                cratePredicate = (Crate<FieldDescriptionsCM> f) =>
                 {
                     return f.Availability == availability;
                 };
@@ -115,7 +115,7 @@ namespace Hub.Services
                 ActivityDO activityDO = uow.PlanRepository.GetById<ActivityDO>(activityId);
                 var curCrates = GetActivitiesByDirection(uow, direction, activityDO)
                     .OfType<ActivityDO>()
-                    .SelectMany(x => _crate.GetStorage(x).CratesOfType<StandardDesignTimeFieldsCM>().Where(cratePredicate))
+                    .SelectMany(x => _crate.GetStorage(x).CratesOfType<FieldDescriptionsCM>().Where(cratePredicate))
                     .ToList();
 
                 mergedFields.Fields.AddRange(_crate.MergeContentFields(curCrates).Fields.Where(fieldPredicate));

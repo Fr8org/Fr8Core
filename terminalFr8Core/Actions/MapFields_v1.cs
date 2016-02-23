@@ -169,8 +169,8 @@ namespace terminalFr8Core.Actions
         {
             ICrateStorage storage = storage = CrateManager.GetStorage(curAction.CrateStorage);
 
-            var upStreamFields = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Terminal-Provided Fields").FirstOrDefault();
-            var downStreamFields = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Downstream Terminal-Provided Fields").FirstOrDefault();
+            var upStreamFields = storage.CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "Upstream Terminal-Provided Fields").FirstOrDefault();
+            var downStreamFields = storage.CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "Downstream Terminal-Provided Fields").FirstOrDefault();
 
             if (upStreamFields == null
                 || upStreamFields.Fields == null

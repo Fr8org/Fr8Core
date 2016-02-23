@@ -21,10 +21,10 @@ namespace Data.Crates
 
         public static Crate<T> FromContent(string label, T content)
         {
-            return FromContent(label, content, null);
+            return FromContent(label, content, AvailabilityType.NotSet);
         }
 
-        public static Crate<T> FromContent(string label, T content, AvailabilityType? availability)
+        public static Crate<T> FromContent(string label, T content, AvailabilityType availability)
         {
             return new Crate<T>(FromContentUnsafe(label, content, availability));
         }     

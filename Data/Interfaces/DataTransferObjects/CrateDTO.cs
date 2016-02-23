@@ -25,6 +25,6 @@ namespace Data.Interfaces.DataTransferObjects
 
         public DateTime CreateTime { get; set; }
 
-        public AvailabilityType? Availability { get; set; }
+        public AvailabilityType Availability { get; set; }
     }
 }
