@@ -30,7 +30,7 @@ namespace Data.Crates
             set;
         }
 
-        public AvailabilityType Availability { get; set; }
+        public AvailabilityType? Availability { get; set; }
 
         /**********************************************************************************/
         /// <summary>
@@ -68,7 +68,7 @@ namespace Data.Crates
         /// <param name="manifestType"></param>
         /// <param name="id"></param>
         /// <param name="availability">Crate availability</param>
-        public Crate(CrateManifestType manifestType, string id, AvailabilityType availability)
+        public Crate(CrateManifestType manifestType, string id, AvailabilityType? availability)
         {
             _manifestType = manifestType;
             Id = id;
@@ -107,7 +107,7 @@ namespace Data.Crates
         /// <param name="label"></param>
         /// <param name="content"></param>
         /// <returns></returns>
-        public static Crate FromContent(string label, Manifest content, AvailabilityType availability = AvailabilityType.NotSet)
+        public static Crate FromContent(string label, Manifest content, AvailabilityType? availability = null)
         {
             return new Crate(GetManifest(content))
             {
@@ -125,7 +125,7 @@ namespace Data.Crates
         /// <param name="label"></param>
         /// <param name="content"></param>
         /// <returns></returns>
-        public static Crate FromContentUnsafe(string label, object content, AvailabilityType availability = AvailabilityType.NotSet)
+        public static Crate FromContentUnsafe(string label, object content, AvailabilityType? availability = null)
         {
             return new Crate(GetManifest(content))
             {

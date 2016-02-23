@@ -1,8 +1,10 @@
-﻿using Data.States;
+﻿using Data.Infrastructure.JsonNet;
+using Data.States;
 using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
 {
+    [JsonConverter(typeof(FieldConverter))]
     public class FieldDTO
     {
         [JsonProperty("key")]
@@ -15,7 +17,7 @@ namespace Data.Interfaces.DataTransferObjects
         public string Tags { get; set; }
 
         [JsonProperty("availability")]
-        public AvailabilityType Availability { get; set; }
+        public AvailabilityType? Availability { get; set; }
 
         [JsonProperty("sourceCrateManifest")]
         public Crates.CrateManifestType SourceCrateManifest { get; set; }

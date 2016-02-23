@@ -83,12 +83,12 @@ namespace Hub.Services
             }
         }
 
-        public StandardDesignTimeFieldsCM GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability)
+        public StandardDesignTimeFieldsCM GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType? availability)
         {
             StandardDesignTimeFieldsCM mergedFields = new StandardDesignTimeFieldsCM();
 
             Func<FieldDTO, bool> fieldPredicate;
-            if (availability == AvailabilityType.NotSet)
+            if (availability == null)
             {
                 fieldPredicate = (FieldDTO f) => true;
             }
@@ -98,7 +98,7 @@ namespace Hub.Services
             }
 
             Func<Crate<StandardDesignTimeFieldsCM>, bool> cratePredicate;
-            if (availability == AvailabilityType.NotSet)
+            if (availability == null)
             {
                 cratePredicate = (Crate<StandardDesignTimeFieldsCM> f) => true;
             }

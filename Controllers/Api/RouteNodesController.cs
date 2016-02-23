@@ -116,7 +116,7 @@ namespace HubWeb.Controllers
         public IHttpActionResult GetDesignTimeFieldsByDirection(
             Guid id, 
             CrateDirection direction, 
-            AvailabilityType availability = AvailabilityType.NotSet)
+            AvailabilityType? availability = null)
         {
             var downstreamActions = _activity.GetDesignTimeFieldsByDirection(id, direction, availability);
             return Ok(downstreamActions);
