@@ -275,7 +275,7 @@ namespace terminalIntegrationTests
 
             Assert.AreEqual(4,storage.Count);
             Assert.True((storage.CratesOfType<StandardConfigurationControlsCM>().Any()));
-            Assert.True(storage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "Available Templates"));
+            Assert.True(storage.CratesOfType<FieldDescriptionsCM>().Any(x => x.Label == "Available Templates"));
 
            // FixActionNavProps(activityDTO.Content.Id);
 
@@ -297,7 +297,7 @@ namespace terminalIntegrationTests
         private void WaitForDocuSignEvent_SelectFirstTemplate(ICrateStorage curCrateStorage)
         {
             // Fetch Available Template crate and parse StandardDesignTimeFieldsMS.
-            var availableTemplatesCrate = curCrateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Single(x => x.Label == "Available Templates");
+            var availableTemplatesCrate = curCrateStorage.CratesOfType<FieldDescriptionsCM>().Single(x => x.Label == "Available Templates");
 
             var fieldsMS = availableTemplatesCrate.Content;
 
@@ -331,8 +331,8 @@ namespace terminalIntegrationTests
 
             Assert.AreEqual(4, storage.Count);//replace this with 3 when 1123 is fixed (Why 3?)
             Assert.True(storage.CratesOfType<StandardConfigurationControlsCM>().Any(x => x.Label == "Configuration_Controls"));
-            Assert.True(storage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "Available Templates"));
-            // Assert.True(storage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "DocuSignTemplateUserDefinedFields"));
+            Assert.True(storage.CratesOfType<FieldDescriptionsCM>().Any(x => x.Label == "Available Templates"));
+            // Assert.True(storage.CratesOfType<FieldDescriptionsCM>().Any(x => x.Label == "DocuSignTemplateUserDefinedFields"));
             Assert.True(storage.CratesOfType<EventSubscriptionCM>().Any(x => x.Label == "Standard Event Subscriptions"));
 
             return storage;
@@ -355,7 +355,7 @@ namespace terminalIntegrationTests
 
             Assert.AreEqual(storage.Count, 2);
             Assert.True(storage.CratesOfType<StandardConfigurationControlsCM>().Any(x => x.Label == "Configuration_Controls"));
-            Assert.True(storage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "Queryable Criteria"));
+            Assert.True(storage.CratesOfType<FieldDescriptionsCM>().Any(x => x.Label == "Queryable Criteria"));
 
             return storage;
         }
@@ -404,7 +404,7 @@ namespace terminalIntegrationTests
 
             Assert.AreEqual(2, storage.Count);//replace this with 3 when 1123 is fixed
             Assert.True(storage.CratesOfType<StandardConfigurationControlsCM>().Any(x => x.Label == "Configuration_Controls"));
-            Assert.True(storage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "Sql Table Columns"));
+            Assert.True(storage.CratesOfType<FieldDescriptionsCM>().Any(x => x.Label == "Sql Table Columns"));
 
             return storage;
         }

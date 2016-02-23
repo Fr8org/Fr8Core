@@ -39,13 +39,13 @@ namespace terminalDocuSignTests.Integration
         private void ShouldHaveCorrectCrateStructure(ICrateStorage crateStorage)
         {
             Assert.True(crateStorage.CratesOfType<StandardConfigurationControlsCM>().Any(), "Crate StandardConfigurationControlsCM is missing in API response.");
-            Assert.True(crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Any(c => c.Label == "AvailableTemplates"), "StandardDesignTimeFieldsCM with label \"AvailableTemplates\" is missing in API response.");
-            Assert.True(crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Any(c => c.Label == "AvailableHandlers"), "StandardDesignTimeFieldsCM with label \"AvailableHandlers\" is missing in API response.");
-            Assert.True(crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Any(c => c.Label == "AvailableRecipientEvents"), "StandardDesignTimeFieldsCM with label \"AvailableRecipientEvents\" is missing in API response.");
+            Assert.True(crateStorage.CratesOfType<FieldDescriptionsCM>().Any(c => c.Label == "AvailableTemplates"), "FieldDescriptionsCM with label \"AvailableTemplates\" is missing in API response.");
+            Assert.True(crateStorage.CratesOfType<FieldDescriptionsCM>().Any(c => c.Label == "AvailableHandlers"), "FieldDescriptionsCM with label \"AvailableHandlers\" is missing in API response.");
+            Assert.True(crateStorage.CratesOfType<FieldDescriptionsCM>().Any(c => c.Label == "AvailableRecipientEvents"), "FieldDescriptionsCM with label \"AvailableRecipientEvents\" is missing in API response.");
 
-            var templatesCrate = crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Single(c => c.Label == "AvailableTemplates");
-            var handlersCrate = crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Single(c => c.Label == "AvailableHandlers");
-            var recipientEventsCrate = crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Single(c => c.Label == "AvailableRecipientEvents");
+            var templatesCrate = crateStorage.CratesOfType<FieldDescriptionsCM>().Single(c => c.Label == "AvailableTemplates");
+            var handlersCrate = crateStorage.CratesOfType<FieldDescriptionsCM>().Single(c => c.Label == "AvailableHandlers");
+            var recipientEventsCrate = crateStorage.CratesOfType<FieldDescriptionsCM>().Single(c => c.Label == "AvailableRecipientEvents");
 
             Assert.True(templatesCrate.Content.Fields.Any(), "There are no fields in AvailableTemplates Crate");
             Assert.True(handlersCrate.Content.Fields.Any(), "There are no fields in AvailableHandlers Crate");
@@ -192,11 +192,11 @@ namespace terminalDocuSignTests.Integration
             timePeriod.Days = 0;
             timePeriod.Hours = 0;
             timePeriod.Minutes = 0;
-            var handlersCrate = _crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Single(c => c.Label == "AvailableHandlers");
+            var handlersCrate = _crateStorage.CratesOfType<FieldDescriptionsCM>().Single(c => c.Label == "AvailableHandlers");
             var emailHandler = handlersCrate.Content.Fields.Single(c => c.Key.Contains("Send Email"));
             notificationHandler.Value = emailHandler.Value;
             notificationHandler.selectedKey = emailHandler.Key;
-            var recipientEventsCrate = _crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Single(c => c.Label == "AvailableRecipientEvents");
+            var recipientEventsCrate = _crateStorage.CratesOfType<FieldDescriptionsCM>().Single(c => c.Label == "AvailableRecipientEvents");
             recipientEvent.Value = recipientEventsCrate.Content.Fields[1].Value;
             recipientEvent.selectedKey = recipientEventsCrate.Content.Fields[1].Key;
 

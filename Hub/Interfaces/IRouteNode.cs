@@ -17,7 +17,7 @@ namespace Hub.Interfaces
 
         List<RouteNodeDO> GetDownstreamActivities(IUnitOfWork uow, RouteNodeDO curActivityDO);
 
-        StandardDesignTimeFieldsCM GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability);
+        FieldDescriptionsCM GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability);
 
         Task Process(Guid curActivityId, ActivityState curActionState, ContainerDO curContainerDO);
 

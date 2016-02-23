@@ -29,7 +29,7 @@ namespace terminalDocuSignTests.Integration
         {
             Assert.AreEqual(2, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(x => x.Label == "Configuration_Controls"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "AvailableActions"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "AvailableActions"));
         }
 
         private void AssertControls(StandardConfigurationControlsCM controls)
@@ -70,7 +70,7 @@ namespace terminalDocuSignTests.Integration
                 var dropDownList = (DropDownList)controls.Controls[1];
 
                  var availableActions = crateStorage
-                    .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "AvailableActions")
+                    .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "AvailableActions")
                     .Single();
 
                 dropDownList.Selected = true;

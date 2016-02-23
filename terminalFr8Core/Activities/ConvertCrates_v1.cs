@@ -113,7 +113,7 @@ namespace terminalFr8Core.Actions
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                crateStorage.RemoveUsingPredicate(c => c.IsOfType<StandardDesignTimeFieldsCM>() && c.Label == "Available To Manifests");
+                crateStorage.RemoveUsingPredicate(c => c.IsOfType<FieldDescriptionsCM>() && c.Label == "Available To Manifests");
                 if (manifestTypeDropdown.Value != null)
                 {
                     crateStorage.Add(GetAvailableToManifests(manifestTypeDropdown.Value));
@@ -160,7 +160,7 @@ namespace terminalFr8Core.Actions
                 Source = new FieldSourceDTO
                 {
                     Label = "Available From Manifests",
-                    ManifestType = MT.StandardDesignTimeFields.GetEnumDisplayName()
+                    ManifestType = MT.FieldDescription.GetEnumDisplayName()
                 }
             };
 
@@ -172,7 +172,7 @@ namespace terminalFr8Core.Actions
                 Source = new FieldSourceDTO
                 {
                     Label = "Available To Manifests",
-                    ManifestType = MT.StandardDesignTimeFields.GetEnumDisplayName()
+                    ManifestType = MT.FieldDescription.GetEnumDisplayName()
                 }
             };
 

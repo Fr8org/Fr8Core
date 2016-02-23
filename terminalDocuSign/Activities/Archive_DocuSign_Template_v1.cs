@@ -38,7 +38,7 @@ namespace terminalDocuSign.Actions
                     Source = new FieldSourceDTO
                     {
                         Label = "Available Templates",
-                        ManifestType = MT.StandardDesignTimeFields.GetEnumDisplayName()
+                        ManifestType = MT.FieldDescription.GetEnumDisplayName()
                     },
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 });

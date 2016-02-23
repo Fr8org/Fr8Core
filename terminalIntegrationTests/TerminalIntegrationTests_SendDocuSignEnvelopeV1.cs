@@ -82,7 +82,7 @@ namespace terminalIntegrationTests
 
             Assert.AreEqual(storage.Count, 3);
             Assert.True((storage.CratesOfType<StandardConfigurationControlsCM>().Any(x => x.Label == "Configuration_Controls")));
-            Assert.True((storage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "Available Templates")));
+            Assert.True((storage.CratesOfType<FieldDescriptionsCM>().Any(x => x.Label == "Available Templates")));
 
 			return storage;
 		}
@@ -90,7 +90,7 @@ namespace terminalIntegrationTests
         private void SendDocuSignEnvelope_SelectFirstTemplate(ICrateStorage curCrateStorage)
 		{
 			// Fetch Available Template crate and parse StandardDesignTimeFieldsMS.
-            var availableTemplatesCrateDTO = curCrateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Single(x => x.Label == "Available Templates");
+            var availableTemplatesCrateDTO = curCrateStorage.CratesOfType<FieldDescriptionsCM>().Single(x => x.Label == "Available Templates");
 
 		    var fieldsMS = availableTemplatesCrateDTO.Content;
 
@@ -121,8 +121,8 @@ namespace terminalIntegrationTests
             var storage = _crateManager.GetStorage(activityDTO.Content);
 
             Assert.AreEqual(storage.Count, 2);
-            Assert.True((storage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "DocuSignTemplateUserDefinedFields")));
-            Assert.True((storage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "DocuSignTemplateStandardFields")));
+            Assert.True((storage.CratesOfType<FieldDescriptionsCM>().Any(x => x.Label == "DocuSignTemplateUserDefinedFields")));
+            Assert.True((storage.CratesOfType<FieldDescriptionsCM>().Any(x => x.Label == "DocuSignTemplateStandardFields")));
 
 			return storage;
 		}

@@ -93,7 +93,7 @@ namespace terminalFr8Core.Actions
             {
                 updater.RemoveByLabel("Available Fields");
 
-                var upstreamFieldsAddress = await MergeUpstreamFields<StandardDesignTimeFieldsCM>(curActivityDO, "Available Fields");
+                var upstreamFieldsAddress = await MergeUpstreamFields<FieldDescriptionsCM>(curActivityDO, "Available Fields");
                 if (upstreamFieldsAddress != null)
                     updater.Add(upstreamFieldsAddress);
             }

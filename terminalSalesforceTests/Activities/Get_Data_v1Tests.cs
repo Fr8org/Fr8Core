@@ -81,7 +81,7 @@ namespace terminalSalesforceTests.Actions
             Assert.IsTrue(configControlCM.Content.Controls.Any(control => control.Name.Equals("SelectedFilter")), "SelectedFilter DDLB is not present");
 
             Assert.AreEqual(0,
-                stroage.CratesOfType<StandardDesignTimeFieldsCM>()
+                stroage.CratesOfType<FieldDescriptionsCM>()
                     .Single(c => c.Label.Equals("Queryable Criteria"))
                     .Content.Fields.Count, "Queryable Criteria is filled with invalid data");
         }
@@ -103,7 +103,7 @@ namespace terminalSalesforceTests.Actions
             var stroage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(activityDO);
             Assert.AreEqual(3, stroage.Count, "Number of configuration crates not populated correctly");
 
-            Assert.AreEqual(stroage.CratesOfType<StandardDesignTimeFieldsCM>()
+            Assert.AreEqual(stroage.CratesOfType<FieldDescriptionsCM>()
                     .Single(c => c.Label.Equals("Queryable Criteria"))
                     .Content.Fields.Count, 1, "Queryable Criteria is NOT filled with invalid data");
 

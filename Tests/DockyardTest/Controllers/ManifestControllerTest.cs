@@ -379,11 +379,11 @@ namespace DockyardTest.Controllers
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("FirstRowHeaders")), "FirstRowHeaders Not Found");
         }
 
-        private static StandardDesignTimeFieldsCM Deserialize(OkNegotiatedContentResult<CrateDTO> actionResult)
+        private static FieldDescriptionsCM Deserialize(OkNegotiatedContentResult<CrateDTO> actionResult)
         {
             var crate = ObjectFactory.GetInstance<ICrateManager>().FromDto(actionResult.Content);
 
-            return crate.Get<StandardDesignTimeFieldsCM>();
+            return crate.Get<FieldDescriptionsCM>();
         }
 
         private static ManifestsController CreateManifestController()

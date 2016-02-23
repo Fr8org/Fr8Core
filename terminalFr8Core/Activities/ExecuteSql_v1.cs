@@ -135,7 +135,7 @@ namespace terminalFr8Core.Actions
 
         private async Task<string> ExtractConnectionString(ActivityDO activityDO)
         {
-            var upstreamCrates = await GetCratesByDirection<StandardDesignTimeFieldsCM>(
+            var upstreamCrates = await GetCratesByDirection<FieldDescriptionsCM>(
                 activityDO,
                 CrateDirection.Upstream
             );

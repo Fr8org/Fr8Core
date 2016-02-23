@@ -163,7 +163,7 @@ namespace TerminalBase.Infrastructure
             return curCrates;
         }
 
-        public async Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability, string userId)
+        public async Task<FieldDescriptionsCM> GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability, string userId)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                 + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routenodes/designtime_fields_dir"
@@ -171,11 +171,11 @@ namespace TerminalBase.Infrastructure
                 + "&direction=" + (int)direction
                 + "&availability=" + (int)availability;
             var uri = new Uri(url, UriKind.Absolute);
-            var curFields = await _restfulServiceClient.GetAsync<StandardDesignTimeFieldsCM>(uri, null, await GetHMACHeader(uri, userId));
+            var curFields = await _restfulServiceClient.GetAsync<FieldDescriptionsCM>(uri, null, await GetHMACHeader(uri, userId));
             return curFields;
         }
 
-        public async Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability, string userId)
+        public async Task<FieldDescriptionsCM> GetDesignTimeFieldsByDirection(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability, string userId)
         {
             return await GetDesignTimeFieldsByDirection(activityDO.Id, direction, availability, userId);
         }
