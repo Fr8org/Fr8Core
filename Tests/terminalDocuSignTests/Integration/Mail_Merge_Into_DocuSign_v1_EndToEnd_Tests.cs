@@ -139,7 +139,7 @@ namespace terminalDocuSignTests.Integration
                 Assert.AreEqual(2, this.solution.ChildrenActivities.Count(), "Solution child actions failed to create.");
 
                 // Delete Google action 
-                await HttpDeleteAsync(_baseUrl + "actions?id=" + this.solution.ChildrenActivities[0].Id);
+                await HttpDeleteAsync(_baseUrl + "activities?id=" + this.solution.ChildrenActivities[0].Id);
 
                 // Add Add Payload Manually action
                 var activityCategoryParam = new ActivityCategory[] { ActivityCategory.Processors };
