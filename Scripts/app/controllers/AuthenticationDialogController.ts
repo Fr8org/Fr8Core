@@ -186,7 +186,7 @@
 
                 // Refresh terminals & auth-tokens list.
                 $http.post(
-                    urlPrefix + '/ManageAuthToken/TerminalsByActions',
+                    urlPrefix + '/ManageAuthToken/TerminalsByActivities',
                     actionIds
                 )
                 .then(function (res) {

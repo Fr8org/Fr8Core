@@ -19,7 +19,7 @@ namespace Hub.Interfaces
 
         FieldDescriptionsCM GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability);
 
-        Task Process(Guid curActivityId, ActionState curActionState, ContainerDO curContainerDO);
+        Task Process(Guid curActivityId, ActivityState curActionState, ContainerDO curContainerDO);
 
         IEnumerable<ActivityTemplateDTO> GetAvailableActivities(IUnitOfWork uow, IFr8AccountDO curAccount);
         IEnumerable<ActivityTemplateDTO> GetAvailableActivities(IUnitOfWork uow, Func<ActivityTemplateDO, bool> predicate);

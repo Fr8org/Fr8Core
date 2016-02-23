@@ -60,7 +60,7 @@ namespace HubWeb.Controllers
 
                     crateManager.AddLogMessage(label, logItemList, container);
                     var terminal = ObjectFactory.GetInstance<ITerminal>();
-                    var terminalUrl = terminal.ParseTerminalUrlFor(alarmDTO.TerminalName, alarmDTO.TerminalVersion, "action/run");
+                    var terminalUrl = terminal.ParseTerminalUrlFor(alarmDTO.TerminalName, alarmDTO.TerminalVersion, "activity/run");
                     var content = new ObjectContent<ActionDTO>(alarmDTO.ActionDTO, new JsonMediaTypeFormatter());
 
                     

@@ -41,7 +41,7 @@ namespace terminalSalesforce.Infrastructure
         [XmlElement(ElementName = "OrganizationId", Namespace = "http://soap.sforce.com/2005/09/outbound")]
         public string OrganizationId { get; set; }
         [XmlElement(ElementName = "ActionId", Namespace = "http://soap.sforce.com/2005/09/outbound")]
-        public string ActionId { get; set; }
+        public string ActivityId { get; set; }
         [XmlElement(ElementName = "SessionId", Namespace = "http://soap.sforce.com/2005/09/outbound")]
         public string SessionId { get; set; }
         [XmlElement(ElementName = "EnterpriseUrl", Namespace = "http://soap.sforce.com/2005/09/outbound")]

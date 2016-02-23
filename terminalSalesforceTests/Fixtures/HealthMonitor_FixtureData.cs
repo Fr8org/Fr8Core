@@ -105,7 +105,7 @@ namespace terminalSalesforceTests.Fixtures
             return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
 
-        public static ActivityDTO Get_Data_v1_InitialConfiguration_ActionDTO()
+        public static ActivityDTO Get_Data_v1_InitialConfiguration_ActivityDTO()
         {
             var activityTemplate = Get_Data_v1_ActivityTemplate();
 

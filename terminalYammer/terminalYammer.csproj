@@ -189,9 +189,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actions\Post_To_Yammer_v1.cs" />
+    <Compile Include="Activities\Post_To_Yammer_v1.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Controllers\ActionController.cs" />
+    <Compile Include="Controllers\ActivityController.cs" />
     <Compile Include="Controllers\AuthenticationController.cs" />
     <Compile Include="Controllers\TerminalController.cs" />
     <Compile Include="Model\YammerAccessToken.cs" />

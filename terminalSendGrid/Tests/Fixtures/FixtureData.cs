@@ -15,9 +15,9 @@ namespace terminalSendGrid.Tests.Fixtures
             return new Guid("A0287C2A-28D3-48C5-8CAC-26FE27E8EA9B");
         }
 
-        public static ActivityDO ConfigureSendEmailViaSendGridAction()
+        public static ActivityDO ConfigureSendEmailViaSendGridActivity()
         {
-            var actionTemplate = SendEmailViaSendGridActionTemplateDTO();
+            var actionTemplate = SendEmailViaSendGridActivityTemplateDTO();
 
             var activityDO = new ActivityDO()
             {
@@ -43,7 +43,7 @@ namespace terminalSendGrid.Tests.Fixtures
             return containerDO;
         }
 
-        public static ActivityTemplateDO SendEmailViaSendGridActionTemplateDTO()
+        public static ActivityTemplateDO SendEmailViaSendGridActivityTemplateDTO()
         {
             return new ActivityTemplateDO
             {

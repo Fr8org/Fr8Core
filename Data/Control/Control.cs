@@ -582,8 +582,8 @@ namespace Data.Control
             get
             {
                 if (string.IsNullOrEmpty(ContentPath))
-                    return "/actions/documentation";
-                return string.Format("/actions/documentation/{0}", ContentPath);
+                    return "/activites/documentation";
+                return string.Format("/activites/documentation/{0}", ContentPath);
             }
         }
     }

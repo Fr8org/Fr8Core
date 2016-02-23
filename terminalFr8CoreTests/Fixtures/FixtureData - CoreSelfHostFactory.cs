@@ -139,7 +139,7 @@ namespace terminalFr8CoreTests.Fixtures
             };
         }
 
-        public static ActivityDTO MonitorFr8Event_InitialConfiguration_ActionDTO()
+        public static ActivityDTO MonitorFr8Event_InitialConfiguration_ActivityDTO()
         {
             var activityTemplate = MonitorFr8Event_ActivityTemplate();
 

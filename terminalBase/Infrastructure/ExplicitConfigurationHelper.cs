@@ -26,7 +26,7 @@ namespace TerminalBase.Infrastructure
         {
             var prefix = endPoint.ToUpper().StartsWith("HTTP://") ? "" : "http://";
 
-            return prefix + endPoint + "/actions/configure";
+            return prefix + endPoint + "/activities/configure";
         }
 
         private void AddHubCrate<T>(ActivityDO activityDO,

@@ -32,7 +32,7 @@ namespace terminalSalesforceTests.Fixtures
             };
         }
 
-        public static ActivityDO GetFileListTestActionDO1()
+        public static ActivityDO GetFileListTestActivityDO1()
         {
             var actionTemplate = GetDataActivityTemplateDO();
 

@@ -92,7 +92,7 @@ namespace Hub.Services
 
                     do
                     {
-                        activityService.Process(currentAction.Id, ActionState.InitialRun, curProcessNode.ParentContainer);
+                        activityService.Process(currentAction.Id, ActivityState.InitialRun, curProcessNode.ParentContainer);
                         currentAction = activityService.GetNextActivity(currentAction, curSubroute);
                     } while (currentAction != null);
                 }
