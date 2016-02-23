@@ -56,8 +56,8 @@ namespace terminalDocuSign.Tests.Actions
             Assert.AreEqual(4, storage.Count);
 
             Assert.IsTrue(storage.CratesOfType<StandardConfigurationControlsCM>().Any());
-            Assert.AreEqual(storage.CratesOfType<StandardDesignTimeFieldsCM>().Count(), 2);
-            Assert.IsTrue(storage.CratesOfType<StandardDesignTimeFieldsCM>(x => x.Label == "DocuSign Event Fields").Any());
+            Assert.AreEqual(storage.CratesOfType<FieldDescriptionsCM>().Count(), 2);
+            Assert.IsTrue(storage.CratesOfType<FieldDescriptionsCM>(x => x.Label == "DocuSign Event Fields").Any());
             
             //NOTE:DO-1236 states - initial configuration response should add the standard event subscription
             Assert.IsTrue(storage.CratesOfType<EventSubscriptionCM>().Any());

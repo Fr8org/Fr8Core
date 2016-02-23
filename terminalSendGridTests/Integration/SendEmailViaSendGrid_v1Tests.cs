@@ -55,7 +55,7 @@ namespace terminalSendGridTests.Integration
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             actionDTOInit = responseActionDTO;
             Assert.IsNotNull(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault());
-            Assert.AreEqual(1, crateStorage.CrateContentsOfType<StandardDesignTimeFieldsCM>().Count());
+            Assert.AreEqual(1, crateStorage.CrateContentsOfType<FieldDescriptionsCM>().Count());
 
             var standardConfigurationControlCM = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>();
             Assert.AreEqual(1, standardConfigurationControlCM.Where(w => w.FindByName("EmailAddress") != null).Count());
@@ -96,7 +96,7 @@ namespace terminalSendGridTests.Integration
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
 
-            Assert.AreEqual(1, crateStorage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Terminal-Provided Fields").Count());
+            Assert.AreEqual(1, crateStorage.CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "Upstream Terminal-Provided Fields").Count());
         }
 
         [Test, Category("Integration.terminalSendGrid")]

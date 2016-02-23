@@ -30,9 +30,9 @@ namespace terminalDocuSignTests.Integration
         {
             Assert.AreEqual(4, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "AvailableTemplates"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "AvailableHandlers"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "AvailableRecipientEvents"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "AvailableTemplates"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "AvailableHandlers"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "AvailableRecipientEvents"));
             
         }
 
@@ -186,11 +186,11 @@ namespace terminalDocuSignTests.Integration
                 radioGroup.Radios[0].Selected = true;
 
                 var availableEventCM = crateStorage
-                    .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "AvailableEvents")
+                    .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "AvailableEvents")
                     .Single();
 
                 var availableHandlers = crateStorage
-                    .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "AvailableHandlers")
+                    .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "AvailableHandlers")
                     .Single();
 
                 Assert.IsTrue(availableEventCM.Fields.Count > 0);
@@ -236,11 +236,11 @@ namespace terminalDocuSignTests.Integration
                 radioGroup.Radios[0].Selected = true;
 
                 var availableEventCM = crateStorage
-                    .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "AvailableEvents")
+                    .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "AvailableEvents")
                     .Single();
 
                 var availableHandlers = crateStorage
-                    .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "AvailableHandlers")
+                    .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "AvailableHandlers")
                     .Single();
 
                 Assert.IsTrue(availableEventCM.Fields.Count > 0);

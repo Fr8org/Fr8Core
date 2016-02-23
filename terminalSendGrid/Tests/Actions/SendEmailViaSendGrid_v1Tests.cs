@@ -51,10 +51,10 @@ namespace terminalSendGrid.Tests.Actions
             /*
             var routeNode = new Mock<IRouteNode>();
             
-            routeNode.Setup(c => c.GetCratesByDirection<StandardDesignTimeFieldsCM>(It.IsAny<Guid>(), It.IsAny<CrateDirection>()))
-                    .Returns(Task.FromResult(new List<Crate<StandardDesignTimeFieldsCM>>()));
+            routeNode.Setup(c => c.GetCratesByDirection<FieldDescriptionsCM>(It.IsAny<Guid>(), It.IsAny<CrateDirection>()))
+                    .Returns(Task.FromResult(new List<Crate<FieldDescriptionsCM>>()));
             routeNode.Setup(c => c.GetDesignTimeFieldsByDirectionTerminal(It.IsAny<Guid>(), It.IsAny<CrateDirection>(), It.IsAny<AvailabilityType>()))
-                    .Returns(Task.FromResult(new StandardDesignTimeFieldsCM()));
+                    .Returns(Task.FromResult(new FieldDescriptionsCM()));
             ObjectFactory.Configure(cfg => cfg.For<IRouteNode>().Use(routeNode.Object));
             */
             activityDto = GetActionResult();

@@ -841,3 +841,41 @@ div[dnd-list].dndDragover {
     margin-right: 1%;
     margin-bottom: 1%;
 }
+
+.crate-node {
+    cursor: pointer;
+    margin: 10px 5px 5px 10px;
+}
+
+.crate-node-category {
+    font-size: 17px;
+    cursor: pointer;
+}
+
+.category-glyph .glyphicon {
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.crate-node-leaf {
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+.crate-node-leaf .data {
+    margin-top: -15px;
+    cursor: pointer;
+}
+
+.crate-node-leaf .glyphicon {
+    font-size: 15px;
+    cursor: pointer;
+}
+.crate-icon .glyphicon {
+    font-size: 40px;
+    cursor: pointer;
+}
+
+.green {
+    color: green;
+}

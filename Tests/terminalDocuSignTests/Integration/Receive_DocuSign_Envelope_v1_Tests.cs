@@ -69,10 +69,10 @@ namespace terminalDocuSignTests.Integration
             
             List<FieldDTO> fieldDTO = new List<FieldDTO>();
             fieldDTO.Add(new FieldDTO() { Key = "TemplateId", Value = "6ef29903-e405-4a24-8b92-a3a3ae8d1824" });
-            StandardDesignTimeFieldsCM standardDesignFieldsCM = new StandardDesignTimeFieldsCM();
+            FieldDescriptionsCM standardDesignFieldsCM = new FieldDescriptionsCM();
             standardDesignFieldsCM.Fields = fieldDTO;
 
-            base.AddUpstreamCrate<StandardDesignTimeFieldsCM>(dataDTO, standardDesignFieldsCM);
+            base.AddUpstreamCrate<FieldDescriptionsCM>(dataDTO, standardDesignFieldsCM);
 
             //Act
             var responseActionDTO =
@@ -89,7 +89,7 @@ namespace terminalDocuSignTests.Integration
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             Assert.AreEqual(2, crateStorage.Count);
             Assert.IsNotNull(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault());
-            Assert.IsNotNull(crateStorage.CrateContentsOfType<StandardDesignTimeFieldsCM>().SingleOrDefault());
+            Assert.IsNotNull(crateStorage.CrateContentsOfType<FieldDescriptionsCM>().SingleOrDefault());
 
             //Assign result actiondto to be used in RUN
             actionDTODesignFields = responseActionDTO;

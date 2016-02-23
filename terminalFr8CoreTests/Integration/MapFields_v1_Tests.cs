@@ -23,17 +23,17 @@ namespace terminalFr8CoreTests.Integration
 
         private void AssertCrateStructure(ICrateStorage storage)
         {
-            Assert.AreEqual(1, storage.CratesOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Downstream Terminal-Provided Fields").Count());
-            Assert.AreEqual(1, storage.CratesOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Terminal-Provided Fields").Count());
+            Assert.AreEqual(1, storage.CratesOfType<FieldDescriptionsCM>(x => x.Label == "Downstream Terminal-Provided Fields").Count());
+            Assert.AreEqual(1, storage.CratesOfType<FieldDescriptionsCM>(x => x.Label == "Upstream Terminal-Provided Fields").Count());
             Assert.AreEqual(1, storage.CratesOfType<StandardConfigurationControlsCM>(x => x.Label == "Configuration_Controls").Count());
         }
 
         private void AssertCrateContent_Initial(ICrateStorage storage)
         {
-            var downstream = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Downstream Terminal-Provided Fields").Single();
+            var downstream = storage.CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "Downstream Terminal-Provided Fields").Single();
             Assert.AreEqual(0, downstream.Fields.Count());
 
-            var upstream = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Terminal-Provided Fields").Single();
+            var upstream = storage.CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "Upstream Terminal-Provided Fields").Single();
             Assert.AreEqual(0, upstream.Fields.Count());
 
             var controls = storage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
@@ -43,12 +43,12 @@ namespace terminalFr8CoreTests.Integration
 
         private void AssertCrateContent_FollowUp(ICrateStorage storage)
         {
-            var downstream = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Downstream Terminal-Provided Fields").Single();
+            var downstream = storage.CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "Downstream Terminal-Provided Fields").Single();
             Assert.AreEqual(1, downstream.Fields.Count());
             Assert.AreEqual("C", downstream.Fields[0].Key);
             Assert.AreEqual("D", downstream.Fields[0].Value);
 
-            var upstream = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Terminal-Provided Fields").Single();
+            var upstream = storage.CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "Upstream Terminal-Provided Fields").Single();
             Assert.AreEqual(1, upstream.Fields.Count());
             Assert.AreEqual("A", upstream.Fields[0].Key);
             Assert.AreEqual("B", upstream.Fields[0].Value);
@@ -67,14 +67,14 @@ namespace terminalFr8CoreTests.Integration
 
             AddUpstreamCrate(
                 dataDTO,
-                new StandardDesignTimeFieldsCM(
+                new FieldDescriptionsCM(
                     new FieldDTO("A", "B")
                 )
             );
 
             AddDownstreamCrate(
                 dataDTO,
-                new StandardDesignTimeFieldsCM(
+                new FieldDescriptionsCM(
                     new FieldDTO("C", "D")
                 )
             );
