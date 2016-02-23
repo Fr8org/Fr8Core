@@ -180,6 +180,12 @@ namespace terminalDocuSign.Services
                         continue;
                     }
                     envelopeData = AddEnvelopeData(envelopeData, tabs, "textTabs", "value");
+                    envelopeData = AddEnvelopeData(envelopeData, tabs, "fullNameTabs", "value");
+                    envelopeData = AddEnvelopeData(envelopeData, tabs, "firstNameTabs", "value");
+                    envelopeData = AddEnvelopeData(envelopeData, tabs, "lastNameTabs", "value");
+                    envelopeData = AddEnvelopeData(envelopeData, tabs, "companyTabs", "value");
+                    envelopeData = AddEnvelopeData(envelopeData, tabs, "titleTabs", "value");
+                    envelopeData = AddEnvelopeData(envelopeData, tabs, "noteTabs", "value");
                     envelopeData = AddEnvelopeData(envelopeData, tabs, "numberTabs", "value");
                     envelopeData = AddEnvelopeData(envelopeData, tabs, "formulaTabs", "value");
                     if (tabs["checkboxTabs"] == null)
@@ -187,6 +193,20 @@ namespace terminalDocuSign.Services
                         continue;
                     }
                     envelopeData = AddEnvelopeData(envelopeData, tabs, "checkboxTabs", "selected");
+
+                    //create radio button groups
+                    if (tabs["radioGroupTabs"] == null)
+                    {
+                        continue;
+                    }
+                    envelopeData = AddRadioButtonGroupEnvelopeData(envelopeData, tabs, "radioGroupTabs", "radios");
+
+                    //create dropdown control as envelope data from tabs
+                    if (tabs["listTabs"] == null)
+                    {
+                        continue;
+                    }
+                    envelopeData = AdDropdownListEnvelopeData(envelopeData, tabs, "listTabs", "listItems");
                 }
             }
 
@@ -214,6 +234,8 @@ namespace terminalDocuSign.Services
                     return ControlTypes.CheckBox;
                 case "Text":
                     return ControlTypes.TextBox;
+                case "Date Signed":
+                    return ControlTypes.DatePicker;
                 default:
                     return ControlTypes.TextBox;
             }
@@ -225,7 +247,6 @@ namespace terminalDocuSign.Services
             var templateList = new List<string> { templateId };
             curEnv.AddTemplates(templateList);
             curEnv.Create();
-
         }
 
         private List<EnvelopeDataDTO> AddEnvelopeData(List<EnvelopeDataDTO> envelopes, JToken tabs, string tabName, string tabField)
@@ -240,5 +261,77 @@ namespace terminalDocuSign.Services
             return envelopes;
         }
 
+        private List<EnvelopeDataDTO> AddRadioButtonGroupEnvelopeData(List<EnvelopeDataDTO> envelopes, JToken tabs, string tabName, string radiosName)
+        {
+            if (tabs[tabName] != null)
+            {
+                foreach (var groupTab in tabs[tabName])
+                {
+                    dynamic grpTab = groupTab;
+                    var groupWrapperEnvelopeData = new GroupWrapperEnvelopeDataDTO
+                    {
+                        DocumentId = grpTab.documentId,
+                        RecipientId = grpTab.recipientId,
+                        Name = grpTab.groupName,
+                        TabId = grpTab.tabId,
+                        Type = ControlTypes.RadioButtonGroup
+                    };
+
+                    if (groupTab[radiosName] != null)
+                    {
+                        foreach (var listItem in groupTab[radiosName])
+                        {
+                            dynamic lstItem = listItem;
+                            groupWrapperEnvelopeData.Items.Add(new GroupItemEnvelopeDataDTO
+                            {
+                                Value = lstItem.value,
+                                Selected = lstItem.selected //todo: convert from string to bool
+                            });
+                        }
+                    }
+
+                    envelopes.Add(groupWrapperEnvelopeData);
+                }
+            }
+            return envelopes;
+        }
+
+        private List<EnvelopeDataDTO> AdDropdownListEnvelopeData(List<EnvelopeDataDTO> envelopes, JToken tabs, string tabName, string listItemsName)
+        {
+            if (tabs[tabName] != null)
+            {
+                foreach (var groupTab in tabs[tabName])
+                {
+                    dynamic grpTab = groupTab;
+                    var groupWrapperEnvelopeData = new GroupWrapperEnvelopeDataDTO
+                    {
+                        DocumentId = grpTab.documentId,
+                        RecipientId = grpTab.recipientId,
+                        Name = grpTab.tabLabel,
+                        TabId = grpTab.tabId,
+                        Type = ControlTypes.DropDownList,
+                        Value = grpTab.Value
+                    };
+
+                    
+                    if (groupTab[listItemsName] != null)
+                    {
+                        foreach (var listItem in groupTab[listItemsName])
+                        {
+                            dynamic lstItem = listItem;
+                            groupWrapperEnvelopeData.Items.Add(new GroupItemEnvelopeDataDTO
+                            {
+                                Text = lstItem.text,
+                                Value = lstItem.value,
+                                Selected = lstItem.selected //todo: convert from string to bool
+                            });
+                        }
+                    }
+
+                    envelopes.Add(groupWrapperEnvelopeData);
+                }
+            }
+            return envelopes;
+        }
     }
 }

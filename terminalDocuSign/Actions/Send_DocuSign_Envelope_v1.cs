@@ -233,7 +233,18 @@ namespace terminalDocuSign.Actions
                 // when we're in design mode, there are no values
                 // we just want the names of the fields
                 var userDefinedFields = new List<FieldDTO>();
-                envelopeDataDTO.ForEach(x => userDefinedFields.Add(new FieldDTO() { Key = x.Name, Value = x.Name, Availability = AvailabilityType.RunTime }));
+                foreach (var x in envelopeDataDTO)
+                {
+                    //special case for 
+                    if (x is GroupWrapperEnvelopeDataDTO)
+                    {
+                        userDefinedFields.Add(new FieldDTO() { Key = x.Name, Value = x.Name, Availability = AvailabilityType.RunTime });
+                    }
+                    else
+                    {
+                        userDefinedFields.Add(new FieldDTO() { Key = x.Name, Value = x.Name, Availability = AvailabilityType.RunTime });
+                    }
+                }
 
                 // we're in design mode, there are no values 
                 var standartFields = new List<FieldDTO>()
@@ -270,6 +281,29 @@ namespace terminalDocuSign.Actions
 
             return await Task.FromResult(curActivityDO);
         }
+
+        private ControlDefinitionDTO CreateUserDefinedRadioButtonGroup(GroupWrapperEnvelopeDataDTO radioButtonEnvelopeData)
+        {
+            var userDefinedRadioButtonGroup = new RadioButtonGroup()
+            {
+                GroupName = radioButtonEnvelopeData.Name,
+                Name = radioButtonEnvelopeData.Name,
+                Radios = new List<RadioButtonOption>()
+            };
+
+            foreach (var item in radioButtonEnvelopeData.Items)
+            {
+                userDefinedRadioButtonGroup.Radios.Add(new RadioButtonOption
+                {
+                    Value = item.Value,
+                    Name = item.Value,
+                    Selected = item.Selected
+                });
+            }
+
+            return userDefinedRadioButtonGroup;
+        }
+
 
         private Crate CreateDocusignTemplateConfigurationControls(ActivityDO curActivityDO)
         {

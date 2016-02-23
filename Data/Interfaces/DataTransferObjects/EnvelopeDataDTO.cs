@@ -22,4 +22,21 @@ namespace Data.Interfaces.DataTransferObjects
 
         public string Type { get; set; }
     }
+
+    public class GroupWrapperEnvelopeDataDTO : EnvelopeDataDTO
+    {
+        public GroupWrapperEnvelopeDataDTO()
+        {
+            Items = new List<GroupItemEnvelopeDataDTO>();
+        } 
+        
+        public List<GroupItemEnvelopeDataDTO> Items { get; set; }
+    }
+
+    public class GroupItemEnvelopeDataDTO
+    {
+        public string Text { get; set; }
+        public string Value { get; set; }
+        public bool Selected { get; set; }
+    }
 }
