@@ -78,9 +78,9 @@ namespace terminalFr8Core.Actions
                 var availableRunTimeCrates = Crate.FromContent("Available Run Time Crates", new CrateDescriptionCM(
                     new CrateDescriptionDTO
                     {
-                        ManifestType = MT.StandardDesignTimeFields.GetEnumDisplayName(),
+                        ManifestType = MT.StandardPayloadData.GetEnumDisplayName(),
                         Label = RunTimeCrateLabel,
-                        ManifestId = (int)MT.StandardDesignTimeFields,
+                        ManifestId = (int)MT.StandardPayloadData,
                         ProducedBy = "AddPayloadManually_v1"
                     }), AvailabilityType.RunTime);
 

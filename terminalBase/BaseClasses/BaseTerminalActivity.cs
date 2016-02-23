@@ -246,6 +246,11 @@ namespace TerminalBase.BaseClasses
             return controls.Controls.FirstOrDefault(predicate);
         }
 
+        protected T GetControl<T>(StandardConfigurationControlsCM controls, string name, string controlType = null) where T : ControlDefinitionDTO
+        {
+            return (T) GetControl(controls, name, controlType);
+        }
+
         protected ControlDefinitionDTO GetControl(ActivityDO curActivityDO, string name, string controlType = null)
         {
             var controls = GetConfigurationControls(curActivityDO);

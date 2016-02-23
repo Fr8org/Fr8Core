@@ -66,17 +66,12 @@ namespace terminalFr8Core.Actions
         {
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                var controlsMS = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+                var controlsMS = GetConfigurationControls(crateStorage);
                 if (controlsMS != null)
                 {
-                    var manifestTypeDropdown = controlsMS.Controls.Single(x => x.Type == ControlTypes.DropDownList && x.Name == "Available_Manifests");
+                    var crateChooser = GetControl<CrateChooser>(controlsMS, "Available_Crates");
 
-                    manifestTypeDropdown.ErrorMessage = string.IsNullOrEmpty(manifestTypeDropdown.Value) 
-                        ? "Please select an item from the list." : string.Empty;
-
-                    var labelDropdown = controlsMS.Controls.Single(x => x.Type == ControlTypes.DropDownList && x.Name == "Available_Labels");
-
-                    labelDropdown.ErrorMessage = string.IsNullOrEmpty(labelDropdown.Value) 
+                    crateChooser.ErrorMessage = !crateChooser.CrateDescriptions.Any(c => c.Selected)
                         ? "Please select an item from the list." : string.Empty;
                 }
             }
@@ -112,32 +107,6 @@ namespace terminalFr8Core.Actions
 
             return ReProcessChildActions(curPayloadDTO);
         }
-        /*
-        //the purpose of this is to create a payload for each row in table data upon each iteration
-        //introduced with FR-2246
-        private void IteratePayload(ActivityDO curActivityDO, PayloadDTO curPayloadDTO, int i)
-        {
-            string label, type;
-            var crateToProcess = FindCrateToProcess(curActivityDO, Crate.FromDto(curPayloadDTO.CrateStorage), out type, out label);
-
-            using (var crateStorage = Crate.GetUpdatableStorage(curPayloadDTO))
-            {
-                if (i > 0)
-                {
-                    //remove old ones
-                    updater.RemoveByLabel(String.Format("row №{0} of {1}", i - 1, label));
-                }
-
-                //get row data
-                var data = (crateToProcess.Get() as StandardTableDataCM).Table.ElementAt(i);
-                List<FieldDTO> fields = new List<FieldDTO>();
-                data.Row.ForEach(a => fields.Add(new FieldDTO(a.Cell.Key, a.Cell.Value)));
-                //add row
-                var crate = Data.Crates.Crate.FromContent(String.Format("row №{0} of {1}", i, label), new StandardPayloadDataCM(fields));
-                updater.Add(crate);
-            }
-
-        }*/
 
         private bool ShouldBreakLoop(PayloadDTO curPayloadDTO, ActivityDO curActivityDO, Crate crateToProcess)
         {
@@ -176,11 +145,13 @@ namespace terminalFr8Core.Actions
 
         private Crate FindCrateToProcess(ActivityDO curActivityDO, ICrateStorage payloadStorage)
         {
-            //get user selected design time values
-            var manifestType = GetSelectedCrateManifestTypeToProcess(curActivityDO);
-            var label = GetSelectedLabelToProcess(curActivityDO);
+            
+            var configControls = GetConfigurationControls(curActivityDO);
+            var crateChooser = (CrateChooser)configControls.Controls.Single(c => c.Name == "Available_Crates");
+            var selectedCrateDescription = crateChooser.CrateDescriptions.Single(c => c.Selected);
+            
             //find crate by user selected values
-            return payloadStorage.FirstOrDefault(c => /*c.ManifestType.Type == manifestType && */c.Label == label);
+            return payloadStorage.FirstOrDefault(c => c.ManifestType.Type == selectedCrateDescription.ManifestType && c.Label == selectedCrateDescription.Label);
         }
 
         private void BreakLoop(string loopId, PayloadDTO payload)
@@ -258,27 +229,6 @@ namespace terminalFr8Core.Actions
 
             return null;
         }
-        private string GetSelectedCrateManifestTypeToProcess(ActivityDO curActivityDO)
-        {
-            var controlsMS = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().First();
-            var manifestTypeDropdown = controlsMS.Controls.Single(x => x.Type == ControlTypes.DropDownList && x.Name == "Available_Manifests");
-            if (manifestTypeDropdown.Value == null)
-            {
-                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Loop activity can't process data without a selected Manifest Type to process");
-            }
-            return manifestTypeDropdown.Value;
-        }
-
-        private string GetSelectedLabelToProcess(ActivityDO curActivityDO)
-        {
-            var controlsMS = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().First();
-            var labelDropdown = controlsMS.Controls.Single(x => x.Type == ControlTypes.DropDownList && x.Name == "Available_Labels");
-            if (labelDropdown.Value == null)
-            {
-                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Loop activity can't process data without a selected Label to process");
-            }
-            return labelDropdown.Value;
-        }
 
         public override async Task<ActivityDO> Configure(ActivityDO curActionDataPackageDO, AuthorizationTokenDO authTokenDO)
         {
@@ -345,47 +295,17 @@ namespace terminalFr8Core.Actions
 
         private async Task<Crate> CreateControlsCrate(ActivityDO curActivityDO)
         {
-            var infoText = new TextBlock
-            {
-                Value = "This Loop will process the data inside of"
-            };
-            var availableManifests = new DropDownList
-            {
-                Label = "Crate Manifest",
-                Name = "Available_Manifests",
-                Value = null,
-                Events = new List<ControlEvent> { ControlEvent.RequestConfig },
-                Source = new FieldSourceDTO
-                {
-                    Label = "Available Manifests",
-                    ManifestType = MT.StandardDesignTimeFields.GetEnumDisplayName()
-                }
-            };
-
-            var availableLabels = new DropDownList
-            {
-                Label = "Crate Label",
-                Name = "Available_Labels",
-                Value = null,
-                Events = new List<ControlEvent> { ControlEvent.RequestConfig },
-                Source = new FieldSourceDTO
-                {
-                    Label = "Available Labels",
-                    ManifestType = MT.StandardDesignTimeFields.GetEnumDisplayName()
-                }
-            };
-
             var crateDescriptions = await GetCratesByDirection<CrateDescriptionCM>(curActivityDO, CrateDirection.Upstream);
             var runTimeCrateDescriptions = crateDescriptions.Where(c => c.Availability == AvailabilityType.RunTime).SelectMany(c => c.Content.CrateDescriptions);
             var crateChooser = new CrateChooser
             {
-                Label = "Select crate to process",
+                Label = "This Loop will process the data inside of",
                 Name = "Available_Crates",
                 CrateDescriptions = runTimeCrateDescriptions.ToList(),
                 SingleManifestOnly = true
             };
 
-            return PackControlsCrate(infoText, availableManifests, availableLabels, crateChooser);
+            return PackControlsCrate(crateChooser);
         }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
