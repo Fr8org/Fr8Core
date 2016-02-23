@@ -1,11 +1,11 @@
 ﻿@{
-Layout = "~/Views/Shared/_HomePage.cshtml";
+    Layout = "~/Views/Shared/_HomePage.cshtml";
 }
 @{
-ViewBag.Title = "Add Note";
+    ViewBag.Title = "Add Note";
 }
 <!--<div id="fullpage">-->
-        <section id="welcome" class="top-banner home-welcome text-block full-height-block" data-section="welcome" >
+<section id="welcome" class="top-banner home-welcome text-block full-height-block" data-section="welcome">
     <div class="inner-bg full-size-bg"></div>
     <div class="container full-height-block">
         <div class="inner-wrap cetered">
@@ -21,62 +21,64 @@ ViewBag.Title = "Add Note";
 </section>
 
 
-        <section id="services" class="text-block full-height-block" data-section="services">
-            <div class="inner-bg full-size-bg"></div>
-            <div class="container full-height-block">
-                <div class="inner-wrap cetered">
-                    <div class="base-block-white title-block">
-                        <p><span class="text green">Fr8</span> ties your existing cloud applications together, letting you move information easily and enabling you to create <br />
-                        powerful web applications, processes and workflows with a few clicks of your mouse<br />
-                            <br />Some of the things you can do with Fr8: </p>
-                    </div>
-                    <div class="base-block-white content-block">
-                        <p><a href="/Home/MultiPartWorkflows">Move data out of one service and into another</a></p>
-                        <p><a href="/Home/ConditionalLogicBranching">Create customized dashboards and notifications</a></p>
-                        <p><a href="/Home/InterOrganizationWorkflow">Generate powerful workflows that can be shared securely between enterprises</a></p>
+<section id="services" class="text-block full-height-block" data-section="services">
+    <div class="inner-bg full-size-bg"></div>
+    <div class="container full-height-block">
+        <div class="inner-wrap cetered">
+            <div class="base-block-white title-block">
+                <p>
+                    <span class="text green">Fr8</span> ties your existing cloud applications together, letting you move information easily and enabling you to create <br />
+                    powerful web applications, processes and workflows with a few clicks of your mouse<br />
+                    <br />Some of the things you can do with Fr8:
+                </p>
+            </div>
+            <div class="base-block-white content-block">
+                <p><a href="/Home/MultiPartWorkflows">Move data out of one service and into another</a></p>
+                <p><a href="/Home/ConditionalLogicBranching">Create customized dashboards and notifications</a></p>
+                <p><a href="/Home/InterOrganizationWorkflow">Generate powerful workflows that can be shared securely between enterprises</a></p>
 
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="aboutus" class="text-block full-height-block" data-section="aboutus">
+    <div class="inner-bg full-size-bg"></div>
+    <div class="container full-height-block">
+        <div class="inner-wrap cetered base-block-white">
+            <p>
+                <span class="bordered-top-green"><span class="text green">fr8 is supported commercially by The fr8 Company,</span>a San Francisco-based startup.</span><br />
+            </p>
+            <p>
+                Our executive team has worked at<br />
+                <span class="bordered-bottom-grey">Microsoft, Netscape, Inktomi, and other internet startups.</span>
+            </p>
+        </div>
+    </div>
+</section>
+
+<section id="contacts" class="text-block full-height-block" data-section="contacts">
+    <div class="inner-bg full-size-bg"></div>
+    <div class="container full-height-block">
+        <div class="inner-wrap cetered ">
+            <h2>Get in touch</h2>
+            <div class="row-fluid section">
+                <div class="col-md-8 col-md-offset-2">
+                    <div class="span12 cform">
+                        <h3>Want to ask something?</h3>
+                        <form class="form clearfix contact-form" action="#">
+                            <p><span id="spMessage" class="contact-hint"></span></p>
+                            <input type="text" class="span12" placeholder="Name" name="name" id="name">
+                            <input type="email" class="span12" placeholder="Email" name="emailAddress" id="emailId">
+                            <textarea class="span12" placeholder="Message" name="message" rows="6" id="message"></textarea>
+                            <button class="btn btn-large submit-btn" type="button" onclick="SendMail();">Submit</button>
+
+                        </form>
                     </div>
                 </div>
             </div>
-        </section>
-
-        <section id="aboutus" class="text-block full-height-block" data-section="aboutus">
-            <div class="inner-bg full-size-bg"></div>
-            <div class="container full-height-block">
-                <div class="inner-wrap cetered base-block-white">
-                    <p>
-                        <span class="bordered-top-green"><span class="text green">fr8 is supported commercially by The fr8 Company,</span>a San Francisco-based startup.</span><br />
-                    </p>
-                    <p>
-                        Our executive team has worked at<br />
-                        <span class="bordered-bottom-grey">Microsoft, Netscape, Inktomi, and other internet startups.</span>
-                    </p>
-                </div>
-            </div>
-        </section>
-
-        <section id="contacts" class="text-block full-height-block" data-section="contacts">
-            <div class="inner-bg full-size-bg"></div>
-            <div class="container full-height-block">
-                <div class="inner-wrap cetered ">
-                    <h2>Get in touch</h2>
-                    <div class="row-fluid section">
-                        <div class="col-md-8 col-md-offset-2">
-                            <div class="span12 cform">
-                                <h3>Want to ask something?</h3>
-                                <form class="form clearfix contact-form" action="#">
-                                    <p><span id="spMessage" class="contact-hint"></span></p>
-                                    <input type="text" class="span12" placeholder="Name" name="name" id="name">
-                                    <input type="email" class="span12" placeholder="Email" name="emailAddress" id="emailId">
-                                    <textarea class="span12" placeholder="Message" name="message" rows="6" id="message"></textarea>
-                                    <button class="btn btn-large submit-btn" type="button" onclick="SendMail();">Submit</button>
-
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+        </div>
+    </div>
+</section>
 
 <!--</div>-->

@@ -282,7 +282,7 @@ namespace terminalDocuSign.Actions
             if (DoesActivityTemplateGenerateTableData(selectedReceiver))
             {
                 //we need to configure this but it is hard to do
-                var loopActivity = await AddAndConfigureChildActivity(curActivityDO, "Loop", order: 2);
+                var loopActivity = await AddAndConfigureChildActivity(curActivityDO, "Loop", "Loop", "Loop", 2);
                 parentOfSendDocusignEnvelope = loopActivity;
                 orderOfSendDocusignEnvelope = 1;
             }

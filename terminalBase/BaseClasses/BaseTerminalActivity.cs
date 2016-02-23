@@ -943,7 +943,7 @@ namespace TerminalBase.BaseClasses
                 Crate availableFieldsCrate = null;
                 if (crates is List<Data.Crates.Crate<StandardDesignTimeFieldsCM>>)
                 {
-                    upstreamFields = (crates as List<Data.Crates.Crate<StandardDesignTimeFieldsCM>>).Where(w => w.Content.Fields.Where(x => x.Availability != AvailabilityType.Configuration).Count() == 1).SelectMany(x => x.Content.Fields).ToArray();
+                    upstreamFields = (crates as List<Data.Crates.Crate<StandardDesignTimeFieldsCM>>).SelectMany(x => x.Content.Fields).Where(a => a.Availability != AvailabilityType.Configuration).ToArray();
 
                     availableFieldsCrate =
                         CrateManager.CreateDesignTimeFieldsCrate(
@@ -974,7 +974,7 @@ namespace TerminalBase.BaseClasses
                 FieldDTO[] upstreamFields = null;
                 if (crates is List<Data.Crates.Crate<StandardDesignTimeFieldsCM>>)
                 {
-                    upstreamFields = (crates as List<Data.Crates.Crate<StandardDesignTimeFieldsCM>>).Where(w => w.Content.Fields.Where(x => x.Availability != AvailabilityType.Configuration).Count() == 1).SelectMany(x => x.Content.Fields).ToArray();
+                    upstreamFields = (crates as List<Data.Crates.Crate<StandardDesignTimeFieldsCM>>).SelectMany(x => x.Content.Fields).Where(a => a.Availability != AvailabilityType.Configuration).ToArray();
                 }
 
                 return await Task.FromResult(upstreamFields);

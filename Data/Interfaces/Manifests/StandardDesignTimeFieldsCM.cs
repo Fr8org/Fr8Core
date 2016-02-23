@@ -7,7 +7,7 @@ namespace Data.Interfaces.Manifests
     public class StandardDesignTimeFieldsCM : Manifest
     {
         public StandardDesignTimeFieldsCM()
-			  :base(Constants.MT.StandardDesignTimeFields)
+			  : base(Constants.MT.StandardDesignTimeFields)
         {
             Fields = new List<FieldDTO>();
         }

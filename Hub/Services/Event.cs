@@ -77,14 +77,6 @@ namespace Hub.Services
             //string systemUserEmail = configRepository.Get("SystemUserEmail");
 
             string systemUserEmail = "system1@fr8.co";
-            if (eventReportMS.EventPayload == null)
-            {
-                throw new ArgumentException("EventReport can't have a null payload");
-            }
-            if (eventReportMS.ExternalAccountId == null)
-            {
-                throw new ArgumentException("EventReport can't have a null ExternalAccountId");
-            }
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -93,7 +85,7 @@ namespace Hub.Services
                     try
                     {
                         Fr8AccountDO systemUser = uow.UserRepository.GetOrCreateUser(systemUserEmail);
-                        await FindAccountRoutes(uow, eventReportMS, curCrateStandardEventReport, systemUser);
+                        await FindAndExecuteAccountRoutes(uow, eventReportMS, curCrateStandardEventReport, systemUser);
                     }
                     catch (Exception ex)
                     {
@@ -104,25 +96,33 @@ namespace Hub.Services
                 {
                     //find the corresponding DockyardAccount
                     var authTokenList = uow.AuthorizationTokenRepository.GetPublicDataQuery().Include(x => x.UserDO).Where(x => x.ExternalAccountId == eventReportMS.ExternalAccountId);
-
+                    var tasks = new List<Task>();
                     foreach (var authToken in authTokenList.ToArray())
                     {
-                        try
-                        {
-                            var curDockyardAccount = authToken.UserDO;
-                            await FindAccountRoutes(uow, eventReportMS, curCrateStandardEventReport, curDockyardAccount);
-                        }
-                        catch (Exception ex)
+                        var curDockyardAccount = authToken.UserDO;
+                        var accountTask = FindAndExecuteAccountRoutes(uow, eventReportMS, curCrateStandardEventReport, curDockyardAccount);
+                        tasks.Add(accountTask);
+                    }
+                    Task waitAllTask = null;
+                    try
+                    {
+                        waitAllTask = Task.WhenAll(tasks.ToArray());
+                        await waitAllTask;
+                    }
+                    catch
+                    {
+                        foreach (Exception ex in waitAllTask.Exception.InnerExceptions)
                         {
                             EventManager.UnexpectedError(ex);
                         }
+
                     }
                 }
 
             }
         }
 
-        private async Task FindAccountRoutes(IUnitOfWork uow, EventReportCM eventReportMS,
+        private async Task FindAndExecuteAccountRoutes(IUnitOfWork uow, EventReportCM eventReportMS,
                Crate curCrateStandardEventReport, Fr8AccountDO curDockyardAccount = null)
         {
             //find this Account's Routes

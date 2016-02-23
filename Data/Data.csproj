@@ -294,6 +294,7 @@
     <Compile Include="Interfaces\DataTransferObjects\AuthenticateResponse.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EventLoggingDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FactDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\QueryFieldType.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldValidationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActivityDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionPayloadDTO.cs" />
@@ -316,6 +317,7 @@
     <Compile Include="Interfaces\DataTransferObjects\ManageAuthTokenDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ManifestDescriptionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\MappingFieldConfigurationDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\QueryFieldDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\StandardAccountingTransactionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\TerminalDiscoveryDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionProcessResultDTO.cs" />
@@ -374,6 +376,7 @@
     <Compile Include="Interfaces\Manifests\StandardLoggingCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardParsingRecordCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardQueryCM.cs" />
+    <Compile Include="Interfaces\Manifests\StandardQueryFieldsCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardRoutingDirectiveCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFileHandle.cs" />
     <Compile Include="Interfaces\Manifests\OperationalStateCM.cs" />

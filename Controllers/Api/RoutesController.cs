@@ -299,7 +299,9 @@ namespace HubWeb.Controllers
         {
             var eventManager = ObjectFactory.GetInstance<Event>();
             string activityDTO = await _plan.Deactivate(planId);
-            await eventManager.Publish("RouteDeactivated", ObjectFactory.GetInstance<ISecurityServices>().GetCurrentUser(), planId.ToString(), null, "Success");
+
+            var routeDeactivateTask = Task.Run(() => eventManager.Publish("RouteDeactivated", ObjectFactory.GetInstance<ISecurityServices>().GetCurrentUser(),
+                    planId.ToString(), null, "Success")).ConfigureAwait(false);
 
             return Ok(activityDTO);
         }
@@ -346,8 +348,9 @@ namespace HubWeb.Controllers
                     return Ok(activateDTO.Container);
                 }
 
-                await eventManager.Publish("RouteActivated", ObjectFactory.GetInstance<ISecurityServices>().GetCurrentAccount
-                    (ObjectFactory.GetInstance<IUnitOfWork>()).Id.ToString(), planId.ToString(), JsonConvert.SerializeObject(planId).ToString(), "Success");
+                var routeActiveTask = Task.Run(() => eventManager.Publish("RouteActivated", ObjectFactory.GetInstance<ISecurityServices>().GetCurrentAccount
+                    (ObjectFactory.GetInstance<IUnitOfWork>()).Id.ToString(), planId.ToString(), JsonConvert.SerializeObject(planId).ToString(), "Success")).
+                    ConfigureAwait(false);
             }
 
             //RUN
@@ -400,15 +403,18 @@ namespace HubWeb.Controllers
 
                         var containerDTO = Mapper.Map<ContainerDTO>(containerDO);
 
-                        await eventManager.Publish("ContainerLaunched"
-                            , planDO.Fr8AccountId
-                            , planDO.Id.ToString()
-                            , JsonConvert.SerializeObject(containerDTO).ToString(), "Success");
 
-                        await eventManager.Publish("ContainerExecutionComplete"
+
+                        var containerLaunched = Task.Run( () =>eventManager.Publish("ContainerLaunched"
+                              , planDO.Fr8AccountId
+                              , planDO.Id.ToString()
+                              , JsonConvert.SerializeObject(containerDTO).ToString(), "Success")).ConfigureAwait(false);
+
+
+                        var containerExecutedTask = Task.Run(()=> eventManager.Publish("ContainerExecutionComplete"
                             , planDO.Fr8AccountId
                             , planDO.Id.ToString()
-                            , JsonConvert.SerializeObject(containerDTO).ToString(), "Success");
+                            , JsonConvert.SerializeObject(containerDTO).ToString(), "Success")).ConfigureAwait(false);
 
                         return Ok(containerDTO);
                     }
