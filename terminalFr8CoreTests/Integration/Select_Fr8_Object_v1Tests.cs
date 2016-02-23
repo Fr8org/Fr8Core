@@ -31,7 +31,7 @@ namespace terminalFr8CoreTests.Integration
 		{
 			var configureUrl = GetTerminalConfigureUrl();
 
-			var requestActionDTO = CreateRequestActionFixture();
+			var requestActionDTO = CreateRequestActivityFixture();
 
 			var responseActionDTO = HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, requestActionDTO).Result;
 
@@ -64,7 +64,7 @@ namespace terminalFr8CoreTests.Integration
 		{
 			var configureUrl = GetTerminalConfigureUrl();
 
-			var requestActionDTO = CreateRequestActionFixture();
+			var requestActionDTO = CreateRequestActivityFixture();
 
 			var responseActionDTO = HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, requestActionDTO).Result;
 
@@ -139,7 +139,7 @@ namespace terminalFr8CoreTests.Integration
 		{
 			var configureUrl = GetTerminalConfigureUrl();
 
-			var requestActionDTO = CreateRequestActionFixture();
+			var requestActionDTO = CreateRequestActivityFixture();
 
 			var responseActionDTO = HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, requestActionDTO).Result;
 
@@ -205,7 +205,7 @@ namespace terminalFr8CoreTests.Integration
 		{
 			var configureUrl = GetTerminalConfigureUrl();
 
-			var requestActionDTO = CreateRequestActionFixture();
+			var requestActionDTO = CreateRequestActivityFixture();
 
             var dataDTO = new Fr8DataDTO { ActivityDTO = requestActionDTO };
 
@@ -238,7 +238,7 @@ namespace terminalFr8CoreTests.Integration
 		{
 			var configureUrl = GetTerminalConfigureUrl();
 
-			var requestActionDTO = CreateRequestActionFixture();
+			var requestActionDTO = CreateRequestActivityFixture();
 
             var dataDTO = new Fr8DataDTO { ActivityDTO = requestActionDTO };
 
@@ -275,7 +275,7 @@ namespace terminalFr8CoreTests.Integration
 			return activityTemplate;
 		}
 
-		private ActivityDTO CreateRequestActionFixture()
+		private ActivityDTO CreateRequestActivityFixture()
 		{
 			var activityTemplate = CreateActivityTemplateFixture();
 

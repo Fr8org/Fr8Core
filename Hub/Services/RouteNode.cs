@@ -278,7 +278,7 @@ namespace Hub.Services
                 TraverseActivity(child, visitAction);
         }
         
-        public async Task Process(Guid curActivityId, ActionState curActionState, ContainerDO containerDO)
+        public async Task Process(Guid curActivityId, ActivityState curActionState, ContainerDO containerDO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

@@ -37,7 +37,7 @@ namespace terminalSendGrid
         public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
         {
             return new Type[] {
-                    typeof(Controllers.ActionController),
+                    typeof(Controllers.ActivityController),
                     typeof(Controllers.TerminalController)
                 };
         }

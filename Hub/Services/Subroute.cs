@@ -150,7 +150,7 @@ namespace Hub.Services
         /// <param name="userId">current user id</param>
         /// <param name="actionId">action to delete</param>
         /// <returns>isActionDeleted</returns>
-        protected async Task<bool> ValidateDownstreamActionsAndDelete(string userId, Guid actionId)
+        protected async Task<bool> ValidateDownstreamActivitiesAndDelete(string userId, Guid actionId)
         {
             var validationErrors = new List<Crate>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -220,11 +220,11 @@ namespace Hub.Services
                 //we can assume that there has been some validation errors on previous call
                 //but user still wants to delete this action
                 //lets use kludge solution
-                DeleteActionKludge(actionId);
+                DeleteActivityKludge(actionId);
             }
             else
             {
-                return await ValidateDownstreamActionsAndDelete(userId, actionId);
+                return await ValidateDownstreamActivitiesAndDelete(userId, actionId);
             }
             return true;
         }
@@ -302,7 +302,7 @@ namespace Hub.Services
             return await Task.FromResult(true);
         }
 
-        protected void DeleteActionKludge(Guid id)
+        protected void DeleteActivityKludge(Guid id)
         {
             //Kludge solution
             //https://maginot.atlassian.net/wiki/display/SH/Action+Deletion+and+Reordering

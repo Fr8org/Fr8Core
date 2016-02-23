@@ -150,7 +150,7 @@ namespace DockyardTest.Repositories.Plan
         }
 
         [Test]
-        public void CanLoadFromCacheUsingChildActionsId()
+        public void CanLoadFromCacheUsingChildActivitiesId()
         {
             var expiration = new ExpirationStrategyMock();
             var routeId = new Guid(1, (short)0, (short)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0);

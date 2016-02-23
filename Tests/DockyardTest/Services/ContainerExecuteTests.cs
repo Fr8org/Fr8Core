@@ -205,7 +205,7 @@ namespace DockyardTest.Services
             {
                 var containerDO = FixtureData.TestContainerExecute();
                 var currActivity = FixtureData.TestActivityTreeWithActivityTemplates();
-                uow.ActivityTemplateRepository.Add(FixtureData.ActionTemplate());
+                uow.ActivityTemplateRepository.Add(FixtureData.ActivityTemplate());
 
                 uow.PlanRepository.Add(new PlanDO()
                 {

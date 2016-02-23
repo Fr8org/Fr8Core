@@ -66,7 +66,7 @@ namespace HealthMonitor.Utility
             operationalStateCM.CurrentActivityResponse.TryParseErrorDTO(out errorMessage);
 
             Assert.AreEqual(ActivityResponse.Error.ToString(), operationalStateCM.CurrentActivityResponse.Type);
-            Assert.AreEqual(ActionErrorCode.NO_AUTH_TOKEN_PROVIDED, operationalStateCM.CurrentActivityErrorCode);
+            Assert.AreEqual(ActivityErrorCode.NO_AUTH_TOKEN_PROVIDED, operationalStateCM.CurrentActivityErrorCode);
             Assert.AreEqual("No AuthToken provided.", errorMessage.Message);
         }
 
@@ -77,22 +77,22 @@ namespace HealthMonitor.Utility
 
         public string GetTerminalConfigureUrl()
         {
-            return GetTerminalUrl() + "/actions/configure";
+            return GetTerminalUrl() + "/activities/configure";
         }
 
         public string GetTerminalActivateUrl()
         {
-            return GetTerminalUrl() + "/actions/activate";
+            return GetTerminalUrl() + "/activities/activate";
         }
 
         public string GetTerminalDeactivateUrl()
         {
-            return GetTerminalUrl() + "/actions/deactivate";
+            return GetTerminalUrl() + "/activities/deactivate";
         }
 
         public string GetTerminalRunUrl()
         {
-            return GetTerminalUrl() + "/actions/run";
+            return GetTerminalUrl() + "/activities/run";
         }
 
         private void AddHubCrate<T>(Fr8DataDTO dataDTO, T crateManifest, string label, string innerLabel)

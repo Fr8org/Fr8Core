@@ -93,7 +93,7 @@ namespace terminalGoogleTests.Integration
             var configureUrl = GetTerminalConfigureUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = fixture.Extract_Spreadsheet_Data_v1_Followup_Configuration_Request_ActionDTO_With_Crates();
+            var requestActionDTO = fixture.Extract_Spreadsheet_Data_v1_Followup_Configuration_Request_ActivityDTO_With_Crates();
 
             ////Act
             fixture.Extract_Spreadsheet_Data_v1_AddPayload(requestActionDTO, "Row_And_Column");
@@ -130,7 +130,7 @@ namespace terminalGoogleTests.Integration
             var configureUrl = GetTerminalConfigureUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = fixture.Extract_Spreadsheet_Data_v1_Followup_Configuration_Request_ActionDTO_With_Crates();
+            var requestActionDTO = fixture.Extract_Spreadsheet_Data_v1_Followup_Configuration_Request_ActivityDTO_With_Crates();
 
             ////Act
             fixture.Extract_Spreadsheet_Data_v1_AddPayload(requestActionDTO, "Column_Only");
@@ -166,7 +166,7 @@ namespace terminalGoogleTests.Integration
             var configureUrl = GetTerminalConfigureUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = fixture.Extract_Spreadsheet_Data_v1_Followup_Configuration_Request_ActionDTO_With_Crates();
+            var requestActionDTO = fixture.Extract_Spreadsheet_Data_v1_Followup_Configuration_Request_ActivityDTO_With_Crates();
 
             ////Act
             fixture.Extract_Spreadsheet_Data_v1_AddPayload(requestActionDTO, "Row_Only");

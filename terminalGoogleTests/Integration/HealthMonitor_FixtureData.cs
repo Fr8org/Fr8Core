@@ -184,7 +184,7 @@ namespace terminalGoogleTests.Unit
             return curEventReport;
         }
 
-        public ActivityDTO Receive_Google_Form_v1_Run_ActionDTO()
+        public ActivityDTO Receive_Google_Form_v1_Run_ActivityDTO()
         {
             var activityTemplate = Receive_Google_Form_v1_ActivityTemplate();
 
@@ -244,7 +244,7 @@ namespace terminalGoogleTests.Unit
             return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
 
-        public ActivityDTO Extract_Spreadsheet_Data_v1_Followup_Configuration_Request_ActionDTO_With_Crates()
+        public ActivityDTO Extract_Spreadsheet_Data_v1_Followup_Configuration_Request_ActivityDTO_With_Crates()
         {
 
             var activityTemplate = Extract_Spreadsheet_Data_v1_ActivityTemplate();

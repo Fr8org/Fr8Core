@@ -9,9 +9,9 @@ namespace UtilitiesTesting.Fixtures
 {
     partial class FixtureData
     {
-        public static ActionNameDTO TestActionNameDTO1()
+        public static ActivityNameDTO TestActivityNameDTO1()
         {
-            return new ActionNameDTO
+            return new ActivityNameDTO
             {
                 Name = "Write SQL",
                 Version = "1.0"

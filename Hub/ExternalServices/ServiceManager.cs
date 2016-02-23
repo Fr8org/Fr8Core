@@ -57,10 +57,10 @@ namespace Hub.ExternalServices
                 ServiceInfo[typeof (T)].SetFlag(flagName, value);
         }
 
-        public static void AddAction<T>(String serverAction, String displayName)
+        public static void AddActivity<T>(String serverAction, String displayName)
         {
             lock (ServiceInfo)
-                ServiceInfo[typeof(T)].AddAction(serverAction, displayName);
+                ServiceInfo[typeof(T)].AddActivity(serverAction, displayName);
         }
 
         public static void AddTest<T>(String serverAction, String displayName)
@@ -192,7 +192,7 @@ namespace Hub.ExternalServices
             }
 
             private readonly Dictionary<String, String> _actions = new Dictionary<String, String>();
-            public Dictionary<String, String> Actions
+            public Dictionary<String, String> Activities
             {
                 get
                 {
@@ -329,7 +329,7 @@ namespace Hub.ExternalServices
                     _flags[flagName] = flagValue;
             }
 
-            public void AddAction(String serverCall, String displayName)
+            public void AddActivity(String serverCall, String displayName)
             {
                 lock (ServiceInfo)
                     _actions[serverCall] = displayName;
@@ -355,9 +355,9 @@ namespace Hub.ExternalServices
             ServiceManager.SetFlag<T>(flagName, value);
         }
 
-        public void AddAction(String serverAction, String displayName)
+        public void AddActivity(String serverAction, String displayName)
         {
-            ServiceManager.AddAction<T>(serverAction, displayName);
+            ServiceManager.AddActivity<T>(serverAction, displayName);
         }
 
         public void AddTest(String serverAction, String displayName)
