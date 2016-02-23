@@ -221,9 +221,9 @@ namespace terminalFr8Core.Actions
                 Source = new FieldSourceDTO
                 {
                     Label = "Queryable Criteria",
-                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
+                    ManifestType = CrateManifestTypes.StandardQueryFields
                 },
-                Events = new List<ControlEvent>() { ControlEvent.RequestConfig }
+                // Events = new List<ControlEvent>() { ControlEvent.RequestConfig }
             };
 
             return PackControlsCrate(fieldFilterPane);
@@ -240,7 +240,23 @@ namespace terminalFr8Core.Actions
                 .ToArray();
 
             //2) Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
-            var queryFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", curUpstreamFields);
+            // var queryFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", curUpstreamFields);
+            var queryFieldsCrate = Crate.FromContent(
+                "Queryable Criteria",
+                new StandardQueryFieldsCM(
+                    curUpstreamFields.Select(
+                        x => new QueryFieldDTO(
+                            x.Key,
+                            x.Key,
+                            QueryFieldType.String,
+                            new TextBox()
+                            {
+                                Name = "QueryField_" + x.Key
+                            }
+                        )
+                    )
+                )
+            );
 
             //build a controls crate to render the pane
             var configurationControlsCrate = CreateControlsCrate();
@@ -261,7 +277,23 @@ namespace terminalFr8Core.Actions
                 .ToArray();
 
             //2) Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
-            var queryFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", curUpstreamFields);
+            // var queryFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", curUpstreamFields);
+            var queryFieldsCrate = Crate.FromContent(
+                "Queryable Criteria",
+                new StandardQueryFieldsCM(
+                    curUpstreamFields.Select(
+                        x => new QueryFieldDTO(
+                            x.Key,
+                            x.Key,
+                            QueryFieldType.String,
+                            new TextBox()
+                            {
+                                Name = "QueryField_" + x.Key
+                            }
+                        )
+                    )
+                )
+            );
 
             using (var crateStorage = CrateManager.UpdateStorage(() => curActivityDO.CrateStorage))
             {
@@ -281,7 +313,7 @@ namespace terminalFr8Core.Actions
 
             var hasControlsCrate = GetCratesByManifestType<StandardConfigurationControlsCM>(curActionDataPackageDO) != null;
 
-            var hasQueryFieldsCrate = GetCratesByManifestType<StandardDesignTimeFieldsCM>(curActionDataPackageDO) != null;
+            var hasQueryFieldsCrate = GetCratesByManifestType<StandardQueryFieldsCM>(curActionDataPackageDO) != null;
 
             if (hasControlsCrate && hasQueryFieldsCrate)
             {
@@ -335,7 +367,7 @@ namespace terminalFr8Core.Actions
         {
             string curLabel = string.Empty;
 
-            if (typeof(TManifest) == typeof(StandardDesignTimeFieldsCM))
+            if (typeof(TManifest) == typeof(StandardQueryFieldsCM))
             {
                 curLabel = "Queryable Criteria";
             } 

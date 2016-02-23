@@ -34,6 +34,7 @@ module dockyard.directives {
         operators: Array<IQueryOperator>;
         defaultOperator: string;
         conditions: Array<IQueryCondition>;
+        rows: Array<interfaces.ICondition>;
 
         addCondition: () => void;
         removeCondition: (index: number) => void;
@@ -59,7 +60,9 @@ module dockyard.directives {
             templateUrl: '/AngularTemplate/QueryBuilder',
             scope: {
                 currentAction: '=',
-                field: '='
+                field: '=',
+                rows: '=?',
+                isDisabled: '='
             },
             controller: ['$scope', '$timeout', 'CrateHelper',
                 function (
@@ -67,7 +70,6 @@ module dockyard.directives {
                     $timeout: ng.ITimeoutService,
                     crateHelper: services.CrateHelper
                 ) {
-
                     $scope.operators = [
                         { text: '>', value: 'gt' },
                         { text: '>=', value: 'gte' },
@@ -98,6 +100,17 @@ module dockyard.directives {
                                         control: it.Control
                                     });
                                 });
+
+                                if ($scope.rows) {
+                                    $scope.conditions = [];
+                                    angular.forEach($scope.rows, function (it) {
+                                        $scope.conditions.push({
+                                            field: findField(it.field),
+                                            operator: it.operator,
+                                            value: it.value
+                                        });
+                                    });
+                                }
                             }
                         }
                     });
@@ -120,7 +133,9 @@ module dockyard.directives {
                             $scope.conditions = conditions;
                         }
                         else {
-                            addEmptyCondition();
+                            if (!$scope.conditions || !$scope.conditions.length) {
+                                addEmptyCondition();
+                            }
                         }
                     });
 
@@ -161,7 +176,16 @@ module dockyard.directives {
                             });
                         });
 
-                        $scope.field.value = angular.toJson(toBeSerialized);
+                        if ($scope.field) {
+                            $scope.field.value = angular.toJson(toBeSerialized);
+                        }
+
+                        if ($scope.rows) {
+                            $scope.rows.splice(0, $scope.rows.length);
+                            angular.forEach(toBeSerialized, function (cond) {
+                                $scope.rows.push(cond);
+                            });
+                        }
                     };
 
                     $scope.$watch('conditions', () => {

@@ -632,6 +632,11 @@ input[type=radio]:checked ~ div.nested-controls {
 .radio-button-group-content {
     margin-left: 20px;
     margin-bottom: 5px;
+    display: block;
+}
+
+.radio-button-group-content .query-builder-table .form-group {
+    margin: 0;
 }
 
 .radio-button-option-label {
