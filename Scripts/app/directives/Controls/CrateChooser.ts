@@ -21,7 +21,10 @@ module dockyard.directives.crateChooser {
                 crateHelper.populateListItemsFromDataSource(ddList, $scope.currentAction.crateStorage);
             };
 
-            
+            var onCratesSelected = (selectedCrates: Array<model.CrateDescriptionDTO>) => {
+                //hmm we don't need to do anything here
+            };
+
             $scope.onChange = () => {
                 if ($scope.change != null && angular.isFunction($scope.change)) {
                     $scope.change()($scope.field);
@@ -33,10 +36,14 @@ module dockyard.directives.crateChooser {
                     animation: true,
                     templateUrl: 'TextTemplate-CrateChooserSelectionModal',
                     controller: 'CrateChooser__CrateSelectorModalController',
-                    size: 'm'
+                    size: 'm',
+                    resolve: {
+                        'crateDescriptions': () => $scope.field.crateDescriptions,
+                        'singleSelection': () => $scope.field.singleManifestOnly
+                    }
                 });
 
-                //modalInstance.result.then(OnExistingFileSelected);
+                modalInstance.result.then(onCratesSelected);
             };
         }];
 
@@ -55,21 +62,70 @@ module dockyard.directives.crateChooser {
     app.directive('crateChooser', CrateChooser);
 
 
-    /*
-A simple controller for Listing existing files dialog.
-Note: here goes a simple (not really a TypeScript) way to define a controller. 
-Not as a class but as a lambda function.
-*/
-    app.controller('CrateChooser__CrateSelectorModalController', ['$scope', '$modalInstance', ($scope: any, $modalInstance: any): void => {
+    app.controller('CrateChooser__CrateSelectorModalController', ['$scope', '$modalInstance', 'crateDescriptions', 'singleSelection', ($scope: any, $modalInstance: any, crateDescriptions: Array<model.CrateDescriptionDTO>, singleSelection: boolean): void => {
 
-        
+        $scope.tpl = '<crate-node single-selection="' + (singleSelection === true ? 'true' : 'false')+'"></crate-node>';
+
+        var categories = [];
+        var findCategory = (crateDescription: model.CrateDescriptionDTO) => {
+            for (var i = 0; i < categories.length; i++) {
+                if (crateDescription.manifestId === categories[i].manifestId) {
+                    return categories[i];
+                }
+            }
+            return null;
+        };
+
+
+        for (var i = 0; i < crateDescriptions.length; i++) {
+            var category = findCategory(crateDescriptions[i]);
+            if (category == null) {
+                category = { label: crateDescriptions[i].manifestType, isCategory: true, children: [] };
+                categories.push(category);
+            }
+
+            category.children.push(crateDescriptions[i]);
+        }
+
+        $scope.crateDescriptions = categories;
+
         $scope.ok = () => {
-            $modalInstance.close();
+            var selections = [];
+            for (var i = 0; i < crateDescriptions.length; i++) {
+                if (crateDescriptions[i].selected) {
+                    selections.push(crateDescriptions[i]);
+                }
+            }
+            $modalInstance.close(selections);
         };
 
         $scope.cancel = () => {
             $modalInstance.dismiss();
         };
 
+    }]);
+
+
+    app.directive('crateNode', ['ivhTreeviewMgr', (ivhTreeviewMgr) => {
+        return {
+            restrict: 'E',
+            templateUrl: 'TextTemplate-CrateNode',
+            link: (scope, element, attrs) => {
+                var singleSelection: boolean = attrs.singleSelection === 'true';
+                element.on('click', () => {
+                    if (scope.node.isCategory) {
+                        return;
+                    }
+
+                    if (singleSelection) {
+                        //deselect previous selections first
+                        ivhTreeviewMgr.deselectAll(scope.trvw.root());
+                    }
+
+                    ivhTreeviewMgr.select(scope.trvw.root(), scope.node, !scope.node.selected);
+                    scope.$apply();
+                });
+            }
+        };
     }]);
 }

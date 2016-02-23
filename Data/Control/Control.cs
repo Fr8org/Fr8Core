@@ -546,8 +546,12 @@ namespace Data.Control
             Type = ControlTypes.CrateChooser;
         }
 
-        [JsonProperty("crateDescription")]
-        public CrateDescriptionDTO CrateDescription { get; set; }
+        [JsonProperty("crateDescriptions")]
+        public List<CrateDescriptionDTO> CrateDescriptions { get; set; }
+
+        [JsonProperty("singleManifestOnly")]
+        public bool SingleManifestOnly { get; set; }
+        
     }
 
     public class UpstreamFieldChooser : ControlDefinitionDTO

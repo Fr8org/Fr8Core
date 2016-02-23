@@ -110,7 +110,8 @@
     }
 
     export class CrateChooser extends ControlDefinitionDTO {
-        crateDescription: CrateDescriptionDTO;
+        crateDescriptions: Array<CrateDescriptionDTO>;
+        singleManifestOnly: boolean;
     }
 
     export class TextSource extends DropDownList {

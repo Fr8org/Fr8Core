@@ -288,7 +288,7 @@ namespace terminalFr8Core.Actions
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             //build a controls crate to render the pane
-            var configurationControlsCrate = CreateControlsCrate();
+            var configurationControlsCrate = await CreateControlsCrate(curActivityDO);
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
@@ -343,7 +343,7 @@ namespace terminalFr8Core.Actions
             return queryFieldsCrate;
         }
 
-        private Crate CreateControlsCrate()
+        private async Task<Crate> CreateControlsCrate(ActivityDO curActivityDO)
         {
             var infoText = new TextBlock
             {
@@ -375,16 +375,14 @@ namespace terminalFr8Core.Actions
                 }
             };
 
+            var crateDescriptions = await GetCratesByDirection<CrateDescriptionCM>(curActivityDO, CrateDirection.Upstream);
+            var runTimeCrateDescriptions = crateDescriptions.Where(c => c.Availability == AvailabilityType.RunTime).SelectMany(c => c.Content.CrateDescriptions);
             var crateChooser = new CrateChooser
             {
                 Label = "Select crate to process",
                 Name = "Available_Crates",
-                Value = null,
-                Source = new FieldSourceDTO
-                {
-                    Label = "Available Labels",
-                    ManifestType = MT.StandardDesignTimeFields.GetEnumDisplayName()
-                }
+                CrateDescriptions = runTimeCrateDescriptions.ToList(),
+                SingleManifestOnly = true
             };
 
             return PackControlsCrate(infoText, availableManifests, availableLabels, crateChooser);
