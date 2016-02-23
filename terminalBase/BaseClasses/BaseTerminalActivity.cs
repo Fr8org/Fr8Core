@@ -1063,6 +1063,28 @@ namespace TerminalBase.BaseClasses
                 CssClass = curCssClass
             };
         }
+
+        /// <summary>
+        /// This is a generic function for creating a CrateChooser which is suitable for most use-cases
+        /// </summary>
+        /// <param name="curActivityDO"></param>
+        /// <param name="label"></param>
+        /// <param name="name"></param>
+        /// <param name="singleManifest"></param>
+        /// <returns></returns>
+        protected async Task<CrateChooser> GenerateCrateChooser(ActivityDO curActivityDO, string name, string label, bool singleManifest)
+        {
+            var crateDescriptions = await GetCratesByDirection<CrateDescriptionCM>(curActivityDO, CrateDirection.Upstream);
+            var runTimeCrateDescriptions = crateDescriptions.Where(c => c.Availability == AvailabilityType.RunTime).SelectMany(c => c.Content.CrateDescriptions);
+            return new CrateChooser
+            {
+                Label = label,
+                Name = name,
+                CrateDescriptions = runTimeCrateDescriptions.ToList(),
+                SingleManifestOnly = singleManifest
+            };
+        }
+
         /// <summary>
         /// Method to be used with Loop Action
         /// Is a helper method to decouple some of the GetCurrentElement Functionality

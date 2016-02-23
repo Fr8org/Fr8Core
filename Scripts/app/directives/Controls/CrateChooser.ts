@@ -10,19 +10,11 @@ module dockyard.directives.crateChooser {
         currentAction: model.ActivityDTO;
     }
 
-
     export function CrateChooser(): ng.IDirective {
-        var controller = ['$scope', 'CrateHelper', '$modal', ($scope: ICrateChooserScope, crateHelper: services.CrateHelper, $modal: any) => {
-
-            var populateListItems = (crateDetails: model.CrateDetails) => {
-                var ddList = Array<model.ControlDefinitionDTO>();
-                ddList.push(crateDetails.manifestType);
-                ddList.push(crateDetails.label);
-                crateHelper.populateListItemsFromDataSource(ddList, $scope.currentAction.crateStorage);
-            };
+        var controller = ['$scope', '$modal', ($scope: ICrateChooserScope, $modal: any) => {
 
             var onCratesSelected = (selectedCrates: Array<model.CrateDescriptionDTO>) => {
-                //hmm we don't need to do anything here
+                $scope.onChange();
             };
 
             $scope.onChange = () => {

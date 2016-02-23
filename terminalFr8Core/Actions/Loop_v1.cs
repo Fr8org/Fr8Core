@@ -295,16 +295,7 @@ namespace terminalFr8Core.Actions
 
         private async Task<Crate> CreateControlsCrate(ActivityDO curActivityDO)
         {
-            var crateDescriptions = await GetCratesByDirection<CrateDescriptionCM>(curActivityDO, CrateDirection.Upstream);
-            var runTimeCrateDescriptions = crateDescriptions.Where(c => c.Availability == AvailabilityType.RunTime).SelectMany(c => c.Content.CrateDescriptions);
-            var crateChooser = new CrateChooser
-            {
-                Label = "This Loop will process the data inside of",
-                Name = "Available_Crates",
-                CrateDescriptions = runTimeCrateDescriptions.ToList(),
-                SingleManifestOnly = true
-            };
-
+            var crateChooser = await GenerateCrateChooser(curActivityDO, "Available_Crates", "This Loop will process the data inside of", true);
             return PackControlsCrate(crateChooser);
         }
 
