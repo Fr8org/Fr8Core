@@ -131,14 +131,6 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(
                     x => x.CurrentClientActionName,
                     x => x.ResolveUsing(y => ExtractOperationStateData(y, z => z.CurrentClientActionName))
-                )
-                .ForMember(
-                    x => x.Error,
-                    x => x.ResolveUsing(y => ExtractOperationStateData(y, z => {
-                        ErrorDTO errorDTO = null; 
-                        if(z.CurrentActivityResponse != null) z.CurrentActivityResponse.TryParseErrorDTO(out errorDTO);
-                        return errorDTO;
-                    }))
                 );
             Mapper.CreateMap<AuthorizationTokenDTO, AuthorizationTokenDO>()
                 .ForMember(x => x.UserID,    x => x.ResolveUsing(y => y.UserId))

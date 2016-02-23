@@ -27,6 +27,5 @@ namespace Data.Interfaces.DataTransferObjects
 
         public ActivityResponse? CurrentActivityResponse { get; set; }
         public string CurrentClientActionName { get; set; }
-        public ErrorDTO Error { get; set; }
     }
 }
