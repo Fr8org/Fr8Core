@@ -135,7 +135,7 @@ namespace terminalFr8Core.Managers
             return standardLoggingCM;
         }
 
-        public StandardLoggingCM ActivityExecuted(EventLoggingDTO eventLogging)
+        public StandardLoggingCM ActionExecuted(EventLoggingDTO eventLogging)
         {
             StandardLoggingCM standardLoggingCM = new StandardLoggingCM();
             standardLoggingCM.LoggingMTkey = Guid.NewGuid().ToString();

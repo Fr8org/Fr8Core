@@ -30,7 +30,7 @@ namespace Hub.Managers
             EventManager.IncidentTerminalConfigureFailed += ProcessIncidentTerminalConfigureFailed;
             EventManager.IncidentTerminalRunFailed += ProcessIncidentTerminalRunFailed;
             EventManager.AlertError_EmailSendFailure += ProcessEmailSendFailure;
-            EventManager.IncidentTerminalActivityActivationFailed += ProcessIncidentTerminalActivityActivationFailed;
+            EventManager.IncidentTerminalActionActivationFailed += ProcessIncidentTerminalActivityActivationFailed;
             EventManager.IncidentTerminalInternalFailureOccurred += ProcessIncidentTerminalInternalFailureOccurred;
             //EventManager.IncidentPluginConfigureFailed += ProcessIncidentPluginConfigureFailed;
             //AlertManager.AlertErrorSyncingCalendar += ProcessErrorSyncingCalendar;

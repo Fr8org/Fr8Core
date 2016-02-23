@@ -66,10 +66,10 @@ namespace Hub.Managers
             EventManager.EventProcessNodeCreated += LogEventProcessNodeCreated;
             EventManager.EventCriteriaEvaluationStarted += LogEventCriteriaEvaluationStarted;
             EventManager.EventCriteriaEvaluationFinished += LogEventCriteriaEvaluationFinished;
-            EventManager.EventActivityStarted += LogEventActivityStarted;
-            EventManager.EventActivityDispatched += LogEventActivityDispatched;
+            EventManager.EventActionStarted += LogEventActivityStarted;
+            EventManager.EventActionDispatched += LogEventActivityDispatched;
             EventManager.TerminalEventReported += LogTerminalEvent;
-            EventManager.TerminalActivityActivated += TerminalActivityActivated;
+            EventManager.TerminalActionActivated += TerminalActivityActivated;
             EventManager.EventProcessRequestReceived += EventManagerOnEventProcessRequestReceived;
             EventManager.EventContainerCreated += LogEventContainerCreated;
             EventManager.EventContainerSent += LogEventContainerSent;
@@ -110,10 +110,10 @@ namespace Hub.Managers
             EventManager.EventProcessNodeCreated -= LogEventProcessNodeCreated;
             EventManager.EventCriteriaEvaluationStarted -= LogEventCriteriaEvaluationStarted;
             EventManager.EventCriteriaEvaluationFinished -= LogEventCriteriaEvaluationFinished;
-            EventManager.EventActivityStarted -= LogEventActivityStarted;
-            EventManager.EventActivityDispatched -= LogEventActivityDispatched;
+            EventManager.EventActionStarted -= LogEventActivityStarted;
+            EventManager.EventActionDispatched -= LogEventActivityDispatched;
             EventManager.TerminalEventReported -= LogTerminalEvent;
-            EventManager.TerminalActivityActivated -= TerminalActivityActivated;
+            EventManager.TerminalActionActivated -= TerminalActivityActivated;
             EventManager.EventContainerCreated -= LogEventContainerCreated;
             EventManager.EventContainerSent -= LogEventContainerSent;
             EventManager.EventContainerReceived -= LogEventContainerReceived;

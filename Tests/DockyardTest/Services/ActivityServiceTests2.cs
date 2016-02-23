@@ -597,7 +597,7 @@ namespace DockyardTest.Services
 
             Activity _activity = ObjectFactory.GetInstance<Action>();
             ContainerDO containerDO = FixtureData.TestContainer1();
-            EventManager.EventActivityStarted += EventManager_EventActivityStarted;
+            EventManager.EventActionStarted += EventManager_EventActivityStarted;
             var executeActionMock = new Mock<IActivity>();
             executeActionMock.Setup(s => s.Run(It.IsAny<IUnitOfWork>(), activityDo, It.IsAny<ActivityState>(), containerDO)).Returns<Task<PayloadDTO>>(null);
 
@@ -632,7 +632,7 @@ namespace DockyardTest.Services
 
             IActivity _activity = ObjectFactory.GetInstance<IActivity>();
             ContainerDO containerDO = FixtureData.TestContainer1();
-            EventManager.EventActivityStarted += EventManager_EventActivityStarted;
+            EventManager.EventActionStarted += EventManager_EventActivityStarted;
 
             
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -675,7 +675,7 @@ namespace DockyardTest.Services
 
             Activity _activity = ObjectFactory.GetInstance<Activity>();
             ContainerDO containerDO = FixtureData.TestContainer1();
-            EventManager.EventActivityStarted += EventManager_EventActivityStarted;
+            EventManager.EventActionStarted += EventManager_EventActivityStarted;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var count = uow.PlanRepository.GetActivityQueryUncached().Count();

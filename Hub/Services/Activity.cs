@@ -476,7 +476,7 @@ namespace Hub.Services
 
         public async Task PrepareToExecute(ActivityDO curActivity, ActivityState curActionState, ContainerDO curContainerDO, IUnitOfWork uow)
         {
-            EventManager.ActivityStarted(curActivity);
+            EventManager.ActionStarted(curActivity);
 
             var payload = await Run(uow, curActivity, curActionState, curContainerDO);
 
@@ -571,18 +571,18 @@ namespace Hub.Services
                 {
                     var result = await CallTerminalActivityAsync<ActivityDTO>(uow, "activate", curActivityDO, Guid.Empty);
 
-                    EventManager.ActivityActivated(curActivityDO);
+                    EventManager.ActionActivated(curActivityDO);
                     return result;
                 }
             }
             catch (ArgumentException)
             {
-                EventManager.TerminalActivityActivationFailed("<no terminal url>", JsonConvert.SerializeObject(Mapper.Map<ActivityDTO>(curActivityDO)), curActivityDO.Id.ToString());
+                EventManager.TerminalActionActivationFailed("<no terminal url>", JsonConvert.SerializeObject(Mapper.Map<ActivityDTO>(curActivityDO)), curActivityDO.Id.ToString());
                 throw;
             }
             catch
             {
-                EventManager.TerminalActivityActivationFailed(_activityTemplate.GetTerminalUrl(curActivityDO.ActivityTemplateId) ?? "<no terminal url>", JsonConvert.SerializeObject(Mapper.Map<ActivityDTO>(curActivityDO)), curActivityDO.Id.ToString());
+                EventManager.TerminalActionActivationFailed(_activityTemplate.GetTerminalUrl(curActivityDO.ActivityTemplateId) ?? "<no terminal url>", JsonConvert.SerializeObject(Mapper.Map<ActivityDTO>(curActivityDO)), curActivityDO.Id.ToString());
                 throw;
             }
         }
@@ -640,7 +640,7 @@ namespace Hub.Services
 
             _authorizationToken.PrepareAuthToken(uow, dto);
 
-            EventManager.ActivityDispatched(curActivityDO, containerId);
+            EventManager.ActionDispatched(curActivityDO, containerId);
 
             if (containerId != Guid.Empty)
             {
