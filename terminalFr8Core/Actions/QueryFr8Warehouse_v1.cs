@@ -277,7 +277,7 @@ namespace terminalFr8Core.Actions
                 }
 
                 int objectId;
-                if (!int.TryParse(availableObjects.Value, out objectId))
+                if (int.TryParse(availableObjects.Value, out objectId))
                 {
                     selectedObjectId = objectId;
                 }
