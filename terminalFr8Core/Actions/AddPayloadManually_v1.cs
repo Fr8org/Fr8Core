@@ -14,11 +14,16 @@ using Data.Entities;
 using StructureMap;
 using Hub.Managers;
 using Data.Control;
+using Data.States;
+using Utilities;
 
 namespace terminalFr8Core.Actions
 {
     public class AddPayloadManually_v1 : BaseTerminalActivity
     {
+
+        private const string RunTimeCrateLabel = "ManuallyAddedPayload";
+
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payloadCrates = await GetPayload(curActivityDO, containerId);
@@ -42,7 +47,7 @@ namespace terminalFr8Core.Actions
 
             using (var crateStorage = CrateManager.UpdateStorage(() => payloadCrates.CrateStorage))
             {
-                crateStorage.Add(Data.Crates.Crate.FromContent("ManuallyAddedPayload", new StandardPayloadDataCM(userDefinedPayload)));
+                crateStorage.Add(Data.Crates.Crate.FromContent(RunTimeCrateLabel, new StandardPayloadDataCM(userDefinedPayload)));
             }
             //
             //            var cratePayload = Crate.Create(
@@ -70,6 +75,16 @@ namespace terminalFr8Core.Actions
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Replace(AssembleCrateStorage(configurationControlsCrate));
+                var availableRunTimeCrates = Crate.FromContent("Available Run Time Crates", new CrateDescriptionCM(
+                    new CrateDescriptionDTO
+                    {
+                        ManifestType = MT.StandardPayloadData.GetEnumDisplayName(),
+                        Label = RunTimeCrateLabel,
+                        ManifestId = (int)MT.StandardPayloadData,
+                        ProducedBy = "AddPayloadManually_v1"
+                    }), AvailabilityType.RunTime);
+
+                crateStorage.Add(availableRunTimeCrates);
             }
 
             return Task.FromResult(curActivityDO);
@@ -102,8 +117,8 @@ namespace terminalFr8Core.Actions
 
                 using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
                 {
-                    crateStorage.RemoveByLabel("ManuallyAddedPayload");
-                    var crate = Data.Crates.Crate.FromContent("ManuallyAddedPayload", new StandardDesignTimeFieldsCM() { Fields = userDefinedPayload });
+                    crateStorage.RemoveByLabel(RunTimeCrateLabel);
+                    var crate = Data.Crates.Crate.FromContent(RunTimeCrateLabel, new FieldDescriptionsCM() { Fields = userDefinedPayload });
                     crate.Availability = Data.States.AvailabilityType.RunTime;
                     crateStorage.Add(crate);
                 }

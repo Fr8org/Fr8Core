@@ -134,7 +134,7 @@ namespace terminalFr8Core.Actions
             var prevSelectedValue = "";
 
             var prevSelectedObjectFields = storage
-                .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "PrevSelectedObject")
+                .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "PrevSelectedObject")
                 .FirstOrDefault();
 
             if (prevSelectedObjectFields != null)
@@ -283,21 +283,21 @@ namespace terminalFr8Core.Actions
             connectToSqlActionDO.CrateStorage = CrateManager.CrateStorageAsStr(
                     new CrateStorage()
                     {
-                        Crate<StandardDesignTimeFieldsCM>.FromContent(
+                        Crate<FieldDescriptionsCM>.FromContent(
                             "Sql Connection String",
-                            new StandardDesignTimeFieldsCM(
+                            new FieldDescriptionsCM(
                                 new FieldDTO(connectionString, connectionString)
                             )
                         ),
-                        Crate<StandardDesignTimeFieldsCM>.FromContent(
+                        Crate<FieldDescriptionsCM>.FromContent(
                             "Sql Table Definitions",
-                            new StandardDesignTimeFieldsCM(
+                            new FieldDescriptionsCM(
                                 FindObjectHelper.RetrieveColumnDefinitions(connectionString)
                             )
                         ),
-                        Crate<StandardDesignTimeFieldsCM>.FromContent(
+                        Crate<FieldDescriptionsCM>.FromContent(
                             "Sql Column Types",
-                            new StandardDesignTimeFieldsCM(
+                            new FieldDescriptionsCM(
                                 FindObjectHelper.RetrieveColumnTypes(connectionString)
                             )
                         )

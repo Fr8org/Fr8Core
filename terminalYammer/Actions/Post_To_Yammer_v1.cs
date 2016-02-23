@@ -150,7 +150,7 @@ namespace terminalYammer.Actions
         private async Task<Crate> CreateAvailableFieldsCrate(ActivityDO activityDO)
         {
             var curUpstreamFields =
-                (await GetCratesByDirection<StandardDesignTimeFieldsCM>(activityDO, CrateDirection.Upstream))
+                (await GetCratesByDirection<FieldDescriptionsCM>(activityDO, CrateDirection.Upstream))
 
                 .Where(x => x.Label != "Available Groups")
                 .SelectMany(x => x.Content.Fields)

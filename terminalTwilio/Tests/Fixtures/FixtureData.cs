@@ -62,9 +62,9 @@ namespace terminalTwilio.Tests.Fixtures
             };
         }
 
-        public static StandardDesignTimeFieldsCM TestFields()
+        public static FieldDescriptionsCM TestFields()
         {
-            return new StandardDesignTimeFieldsCM
+            return new FieldDescriptionsCM
             {
                 Fields = new List<FieldDTO>
                 {

@@ -111,7 +111,7 @@ namespace HubWeb.Controllers
         }
 
         [ActionName("designtime_fields_dir")]
-        [ResponseType(typeof(StandardDesignTimeFieldsCM))]
+        [ResponseType(typeof(FieldDescriptionsCM))]
         [Fr8HubWebHMACAuthenticate]
         public IHttpActionResult GetDesignTimeFieldsByDirection(
             Guid id, 
