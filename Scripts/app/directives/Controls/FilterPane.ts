@@ -21,59 +21,10 @@ module dockyard.directives {
                 ) {
                     $scope.uniqueDirectiveId = ++uniqueDirectiveId;
 
-                    // TODO: FR-2393, remove this.
-                    // $scope.operators = [
-                    //     { text: '>', value: 'gt' },
-                    //     { text: '>=', value: 'gte' },
-                    //     { text: '<', value: 'lt' },
-                    //     { text: '<=', value: 'lte' },
-                    //     { text: '==', value: 'eq' },
-                    //     { text: '<>', value: 'neq' }
-                    // ];
-
-                    // TODO: FR-2393, remove this.
-                    // $scope.defaultOperator = '';
-
-                    // $scope.$watch('currentAction', function (newValue: model.ActivityDTO) {
-                    //     if (newValue && newValue.crateStorage) {
-                    //         var crate = crateHelper.findByManifestTypeAndLabel(
-                    //             newValue.crateStorage, 'Standard Design-Time Fields', 'Queryable Criteria');
-                    // 
-                    //         $scope.fields = [];
-                    //         if (crate != null) {
-                    //             var crateJson = <any>(crate.contents);
-                    //             angular.forEach(crateJson.Fields, function (it) {
-                    //                 $scope.fields.push({
-                    //                     name: it.Name,
-                    //                     label: it.Label,
-                    //                     fieldType: it.FieldType,
-                    //                     control: it.Control
-                    //                 });
-                    //             });
-                    //         }
-                    //     }
-                    // });
-
                     $scope.conditions = [];
-
-                    // var findField = (name): IQueryField => {
-                    //     if (!$scope.fields) {
-                    //         return null;
-                    //     }
-                    // 
-                    //     var i;
-                    //     for (i = 0; i < $scope.fields.length; ++i) {
-                    //         if ($scope.fields[i].name === name) {
-                    //             return $scope.fields[i];
-                    //         }
-                    //     }
-                    // 
-                    //     return null;
-                    // };
 
                     $scope.$watch('field', function (newValue: any) {
                         if (newValue && newValue.value) {
-                            debugger;
                             var jsonValue = angular.fromJson(newValue.value);
 
                             $scope.conditions = jsonValue.conditions;
@@ -100,8 +51,6 @@ module dockyard.directives {
                             executionType: $scope.executionType,
                             conditions: $scope.conditions
                         });
-
-                        debugger;
                     };
 
                     $scope.$watch('conditions', () => { 
@@ -129,9 +78,6 @@ module dockyard.directives {
         field: any;
         change: () => (field: model.ControlDefinitionDTO) => void;
         fields: Array<IQueryField>;
-        // TODO: FR-2393, remove this.
-        // operators: Array<interfaces.IOperator>;
-        // defaultOperator: string;
         conditions: Array<IQueryCondition>;
         executionType: number;
         uniqueDirectiveId: number;
