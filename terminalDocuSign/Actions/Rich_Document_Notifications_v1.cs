@@ -382,7 +382,7 @@ namespace terminalDocuSign.Actions
                     Name = SolutionName,
                     Version = SolutionVersion,
                     Terminal = TerminalName,
-                    Body = @"<p>This is Rich Document Notification solution action</p>"
+                    Body = @"<p>Link your important outgoing envelopes to Fr8's powerful notification Activities, which allow you to receive SMS notices, emails, or receive posts to popular tracking systems like Slack and Yammer. Get notified when recipients take too long to sign!</p>"
                 };
                 return Task.FromResult(curSolutionPage);
             }

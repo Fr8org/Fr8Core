@@ -666,7 +666,7 @@ namespace terminalDocuSign.Actions
                     Name = SolutionName,
                     Version = SolutionVersion,
                     Terminal = TerminalName,
-                    Body = @"<p>This is Generate DocuSign Report solution action</p>"
+                    Body = @"<p>This powerful report generator extends the capabilities of the standard DocuSign reporting tools. Search by Recipient or Template and build powerful queries with a few mouse clicks</p>"
                 };
                 return Task.FromResult(curSolutionPage);
             }

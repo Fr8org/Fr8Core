@@ -1064,3 +1064,25 @@ ul.bordered-list li {
 .base-block-white.button-block.bottom-margin {
     margin-bottom: 40px;
 }
+
+.solution-body {
+    color: #000000;
+    font: bold;
+}
+
+.solution-header {
+    color: #fff;
+    /*background-color: #b84d45;*/
+    background-color: #58b8a9;
+    background-image: url('/Content/img/backgrounds/solution-bg.png');
+}
+
+.solution-docusion {
+    height: 10rem;
+}
+
+.btn-sln-turquoise {
+    color: #ffffff;
+    background-color: #58b8a9;
+    border-color: #58b8a9;
+}

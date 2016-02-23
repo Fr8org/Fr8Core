@@ -317,7 +317,7 @@ namespace terminalDocuSign.Actions
                 Name = SolutionName,
                 Version = SolutionVersion,
                 Terminal = TerminalName,
-                Body = @"<p>This is a solution action</p>"
+                Body = @"<p>Pull data from a variety of sources, including Excel files, Google Sheets, and databases, and merge the data into your DocuSign template. You can link specific fields from your source data to DocuSign fields</p>"
             };
             return Task.FromResult(curSolutionPage);
         }
