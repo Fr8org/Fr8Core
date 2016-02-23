@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Constants;
 using Data.Control;
 using Data.Crates;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using Data.States;
 using Hub.Managers;
 using Newtonsoft.Json;
 using terminalGoogle.DataTransferObjects;
@@ -14,6 +16,7 @@ using terminalGoogle.Interfaces;
 using terminalGoogle.Services;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
+using Utilities;
 
 namespace terminalGoogle.Actions
 {
@@ -199,7 +202,16 @@ namespace terminalGoogle.Actions
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Replace( AssembleCrateStorage(configurationControlsCrate));
-                crateStorage.Add(CrateManager.CreateStandardTableDataCrate(TableCrateLabel, false, new TableRowDTO[]{}));
+                var availableRunTimeCrates = Crate.FromContent("Available Run Time Crates", new CrateDescriptionCM(
+                    new CrateDescriptionDTO
+                    {
+                        ManifestType = MT.StandardTableData.GetEnumDisplayName(),
+                        Label = TableCrateLabel,
+                        ManifestId = (int)MT.StandardTableData,
+                        ProducedBy = "Get_Google_Sheet_Data_v1"
+                    }), AvailabilityType.RunTime);
+
+                crateStorage.Add(availableRunTimeCrates);
             }
 
             return Task.FromResult(curActivityDO);

@@ -152,7 +152,7 @@ namespace terminalSlack.Actions
 
         private async Task<Crate> CreateAvailableFieldsCrate(ActivityDO activityDO)
         {
-            var curUpstreamFields = (await GetCratesByDirection<StandardDesignTimeFieldsCM>(activityDO, CrateDirection.Upstream))
+            var curUpstreamFields = (await GetCratesByDirection<FieldDescriptionsCM>(activityDO, CrateDirection.Upstream))
                 .Where(x => x.Label != "Available Channels")
                 .SelectMany(x => x.Content.Fields)
                 .ToArray();

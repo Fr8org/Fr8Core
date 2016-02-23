@@ -33,8 +33,8 @@ namespace terminalDocuSignTests.Integration
             Assert.AreEqual(4, crateStorage.Count);
 
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "Available Templates"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "DocuSign Event Fields"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Available Templates"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "DocuSign Event Fields"));
             Assert.AreEqual(1, crateStorage.CratesOfType<EventSubscriptionCM>().Count(x => x.Label == "Standard Event Subscriptions"));
         }
 
@@ -156,7 +156,7 @@ namespace terminalDocuSignTests.Integration
                 var templateDdl = (DropDownList)radioGroup.Radios[1].Controls[0];
 
                 var availableTemplatesCM = crateStorage
-                    .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Available Templates")
+                    .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "Available Templates")
                     .Single();
                 Assert.IsTrue(availableTemplatesCM.Fields.Count > 0);
 
@@ -269,7 +269,7 @@ namespace terminalDocuSignTests.Integration
 
             var crateStorage = Crate.GetStorage(responseActionDTO);
             var docuSignEventFields = crateStorage
-                .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "DocuSign Event Fields")
+                .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "DocuSign Event Fields")
                 .Single();
 
             Assert.AreEqual(11, docuSignEventFields.Fields.Count);
@@ -298,7 +298,7 @@ namespace terminalDocuSignTests.Integration
 
             var crateStorage = Crate.GetStorage(responseActionDTO);
             var docuSignEventFields = crateStorage
-                .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "DocuSign Event Fields")
+                .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "DocuSign Event Fields")
                 .Single();
 
             Assert.AreEqual(11, docuSignEventFields.Fields.Count());

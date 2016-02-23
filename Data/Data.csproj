@@ -290,6 +290,7 @@
     <Compile Include="Interfaces\DataTransferObjects\ActivityResponseDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\AlarmDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\AuthenticateResponse.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\CrateDescriptionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EventLoggingDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FactDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\QueryFieldType.cs" />
@@ -353,6 +354,7 @@
     <Compile Include="Interfaces\IMTObjectRepository.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ControlDefinitionDTOConverter.cs" />
     <Compile Include="Interfaces\ITrackingChangesRepository.cs" />
+    <Compile Include="Interfaces\Manifests\CrateDescriptionCM.cs" />
     <Compile Include="Interfaces\Manifests\ManifestDescriptionCM.cs" />
     <Compile Include="Interfaces\Manifests\ChartOfAccountsCM.cs" />
     <Compile Include="Interfaces\Manifests\CrateManifestTypes.cs" />
@@ -381,7 +383,7 @@
     <Compile Include="Interfaces\Manifests\StandardSecurityCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardTableDataCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardPayloadDataCM.cs" />
-    <Compile Include="Interfaces\Manifests\StandardDesignTimeFieldsCM.cs" />
+    <Compile Include="Interfaces\Manifests\FieldDescriptionsCM.cs" />
     <Compile Include="Interfaces\Manifests\EventReportCM.cs" />
     <Compile Include="Interfaces\Manifests\EventSubscriptionCM.cs" />
     <Compile Include="Migrations\201510120408332_InitialMigration.cs" />
@@ -620,6 +622,10 @@
     <Compile Include="Migrations\201602170735431_RemoveMTActivitiesAndRemoveFr8CoreWebServices.cs" />
     <Compile Include="Migrations\201602170735431_RemoveMTActivitiesAndRemoveFr8CoreWebServices.Designer.cs">
       <DependentUpon>201602170735431_RemoveMTActivitiesAndRemoveFr8CoreWebServices.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201602191529576_RemoveActivityTemplateDupesAndAddConstaints.cs" />
+    <Compile Include="Migrations\201602191529576_RemoveActivityTemplateDupesAndAddConstaints.Designer.cs">
+      <DependentUpon>201602191529576_RemoveActivityTemplateDupesAndAddConstaints.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -1048,6 +1054,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201602170735431_RemoveMTActivitiesAndRemoveFr8CoreWebServices.resx">
       <DependentUpon>201602170735431_RemoveMTActivitiesAndRemoveFr8CoreWebServices.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602191529576_RemoveActivityTemplateDupesAndAddConstaints.resx">
+      <DependentUpon>201602191529576_RemoveActivityTemplateDupesAndAddConstaints.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

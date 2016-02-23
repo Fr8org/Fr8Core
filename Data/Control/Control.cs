@@ -48,6 +48,7 @@ namespace Data.Control
         public const string UpstreamFieldChooser = "UpstreamFieldChooser";
         public const string UpstreamCrateChooser = "UpstreamCrateChooser";
         public const string DatePicker = "DatePicker";
+        public const string CrateChooser = "CrateChooser";
     }
 
     public class CheckBox : ControlDefinitionDTO
@@ -536,6 +537,21 @@ namespace Data.Control
         [JsonProperty("multiSelection")]
         public bool MultiSelection { get; set; }
 
+    }
+
+    public class CrateChooser : ControlDefinitionDTO
+    {
+        public CrateChooser()
+        {
+            Type = ControlTypes.CrateChooser;
+        }
+
+        [JsonProperty("crateDescriptions")]
+        public List<CrateDescriptionDTO> CrateDescriptions { get; set; }
+
+        [JsonProperty("singleManifestOnly")]
+        public bool SingleManifestOnly { get; set; }
+        
     }
 
     public class UpstreamFieldChooser : ControlDefinitionDTO

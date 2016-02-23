@@ -191,10 +191,10 @@ namespace terminalDocuSign.Actions
                 fields.Add(new FieldDTO(folder.Name, folder.FolderId));
             }
 
-            yield return Data.Crates.Crate.FromContent("Folders", new StandardDesignTimeFieldsCM(fields));
+            yield return Data.Crates.Crate.FromContent("Folders", new FieldDescriptionsCM(fields));
 
 
-            yield return Data.Crates.Crate.FromContent("Statuses", new StandardDesignTimeFieldsCM(new[]
+            yield return Data.Crates.Crate.FromContent("Statuses", new FieldDescriptionsCM(new[]
             {
                 new FieldDTO("Any status", "<any>"),
                 new FieldDTO("Sent", "sent"),

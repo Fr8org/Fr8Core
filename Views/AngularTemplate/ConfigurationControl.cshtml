@@ -180,7 +180,12 @@
 
     <!-- DatePicker -->
     <div ng-if='field.type == "DatePicker"'>
-        <date-picker field="field" />
+        <date-picker field="field"/>
+    </div>
+
+    <!-- CrateChooser -->
+    <div ng-if='field.type == "CrateChooser"'>
+        <crate-chooser field="field" current-action="currentAction" change="onChange"></crate-chooser>
     </div>
 
     <!-- Add more configuration field templates below -->

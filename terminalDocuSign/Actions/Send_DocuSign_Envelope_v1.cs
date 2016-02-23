@@ -176,10 +176,10 @@ namespace terminalDocuSign.Actions
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                // Only do it if no existing MT.StandardDesignTimeFields crate is present to avoid loss of existing settings
+                // Only do it if no existing MT.FieldDescription crate is present to avoid loss of existing settings
                 // Two crates are created
                 // One to hold the ui controls
-                if (crateStorage.All(c => c.ManifestType.Id != (int)MT.StandardDesignTimeFields))
+                if (crateStorage.All(c => c.ManifestType.Id != (int)MT.FieldDescription))
                 {
                     var crateControlsDTO = CreateDocusignTemplateConfigurationControls(curActivityDO);
                     // and one to hold the available templates, which need to be requested from docusign
@@ -319,7 +319,7 @@ namespace terminalDocuSign.Actions
                 Source = new FieldSourceDTO
                 {
                     Label = "Available Templates",
-                    ManifestType = MT.StandardDesignTimeFields.GetEnumDisplayName()
+                    ManifestType = MT.FieldDescription.GetEnumDisplayName()
                 }
             };
 
@@ -344,7 +344,7 @@ namespace terminalDocuSign.Actions
         public async Task UpdateUpstreamCrate(ActivityDO curActivityDO, IUpdatableCrateStorage updater)
         {
             // Build a crate with the list of available upstream fields
-            var curUpstreamFieldsCrate = updater.SingleOrDefault(c => c.ManifestType.Id == (int)MT.StandardDesignTimeFields
+            var curUpstreamFieldsCrate = updater.SingleOrDefault(c => c.ManifestType.Id == (int)MT.FieldDescription
                                                                                 && c.Label == "Upstream Terminal-Provided Fields");
 
             if (curUpstreamFieldsCrate != null)

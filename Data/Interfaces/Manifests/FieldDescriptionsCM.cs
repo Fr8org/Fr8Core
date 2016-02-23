@@ -4,20 +4,20 @@ using Data.Interfaces.DataTransferObjects;
 
 namespace Data.Interfaces.Manifests
 {
-    public class StandardDesignTimeFieldsCM : Manifest
+    public class FieldDescriptionsCM : Manifest
     {
-        public StandardDesignTimeFieldsCM()
-			  : base(Constants.MT.StandardDesignTimeFields)
+        public FieldDescriptionsCM()
+			  : base(Constants.MT.FieldDescription)
         {
             Fields = new List<FieldDTO>();
         }
 
-        public StandardDesignTimeFieldsCM(IEnumerable<FieldDTO> fields) : this()
+        public FieldDescriptionsCM(IEnumerable<FieldDTO> fields) : this()
         {
             Fields.AddRange(fields);
         }
 
-        public StandardDesignTimeFieldsCM(params FieldDTO[] fields) : this()
+        public FieldDescriptionsCM(params FieldDTO[] fields) : this()
         {
             Fields.AddRange(fields);
         }

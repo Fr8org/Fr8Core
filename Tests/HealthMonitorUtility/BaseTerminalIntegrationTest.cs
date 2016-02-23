@@ -123,7 +123,7 @@ namespace HealthMonitor.Utility
 
         public void AddActivityTemplate(Fr8DataDTO dataDTO, ActivityTemplateDTO activityTemplate)
         {
-            AddHubCrate(dataDTO, new StandardDesignTimeFieldsCM(new FieldDTO("ActivityTemplate", JsonConvert.SerializeObject(activityTemplate))),
+            AddHubCrate(dataDTO, new FieldDescriptionsCM(new FieldDTO("ActivityTemplate", JsonConvert.SerializeObject(activityTemplate))),
                 "HealthMonitor_ActivityTemplate",
                 ""
             );

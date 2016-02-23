@@ -58,7 +58,7 @@ namespace Hub.Services
                 {
                     //var crates = _crate.GetCratesByManifestType(CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME, upstreamRouteNode.CrateStorageDTO());
 
-                    foreach (var crate in _crate.GetStorage(upstreamRouteNode.CrateStorage).CratesOfType<StandardDesignTimeFieldsCM>())
+                    foreach (var crate in _crate.GetStorage(upstreamRouteNode.CrateStorage).CratesOfType<FieldDescriptionsCM>())
                     {
                         if (data.CrateLabel != null && data.CrateLabel != crate.Label)
                         {
