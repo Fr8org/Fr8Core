@@ -17,6 +17,8 @@ using Hub.Interfaces;
 using Hub.Managers;
 using Utilities.Configuration.Azure;
 using System.Reflection;
+using Data.Interfaces;
+using Data.Repositories;
 
 namespace terminalFr8Core.Services
 {
@@ -32,22 +34,32 @@ namespace terminalFr8Core.Services
         public async Task<Crate> Process(string eventPayload)
         {
             var eventLogging = JsonConvert.DeserializeObject<EventLoggingDTO>(eventPayload);
-            var systemUser = CloudConfigurationManager.GetSetting("SystemAccount");
+            var systemUserMail = CloudConfigurationManager.GetSetting("SystemAccount");
             string curAssemblyName = "terminalFr8Core.Managers.EventManager";
             string curMethodPath = eventLogging.EventName;
 
             try
             {
                 Type calledType = Type.GetType(curAssemblyName);
-                object curObject = Activator.CreateInstance(calledType);
-                MethodInfo curMethodInfo = calledType.GetMethod(curMethodPath, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
-                StandardLoggingCM loggingManifest =  (StandardLoggingCM)curMethodInfo.Invoke(curObject, new Object[] { eventLogging });
 
                 if (calledType == null)
                     throw new ArgumentException("Event Manager does not exist in terminal");
 
-                await Task.Run(() => (StandardLoggingCM)curMethodInfo.Invoke(curObject, new Object[] { eventLogging }));
+                object curObject = Activator.CreateInstance(calledType);
+                MethodInfo curMethodInfo = calledType.GetMethod(curMethodPath, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+                if (curMethodInfo == null)
+                    throw new ArgumentException($"Event Manager Method: {curMethodPath} does not exist in terminal");
 
+                StandardLoggingCM loggingManifest =  (StandardLoggingCM)curMethodInfo.Invoke(curObject, new Object[] { eventLogging });
+
+                MethodInfo method = typeof(MultiTenantObjectRepository).GetMethod("AddOrUpdate");
+                MethodInfo addOrUpdate = method.MakeGenericMethod(loggingManifest.GetType());
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    var systemUser = uow.UserRepository.GetQuery().Single(x => x.EmailAddress.Address == systemUserMail);
+                    addOrUpdate.Invoke(uow.MultiTenantObjectRepository, new object[] {uow, systemUser.Id, loggingManifest, null});
+                }
+                /*
                 // Create the eventReportContent from the posted JSON and the using the account.
                 var eventReportContent = new EventReportCM
                 {
@@ -60,12 +72,17 @@ namespace terminalFr8Core.Services
 
                 var curEventReport = _crate.CreateStandardEventReportCrate("Fr8 Internal Event", eventReportContent);
                 return curEventReport;
+
+                */
             }
             catch (Exception)
             {
 
                 throw;
             }
+
+            //let's return null to prevent BaseEventService posting event to hub
+            return null;
         }
 
         // Create event payload from the JSON data.
