@@ -14,8 +14,8 @@
         <div ng-repeat="group in actionGroups" layout-action-group class="action-group" ng-style="{left: group.offsetLeft, top: group.offsetTop}">
             <div ng-if="mode !== 'solution' || $index === 0">
                 <div class="action-arrow-bottom" ng-style="{top: -group.arrowLength - 60, height: group.arrowLength + 35, left: group.arrowOffsetLeft}"></div>
-                <div dnd-list="group.actions" dnd-external-sources="true" dnd-drop="onActionDrop(group, item, index)" style="display: inline-block;">
-                    <div dnd-draggable="action.id" dnd-effect-allowed="move" ng-repeat="action in group.actions">
+                <div dnd-list="group.activites" dnd-external-sources="true" dnd-drop="onActionDrop(group, item, index)" style="display: inline-block;">
+                    <div dnd-draggable="action.id" dnd-effect-allowed="move" ng-repeat="action in group.activites">
                         <div class="action" ng-class="{'solution-action': action.activityTemplate.category==='Solution'  && mode !== 'solution'}" layout-action ng-style="{'width' : action.activityTemplate.minPaneWidth || 330 + 'px'}">
                             <div class="action-header solution-action-header handle" dropdown transfer-click-configure-pane>
                                 <div class="action-header-icon"><img ng-src="{{action.activityTemplate.webService.iconPath}}" ng-if="action.activityTemplate.webService.iconPath" /></div>

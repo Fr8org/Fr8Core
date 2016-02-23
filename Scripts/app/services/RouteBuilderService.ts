@@ -361,21 +361,21 @@ module dockyard.services {
                         newState.subroute = result;
 
                         this.crateHelper.mergeControlListCrate(
-                            currentState.action.configurationControls,
-                            currentState.action.crateStorage
+                            currentState.activities.configurationControls,
+                            currentState.activities.crateStorage
                         );
 
                         // If an Action is selected, save it
-                        if (currentState.action) {
-                            return this.ActionService.save({ id: currentState.action.id },
-                                currentState.action, null, null);
+                        if (currentState.activities) {
+                            return this.ActionService.save({ id: currentState.activities.id },
+                                currentState.activities, null, null);
                         }
                         else {
                             return deferred.resolve(newState);
                         }
                     })
                     .then((result: interfaces.IActionVM) => {
-                        newState.action = result;
+                        newState.activities = result;
                         return deferred.resolve(newState);
                     })
                     .catch((reason: any) => {
@@ -384,20 +384,20 @@ module dockyard.services {
             }
 
             //Save Action only
-            else if (currentState.action) {
+            else if (currentState.activities) {
                 this.crateHelper.mergeControlListCrate(
-                    currentState.action.configurationControls,
-                    currentState.action.crateStorage
+                    currentState.activities.configurationControls,
+                    currentState.activities.crateStorage
                 );
 
                 var promise = this.ActionService.save(
-                    { id: currentState.action.id },
-                    currentState.action,
+                    { id: currentState.activities.id },
+                    currentState.activities,
                     null,
                     null).$promise;
                 promise
                     .then((result: interfaces.IActionVM) => {
-                        newState.action = result;
+                        newState.activities = result;
                         return deferred.resolve(newState);
                     })
                     .catch((reason: any) => {

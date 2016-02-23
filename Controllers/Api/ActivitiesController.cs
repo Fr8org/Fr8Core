@@ -17,25 +17,25 @@ using StructureMap;
 namespace HubWeb.Controllers
 {
     [Fr8ApiAuthorize]
-    public class ActionsController : ApiController
+    public class ActivitiesController : ApiController
     {
         private readonly IActivity _activity;
         private readonly IActivityTemplate _activityTemplate;
         private readonly ISubroute _subRoute;
 
-        public ActionsController()
+        public ActivitiesController()
         {
             _activity = ObjectFactory.GetInstance<IActivity>();
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
             _subRoute = ObjectFactory.GetInstance<ISubroute>();
         }
 
-        public ActionsController(IActivity service)
+        public ActivitiesController(IActivity service)
         {
             _activity = service;
         }
 
-        public ActionsController(ISubroute service)
+        public ActivitiesController(ISubroute service)
         {
             _subRoute = service;
         }

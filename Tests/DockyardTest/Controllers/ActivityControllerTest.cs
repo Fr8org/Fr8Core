@@ -47,26 +47,26 @@ namespace DockyardTest.Controllers
         [Test]
         public void ActivityController_ShouldHaveFr8ApiAuthorize()
         {
-            ShouldHaveFr8ApiAuthorize(typeof(ActionsController));
+            ShouldHaveFr8ApiAuthorize(typeof(ActivitiesController));
         }
 
         [Test]
         public void ActivityController_ShouldHaveHMACOnCreateMethod()
         {
-            var createMethod = typeof (ActionsController).GetMethod("Create", new Type[] { typeof(int), typeof(string), typeof(int ?), typeof(Guid ?), typeof(bool), typeof(Guid ?)});
+            var createMethod = typeof (ActivitiesController).GetMethod("Create", new Type[] { typeof(int), typeof(string), typeof(int ?), typeof(Guid ?), typeof(bool), typeof(Guid ?)});
             ShouldHaveFr8HMACAuthorizeOnFunction(createMethod);
         }
 
         [Test]
         public void ActivityController_ShouldHaveHMACOnConfigureMethod()
         {
-            ShouldHaveFr8HMACAuthorizeOnFunction(typeof(ActionsController), "Configure");
+            ShouldHaveFr8HMACAuthorizeOnFunction(typeof(ActivitiesController), "Configure");
         }
 
         [Test,Ignore]
         public void ActivityController_ShouldHaveHMACOnDocumentationMethod()
         {
-            ShouldHaveFr8HMACAuthorizeOnFunction(typeof(ActionsController), "Documentation");
+            ShouldHaveFr8HMACAuthorizeOnFunction(typeof(ActivitiesController), "Documentation");
         }
 
         [Test]
@@ -90,7 +90,7 @@ namespace DockyardTest.Controllers
             var actualAction = CreateActivityWithId(FixtureData.GetTestGuidById(1));
             actualAction.ParentRouteNodeId = subroute.Id;
                 
-            var controller = new ActionsController();
+            var controller = new ActivitiesController();
             var result = (OkNegotiatedContentResult<ActivityDTO>) controller.Save(actualAction);
             var savedAction = result.Content;
 
@@ -130,7 +130,7 @@ namespace DockyardTest.Controllers
                 var actualAction = CreateActivityWithId(FixtureData.GetTestGuidById(2));
                 actualAction.ParentRouteNodeId = subroute.Id;
 
-                var controller = new ActionsController();
+                var controller = new ActivitiesController();
                 var result = (OkNegotiatedContentResult<ActivityDTO>) controller.Save(actualAction);
                 var savedAction = result.Content;
 
@@ -174,7 +174,7 @@ namespace DockyardTest.Controllers
 
             actualAction.ParentRouteNodeId = plan.Id;
 
-                var controller = new ActionsController();
+                var controller = new ActivitiesController();
                 controller.Save(actualAction);
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -316,7 +316,7 @@ namespace DockyardTest.Controllers
                 subRouteMock.Setup(a => a.DeleteActivity(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<bool>())).ReturnsAsync(true);
 
                 ActivityDO activityDO = new FixtureData(uow).TestActivity3();
-                var controller = new ActionsController(subRouteMock.Object);
+                var controller = new ActivitiesController(subRouteMock.Object);
                 await controller.Delete(activityDO.Id);
                 subRouteMock.Verify(a => a.DeleteActivity(null, activityDO.Id, false));
             }
@@ -332,7 +332,7 @@ namespace DockyardTest.Controllers
                 actionMock.Setup(a => a.GetById(It.IsAny<IUnitOfWork>(), It.IsAny<Guid>()));
 
                 ActivityDO activityDO = new FixtureData(uow).TestActivity3();
-                var controller = new ActionsController(actionMock.Object);
+                var controller = new ActivitiesController(actionMock.Object);
                 controller.Get(activityDO.Id);
                 actionMock.Verify(a => a.GetById(It.IsAny<IUnitOfWork>(), activityDO.Id));
             }
@@ -427,7 +427,7 @@ namespace DockyardTest.Controllers
         public async Task ActivityController_GetConfigurationSettings_ValidActionDesignDTO()
         {
             
-            var controller = new ActionsController();
+            var controller = new ActivitiesController();
             ActivityDTO actionDesignDTO = CreateActivityWithId(FixtureData.GetTestGuidById(2));
             actionDesignDTO.ActivityTemplate = FixtureData.TestActivityTemplateDTOV2();
 
@@ -445,7 +445,7 @@ namespace DockyardTest.Controllers
         [ExpectedException(ExpectedException = typeof(ApplicationException), ExpectedMessage = "Could not find Action.")]
         public async Task ActivityController_GetConfigurationSettings_IdIsMissing()
         {
-            var controller = new ActionsController();
+            var controller = new ActivitiesController();
             ActivityDTO actionDesignDTO = CreateActivityWithId(FixtureData.GetTestGuidById(2));
             actionDesignDTO.Id = Guid.Empty;
 
@@ -463,7 +463,7 @@ namespace DockyardTest.Controllers
         [ExpectedException(ExpectedException = typeof(NullReferenceException))]
         public async Task ActivityController_GetConfigurationSettings_ActionTemplateNameAndVersionIsMissing()
         {
-            var controller = new ActionsController();
+            var controller = new ActivitiesController();
             ActivityDTO actionDesignDTO = CreateActivityWithId(FixtureData.GetTestGuidById(2));
             var actionResult = await controller.Configure(actionDesignDTO);
 

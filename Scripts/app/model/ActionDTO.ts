@@ -8,7 +8,7 @@
         configurationControls: model.ControlsList;
         activityTemplate: ActivityTemplate;
         currentView: string;
-        childrenActions: Array<interfaces.IActivityDTO>;
+        childrenActivities: Array<interfaces.IActivityDTO>;
         height: number = 300;
         ordering: number;
         documentation: string;

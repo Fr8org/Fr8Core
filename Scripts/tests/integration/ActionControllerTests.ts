@@ -78,7 +78,7 @@ module dockyard.tests.controller {
                     parentRouteNodeId: '89EBF277-0CC4-4D6D-856B-52457F10C686',
                     activityTemplate: null,
                     id: '00000000-0000-0000-0000-000000000000',
-                    childrenActions: null,
+                    childrenActivities: null,
                     ordering: 0
                 };
 
@@ -101,7 +101,7 @@ module dockyard.tests.controller {
                         parentRouteNodeId: '89EBF277-0CC4-4D6D-856B-52457F10C686',
                         activityTemplate: null,
                         id: '89EBF277-0CC4-4D6D-856B-52457F10C686',
-                        childrenActions: null,
+                        childrenActivities: null,
                         ordering: 0
                 };
 

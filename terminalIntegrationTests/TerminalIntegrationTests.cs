@@ -529,9 +529,9 @@ namespace terminalIntegrationTests
         /// <summary>
         /// Create ActionController instance.
         /// </summary>
-        public ActionsController CreateActivityController()
+        public ActivitiesController CreateActivityController()
         {
-            return CreateController<ActionsController>(_testUserAccount.Id);
+            return CreateController<ActivitiesController>(_testUserAccount.Id);
         }
     }
 }

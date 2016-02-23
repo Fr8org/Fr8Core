@@ -53,7 +53,7 @@ namespace HubWeb.Controllers
 		}
 
         [HttpPost]
-		[ActionName("activites")]
+		[ActionName("activities")]
 		public IHttpActionResult GetActivities(ActivityCategory[] categories)
 		{
 			List<WebServiceActivitySetDTO> webServiceList;
