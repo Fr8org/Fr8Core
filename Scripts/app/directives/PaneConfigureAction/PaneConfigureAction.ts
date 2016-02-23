@@ -436,9 +436,8 @@ module dockyard.directives.paneConfigureAction {
                                 // It means that solution configuration is complete.
                                 
                                 // not needed in case of Loop action reconfigure
-                                if ($scope.currentAction.label !== "Loop") {
-                                    $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsDetected]);
-                                }
+                                
+                                $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsDetected]);
 
                                 childActionsDetected = true;
                             }
@@ -449,7 +448,11 @@ module dockyard.directives.paneConfigureAction {
                                 if (angular.toJson($scope.currentAction.childrenActions) != angular.toJson(res.childrenActions)) {
                                     $scope.reconfigureChildrenActions = true;
                                     //in case of reconfiguring the solution check the child actions again
-                                    $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsDetected]);
+
+                                    //not needed in case of Loop action
+                                    if ($scope.currentAction.label !== "Loop") {
+                                        $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsDetected]);
+                                    }
                                 }
                             }
 
