@@ -20,45 +20,76 @@ module dockyard.directives {
                     crateHelper: services.CrateHelper
                 ) {
                     $scope.uniqueDirectiveId = ++uniqueDirectiveId;
-                    $scope.operators = [
-                        { text: '>', value: 'gt' },
-                        { text: '>=', value: 'gte' },
-                        { text: '<', value: 'lt' },
-                        { text: '<=', value: 'lte' },
-                        { text: '==', value: 'eq' },
-                        { text: '<>', value: 'neq' }
-                    ];
 
-                    $scope.defaultOperator = '';
+                    // TODO: FR-2393, remove this.
+                    // $scope.operators = [
+                    //     { text: '>', value: 'gt' },
+                    //     { text: '>=', value: 'gte' },
+                    //     { text: '<', value: 'lt' },
+                    //     { text: '<=', value: 'lte' },
+                    //     { text: '==', value: 'eq' },
+                    //     { text: '<>', value: 'neq' }
+                    // ];
 
-                    $scope.$watch('currentAction', function (newValue: model.ActivityDTO) {
-                        if (newValue && newValue.crateStorage) {
-                            var crate = crateHelper.findByManifestTypeAndLabel(
-                                newValue.crateStorage, 'Standard Design-Time Fields', 'Queryable Criteria');
+                    // TODO: FR-2393, remove this.
+                    // $scope.defaultOperator = '';
 
-                            $scope.fields = [];
-                            if (crate != null) {
-                                var crateJson = <any>crate.contents;
-                                angular.forEach(crateJson.Fields, function (it) {
-                                    $scope.fields.push({ name: it.key, key: it.key });
-                                });
-                            }
-                        }
-                    });
+                    // $scope.$watch('currentAction', function (newValue: model.ActivityDTO) {
+                    //     if (newValue && newValue.crateStorage) {
+                    //         var crate = crateHelper.findByManifestTypeAndLabel(
+                    //             newValue.crateStorage, 'Standard Design-Time Fields', 'Queryable Criteria');
+                    // 
+                    //         $scope.fields = [];
+                    //         if (crate != null) {
+                    //             var crateJson = <any>(crate.contents);
+                    //             angular.forEach(crateJson.Fields, function (it) {
+                    //                 $scope.fields.push({
+                    //                     name: it.Name,
+                    //                     label: it.Label,
+                    //                     fieldType: it.FieldType,
+                    //                     control: it.Control
+                    //                 });
+                    //             });
+                    //         }
+                    //     }
+                    // });
+
+                    $scope.conditions = [];
+
+                    // var findField = (name): IQueryField => {
+                    //     if (!$scope.fields) {
+                    //         return null;
+                    //     }
+                    // 
+                    //     var i;
+                    //     for (i = 0; i < $scope.fields.length; ++i) {
+                    //         if ($scope.fields[i].name === name) {
+                    //             return $scope.fields[i];
+                    //         }
+                    //     }
+                    // 
+                    //     return null;
+                    // };
 
                     $scope.$watch('field', function (newValue: any) {
-
                         if (newValue && newValue.value) {
+                            debugger;
                             var jsonValue = angular.fromJson(newValue.value);
-                            $scope.conditions = <Array<interfaces.ICondition>>jsonValue.conditions;
+
+                            $scope.conditions = jsonValue.conditions;
+                            if (!$scope.conditions) {
+                                $scope.conditions = [];
+                            }
+
                             $scope.executionType = jsonValue.executionType;
                         }
                         else {
                             $scope.conditions = [
-                                new model.Condition(
-                                    null,
-                                    $scope.defaultOperator,
-                                    null)
+                                {
+                                    field: null,
+                                    operator: '',
+                                    value: null
+                                }
                             ];
                             $scope.executionType = 2;
                         }
@@ -69,17 +100,21 @@ module dockyard.directives {
                             executionType: $scope.executionType,
                             conditions: $scope.conditions
                         });
+
+                        debugger;
                     };
 
-                    $scope.$watch('conditions', () => {
+                    $scope.$watch('conditions', () => { 
                         updateFieldValue();
                     }, true);
 
                     $scope.$watch('executionType', (oldValue, newValue) => {
                         updateFieldValue();
+
                         if (oldValue === newValue) {
                             return;
                         }
+
                         // Invoke onChange event handler
                         if ($scope.change != null && angular.isFunction($scope.change)) {
                             $scope.change()($scope.field);
@@ -93,10 +128,11 @@ module dockyard.directives {
     export interface IPaneDefineCriteriaScope extends ng.IScope {
         field: any;
         change: () => (field: model.ControlDefinitionDTO) => void;
-        fields: Array<interfaces.IField>;
-        operators: Array<interfaces.IOperator>;
-        defaultOperator: string;
-        conditions: Array<interfaces.ICondition>;
+        fields: Array<IQueryField>;
+        // TODO: FR-2393, remove this.
+        // operators: Array<interfaces.IOperator>;
+        // defaultOperator: string;
+        conditions: Array<IQueryCondition>;
         executionType: number;
         uniqueDirectiveId: number;
     }
