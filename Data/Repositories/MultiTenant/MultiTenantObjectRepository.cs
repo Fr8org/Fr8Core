@@ -388,7 +388,7 @@ namespace Data.Repositories
                     var valueCell = dataValueCells.FirstOrDefault(a => a.Name == "Value" + DTField.FieldColumnOffset);
 
                     object val = null;
-                    if (!correspondingProperty.PropertyType.IsValueType)
+                    if (!correspondingProperty.PropertyType.IsValueType && valueCell != null)
                         val = valueCell.GetValue(data);
                     else
                     {

@@ -203,6 +203,7 @@
     <Compile Include="Actions\Build_Message_v1.cs" />
     <Compile Include="Actions\ConnectToSql_v1.cs" />
     <Compile Include="Actions\GetFileFromFr8Store_v1.cs" />
+    <Compile Include="Actions\SearchFr8Warehouse_v1.cs" />
     <Compile Include="Actions\StoreFile_v1.cs" />
     <Compile Include="Actions\ConvertCrates_v1.cs" />
     <Compile Include="Actions\SetDelay_v1.cs" />
