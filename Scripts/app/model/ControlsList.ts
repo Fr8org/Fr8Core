@@ -109,6 +109,10 @@
         multiSelection: boolean;
     }
 
+    export class CrateChooser extends ControlDefinitionDTO {
+        crateDescription: CrateDescriptionDTO;
+    }
+
     export class TextSource extends DropDownList {
         initialLabel: string;
         valueSource: string;

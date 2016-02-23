@@ -375,7 +375,19 @@ namespace terminalFr8Core.Actions
                 }
             };
 
-            return PackControlsCrate(infoText, availableManifests, availableLabels);
+            var crateChooser = new CrateChooser
+            {
+                Label = "Select crate to process",
+                Name = "Available_Crates",
+                Value = null,
+                Source = new FieldSourceDTO
+                {
+                    Label = "Available Labels",
+                    ManifestType = MT.StandardDesignTimeFields.GetEnumDisplayName()
+                }
+            };
+
+            return PackControlsCrate(infoText, availableManifests, availableLabels, crateChooser);
         }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)

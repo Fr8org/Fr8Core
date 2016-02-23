@@ -290,6 +290,7 @@
     <Compile Include="Interfaces\DataTransferObjects\ActivityResponseDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\AlarmDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\AuthenticateResponse.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\CrateDescriptionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EventLoggingDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FactDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\QueryFieldType.cs" />
