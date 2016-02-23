@@ -48,11 +48,14 @@ namespace Data.Expressions
 
             protected override Expression VisitMember(MemberExpression node)
             {
-                var expr = (MemberExpression)node;
+                var expr = node;
 
-                while (expr.Expression is MemberExpression)
+                if (node.Member.DeclaringType != null && node.Member.DeclaringType.IsGenericType && node.Member.DeclaringType.GetGenericTypeDefinition() == typeof(Nullable<>))
                 {
-                    expr = (MemberExpression)expr.Expression;
+                    while (expr.Expression is MemberExpression)
+                    {
+                        expr = (MemberExpression)expr.Expression;
+                    }
                 }
 
                 Type propType;
@@ -62,69 +65,23 @@ namespace Data.Expressions
                     return base.VisitMember(node);
                 }
 
-                if (expr.Member is System.Reflection.PropertyInfo)
+                if (node.Member is System.Reflection.PropertyInfo)
                 {
-                    propType = ((System.Reflection.PropertyInfo)expr.Member).PropertyType;
+                    propType = ((System.Reflection.PropertyInfo)node.Member).PropertyType;
                 }
-                else if (expr.Member is FieldInfo)
+                else if (node.Member is FieldInfo)
                 {
-                    propType = ((FieldInfo)expr.Member).FieldType;
+                    propType = ((FieldInfo)node.Member).FieldType;
                 }
                 else
                 {
-                    throw new NotSupportedException(string.Format("Member {0} has unsupported member type {1}", expr.Member.Name, expr.Member.GetType().Name));
+                    throw new NotSupportedException(string.Format("Member {0} has unsupported member type {1}", node.Member.Name, node.Member.GetType().Name));
                 }
 
                 _discoveredProperties.Add(new PropertyInfo(expr.Member.Name, propType));
 
                 return GetMtPropertyExpression(expr.Member.Name, propType, _paramExpr);
             }
-
-            /**********************************************************************************/
-            /*
-            public override Expression Visit(Expression node)
-            {
-                if (node == null)
-                {
-                    return null;
-                }
-
-                if (node != null && node.NodeType == ExpressionType.MemberAccess)
-                {
-                    var expr = (MemberExpression)node;
-
-                    while (expr.Expression is MemberExpression)
-                    {
-                        expr = (MemberExpression)expr.Expression;
-                    }
-
-                    Type propType;
-
-                    if (!typeof (TSource).IsAssignableFrom(expr.Member.DeclaringType))
-                    {
-                        return null;
-                    }
-
-                    if (expr.Member is System.Reflection.PropertyInfo)
-                    {
-                        propType = ((System.Reflection.PropertyInfo)expr.Member).PropertyType;
-                    }
-                    else if (expr.Member is FieldInfo)
-                    {
-                        propType = ((FieldInfo)expr.Member).FieldType;
-                    }
-                    else
-                    {
-                        throw new NotSupportedException(string.Format("Member {0} has unsupported member type {1}", expr.Member.Name, expr.Member.GetType().Name));
-                    }
-
-                    _discoveredProperties.Add(new PropertyInfo(expr.Member.Name, propType));
-
-                    return GetMtPropertyExpression(expr.Member.Name, propType, _paramExpr);
-                }
-
-                return base.Visit(node);
-            }*/
 
             /**********************************************************************************/
         }
