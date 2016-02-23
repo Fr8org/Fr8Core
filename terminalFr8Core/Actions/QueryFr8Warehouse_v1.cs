@@ -114,7 +114,7 @@ namespace terminalFr8Core.Actions
                                     Source = new FieldSourceDTO
                                     {
                                         Label = "Queryable Criteria",
-                                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
+                                        ManifestType = CrateManifestTypes.StandardQueryFields
                                     }
                                 })
                             }
@@ -221,7 +221,13 @@ namespace terminalFr8Core.Actions
 
                 if (int.TryParse(config.AvailableObjects.Value, out selectedObjectId))
                 {
-                    crateStorage.Add(CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", GetFieldsByObjectId(selectedObjectId).ToArray()));
+                    // crateStorage.Add(CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", GetFieldsByObjectId(selectedObjectId).ToArray()));
+                    crateStorage.Add(
+                        Crate.FromContent(
+                            "Queryable Criteria",
+                            new StandardQueryFieldsCM(GetFieldsByObjectId(selectedObjectId))
+                        )
+                    );
                 }
             }
             return Task.FromResult(curActivityDO);
@@ -432,7 +438,7 @@ namespace terminalFr8Core.Actions
             };
         }
 
-        private IEnumerable<FieldDTO> GetFieldsByObjectId(int objectId)
+        private IEnumerable<QueryFieldDTO> GetFieldsByObjectId(int objectId)
         {
             var fields = new Dictionary<string, string>();
 
@@ -457,7 +463,18 @@ namespace terminalFr8Core.Actions
                 }
             }
 
-            return fields.OrderBy(x => x.Key).Select(x => new FieldDTO(x.Key, x.Key));
+            return fields.OrderBy(x => x.Key)
+                .Select(x =>
+                    new QueryFieldDTO(
+                        x.Key,
+                        x.Key,
+                        QueryFieldType.String,
+                        new TextBox()
+                        {
+                            Name = "QueryField_" + x.Key
+                        }
+                    )
+                );
         }
 
         private IEnumerable<FieldDTO> GetObjects()

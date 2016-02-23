@@ -200,6 +200,7 @@
     <Compile Include="Actions\QueryFr8Warehouse_v1.cs" />
     <Compile Include="Actions\AddPayloadManually_v1.cs" />
     <Compile Include="Actions\BuildQuery_v1.cs" />
+    <Compile Include="Actions\Build_Message_v1.cs" />
     <Compile Include="Actions\ConnectToSql_v1.cs" />
     <Compile Include="Actions\GetFileFromFr8Store_v1.cs" />
     <Compile Include="Actions\StoreFile_v1.cs" />
