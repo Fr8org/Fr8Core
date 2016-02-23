@@ -23,9 +23,9 @@ using AutoMapper;
 
 namespace terminalDocuSign.Actions
 {
-    public class Rich_Document_Notifications_v1 : BaseDocuSignAction
+    public class Track_DocuSign_Recipients_v1 : BaseDocuSignAction
     {
-        private const string SolutionName = "Rich Document Notifications";
+        private const string SolutionName = "Track DocuSign Recipients";
         private const double SolutionVersion = 1.0;
         private const string TerminalName = "DocuSign";
         private class ActionUi : StandardConfigurationControlsCM
@@ -112,7 +112,7 @@ namespace terminalDocuSign.Actions
 
         public DocuSignManager DocuSignManager { get; set; }
 
-        public Rich_Document_Notifications_v1()
+        public Track_DocuSign_Recipients_v1()
         {
             DocuSignManager = new DocuSignManager();
         }
@@ -382,7 +382,7 @@ namespace terminalDocuSign.Actions
                     Name = SolutionName,
                     Version = SolutionVersion,
                     Terminal = TerminalName,
-                    Body = @"<p>This is Rich Document Notification solution action</p>"
+                    Body = @"<p>This is Track DocuSign Recipients solution action</p>"
                 };
                 return Task.FromResult(curSolutionPage);
             }

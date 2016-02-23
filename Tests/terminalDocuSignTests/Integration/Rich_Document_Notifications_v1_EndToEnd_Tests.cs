@@ -25,7 +25,7 @@ namespace terminalDocuSignTests.Integration
     /// </summary>
     [Explicit]
     [Category("terminalDocuSignTests.Integration")]
-    public class Rich_Document_Notifications_v1_EndToEnd_Tests : BaseHubIntegrationTest
+    public class Track_DocuSign_Recipients_v1_EndToEnd_Tests : BaseHubIntegrationTest
     {
         public override string TerminalName
         {
@@ -73,11 +73,11 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async Task Rich_Document_Notifications_EndToEnd()
+        public async Task Track_DocuSign_Recipients_EndToEnd()
         {
             string baseUrl = GetHubApiBaseUrl();
             
-            var solutionCreateUrl = baseUrl + "actions/create?solutionName=Rich_Document_Notifications";
+            var solutionCreateUrl = baseUrl + "actions/create?solutionName=Track_DocuSign_Recipients";
 
             //
             // Create solution

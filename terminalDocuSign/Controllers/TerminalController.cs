@@ -126,8 +126,8 @@ namespace terminalDocuSign.Controllers
 
             var richDocumentNotificationsSolution = new ActivityTemplateDTO
             {
-                Name = "Rich_Document_Notifications",
-                Label = "Rich Document Notifications",
+                Name = "Track_DocuSign_Recipients",
+                Label = "Track DocuSign Recipients",
                 Version = "1",
                 Category = ActivityCategory.Solution,
                 NeedsAuthentication = true,

@@ -19,7 +19,7 @@ namespace terminalDocuSignTests.Integration
 {
     [Explicit]
     [Category("terminalDocuSignTests.Integration")]
-    public class Rich_Document_Notifications_v1_Tests : BaseTerminalIntegrationTest
+    public class Track_DocuSign_Recipients_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {
@@ -139,11 +139,11 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async Task Rich_Document_Notification_Initial_Configuration_Check_Crate_Structure()
+        public async Task Track_DocuSign_Recipients_Initial_Configuration_Check_Crate_Structure()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var dataDTO = HealthMonitor_FixtureData.Rich_Document_Notifications_v1_InitialConfiguration_Fr8DataDTO();
+            var dataDTO = HealthMonitor_FixtureData.Track_DocuSign_Recipients_v1_InitialConfiguration_Fr8DataDTO();
             AddHubActivityTemplate(dataDTO);
             dataDTO.ActivityDTO.AuthToken = HealthMonitor_FixtureData.DocuSign_AuthToken();
 
@@ -165,7 +165,7 @@ namespace terminalDocuSignTests.Integration
         private async Task<ActivityDTO> GetActionDTO_WithEventsAndDelayValue()
         {
             var configureUrl = GetTerminalConfigureUrl();
-            var dataDTO = HealthMonitor_FixtureData.Rich_Document_Notifications_v1_InitialConfiguration_Fr8DataDTO();
+            var dataDTO = HealthMonitor_FixtureData.Track_DocuSign_Recipients_v1_InitialConfiguration_Fr8DataDTO();
             AddHubActivityTemplate(dataDTO);
 
             var responseActionDTO =
@@ -215,7 +215,7 @@ namespace terminalDocuSignTests.Integration
         private async Task<ActivityDTO> GetActionDTO_WithEventsValue()
         {
             var configureUrl = GetTerminalConfigureUrl();
-            var dataDTO = HealthMonitor_FixtureData.Rich_Document_Notifications_v1_InitialConfiguration_Fr8DataDTO();
+            var dataDTO = HealthMonitor_FixtureData.Track_DocuSign_Recipients_v1_InitialConfiguration_Fr8DataDTO();
             AddHubActivityTemplate(dataDTO);
 
             var responseActionDTO =
@@ -282,7 +282,7 @@ namespace terminalDocuSignTests.Integration
         /*
         // check for child actions.
         [Test]
-        public async Task Rich_Document_Notifications_FollowUp_Configuration_Check_ChildAction_WithoutDelay()
+        public async Task Track_DocuSign_Recipients_FollowUp_Configuration_Check_ChildAction_WithoutDelay()
         {
             var configureUrl = GetTerminalConfigureUrl();
             var actionDTO = await GetActionDTO_WithEventsValue();
@@ -304,7 +304,7 @@ namespace terminalDocuSignTests.Integration
         //This test causes timeout exception on build server. disabled for now
         /*
         [Test]
-        public async Task Rich_Document_Notifications_FollowUp_Configuration_Check_ChildAction_WithDelay()
+        public async Task Track_DocuSign_Recipients_FollowUp_Configuration_Check_ChildAction_WithDelay()
         {
             var configureUrl = GetTerminalConfigureUrl();
             var actionDTO = await GetActionDTO_WithEventsAndDelayValue();
@@ -328,13 +328,13 @@ namespace terminalDocuSignTests.Integration
         }
         */
         [Test]
-        public async Task Rich_Document_Notifications_Activate_Returns_ActionDTO()
+        public async Task Track_DocuSign_Recipients_Activate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = HealthMonitor_FixtureData.Rich_Document_Notifications_v1_InitialConfiguration_Fr8DataDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Track_DocuSign_Recipients_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
@@ -349,13 +349,13 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async Task Rich_Document_Notifications_Deactivate_Returns_ActionDTO()
+        public async Task Track_DocuSign_Recipients_Deactivate_Returns_ActionDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = HealthMonitor_FixtureData.Rich_Document_Notifications_v1_InitialConfiguration_Fr8DataDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Track_DocuSign_Recipients_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
