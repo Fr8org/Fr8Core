@@ -8,6 +8,7 @@ using System.Text;
 using System.Net;
 using System.Collections.Generic;
 using System.Linq;
+using Data.Constants;
 using Hub.Managers;
 using Data.Interfaces.Manifests;
 using terminalDocuSignTests.Fixtures;
@@ -187,12 +188,9 @@ namespace terminalDocuSignTests.Integration
                 var fr8CoreLoopCrateStorage = _crateManager.FromDto(fr8CoreLoop.CrateStorage);
                 var loopConfigCrate = fr8CoreLoopCrateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
                 var loopConfigControls = loopConfigCrate.Content.Controls;
-                var availableManifests = (DropDownList)loopConfigControls.Single(c => c.Name == "Available_Manifests");
-                var availableLabels = (DropDownList)loopConfigControls.Single(c => c.Name == "Available_Labels");
-                availableManifests.Value = "Standard Design-Time Fields";
-                availableManifests.selectedKey = "Standard Design-Time Fields";
-                availableLabels.Value = "ManuallyAddedPayload";
-                availableLabels.selectedKey = "ManuallyAddedPayload";
+                var crateChooser = (CrateChooser)loopConfigControls.Single(c => c.Name == "Available_Crates");
+                var payloadDataCrate = crateChooser.CrateDescriptions.Single(c => c.ManifestId == (int) MT.StandardPayloadData);
+                payloadDataCrate.Selected = true;
                 using (var updatableStorage = _crateManager.GetUpdatableStorage(fr8CoreLoop))
                 {
                     updatableStorage.Remove<StandardConfigurationControlsCM>();
