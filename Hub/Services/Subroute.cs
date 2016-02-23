@@ -137,9 +137,9 @@ namespace Hub.Services
             uow.SaveChanges();
         }
 
-        protected Crate<StandardDesignTimeFieldsCM> GetValidationErrors(CrateStorageDTO crateStorage)
+        protected Crate<FieldDescriptionsCM> GetValidationErrors(CrateStorageDTO crateStorage)
         {
-            return _crate.FromDto(crateStorage).FirstCrateOrDefault<StandardDesignTimeFieldsCM>(x => x.Label == "Validation Errors");
+            return _crate.FromDto(crateStorage).FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == "Validation Errors");
         }
 
         /// <summary>

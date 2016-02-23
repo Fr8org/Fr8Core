@@ -118,7 +118,7 @@ namespace terminalFr8Core.Actions
                 using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
                 {
                     crateStorage.RemoveByLabel(RunTimeCrateLabel);
-                    var crate = Data.Crates.Crate.FromContent(RunTimeCrateLabel, new StandardDesignTimeFieldsCM() { Fields = userDefinedPayload });
+                    var crate = Data.Crates.Crate.FromContent(RunTimeCrateLabel, new FieldDescriptionsCM() { Fields = userDefinedPayload });
                     crate.Availability = Data.States.AvailabilityType.RunTime;
                     crateStorage.Add(crate);
                 }

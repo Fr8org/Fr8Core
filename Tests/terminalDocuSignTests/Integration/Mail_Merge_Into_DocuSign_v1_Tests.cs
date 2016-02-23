@@ -33,7 +33,7 @@ namespace terminalDocuSignTests.Integration
         {
             Assert.AreEqual(2, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "Available Templates"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Available Templates"));
         }
 
         private void AddHubActivityTemplate(Fr8DataDTO dataDTO)
@@ -118,7 +118,7 @@ namespace terminalDocuSignTests.Integration
                 dataSourceDropdown.Value = childAction;
 
                 var availableTemplatesCM = crateStorage
-                  .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Available Templates")
+                  .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "Available Templates")
                   .Single();
                 Assert.IsTrue(availableTemplatesCM.Fields.Count > 0);
 

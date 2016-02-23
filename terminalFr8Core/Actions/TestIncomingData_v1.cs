@@ -327,7 +327,7 @@ namespace terminalFr8Core.Actions
 
         protected async Task<CrateDTO> ValidateAction(ActivityDO curActivityDO)
         {
-            return await ValidateByStandartDesignTimeFields(curActivityDO, CrateManager.GetStorage(curActivityDO).FirstCrate<StandardDesignTimeFieldsCM>(x => x.Label == "Queryable Criteria").Content);
+            return await ValidateByStandartDesignTimeFields(curActivityDO, CrateManager.GetStorage(curActivityDO).FirstCrate<FieldDescriptionsCM>(x => x.Label == "Queryable Criteria").Content);
         }
 
         /// <summary>

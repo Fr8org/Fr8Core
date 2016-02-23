@@ -124,7 +124,7 @@ namespace terminalFr8Core.Actions
         /// </summary>
         private async Task<List<FieldDTO>> ExtractColumnDefinitions(ActivityDO activityDO)
         {
-            var upstreamCrates = await GetCratesByDirection<StandardDesignTimeFieldsCM>(
+            var upstreamCrates = await GetCratesByDirection<FieldDescriptionsCM>(
                 activityDO,
                 CrateDirection.Upstream
             );
@@ -221,7 +221,7 @@ namespace terminalFr8Core.Actions
         /// </summary>
         private string ExtractSelectedObjectFromCrate(ICrateStorage storage)
         {
-            var fields = storage.CratesOfType<StandardDesignTimeFieldsCM>()
+            var fields = storage.CratesOfType<FieldDescriptionsCM>()
                 .FirstOrDefault(x => x.Label == "Selected Object");
 
             if (fields == null || fields.Content.Fields.Count == 0)

@@ -23,7 +23,7 @@ namespace terminalFr8Core.Infrastructure
         public async Task<Dictionary<string, DbType>> ExtractColumnTypes(
             BaseTerminalActivity activity, ActivityDO activityDO)
         {
-            var upstreamCrates = await activity.GetCratesByDirection<StandardDesignTimeFieldsCM>(
+            var upstreamCrates = await activity.GetCratesByDirection<FieldDescriptionsCM>(
                 activityDO,
                 CrateDirection.Upstream
             );

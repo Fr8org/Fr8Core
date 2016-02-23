@@ -481,7 +481,7 @@ namespace terminalDocuSign.Actions
                         crateStorage.Add(upstreamLabelsCrate);
 
                         var upstreamManifestTypes = crateStorage
-                            .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Crate ManifestType List")
+                            .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "Upstream Crate ManifestType List")
                             .FirstOrDefault();
 
                         var controls = crateStorage
@@ -630,7 +630,7 @@ namespace terminalDocuSign.Actions
 
             yield return Data.Crates.Crate.FromContent(
                 "DocuSign Envelope Report",
-                new StandardDesignTimeFieldsCM(
+                new FieldDescriptionsCM(
                     new FieldDTO
                     {
                         Key = "DocuSign Envelope Report",

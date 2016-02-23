@@ -383,7 +383,7 @@
     <Compile Include="Interfaces\Manifests\StandardSecurityCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardTableDataCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardPayloadDataCM.cs" />
-    <Compile Include="Interfaces\Manifests\StandardDesignTimeFieldsCM.cs" />
+    <Compile Include="Interfaces\Manifests\FieldDescriptionsCM.cs" />
     <Compile Include="Interfaces\Manifests\EventReportCM.cs" />
     <Compile Include="Interfaces\Manifests\EventSubscriptionCM.cs" />
     <Compile Include="Migrations\201510120408332_InitialMigration.cs" />

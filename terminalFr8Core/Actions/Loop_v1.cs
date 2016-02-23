@@ -277,7 +277,7 @@ namespace terminalFr8Core.Actions
                 using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
                 {
                     crateStorage.RemoveByLabel("Available Labels");
-                    crateStorage.Add(Data.Crates.Crate.FromContent("Available Labels", new StandardDesignTimeFieldsCM() { Fields = labelList }));
+                    crateStorage.Add(Data.Crates.Crate.FromContent("Available Labels", new FieldDescriptionsCM() { Fields = labelList }));
                 }
             }
 

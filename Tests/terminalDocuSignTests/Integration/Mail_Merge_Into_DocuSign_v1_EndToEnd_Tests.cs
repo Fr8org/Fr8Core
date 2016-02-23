@@ -104,7 +104,7 @@ namespace terminalDocuSignTests.Integration
                 this.solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "actions/configure?id=" + solution.Id, solution);
                 crateStorage = _crateManager.FromDto(this.solution.CrateStorage);
                 Assert.True(crateStorage.CratesOfType<StandardConfigurationControlsCM>().Any(), "Crate StandardConfigurationControlsCM is missing in API response.");
-                Assert.True(crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Any(), "Crate StandardDesignTimeFieldsCM is missing in API response.");
+                Assert.True(crateStorage.CratesOfType<FieldDescriptionsCM>().Any(), "Crate FieldDescriptionsCM is missing in API response.");
 
                 var controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
                 var controls = controlsCrate.Content.Controls;

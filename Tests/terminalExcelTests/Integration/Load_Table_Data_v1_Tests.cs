@@ -44,7 +44,7 @@ namespace terminalExcelTests.Integration
         {
             Assert.AreEqual(crateStorage.Count, 2);
             Assert.AreEqual(crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(), 1);
-            Assert.AreEqual(crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "Select Excel File"), 1);
+            Assert.AreEqual(crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Select Excel File"), 1);
         }
 
         private void AssertControls(StandardConfigurationControlsCM controls)
@@ -87,7 +87,7 @@ namespace terminalExcelTests.Integration
             Assert.AreEqual(crateStorage.Count, 2);
 
             Assert.AreEqual(crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(x => x.Label == "Configuration_Controls"), 1);
-            Assert.AreEqual(crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "Select Excel File"), 1);
+            Assert.AreEqual(crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Select Excel File"), 1);
         }
 
         [Test]

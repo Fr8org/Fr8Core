@@ -9,8 +9,8 @@ namespace Data.Constants
 {
     public enum MT : int
     {
-        [Display(Name = "Standard Design-Time Fields")]
-        StandardDesignTimeFields = 3,
+        [Display(Name = "Field Description")]
+        FieldDescription = 3,
 
         [Display(Name = "Dockyard Terminal Event or Incident Report")]
         EventOrIncidentReport = 2,
