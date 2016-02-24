@@ -1,16 +1,4 @@
 ﻿<div class="filter-pane">
-    <!--
-    <form>
-        <div class="form-group">
-            <query-builder-widget fields="fields"
-                                  current-action="currentAction"
-                                  rows="conditions"
-                                  operators="operators"
-                                  default-operator="defaultOperator">
-            </query-builder-widget>
-        </div>
-    </form>
-    -->
     <div>
         <div ng-class="{'noclick-background': isDisabled}">
             <table class="table query-builder-table" stop-click-propagation>
@@ -25,50 +13,6 @@
                 <tbody>
                     <tr ng-repeat="condition in conditions track by $index" query-builder-condition current-action="currentAction" condition="condition" is-single="conditions.length <= 1" fields="fields" operators="operators" on-remove-condition="removeCondition($index)">
                     </tr>
-                    
-                    <!--
-                    <tr ng-repeat-start="condition in conditions track by $index">
-                        <td width="125">
-                            <select class="form-control" ng-options="f as f.name for f in fields" ng-model="condition.field" ng-change="fieldSelected(condition)">
-                                <option value="">Select a Field</option>
-                            </select>
-                        </td>
-                        <td width="60">
-                            <select class="form-control" ng-options="op.value as op.text for op in operators" ng-model="condition.operator" ng-disabled="!condition.field"></select>
-                        </td>
-                        <td>
-                            <div ng-if="condition.control" class="">
-                                !--
-                                <input type="text"
-                                       class="form-control"
-                                       ng-required="true"
-                                       ng-model="row.value"
-                                       ng-model-options="{ updateOn: 'default blur', debounce: { 'default': 500, 'blur': 0 } }"
-                                       ng-change="valueChanged(row)"
-                                       ng-disabled="!row.field"
-                                       ng-class="{ invalid: !!row.valueError }" />
-                                --
-                                !--
-                                <configuration-control current-action="currentAction" field="condition.control" />
-                                --
-                            </div>
-                            <div ng-if="!condition.control" style="padding: 3px; border: 1px solid #acacac;">
-                                First select a field
-                            </div>
-                        </td>
-                        <td>
-                            <img src="~/Content/img/RouteBuilder/delete-icon.png" width="15" height="15"
-                                 ng-show="conditions.length > 1"
-                                 ng-click="removeCondition($index)"
-                                 class="query-builder-delete-button" />
-                        </td>
-                    </tr>
-                    <tr ng-repeat-end ng-if="condition.valueError" class="no-border">
-                        <td colspan="3">
-                            <div class="invalid-hint">{{condition.valueError}}</div>
-                        </td>
-                    </tr>
-                    -->
                 </tbody>
             </table>
             <div>

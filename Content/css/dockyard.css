@@ -570,6 +570,15 @@ div.action-header {
     margin-top: 4px;
 }
 
+.query-builder-table date-picker .btn.btn-default {
+    padding: 1px 3px 2px 3px;
+    border: 1px solid #acacac;
+}
+
+ul.dropdown-menu {
+    padding: 3px 3px 10px 2px;
+}
+
 .table-delete-button {
     width: 15px;
     height: 15px;
@@ -632,6 +641,11 @@ input[type=radio]:checked ~ div.nested-controls {
 .radio-button-group-content {
     margin-left: 20px;
     margin-bottom: 5px;
+    display: block;
+}
+
+.radio-button-group-content .query-builder-table .form-group {
+    margin: 0;
 }
 
 .radio-button-option-label {
@@ -835,4 +849,42 @@ div[dnd-list].dndDragover {
     padding-bottom: 6%;
     margin-right: 1%;
     margin-bottom: 1%;
+}
+
+.crate-node {
+    cursor: pointer;
+    margin: 10px 5px 5px 10px;
+}
+
+.crate-node-category {
+    font-size: 17px;
+    cursor: pointer;
+}
+
+.category-glyph .glyphicon {
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.crate-node-leaf {
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+.crate-node-leaf .data {
+    margin-top: -15px;
+    cursor: pointer;
+}
+
+.crate-node-leaf .glyphicon {
+    font-size: 15px;
+    cursor: pointer;
+}
+.crate-icon .glyphicon {
+    font-size: 40px;
+    cursor: pointer;
+}
+
+.green {
+    color: green;
 }

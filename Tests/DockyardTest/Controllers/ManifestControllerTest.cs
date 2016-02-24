@@ -154,7 +154,7 @@ namespace DockyardTest.Controllers
             ////Assert
             Assert.NotNull(fieldsList);
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Definition")), "Definition Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Actions")), "Actions Not Found");          
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Activities")), "Actions Not Found");          
         }
         
         //QueryDTO	List
@@ -359,7 +359,7 @@ namespace DockyardTest.Controllers
             Assert.NotNull(fieldsList);
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Directive")), "Directive Not Found");
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("TargetProcessNodeName")), "TargetProcessNodeName Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("TargetActionName")), "TargetActionName Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("TargetActivityName")), "TargetActivityName Not Found");
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Explanation")), "Explanation Not Found");
         }
 
@@ -379,11 +379,11 @@ namespace DockyardTest.Controllers
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("FirstRowHeaders")), "FirstRowHeaders Not Found");
         }
 
-        private static StandardDesignTimeFieldsCM Deserialize(OkNegotiatedContentResult<CrateDTO> actionResult)
+        private static FieldDescriptionsCM Deserialize(OkNegotiatedContentResult<CrateDTO> actionResult)
         {
             var crate = ObjectFactory.GetInstance<ICrateManager>().FromDto(actionResult.Content);
 
-            return crate.Get<StandardDesignTimeFieldsCM>();
+            return crate.Get<FieldDescriptionsCM>();
         }
 
         private static ManifestsController CreateManifestController()

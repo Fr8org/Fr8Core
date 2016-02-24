@@ -17,13 +17,13 @@ namespace UtilitiesTesting.Fixtures
     {
 
 
-        public static List<Crate<StandardDesignTimeFieldsCM>> TestCrateDTO1()
+        public static List<Crate<FieldDescriptionsCM>> TestCrateDTO1()
         {
             List<FieldDTO> fields = new List<FieldDTO>();
             fields.Add(new FieldDTO() { Key = "Medical_Form_v1", Value = Guid.NewGuid().ToString() });
             fields.Add(new FieldDTO() { Key = "Medical_Form_v2", Value = Guid.NewGuid().ToString() });
 
-            return new List<Crate<StandardDesignTimeFieldsCM>>() { Crate<StandardDesignTimeFieldsCM>.FromContent("Available Templates", new StandardDesignTimeFieldsCM() { Fields = fields }) };
+            return new List<Crate<FieldDescriptionsCM>>() { Crate<FieldDescriptionsCM>.FromContent("Available Templates", new FieldDescriptionsCM() { Fields = fields }) };
         }
 
         public static List<Crate> TestCrateDTO2()
@@ -35,14 +35,14 @@ namespace UtilitiesTesting.Fixtures
             fields.Add(new FieldDTO() { Key = "Doctor", Value = Guid.NewGuid().ToString() });
             fields.Add(new FieldDTO() { Key = "Condition", Value = Guid.NewGuid().ToString() });
 
-            return new List<Crate>() { Crate.FromContent("DocuSignTemplateUserDefinedFields", new StandardDesignTimeFieldsCM() { Fields = fields }) };
+            return new List<Crate>() { Crate.FromContent("DocuSignTemplateUserDefinedFields", new FieldDescriptionsCM() { Fields = fields }) };
 
         }
 
         public static List<Crate> TestCrateDTO3()
         {
             return new List<Crate>() {
-                Crate.FromContent("CrateId1", new StandardDesignTimeFieldsCM()),
+                Crate.FromContent("CrateId1", new FieldDescriptionsCM()),
                 Crate.FromContent("CrateId2", new StandardConfigurationControlsCM()),
                 Crate.FromContent("CrateId3", new DocuSignRecipientCM()),
                 Crate.FromContent("CrateId4", new EventSubscriptionCM()),

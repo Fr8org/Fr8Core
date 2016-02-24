@@ -26,7 +26,7 @@ namespace terminalQuickBooksTests.Fixtures
             };
         }
 
-        public static ActivityTemplateDTO Action_Create_Journal_Entry_ActivityTemplate()
+        public static ActivityTemplateDTO Activity_Create_Journal_Entry_ActivityTemplate()
         {
             return new ActivityTemplateDTO()
             {
@@ -35,9 +35,9 @@ namespace terminalQuickBooksTests.Fixtures
                 Version = "1"
             };
         }
-        public static Fr8DataDTO Action_Create_Journal_Entry_v1_InitialConfiguration_Fr8DataDTO()
+        public static Fr8DataDTO Activity_Create_Journal_Entry_v1_InitialConfiguration_Fr8DataDTO()
         {
-            var activityTemplate = Action_Create_Journal_Entry_ActivityTemplate();
+            var activityTemplate = Activity_Create_Journal_Entry_ActivityTemplate();
 
             var activityDTO = new ActivityDTO()
             {

@@ -39,13 +39,13 @@ namespace terminalDocuSignTests.Integration
         private void ShouldHaveCorrectCrateStructure(ICrateStorage crateStorage)
         {
             Assert.True(crateStorage.CratesOfType<StandardConfigurationControlsCM>().Any(), "Crate StandardConfigurationControlsCM is missing in API response.");
-            Assert.True(crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Any(c => c.Label == "AvailableTemplates"), "StandardDesignTimeFieldsCM with label \"AvailableTemplates\" is missing in API response.");
-            Assert.True(crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Any(c => c.Label == "AvailableHandlers"), "StandardDesignTimeFieldsCM with label \"AvailableHandlers\" is missing in API response.");
-            Assert.True(crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Any(c => c.Label == "AvailableRecipientEvents"), "StandardDesignTimeFieldsCM with label \"AvailableRecipientEvents\" is missing in API response.");
+            Assert.True(crateStorage.CratesOfType<FieldDescriptionsCM>().Any(c => c.Label == "AvailableTemplates"), "FieldDescriptionsCM with label \"AvailableTemplates\" is missing in API response.");
+            Assert.True(crateStorage.CratesOfType<FieldDescriptionsCM>().Any(c => c.Label == "AvailableHandlers"), "FieldDescriptionsCM with label \"AvailableHandlers\" is missing in API response.");
+            Assert.True(crateStorage.CratesOfType<FieldDescriptionsCM>().Any(c => c.Label == "AvailableRecipientEvents"), "FieldDescriptionsCM with label \"AvailableRecipientEvents\" is missing in API response.");
 
-            var templatesCrate = crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Single(c => c.Label == "AvailableTemplates");
-            var handlersCrate = crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Single(c => c.Label == "AvailableHandlers");
-            var recipientEventsCrate = crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Single(c => c.Label == "AvailableRecipientEvents");
+            var templatesCrate = crateStorage.CratesOfType<FieldDescriptionsCM>().Single(c => c.Label == "AvailableTemplates");
+            var handlersCrate = crateStorage.CratesOfType<FieldDescriptionsCM>().Single(c => c.Label == "AvailableHandlers");
+            var recipientEventsCrate = crateStorage.CratesOfType<FieldDescriptionsCM>().Single(c => c.Label == "AvailableRecipientEvents");
 
             Assert.True(templatesCrate.Content.Fields.Any(), "There are no fields in AvailableTemplates Crate");
             Assert.True(handlersCrate.Content.Fields.Any(), "There are no fields in AvailableHandlers Crate");
@@ -77,7 +77,7 @@ namespace terminalDocuSignTests.Integration
         {
             string baseUrl = GetHubApiBaseUrl();
             
-            var solutionCreateUrl = baseUrl + "actions/create?solutionName=Rich_Document_Notifications";
+            var solutionCreateUrl = baseUrl + "activities/create?solutionName=Rich_Document_Notifications";
 
             //
             // Create solution
@@ -88,7 +88,7 @@ namespace terminalDocuSignTests.Integration
             //
             // Send configuration request without authentication token
             //
-            this._solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure?id=" + solution.Id, solution);
+            this._solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "activities/configure?id=" + solution.Id, solution);
             _crateStorage = _crateManager.FromDto(this._solution.CrateStorage);
             var stAuthCrate = _crateStorage.CratesOfType<StandardAuthenticationCM>().FirstOrDefault();
             bool defaultDocuSignAuthTokenExists = stAuthCrate == null;
@@ -132,11 +132,11 @@ namespace terminalDocuSignTests.Integration
             //
             // Send configuration request with authentication token
             //
-            this._solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure?id=" + solution.Id, solution);
+            this._solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "activities/configure?id=" + solution.Id, solution);
             _crateStorage = _crateManager.FromDto(this._solution.CrateStorage);
 
             ShouldHaveCorrectCrateStructure(_crateStorage);
-            Assert.True(this._solution.ChildrenActions.Length == 0);
+            Assert.True(this._solution.ChildrenActivities.Length == 0);
 
             var controlsCrate = _crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
             var controls = controlsCrate.Content.Controls;
@@ -177,10 +177,10 @@ namespace terminalDocuSignTests.Integration
                 updater.Add(controlsCrate);
             }
 
-            this._solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure?id=" + this._solution.Id, this._solution);
+            this._solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "activities/configure?id=" + this._solution.Id, this._solution);
             _crateStorage = _crateManager.FromDto(this._solution.CrateStorage);
             ShouldHaveCorrectCrateStructure(_crateStorage);
-            Assert.True(this._solution.ChildrenActions.Length == 0);
+            Assert.True(this._solution.ChildrenActivities.Length == 0);
 
             //everything seems perfect for now
             //let's force RDN for a followup configuration
@@ -192,11 +192,11 @@ namespace terminalDocuSignTests.Integration
             timePeriod.Days = 0;
             timePeriod.Hours = 0;
             timePeriod.Minutes = 0;
-            var handlersCrate = _crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Single(c => c.Label == "AvailableHandlers");
+            var handlersCrate = _crateStorage.CratesOfType<FieldDescriptionsCM>().Single(c => c.Label == "AvailableHandlers");
             var emailHandler = handlersCrate.Content.Fields.Single(c => c.Key.Contains("Send Email"));
             notificationHandler.Value = emailHandler.Value;
             notificationHandler.selectedKey = emailHandler.Key;
-            var recipientEventsCrate = _crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Single(c => c.Label == "AvailableRecipientEvents");
+            var recipientEventsCrate = _crateStorage.CratesOfType<FieldDescriptionsCM>().Single(c => c.Label == "AvailableRecipientEvents");
             recipientEvent.Value = recipientEventsCrate.Content.Fields[1].Value;
             recipientEvent.selectedKey = recipientEventsCrate.Content.Fields[1].Key;
 
@@ -206,22 +206,22 @@ namespace terminalDocuSignTests.Integration
                 updatableStorage.Add(controlsCrate);
             }
 
-            this._solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure?id=" + this._solution.Id, this._solution);
+            this._solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "activities/configure?id=" + this._solution.Id, this._solution);
             _crateStorage = _crateManager.FromDto(this._solution.CrateStorage);
 
             //from now on our solution should have followup crate structure
-            Assert.True(this._solution.ChildrenActions.Length == 5, "Solution child actions failed to create.");
+            Assert.True(this._solution.ChildrenActivities.Length == 5, "Solution child actions failed to create.");
 
-            Assert.True(this._solution.ChildrenActions.Any(a => a.Label == "Monitor Docusign Envelope Activity" && a.Ordering == 1));
-            Assert.True(this._solution.ChildrenActions.Any(a => a.Label == "Set Delay" && a.Ordering == 2));
-            Assert.True(this._solution.ChildrenActions.Any(a => a.Label == "Query Fr8 Warehouse" && a.Ordering == 3));
-            Assert.True(this._solution.ChildrenActions.Any(a => a.Label == "Test Incoming Data" && a.Ordering == 4));
-            Assert.True(this._solution.ChildrenActions.Any(a => a.Label == notificationHandler.selectedKey && a.Ordering == 5));
+            Assert.True(this._solution.ChildrenActivities.Any(a => a.Label == "Monitor Docusign Envelope Activity" && a.Ordering == 1));
+            Assert.True(this._solution.ChildrenActivities.Any(a => a.Label == "Set Delay" && a.Ordering == 2));
+            Assert.True(this._solution.ChildrenActivities.Any(a => a.Label == "Query Fr8 Warehouse" && a.Ordering == 3));
+            Assert.True(this._solution.ChildrenActivities.Any(a => a.Label == "Test Incoming Data" && a.Ordering == 4));
+            Assert.True(this._solution.ChildrenActivities.Any(a => a.Label == notificationHandler.selectedKey && a.Ordering == 5));
 
             //let's configure email settings
-            var emailActivity = this._solution.ChildrenActions.Single(a => a.Label == notificationHandler.selectedKey && a.Ordering == 5);
+            var emailActivity = this._solution.ChildrenActivities.Single(a => a.Label == notificationHandler.selectedKey && a.Ordering == 5);
             //let's configure this
-            emailActivity = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure?id=" + emailActivity.Id, emailActivity);
+            emailActivity = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "activities/configure?id=" + emailActivity.Id, emailActivity);
             var emailCrateStorage = _crateManager.GetStorage(emailActivity);
 
             var emailControlsCrate = emailCrateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
@@ -248,7 +248,7 @@ namespace terminalDocuSignTests.Integration
             }
 
             //save changes
-            await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/save", emailActivity);
+            await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "activities/save", emailActivity);
 
             //
             //Rename route

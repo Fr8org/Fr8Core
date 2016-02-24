@@ -132,7 +132,7 @@ namespace HubWeb
             {
                 try
                 {
-                    var activityTemplateList = await terminalService.GetAvailableActions(url);
+                    var activityTemplateList = await terminalService.GetAvailableActivities(url);
 
                     foreach (var curItem in activityTemplateList)
                     {

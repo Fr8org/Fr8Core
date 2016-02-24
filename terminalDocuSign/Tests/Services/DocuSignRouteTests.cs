@@ -29,7 +29,7 @@ namespace terminalDocuSign.Tests.Services
         }
 
         [Test, Category("DocuSignRoute_CreateRoute")]
-        public async Task CreateRoute_InitialAuthenticationSuccessful_MonitorAllDocuSignEvents_RouteCreatedWithTwoActions()
+        public async Task CreateRoute_InitialAuthenticationSuccessful_MonitorAllDocuSignEvents_RouteCreatedWithTwoActivities()
         {
             //Act
             await _curDocuSignRoute.CreateRoute_MonitorAllDocuSignEvents(FixtureData.TestDeveloperAccount().Id, null);

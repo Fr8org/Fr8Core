@@ -67,7 +67,7 @@ namespace HubWeb
         {
             return new Type[] {
                     typeof(ActionListController),
-                    typeof(ActionsController),
+                    typeof(ActivitiesController),
                     typeof(AlarmsController),
                     typeof(AuthenticationController),
                     typeof(ConfigurationController),

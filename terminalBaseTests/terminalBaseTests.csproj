@@ -140,11 +140,11 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseClasses\BaseTerminalActionTests.cs" />
+    <Compile Include="BaseClasses\BaseTerminalActivityTests.cs" />
     <Compile Include="BaseClasses\BaseTerminalControllerTests.cs" />
     <Compile Include="Fixtures\FixtureData - CoreSelfHostFactory.cs" />
     <Compile Include="Fixtures\FixtureData - HandleFr8Request.cs" />
-    <Compile Include="Fixtures\terminalActionMock_v1.cs" />
+    <Compile Include="Fixtures\terminalActivityMock_v1.cs" />
     <Compile Include="Infrastructure\BaseTerminalEventTests.cs" />
     <Compile Include="Infrastructure\DefaultHubCommunicatorTests.cs" />
     <Compile Include="Infrastructure\TestBaseTerminalEvent.cs" />

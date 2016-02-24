@@ -12,8 +12,8 @@ namespace terminalDropboxTests.Integration
         [Explicit]
         public class Terminal_Discover_v1Tests : BaseTerminalIntegrationTest
     {
-            private const int ActionCount = 1;
-            private const string Get_File_List_Action_Name = "Get_File_List";
+            private const int ActivityCount = 1;
+            private const string Get_File_List_Activity_Name = "Get_File_List";
 
 
             public override string TerminalName
@@ -22,7 +22,7 @@ namespace terminalDropboxTests.Integration
             }
 
             [Test, CategoryAttribute("Integration.terminalDropbox")]
-            public async Task Discover_Check_Returned_Actions()
+            public async Task Discover_Check_Returned_Activities()
             {
                 //Arrange
                 var discoverUrl = GetTerminalDiscoverUrl();
@@ -32,10 +32,10 @@ namespace terminalDropboxTests.Integration
 
                 //Assert
                 Assert.IsNotNull(terminalDiscoverResponse, "Terminal Dropbox discovery did not happen.");
-                Assert.IsNotNull(terminalDiscoverResponse.Actions, "Dropbox terminal actions were not loaded");
-                Assert.AreEqual(ActionCount, terminalDiscoverResponse.Actions.Count,
+                Assert.IsNotNull(terminalDiscoverResponse.Activities, "Dropbox terminal actions were not loaded");
+                Assert.AreEqual(ActivityCount, terminalDiscoverResponse.Activities.Count,
                 "Not all terminal Dropbox actions were loaded");
-                Assert.AreEqual(terminalDiscoverResponse.Actions.Any(a => a.Name == Get_File_List_Action_Name), true,"Action " + Get_File_List_Action_Name + " was not loaded");
+                Assert.AreEqual(terminalDiscoverResponse.Activities.Any(a => a.Name == Get_File_List_Activity_Name), true,"Action " + Get_File_List_Activity_Name + " was not loaded");
 
             }
         }

@@ -240,13 +240,13 @@ namespace Hub.Services
             }
         }
         
-        public async Task<IList<ActivityTemplateDO>> GetAvailableActions(string uri)
+        public async Task<IList<ActivityTemplateDO>> GetAvailableActivities(string uri)
         {
             Initialize();
 
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
             var standardFr8TerminalCM = await restClient.GetAsync<StandardFr8TerminalCM>(new Uri(uri, UriKind.Absolute));
-            return Mapper.Map<IList<ActivityTemplateDO>>(standardFr8TerminalCM.Actions);
+            return Mapper.Map<IList<ActivityTemplateDO>>(standardFr8TerminalCM.Activities);
         }
         
         public async Task<TerminalDO> GetTerminalByPublicIdentifier(string terminalId)

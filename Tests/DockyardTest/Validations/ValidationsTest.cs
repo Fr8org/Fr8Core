@@ -13,7 +13,7 @@ namespace DockyardTest.Validations
         public void Validations_ValidateDTOWithValidString()
         {
             const string availableActions = "{'type_name':'write to azure sql server','version':4.3}";
-            var result = TerminalBase.Infrastructure.Validations.ValidateDtoString<ActionTypeListDTO>(availableActions);
+            var result = TerminalBase.Infrastructure.Validations.ValidateDtoString<ActivityTypeListDTO>(availableActions);
 
             Assert.IsTrue(result);
         }
@@ -23,7 +23,7 @@ namespace DockyardTest.Validations
         public void Validations_ValidateDTOWithInvalidString()
         {
             const string availableActions = "some invalid string";
-            TerminalBase.Infrastructure.Validations.ValidateDtoString<ActionTypeListDTO>(availableActions);
+            TerminalBase.Infrastructure.Validations.ValidateDtoString<ActivityTypeListDTO>(availableActions);
         }
     }
 }
