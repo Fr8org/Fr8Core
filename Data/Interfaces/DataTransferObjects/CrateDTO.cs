@@ -21,6 +21,11 @@ namespace Data.Interfaces.DataTransferObjects
 
         public int ManifestId { get; set; }
 
+        public string ManifestRegistrar
+        {
+            get { return "www.fr8.co/registry"; }
+        }
+
         public ManufacturerDTO Manufacturer { get; set; }
 
         public DateTime CreateTime { get; set; }

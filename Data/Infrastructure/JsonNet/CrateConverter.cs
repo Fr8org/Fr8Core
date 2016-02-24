@@ -50,6 +50,8 @@ namespace Data.Infrastructure.JsonNet
             writer.WriteValue(item.ManifestId);
             writer.WritePropertyName("manufacturer");
             writer.WriteValue(item.Manufacturer);
+            writer.WritePropertyName("manifestRegistrar");
+            writer.WriteValue(item.ManifestRegistrar);
             writer.WritePropertyName("id");
             writer.WriteValue(item.Id);
             writer.WritePropertyName("label");
