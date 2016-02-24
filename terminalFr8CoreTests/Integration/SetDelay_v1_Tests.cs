@@ -191,7 +191,7 @@ namespace terminalFr8CoreTests.Integration
 
 			var configurationControlEvents = configurationControl.Events;
 
-			Assert.IsNull(configurationControlEvents);
+			Assert.IsEmpty(configurationControlEvents);
             Assert.IsNull(configurationControl.Source);
 		}
 	}
