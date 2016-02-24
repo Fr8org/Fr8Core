@@ -32,12 +32,12 @@ namespace terminalGoogleTests.Integration
             var googleTerminalDiscoveryResponse = await HttpGetAsync<StandardFr8TerminalCM>(discoverUrl);
 
             Assert.IsNotNull(googleTerminalDiscoveryResponse, "Terminal Google discovery did not happen.");
-            Assert.IsNotNull(googleTerminalDiscoveryResponse.Actions, "Google terminal does not have actions.");
-            Assert.AreEqual(3, googleTerminalDiscoveryResponse.Actions.Count, "Google terminal expected 3 actions.");
+            Assert.IsNotNull(googleTerminalDiscoveryResponse.Activities, "Google terminal does not have actions.");
+            Assert.AreEqual(3, googleTerminalDiscoveryResponse.Activities.Count, "Google terminal expected 3 actions.");
             Assert.AreEqual("terminalGoogle", googleTerminalDiscoveryResponse.Definition.Name);
-            Assert.AreEqual(googleTerminalDiscoveryResponse.Actions.Any(a => a.Name == "Get_Google_Sheet_Data"), true, "Action Get_Google_Sheet_Data was not loaded");
-            Assert.AreEqual(googleTerminalDiscoveryResponse.Actions.Any(a => a.Name == "Receive_Google_Form"), true, "Action Receive_Google_Form was not loaded");
-            Assert.AreEqual(googleTerminalDiscoveryResponse.Actions.Any(a => a.Name == "Save_In_Google_Sheet"), true, "Action Save_In_Google_Sheet was not loaded");
+            Assert.AreEqual(googleTerminalDiscoveryResponse.Activities.Any(a => a.Name == "Get_Google_Sheet_Data"), true, "Action Get_Google_Sheet_Data was not loaded");
+            Assert.AreEqual(googleTerminalDiscoveryResponse.Activities.Any(a => a.Name == "Receive_Google_Form"), true, "Action Receive_Google_Form was not loaded");
+            Assert.AreEqual(googleTerminalDiscoveryResponse.Activities.Any(a => a.Name == "Save_In_Google_Sheet"), true, "Action Save_In_Google_Sheet was not loaded");
         }
     }
 }

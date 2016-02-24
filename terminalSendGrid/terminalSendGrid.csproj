@@ -208,9 +208,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actions\SendEmailViaSendGrid_v1.cs" />
+    <Compile Include="Activities\SendEmailViaSendGrid_v1.cs" />
     <Compile Include="App_Start\RoutesConfig.cs" />
-    <Compile Include="Controllers\ActionController.cs" />
+    <Compile Include="Controllers\ActivityController.cs" />
     <Compile Include="Controllers\TerminalController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -224,7 +224,7 @@
     <Compile Include="Services\TransportWrapper.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="StructureMapConfiguration.cs" />
-    <Compile Include="Tests\Actions\SendEmailViaSendGrid_v1Tests.cs" />
+    <Compile Include="Tests\Activities\SendEmailViaSendGrid_v1Tests.cs" />
     <Compile Include="Tests\BaseTest.cs" />
     <Compile Include="Tests\Fixtures\FixtureData.cs" />
   </ItemGroup>

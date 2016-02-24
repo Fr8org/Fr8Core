@@ -9,9 +9,9 @@ namespace UtilitiesTesting.Fixtures
 {
     partial class FixtureData
     {
-        public static ActionNameListDTO TestActionNameListDTO1()
+        public static ActivityNameListDTO TestActivityNameListDTO1()
         {
-            return new ActionNameListDTO{ ActionNames = new List<ActionNameDTO>(){FixtureData.TestActionNameDTO1()}};
+            return new ActivityNameListDTO{ ActivityNames = new List<ActivityNameDTO>(){FixtureData.TestActivityNameDTO1()}};
         }
     }
 }

@@ -47,7 +47,7 @@ namespace terminalGoogleTests.Unit
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             Assert.AreEqual(3, crateStorage.Count);
             Assert.IsNotNull(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault());
-            Assert.IsNotNull(crateStorage.CrateContentsOfType<StandardDesignTimeFieldsCM>().SingleOrDefault());
+            Assert.IsNotNull(crateStorage.CrateContentsOfType<FieldDescriptionsCM>().SingleOrDefault());
             Assert.IsNotNull(crateStorage.CrateContentsOfType<EventSubscriptionCM>().SingleOrDefault());
         }
 
@@ -73,7 +73,7 @@ namespace terminalGoogleTests.Unit
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
 
             var standardConfigurationControlsCM = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
-            var standardDesignTimeFieldsCM = crateStorage.CrateContentsOfType<StandardDesignTimeFieldsCM>().SingleOrDefault();
+            var FieldDescriptionsCM = crateStorage.CrateContentsOfType<FieldDescriptionsCM>().SingleOrDefault();
             var eventSubscriptionCM = crateStorage.CrateContentsOfType<EventSubscriptionCM>().SingleOrDefault();
 
             var dropdown = standardConfigurationControlsCM.Controls.Where(s => s.GetType() == typeof(DropDownList)).FirstOrDefault();
@@ -83,7 +83,7 @@ namespace terminalGoogleTests.Unit
             Assert.AreEqual("Available Forms", dropdown.Source.Label);
             Assert.AreEqual(CrateManifestTypes.StandardDesignTimeFields, dropdown.Source.ManifestType);
 
-            Assert.IsNotNull(standardDesignTimeFieldsCM);
+            Assert.IsNotNull(FieldDescriptionsCM);
             Assert.AreEqual(1, crateStorage.Where(s => s.Label == "Available Forms").Count());
 
             Assert.IsNotNull(eventSubscriptionCM);
@@ -110,11 +110,11 @@ namespace terminalGoogleTests.Unit
 
             //Assert
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
-            var standardDesignTimeFieldsCM = crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Where(x => x.Label == "Available Forms").ToArray();
+            var FieldDescriptionsCM = crateStorage.CratesOfType<FieldDescriptionsCM>().Where(x => x.Label == "Available Forms").ToArray();
 
-            Assert.IsNotNull(standardDesignTimeFieldsCM);
-            Assert.Greater(standardDesignTimeFieldsCM.Count(), 0);
-            Assert.Greater(standardDesignTimeFieldsCM.First().Content.Fields.Count(), 0);
+            Assert.IsNotNull(FieldDescriptionsCM);
+            Assert.Greater(FieldDescriptionsCM.Count(), 0);
+            Assert.Greater(FieldDescriptionsCM.First().Content.Fields.Count(), 0);
         }
 
         /// <summary>
@@ -167,7 +167,7 @@ namespace terminalGoogleTests.Unit
         }
 
         [Test, Category("Integration.terminalGoogle")]
-        public async Task Receive_Google_Form_Activate_Returns_ActionDTO()
+        public async Task Receive_Google_Form_Activate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
@@ -188,7 +188,7 @@ namespace terminalGoogleTests.Unit
         }
 
         [Test, Category("Integration.terminalGoogle")]
-        public async Task Receive_Google_Form_Deactivate_Returns_ActionDTO()
+        public async Task Receive_Google_Form_Deactivate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();
@@ -239,7 +239,7 @@ namespace terminalGoogleTests.Unit
             var runUrl = GetTerminalRunUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var activityDTO = fixture.Receive_Google_Form_v1_Run_ActionDTO();
+            var activityDTO = fixture.Receive_Google_Form_v1_Run_ActivityDTO();
 
             var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
 
@@ -267,10 +267,10 @@ namespace terminalGoogleTests.Unit
             //Assert
             var crateStorage = Crate.FromDto(responsePayloadDTO.CrateStorage);
 
-            var standardDesignTimeFieldsCM = crateStorage.CrateContentsOfType<StandardPayloadDataCM>().SingleOrDefault();
+            var FieldDescriptionsCM = crateStorage.CrateContentsOfType<StandardPayloadDataCM>().SingleOrDefault();
 
-            Assert.IsNotNull(standardDesignTimeFieldsCM);
-            var fields = standardDesignTimeFieldsCM.PayloadObjects.SelectMany(s => s.PayloadObject);
+            Assert.IsNotNull(FieldDescriptionsCM);
+            var fields = FieldDescriptionsCM.PayloadObjects.SelectMany(s => s.PayloadObject);
             Assert.Greater(fields.Count(), 0);
         }
     }

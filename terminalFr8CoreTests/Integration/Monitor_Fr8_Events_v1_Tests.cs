@@ -33,7 +33,7 @@ namespace terminalTests.Integration
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActivityDTO = FixtureData.MonitorFr8Event_InitialConfiguration_ActionDTO();
+            var requestActivityDTO = FixtureData.MonitorFr8Event_InitialConfiguration_ActivityDTO();
             var dataDTO = new Fr8DataDTO { ActivityDTO = requestActivityDTO };
             var responseActivityDTO = HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO).Result;
 
@@ -50,7 +50,7 @@ namespace terminalTests.Integration
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActivityDTO = FixtureData.MonitorFr8Event_InitialConfiguration_ActionDTO();
+            var requestActivityDTO = FixtureData.MonitorFr8Event_InitialConfiguration_ActivityDTO();
             var dataDTO = new Fr8DataDTO { ActivityDTO = requestActivityDTO };
             var responseActivityDTO = HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO).Result;
 
@@ -64,7 +64,7 @@ namespace terminalTests.Integration
         public void Run_With_Route_Payload()
         {
             var configureUrl = GetTerminalConfigureUrl();
-            var requestActivityDTO = FixtureData.MonitorFr8Event_InitialConfiguration_ActionDTO();
+            var requestActivityDTO = FixtureData.MonitorFr8Event_InitialConfiguration_ActivityDTO();
             var dataDTO = new Fr8DataDTO { ActivityDTO = requestActivityDTO };
             var responseActivityDTO = HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO).Result;
             var runUrl = GetTerminalRunUrl();

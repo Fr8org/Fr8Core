@@ -88,7 +88,7 @@ namespace terminalFr8CoreTests.Integration
             lstFields.Add(new FieldDTO() { Key = "Customer.CurrentMedicalCondition", Value = "String" });
             AddUpstreamCrate(
                 dataDTO,
-                new StandardDesignTimeFieldsCM(lstFields),
+                new FieldDescriptionsCM(lstFields),
                 "Sql Column Types"
             );
 
@@ -96,7 +96,7 @@ namespace terminalFr8CoreTests.Integration
             lstFields.Add(new FieldDTO() { Key = UtilitiesTesting.Fixtures.FixtureData.TestConnectionString2().Value, Value = "value" });
             AddUpstreamCrate(
                 dataDTO,
-                new StandardDesignTimeFieldsCM(lstFields),
+                new FieldDescriptionsCM(lstFields),
                 "Sql Connection String"
             );
 

@@ -21,7 +21,7 @@ module dockyard.tests.controller {
         var activateInvoker = function (done, dataToSave) {
             $.ajax({
                 type: "POST",
-                url: "http://localhost:53234/plugin_docusign/actions/activate",
+                url: "http://localhost:53234/plugin_docusign/activities/activate",
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(dataToSave),
                 dataType: "json"
@@ -37,7 +37,7 @@ module dockyard.tests.controller {
         var executeInvoker = function (done, dataToSave) {
             $.ajax({
                 type: "POST",
-                url: "http://localhost:53234/plugin_docusign/actions/run",
+                url: "http://localhost:53234/plugin_docusign/activities/run",
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(dataToSave),
                 dataType: "json"
@@ -54,7 +54,7 @@ module dockyard.tests.controller {
         var postInvoker = function (done, dataToSave) {
             $.ajax({
                 type: "POST",
-                url: "http://localhost:53234/plugin_docusign/actions/configure",
+                url: "http://localhost:53234/plugin_docusign/activities/configure",
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(dataToSave),
                 dataType: "json"
@@ -77,7 +77,7 @@ module dockyard.tests.controller {
                     parentRouteNodeId: '89EBF277-0CC4-4D6D-856B-52457F10C686',
                     activityTemplate: null,
                     id: '00000000-0000-0000-0000-000000000000',
-                    childrenActions: null,
+                    childrenActivities: null,
                     ordering: 0
                 };
 

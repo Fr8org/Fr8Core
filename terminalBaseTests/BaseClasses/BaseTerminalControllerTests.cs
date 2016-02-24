@@ -50,7 +50,7 @@ namespace terminalBaseTests.BaseClasses
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public async Task HandleFr8Request_NullActionDTO_ThrowsException()
+        public async Task HandleFr8Request_NullActivityDTO_ThrowsException()
         {
             await _baseTerminalController.HandleFr8Request(terminalName, "", null);
         }
@@ -59,7 +59,7 @@ namespace terminalBaseTests.BaseClasses
         [ExpectedException(typeof(ArgumentException))]
         public async Task HandleFr8Request_NullActivityTemplate_ThrowsException()
         {
-            var activityDTO = Fixture_HandleRequest.terminalMockActionDTO();
+            var activityDTO = Fixture_HandleRequest.terminalMockActivityDTO();
             activityDTO.ActivityTemplate = null;
             var fr8Data = new Fr8DataDTO { ActivityDTO = activityDTO };
             await _baseTerminalController.HandleFr8Request(terminalName, "", fr8Data);
@@ -76,7 +76,7 @@ namespace terminalBaseTests.BaseClasses
         }
 
         [Test]
-        public async Task HandleFr8Request_Configure_ReturnsActionDTO()
+        public async Task HandleFr8Request_Configure_ReturnsActivityDTO()
         {
             var result = await _baseTerminalController.HandleFr8Request(terminalName, "configure", Fixture_HandleRequest.terminalMockFr8DataDTO());
 
@@ -108,7 +108,7 @@ namespace terminalBaseTests.BaseClasses
         }
 
         [Test]
-        public async Task HandleFr8Request_Activate_ReturnsActionDTO()
+        public async Task HandleFr8Request_Activate_ReturnsActivityDTO()
         {
             var result = await _baseTerminalController.HandleFr8Request(terminalName, "activate", Fixture_HandleRequest.terminalMockFr8DataDTO());
 
@@ -122,7 +122,7 @@ namespace terminalBaseTests.BaseClasses
         }
 
         [Test]
-        public async Task HandleFr8Request_Deactivate_ReturnsActionDTO()
+        public async Task HandleFr8Request_Deactivate_ReturnsActivityDTO()
         {
             var result = await _baseTerminalController.HandleFr8Request(terminalName, "deactivate", Fixture_HandleRequest.terminalMockFr8DataDTO());
 
@@ -136,7 +136,7 @@ namespace terminalBaseTests.BaseClasses
         }
 
         [Test]
-        public async Task HandleFr8Request_Othermethod_ReturnsActionDTO()
+        public async Task HandleFr8Request_Othermethod_ReturnsActivityDTO()
         {
             var result = await _baseTerminalController.HandleFr8Request(terminalName, "OtherMethod", Fixture_HandleRequest.terminalMockFr8DataDTO());
 

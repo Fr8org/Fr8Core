@@ -15,9 +15,9 @@ namespace terminalTwilio.Tests.Fixtures
             return new Guid("A1C11E86-9B54-42D4-AA91-605BF46E68E9");
         }
 
-        public static ActivityDO ConfigureTwilioAction()
+        public static ActivityDO ConfigureTwilioActivity()
         {
-            var actionTemplate = TwilioActionTemplateDTO();
+            var actionTemplate = TwilioActivityTemplateDTO();
 
             var activityDO = new ActivityDO
             {
@@ -30,7 +30,7 @@ namespace terminalTwilio.Tests.Fixtures
             return activityDO;
         }
 
-        public static ActivityTemplateDO TwilioActionTemplateDTO()
+        public static ActivityTemplateDO TwilioActivityTemplateDTO()
         {
             return new ActivityTemplateDO
             {
@@ -62,9 +62,9 @@ namespace terminalTwilio.Tests.Fixtures
             };
         }
 
-        public static StandardDesignTimeFieldsCM TestFields()
+        public static FieldDescriptionsCM TestFields()
         {
-            return new StandardDesignTimeFieldsCM
+            return new FieldDescriptionsCM
             {
                 Fields = new List<FieldDTO>
                 {

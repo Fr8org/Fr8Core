@@ -126,6 +126,8 @@ namespace HubWeb.App_Start
                 .Include("~/Content/templates/metronic/assets/admin/layout3/css/layout.css", new CssRewriteUrlTransform())
                 .Include("~/Content/templates/metronic/assets/admin/layout3/css/themes/default.css", new CssRewriteUrlTransform())
                 .Include("~/Content/templates/metronic/assets/admin/layout3/css/custom.css", new CssRewriteUrlTransform())
+                .Include("~/bower_components/angular-ivh-treeview/dist/ivh-treeview.min.css", new CssRewriteUrlTransform())
+                .Include("~/bower_components/angular-ivh-treeview/dist/ivh-treeview-theme-basic.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/dockyard.css", new CssRewriteUrlTransform())
             );
 
@@ -164,6 +166,7 @@ namespace HubWeb.App_Start
                 .Include("~/bower_components/mb-scrollbar/mb-scrollbar.min.js")//not found on cdn
                 .Include("~/bower_components/angular-bootstrap-switch/dist/angular-bootstrap-switch.js")//not found on cdn
                 .Include("~/bower_components/angular-applicationinsights/dist/angular-applicationinsights.min.js")//not found on cdn
+                .Include("~/bower_components/angular-ivh-treeview/dist/ivh-treeview.min.js")//not found on cdn
             );
 
 #if RELEASE || DEV

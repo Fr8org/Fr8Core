@@ -31,13 +31,13 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
         }
 
         /// <summary>
-        /// Posts ActionDTO to "/actions/&lt;actionType&gt;"
+        /// Posts ActionDTO to "/activities/&lt;actionType&gt;"
         /// </summary>
         /// <param name="curActionType">Action Type</param>
         /// <param name="activityDTO">DTO</param>
         /// <remarks>Uses <paramref name="curActionType"/> argument for constructing request uri replacing all space characters with "_"</remarks>
         /// <returns></returns>
-        public async Task<TResponse> CallActionAsync<TResponse>(string curActionType, Fr8DataDTO dataDTO, string correlationId)
+        public async Task<TResponse> CallActivityAsync<TResponse>(string curActionType, Fr8DataDTO dataDTO, string correlationId)
         {
             if (dataDTO == null)
             {
@@ -59,7 +59,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
 
 
             var actionName = Regex.Replace(curActionType, @"[^-_\w\d]", "_");
-            var requestUri = new Uri(string.Format("actions/{0}", actionName), UriKind.Relative);
+            var requestUri = new Uri(string.Format("activities/{0}", actionName), UriKind.Relative);
             if (terminal == null || string.IsNullOrEmpty(terminal.Endpoint))
             {
                 _logger.ErrorFormat("Terminal record not found for activityTemplate: {0}. Throwing exception.", dataDTO.ActivityDTO.ActivityTemplate.Name);

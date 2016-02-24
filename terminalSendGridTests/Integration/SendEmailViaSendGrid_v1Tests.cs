@@ -22,7 +22,7 @@ namespace terminalSendGridTests.Integration
     [Explicit]
     public class SendEmailViaSendGrid_v1Tests : BaseTerminalIntegrationTest
     {
-        ActivityDTO actionDTOInit = new ActivityDTO();
+        ActivityDTO activityDTOInit = new ActivityDTO();
 
         public override string TerminalName
         {
@@ -53,9 +53,9 @@ namespace terminalSendGridTests.Integration
             Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
-            actionDTOInit = responseActionDTO;
+            activityDTOInit = responseActionDTO;
             Assert.IsNotNull(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault());
-            Assert.AreEqual(1, crateStorage.CrateContentsOfType<StandardDesignTimeFieldsCM>().Count());
+            Assert.AreEqual(1, crateStorage.CrateContentsOfType<FieldDescriptionsCM>().Count());
 
             var standardConfigurationControlCM = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>();
             Assert.AreEqual(1, standardConfigurationControlCM.Where(w => w.FindByName("EmailAddress") != null).Count());
@@ -96,7 +96,7 @@ namespace terminalSendGridTests.Integration
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
 
-            Assert.AreEqual(1, crateStorage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Terminal-Provided Fields").Count());
+            Assert.AreEqual(1, crateStorage.CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "Upstream Terminal-Provided Fields").Count());
         }
 
         [Test, Category("Integration.terminalSendGrid")]
@@ -165,7 +165,7 @@ namespace terminalSendGridTests.Integration
         }
 
         [Test, Category("Integration.terminalSendGrid")]
-        public async Task SendEmailViaSendGrid_Activate_Returns_ActionDTO()
+        public async Task SendEmailViaSendGrid_Activate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
@@ -186,7 +186,7 @@ namespace terminalSendGridTests.Integration
         }
 
         [Test, Category("Integration.terminalSendGrid")]
-        public async Task SendEmailViaSendGrid_Deactivate_Returns_ActionDTO()
+        public async Task SendEmailViaSendGrid_Deactivate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();

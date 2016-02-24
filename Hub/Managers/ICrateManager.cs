@@ -33,10 +33,10 @@ namespace Hub.Managers
         Crate CreateAuthenticationCrate(string label, AuthenticationMode mode);
 
         Crate<ManifestDescriptionCM> CreateManifestDescriptionCrate(string label, string name, string id, AvailabilityType availability);
-        Crate<StandardDesignTimeFieldsCM> CreateDesignTimeFieldsCrate(string label, params FieldDTO[] fields);
-        Crate<StandardDesignTimeFieldsCM> CreateDesignTimeFieldsCrate(string label, List<FieldDTO> fields);
-        Crate<StandardDesignTimeFieldsCM> CreateDesignTimeFieldsCrate(string label, List<FieldDTO> fields, AvailabilityType availability);
-        Crate<StandardDesignTimeFieldsCM> CreateDesignTimeFieldsCrate(string label, AvailabilityType availability, params FieldDTO[] fields);
+        Crate<FieldDescriptionsCM> CreateDesignTimeFieldsCrate(string label, params FieldDTO[] fields);
+        Crate<FieldDescriptionsCM> CreateDesignTimeFieldsCrate(string label, List<FieldDTO> fields);
+        Crate<FieldDescriptionsCM> CreateDesignTimeFieldsCrate(string label, List<FieldDTO> fields, AvailabilityType availability);
+        Crate<FieldDescriptionsCM> CreateDesignTimeFieldsCrate(string label, AvailabilityType availability, params FieldDTO[] fields);
         Crate<StandardConfigurationControlsCM> CreateStandardConfigurationControlsCrate(string label, params ControlDefinitionDTO[] controls);
         Crate CreateStandardEventReportCrate(string label, EventReportCM eventReport);
         Crate CreateStandardEventSubscriptionsCrate(string label, string manufacturer, params string[] subscriptions);
@@ -49,7 +49,7 @@ namespace Hub.Managers
         OperationalStateCM GetOperationalState(PayloadDTO payloadDTO);
         IEnumerable<FieldDTO> GetFields(IEnumerable<Crate> crates);
         IEnumerable<string> GetLabelsByManifestType(IEnumerable<Crate> crates, string manifestType);
-        StandardDesignTimeFieldsCM MergeContentFields(List<Crate<StandardDesignTimeFieldsCM>> curCrates);
+        FieldDescriptionsCM MergeContentFields(List<Crate<FieldDescriptionsCM>> curCrates);
         T GetContentType<T>(string crate) where T : class;
     }
 }

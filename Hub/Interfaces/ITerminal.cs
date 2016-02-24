@@ -9,7 +9,7 @@ namespace Hub.Interfaces
     {
         IEnumerable<TerminalDO> GetAll();
 
-        Task<IList<ActivityTemplateDO>> GetAvailableActions(string uri);
+        Task<IList<ActivityTemplateDO>> GetAvailableActivities(string uri);
 
         TerminalDO GetByKey(int terminalId);
         TerminalDO RegisterOrUpdate(TerminalDO terminalDo);

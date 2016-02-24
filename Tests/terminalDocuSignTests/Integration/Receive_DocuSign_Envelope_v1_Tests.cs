@@ -19,7 +19,7 @@ namespace terminalDocuSignTests.Integration
     [Explicit]
     public class Receive_DocuSign_Envelope_v1_Tests : BaseTerminalIntegrationTest
     {
-        ActivityDTO actionDTODesignFields;
+        ActivityDTO activityDTODesignFields;
 
         public override string TerminalName
         {
@@ -69,10 +69,10 @@ namespace terminalDocuSignTests.Integration
             
             List<FieldDTO> fieldDTO = new List<FieldDTO>();
             fieldDTO.Add(new FieldDTO() { Key = "TemplateId", Value = "6ef29903-e405-4a24-8b92-a3a3ae8d1824" });
-            StandardDesignTimeFieldsCM standardDesignFieldsCM = new StandardDesignTimeFieldsCM();
+            FieldDescriptionsCM standardDesignFieldsCM = new FieldDescriptionsCM();
             standardDesignFieldsCM.Fields = fieldDTO;
 
-            base.AddUpstreamCrate<StandardDesignTimeFieldsCM>(dataDTO, standardDesignFieldsCM);
+            base.AddUpstreamCrate<FieldDescriptionsCM>(dataDTO, standardDesignFieldsCM);
 
             //Act
             var responseActionDTO =
@@ -89,10 +89,10 @@ namespace terminalDocuSignTests.Integration
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             Assert.AreEqual(2, crateStorage.Count);
             Assert.IsNotNull(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault());
-            Assert.IsNotNull(crateStorage.CrateContentsOfType<StandardDesignTimeFieldsCM>().SingleOrDefault());
+            Assert.IsNotNull(crateStorage.CrateContentsOfType<FieldDescriptionsCM>().SingleOrDefault());
 
             //Assign result actiondto to be used in RUN
-            actionDTODesignFields = responseActionDTO;
+            activityDTODesignFields = responseActionDTO;
         }
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace terminalDocuSignTests.Integration
 
             var runUrl = GetTerminalRunUrl();
 
-            var activityDTO = actionDTODesignFields;
+            var activityDTO = activityDTODesignFields;
             var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
             AddPayloadCrate(
                 dataDTO,
@@ -153,7 +153,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async Task Receive_DocuSign_Envelope_Activate_Returns_ActionDTO()
+        public async Task Receive_DocuSign_Envelope_Activate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
@@ -174,7 +174,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async Task Receive_DocuSign_Envelope_Deactivate_Returns_ActionDTO()
+        public async Task Receive_DocuSign_Envelope_Deactivate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();
