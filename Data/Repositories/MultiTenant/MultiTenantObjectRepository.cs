@@ -386,7 +386,6 @@ namespace Data.Repositories
         //instantiate object from MTData
         private T MapMTDataToManifest<T>(Entities.MT_Data data, Entities.MT_Object correspondingDTObject)
         {
-
             var correspondingDTFields = correspondingDTObject.Fields;
             var objMTType = correspondingDTObject.MT_FieldType;
             object obj = Activator.CreateInstance(objMTType.AssemblyName, objMTType.TypeName).Unwrap();
@@ -395,26 +394,29 @@ namespace Data.Repositories
 
             if (correspondingDTFields != null)
             {
-                foreach (var DTField in correspondingDTFields)
+                foreach (var dtField in correspondingDTFields)
                 {
-                    var correspondingProperty = properties.FirstOrDefault(a => a.Name == DTField.Name);
-                    var valueCell = dataValueCells.FirstOrDefault(a => a.Name == "Value" + DTField.FieldColumnOffset);
+                    var correspondingProperty = properties.FirstOrDefault(a => a.Name == dtField.Name);
+                    var valueCell = dataValueCells.FirstOrDefault(a => a.Name == "Value" + dtField.FieldColumnOffset);
                     Type manifestPropType;
 
-                    bool isNullable = TryGetNullableType(correspondingProperty.PropertyType, out manifestPropType);
-                    object val = null;
+                    if (valueCell == null || correspondingProperty == null)
+                    {
+                        continue;
+                    }
 
-                    val = valueCell.GetValue(data);
+                    bool isNullable = TryGetNullableType(correspondingProperty.PropertyType, out manifestPropType);
+                    var val = valueCell.GetValue(data);
 
                     if (IsOfPrimitiveType(manifestPropType))
                     {
                         if (val != null)
                         {
-                            val  = Convert.ChangeType(val, manifestPropType, CultureInfo.InvariantCulture);
+                            val = Convert.ChangeType(val, manifestPropType, CultureInfo.InvariantCulture);
 
                             if (isNullable)
                             {
-                                val = Activator.CreateInstance(typeof(Nullable<>).MakeGenericType(manifestPropType), new object[] {val});
+                                val = Activator.CreateInstance(typeof (Nullable<>).MakeGenericType(manifestPropType), val);
                             }
                         }
 
@@ -425,12 +427,12 @@ namespace Data.Repositories
                         correspondingProperty.SetValue(
                             obj,
                             ConvertValueFromJson(correspondingProperty.PropertyType, val)
-                        );
+                            );
                     }
                 }
             }
 
-            return (T)obj;
+            return (T) obj;
         }
 
         private object ConvertValueFromJson(Type type, object sourceValue)

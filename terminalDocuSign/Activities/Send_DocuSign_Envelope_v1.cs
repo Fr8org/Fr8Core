@@ -22,6 +22,7 @@ using terminalDocuSign.Services;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using TerminalBase.Infrastructure.Behaviors;
+using Newtonsoft.Json.Linq;
 
 namespace terminalDocuSign.Actions
 {
@@ -67,33 +68,6 @@ namespace terminalDocuSign.Actions
             curEnvelope.EmailSubject = "Test Message from Fr8";
             curEnvelope.Status = "sent";
 
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                var mappingBehavior = new TextSourceMappingBehavior(
-                    crateStorage,
-                    "Mapping"
-                );
-
-                var payloadCrateStorage = CrateManager.FromDto(payloadCrates.CrateStorage);
-                var values = mappingBehavior.GetValues(payloadCrateStorage);
-
-                var valuesToAdd = new List<TextCustomField>();                
-                foreach (var pair in values.Where(x => !string.IsNullOrEmpty(x.Value)))
-                {
-                    valuesToAdd.Add(new TextCustomField()
-                    {
-                        name = pair.Key,
-                        value = pair.Value
-                    });
-                }
-
-                // curEnvelope.AddCustomFields(valuesToAdd);
-                curEnvelope.CustomFields = new CustomFields()
-                {
-                    textCustomFields = valuesToAdd.ToArray()
-                };
-            }
-
             var result = curEnvelope.Create();
 
             return Success(payloadCrates);
@@ -114,28 +88,54 @@ namespace terminalDocuSign.Actions
             return result;
         }
 
-        private Envelope AddTemplateData(ActivityDO activityDO, PayloadDTO payloadCrates, Envelope curEnvelope)
+        private Envelope AddTemplateData(ActivityDO curActivityDO, PayloadDTO payloadCrates, Envelope curEnvelope)
         {
-            var curTemplateId = ExtractTemplateId(activityDO);
+            var curTemplateId = ExtractTemplateId(curActivityDO);
             var payloadCrateStorage = CrateManager.GetStorage(payloadCrates);
-            var configurationControls = GetConfigurationControls(activityDO);
+            var configurationControls = GetConfigurationControls(curActivityDO);
             var recipientField = (TextSource)GetControl(configurationControls, "Recipient", ControlTypes.TextSource);
-
-            
+            var recipientNameField = (TextSource)GetControl(configurationControls, "RecipientName", ControlTypes.TextSource);
 
             var curRecipientAddress = recipientField.GetValue(payloadCrateStorage, true);
+            var curRecipientName = recipientNameField.GetValue(payloadCrateStorage, true);
 
             curEnvelope.TemplateId = curTemplateId;
-            curEnvelope.TemplateRoles = new TemplateRole[]
-            {
-                new TemplateRole()
-                {
-                    email = curRecipientAddress,
-                    name = curRecipientAddress,
-                    roleName = "Signer"   // need to fetch this
-                },
-            };
 
+            var templateRoles = new TemplateRole[]
+            {
+                    new TemplateRole()
+                    {
+                        email = curRecipientAddress,
+                        name = curRecipientName,
+                        roleName = "Signer"   // need to fetch this
+                    },
+            };  
+
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            {
+                var mappingBehavior = new TextSourceMappingBehavior(
+                    crateStorage,   
+                    "Mapping"
+                );
+
+                var values = mappingBehavior.GetValues(payloadCrateStorage);
+
+                var valuesToAdd = new List<RoleTextTab>();
+                var nonEmptyValues = values.Where(x => !string.IsNullOrEmpty(x.Value));
+                foreach (var pair in nonEmptyValues)
+                {
+                    valuesToAdd.Add(new RoleTextTab()
+                    {
+                        tabLabel = pair.Key,
+                        value = pair.Value,
+                    });
+                }
+                curEnvelope.TemplateRoles = templateRoles;
+                curEnvelope.TemplateRoles[0].tabs = new RoleTabs();
+                curEnvelope.TemplateRoles[0].tabs.textTabs = valuesToAdd.ToArray();
+            }
+
+            curEnvelope.TemplateRoles = templateRoles;
             return curEnvelope;
         }
 
@@ -259,7 +259,7 @@ namespace terminalDocuSign.Actions
                 var allFields = new List<string>();
                 allFields.AddRange(userDefinedFields.Select(x => x.Key));
                 allFields.AddRange(standartFields.Select(x => x.Key));
-                
+
                 var mappingBehavior = new TextSourceMappingBehavior(
                     crateStorage,
                     "Mapping"
@@ -295,6 +295,11 @@ namespace terminalDocuSign.Actions
                 new TextSource("Email Address", "Upstream Terminal-Provided Fields", "Recipient")
                 {
                     selectedKey = "Recipient",
+                    ValueSource = "upstream"
+                },
+               new TextSource("Recipient Name", "Upstream Terminal-Provided Fields", "RecipientName")
+                {
+                    selectedKey = "RecipientName",
                     ValueSource = "upstream"
                 }
             };
