@@ -78,7 +78,7 @@ namespace terminalFr8Core.Actions
             return await Task.FromResult<ICrateStorage>(null);
         }
 
-        public override async Task<PayloadDTO> ChildrenExecuted(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public override async Task<PayloadDTO> ExecuteChildActivities(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var curPayloadDTO = await GetPayload(curActivityDO, containerId);
             var payloadStorage = CrateManager.GetStorage(curPayloadDTO);
