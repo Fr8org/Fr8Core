@@ -77,21 +77,19 @@ namespace terminalDocuSign.Actions
                 var payloadCrateStorage = CrateManager.FromDto(payloadCrates.CrateStorage);
                 var values = mappingBehavior.GetValues(payloadCrateStorage);
 
-                var valuesToAdd = new List<TextCustomField>();                
+                var valuesToAdd = new List<RoleTextTab>();
                 foreach (var pair in values.Where(x => !string.IsNullOrEmpty(x.Value)))
                 {
-                    valuesToAdd.Add(new TextCustomField()
+                    valuesToAdd.Add(new RoleTextTab()
                     {
-                        name = pair.Key,
+                        tabLabel = pair.Key,
                         value = pair.Value
                     });
                 }
 
                 // curEnvelope.AddCustomFields(valuesToAdd);
-                curEnvelope.CustomFields = new CustomFields()
-                {
-                    textCustomFields = valuesToAdd.ToArray()
-                };
+                curEnvelope.TemplateRoles[0].tabs = new RoleTabs() { };
+                curEnvelope.TemplateRoles[0].tabs.textTabs = valuesToAdd.ToArray();
             }
 
             var result = curEnvelope.Create();
