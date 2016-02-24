@@ -36,6 +36,7 @@ namespace terminalDocuSign.Actions
         private const string SolutionName = "Generate DocuSign Report";
         private const double SolutionVersion = 1.0;
         private const string TerminalName = "DocuSign";
+        private const string SolutionBody = @"<p>This is Generate DocuSign Report solution action</p>";
 
         // Here in this action we have query builder control to build queries against docusign API and out mt database.
         // Docusign and MT DB have different set of fileds and we want to provide ability to search by any field.
@@ -189,7 +190,7 @@ namespace terminalDocuSign.Actions
             return Success(payload);
         }
 
-        public override async Task<PayloadDTO> ChildrenExecuted(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public override async Task<PayloadDTO> ExecuteChildActivities(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payload = await GetPayload(curActivityDO, containerId);
 
@@ -661,13 +662,7 @@ namespace terminalDocuSign.Actions
         {
             if (curDocumentation.Contains("MainPage"))
             {
-                var curSolutionPage = new SolutionPageDTO
-                {
-                    Name = SolutionName,
-                    Version = SolutionVersion,
-                    Terminal = TerminalName,
-                    Body = @"<p>This powerful report generator extends the capabilities of the standard DocuSign reporting tools. Search by Recipient or Template and build powerful queries with a few mouse clicks</p>"
-                };
+                var curSolutionPage = GetDefaultDocumentation(SolutionName, SolutionVersion, TerminalName, SolutionBody);
                 return Task.FromResult(curSolutionPage);
             }
             if (curDocumentation.Contains("HelpMenu"))
