@@ -73,19 +73,25 @@ namespace HubWeb.Controllers.Api
         }
 
         [HttpPost]
-        public IHttpActionResult TerminalsByActions(IEnumerable<Guid> actionIds)
+        public IHttpActionResult TerminalsByActivities(IEnumerable<Guid> actionIds)
         {
             var result = new List<ManageAuthToken_Terminal_Activity>();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var accountId = User.Identity.GetUserId();
-                var authTokens = Authorization.GetAllTokens(accountId);
+                var authTokens = Authorization.GetAllTokens(accountId).ToArray();
 
                 foreach (Guid actionId in actionIds)
                 {
-                    var activity = Activity.GetById(uow, actionId);
-                    var template = _activityTemplate.GetByKey(activity.ActivityTemplateId.Value);
+                    var activity =  uow.PlanRepository.GetActivityQueryUncached().FirstOrDefault(x => x.Id == actionId);
+
+                    if (activity == null)
+                    {
+                        continue;
+                    }
+
+                    var template = _activityTemplate.GetByKey(activity.ActivityTemplateId);
                     result.Add(
                         new ManageAuthToken_Terminal_Activity()
                         {

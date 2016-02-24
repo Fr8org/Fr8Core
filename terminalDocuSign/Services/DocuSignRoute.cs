@@ -37,6 +37,7 @@ namespace terminalDocuSign.Services
             _activity = ObjectFactory.GetInstance<IActivity>();
             _hubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
+            _hubCommunicator.Configure("terminalDocuSign");
         }
 
         /// <summary>
@@ -45,7 +46,7 @@ namespace terminalDocuSign.Services
         public async Task CreateRoute_MonitorAllDocuSignEvents(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
         {
             var existingRoutes = (await _hubCommunicator.GetPlansByName("MonitorAllDocuSignEvents", curFr8UserId)).ToList();
-            existingRoutes = existingRoutes.Where(r => r.Tag == "docusign-auto-monitor-plan-"+authTokenDTO.ExternalAccountId).ToList();
+            existingRoutes = existingRoutes.Where(r => r.Tag == ("docusign-auto-monitor-plan-" + curFr8UserId)).ToList();
             if (existingRoutes.Any())
             {
                 //hmmmm which one belongs to us?
@@ -64,15 +65,15 @@ namespace terminalDocuSign.Services
                 Name = "MonitorAllDocuSignEvents",
                 Description = "MonitorAllDocuSignEvents",
                 RouteState = RouteState.Active,
-                Tag = "docusign-auto-monitor-route-"+authTokenDTO.ExternalAccountId
+                Tag = "docusign-auto-monitor-plan-" + curFr8UserId
             };
             var monitorDocusignRoute = await _hubCommunicator.CreatePlan(emptyMonitorRoute, curFr8UserId);
             var activityTemplates = await _hubCommunicator.GetActivityTemplates(null, curFr8UserId);
             var recordDocusignEventsTemplate = GetActivityTemplate(activityTemplates, "Record_DocuSign_Events");
             var storeMTDataTemplate = GetActivityTemplate(activityTemplates, "SaveToFr8Warehouse");
-            await _hubCommunicator.CreateAndConfigureActivity(recordDocusignEventsTemplate.Id, "Record_DocuSign_Events",
+            await _hubCommunicator.CreateAndConfigureActivity(recordDocusignEventsTemplate.Id, 
                 curFr8UserId, "Record DocuSign Events", 1, monitorDocusignRoute.StartingSubrouteId, false, new Guid(authTokenDTO.Id));
-            var storeMTDataActivity = await _hubCommunicator.CreateAndConfigureActivity(storeMTDataTemplate.Id, "Save To Fr8 Warehouse",
+            var storeMTDataActivity = await _hubCommunicator.CreateAndConfigureActivity(storeMTDataTemplate.Id, 
                 curFr8UserId, "Save To Fr8 Warehouse", 2, monitorDocusignRoute.StartingSubrouteId);
             SetSelectedCrates(storeMTDataActivity);
             //save this
@@ -83,9 +84,9 @@ namespace terminalDocuSign.Services
 
         private void SetSelectedCrates(ActivityDTO storeMTDataActivity)
         {
-            using (var updater = _crateManager.UpdateStorage(() => storeMTDataActivity.CrateStorage))
+            using (var crateStorage = _crateManager.UpdateStorage(() => storeMTDataActivity.CrateStorage))
             {
-                var configControlCM = updater.CrateStorage
+                var configControlCM = crateStorage
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
                     .First();
 
@@ -132,20 +133,6 @@ namespace terminalDocuSign.Services
             }
 
             return template;
-        }
-
-        private PlanDO GetExistingPlan(IUnitOfWork uow, string routeName, string fr8AccountEmail)
-        {
-            if (uow.PlanRepository.GetQuery().Any(existingRoute =>
-                existingRoute.Name.Equals(routeName) &&
-                existingRoute.Fr8Account.Email.Equals(fr8AccountEmail)))
-            {
-                return uow.PlanRepository.GetQuery().First(existingRoute =>
-                    existingRoute.Name.Equals(routeName) &&
-                    existingRoute.Fr8Account.Email.Equals(fr8AccountEmail));
-            }
-
-            return null;
         }
     }
 }

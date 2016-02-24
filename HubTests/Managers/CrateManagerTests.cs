@@ -134,7 +134,7 @@ namespace HubTests.Managers
         {
             var crate = Crate.FromContent("test", TestManifest());
 
-            crate.Get<StandardDesignTimeFieldsCM>();
+            crate.Get<FieldDescriptionsCM>();
         }
 
         [Test]
@@ -142,7 +142,7 @@ namespace HubTests.Managers
         {
             var crate = Crate.FromContent("test", TestManifest());
 
-            Assert.IsTrue(crate.IsOfType<StandardDesignTimeFieldsCM>());
+            Assert.IsTrue(crate.IsOfType<FieldDescriptionsCM>());
         }
 
         [Test]
@@ -168,7 +168,7 @@ namespace HubTests.Managers
                     x.Id == dto.Id &&
                     x.ManifestType.Type == dto.ManifestType &&
                     x.ManifestType.Id == dto.ManifestId &&
-                    IsEquals(x.Get<StandardDesignTimeFieldsCM>(), dto.Contents.ToObject<StandardDesignTimeFieldsCM>())));
+                    IsEquals(x.Get<FieldDescriptionsCM>(), dto.Contents.ToObject<FieldDescriptionsCM>())));
             }
         }
 
@@ -214,8 +214,8 @@ namespace HubTests.Managers
             Assert.AreEqual(crate.Label, crateDto.Label);
             Assert.AreEqual(crate.ManifestType.Type, crateDto.ManifestType);
             Assert.AreEqual(crate.ManifestType.Id, crateDto.ManifestId);
-            Assert.AreEqual(crate.Get<StandardDesignTimeFieldsCM>().Fields[0].Key, "key");
-            Assert.AreEqual(crate.Get<StandardDesignTimeFieldsCM>().Fields[0].Value, "value");
+            Assert.AreEqual(crate.Get<FieldDescriptionsCM>().Fields[0].Key, "key");
+            Assert.AreEqual(crate.Get<FieldDescriptionsCM>().Fields[0].Value, "value");
         }
 
         [Test]
@@ -228,13 +228,13 @@ namespace HubTests.Managers
             var newCrateStorageDto = GetKnownManifestsStorageDto("newValue");
             var newCrateStorage = _crateManager.FromDto(newCrateStorageDto);
 
-            using (var updater = _crateManager.UpdateStorage(activityDto))
+            using (var crateStorage = _crateManager.GetUpdatableStorage(activityDto))
             {
-                updater.CrateStorage.Clear();
+                crateStorage.Clear();
 
                 foreach (var crates in newCrateStorage)
                 {
-                    updater.CrateStorage.Add(crates);
+                    crateStorage.Add(crates);
                 }
             }
 
@@ -273,13 +273,13 @@ namespace HubTests.Managers
             var newCrateStorageDto = GetKnownManifestsStorageDto("newValue");
             var newCrateStorage = _crateManager.FromDto(newCrateStorageDto);
 
-            using (var updater = _crateManager.UpdateStorage(actionDo))
+            using (var crateStorage = _crateManager.GetUpdatableStorage(actionDo))
             {
-                updater.CrateStorage.Clear();
+                crateStorage.Clear();
 
                 foreach (var crates in newCrateStorage)
                 {
-                    updater.CrateStorage.Add(crates);
+                    crateStorage.Add(crates);
                 }
             }
 
@@ -299,7 +299,7 @@ namespace HubTests.Managers
             }
         }
 
-        private static bool IsEquals(StandardDesignTimeFieldsCM a, StandardDesignTimeFieldsCM b)
+        private static bool IsEquals(FieldDescriptionsCM a, FieldDescriptionsCM b)
         {
             if (ReferenceEquals(a, b))
             {

@@ -54,9 +54,9 @@ namespace terminalFr8CoreTests.Unit
         }
 
         [Test]
-        public async void Evaluate_IsValidJSONResponse_For_InitialRequest()
+        public async Task Evaluate_IsValidJSONResponse_For_InitialRequest()
         {
-            ActivityDTO curActionDTO = FixtureData.TestActionDTOSelectFr8ObjectInitial();
+            ActivityDTO curActionDTO = FixtureData.TestActivityDTOSelectFr8ObjectInitial();
             ActivityDO curActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
             AuthorizationTokenDO curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
             var activity = await select_Fr8_Object_v1.Configure(curActivityDO,curAuthTokenDO);
@@ -66,9 +66,9 @@ namespace terminalFr8CoreTests.Unit
         }
 
         [Test]
-        public async void Evaluate_IsValidJSONResponse_For_FollowupRequest_RouteSelected()
+        public async Task Evaluate_IsValidJSONResponse_For_FollowupRequest_RouteSelected()
         {
-            ActivityDTO curActionDTO = FixtureData.TestActionDTOSelectFr8ObjectFollowup("19");
+            ActivityDTO curActionDTO = FixtureData.TestActivityDTOSelectFr8ObjectFollowup("19");
             ActivityDO curActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
             AuthorizationTokenDO curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
             var activity = await select_Fr8_Object_v1.Configure(curActivityDO, curAuthTokenDO);
@@ -78,9 +78,9 @@ namespace terminalFr8CoreTests.Unit
         }
 
         [Test]
-        public async void Evaluate_IsValidJSONResponse_For_FollowupRequest_ContainerSelected()
+        public async Task Evaluate_IsValidJSONResponse_For_FollowupRequest_ContainerSelected()
         {
-            ActivityDTO curActionDTO = FixtureData.TestActionDTOSelectFr8ObjectFollowup("21");
+            ActivityDTO curActionDTO = FixtureData.TestActivityDTOSelectFr8ObjectFollowup("21");
             ActivityDO curActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
             AuthorizationTokenDO curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
             var activity = await select_Fr8_Object_v1.Configure(curActivityDO, curAuthTokenDO);

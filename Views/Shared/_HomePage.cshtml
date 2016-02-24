@@ -16,8 +16,8 @@
         i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
             (i[r].q = i[r].q || []).push(arguments)
         }, i[r].l = 1 * new Date(); a = s.createElement(o),
-                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+                m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
 
     ga('create', 'UA-52048536-1', 'kwasant.com');
     ga('send', 'pageview');
@@ -107,152 +107,164 @@
     </script>
 </head>
 <body>
-<!--[if lt IE 7]>
-<p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-<![endif]-->
-<div id="fullpage">
-<div id="wrap">
+    <!--[if lt IE 7]>
+    <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+    <div id="fullpage">
+        <div id="wrap">
 
-    <header id="site-header" class="container-fluid">
-        <div class="navbar navbar-default navbar-fixed-top">
-            <div class="container">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse" aria-expanded="false">
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    
-    <!------SINGUP/LOGIN UPRIGHT OR WELCOMING MESSAGE----------------------------------->
-            @using Microsoft.AspNet.Identity
-            @if (Request.IsAuthenticated)
-            {
-                <h1 class="site-logo"><a class="navbar-brand" href="http://www.fr8.company" title="fr8"><img src="~/Content/img/site/site-logo.png" alt="fr8" title="fr8"></a></h1>
-                 <div class="pull-right visible-desktop visible-tablet">
-                     <a href="/Dashboard#/myaccount" title="Manage">Hello @User.Identity.GetUserName()!</a>
-                </div>
-            }
-            else 
-            {
-                <h1 class="site-logo"><a class="navbar-brand" href="/" title="fr8"><img src="~/Content/img/site/site-logo.png" alt="fr8" title="fr8"></a></h1>
-                 <div class="pull-right visible-desktop visible-tablet"><a href="/DockyardAccount" title="SignUp/Login">SignUp/Login</a></div>
-            }            
-     <!------END OF SINGUP/LOGIN UPRIGHT OR WELCOMING MESSAGE-------------------------->
-                </div>
-            </div>
-            <div class="main-nav">
-                <div class="container">
-                    <div class="collapse navbar-collapse">
-                        <nav>
-                            @Html.Partial("_HomeNav")
-                        </nav>
+            <header id="site-header" class="container-fluid">
+                <div class="navbar navbar-default navbar-fixed-top">
+                    <div class="container">
+                        <div class="navbar-header">
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse" aria-expanded="false">
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </button>
+
+                            <!------SINGUP/LOGIN UPRIGHT OR WELCOMING MESSAGE----------------------------------->
+                            @using Microsoft.AspNet.Identity
+                            @if (Request.IsAuthenticated)
+                            {
+                                <h1 class="site-logo"><a class="navbar-brand" href="http://www.fr8.company" title="fr8"><img src="~/Content/img/site/site-logo.png" alt="fr8" title="fr8"></a></h1>
+                                <div class="pull-right visible-desktop visible-tablet">
+                                    <a href="/Dashboard#/myaccount" title="Manage">
+                                        Hello
+                                        @if (User.IsInRole("Guest"))
+                                        {
+                                            <text>Guest User!</text>
+                                        }
+                                        else
+                                        {
+                                            <text>@User.Identity.GetUserName()!</text>
+                                        }
+                                    </a>
+                                    @if (User.IsInRole("Guest"))
+                                    {
+                                        <span>&nbsp;&nbsp;</span>
+                                        <a href="/DockyardAccount/Logoff">
+                                            <span>Have an Account? Login</span>
+                                        </a>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <h1 class="site-logo"><a class="navbar-brand" href="/" title="fr8"><img src="~/Content/img/site/site-logo.png" alt="fr8" title="fr8"></a></h1>
+                                <div class="pull-right visible-desktop visible-tablet"><a href="/DockyardAccount" title="SignUp/Login">SignUp/Login</a></div>
+                            }
+                            <!------END OF SINGUP/LOGIN UPRIGHT OR WELCOMING MESSAGE-------------------------->
+                        </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </header>
-    @RenderBody()
-    <div class="clear clear-footer-spacer"></div>
-</div>
-    <footer id="site-footer">
-        <div class="page-prefooter ng-scope">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-3 col-sm-6 col-xs-12 footer-block">
-                        <h2>About</h2>
-                        <p>fr8 is the open standard for cloud workflow.</p>
-                    </div>
-                    <div class="col-md-3 col-sm-6 col-xs-12 footer-block">
-                        <h2>Subscribe Email</h2>
-                        <div class="subscribe-form">
-                            <div class="input-group">
-                                <input type="text" placeholder="mail@email.com" class="form-control">
-                            <span class="input-group-btn">
-                                <button class="btn" type="button" onclick="SendMail();">Submit</button>
-                            </span>
+                    <div class="main-nav">
+                        <div class="container">
+                            <div class="collapse navbar-collapse">
+                                <nav>
+                                    @Html.Partial("_HomeNav")
+                                </nav>
                             </div>
                         </div>
                     </div>
-                    <div class="clearfix visible-sm-block"></div>
-                    <div class="col-md-3 col-sm-6 col-xs-12 footer-block">
-                        <h2>Follow Us On</h2>
-                        <ul class="social-icons">
-                            <li>
-                                <a href="#" data-original-title="rss" class="rss"></a>
-                            </li>
-                            <li>
-                                <a href="#" data-original-title="facebook" class="facebook"></a>
-                            </li>
-                            <li>
-                                <a href="#" data-original-title="twitter" class="twitter"></a>
-                            </li>
-                            <li>
-                                <a href="#" data-original-title="googleplus" class="googleplus"></a>
-                            </li>
-                            <li>
-                                <a href="#" data-original-title="linkedin" class="linkedin"></a>
-                            </li>
-                            <li>
-                                <a href="#" data-original-title="youtube" class="youtube"></a>
-                            </li>
-                            <li>
-                                <a href="#" data-original-title="vimeo" class="vimeo"></a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-md-3 col-sm-6 col-xs-12 footer-block">
-                        <h2>Contacts</h2>
-                        <address class="margin-bottom-40">
-                            Phone: 415 555 1212<br>
-                            Email: <a href="mailto:info@metronic.com">info@fr8.co</a>
-                        </address>
+                </div>
+            </header>
+            @RenderBody()
+            <div class="clear clear-footer-spacer"></div>
+        </div>
+        <footer id="site-footer">
+            <div class="page-prefooter ng-scope">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-3 col-sm-6 col-xs-12 footer-block">
+                            <h2>About</h2>
+                            <p>fr8 is the open standard for cloud workflow.</p>
+                        </div>
+                        <div class="col-md-3 col-sm-6 col-xs-12 footer-block">
+                            <h2>Subscribe Email</h2>
+                            <div class="subscribe-form">
+                                <div class="input-group">
+                                    <input type="text" placeholder="mail@email.com" class="form-control">
+                                    <span class="input-group-btn">
+                                        <button class="btn" type="button" onclick="SendMail();">Submit</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="clearfix visible-sm-block"></div>
+                        <div class="col-md-3 col-sm-6 col-xs-12 footer-block">
+                            <h2>Follow Us On</h2>
+                            <ul class="social-icons">
+                                <li>
+                                    <a href="#" data-original-title="rss" class="rss"></a>
+                                </li>
+                                <li>
+                                    <a href="#" data-original-title="facebook" class="facebook"></a>
+                                </li>
+                                <li>
+                                    <a href="#" data-original-title="twitter" class="twitter"></a>
+                                </li>
+                                <li>
+                                    <a href="#" data-original-title="googleplus" class="googleplus"></a>
+                                </li>
+                                <li>
+                                    <a href="#" data-original-title="linkedin" class="linkedin"></a>
+                                </li>
+                                <li>
+                                    <a href="#" data-original-title="youtube" class="youtube"></a>
+                                </li>
+                                <li>
+                                    <a href="#" data-original-title="vimeo" class="vimeo"></a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-3 col-sm-6 col-xs-12 footer-block">
+                            <h2>Contacts</h2>
+                            <address class="margin-bottom-40">
+                                Phone: 415 555 1212<br>
+                                Email: <a href="mailto:info@metronic.com">info@fr8.co</a>
+                            </address>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="page-footer ng-scope">
-            <div class="container">
-                2015 © Maginot Technologies, LLC. All Rights Reserved.
+            <div class="page-footer ng-scope">
+                <div class="container">
+                    @DateTime.Now.Year © Maginot Technologies, LLC. All Rights Reserved.
+                </div>
             </div>
-        </div>
-
-    </footer>
-</div>
-
+        </footer>
+    </div>
     <a class="goTop goTop-link" title="Go Top"><i class="fa fa-arrow-up"></i></a>
 
-        @Scripts.Render("~/bundles/js/bootstrap")
-        @Scripts.Render("~/bundles/js/colorbox")
-        @Scripts.Render("~/bundles/js/waypoints")
-        @Scripts.Render("~/bundles/js/placeholder")
-        @Scripts.Render("~/bundles/js/modernizr")
-        <script src="https://secure-a.vimeocdn.com/js/froogaloop2.min.js"></script>
-        <script src="http://alvarotrigo.com/fullPage/jquery.fullPage.min.js"></script>
-        @Scripts.Render("~/bundles/js/main")
+    @Scripts.Render("~/bundles/js/bootstrap")
+    @Scripts.Render("~/bundles/js/colorbox")
+    @Scripts.Render("~/bundles/js/waypoints")
+    @Scripts.Render("~/bundles/js/placeholder")
+    @Scripts.Render("~/bundles/js/modernizr")
+    <script src="https://secure-a.vimeocdn.com/js/froogaloop2.min.js"></script>
+    <script src="http://alvarotrigo.com/fullPage/jquery.fullPage.min.js"></script>
+    @Scripts.Render("~/bundles/js/main")
 
-        <script type="text/javascript">
-            // this function is used to get values and sent pass these values to “ProcessSubmittedEmail” action method on "HomeController" using ajax
-            //and display contant result to user using alert
-            function SendMail() {
-                $.ajax({
-                    url: "/Home/ProcessSubmittedEmail",
-                    type: "POST",
-                    async: true,
-                    data: { 'name': $('#name').val(), 'emailId': $('#emailId').val(), 'message': $('#message').val() },
-                    success: function (result) {
-                        if (result == "success") {
-                            $('#name').val(""); $('#emailId').val(""); $('#message').val("");
-                            $('#spMessage').html("Email Submitted");
-                        }
-                        else {
-                            $('#spMessage').html(result);
-                        }
+    <script type="text/javascript">
+        // this function is used to get values and sent pass these values to “ProcessSubmittedEmail” action method on "HomeController" using ajax
+        //and display contant result to user using alert
+        function SendMail() {
+            $.ajax({
+                url: "/Home/ProcessSubmittedEmail",
+                type: "POST",
+                async: true,
+                data: { 'name': $('#name').val(), 'emailId': $('#emailId').val(), 'message': $('#message').val() },
+                success: function (result) {
+                    if (result == "success") {
+                        $('#name').val(""); $('#emailId').val(""); $('#message').val("");
+                        $('#spMessage').html("Email Submitted");
                     }
-                });
-            }
-        </script>
-
-      
-
+                    else {
+                        $('#spMessage').html(result);
+                    }
+                }
+            });
+        }
+    </script>
 </body>
 </html>

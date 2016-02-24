@@ -18,6 +18,7 @@ using Hub.Managers;
 using Utilities.Configuration.Azure;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Data.Interfaces.Manifests;
+using DocuSign.Integrations.Client;
 
 namespace Hub.Services
 {
@@ -37,38 +38,7 @@ namespace Hub.Services
             _crate = ObjectFactory.GetInstance<ICrateManager>();
             _restfulServiceClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
         }
-
-        //This builds a list of an activity and all of its descendants, over multiple levels
-        // public List<RouteNodeDO> GetActivityTree(IUnitOfWork uow, RouteNodeDO curActivity)
-        // {
-        //     var curList = new List<RouteNodeDO>();
-        //     curList.Add(curActivity);
-        //     var childActivities = GetChildren(uow, curActivity);
-        //     foreach (var child in childActivities)
-        //     {
-        //         curList.AddRange(GetActivityTree(uow, child));
-        //     }
-        //     return curList;
-        // }
-
-        public List<RouteNodeDO> GetActivityTree(IEnumerable<RouteNodeDO> fullTree, RouteNodeDO curActivity)
-        {
-            var curList = new List<RouteNodeDO>();
-            curList.Add(curActivity);
-
-            // var childActivities = GetChildren(uow, curActivity);
-            var childActivities = fullTree
-                .Where(x => x.ParentRouteNodeId == curActivity.Id)
-                .OrderBy(z => z.Ordering);
-
-            foreach (var child in childActivities)
-            {
-                curList.AddRange(GetActivityTree(fullTree, child));
-            }
-
-            return curList;
-        }
-
+        
         public List<RouteNodeDO> GetUpstreamActivities(IUnitOfWork uow, RouteNodeDO curActivityDO)
         {
             if (curActivityDO == null)
@@ -76,16 +46,46 @@ namespace Hub.Services
             if (curActivityDO.ParentRouteNodeId == null)
                 return new List<RouteNodeDO>();
 
-            var fullTree = uow.RouteNodeRepository.GetAll()
-                .Where(x => x.RootRouteNodeId == curActivityDO.RootRouteNodeId)
-                .ToList();
+            List<RouteNodeDO> routeNodes  = new List<RouteNodeDO>();
+            var node = curActivityDO;
 
-            return GetUpstreamActivities(fullTree, curActivityDO);
+            do
+            {
+                var currentNode = node;
+                
+                if (node.ParentRouteNode != null)
+                {
+                    foreach (var predcessors in node.ParentRouteNode.ChildNodes.Where(x => x.Ordering < currentNode.Ordering && x != currentNode).OrderByDescending(x => x.Ordering))
+                    {
+                        GetDownstreamRecusive(predcessors, routeNodes);
+                    }
+                }
+
+                node = node.ParentRouteNode;
+    
+                if (node != null)
+                {
+                    routeNodes.Add(node);
+                }
+
+            } while (node != null);
+
+            return routeNodes;
         }
 
-        public StandardDesignTimeFieldsCM GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability)
+        private void GetDownstreamRecusive(RouteNodeDO root, List<RouteNodeDO> items)
         {
-            StandardDesignTimeFieldsCM mergedFields = new StandardDesignTimeFieldsCM();
+            items.Add(root);
+
+            foreach (var child in root.ChildNodes.OrderBy(x=>x.Ordering))
+            {
+               GetDownstreamRecusive(child, items);
+            }
+        }
+
+        public FieldDescriptionsCM GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability)
+        {
+            FieldDescriptionsCM mergedFields = new FieldDescriptionsCM();
 
             Func<FieldDTO, bool> fieldPredicate;
             if (availability == AvailabilityType.NotSet)
@@ -97,14 +97,14 @@ namespace Hub.Services
                 fieldPredicate = (FieldDTO f) => f.Availability == availability;
             }
 
-            Func<Crate<StandardDesignTimeFieldsCM>, bool> cratePredicate;
+            Func<Crate<FieldDescriptionsCM>, bool> cratePredicate;
             if (availability == AvailabilityType.NotSet)
             {
-                cratePredicate = (Crate<StandardDesignTimeFieldsCM> f) => true;
+                cratePredicate = (Crate<FieldDescriptionsCM> f) => true;
             }
             else
             {
-                cratePredicate = (Crate<StandardDesignTimeFieldsCM> f) =>
+                cratePredicate = (Crate<FieldDescriptionsCM> f) =>
                 {
                     return f.Availability == availability;
                 };
@@ -112,10 +112,10 @@ namespace Hub.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                ActivityDO activityDO = uow.ActivityRepository.GetByKey(activityId);
+                ActivityDO activityDO = uow.PlanRepository.GetById<ActivityDO>(activityId);
                 var curCrates = GetActivitiesByDirection(uow, direction, activityDO)
                     .OfType<ActivityDO>()
-                    .SelectMany(x => _crate.GetStorage(x).CratesOfType<StandardDesignTimeFieldsCM>().Where(cratePredicate))
+                    .SelectMany(x => _crate.GetStorage(x).CratesOfType<FieldDescriptionsCM>().Where(cratePredicate))
                     .ToList();
 
                 mergedFields.Fields.AddRange(_crate.MergeContentFields(curCrates).Fields.Where(fieldPredicate));
@@ -136,57 +136,7 @@ namespace Hub.Services
                     return  GetDownstreamActivities(uow, curActivityDO).Concat(GetUpstreamActivities(uow, curActivityDO)).ToList();
             }
         }
-
-        private List<RouteNodeDO> GetUpstreamActivities(
-            IEnumerable<RouteNodeDO> fullTree,
-            RouteNodeDO curActivityDO)
-        {
-            if (curActivityDO == null)
-            {
-                throw new ArgumentNullException("curActivityDO");
-            }
-
-            if (curActivityDO.ParentRouteNodeId == null)
-            {
-                return new List<RouteNodeDO>();
-            }
-
-            var upstreamActivities = new List<RouteNodeDO>();
-
-            //start by getting the parent of the current action
-            // var parentActivity = uow.RouteNodeRepository.GetByKey(curActivityDO.ParentRouteNodeId);
-            var parentActivity = fullTree.Single(x => x.Id == curActivityDO.ParentRouteNodeId);
-
-
-            // find all sibling actions that have a lower Ordering. These are the ones that are "above" this action in the list
-            // var upstreamSiblings =
-            //     parentActivity.ChildNodes.Where(a => a.Ordering < curActivityDO.Ordering);
-            var upstreamSiblings =
-                fullTree.Where(a => a.ParentRouteNodeId == curActivityDO.ParentRouteNodeId
-                    && a.Ordering < curActivityDO.Ordering);
-
-            //for each such sibling action, we want to add it to the list
-            //but some of those activities may be actionlists with childactivities of their own
-            //in that case we need to recurse
-            foreach (var upstreamSibling in upstreamSiblings)
-            {
-                //1) first add the upstream siblings
-                upstreamActivities.AddRange(GetActivityTree(fullTree, upstreamSibling));
-            }
-
-            //now we need to recurse up to the parent of the current activity, and repeat until we reach the root of the tree
-            if (parentActivity != null)
-            {
-                //2) then add the parent activity...
-                upstreamActivities.Add(parentActivity);
-                //3) then add the parent's upstream activities
-                upstreamActivities.AddRange(GetUpstreamActivities(fullTree, parentActivity));
-            }
-            else return upstreamActivities;
-
-            return upstreamActivities; //should never actually get here, but the compiler insists
-        }
-
+        
         public List<RouteNodeDO> GetDownstreamActivities(IUnitOfWork uow, RouteNodeDO curActivityDO)
         {
             if (curActivityDO == null)
@@ -194,59 +144,30 @@ namespace Hub.Services
             if (curActivityDO.ParentRouteNodeId == null)
                 return new List<RouteNodeDO>();
 
-            var fullTree = uow.RouteNodeRepository.GetAll()
-                .Where(x => x.RootRouteNodeId == curActivityDO.RootRouteNodeId)
-                .ToList();
+            List<RouteNodeDO> nodes = new List<RouteNodeDO>();
+            
+            foreach (var routeNodeDo in curActivityDO.ChildNodes)
+            {
+                GetDownstreamRecusive(routeNodeDo, nodes);    
+            }
+            
 
-            return GetDownstreamActivities(fullTree, curActivityDO);
+            while (curActivityDO != null)
+            {
+                if (curActivityDO.ParentRouteNode != null)
+                {
+                    foreach (var sibling in curActivityDO.ParentRouteNode.ChildNodes.Where(x => x.Ordering > curActivityDO.Ordering))
+                    {
+                        GetDownstreamRecusive(sibling, nodes);
+                    }
+                }
+
+                curActivityDO = curActivityDO.ParentRouteNode;
+            }
+
+            return nodes;
         }
-
-        private List<RouteNodeDO> GetDownstreamActivities(
-            IEnumerable<RouteNodeDO> fullTree,
-            RouteNodeDO curActivityDO)
-        {
-            if (curActivityDO == null)
-            {
-                throw new ArgumentNullException("curActivityDO");
-            }
-
-            if (curActivityDO.ParentRouteNodeId == null)
-            {
-                return new List<RouteNodeDO>();
-            }
-
-            var downstreamList = new List<RouteNodeDO>();
-
-            //start by getting the parent of the current action
-            // var parentActivity = uow.RouteNodeRepository.GetByKey(curActivity.ParentRouteNodeId);
-            var parentActivity = fullTree.Single(x => x.Id == curActivityDO.ParentRouteNodeId);
-
-            // find all sibling actions that have a higher Ordering. These are the ones that are "below" or downstream of this action in the list
-            // var downstreamSiblings = parentActivity.ChildNodes.Where(a => a.Ordering > curActivity.Ordering);
-            var downstreamSiblings =
-                fullTree.Where(a => a.ParentRouteNodeId == curActivityDO.ParentRouteNodeId
-                    && a.Ordering > curActivityDO.Ordering);
-
-            //for each such sibling action, we want to add it to the list
-            //but some of those activities may be actionlists with childactivities of their own
-            //in that case we need to recurse
-            foreach (var downstreamSibling in downstreamSiblings)
-            {
-                //1) first add the downstream siblings and their descendants
-                downstreamList.AddRange(GetActivityTree(fullTree, downstreamSibling));
-            }
-
-            //now we need to recurse up to the parent of the current activity, and repeat until we reach the root of the tree
-            if (parentActivity != null)
-            {
-                //find the downstream siblings of the parent activity and add them and their descendants
-
-                downstreamList.AddRange(GetDownstreamActivities(fullTree, parentActivity));
-            }
-
-            return downstreamList;
-        }
-
+        
         public RouteNodeDO GetParent(RouteNodeDO currentActivity)
         {
             return currentActivity.ParentRouteNode;
@@ -261,9 +182,7 @@ namespace Hub.Services
                 return null;
             }
 
-            return currentActivity.ParentRouteNode.ChildNodes
-                .OrderBy(x => x.Ordering)
-                .FirstOrDefault(x => x.Ordering > currentActivity.Ordering);
+            return currentActivity.ParentRouteNode.GetOrderedChildren().FirstOrDefault(x => x.Ordering > currentActivity.Ordering);
         }
 
         public RouteNodeDO GetFirstChild(RouteNodeDO currentActivity)
@@ -347,9 +266,9 @@ namespace Hub.Services
                         uow.CriteriaRepository.Remove(criteria);
                     }
                 }
-
-                uow.RouteNodeRepository.Remove(x);
             });
+
+            activity.RemoveFromParent();
         }
 
         private static void TraverseActivity(RouteNodeDO parent, Action<RouteNodeDO> visitAction)
@@ -358,25 +277,14 @@ namespace Hub.Services
             foreach (RouteNodeDO child in parent.ChildNodes)
                 TraverseActivity(child, visitAction);
         }
-
-        private IEnumerable<RouteNodeDO> GetChildren(IUnitOfWork uow, RouteNodeDO currActivity)
-        {
-            // Get all activities which parent is currActivity and order their by Ordering. The order is important!
-            var orderedActivities = uow.RouteNodeRepository.GetAll()
-            .Where(x => x.ParentRouteNodeId == currActivity.Id)
-            .OrderBy(z => z.Ordering);
-            return orderedActivities;
-        }
-
-
-
-        public async Task Process(Guid curActivityId, ActionState curActionState, ContainerDO containerDO)
+        
+        public async Task Process(Guid curActivityId, ActivityState curActionState, ContainerDO containerDO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //why do we get container from db again???
                 var curContainerDO = uow.ContainerRepository.GetByKey(containerDO.Id);
-                var curActivityDO = uow.RouteNodeRepository.GetByKey(curActivityId);
+                var curActivityDO = uow.PlanRepository.GetById<RouteNodeDO>(curActivityId);
 
                 if (curActivityDO == null)
                 {
@@ -431,7 +339,7 @@ namespace Hub.Services
                 .ToList();
         }
 
-        public IEnumerable<ActivityTemplateDTO> GetSolutions(IUnitOfWork uow, IFr8AccountDO curAccount)
+        public IEnumerable<ActivityTemplateDTO> GetSolutions(IUnitOfWork uow)
         {
             IEnumerable<ActivityTemplateDTO> curActivityTemplates;
             curActivityTemplates = _activityTemplate
@@ -454,7 +362,8 @@ namespace Hub.Services
             return curActivityTemplates;
         }
 
-        public IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivitiyGroups()
+
+        public IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivityGroups()
         {
             var curActivityTemplates = _activityTemplate
                 .GetQuery()

@@ -26,7 +26,7 @@ namespace terminalQuickBooksTests.Fixtures
             };
         }
 
-        public static ActivityTemplateDTO Action_Create_Journal_Entry_ActivityTemplate()
+        public static ActivityTemplateDTO Activity_Create_Journal_Entry_ActivityTemplate()
         {
             return new ActivityTemplateDTO()
             {
@@ -35,19 +35,19 @@ namespace terminalQuickBooksTests.Fixtures
                 Version = "1"
             };
         }
-        public static ActivityDTO Action_Create_Journal_Entry_v1_InitialConfiguration_ActionDTO()
+        public static Fr8DataDTO Activity_Create_Journal_Entry_v1_InitialConfiguration_Fr8DataDTO()
         {
-            var activityTemplate = Action_Create_Journal_Entry_ActivityTemplate();
+            var activityTemplate = Activity_Create_Journal_Entry_ActivityTemplate();
 
-            return new ActivityDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Create_Journal_Entry",
                 Label = "Create Journal Entry",
                 AuthToken = QuickBooks_AuthTokenDTO(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
+
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
         public static ActivityTemplateDTO Convert_TableData_To_AccountingTransactions_ActivityTemplate()
         {
@@ -58,19 +58,19 @@ namespace terminalQuickBooksTests.Fixtures
                 Version = "1"
             };
         }
-        public static ActivityDTO Convert_TableData_To_AccountingTransactions_v1_InitialConfiguration_ActionDTO()
+        public static Fr8DataDTO Convert_TableData_To_AccountingTransactions_v1_InitialConfiguration_Fr8DataDTO()
         {
             var activityTemplate = Convert_TableData_To_AccountingTransactions_ActivityTemplate();
 
-            return new ActivityDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Convert_TableData_To_AccountingTransactions",
                 Label = "Convert TableData To AccountingTransactions",
                 AuthToken = QuickBooks_AuthTokenDTO(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
+
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
         public static StandardAccountingTransactionCM GetAccountingTransactionCM()
         {

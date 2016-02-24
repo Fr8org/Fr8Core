@@ -19,19 +19,18 @@ using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Interfaces;
 using Utilities.Configuration.Azure;
 using terminalDocuSign.Infrastructure;
+using terminalDocuSign.Infrastructure.DocuSignParserModels;
 
 namespace terminalDocuSign.Services
 {
     public class Event : terminalDocuSign.Interfaces.IEvent
     {
         private readonly EventReporter _alertReporter;
-        private readonly ICrateManager _crate;
         private readonly IDocuSignRoute _docuSignRoute;
 
         public Event()
         {
             _alertReporter = ObjectFactory.GetInstance<EventReporter>();
-            _crate = ObjectFactory.GetInstance<ICrateManager>();
             _docuSignRoute = ObjectFactory.GetInstance<IDocuSignRoute>();
         }
 
@@ -59,7 +58,7 @@ namespace terminalDocuSign.Services
                 //create MonitorAllDocuSignEvents plan
                 await _docuSignRoute.CreateRoute_MonitorAllDocuSignEvents(curFr8UserId, authToken);
                 return null;
-            } 
+            }
 
             //parse the external event xml payload
             List<DocuSignEventDTO> curExternalEvents;
@@ -68,9 +67,10 @@ namespace terminalDocuSign.Services
 
             //prepare the content from the external event payload
             var curDocuSignEnvelopeInfo = DocuSignConnectParser.GetEnvelopeInformation(curExternalEventPayload);
+
             var eventReportContent = new EventReportCM
             {
-                EventNames = "Envelope" + curDocuSignEnvelopeInfo.EnvelopeStatus.Status,
+                EventNames = GetEventNames(curDocuSignEnvelopeInfo),
                 ContainerDoId = "",
                 EventPayload = ExtractEventPayload(curExternalEvents),
                 Manufacturer = "DocuSign",
@@ -81,6 +81,24 @@ namespace terminalDocuSign.Services
             var curEventReport = Crate.FromContent("Standard Event Report", eventReportContent);
 
             return curEventReport;
+        }
+
+        private string GetEventNames(DocuSignEnvelopeInformation curDocuSignEnvelopeInfo)
+        {
+            List<string> result = new List<string>();
+
+            //Envelope events
+            if (curDocuSignEnvelopeInfo.EnvelopeStatus != null)
+                result.Add("Envelope" + curDocuSignEnvelopeInfo.EnvelopeStatus.Status);
+
+            //Recipinent events
+            if (curDocuSignEnvelopeInfo.EnvelopeStatus != null &&
+                curDocuSignEnvelopeInfo.EnvelopeStatus.RecipientStatuses != null)
+            {
+                var recipientEvents = curDocuSignEnvelopeInfo.EnvelopeStatus.RecipientStatuses.Statuses.Select(s => "Recipient" + s.Status).Distinct();
+                result.AddRange(recipientEvents);
+            }
+            return string.Join(",", result);
         }
 
         private void Parse(string xmlPayload, out List<DocuSignEventDTO> curEvents, out string curEnvelopeId)
@@ -116,10 +134,10 @@ namespace terminalDocuSign.Services
             }
         }
 
-        private CrateStorage ExtractEventPayload(IEnumerable<DocuSignEventDTO> curEvents)
+        private ICrateStorage ExtractEventPayload(IEnumerable<DocuSignEventDTO> curEvents)
         {
             var stroage = new CrateStorage();
-            
+
             foreach (var curEvent in curEvents)
             {
                 var payloadCrate = Data.Crates.Crate.FromContent("", new StandardPayloadDataCM(CreateKeyValuePairList(curEvent)));
@@ -132,9 +150,9 @@ namespace terminalDocuSign.Services
         private List<FieldDTO> CreateKeyValuePairList(DocuSignEventDTO curEvent)
         {
             List<FieldDTO> returnList = new List<FieldDTO>();
-            returnList.Add(new FieldDTO("EnvelopeId",curEvent.EnvelopeId));
-            returnList.Add(new FieldDTO("ExternalEventType",curEvent.ExternalEventType.ToString()));
-            returnList.Add(new FieldDTO("RecipientId",curEvent.RecipientId));
+            returnList.Add(new FieldDTO("EnvelopeId", curEvent.EnvelopeId));
+            returnList.Add(new FieldDTO("ExternalEventType", curEvent.ExternalEventType.ToString()));
+            returnList.Add(new FieldDTO("RecipientId", curEvent.RecipientId));
             returnList.Add(new FieldDTO("RecipientEmail", curEvent.RecipientEmail));
 
             returnList.Add(new FieldDTO("DocumentName", curEvent.DocumentName));
@@ -151,6 +169,6 @@ namespace terminalDocuSign.Services
             returnList.Add(new FieldDTO("EventId", curEvent.EventId));
             returnList.Add(new FieldDTO("Subject", curEvent.Subject));
             return returnList;
-            }
+        }
     }
 }

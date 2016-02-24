@@ -6,6 +6,7 @@ using System.Linq;
 using System.Transactions;
 using Data.Interfaces;
 using Data.Repositories;
+using Data.Repositories.Plan;
 using StructureMap;
 
 namespace Data.Infrastructure
@@ -16,18 +17,19 @@ namespace Data.Infrastructure
         private readonly IDBContext _context;
         private readonly IContainer _container;
 
-        internal UnitOfWork(IDBContext context)
+        public UnitOfWork(IDBContext context, IContainer container)
         {
             _context = context;
             _context.UnitOfWork = this;
             
             // Create nested StructureMap container
-            _container = ObjectFactory.Container.GetNestedContainer();
+            _container = container.GetNestedContainer();
 
             // Register self in the nested container to allow constructor injection
             _container.Configure(expression =>
             {
-                expression.For<IUnitOfWork>().Use(this).Singleton();
+                expression.For<IUnitOfWork>().Use(this);
+                expression.For<PlanRepository>().Use<PlanRepository>().Transient();
             });
         }
 
@@ -407,12 +409,12 @@ namespace Data.Infrastructure
             }
         }
 
-	  private ActivityRepository _actionRepository;
+	  private ActivityRepository _activityRepository;
 	  public ActivityRepository ActivityRepository
         {
             get
             {
-                return _actionRepository ?? (_actionRepository = new ActivityRepository(this));
+                return _activityRepository ?? (_activityRepository = new ActivityRepository(this));
             }
         }
 
@@ -433,15 +435,6 @@ namespace Data.Infrastructure
 			  return _routeNodeRepository ?? (_routeNodeRepository = new RouteNodeRepository(this));
 		  }
 	  }
-      private IPlanRepository _routeRepository;
-
-        public IPlanRepository PlanRepository
-        {
-            get
-            {
-                return _routeRepository ?? (_routeRepository = new PlanRepository(this));
-            }
-        }
 
 		private ProcessNodeRepository _proeProcessNodeRepository;
 
@@ -522,6 +515,11 @@ namespace Data.Infrastructure
             {
                 return _mtDataRepository ?? (_mtDataRepository = new MTDataRepository(this));
             }
+        }
+
+        public IPlanRepository PlanRepository
+        {
+            get { return _container.GetInstance<PlanRepository>(); }
         }
 
         private MultiTenantObjectRepository _multiTenantObjectRepository;
@@ -633,6 +631,8 @@ namespace Data.Infrastructure
 
         public void SaveChanges()
         {
+            _container.GetInstance<PlanRepository>().SaveChanges();
+
             _context.DetectChanges();
             var addedEntities = _context.AddedEntities;
             var modifiedEntities = _context.ModifiedEntities;

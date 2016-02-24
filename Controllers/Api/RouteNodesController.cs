@@ -54,7 +54,7 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var activityDO = uow.ActivityRepository.GetByKey(id);
+                var activityDO = uow.PlanRepository.GetById<ActivityDO>(id);
                 var upstreamActivities = _activity.GetUpstreamActivities(uow, activityDO);
                 return Ok(upstreamActivities);
             }
@@ -67,7 +67,7 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                ActivityDO activityDO = uow.ActivityRepository.GetByKey(id);
+                ActivityDO activityDO = uow.PlanRepository.GetById<ActivityDO>(id);
                 var downstreamActivities = _activity.GetDownstreamActivities(uow, activityDO);
                 return Ok(downstreamActivities);
             }
@@ -81,7 +81,7 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var activityDO = uow.ActivityRepository.GetByKey(id);
+                var activityDO = uow.PlanRepository.GetById<ActivityDO>(id);
                 var upstreamActions = _activity
                     .GetUpstreamActivities(uow, activityDO)
                     .OfType<ActivityDO>()
@@ -91,7 +91,6 @@ namespace HubWeb.Controllers
                 return Ok(upstreamActions);
             }
         }
-
         // TODO: after DO-1214 is completed, this method must be removed.
         [ActionName("downstream_actions")]
         [ResponseType(typeof (List<ActivityDTO>))]
@@ -100,7 +99,7 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                ActivityDO activityDO = uow.ActivityRepository.GetByKey(id);
+                ActivityDO activityDO = uow.PlanRepository.GetById<ActivityDO>(id);
                 var downstreamActions = _activity
                     .GetDownstreamActivities(uow, activityDO)
                     .OfType<ActivityDO>()
@@ -112,7 +111,7 @@ namespace HubWeb.Controllers
         }
 
         [ActionName("designtime_fields_dir")]
-        [ResponseType(typeof(StandardDesignTimeFieldsCM))]
+        [ResponseType(typeof(FieldDescriptionsCM))]
         [Fr8HubWebHMACAuthenticate]
         public IHttpActionResult GetDesignTimeFieldsByDirection(
             Guid id, 
@@ -129,7 +128,7 @@ namespace HubWeb.Controllers
         [HttpGet]
         public IHttpActionResult GetAvailableActivities()
         {
-            var categoriesWithActivities = _activity.GetAvailableActivitiyGroups();
+            var categoriesWithActivities = _activity.GetAvailableActivityGroups();
 
             return Ok(categoriesWithActivities);
         }

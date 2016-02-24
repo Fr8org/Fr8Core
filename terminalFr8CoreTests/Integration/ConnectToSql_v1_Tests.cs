@@ -48,18 +48,18 @@ namespace terminalFr8CoreTests.Integration
             Assert.AreEqual("ErrorLabel", control.Controls[1].Name);
         }
 
-        private void AssertFollowUpCrateTypes(CrateStorage crateStorage)
+        private void AssertFollowUpCrateTypes(ICrateStorage crateStorage)
         {
             Assert.AreEqual(4, crateStorage.Count);
-            Assert.AreEqual(3, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count());
+            Assert.AreEqual(3, crateStorage.CratesOfType<FieldDescriptionsCM>().Count());
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
             
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "Sql Table Definitions"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "Sql Column Types"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "Sql Connection String"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Sql Table Definitions"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Sql Column Types"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Sql Connection String"));
         }
 
-        private void AssertConfigureCrate(CrateStorage crateStorage)
+        private void AssertConfigureCrate(ICrateStorage crateStorage)
         {
             Assert.AreEqual(1, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
@@ -95,14 +95,14 @@ namespace terminalFr8CoreTests.Integration
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
         [Test]
-        public async void ConnectToSql_Initial_Configuration_Check_Crate_Structure()
+        public async Task ConnectToSql_Initial_Configuration_Check_Crate_Structure()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = FixtureData.ConnectToSql_InitialConfiguration_ActionDTO();
+            var requestActionDTO = FixtureData.ConnectToSql_InitialConfiguration_Fr8DataDTO();
 
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -120,22 +120,22 @@ namespace terminalFr8CoreTests.Integration
         /// Validate correct crate-storage structure in follow-up configuration response with error connetcion string
         /// </summary>
         [Test]
-        public async void ConnectToSql_FollowUp_Configuration_No_Connection_String_Check_Crate_Structure()
+        public async Task ConnectToSql_FollowUp_Configuration_No_Connection_String_Check_Crate_Structure()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = FixtureData.ConnectToSql_InitialConfiguration_ActionDTO();
+            var dataDTO = FixtureData.ConnectToSql_InitialConfiguration_Fr8DataDTO();
 
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    requestActionDTO
+                    dataDTO
                 );
-
+            dataDTO.ActivityDTO = responseActionDTO;
             responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    responseActionDTO
+                    dataDTO
                 );
 
             Assert.NotNull(responseActionDTO);
@@ -151,28 +151,28 @@ namespace terminalFr8CoreTests.Integration
         /// Validate correct crate-storage structure in follow-up configuration response 
         /// </summary>
         [Test]
-        public async void ConnectToSql_FollowUp_Configuration_Wrong_ConnetcioString_Check_Crate_Structure()
+        public async Task ConnectToSql_FollowUp_Configuration_Wrong_ConnetcioString_Check_Crate_Structure()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = FixtureData.ConnectToSql_InitialConfiguration_ActionDTO();
+            var dataDTO = FixtureData.ConnectToSql_InitialConfiguration_Fr8DataDTO();
 
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    requestActionDTO
+                    dataDTO
                 );            
 
-            using (var updater = Crate.UpdateStorage(responseActionDTO))
+            using (var updatableStorage = Crate.GetUpdatableStorage(responseActionDTO))
             {
-                updater.CrateStorage.RemoveByLabel("Configuration_Controls");
-                updater.CrateStorage.Add(CreateWrongConnectionStringCrate());
+                updatableStorage.RemoveByLabel("Configuration_Controls");
+                updatableStorage.Add(CreateWrongConnectionStringCrate());
             }
-            
+            dataDTO.ActivityDTO = responseActionDTO;
             responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    responseActionDTO
+                    dataDTO
                 );
 
             Assert.NotNull(responseActionDTO);
@@ -190,28 +190,29 @@ namespace terminalFr8CoreTests.Integration
         /// Validate correct crate-storage structure in follow-up configuration response 
         /// </summary>
         [Test]
-        public async void ConnectToSql_FollowUp_Configuration_Check_Crate_Structure()
+        public async Task ConnectToSql_FollowUp_Configuration_Check_Crate_Structure()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = FixtureData.ConnectToSql_InitialConfiguration_ActionDTO();
+            var dataDTO = FixtureData.ConnectToSql_InitialConfiguration_Fr8DataDTO();
 
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    requestActionDTO
+                    dataDTO
                 );
 
-            using (var updater = Crate.UpdateStorage(responseActionDTO))
+            using (var updatableStorage = Crate.GetUpdatableStorage(responseActionDTO))
             {
-                updater.CrateStorage.RemoveByLabel("Configuration_Controls");
-                updater.CrateStorage.Add(CreateConnectionStringCrate());
+                updatableStorage.RemoveByLabel("Configuration_Controls");
+                updatableStorage.Add(CreateConnectionStringCrate());
             }
 
+            dataDTO.ActivityDTO = responseActionDTO;
             responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    responseActionDTO
+                    dataDTO
                 );
 
             Assert.NotNull(responseActionDTO);
@@ -227,21 +228,21 @@ namespace terminalFr8CoreTests.Integration
         /// Test run-time for action Run().
         /// </summary>
         [Test]
-        public async void ConnectToSql_Run()
+        public async Task ConnectToSql_Run()
         {
             var runUrl = GetTerminalRunUrl();
 
-            var activityDTO = FixtureData.ConnectToSql_InitialConfiguration_ActionDTO();
+            var dataDTO = FixtureData.ConnectToSql_InitialConfiguration_Fr8DataDTO();
 
-            AddOperationalStateCrate(activityDTO, new OperationalStateCM());
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
 
             AddPayloadCrate(
-               activityDTO,
+               dataDTO,
                new EventReportCM()
            );
 
             var responsePayloadDTO =
-                await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, activityDTO);
+                await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
 
             Assert.NotNull(responsePayloadDTO);
 

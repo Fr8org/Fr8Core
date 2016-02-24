@@ -47,39 +47,56 @@ namespace Data.Migrations
 
 
             // Uncomment four following lines to debug Seed method (in case running from NuGet Package Manager Console).
-            //if (System.Diagnostics.Debugger.IsAttached == false)
-            //{
-            //    System.Diagnostics.Debugger.Launch();
-            //}
+            // if (System.Diagnostics.Debugger.IsAttached == false)
+            // {
+            //     System.Diagnostics.Debugger.Launch();
+            // }
 
-            // If not running inside web application (i.e. running "Update-Database" in NuGet Package Manager Console),
-            // then register IDBContext and IUnitOfWork in StructureMap DI.
-            if (HttpContext.Current == null)
+            using (var migrationContainer = new Container())
             {
-                ObjectFactory.Initialize(x => x.AddRegistry<MigrationConsoleSeedRegistry>());
+                migrationContainer.Configure(x => x.AddRegistry<MigrationConsoleSeedRegistry>());
+
+                var uow = new UnitOfWork(context, migrationContainer);
+
+                UpdateRootRouteNodeId(uow);
+
+                SeedIntoMockDb(uow);
+
+                AddRoles(uow);
+                AddAdmins(uow);
+                AddDockyardAccounts(uow);
+                AddProfiles(uow);
+                AddTestAccounts(uow);
+                //Addterminals(uow);
+
+                //AddAuthorizationTokens(uow);
+                uow.SaveChanges();
+                Fr8AccountDO fr8AccountDO = GetFr8Account(uow, "alex@edelstein.org");
+
+                // TODO: to be fixed, crashes when resolving IUnitOfWork out of global ObjectFactory container.
+                // Commented out by yakov.gnusin.
+                // AddContainerDOForTestingApi(uow, fr8AccountDO);
+
+                AddWebServices(uow);
+
+                AddTestUser(uow);
+
+                UpdateTerminalClientVisibility(uow);
+
             }
+        }
 
-            var uow = new UnitOfWork(context);
-
-            UpdateRootRouteNodeId(uow);
-
-            SeedIntoMockDb(uow);
-
-            AddRoles(uow);
-            AddAdmins(uow);
-            AddDockyardAccounts(uow);
-            AddProfiles(uow);
-            AddTestAccounts(uow);
-            //Addterminals(uow);
-
-
-            //AddAuthorizationTokens(uow);
+        private void UpdateTerminalClientVisibility(UnitOfWork uow)
+        {
+            var activities = uow.ActivityTemplateRepository.GetAll();
+            foreach (var activity in activities)
+            {
+                if (activity.Name == "Monitor_DocuSign_Envelope_Activity")
+                    activity.ClientVisibility = false;
+                else
+                    activity.ClientVisibility = true;
+            }
             uow.SaveChanges();
-            Fr8AccountDO fr8AccountDO = GetFr8Account(uow, "alex@edelstein.org");
-            AddContainerDOForTestingApi(uow, fr8AccountDO);
-
-            AddWebServices(uow);
-
         }
 
         //Method to let us seed into memory as well
@@ -376,7 +393,7 @@ namespace Data.Migrations
         /// <param name="unitOfWork"></param>
         private static void AddTestAccounts(IUnitOfWork unitOfWork)
         {
-            CreateTestAccount("integration_test_runner@fr8.company", "fr8#s@lt!", unitOfWork);
+            CreateTestAccount("integration_test_runner@fr8.company", "fr8#s@lt!", "IntegrationTestRunner", unitOfWork);
         }
 
         /// <summary>
@@ -399,15 +416,17 @@ namespace Data.Migrations
             return user;
         }
 
-        private static Fr8AccountDO CreateTestAccount(string userEmail, string curPassword, IUnitOfWork uow)
+        private static Fr8AccountDO CreateTestAccount(string userEmail, string curPassword, string userName, IUnitOfWork uow)
         {
             var user = uow.UserRepository.GetOrCreateUser(userEmail);
-            uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
-            uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, user.Id);
-            uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Booker, user.Id);
-            uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, user.Id);
-            user.UserName = "IntegrationTestRunner";
-            user.TestAccount = true;
+            if (user == null)
+            {
+                uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
+                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, user.Id);
+                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Booker, user.Id);
+                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, user.Id);
+                user.TestAccount = true;
+            }
             return user;
         }
 
@@ -418,7 +437,7 @@ namespace Data.Migrations
         /// <param name="curPassword"></param>
         /// <param name="uow"></param>
         /// <returns></returns>
-        internal static Fr8AccountDO CreateDockyardAccount(string userEmail, string curPassword, IUnitOfWork uow)
+        public static Fr8AccountDO CreateDockyardAccount(string userEmail, string curPassword, IUnitOfWork uow)
         {
             var user = uow.UserRepository.GetOrCreateUser(userEmail);
             uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
@@ -544,7 +563,7 @@ namespace Data.Migrations
             AddWebService(uow, "DocuSign", "/Content/icons/web_services/docusign-icon-64x64.png");
             AddWebService(uow, "Microsoft Azure", "/Content/icons/web_services/ms-azure-icon-64x64.png");
             AddWebService(uow, "Excel", "/Content/icons/web_services/ms-excel-icon-64x64.png");
-            AddWebService(uow, "fr8 Core", "/Content/icons/web_services/fr8-core-icon-64x64.png");
+            AddWebService(uow, "Built-In Services", "/Content/icons/web_services/fr8-core-icon-64x64.png");
             AddWebService(uow, "Salesforce", "/Content/icons/web_services/salesforce-icon-64x64.png");
             AddWebService(uow, "SendGrid", "/Content/icons/web_services/sendgrid-icon-64x64.png");
             AddWebService(uow, "Dropbox", "/Content/icons/web_services/dropbox-icon-64x64.png");
@@ -571,6 +590,41 @@ namespace Data.Migrations
             }
 
             uow.SaveChanges();
+        }
+
+        private void AddTestUser(IUnitOfWork uow)
+        {
+            const string email = "integration_test_runner@fr8.company";
+            const string password = "fr8#s@lt!";
+
+            Fr8AccountDO newDockyardAccountDO = null;
+            //check if we know this email address
+
+            var existingEmailAddressDO =
+                uow.EmailAddressRepository.GetQuery().FirstOrDefault(ea => ea.Address == email);
+            if (existingEmailAddressDO != null)
+            {
+                var existingUserDO = uow.UserRepository
+                    .GetQuery()
+                    .FirstOrDefault(u => u.EmailAddressID == existingEmailAddressDO.Id);
+
+                newDockyardAccountDO = RegisterTestUser(uow, email, email, email, password, Roles.Customer);
+            }
+            else
+            {
+                newDockyardAccountDO = RegisterTestUser(uow, email, email, email, password, Roles.Customer);
+            }
+
+            uow.SaveChanges();
+        }
+
+        private Fr8AccountDO RegisterTestUser(IUnitOfWork uow, string userName,
+            string firstName, string lastName, string password, string roleID)
+        {
+            var userDO = uow.UserRepository.GetOrCreateUser(userName, roleID);
+            uow.UserRepository.UpdateUserCredentials(userDO, userName, password);
+            uow.AspNetUserRolesRepository.AssignRoleToUser(roleID, userDO.Id);
+            return userDO;
         }
 
         private void AddWebService(IUnitOfWork uow, string name, string iconPath)
@@ -610,16 +664,14 @@ namespace Data.Migrations
 
         private void UpdateRootRouteNodeId(IUnitOfWork uow)
         {
-            var anyRootIdFlag = uow.RouteNodeRepository
-                .GetAll()
-                .Any(x => x.RootRouteNodeId != null);
+            var anyRootIdFlag = uow.PlanRepository.GetNodesQueryUncached().Any(x => x.RootRouteNodeId != null);
 
             if (anyRootIdFlag)
             {
                 return;
             }
 
-            var fullTree = uow.RouteNodeRepository.GetAll().ToList();
+            var fullTree = uow.PlanRepository.GetNodesQueryUncached().ToList();
 
             var parentChildMap = new Dictionary<Guid, List<RouteNodeDO>>();
             foreach (var routeNode in fullTree.Where(x => x.ParentRouteNodeId.HasValue))

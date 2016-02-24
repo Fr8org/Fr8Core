@@ -81,18 +81,18 @@ namespace terminalFr8CoreTests.Fixtures
             return WebApp.Start<ActivitiesController_SelfHostStartup>(url: CoreEndPoint);
         }
 
-        public static ActivityDTO ConnectToSql_InitialConfiguration_ActionDTO()
+        public static Fr8DataDTO ConnectToSql_InitialConfiguration_Fr8DataDTO()
         {
             var activityTemplate = ConnectToSql_ActivityTemplate();
 
-            return new ActivityDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "ConnectToSql_Fr8Core",
                 Label = "ConnectToSql Fr8Core",
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
+
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
 
         public static ActivityTemplateDTO ConnectToSql_ActivityTemplate()
@@ -105,18 +105,18 @@ namespace terminalFr8CoreTests.Fixtures
             };
         }
 
-        public static ActivityDTO ExecuteSql_InitialConfiguration_ActionDTO()
+        public static Fr8DataDTO ExecuteSql_InitialConfiguration_Fr8DataDTO()
         {
             var activityTemplate = ExecuteSql_ActivityTemplate();
 
-            return new ActivityDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "ExecuteSql_Fr8Core",
                 Label = "ExecuteSql Fr8Core",
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
+
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
 
         public static ActivityTemplateDTO ExecuteSql_ActivityTemplate()
@@ -139,17 +139,15 @@ namespace terminalFr8CoreTests.Fixtures
             };
         }
 
-        public static ActivityDTO MonitorFr8Event_InitialConfiguration_ActionDTO()
+        public static ActivityDTO MonitorFr8Event_InitialConfiguration_ActivityDTO()
         {
             var activityTemplate = MonitorFr8Event_ActivityTemplate();
 
             return new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Monitor_Fr8_Events",
                 Label = "Monitor Fr8 Events",
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
         }
 

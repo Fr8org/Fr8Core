@@ -52,7 +52,7 @@ namespace terminalDropbox.Controllers
             StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
                 Definition = terminal,
-                Actions = actionList
+                Activities = actionList
             };
 
             return Json(curStandardFr8TerminalCM);

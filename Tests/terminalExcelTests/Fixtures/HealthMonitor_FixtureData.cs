@@ -23,19 +23,19 @@ namespace terminalExcelTests.Fixtures
             };
         }
 
-        public static ActivityDTO Load_Table_Data_v1_InitialConfiguration_ActionDTO(Guid guid)
+        public static Fr8DataDTO Load_Table_Data_v1_InitialConfiguration_Fr8DataDTO(Guid guid)
         {
             var activityTemplate = Load_Table_Data_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = guid,
-                Name = "Load_Table_Data",
                 Label = "Load Table Data",
                 AuthToken = DocuSign_AuthToken(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
+
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
     }
 }

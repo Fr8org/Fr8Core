@@ -13,10 +13,7 @@ namespace HubWeb.Controllers.Helpers
         // Manual mapping method to resolve DO-1164.
         public static RouteFullDTO MapRouteToDto(IUnitOfWork uow, PlanDO curPlanDO)
         {
-            var subrouteDTOList = uow.SubrouteRepository
-                .GetQuery()
-                .Include(x => x.ChildNodes)
-                .Where(x => x.ParentRouteNodeId == curPlanDO.Id)
+            var subrouteDTOList = curPlanDO.ChildNodes.OfType<SubrouteDO>()
                 .OrderBy(x => x.Ordering)
                 .ToList()
                 .Select((SubrouteDO x) =>
@@ -36,7 +33,7 @@ namespace HubWeb.Controllers.Helpers
                 RouteState = curPlanDO.RouteState,
                 StartingSubrouteId = curPlanDO.StartingSubrouteId,
                 Subroutes = subrouteDTOList,
-                Fr8UserId = curPlanDO.Fr8Account.Id,
+                Fr8UserId = curPlanDO.Fr8AccountId,
                 Tag = curPlanDO.Tag
             };
 

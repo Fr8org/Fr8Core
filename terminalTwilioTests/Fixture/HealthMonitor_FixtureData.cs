@@ -30,29 +30,29 @@ namespace terminalTwilioTests.Fixture
                 Version = "1"
             };
         }
-        public static ActivityDTO Send_Via_Twilio_v1_InitialConfiguration_ActionDTO()
+        public static Fr8DataDTO Send_Via_Twilio_v1_InitialConfiguration_Fr8DataDTO()
         {
             var activityTemplate = Send_Via_Twilio_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Send_Via_Twilio",
-                Label = "Send Via Twilio",
+                Label = "Send SMS",
                 AuthToken = null,
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
+
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
         public ActivityDTO Send_Via_Twilio_v1_Preconfigured_Crate_With_No_SMS_Number()
         {
-            var curActionDTO = Send_Via_Twilio_v1_InitialConfiguration_ActionDTO();
-            using (var updater = CrateManager.UpdateStorage(curActionDTO))
+            var dataDTO = Send_Via_Twilio_v1_InitialConfiguration_Fr8DataDTO();
+            using (var crateStorage = CrateManager.GetUpdatableStorage(dataDTO.ActivityDTO))
             {
                 var curCrate = No_SMS_Number_Controls();
-                updater.CrateStorage.Add(curCrate);
+                crateStorage.Add(curCrate);
             }
-            return curActionDTO;
+            return dataDTO.ActivityDTO;
         }
         public Crate No_SMS_Number_Controls()
         {
@@ -64,14 +64,15 @@ namespace terminalTwilioTests.Fixture
                     InitialLabel = "SMS Number",
                     Name = "SMS_Number",
                     Value = "15005550006",
-                    Label = "SMS Number",
+                    Label = "SMS Number"
                 },
-                new TextBox()
+                new TextSource()
                 {
-                    Label = "SMS Body",
+                    UpstreamSourceLabel = "Upstream Terminal-Provided Fields",
+                    InitialLabel = "SMS Body",
                     Name = "SMS_Body",
-                    Required = true,
-                    Value = "That is the message that we are sending"
+                    Value = "That is the message that we are sending",
+                    Label = "SMS Body"
                 }
             };
             return CrateManager.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());

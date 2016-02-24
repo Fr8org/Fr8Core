@@ -196,31 +196,34 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actions\Monitor_Fr8_Events_v1.cs" />
-    <Compile Include="Actions\QueryMTDatabase_v1.cs" />
-    <Compile Include="Actions\AddPayloadManually_v1.cs" />
-    <Compile Include="Actions\BuildQuery_v1.cs" />
-    <Compile Include="Actions\ConnectToSql_v1.cs" />
-    <Compile Include="Actions\StoreFile_v1.cs" />
-    <Compile Include="Actions\ConvertCrates_v1.cs" />
-    <Compile Include="Actions\SetDelay_v1.cs" />
-    <Compile Include="Actions\ConvertRelatedFieldsIntoTable_v1.cs" />
-    <Compile Include="Actions\ExecuteSql_v1.cs" />
-    <Compile Include="Actions\FindObjects_Solution_v1.cs" />
-    <Compile Include="Actions\Loop_v1.cs" />
-    <Compile Include="Actions\ManageRoute_v1.cs" />
-    <Compile Include="Actions\Select_Fr8_Object_v1.cs" />
-    <Compile Include="Actions\Show_Report_Onscreen_v1.cs" />
-    <Compile Include="Actions\SaveToFr8Warehouse_v1.cs" />
+    <Compile Include="Activities\Monitor_Fr8_Events_v1.cs" />
+    <Compile Include="Activities\QueryFr8Warehouse_v1.cs" />
+    <Compile Include="Activities\AddPayloadManually_v1.cs" />
+    <Compile Include="Activities\BuildQuery_v1.cs" />
+    <Compile Include="Activities\Build_Message_v1.cs" />
+    <Compile Include="Activities\ConnectToSql_v1.cs" />
+    <Compile Include="Activities\GetFileFromFr8Store_v1.cs" />
+    <Compile Include="Activities\StoreFile_v1.cs" />
+    <Compile Include="Activities\ConvertCrates_v1.cs" />
+    <Compile Include="Activities\SetDelay_v1.cs" />
+    <Compile Include="Activities\ConvertRelatedFieldsIntoTable_v1.cs" />
+    <Compile Include="Activities\ExecuteSql_v1.cs" />
+    <Compile Include="Activities\FindObjects_Solution_v1.cs" />
+    <Compile Include="Activities\Loop_v1.cs" />
+    <Compile Include="Activities\ManageRoute_v1.cs" />
+    <Compile Include="Activities\Select_Fr8_Object_v1.cs" />
+    <Compile Include="Activities\Show_Report_Onscreen_v1.cs" />
+    <Compile Include="Activities\SaveToFr8Warehouse_v1.cs" />
     <Compile Include="App_Start\RoutesConfig.cs" />
-    <Compile Include="Controllers\ActionController.cs" />
-    <Compile Include="Actions\TestIncomingData_v1.cs" />
+    <Compile Include="Controllers\ActivityController.cs" />
+    <Compile Include="Activities\TestIncomingData_v1.cs" />
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\TerminalController.cs" />
+    <Compile Include="Converters\StandardFileDescriptionToDocuSignTemplateConversion.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Actions\MapFields_v1.cs" />
+    <Compile Include="Activities\MapFields_v1.cs" />
     <Compile Include="Infrastructure\FindObjectHelper.cs" />
     <Compile Include="Interfaces\IEvent.cs" />
     <Compile Include="Managers\EventManager.cs" />

@@ -60,7 +60,7 @@ namespace UtilitiesTesting.Fixtures
             return curActionTemplate;
         }
 
-        public static ActivityTemplateDTO TestActionTemplateDTOV2()
+        public static ActivityTemplateDTO TestActivityTemplateDTOV2()
         {
             var curActionTemplate = new ActivityTemplateDTO
             {
@@ -73,12 +73,12 @@ namespace UtilitiesTesting.Fixtures
             return curActionTemplate;
         }
 
-        public static CrateStorage TestConfigurationSettings()
+        public static ICrateStorage TestConfigurationSettings()
         {
             return FixtureData.CrateStorageDTO();
         }
 
-        public static CrateStorage TestConfigurationStore()
+        public static ICrateStorage TestConfigurationStore()
         {
             return new CrateStorage
             {

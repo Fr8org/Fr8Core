@@ -16,13 +16,16 @@ namespace Data.Interfaces.Manifests
             public int Index { get; set; }
             public bool BreakSignalReceived { get; set; }
             public int Level { get; set; }
+            public string CrateManifest { get; set; }
+            public string Label { get; set; }
         }
         public List<LoopStatus> Loops { get; set; }
-        public ActivityResponse CurrentActivityResponse { get; set; }
-        public ActionErrorCode? CurrentActivityErrorCode { get; set; }
+        //public ActivityResponse CurrentActivityResponse { get; set; }
+        public ActivityErrorCode? CurrentActivityErrorCode { get; set; }
         public string CurrentActivityErrorMessage { get; set; }
-        public ResponseMessageDTO ResponseMessageDTO { get; set; }
-        public string CurrentClientActionName { get; set; }
+        public string CurrentClientActivityName { get; set; }
+
+        public ActivityResponseDTO CurrentActivityResponse { get; set; }
 
         public OperationalStateCM()
             : base(MT.OperationalStatus)

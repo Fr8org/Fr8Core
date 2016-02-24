@@ -30,41 +30,41 @@ namespace terminalYammerTests.Integration
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Post_To_Yammer_v1_InitialConfiguration_ActionDTO();
+            var dataDTO = HealthMonitor_FixtureData.Post_To_Yammer_v1_InitialConfiguration_Fr8DataDTO();
 
-            var responseActionDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, requestActionDTO);
+            var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
 
             var storage = Crate.GetStorage(responseActionDTO);
 
-            using (var updater = Crate.UpdateStorage(requestActionDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(dataDTO.ActivityDTO))
             {
-                updater.CrateStorage = storage;
+                crateStorage.Replace(storage);
             }
 
-            return await HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, requestActionDTO);
+            return await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
         }
 
         private async Task<ActivityDTO> ConfigureInitial(bool isAuthToken = true)
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Post_To_Yammer_v1_InitialConfiguration_ActionDTO(isAuthToken);
-            var responseActionDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, requestActionDTO);
+            var requestActionDTO = HealthMonitor_FixtureData.Post_To_Yammer_v1_InitialConfiguration_Fr8DataDTO(isAuthToken);
+            var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, requestActionDTO);
 
             return responseActionDTO;
         }
 
-        private void AssertCrateTypes(CrateStorage crateStorage)
+        private void AssertCrateTypes(ICrateStorage crateStorage)
         {
             Assert.AreEqual(3, crateStorage.Count);
 
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(x => x.Label == "Configuration_Controls"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "Available Fields"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "Available Groups"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Available Fields"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Available Groups"));
         }
 
         [Test]
-        public async void Post_To_Yammer_v1_Initial_Configuration_Check_Crate_Structure()
+        public async Task Post_To_Yammer_v1_Initial_Configuration_Check_Crate_Structure()
         {
             // Act
             var responseActionDTO = await ConfigureInitial();
@@ -82,7 +82,7 @@ namespace terminalYammerTests.Integration
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException)
         )]
-        public async void Post_To_Yammer_v1_Initial_Configuration_Check_Crate_Structure_NoAuth()
+        public async Task Post_To_Yammer_v1_Initial_Configuration_Check_Crate_Structure_NoAuth()
         {
             // Act
             var responseActionDTO = await ConfigureInitial(false);
@@ -90,7 +90,7 @@ namespace terminalYammerTests.Integration
 
 
         [Test]
-        public async void Post_To_Yammer_v1_FollowupConfiguration()
+        public async Task Post_To_Yammer_v1_FollowupConfiguration()
         {
             // Act
             var responseFollowUpActionDTO = await ConfigurationRequest();
@@ -105,14 +105,14 @@ namespace terminalYammerTests.Integration
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException)
         )]
-        public async void Post_To_Yammer_Run_Return_Payload()
+        public async Task Post_To_Yammer_Run_Return_Payload()
         {
             //Arrange
             var runUrl = GetTerminalRunUrl();
             var activityDTO = await ConfigurationRequest();
-
+            var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
             AddPayloadCrate(
-                activityDTO,
+                dataDTO,
                 new StandardPayloadDataCM(
                     new FieldDTO("message", "Hello")
                 ),
@@ -120,9 +120,9 @@ namespace terminalYammerTests.Integration
             );
 
             activityDTO.AuthToken = HealthMonitor_FixtureData.Yammer_AuthToken();
+            
             //Act
-                var responsePayloadDTO =
-             await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, activityDTO);
+            var responsePayloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
 
             //Assert
             var crateStorage = Crate.FromDto(responsePayloadDTO.CrateStorage);

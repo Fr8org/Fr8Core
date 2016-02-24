@@ -104,49 +104,46 @@ namespace terminalGoogleTests.Unit
             var crateDesignTimeFields = PackCrate_GoogleForms();
             var eventCrate = CreateEventSubscriptionCrate();
 
-            using (var updater = CrateManager.UpdateStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                updater.CrateStorage.Add(configurationControlsCrate);
-                updater.CrateStorage.Add(crateDesignTimeFields);
-                updater.CrateStorage.Add(eventCrate);
+                crateStorage.Add(configurationControlsCrate);
+                crateStorage.Add(crateDesignTimeFields);
+                crateStorage.Add(eventCrate);
             }
         }
 
-        public static ActivityDTO Receive_Google_Form_v1_InitialConfiguration_ActionDTO()
+        public static Fr8DataDTO Receive_Google_Form_v1_InitialConfiguration_Fr8DataDTO()
         {
             var activityTemplate = Receive_Google_Form_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Receive_Google_Form",
                 Label = "Receive Google Form Response",
                 AuthToken = Google_AuthToken(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
 
-        public ActivityDTO Receive_Google_Form_v1_ActivateDeactivate_ActionDTO()
+        public Fr8DataDTO Receive_Google_Form_v1_ActivateDeactivate_Fr8DataDTO()
         {
             var activityTemplate = Receive_Google_Form_v1_ActivityTemplate();
 
             var activity = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Receive_Google_Form",
                 Label = "Receive Google Form Response",
                 AuthToken = Google_AuthToken(),
                 ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id,
-                ParentRouteNodeId = Guid.NewGuid(),
+                ParentRouteNodeId = Guid.NewGuid()
             };
 
             ActivateCrateStorage(activity);
-            return activity;
+            return new Fr8DataDTO { ActivityDTO = activity };
         }
 
-        private CrateStorage WrapPayloadDataCrate(List<FieldDTO> payloadFields)
+        private ICrateStorage WrapPayloadDataCrate(List<FieldDTO> payloadFields)
         {
             return new CrateStorage(Data.Crates.Crate.FromContent("Payload Data", new StandardPayloadDataCM(payloadFields)));
         }
@@ -187,22 +184,20 @@ namespace terminalGoogleTests.Unit
             return curEventReport;
         }
 
-        public ActivityDTO Receive_Google_Form_v1_Run_ActionDTO()
+        public ActivityDTO Receive_Google_Form_v1_Run_ActivityDTO()
         {
             var activityTemplate = Receive_Google_Form_v1_ActivityTemplate();
 
             var activity = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Receive_Google_Form",
                 Label = "Receive Google Form Response",
                 AuthToken = Google_AuthToken(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
-            using (var updater = CrateManager.UpdateStorage(activity))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(activity))
             {
-                updater.CrateStorage.Add(PayloadRaw());
+                crateStorage.Add(PayloadRaw());
             }
             return activity;
         }
@@ -214,15 +209,13 @@ namespace terminalGoogleTests.Unit
             var activity = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Receive_Google_Form",
                 Label = "Receive Google Form Response",
                 AuthToken = Google_AuthToken(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
-            using (var updater = CrateManager.UpdateStorage(activity))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(activity))
             {
-                updater.CrateStorage.Add(PayloadEmptyRaw());
+                crateStorage.Add(PayloadEmptyRaw());
             }
             return activity;
         }
@@ -236,22 +229,22 @@ namespace terminalGoogleTests.Unit
                 Version = "1"
             };
         }
-        public static ActivityDTO Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO()
+        public static Fr8DataDTO Extract_Spreadsheet_Data_v1_InitialConfiguration_Fr8DataDTO()
         {
             var activityTemplate = Extract_Spreadsheet_Data_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Get_Google_Sheet_Data",
                 Label = "Get Google Sheet Data",
                 AuthToken = Google_AuthToken(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
+
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
 
-        public ActivityDTO Extract_Spreadsheet_Data_v1_Followup_Configuration_Request_ActionDTO_With_Crates()
+        public ActivityDTO Extract_Spreadsheet_Data_v1_Followup_Configuration_Request_ActivityDTO_With_Crates()
         {
 
             var activityTemplate = Extract_Spreadsheet_Data_v1_ActivityTemplate();
@@ -259,11 +252,9 @@ namespace terminalGoogleTests.Unit
             var curActivityDto = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Get_Google_Sheet_Data",
                 Label = "Get Google Sheet Data",
                 AuthToken = Google_AuthToken1(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id,
+                ActivityTemplate = activityTemplate
             };
             
             return curActivityDto;
@@ -318,10 +309,10 @@ namespace terminalGoogleTests.Unit
             var caseTuple = CaseTuple(spreadsheet);
             var configurationControlsCrate = Extract_Spreadsheet_Data_v1_PackCrate_ConfigurationControls(caseTuple);
             var crateDesignTimeFields = PackCrate_GoogleSpreadsheets();
-            using (var updater = CrateManager.UpdateStorage(activityDTO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(activityDTO))
             {
-                updater.CrateStorage.Add(configurationControlsCrate);
-                updater.CrateStorage.Add(crateDesignTimeFields);
+                crateStorage.Add(configurationControlsCrate);
+                crateStorage.Add(crateDesignTimeFields);
             }
         }
 

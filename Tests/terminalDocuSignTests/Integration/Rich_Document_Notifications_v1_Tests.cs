@@ -26,14 +26,13 @@ namespace terminalDocuSignTests.Integration
             get { return "terminalDocuSign"; }
         }
 
-        private void AssertCrateTypes(CrateStorage crateStorage)
+        private void AssertCrateTypes(ICrateStorage crateStorage)
         {
-            Assert.AreEqual(5, crateStorage.Count);
+            Assert.AreEqual(4, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "AvailableTemplates"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "AvailableEvents"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "AvailableHandlers"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "AvailableRecipientEvents"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "AvailableTemplates"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "AvailableHandlers"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "AvailableRecipientEvents"));
             
         }
 
@@ -49,7 +48,7 @@ namespace terminalDocuSignTests.Integration
             
         }
 
-        private void AddHubActivityTemplate(ActivityDTO activityDTO)
+        private void AddHubActivityTemplate(Fr8DataDTO dataDTO)
         {
 
             var terminal = new TerminalDTO()
@@ -95,20 +94,20 @@ namespace terminalDocuSignTests.Integration
             };
 
             AddActivityTemplate(
-               activityDTO,
+               dataDTO,
               testIncomingDataTemplate
             );
 
             AddActivityTemplate(
-               activityDTO,
+               dataDTO,
               setDelayActionTemplate
             );
 
-            var queryMTDatabaseActionTemplate = new ActivityTemplateDTO()
+            var queryFr8WarehouseActionTemplate = new ActivityTemplateDTO()
             {
                 Version = "1",
-                Name = "QueryMTDatabase",
-                Label = "Query MT Database",
+                Name = "QueryFr8Warehouse",
+                Label = "Query Fr8 Warehouse",
                 Category = ActivityCategory.Processors,
                 Terminal = terminalCoreDO,
                 NeedsAuthentication = false,
@@ -116,22 +115,22 @@ namespace terminalDocuSignTests.Integration
             };
 
             AddActivityTemplate(
-               activityDTO,
-              queryMTDatabaseActionTemplate
+               dataDTO,
+              queryFr8WarehouseActionTemplate
             );
 
             AddActivityTemplate(
-               activityDTO,
+               dataDTO,
               docusignEventActionTemplate
             );
 
             AddActivityTemplate(
-                activityDTO,
+                dataDTO,
                 new ActivityTemplateDTO()
                 {
                     Id = 9,
                     Name = "Send Email_Via_Send_Grid",
-                    Label = "Send Email using SendGrid",
+                    Label = "Send Email",
                     Tags = "Notifier",
                     Version = "1",
                     Terminal = terminal
@@ -140,18 +139,18 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async void Rich_Document_Notification_Initial_Configuration_Check_Crate_Structure()
+        public async Task Rich_Document_Notification_Initial_Configuration_Check_Crate_Structure()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Rich_Document_Notifications_v1_InitialConfiguration_ActionDTO();
-            AddHubActivityTemplate(requestActionDTO);
-            requestActionDTO.AuthToken = HealthMonitor_FixtureData.DocuSign_AuthToken();
+            var dataDTO = HealthMonitor_FixtureData.Rich_Document_Notifications_v1_InitialConfiguration_Fr8DataDTO();
+            AddHubActivityTemplate(dataDTO);
+            dataDTO.ActivityDTO.AuthToken = HealthMonitor_FixtureData.DocuSign_AuthToken();
 
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    requestActionDTO
+                    dataDTO
                 );
 
             Assert.NotNull(responseActionDTO);
@@ -163,21 +162,21 @@ namespace terminalDocuSignTests.Integration
             AssertControls(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single());
         }
 
-        private async Task<ActivityDTO> GetActionDTO_WithEventsAndDelayValue()
+        private async Task<ActivityDTO> GetActivityDTO_WithEventsAndDelayValue()
         {
             var configureUrl = GetTerminalConfigureUrl();
-            var requestActionDTO = HealthMonitor_FixtureData.Rich_Document_Notifications_v1_InitialConfiguration_ActionDTO();
-            AddHubActivityTemplate(requestActionDTO);
+            var dataDTO = HealthMonitor_FixtureData.Rich_Document_Notifications_v1_InitialConfiguration_Fr8DataDTO();
+            AddHubActivityTemplate(dataDTO);
 
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    requestActionDTO
+                    dataDTO
                 );
 
-            using (var updater = Crate.UpdateStorage(responseActionDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(responseActionDTO))
             {
-                var controls = updater.CrateStorage
+                var controls = crateStorage
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
                     .Single();
 
@@ -186,12 +185,12 @@ namespace terminalDocuSignTests.Integration
                 var radioGroup = (RadioButtonGroup)controls.Controls[0];
                 radioGroup.Radios[0].Selected = true;
 
-                var availableEventCM = updater.CrateStorage
-                    .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "AvailableEvents")
+                var availableEventCM = crateStorage
+                    .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "AvailableEvents")
                     .Single();
 
-                var availableHandlers = updater.CrateStorage
-                    .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "AvailableHandlers")
+                var availableHandlers = crateStorage
+                    .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "AvailableHandlers")
                     .Single();
 
                 Assert.IsTrue(availableEventCM.Fields.Count > 0);
@@ -213,21 +212,21 @@ namespace terminalDocuSignTests.Integration
             return responseActionDTO;
         }
 
-        private async Task<ActivityDTO> GetActionDTO_WithEventsValue()
+        private async Task<ActivityDTO> GetActivityDTO_WithEventsValue()
         {
             var configureUrl = GetTerminalConfigureUrl();
-            var requestActionDTO = HealthMonitor_FixtureData.Rich_Document_Notifications_v1_InitialConfiguration_ActionDTO();
-            AddHubActivityTemplate(requestActionDTO);
+            var dataDTO = HealthMonitor_FixtureData.Rich_Document_Notifications_v1_InitialConfiguration_Fr8DataDTO();
+            AddHubActivityTemplate(dataDTO);
 
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    requestActionDTO
+                    dataDTO
                 );
 
-            using (var updater = Crate.UpdateStorage(responseActionDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(responseActionDTO))
             {
-                var controls = updater.CrateStorage
+                var controls = crateStorage
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
                     .Single();
 
@@ -236,12 +235,12 @@ namespace terminalDocuSignTests.Integration
                 var radioGroup = (RadioButtonGroup)controls.Controls[0];
                 radioGroup.Radios[0].Selected = true;
 
-                var availableEventCM = updater.CrateStorage
-                    .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "AvailableEvents")
+                var availableEventCM = crateStorage
+                    .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "AvailableEvents")
                     .Single();
 
-                var availableHandlers = updater.CrateStorage
-                    .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "AvailableHandlers")
+                var availableHandlers = crateStorage
+                    .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "AvailableHandlers")
                     .Single();
 
                 Assert.IsTrue(availableEventCM.Fields.Count > 0);
@@ -257,7 +256,7 @@ namespace terminalDocuSignTests.Integration
         /*
         // check for Follow-up configuration
         [Test]
-        public async void Rich_Document_FollowUp_Configuration_Check_Crate_Structure()
+        public async Task Rich_Document_FollowUp_Configuration_Check_Crate_Structure()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -283,7 +282,7 @@ namespace terminalDocuSignTests.Integration
         /*
         // check for child actions.
         [Test]
-        public async void Rich_Document_Notifications_FollowUp_Configuration_Check_ChildAction_WithoutDelay()
+        public async Task Rich_Document_Notifications_FollowUp_Configuration_Check_ChildAction_WithoutDelay()
         {
             var configureUrl = GetTerminalConfigureUrl();
             var actionDTO = await GetActionDTO_WithEventsValue();
@@ -305,7 +304,7 @@ namespace terminalDocuSignTests.Integration
         //This test causes timeout exception on build server. disabled for now
         /*
         [Test]
-        public async void Rich_Document_Notifications_FollowUp_Configuration_Check_ChildAction_WithDelay()
+        public async Task Rich_Document_Notifications_FollowUp_Configuration_Check_ChildAction_WithDelay()
         {
             var configureUrl = GetTerminalConfigureUrl();
             var actionDTO = await GetActionDTO_WithEventsAndDelayValue();
@@ -329,17 +328,17 @@ namespace terminalDocuSignTests.Integration
         }
         */
         [Test]
-        public async void Rich_Document_Notifications_Activate_Returns_ActionDTO()
+        public async Task Rich_Document_Notifications_Activate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = HealthMonitor_FixtureData.Rich_Document_Notifications_v1_InitialConfiguration_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Rich_Document_Notifications_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -350,17 +349,17 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async void Rich_Document_Notifications_Deactivate_Returns_ActionDTO()
+        public async Task Rich_Document_Notifications_Deactivate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = HealthMonitor_FixtureData.Rich_Document_Notifications_v1_InitialConfiguration_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Rich_Document_Notifications_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );

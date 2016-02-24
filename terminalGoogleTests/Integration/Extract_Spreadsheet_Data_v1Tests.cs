@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Data.Control;
 using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
@@ -34,15 +35,15 @@ namespace terminalGoogleTests.Integration
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
         [Test, Category("Integration.terminalGoogle")]
-        public async void Extract_Spreadsheet_Data_Initial_Configuration_Check_Crate_Structure()
+        public async Task Extract_Spreadsheet_Data_Initial_Configuration_Check_Crate_Structure()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
-            requestActionDTO.AuthToken = HealthMonitor_FixtureData.Google_AuthToken1();
+            var dataDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_Fr8DataDTO();
+            dataDTO.ActivityDTO.AuthToken = HealthMonitor_FixtureData.Google_AuthToken1();
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
-                    configureUrl, requestActionDTO
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
+                    configureUrl, dataDTO
                 );
 
             Assert.NotNull(responseActionDTO);
@@ -53,9 +54,9 @@ namespace terminalGoogleTests.Integration
             AssertCrateTypes_OnConfiguration(crateStorage);
             AssertControls_OnConfiguration(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single());
         }
-        private void AssertCrateTypes_OnConfiguration(CrateStorage crateStorage)
+        private void AssertCrateTypes_OnConfiguration(ICrateStorage crateStorage)
         {
-            Assert.AreEqual(1, crateStorage.Count);
+            Assert.AreEqual(2, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
         }
 
@@ -87,21 +88,21 @@ namespace terminalGoogleTests.Integration
         /// Required fields are tested
         /// </summary> 
         [Test, Category("Integration.terminalGoogle")]
-        public async void Extract_Spreadsheet_Data_v1_FollowupConfiguration_Row_And_Column_Table()
+        public async Task Extract_Spreadsheet_Data_v1_FollowupConfiguration_Row_And_Column_Table()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = fixture.Extract_Spreadsheet_Data_v1_Followup_Configuration_Request_ActionDTO_With_Crates();
+            var requestActionDTO = fixture.Extract_Spreadsheet_Data_v1_Followup_Configuration_Request_ActivityDTO_With_Crates();
 
             ////Act
             fixture.Extract_Spreadsheet_Data_v1_AddPayload(requestActionDTO, "Row_And_Column");
-
+            var dataDTO = new Fr8DataDTO { ActivityDTO = requestActionDTO };
             //As the ActionDTO is preconfigured configure url actually calls the follow up configuration
             var responseActionDTO =
-               await HttpPostAsync<ActivityDTO, ActivityDTO>(
+               await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                    configureUrl,
-                   requestActionDTO
+                   dataDTO
                );
 
             //Assert
@@ -124,21 +125,21 @@ namespace terminalGoogleTests.Integration
         /// Required fields are tested
         /// </summary> 
         [Test, Category("Integration.terminalGoogle")]
-        public async void Extract_Spreadsheet_Data_v1_FollowupConfiguration_Column_Only_Table()
+        public async Task Extract_Spreadsheet_Data_v1_FollowupConfiguration_Column_Only_Table()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = fixture.Extract_Spreadsheet_Data_v1_Followup_Configuration_Request_ActionDTO_With_Crates();
+            var requestActionDTO = fixture.Extract_Spreadsheet_Data_v1_Followup_Configuration_Request_ActivityDTO_With_Crates();
 
             ////Act
             fixture.Extract_Spreadsheet_Data_v1_AddPayload(requestActionDTO, "Column_Only");
-
+            var dataDTO = new Fr8DataDTO { ActivityDTO = requestActionDTO };
             //As the ActionDTO is preconfigured configure url actually calls the follow up configuration
             var responseActionDTO =
-               await HttpPostAsync<ActivityDTO, ActivityDTO>(
+               await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                    configureUrl,
-                   requestActionDTO
+                   dataDTO
                );
 
             //Assert
@@ -160,21 +161,21 @@ namespace terminalGoogleTests.Integration
         /// Required fields are tested
         /// </summary> 
         [Test, Category("Integration.terminalGoogle")]
-        public async void Extract_Spreadsheet_Data_v1_FollowupConfiguration_Row_Only_Table()
+        public async Task Extract_Spreadsheet_Data_v1_FollowupConfiguration_Row_Only_Table()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = fixture.Extract_Spreadsheet_Data_v1_Followup_Configuration_Request_ActionDTO_With_Crates();
+            var requestActionDTO = fixture.Extract_Spreadsheet_Data_v1_Followup_Configuration_Request_ActivityDTO_With_Crates();
 
             ////Act
             fixture.Extract_Spreadsheet_Data_v1_AddPayload(requestActionDTO, "Row_Only");
-
+            var dataDTO = new Fr8DataDTO { ActivityDTO = requestActionDTO };
             //As the ActionDTO is preconfigured configure url actually calls the follow up configuration
             var responseActionDTO =
-               await HttpPostAsync<ActivityDTO, ActivityDTO>(
+               await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                    configureUrl,
-                   requestActionDTO
+                   dataDTO
                );
 
             //Assert
@@ -208,7 +209,7 @@ namespace terminalGoogleTests.Integration
         //    ExpectedException = typeof(RestfulServiceException),
         //    ExpectedMessage = @"{""status"":""terminal_error"",""message"":""No headers found in the Standard Table Data Manifest.""}"
         //)]
-        //public async void Extract_Spreadsheet_Data_v1_FollowupConfiguration_Empty_First_Row()
+        //public async Task Extract_Spreadsheet_Data_v1_FollowupConfiguration_Empty_First_Row()
         //{
         //    var configureUrl = GetTerminalConfigureUrl();
         //    var runUrl = GetTerminalRunUrl();
@@ -228,98 +229,102 @@ namespace terminalGoogleTests.Integration
         /// Run ActionType with no AuthToken provided throws exception.
         /// </summary>
         [Test, Category("Integration.terminalGoogle")]
-        public async void Extract_Spreadsheet_Data_v1_Run_No_Auth()
+        public async Task Extract_Spreadsheet_Data_v1_Run_No_Auth()
         {
             //Arrange
             var runUrl = GetTerminalRunUrl();
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
 
             //prepare the action DTO with valid target URL
-            var activityDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
-            activityDTO.AuthToken = null;
+            var dataDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_Fr8DataDTO();
+            dataDTO.ActivityDTO.AuthToken = null;
 
-            AddOperationalStateCrate(activityDTO, new OperationalStateCM());
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
             //Act
-            var payload = await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, activityDTO);
+            var payload = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
             CheckIfPayloadHasNeedsAuthenticationError(payload);
         }
         /// <summary>
         /// Zero Upstream Crates throws exception.
         /// </summary>
-        [Test, Category("Integration.terminalGoogle")]
-        [ExpectedException(
-            ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""No Standard File Handle crate found in upstream.""}",
-            MatchType = MessageMatch.Contains
-        )]
-        public async void Extract_Spreadsheet_Data_v1_Run_With_Zero_Upstream_Crates()
-        {
-            //Arrange
-            var runUrl = GetTerminalRunUrl();
+        //[Test, Category("Integration.terminalGoogle")]
+        //[ExpectedException(
+        //    ExpectedException = typeof(RestfulServiceException),
+        //    ExpectedMessage = @"{""status"":""terminal_error"",""message"":""No Standard File Handle crate found in upstream.""}",
+        //    MatchType = MessageMatch.Contains
+        //)]
+        //public async Task Extract_Spreadsheet_Data_v1_Run_With_Zero_Upstream_Crates()
+        //{
+        //    //Arrange
+        //    var runUrl = GetTerminalRunUrl();
+        //    HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
 
-            //prepare the action DTO
-            var activityDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
-            AddOperationalStateCrate(activityDTO, new OperationalStateCM());
-            //Act
-            await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, activityDTO);
-        }
+        //    //prepare the action DTO
+        //    var dataDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_Fr8DataDTO();
+        //    AddOperationalStateCrate(dataDTO.ActivityDTO, new OperationalStateCM());
+
+        //    //Act
+        //    await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
+        //}
         /// <summary>
         /// One Upstream Crate throws NonImplementedException.
         /// </summary>
-        [Test, Category("Integration.terminalGoogle")]
-        [ExpectedException(
-            ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""The method or operation is not implemented.""}",
-            MatchType = MessageMatch.Contains
-        )]
-        public async void Extract_Spreadsheet_Data_v1_Run_With_One_Upstream_Crates()
-        {
-            //Arrange
-            var runUrl = GetTerminalRunUrl();
-            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+        //[Test, Category("Integration.terminalGoogle")]
+        //[ExpectedException(
+        //    ExpectedException = typeof(RestfulServiceException),
+        //    ExpectedMessage = @"{""status"":""terminal_error"",""message"":""The method or operation is not implemented.""}",
+        //    MatchType = MessageMatch.Contains
+        //)]
+        //public async Task Extract_Spreadsheet_Data_v1_Run_With_One_Upstream_Crates()
+        //{
+        //    //Arrange
+        //    var runUrl = GetTerminalRunUrl();
+        //    HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
 
-            //prepare the action DTO with valid target URL
-            var activityDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
-            AddUpstreamCrate(activityDTO, fixture.GetUpstreamCrate(), "Upsteam Crate");
-            AddOperationalStateCrate(activityDTO, new OperationalStateCM());
-            //Act
-            await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, activityDTO);
-        }
+        //    //prepare the action DTO with valid target URL
+        //    var dataDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_Fr8DataDTO();
+        //    AddUpstreamCrate(dataDTO.ActivityDTO, fixture.GetUpstreamCrate(), "Upsteam Crate");
+        //    AddOperationalStateCrate(dataDTO.ActivityDTO, new OperationalStateCM());
+
+        //    //Act
+        //    await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
+        //}
         /// <summary>
         /// Two Upstream Crate throw exception.
         /// </summary>
-        [Test, Category("Integration.terminalGoogle")]
-        [ExpectedException(
-            ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""More than one Standard File Handle crates found upstream.""}",
-            MatchType = MessageMatch.Contains
-        )]
-        public async void Extract_Spreadsheet_Data_v1_Run_With_Two_Upstream_Crates()
-        {
-            //Arrange
-            var runUrl = GetTerminalRunUrl();
-            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+        //[Test, Category("Integration.terminalGoogle")]
+        //[ExpectedException(
+        //    ExpectedException = typeof(RestfulServiceException),
+        //    ExpectedMessage = @"{""status"":""terminal_error"",""message"":""More than one Standard File Handle crates found upstream.""}",
+        //    MatchType = MessageMatch.Contains
+        //)]
+        //public async Task Extract_Spreadsheet_Data_v1_Run_With_Two_Upstream_Crates()
+        //{
+        //    //Arrange
+        //    var runUrl = GetTerminalRunUrl();
+        //    HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
 
-            //prepare the action DTO with valid target URL
-            var activityDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
-            AddUpstreamCrate(activityDTO, fixture.GetUpstreamCrate(), "Upsteam Crate");
-            AddUpstreamCrate(activityDTO, fixture.GetUpstreamCrate(), "Upsteam Crate");
-            AddOperationalStateCrate(activityDTO, new OperationalStateCM());
-            //Act
-            await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, activityDTO);
-        }
+        //    //prepare the action DTO with valid target URL
+        //    var dataDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_Fr8DataDTO();
+        //    AddUpstreamCrate(dataDTO.ActivityDTO, fixture.GetUpstreamCrate(), "Upsteam Crate");
+        //    AddUpstreamCrate(dataDTO.ActivityDTO, fixture.GetUpstreamCrate(), "Upsteam Crate");
+        //    AddOperationalStateCrate(dataDTO.ActivityDTO, new OperationalStateCM());
+
+        //    //Act
+        //    await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
+        //}
         /// <summary>
         /// Test run-time without Auth-Token.
         /// </summary>
         [Test, Category("Integration.terminalGoogle")]
-        public async void Extract_Spreadsheet_Data_v1_Run_NoAuth()
+        public async Task Extract_Spreadsheet_Data_v1_Run_NoAuth()
         {
             var runUrl = GetTerminalRunUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
-            requestActionDTO.AuthToken = null;
-            AddOperationalStateCrate(requestActionDTO, new OperationalStateCM());
-            var payload = await HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, requestActionDTO);
+            var dataDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_Fr8DataDTO();
+            dataDTO.ActivityDTO.AuthToken = null;
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
+            var payload = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
             CheckIfPayloadHasNeedsAuthenticationError(payload);
         }
         /////////////

@@ -17,6 +17,7 @@ using Moq;
 using Hub.Managers;
 using Data.Interfaces.Manifests;
 using Data.Crates;
+using AutoMapper;
 
 namespace DockyardTest.Security
 {
@@ -161,8 +162,6 @@ namespace DockyardTest.Security
                 {
                     ParentRouteNode = planDO,
                     ParentRouteNodeId = planDO.Id,
-                    Name = "testaction",
-
                     Id = FixtureData.GetTestGuidById(1),
                     ActivityTemplateId = activityTemplateDO.Id,
                     ActivityTemplate = activityTemplateDO,
@@ -171,15 +170,19 @@ namespace DockyardTest.Security
                     Ordering = 1
                 };
 
-                uow.ActivityRepository.Add(activityDO);
+                planDO.ChildNodes.Add(activityDO);
+
+               // uow.ActivityRepository.Add(activityDO);
                 uow.SaveChanges();
 
                 activityDTO.Id = activityDO.Id;
-                activityDTO.ActivityTemplateId = activityTemplateDO.Id;
+                activityDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(activityTemplateDO);
             }
-            
-                
-            _authorization.PrepareAuthToken(activityDTO);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                _authorization.PrepareAuthToken(uow, activityDTO);
+            }
 
             Assert.AreEqual(Token, activityDTO.AuthToken.Token);
         }
@@ -199,7 +202,14 @@ namespace DockyardTest.Security
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {   
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
-                uow.RouteNodeRepository.Add(activityDO);
+
+                uow.PlanRepository.Add(new PlanDO()
+                {
+                    Name = "name",
+                    RouteState = RouteState.Active,
+                    ChildNodes = { activityDO }
+                });
+                
                 uow.SaveChanges();
             }
 
@@ -285,7 +295,12 @@ namespace DockyardTest.Security
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {   
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
-                uow.RouteNodeRepository.Add(activityDO);
+                uow.PlanRepository.Add(new PlanDO()
+                {
+                    Name = "name",
+                    RouteState = RouteState.Active,
+                    ChildNodes = { activityDO }
+                });
                 uow.SaveChanges();
             }
 
@@ -328,19 +343,26 @@ namespace DockyardTest.Security
                 activityTemplateDO.NeedsAuthentication = true;
 
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
-                activityDTO.ActivityTemplateId = activityTemplateDO.Id;
 
                 activityDO.ActivityTemplate = activityTemplateDO;
-                uow.ActivityRepository.Add(activityDO);
+                   uow.PlanRepository.Add(new PlanDO()
+                {
+                    Name = "name",
+                    RouteState = RouteState.Active,
+                    ChildNodes = { activityDO }
+                });
 
                 uow.SaveChanges();
 
-                activityDTO.ActivityTemplateId = activityTemplateDO.Id;
                 activityDTO.Id = activityDO.Id;
+                activityDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(activityTemplateDO);
             }
-            var testResult = _authorization.ValidateAuthenticationNeeded(userDO.Id, activityDTO);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var testResult = _authorization.ValidateAuthenticationNeeded(uow, userDO.Id, activityDTO);
 
-            Assert.IsTrue(testResult);
+                Assert.IsTrue(testResult);
+            }
         }
 
         [Test]
@@ -356,21 +378,29 @@ namespace DockyardTest.Security
             {
                 var activityTemplateDO = new ActivityTemplateDO("test_name", "test_label", "1", "test_description", tokenDO.TerminalID);
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
-                activityDTO.ActivityTemplateId = activityTemplateDO.Id;
 
                 activityDO.ActivityTemplate = activityTemplateDO;
+                
                 activityDO.AuthorizationToken = tokenDO;
-                uow.ActivityRepository.Add(activityDO);
+                uow.PlanRepository.Add(new PlanDO()
+                {
+                    Name="name",
+                    RouteState = RouteState.Active,
+                    ChildNodes = { activityDO }
+                });
 
                 uow.SaveChanges();
 
                 activityDTO.Id = activityDO.Id;
-                activityDTO.ActivityTemplateId = activityTemplateDO.Id;
+                activityDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(activityTemplateDO);
             }
 
-            var testResult = _authorization.ValidateAuthenticationNeeded(tokenDO.UserID, activityDTO);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var testResult = _authorization.ValidateAuthenticationNeeded(uow, tokenDO.UserID, activityDTO);
 
-            Assert.IsFalse(testResult);
+                Assert.IsFalse(testResult);
+            }
         }
 
         [Test]
@@ -386,10 +416,8 @@ namespace DockyardTest.Security
             {
                 var activityTemplateDO = new ActivityTemplateDO("test_name", "test_label", "1", "test_description", terminalDO.Id);
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
-                activityDTO.ActivityTemplateId = activityTemplateDO.Id;
                 uow.SaveChanges();
 
-                activityDTO.ActivityTemplateId = activityTemplateDO.Id;
             }
 
             

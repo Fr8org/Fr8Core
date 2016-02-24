@@ -23,13 +23,12 @@ namespace terminalDropboxTests.Fixtures
             };
         }
 
-        public static ActivityDO GetFileListTestActionDO1()
+        public static ActivityDO GetFileListTestActivityDO1()
         {
             var actionTemplate = GetFileListTestActivityTemplateDO();
 
             var activityDO = new ActivityDO()
             {
-                Name = "testaction",
                 Id = TestGuid_Id_333(),
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate,
@@ -67,11 +66,11 @@ namespace terminalDropboxTests.Fixtures
             get
             {
                 PayloadDTO payloadDTO = new PayloadDTO(TestContainerGuid());
-                using (var updater = new CrateManager().UpdateStorage(payloadDTO))
+                using (var crateStorage = new CrateManager().GetUpdatableStorage(payloadDTO))
                 {
                     var operationalStatus = new OperationalStateCM();
                     var operationsCrate = Crate.FromContent("Operational Status", operationalStatus);
-                    updater.CrateStorage.Add(operationsCrate);
+                    crateStorage.Add(operationsCrate);
                 }
                 return payloadDTO;
             }

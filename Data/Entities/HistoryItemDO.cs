@@ -28,6 +28,7 @@ namespace Data.Entities
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var a = ObjectFactory.Container.WhatDoIHave();
                 var configRepo = ObjectFactory.GetInstance<IConfigRepository>();
                 string customerAddress = null;
 

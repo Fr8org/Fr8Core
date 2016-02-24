@@ -242,20 +242,20 @@ namespace Hub.Services
             var namePart = string.Join("_", tokens.Take(tokens.Length - 1).ToArray());
             var versionPart = versionToken.Substring(1);
 
-            return GetByNameAndVersion(uow, namePart, versionPart);
+            return GetByNameAndVersion(namePart, versionPart);
         }
 
         /// <summary>
         /// Returns ActivityTemplate by it's name and version.
         /// For example GetByNameAndVersion(uow, "AddPayloadManually", "1").
         /// </summary>
-        public ActivityTemplateDO GetByNameAndVersion(IUnitOfWork uow, string name, string version)
+        public ActivityTemplateDO GetByNameAndVersion(string name, string version)
         {
             Initialize();
 
             lock (_activityTemplates)
             {
-                return _activityTemplates.Values.Single(x => x.Name == name && x.Version == version);
+                return _activityTemplates.Values.FirstOrDefault(x => x.Name == name && x.Version == version);
             }
         }
     }

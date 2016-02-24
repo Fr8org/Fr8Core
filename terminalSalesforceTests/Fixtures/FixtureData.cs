@@ -15,9 +15,9 @@ namespace terminalSalesforceTests.Fixtures
             return new AuthorizationTokenDO()
             {
                 Token =
-                    @"{ ""Email"": ""freight.testing@gmail.com"", ""ApiPassword"": ""SnByDvZJ/fp9Oesd/a9Z84VucjU="" }",
+                    @"00D610000007nIo!AQ8AQHb7zGj8FFNh8Cimj9f_f174biQ3ZYT3TBjFUx_fCrOHZZgBwUusnbKeqOBf5QQdX6w1KpRfoo_LE5KGf78zPbPyL35m",
                 AdditionalAttributes =
-                    @"refresh_token=5Aep861tbt360sO1.uiSjP9QVIPyR8s6bD9ipi.zZtsHJjep8c8djasP2.kmjMlBpojryMUY4dMgo3rESsiruiR;instance_url=https://na34.salesforce.com;api_version=v34.0"
+                    @"refresh_token=5Aep861tbt360sO1.uiSjP9QVIPyR8s6bD9ipi.zZtsHJjep8f9D6MxcRJRKyYoiUo.U.XfZX0wx8JWmboZNVqm;instance_url=https://na34.salesforce.com;api_version=v34.0"
             };
         }
 
@@ -27,18 +27,17 @@ namespace terminalSalesforceTests.Fixtures
             {
                 Version = "1",
                 Name = "Get_Data",
-                Label = "Get Data",
+                Label = "Get Data from Salesforce.com",
                 NeedsAuthentication = true
             };
         }
 
-        public static ActivityDO GetFileListTestActionDO1()
+        public static ActivityDO GetFileListTestActivityDO1()
         {
             var actionTemplate = GetDataActivityTemplateDO();
 
             var activityDO = new ActivityDO()
             {
-                Name = "testaction",
                 Id = new Guid("8339DC87-F011-4FB1-B47C-FEC406E4100A"),
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate,

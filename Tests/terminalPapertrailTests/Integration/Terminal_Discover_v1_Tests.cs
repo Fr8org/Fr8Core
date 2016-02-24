@@ -1,5 +1,6 @@
 ﻿
 using System.Runtime.Remoting;
+using System.Threading.Tasks;
 using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
 using NUnit.Framework;
@@ -23,16 +24,16 @@ namespace terminalPapertrailTests.Integration
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
         [Test, Category("Integration.terminalPapertrail")]
-        public async void Terminal_Papertrail_Discover_()
+        public async Task Terminal_Papertrail_Discover_()
         {
             var discoverUrl = GetTerminalDiscoverUrl();
 
             var papertrailTerminalDiscoveryResponse = await HttpGetAsync<StandardFr8TerminalCM>(discoverUrl);
 
             Assert.IsNotNull(papertrailTerminalDiscoveryResponse, "Terminal Papertrail discovery did not happen.");
-            Assert.IsNotNull(papertrailTerminalDiscoveryResponse.Actions, "Papertrail terminal does not have the write to log activity.");
-            Assert.AreEqual(1, papertrailTerminalDiscoveryResponse.Actions.Count, "Papertrail terminal does not have the write to log activity.");
-            Assert.AreEqual("Write_To_Log", papertrailTerminalDiscoveryResponse.Actions[0].Name, "Name of the write to log activity is wrong.");
+            Assert.IsNotNull(papertrailTerminalDiscoveryResponse.Activities, "Papertrail terminal does not have the write to log activity.");
+            Assert.AreEqual(1, papertrailTerminalDiscoveryResponse.Activities.Count, "Papertrail terminal does not have the write to log activity.");
+            Assert.AreEqual("Write_To_Log", papertrailTerminalDiscoveryResponse.Activities[0].Name, "Name of the write to log activity is wrong.");
         }
     }
 }

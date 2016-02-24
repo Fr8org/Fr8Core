@@ -5,6 +5,8 @@ using System.Threading;
 using NUnit.Core;
 using HealthMonitor.Configuration;
 using System.Configuration;
+using System.Diagnostics;
+using System.IO;
 
 namespace HealthMonitor
 {
@@ -18,6 +20,10 @@ namespace HealthMonitor
             var selfHosting = false;
             var connectionString = string.Empty;
             var specificTest = string.Empty;
+            var appInsightsInstrumentationKey = string.Empty;
+            int errorCount = 0;
+
+            Debug.AutoFlush = true;
 
             if (args != null)
             {
@@ -47,13 +53,17 @@ namespace HealthMonitor
                     {
                         specificTest = args[i];
                     }
+                    else if (i > 0 && args[i - 1] == "--aiik" && args[i] != null)
+                    {
+                        appInsightsInstrumentationKey = args[i];
+                    }
                 }
 
                 if (selfHosting)
                 {
                     if (string.IsNullOrEmpty(connectionString))
                     {
-                        throw new ArgumentException("You should specify '--connectionString {Name}={Value}' parameter when using self host mode.");
+                        throw new ArgumentException("You should specify --connectionString \"{Name}={Value}\" argument when using self host mode.");
                     }
 
                     var regex = new System.Text.RegularExpressions.Regex("([\\w\\d]{1,})=([\\s\\S]+)");
@@ -69,12 +79,16 @@ namespace HealthMonitor
             var selfHostInitializer = new SelfHostInitializer();
             if (selfHosting)
             {
-                selfHostInitializer.Initialize();
+                selfHostInitializer.Initialize(connectionString);
             }
 
             try
             {
-                new Program().Run(ensureTerminalsStartup, sendEmailReport, appName, specificTest);
+                errorCount = new Program().Run(ensureTerminalsStartup, sendEmailReport, appName, specificTest, appInsightsInstrumentationKey);
+            }
+            catch (Exception)
+            {
+
             }
             finally
             {
@@ -83,6 +97,7 @@ namespace HealthMonitor
                     selfHostInitializer.Dispose();
                 }
             }
+            Environment.Exit(errorCount);
         }
 
         private static void UpdateConnectionString(string key, string value)
@@ -106,7 +121,7 @@ namespace HealthMonitor
 
                 foreach (var terminalName in failedToStart)
                 {
-                    Console.WriteLine(terminalName);
+                    Console.WriteLine("{0}: {1}", terminalName, ConfigurationManager.AppSettings[terminalName]);
                 }
 
                 Environment.Exit(failedToStart.Count);
@@ -135,11 +150,12 @@ namespace HealthMonitor
             }
         }
 
-        private void Run(
+        private int Run(
             bool ensureTerminalsStartup,
             bool sendEmailReport,
             string appName,
-            string test)
+            string test,
+            string appInsightsInstrumentationKey)
         {
             CoreExtensions.Host.InitializeService();
 
@@ -148,7 +164,7 @@ namespace HealthMonitor
                 EnsureTerminalsStartUp();
             }
 
-            var testRunner = new NUnitTestRunner();
+            var testRunner = new NUnitTestRunner(appInsightsInstrumentationKey);
             var report = testRunner.Run(test);
 
             if (sendEmailReport)
@@ -164,11 +180,7 @@ namespace HealthMonitor
             }
 
             ReportToConsole(appName, report);
-
-            // Console.ReadLine();
-
-            var errorCount = report.Tests.Count(x => !x.Success);
-            Environment.Exit(errorCount);
+            return report.Tests.Count(x => !x.Success);
         }
     }
 }

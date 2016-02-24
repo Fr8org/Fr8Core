@@ -32,9 +32,9 @@ namespace terminalSendGrid.Controllers
             var activity = new ActivityTemplateDTO()
             {
                 Name = "SendEmailViaSendGrid",
-                Label = "Send Email using SendGrid",
+                Label = "Send Email",
                 Version = "1",
-                Description = "Send Email using SendGrid: Description",
+                Description = "Send Email: Description",
                 Tags = "Notifier",
                 Terminal = terminal,
                 Category = ActivityCategory.Forwarders,
@@ -50,7 +50,7 @@ namespace terminalSendGrid.Controllers
             StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
                 Definition = terminal,
-                Actions = actionList
+                Activities = actionList
             };
 
             return Json(curStandardFr8TerminalCM);

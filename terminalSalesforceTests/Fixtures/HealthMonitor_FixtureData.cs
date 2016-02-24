@@ -11,9 +11,9 @@ namespace terminalSalesforceTests.Fixtures
             return new AuthorizationTokenDTO()
             {
                 Token =
-                    @"{ ""Email"": ""freight.testing@gmail.com"", ""ApiPassword"": ""SnByDvZJ/fp9Oesd/a9Z84VucjU="" }",
+                    @"00D610000007nIo!AQ8AQHb7zGj8FFNh8Cimj9f_f174biQ3ZYT3TBjFUx_fCrOHZZgBwUusnbKeqOBf5QQdX6w1KpRfoo_LE5KGf78zPbPyL35m",
                 AdditionalAttributes =
-                    @"refresh_token=5Aep861tbt360sO1.uiSjP9QVIPyR8s6bD9ipi.zZtsHJjep8eXTEwlpwx8gvOTG_tDqWppOeNVeI33honwW02D;instance_url=https://na34.salesforce.com;api_version=v34.0"
+                    @"refresh_token=5Aep861tbt360sO1.uiSjP9QVIPyR8s6bD9ipi.zZtsHJjep8f9D6MxcRJRKyYoiUo.U.XfZX0wx8JWmboZNVqm;instance_url=https://na34.salesforce.com;api_version=v34.0"
             };
         }
 
@@ -56,68 +56,65 @@ namespace terminalSalesforceTests.Fixtures
             {
                 Version = "1",
                 Name = "Get_Data_TEST",
-                Label = "Get Data",
+                Label = "Get Data from Salesforce.com",
                 NeedsAuthentication = true
             };
         }
 
-        public static ActivityDTO Create_Account_v1_InitialConfiguration_ActionDTO()
+        public static Fr8DataDTO Create_Account_v1_InitialConfiguration_Fr8DataDTO()
         {
             var activityTemplate = Create_Account_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Create_Account",
                 Label = "Create Account",
                 AuthToken = Salesforce_AuthToken(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
+
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
 
-        public static ActivityDTO Create_Contact_v1_InitialConfiguration_ActionDTO()
+        public static Fr8DataDTO Create_Contact_v1_InitialConfiguration_Fr8DataDTO()
         {
             var activityTemplate = Create_Contact_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Create_Contact",
                 Label = "Create Contact",
                 AuthToken = Salesforce_AuthToken(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
+
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
 
-        public static ActivityDTO Create_Lead_v1_InitialConfiguration_ActionDTO()
+        public static Fr8DataDTO Create_Lead_v1_InitialConfiguration_Fr8DataDTO()
         {
             var activityTemplate = Create_Lead_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Create_Lead",
                 Label = "Create Lead",
                 AuthToken = Salesforce_AuthToken(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
 
-        public static ActivityDTO Get_Data_v1_InitialConfiguration_ActionDTO()
+        public static ActivityDTO Get_Data_v1_InitialConfiguration_ActivityDTO()
         {
             var activityTemplate = Get_Data_v1_ActivityTemplate();
 
             return new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Get_Data",
-                Label = "Get Data",
+                Label = "Get Data from Salesforce.com",
                 AuthToken = Salesforce_AuthToken(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
         }
     }

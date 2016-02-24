@@ -13,10 +13,14 @@ namespace terminalDocuSign.Interfaces
 {
 	public interface IDocuSignTemplate
 	{
-		List<string> GetMappableSourceFields(DocuSignEnvelope envelope);
-		IEnumerable<string> GetMappableSourceFields(string templateId);
-		IEnumerable<TemplateInfo> GetTemplates(Fr8AccountDO curDockyardAccount);
-        IEnumerable<TemplateInfo> GetTemplates(string email, string apiPassword);
+        // Commented by blazingmind (Vlad). Current implementation of these methods will fail. 
+        // If you need them you have to fix DocuSignTemplate service logic first
+		//List<string> GetMappableSourceFields(DocuSignEnvelope envelope);
+		//IEnumerable<string> GetMappableSourceFields(string templateId);
+		
+            
+        //IEnumerable<TemplateInfo> GetTemplates(Fr8AccountDO curDockyardAccount);
+        IEnumerable<TemplateInfo> GetTemplateNames(string email, string apiPassword);
 		List<string> GetUserFields(DocuSignTemplateDTO curDocuSignTemplateDTO);
 		DocuSignTemplateDTO GetTemplateById(string templateId);
 	}

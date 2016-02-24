@@ -71,9 +71,12 @@
     },    
     {
       "Path": "../../bower_components/angular-bootstrap-switch/dist/angular-bootstrap-switch.js"
-    },    
+    },
     {
       "Path": "../../bower_components/dndLists/angular-drag-and-drop-lists.min.js"
+    },
+    {
+      "Path": "../../bower_components/angular-ivh-treeview/dist/ivh-treeview.min.js"
     },
     {
       "Path": "../app/app.js"
@@ -150,7 +153,10 @@
       "Includes": [ "*.js" ],
       "Excludes": [ "*.ts" ]
     },
-    { "Path": "../tests/templates/templateCache.js" }
+    { "Path": "../tests/templates/templateCache.js" },
+     {
+      "Path": "../../bower_components/angular-messages/angular-messages.min.js"
+    }
   ],
   "Tests": [{ "Include": "*.js" }],
   "RootReferencePathMode": "SettingsFileDirectory"

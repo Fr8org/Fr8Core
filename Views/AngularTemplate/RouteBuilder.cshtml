@@ -1,5 +1,4 @@
-﻿<!-- BEGIN PAGE BREADCRUMB -->
-<ul class="page-breadcrumb breadcrumb hide">
+﻿<ul class="page-breadcrumb breadcrumb hide"><!-- BEGIN PAGE BREADCRUMB -->
     <li>
         <a href="#">Home</a><i class="fa fa-circle"></i>
     </li>
@@ -9,14 +8,14 @@
 </ul>
 <!-- END PAGE BREADCRUMB -->
 <!-- BEGIN MAIN CONTENT -->
-<div ng-controller="RouteBuilderController" class="margin-top-10" block-if="isBusy()" stop-click-propagation>
+<div ng-controller="RouteBuilderController" class="margin-top-10" block-if="isBusy()">
     <designer-header route="current.route"></designer-header>
     <div class="route-builder-container" layout-container>
         <div ng-repeat="group in actionGroups" layout-action-group class="action-group" ng-style="{left: group.offsetLeft, top: group.offsetTop}">
             <div ng-if="mode !== 'solution' || $index === 0">
                 <div class="action-arrow-bottom" ng-style="{top: -group.arrowLength - 60, height: group.arrowLength + 35, left: group.arrowOffsetLeft}"></div>
-                <div dnd-list="group.actions" dnd-external-sources="true" dnd-drop="onActionDrop(group, item, index)" style="display: inline-block;">
-                    <div dnd-draggable="action.id" dnd-effect-allowed="move" ng-repeat="action in group.actions">
+                <div dnd-list="group.activities" dnd-external-sources="true" dnd-drop="onActionDrop(group, item, index)" style="display: inline-block;">
+                    <div dnd-draggable="action.id" dnd-effect-allowed="move" ng-repeat="action in group.activities">
                         <div class="action" ng-class="{'solution-action': action.activityTemplate.category==='Solution'  && mode !== 'solution'}" layout-action ng-style="{'width' : action.activityTemplate.minPaneWidth || 330 + 'px'}">
                             <div class="action-header solution-action-header handle" dropdown transfer-click-configure-pane>
                                 <div class="action-header-icon"><img ng-src="{{action.activityTemplate.webService.iconPath}}" ng-if="action.activityTemplate.webService.iconPath" /></div>
@@ -31,6 +30,12 @@
                                         <a ng-click="chooseAuthToken(action);">
                                             <i class="fa fa-user"></i>
                                             Choose authentication
+                                        </a>
+                                    </li>
+                                    <li role="menuitem">
+                                        <a ng-click="reConfigureAction(action);">
+                                            <i class="fa fa-refresh"></i>
+                                            Re-Configure
                                         </a>
                                     </li>
                                     <li role="menuitem">

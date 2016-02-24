@@ -2,28 +2,42 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
-using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using DocuSign.Integrations.Client;
-using Newtonsoft.Json;
-using Utilities;
-using Data.Interfaces;
 using terminalDocuSign.Interfaces;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Infrastructure;
-using System.Configuration;
-using System.Diagnostics;
+using System.Globalization;
+using System.Runtime.Caching;
+using Utilities.Configuration.Azure;
 
 namespace terminalDocuSign.Services
 {
     public class DocuSignTemplate : Template, IDocuSignTemplate
     {
-        private DocuSignEnvelope _docusignEnvelope;
-        private DocuSignPackager _docusignPackager;
+        private static readonly MemoryCache UserTemplatesCache = new MemoryCache("DocusignTemplateCache");
+        private static readonly Dictionary<string, object> EmailLocks = new Dictionary<string, object>();
+
+        // Commented by blazingmind (Vlad). 
+        // because _docusignEnvelope is not initialized
+        //  private DocuSignEnvelope _docusignEnvelope;
+        private readonly DocuSignPackager _docusignPackager;
+        private readonly TimeSpan _templateCacheTimeout;
 
         public DocuSignTemplate()
         {
             _docusignPackager = new DocuSignPackager();
+            var timeoutStr = CloudConfigurationManager.GetSetting("DocusignTemplateCacheExpirationTimeout");
+            int timeout;
+
+            if (timeoutStr != null && int.TryParse(timeoutStr, NumberStyles.Any, CultureInfo.InvariantCulture, out timeout))
+            {
+                _templateCacheTimeout = TimeSpan.FromSeconds(timeout);
+            }
+            else
+            {
+                _templateCacheTimeout = TimeSpan.FromSeconds(30);
+            }
         }
 
         public TemplateInfo Create(TemplateInfo submissionData)
@@ -34,18 +48,41 @@ namespace terminalDocuSign.Services
             return submissionData;
         }
 
-        public IEnumerable<TemplateInfo> GetTemplates(Fr8AccountDO curDockyardAccount)
-        {
-            Login = _docusignPackager.Login();
-            return GetTemplates();
-        }
 
-        public IEnumerable<TemplateInfo> GetTemplates(string email, string apiPassword)
+        public IEnumerable<TemplateInfo> GetTemplateNames(string email, string apiPassword)
         {
-            Login = _docusignPackager.Login(email, apiPassword);
-            return GetTemplates();
-        }
+            List<TemplateInfo> templates;
+            object mailLock;
 
+            // we'll use personal lock for each email not to block all users while loading template list.
+            lock (EmailLocks)
+            {
+                if (!EmailLocks.TryGetValue(email, out mailLock))
+                {
+                    mailLock = new object();
+                    EmailLocks[email] = mailLock;
+                }
+            }
+
+            lock (mailLock)
+            {
+                templates = (List<TemplateInfo>)UserTemplatesCache.Get(email);
+
+                if (templates == null)
+                {
+                    Login = _docusignPackager.Login(email, apiPassword);
+
+                    templates = GetTemplates();
+
+                    UserTemplatesCache.Add(email, templates, new CacheItemPolicy
+                    {
+                        AbsoluteExpiration = DateTime.Now.Add(_templateCacheTimeout)
+                    });
+                }
+            }
+
+            return templates;
+        }
 
         public DocuSignTemplateDTO GetTemplateById(string email, string apiPassword, string templateId)
         {
@@ -71,8 +108,11 @@ namespace terminalDocuSign.Services
             return GetTemplateByIdInternally(templateId);
         }
 
+        // Commented by blazingmind (Vlad). Current implementation of these methods will fail 
+        // because _docusignEnvelope is not initialized
+        // If you need them you have to fix DocuSignTemplate service logic first
         //TODO: merge these
-        public IEnumerable<string> GetMappableSourceFields(string templateId)
+        /*public IEnumerable<string> GetMappableSourceFields(string templateId)
         {
             return _docusignEnvelope.GetEnvelopeDataByTemplate(templateId).Select(r => r.Name);
         }
@@ -100,7 +140,7 @@ namespace terminalDocuSign.Services
                 curLstMappableSourceFields.Add(curEnvelopeData.Name + " from " + curLstenvelopDocuments[0].name);
             }
             return curLstMappableSourceFields;
-        }
+        }*/
 
         public List<string> GetUserFields(DocuSignTemplateDTO curDocuSignTemplateDTO)
         {

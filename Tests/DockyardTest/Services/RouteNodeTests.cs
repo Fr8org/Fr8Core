@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Hub.Interfaces;
@@ -26,15 +27,22 @@ namespace DockyardTest.Services
         public override void SetUp()
         {
             base.SetUp();
+            FixtureData.AddTestActivityTemplate();
         }
 
         [Test]
         public void GetDesignTimeFieldsByDirection_ShouldReturnDesignTimeFieldsCrate()
         {
-            var testActionTree = FixtureData.TestActionTree();
+            var route = new PlanDO();
+            route.Name = "sdfasdfasdf";
+            route.RouteState = RouteState.Active;
+            var testActionTree = FixtureData.TestActivity2Tree();
+            
+            route.ChildNodes.Add(testActionTree);
+            
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.RouteNodeRepository.Add(testActionTree);
+                uow.PlanRepository.Add(route);
                 uow.SaveChanges();
             }
 
@@ -42,7 +50,7 @@ namespace DockyardTest.Services
             var fieldsCrate = _routeNodeService.GetDesignTimeFieldsByDirection(testActionTree.ChildNodes.Last().Id, CrateDirection.Upstream, AvailabilityType.NotSet);
             Assert.NotNull(fieldsCrate);
             Assert.NotNull(fieldsCrate.Fields);
-            Assert.IsInstanceOfType(typeof(StandardDesignTimeFieldsCM), fieldsCrate);
+            Assert.IsInstanceOfType(typeof(FieldDescriptionsCM), fieldsCrate);
             Assert.AreEqual(66, fieldsCrate.Fields.Count());
         }
     }

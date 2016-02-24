@@ -17,19 +17,19 @@ namespace terminalPapertrailTests.Fixtures
             };
         }
 
-        public static ActivityDTO Write_To_Log_v1_InitialConfiguration_ActionDTO()
+        public static Fr8DataDTO Write_To_Log_v1_InitialConfiguration_Fr8DataDTO()
         {
             var activityTemplate = Write_To_Log_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Write_To_Log",
                 Label = "Write To Log",
                 AuthToken = null,
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
+
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
     }
 }

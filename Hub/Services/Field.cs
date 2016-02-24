@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using StructureMap;
 using Data.Constants;
+using Data.Crates;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -33,7 +34,7 @@ namespace Hub.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curAction = _activity.GetById(uow, data.CurrentActionId);
+                var curAction = _activity.GetById(uow, data.CurrentActivityId);
 
                 List<ActivityDO> routeNodes;
                 switch (data.Direction)
@@ -57,7 +58,7 @@ namespace Hub.Services
                 {
                     //var crates = _crate.GetCratesByManifestType(CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME, upstreamRouteNode.CrateStorageDTO());
 
-                    foreach (var crate in _crate.GetStorage(upstreamRouteNode.CrateStorage).CratesOfType<StandardDesignTimeFieldsCM>())
+                    foreach (var crate in _crate.GetStorage(upstreamRouteNode.CrateStorage).CratesOfType<FieldDescriptionsCM>())
                     {
                         if (data.CrateLabel != null && data.CrateLabel != crate.Label)
                         {

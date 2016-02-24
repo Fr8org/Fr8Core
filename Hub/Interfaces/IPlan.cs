@@ -13,18 +13,15 @@ namespace Hub.Interfaces
     {
         IList<PlanDO> GetForUser(IUnitOfWork uow, Fr8AccountDO account, bool isAdmin, Guid? id = null, int? status = null);
         IList<PlanDO> GetByName(IUnitOfWork uow, Fr8AccountDO account, string name);
-        void CreateOrUpdate(IUnitOfWork uow, PlanDO ptdo, bool withTemplate);
+        void CreateOrUpdate(IUnitOfWork uow, PlanDO submittedPlan, bool withTemplate);
         PlanDO Create(IUnitOfWork uow, string name);
         void Delete(IUnitOfWork uow, Guid id);
-        RouteNodeDO GetInitialActivity(IUnitOfWork uow, PlanDO curPlan);
-
-        IList<SubrouteDO> GetSubroutes(PlanDO curPlanDO);
+        
         IList<PlanDO> GetMatchingPlans(string userId, EventReportCM curEventReport);
-        RouteNodeDO GetFirstActivity(Guid curPlanId);
-        Task<ActivateActionsDTO> Activate(Guid planId, bool routeBuilderActivate);
+        Task<ActivateActivitiesDTO> Activate(Guid planId, bool routeBuilderActivate);
         Task<string> Deactivate(Guid curPlanId);
-        IEnumerable<ActivityDO> GetActivities(int id);
-        PlanDO GetPlan(ActivityDO activity);
+        
+        PlanDO GetPlanByActivityId(IUnitOfWork uow, Guid planActivityId);
         //  ActionListDO GetActionList(IUnitOfWork uow, int id);
         List<PlanDO> MatchEvents(List<PlanDO> curPlans, EventReportCM curEventReport);
 

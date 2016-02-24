@@ -44,16 +44,24 @@ module dockyard.services {
         
         // Depth first search on the ActionGroup tree going from last sibling to first.
         private processGroup(actionGroups: model.ActivityDTO[][], group: model.ActionGroup, processedGroups: model.ActionGroup[]) {
+            if (group.parentAction && group.parentAction.activityTemplate) {
+                if (group.parentAction.activityTemplate.tags
+                    && group.parentAction.activityTemplate.tags.indexOf('HideChildren') !== -1) {
+                    return;
+                }
+            }
+
             processedGroups.push(group);
-            group.actions = _.sortBy(group.actions, (action: model.ActivityDTO) => action.ordering);
-            for (var i = group.actions.length - 1; i > -1; i--) {
+            group.activities = _.sortBy(group.activities, (action: model.ActivityDTO) => action.ordering);
+
+            for (var i = group.activities.length - 1; i > -1; i--) {
                 //var childGroup = this.findChildGroup(actionGroups, group.actions[i].id);
-                if (group.actions[i].childrenActions.length) {
-                    var newGroup = new model.ActionGroup(<model.ActivityDTO[]>group.actions[i].childrenActions, group.actions[i]);
+                if (group.activities[i].childrenActivities.length) {
+                    var newGroup = new model.ActionGroup(<model.ActivityDTO[]>group.activities[i].childrenActivities, group.activities[i]);
                     this.calculateGroupPosition(newGroup, group, processedGroups);
                     this.processGroup(actionGroups, newGroup, processedGroups);
-                } else if (this.allowsChildren(group.actions[i])) { //has no children, but allows it. we should place an add action button below
-                    var potentialGroup = new model.ActionGroup([], group.actions[i]);
+                } else if (this.allowsChildren(group.activities[i])) { //has no children, but allows it. we should place an add action button below
+                    var potentialGroup = new model.ActionGroup([], group.activities[i]);
                     this.calculateGroupPosition(potentialGroup, group, processedGroups);
                     this.processGroup(actionGroups, potentialGroup, processedGroups);
                 }
@@ -76,14 +84,14 @@ module dockyard.services {
 
             var i = 0, offsetLeft = parentGroup.offsetLeft;
             //calculate left offset by summing existing elements
-            while (parentGroup.actions[i].id != currentGroup.parentAction.id) {
-                offsetLeft += (parentGroup.actions[i].activityTemplate.minPaneWidth || this.ACTION_WIDTH) + this.ACTION_PADDING;
+            while (parentGroup.activities[i].id != currentGroup.parentAction.id) {
+                offsetLeft += (parentGroup.activities[i].activityTemplate.minPaneWidth || this.ACTION_WIDTH) + this.ACTION_PADDING;
                 i++;
             }
 
             //offsetLeft += ((parentGroup.actions[i].activityTemplate.minPaneWidth || this.ACTION_WIDTH) - (action.activityTemplate.minPaneWidth || this.ACTION_WIDTH)) / 2;
-            if (currentGroup.actions.length) {
-                offsetLeft += ((parentGroup.actions[i].activityTemplate.minPaneWidth || this.ACTION_WIDTH) - (currentGroup.actions[0].activityTemplate.minPaneWidth || this.ACTION_WIDTH)) / 2;
+            if (currentGroup.activities.length) {
+                offsetLeft += ((parentGroup.activities[i].activityTemplate.minPaneWidth || this.ACTION_WIDTH) - (currentGroup.activities[0].activityTemplate.minPaneWidth || this.ACTION_WIDTH)) / 2;
             } else {
                 offsetLeft += (this.ACTION_WIDTH - this.ADD_ACTION_BUTTON_WIDTH) / 2;
             }
@@ -102,22 +110,22 @@ module dockyard.services {
         }
 
         private calculateArrowOffsetLeft(group: model.ActionGroup): number {
-            if (group.actions.length) {
-                return ((group.actions[0].activityTemplate.minPaneWidth || this.ACTION_WIDTH) - this.ARROW_WIDTH) / 2;
+            if (group.activities.length) {
+                return ((group.activities[0].activityTemplate.minPaneWidth || this.ACTION_WIDTH) - this.ARROW_WIDTH) / 2;
             } else {
                 return 70; //TODO calculate this for real //(this.ACTION_WIDTH - this.ARROW_WIDTH) / 2;
             }
         }
 
         private findParentAction(group: model.ActionGroup, parentGroup: model.ActionGroup): model.ActivityDTO {
-            return _.find(parentGroup.actions, (action: model.ActivityDTO) => {
+            return _.find(parentGroup.activities, (action: model.ActivityDTO) => {
                 return action.id === group.parentAction.id;
             });
         }      
 
         private findParentGroup(actionGroups: model.ActionGroup[], parentId: string): model.ActionGroup {
             return _.find(actionGroups, (group: model.ActionGroup) => {
-                return group.actions.some((action: model.ActivityDTO) => {
+                return group.activities.some((action: model.ActivityDTO) => {
                     return action.id === parentId;
                 });
             });

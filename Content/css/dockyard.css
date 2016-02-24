@@ -199,7 +199,6 @@
     box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 3px 0px, rgba(0, 0, 0, 0.137255) 0px 1px 1px 0px, rgba(0, 0, 0, 0.117647) 0px 2px 1px -1px;
     display: inline-block;
     height: auto;
-    min-height: 330px;
     margin-bottom: 5px;
     vertical-align: top;
     width: 330px;
@@ -418,6 +417,11 @@ div.action-header {
     position: absolute;
 }
 
+.pane-configure-action-executing {
+    padding: 10px 0 10px 0;
+    font-weight: bold;
+}
+
 .pane-configure-action-returnToSolution {
     height: 180px;
 }
@@ -522,20 +526,35 @@ div.action-header {
     width: calc(100% - 25px);
 }
 
-    .query-builder-table td:first-of-type,
-    .query-builder-table th:first-of-type {
-        padding-left: 0;
-    }
+.query-builder-table td:first-of-type,
+.query-builder-table th:first-of-type {
+    padding-left: 0;
+}
 
-    .query-builder-table tbody,
-    .query-builder-table thead {
-        display: block;
-    }
+.query-builder-table tbody,
+.query-builder-table thead {
+    display: block;
+}
 
-    .query-builder-table tbody {
-        max-height: 125px;
-        overflow-y: auto;
-    }
+.query-builder-table tbody {
+    max-height: 296px;
+    overflow-y: auto;
+}
+
+.query-builder-table tbody tr.no-border td {
+    border-top: none;
+    padding: 0;
+}
+
+.query-builder-table input[type=text].invalid {
+    border: 1px solid red;
+}
+
+.query-builder-table div.invalid-hint {
+    font-size: 1em;
+    color: #FF0000;
+    text-align: right;
+}
 
 .query-builder-add-button {
     margin-left: 27px;
@@ -551,6 +570,15 @@ div.action-header {
     margin-top: 4px;
 }
 
+.query-builder-table date-picker .btn.btn-default {
+    padding: 1px 3px 2px 3px;
+    border: 1px solid #acacac;
+}
+
+ul.dropdown-menu {
+    padding: 3px 3px 10px 2px;
+}
+
 .table-delete-button {
     width: 15px;
     height: 15px;
@@ -564,7 +592,7 @@ form.internal-authenticate-form {
 
 /* Configure Action Pane */
 .nested-controls {
-    margin-left: 20px;
+    margin-left: 6%;
 }
 
 input[type=radio] ~ div.nested-controls {
@@ -582,10 +610,6 @@ input[type=radio]:checked ~ div.nested-controls {
 
 .page-header .container {
     width: 100%;
-    margin: 0;
-}
-
-.nested-controls {
     margin: 0;
 }
 
@@ -617,6 +641,11 @@ input[type=radio]:checked ~ div.nested-controls {
 .radio-button-group-content {
     margin-left: 20px;
     margin-bottom: 5px;
+    display: block;
+}
+
+.radio-button-group-content .query-builder-table .form-group {
+    margin: 0;
 }
 
 .radio-button-option-label {
@@ -778,4 +807,84 @@ div[dnd-list].dndDragover {
 
 .ui-select-match {
     overflow: hidden;
+}
+
+.have-account-login-guest a{
+    color:rgb(142, 163, 182);
+}
+
+.have-account-login-guest a:hover{
+    background-color: #fff !important;
+    color: #7089a2;
+}
+
+.ng-invalid {
+    border-color: red;
+    outline-color: red;
+}
+
+.ng-valid {
+    border-color: green;
+    outline-color: green;
+}
+
+.validationMessages {
+  font-size: smaller;
+  padding-top: 5px;
+  padding-bottom: 10px;
+  color: red;
+}
+.push-footer {
+    background: #eff3f8
+}
+
+.label-than {
+    font-weight: 400;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.resize-pane{
+    float: right;
+    padding-bottom: 6%;
+    margin-right: 1%;
+    margin-bottom: 1%;
+}
+
+.crate-node {
+    cursor: pointer;
+    margin: 10px 5px 5px 10px;
+}
+
+.crate-node-category {
+    font-size: 17px;
+    cursor: pointer;
+}
+
+.category-glyph .glyphicon {
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.crate-node-leaf {
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+.crate-node-leaf .data {
+    margin-top: -15px;
+    cursor: pointer;
+}
+
+.crate-node-leaf .glyphicon {
+    font-size: 15px;
+    cursor: pointer;
+}
+.crate-icon .glyphicon {
+    font-size: 40px;
+    cursor: pointer;
+}
+
+.green {
+    color: green;
 }

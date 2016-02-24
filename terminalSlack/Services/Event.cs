@@ -83,7 +83,7 @@ namespace terminalSlack.Services
             return payloadFields;
         }
 
-        private CrateStorage WrapPayloadDataCrate(List<FieldDTO> payloadFields)
+        private ICrateStorage WrapPayloadDataCrate(List<FieldDTO> payloadFields)
         {
 
             return new CrateStorage(Data.Crates.Crate.FromContent("Payload Data", new StandardPayloadDataCM(payloadFields)));

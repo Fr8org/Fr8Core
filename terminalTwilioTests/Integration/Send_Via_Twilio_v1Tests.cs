@@ -1,10 +1,12 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Data.Constants;
 using HealthMonitor.Utility;
 using terminalTwilioTests.Fixture;
 using Data.Control;
 using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.DataTransferObjects.Helpers;
 using Data.Interfaces.Manifests;
 using Hub.Managers;
 using NUnit.Framework;
@@ -27,14 +29,14 @@ namespace terminalTwilioTests.Integration
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
         [Test, Category("Integration.terminalTwilio")]
-        public async void Send_Via_Twilio_Initial_Configuration_Check_Crate_Structure()
+        public async Task Send_Via_Twilio_Initial_Configuration_Check_Crate_Structure()
         {
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
-            var requestActionDTO = HealthMonitor_FixtureData.Send_Via_Twilio_v1_InitialConfiguration_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Send_Via_Twilio_v1_InitialConfiguration_Fr8DataDTO();
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -45,33 +47,35 @@ namespace terminalTwilioTests.Integration
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             var controls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
             Assert.NotNull(controls.Controls[0] is TextSource);
-            Assert.NotNull(controls.Controls[1] is TextBox);
-            Assert.AreEqual("SMS Body", controls.Controls[1].Label);
-            Assert.AreEqual("SMS_Body", controls.Controls[1].Name);
+            Assert.NotNull(controls.Controls[1] is TextSource);
             Assert.AreEqual("Upstream Terminal-Provided Fields", controls.Controls[0].Source.Label);
+            Assert.AreEqual("Upstream Terminal-Provided Fields", controls.Controls[1].Source.Label);
             Assert.AreEqual(false, controls.Controls[0].Selected);
         }
         /// <summary>
         /// Expect null when ActionDTO with no StandardConfigurationControlsCM Crate.
         /// </summary>
         [Test, Category("Integration.terminalTwilio")]
-        public async void Send_Via_Twilio_Run_With_No_SMS_Number_Provided()
+        public async Task Send_Via_Twilio_Run_With_No_SMS_Number_Provided()
         {
             //Arrange
             var runUrl = GetTerminalRunUrl();
-            var curActionDTO = HealthMonitor_FixtureData.Send_Via_Twilio_v1_InitialConfiguration_ActionDTO();
+            var dataDTO = HealthMonitor_FixtureData.Send_Via_Twilio_v1_InitialConfiguration_Fr8DataDTO();
             //Act
             //OperationalStateCM crate is required to be added,
             //as upon return the Run method takes this crate and updates the status to "Success"
-            AddOperationalStateCrate(curActionDTO, new OperationalStateCM());
-            var payloadDTO = await HttpPostAsync<ActivityDTO, PayloadDTO>(
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
+            var payloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(
                 runUrl,
-                curActionDTO
+                dataDTO
                 );
             //Assert
             var operationalCrate = Crate.FromDto(payloadDTO.CrateStorage).CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
-            Assert.AreEqual(ActivityResponse.Error, operationalCrate.CurrentActivityResponse, "Run method of the Send_Via_Twilio did not set CurentActionResponce to Error");
-            Assert.AreEqual("No StandardConfigurationControlsCM crate provided", operationalCrate.CurrentActivityErrorMessage, "Run method of the Send_Via_Twilio did not set error message");
+            ErrorDTO errorMessage;
+            operationalCrate.CurrentActivityResponse.TryParseErrorDTO(out errorMessage);
+
+            Assert.AreEqual(ActivityResponse.Error.ToString(), operationalCrate.CurrentActivityResponse.Type, "Run method of the Send_Via_Twilio did not set CurentActionResponce to Error");
+            Assert.AreEqual("No StandardConfigurationControlsCM crate provided", errorMessage.Message, "Run method of the Send_Via_Twilio did not set error message");
 
         }
         /// <summary>
@@ -79,29 +83,35 @@ namespace terminalTwilioTests.Integration
         /// Expect that the status of the message is not fail or undelivered.
         /// </summary>
         [Test, Category("Integration.terminalTwilio")]
-        public async void Send_Via_Twilio_Run_Send_SMS_With_Correct_Number()
+        public async Task Send_Via_Twilio_Run_Send_SMS_With_Correct_Number()
         {
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
             var runUrl = GetTerminalRunUrl();
-            var curActionDTO = HealthMonitor_FixtureData.Send_Via_Twilio_v1_InitialConfiguration_ActionDTO();
+            var dataDTO = HealthMonitor_FixtureData.Send_Via_Twilio_v1_InitialConfiguration_Fr8DataDTO();
             //Act
-            var responseActionDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, curActionDTO);
+            var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
             var crateManager = new CrateManager();
-            using (var updater = crateManager.UpdateStorage(responseActionDTO))
+            using (var updatableStorage = crateManager.GetUpdatableStorage(responseActionDTO))
             {
-                var curTextSource =
+                var curNumberTextSource =
                     (TextSource)
-                        updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0];
-                curTextSource.ValueSource = "specific";
-                curTextSource.TextValue = "+15005550006";
-                updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[1].Value =
-                    "That is the body of the message";
+                        updatableStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0];
+                curNumberTextSource.ValueSource = "specific";
+                curNumberTextSource.TextValue = "+15005550006";
+
+                var curBodyTextSource =
+                   (TextSource)
+                       updatableStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[1];
+                curBodyTextSource.ValueSource = "specific";
+                curBodyTextSource.TextValue = "That is the body of the message";
             }
+            dataDTO.ActivityDTO = responseActionDTO;
             //OperationalStateCM crate is required to be added,
             //as upon return the Run method takes this crate and updates the status to "Success"
-            AddOperationalStateCrate(responseActionDTO, new OperationalStateCM());
-            var payloadDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(runUrl,responseActionDTO);
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
+            
+            var payloadDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(runUrl, dataDTO);
             //Assert
             //After Configure Test
             Assert.NotNull(responseActionDTO);
@@ -110,10 +120,9 @@ namespace terminalTwilioTests.Integration
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             var controls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
             Assert.NotNull(controls.Controls[0] is TextSource);
-            Assert.NotNull(controls.Controls[1] is TextBox);
-            Assert.AreEqual("SMS Body", controls.Controls[1].Label);
-            Assert.AreEqual("SMS_Body", controls.Controls[1].Name);
+            Assert.NotNull(controls.Controls[1] is TextSource);
             Assert.AreEqual("Upstream Terminal-Provided Fields", controls.Controls[0].Source.Label);
+            Assert.AreEqual("Upstream Terminal-Provided Fields", controls.Controls[1].Source.Label);
             Assert.AreEqual(false, controls.Controls[0].Selected);
             //After Run Test
             var payload = Crate.FromDto(payloadDTO.CrateStorage).CrateContentsOfType<StandardPayloadDataCM>().Single();
@@ -123,17 +132,17 @@ namespace terminalTwilioTests.Integration
         }
 
         [Test, Category("Integration.terminalTwilio")]
-        public async void Send_Via_Twilio_Activate_Returns_ActionDTO()
+        public async Task Send_Via_Twilio_Activate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = HealthMonitor_FixtureData.Send_Via_Twilio_v1_InitialConfiguration_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Send_Via_Twilio_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -144,17 +153,17 @@ namespace terminalTwilioTests.Integration
         }
 
         [Test, Category("Integration.terminalTwilio")]
-        public async void Send_Via_Twilio_Deactivate_Returns_ActionDTO()
+        public async Task Send_Via_Twilio_Deactivate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = HealthMonitor_FixtureData.Send_Via_Twilio_v1_InitialConfiguration_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Send_Via_Twilio_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
-                await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
                 );

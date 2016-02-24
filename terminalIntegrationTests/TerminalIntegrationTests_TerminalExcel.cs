@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Data.Crates;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
@@ -24,7 +25,7 @@ namespace terminalIntegrationTests
     public partial class TerminalIntegrationTests
     {
         [Test, Ignore]
-        public async void TerminalExcel_CallExtractData_Execute()
+        public async Task TerminalExcel_CallExtractData_Execute()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -61,13 +62,12 @@ namespace terminalIntegrationTests
 
             var curActionDTO = new ActivityDTO()
             {
-                ContainerId = UtilitiesTesting.Fixtures.FixtureData.TestContainer_Id_1(),
                 ParentRouteNodeId =  UtilitiesTesting.Fixtures.FixtureData.TestParentPlanID()
             };
 
-            using (var updater = _crateManager.UpdateStorage(curActionDTO))
+            using (var crateStorage = _crateManager.GetUpdatableStorage(curActionDTO))
             {
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("", tableDataMS));
+                crateStorage.Add(Data.Crates.Crate.FromContent("", tableDataMS));
             }
 
             var restfulServiceClient = new Mock<IRestfulServiceClient>();
@@ -77,7 +77,7 @@ namespace terminalIntegrationTests
 
 
             var curActivityDO = AutoMapper.Mapper.Map<ActivityDO>(curActionDTO);
-            var result = await new Load_Excel_File_v1().Run(curActivityDO, curActionDTO.ContainerId, null);
+            var result = await new Load_Excel_File_v1().Run(curActivityDO, UtilitiesTesting.Fixtures.FixtureData.TestContainer_Id_1(), null);
 
             var payloadCrates = _crateManager.GetStorage(result).CratesOfType<StandardPayloadDataCM>();
             var payloadDataMS = payloadCrates.First().Content;

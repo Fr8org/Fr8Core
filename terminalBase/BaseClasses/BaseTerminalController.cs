@@ -53,12 +53,6 @@ namespace TerminalBase.BaseClasses
             if (_integrationTestMode)
                 return Ok();
 
-            // Wirte exception to App Insights
-            var telemetry = new Microsoft.ApplicationInsights.TelemetryClient();
-            var prop = new System.Collections.Generic.Dictionary<string, string>();
-            prop.Add("Terminal", terminalName);
-            telemetry.TrackException(terminalError);
-
             var exceptionMessage = terminalError.GetFullExceptionMessage() + "      \r\n" + terminalError.ToString();//string.Format("{0}\r\n{1}", terminalError.Message, terminalError.StackTrace);
             try
             {
@@ -99,7 +93,7 @@ namespace TerminalBase.BaseClasses
         }
 
 
-        private void BindTestHubCommunicator(object curObject)
+        private void BindTestHubCommunicator(object curObject, string explicitData)
         {
             var baseTerminalAction = curObject as BaseTerminalActivity;
 
@@ -108,10 +102,10 @@ namespace TerminalBase.BaseClasses
                 return;
             }
 
-            baseTerminalAction.HubCommunicator = new TestMonitoringHubCommunicator();
+            baseTerminalAction.HubCommunicator = new TestMonitoringHubCommunicator(explicitData);
         }
 
-        private void BindExplicitDataHubCommunicator(object curObject)
+        private void BindExplicitDataHubCommunicator(object curObject, string explicitData)
         {
             var baseTerminalAction = curObject as BaseTerminalActivity;
 
@@ -120,7 +114,7 @@ namespace TerminalBase.BaseClasses
                 return;
             }
 
-            baseTerminalAction.HubCommunicator = new ExplicitDataHubCommunicator();
+            baseTerminalAction.HubCommunicator = new ExplicitDataHubCommunicator(explicitData);
         }
 
         private void SetCurrentUser(object curObject, string userId)
@@ -133,6 +127,18 @@ namespace TerminalBase.BaseClasses
             }
 
             baseTerminalAction.SetCurrentUser(userId);
+        }
+
+        private void ConfigureHubCommunicator(object curObject, string terminalName)
+        {
+            var baseTerminalAction = curObject as BaseTerminalActivity;
+
+            if (baseTerminalAction == null)
+            {
+                return;
+            }
+
+            baseTerminalAction.HubCommunicator.Configure(terminalName);
         }
 
         /// <summary>
@@ -148,15 +154,17 @@ namespace TerminalBase.BaseClasses
         }
 
         // For /Configure and /Activate actions that accept ActionDTO
-        public async Task<object> HandleFr8Request(string curTerminal, string curActionPath, ActivityDTO curActionDTO)
+        public async Task<object> HandleFr8Request(string curTerminal, string curActionPath, Fr8DataDTO curDataDTO)
         {
-            if (curActionDTO == null)
-                throw new ArgumentNullException("curActionDTO");
-            if (curActionDTO.ActivityTemplate == null)
-                throw new ArgumentException("ActivityTemplate is null", "curActionDTO");
+            if (curDataDTO?.ActivityDTO == null)
+                throw new ArgumentNullException(nameof(curDataDTO.ActivityDTO));
+
+            if (curDataDTO.ActivityDTO.ActivityTemplate == null)
+                throw new ArgumentException("ActivityTemplate is null", nameof(curDataDTO.ActivityDTO));
 
             _integrationTestMode = false;
 
+            var curActionDTO = curDataDTO.ActivityDTO;
             var activityTemplateName = curActionDTO.ActivityTemplate.Name;
             if (activityTemplateName.EndsWith("_TEST"))
             {
@@ -179,24 +187,20 @@ namespace TerminalBase.BaseClasses
 
             if (_integrationTestMode)
             {
-                BindTestHubCommunicator(curObject);
+                BindTestHubCommunicator(curObject, curDataDTO.ExplicitData);
             }
-            else if (curActionDTO.IsExplicitData)
-            {
-                BindExplicitDataHubCommunicator(curObject);
-            }
+
             var curActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
             //this is a comma separated string
-            var curDocumentation = curActionDTO.DocumentationSupport;
-            //Object to carry Documentation
-            SolutionPageDTO curSolutionPageDTO;
+            var curDocumentation = curActionDTO.Documentation;
+
             var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
-            var curContainerId = curActionDTO.ContainerId;
+
             Task<ActivityDO> response;
             var currentUserId = curAuthTokenDO != null ? curAuthTokenDO.UserID : null;
             //Set Current user of action
             SetCurrentUser(curObject, currentUserId);
-
+            ConfigureHubCommunicator(curObject, curTerminal);
             try
             {
                 switch (curActionPath.ToLower())
@@ -209,10 +213,10 @@ namespace TerminalBase.BaseClasses
                     case "run":
                     case "childrenexecuted":
                         {
-                            OnStartAction(curTerminal, activityTemplateName, IntegrationTestMode);
+                            OnStartActivity(curTerminal, activityTemplateName, IntegrationTestMode);
                             var resultPayloadDTO = await (Task<PayloadDTO>)curMethodInfo
-                                .Invoke(curObject, new Object[] { curActivityDO, curContainerId, curAuthTokenDO });
-                            await OnCompletedAction(curTerminal, IntegrationTestMode);
+                                .Invoke(curObject, new Object[] { curActivityDO, curDataDTO.ContainerId, curAuthTokenDO });
+                            await OnCompletedActivity(curTerminal, IntegrationTestMode);
 
                             return resultPayloadDTO;
                         }
@@ -252,15 +256,9 @@ namespace TerminalBase.BaseClasses
                             return resutlActionDO.ContinueWith(x => Mapper.Map<ActivityDTO>(x.Result));
                         }
                     case "documentation":
-                        {
-                            curSolutionPageDTO = new SolutionPageDTO();
-                            if (!curDocumentation.IsNullOrEmpty() && curDocumentation.Split(',').Contains("MainPage"))
-                            {
-                                Task<SolutionPageDTO> resutlSolutionPageDTO = (Task<SolutionPageDTO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDO });
-                                return await resutlSolutionPageDTO;
-                            }
-                            return Task.FromResult(curSolutionPageDTO);
-                        }
+                    {
+                        return await HandleDocumentationRequest(curObject, curMethodInfo, curActivityDO, curDocumentation);
+                    }
                     default:
                         response = (Task<ActivityDO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDO });
                         return await response.ContinueWith(x => Mapper.Map<ActivityDTO>(x.Result)); ;
@@ -278,7 +276,7 @@ namespace TerminalBase.BaseClasses
                 throw;
             }
         }
-        private void OnStartAction(string terminalName, string actionName, bool isTestActivityTemplate)
+        private void OnStartActivity(string terminalName, string actionName, bool isTestActivityTemplate)
         {
             if (isTestActivityTemplate)
                 return;
@@ -288,7 +286,7 @@ namespace TerminalBase.BaseClasses
                 string.Format("{0} began processing this Container at {1}. Sending to Action {2}", terminalName, DateTime.Now.ToString("G"), actionName));
         }
 
-        private Task OnCompletedAction(string terminalName, bool isTestActivityTemplate)
+        private Task OnCompletedActivity(string terminalName, bool isTestActivityTemplate)
         {
             if (isTestActivityTemplate)
                 return Task.FromResult<object>(null);
@@ -299,7 +297,7 @@ namespace TerminalBase.BaseClasses
                  string.Format("{0} completed processing this Container at {1}.", terminalName, DateTime.Now.ToString("G"))));
         }
 
-        public HttpResponseMessage GetActionDocumentation(string helpPath)
+        public HttpResponseMessage GetActivityDocumentation(string helpPath)
         {
             string htmlContent = FindDocumentation(helpPath);
 
@@ -325,6 +323,23 @@ namespace TerminalBase.BaseClasses
             }
 
             return content;
+        }
+
+        private async Task<dynamic> HandleDocumentationRequest(object classInstance,MethodInfo curMethodInfo, ActivityDO curActivityDO, string curDocumentation)
+        {
+            if (!curDocumentation.IsNullOrEmpty() && curDocumentation.Split(',').Contains("MainPage"))
+            {
+                Task<SolutionPageDTO> resultSolutionPageDTO = (Task<SolutionPageDTO>)curMethodInfo
+                    .Invoke(classInstance, new Object[] { curActivityDO, curDocumentation });
+                return await resultSolutionPageDTO;
+            }
+            if (!curDocumentation.IsNullOrEmpty() && curDocumentation.Split(',').Contains("HelpMenu"))
+            {
+                Task<ActivityResponseDTO> resultActivityRepsonceDTO = (Task<ActivityResponseDTO>)curMethodInfo
+                    .Invoke(classInstance, new Object[] { curActivityDO, curDocumentation });
+                return await resultActivityRepsonceDTO;
+            }
+            return Task.FromResult(new ActivityResponseDTO {Type = ActivityResponse.Error.ToString(), Body = "Unknown display method"});
         }
     }
 }

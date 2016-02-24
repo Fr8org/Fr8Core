@@ -1,0 +1,25 @@
+﻿<div class='solution-fr8 container'>
+    <div class="solution-container" ng-repeat="solutionDTO in solutionDTOList">
+        <div class="row">
+            <div class="col-md-1">
+                <a href="~/Dashboard#/solution/{{solutionDTO.activityName}}" class="btn btn-md btn-sln-turquoise">Create</a>
+            </div>
+            <div class="col-md-11 h2">{{solutionDTO.name}}</div>
+        </div>
+        <div class="row solution-body">
+            <div class="panel-body col-md-12 h4" ng-bind-html="solutionDTO.body"></div>
+        </div>
+        <div class="base-block-white content-block row">
+            <p class="col-md-2">
+                Version: {{solutionDTO.version}}
+            </p>
+            <p class="col-md-3">
+                Host Terminal: <strong>{{solutionDTO.terminal}}</strong>
+            </p>
+        </div>
+        <div class="row">
+            <hr />
+        </div>
+    </div>
+</div>
+   

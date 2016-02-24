@@ -14,6 +14,7 @@ using Data.Interfaces;
 using Data.Migrations;
 using Data.States.Templates;
 using Segment.Model;
+using StructureMap;
 using Utilities;
 
 namespace Data.Infrastructure.StructureMap
@@ -39,7 +40,7 @@ namespace Data.Infrastructure.StructureMap
 
             SetPrimaryKey<Fr8AccountDO, String>(u => u.Id);
 
-            MigrationConfiguration.SeedIntoMockDb(new UnitOfWork(this));
+            MigrationConfiguration.SeedIntoMockDb(new UnitOfWork(this, ObjectFactory.Container));
         }
 
         private readonly Dictionary<Type, PropertyInfo> _forcedDOPrimaryKey = new Dictionary<Type, PropertyInfo>();

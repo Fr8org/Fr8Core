@@ -13,6 +13,8 @@ using Hub.Services;
 using Utilities;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
+using Hub.Security;
+using Microsoft.Owin.Security.DataProtection;
 
 namespace DockyardTest.Services
 {
@@ -159,6 +161,9 @@ namespace DockyardTest.Services
         [Test]
         public void CanCreatedUser()
         {
+            // DataProtectionProvider property is not getting initialised through startup
+            // So Initiliaze it explicitly. DpapiDataProtectionProvider is used for test cases only
+            DockyardIdentityManager.DataProtectionProvider = new DpapiDataProtectionProvider("fr8");
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 Fr8AccountDO curDockyardAccountLocal = FixtureData.TestDockyardAccount4();
@@ -193,6 +198,9 @@ namespace DockyardTest.Services
         [Test]
         public void CanGetExistingUser()
         {
+            // DataProtectionProvider property is not getting initialised through startup
+            // So Initiliaze it explicitly. DpapiDataProtectionProvider is used for test cases only
+            DockyardIdentityManager.DataProtectionProvider = new DpapiDataProtectionProvider("fr8");
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curDockyardAccountLocal = FixtureData.TestDockyardAccount4();
@@ -204,6 +212,9 @@ namespace DockyardTest.Services
         [Test]
         public void FailsGetExistingUserIfNoEmailAddress()
         {
+            // DataProtectionProvider property is not getting initialised through startup
+            // So Initiliaze it explicitly. DpapiDataProtectionProvider is used for test cases only
+            DockyardIdentityManager.DataProtectionProvider = new DpapiDataProtectionProvider("fr8");
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curDockyardAccountLocal = FixtureData.TestDockyardAccount4();
@@ -227,6 +238,9 @@ namespace DockyardTest.Services
         [Test]
         public void CanUpdateUser()
         {
+            // DataProtectionProvider property is not getting initialised through startup
+            // So Initiliaze it explicitly. DpapiDataProtectionProvider is used for test cases only
+            DockyardIdentityManager.DataProtectionProvider = new DpapiDataProtectionProvider("fr8");
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curDockyardAccountLocal = FixtureData.TestDockyardAccount4();
@@ -261,14 +275,14 @@ namespace DockyardTest.Services
         #region Test cases for Guest User Mode Operations
         
         [Test]
-        public async void CanAddAuthenticateGuestUser()
+        public async Task CanAddAuthenticateGuestUser()
         {
             LoginStatus loginStatus   = await _fr8Account.CreateAuthenticateGuestUser();
             Assert.AreEqual(loginStatus, LoginStatus.Successful);
         }
 
         [Test]
-        public async void CanRegisterAndUpdateGuestUser()
+        public async Task CanRegisterAndUpdateGuestUser()
         {
             Fr8AccountDO guestUserAccount = FixtureData.TestDockyardAccount6();
             string newEmail="fr8user@test.com";

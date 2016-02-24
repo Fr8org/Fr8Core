@@ -112,10 +112,11 @@ namespace terminalIntegrationTests
                 uow.AuthorizationTokenRepository.Add(_authToken);
 
                 uow.PlanRepository.Add(_planDO);
-                uow.SubrouteRepository.Add(_subrouteDO);
+               // uow.RouteRepository.Add(_planDO);
+               // uow.SubrouteRepository.Add(_subrouteDO);
                 // This fix inability of MockDB to correctly resolve requests to collections of derived entites
-                uow.RouteNodeRepository.Add(_subrouteDO);
-                uow.RouteNodeRepository.Add(_planDO);
+               // uow.RouteNodeRepository.Add(_subrouteDO);
+                //uow.RouteNodeRepository.Add(_planDO);
                 uow.SaveChanges();
             }
 
@@ -200,10 +201,10 @@ namespace terminalIntegrationTests
             }
         }
 
-        private ActivityDTO CreateEmptyAction(ActivityTemplateDO activityTemplate)
+        private ActivityDTO CreateEmptyActivity(ActivityTemplateDO activityTemplate)
         {
-            var curActionController = CreateActionController();
-            var curActivityDO = FixtureData.TestAction_Blank();
+            var curActionController = CreateActivityController();
+            var curActivityDO = FixtureData.TestActivity_Blank();
 
             if (_subrouteDO.ChildNodes == null)
             {
@@ -221,46 +222,46 @@ namespace terminalIntegrationTests
             curActivityDO.ParentRouteNodeId = _subrouteDO.Id;
 
             var curActionDTO = Mapper.Map<ActivityDTO>(curActivityDO);
-
-            curActionDTO.IsTempId = true;
-
             var result = curActionController.Save(curActionDTO)
                 as OkNegotiatedContentResult<ActivityDTO>;
 
             // Assert action was property saved.
             Assert.NotNull(result);
             Assert.NotNull(result.Content);
-            Assert.AreEqual(result.Content.ActivityTemplateId, curActionDTO.ActivityTemplateId);
+            Assert.AreEqual(result.Content.ActivityTemplate.Name, curActionDTO.ActivityTemplate.Name);
+            Assert.AreEqual(result.Content.ActivityTemplate.Version, curActionDTO.ActivityTemplate.Version);
             Assert.AreEqual(result.Content.CrateStorage, curActionDTO.CrateStorage);
 
 
             return result.Content;
         }
 
-        private ActivityDTO SaveAction(ActivityDTO curActionDTO)
+        private ActivityDTO SaveActivity(ActivityDTO curActivityDTO)
         {
-            var curActionController = CreateActionController();
+            var curActionController = CreateActivityController();
 
-            var result = curActionController.Save(curActionDTO)
+            var result = curActionController.Save(curActivityDTO)
                 as OkNegotiatedContentResult<ActivityDTO>;
 
             // Assert action was property saved.
             Assert.NotNull(result);
             Assert.NotNull(result.Content);
-            Assert.AreEqual(result.Content.ActivityTemplateId, curActionDTO.ActivityTemplateId);
+            //TODO bahadir check this -- is it ???
+            Assert.AreEqual(result.Content.ActivityTemplate.Name, curActivityDTO.ActivityTemplate.Name);
+            Assert.AreEqual(result.Content.ActivityTemplate.Version, curActivityDTO.ActivityTemplate.Version);
+            Assert.AreEqual(result.Content.ActivityTemplate.Terminal.Name, curActivityDTO.ActivityTemplate.Terminal.Name);
 
             return result.Content;
         }
 
-        private async Task<CrateStorage> WaitForDocuSignEvent_ConfigureInitial(ActivityDTO curActionDTO)
+        private async Task<ICrateStorage> WaitForDocuSignEvent_ConfigureInitial(ActivityDTO curActionDTO)
         {
             // Fill values as it would be on front-end.
             curActionDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(_waitForDocuSignEventActivityTemplate);
-            curActionDTO.ActivityTemplateId = _waitForDocuSignEventActivityTemplate.Id;
             curActionDTO.CrateStorage = new CrateStorageDTO();
 
             // Send initial configure request.
-            var curActionController = CreateActionController();
+            var curActionController = CreateActivityController();
             var activityDTO = await curActionController.Configure(curActionDTO) as OkNegotiatedContentResult<ActivityDTO>;
 
 
@@ -274,29 +275,29 @@ namespace terminalIntegrationTests
 
             Assert.AreEqual(4,storage.Count);
             Assert.True((storage.CratesOfType<StandardConfigurationControlsCM>().Any()));
-            Assert.True(storage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "Available Templates"));
+            Assert.True(storage.CratesOfType<FieldDescriptionsCM>().Any(x => x.Label == "Available Templates"));
 
-            FixActionNavProps(activityDTO.Content.Id);
+           // FixActionNavProps(activityDTO.Content.Id);
 
             return storage;
         }
 
         // navigational properties in MockDB are not so navigational... 
-        private void FixActionNavProps(Guid id)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var activity = uow.ActivityRepository.GetByKey(id);
+//        private void FixActionNavProps(Guid id)
+//        {
+//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+//            {
+//                var activity = uow.ActivityRepository.GetByKey(id);
+//
+//                activity.ParentRouteNode = (RouteNodeDO)uow.SubrouteRepository.GetByKey(activity.ParentRouteNodeId) ?? uow.ActivityRepository.GetByKey(activity.ParentRouteNodeId);
+//                uow.SaveChanges();
+//            }
+//        }
 
-                activity.ParentRouteNode = (RouteNodeDO)uow.SubrouteRepository.GetByKey(activity.ParentRouteNodeId) ?? uow.ActivityRepository.GetByKey(activity.ParentRouteNodeId);
-                uow.SaveChanges();
-            }
-        }
-
-        private void WaitForDocuSignEvent_SelectFirstTemplate(CrateStorage curCrateStorage)
+        private void WaitForDocuSignEvent_SelectFirstTemplate(ICrateStorage curCrateStorage)
         {
             // Fetch Available Template crate and parse StandardDesignTimeFieldsMS.
-            var availableTemplatesCrate = curCrateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Single(x => x.Label == "Available Templates");
+            var availableTemplatesCrate = curCrateStorage.CratesOfType<FieldDescriptionsCM>().Single(x => x.Label == "Available Templates");
 
             var fieldsMS = availableTemplatesCrate.Content;
 
@@ -315,9 +316,9 @@ namespace terminalIntegrationTests
             docuSignTemplateControl.Controls[0].Value = fieldsMS.Fields.First().Value;
         }
 
-        private async Task<CrateStorage> WaitForDocuSignEvent_ConfigureFollowUp(ActivityDTO curActionDTO)
+        private async Task<ICrateStorage> WaitForDocuSignEvent_ConfigureFollowUp(ActivityDTO curActionDTO)
         {
-            var curActionController = CreateActionController();
+            var curActionController = CreateActivityController();
 
             var activtyDTO = await curActionController.Configure(curActionDTO) as OkNegotiatedContentResult<ActivityDTO>;
 
@@ -330,21 +331,20 @@ namespace terminalIntegrationTests
 
             Assert.AreEqual(4, storage.Count);//replace this with 3 when 1123 is fixed (Why 3?)
             Assert.True(storage.CratesOfType<StandardConfigurationControlsCM>().Any(x => x.Label == "Configuration_Controls"));
-            Assert.True(storage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "Available Templates"));
-            // Assert.True(storage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "DocuSignTemplateUserDefinedFields"));
+            Assert.True(storage.CratesOfType<FieldDescriptionsCM>().Any(x => x.Label == "Available Templates"));
+            // Assert.True(storage.CratesOfType<FieldDescriptionsCM>().Any(x => x.Label == "DocuSignTemplateUserDefinedFields"));
             Assert.True(storage.CratesOfType<EventSubscriptionCM>().Any(x => x.Label == "Standard Event Subscriptions"));
 
             return storage;
         }
 
-        private async Task<CrateStorage> TestIncomingData_ConfigureInitial(ActivityDTO curActionDTO)
+        private async Task<ICrateStorage> TestIncomingData_ConfigureInitial(ActivityDTO curActionDTO)
         {
             // Fill values as it would be on front-end.
-            curActionDTO.ActivityTemplateId = _testIncomingDataActivityTemplate.Id;
             curActionDTO.CrateStorage = new CrateStorageDTO();
 
             // Send initial configure request.
-            var curActionController = CreateActionController();
+            var curActionController = CreateActivityController();
             var result = await curActionController.Configure(curActionDTO) as OkNegotiatedContentResult<ActivityDTO>;
 
             Assert.NotNull(result);
@@ -355,18 +355,17 @@ namespace terminalIntegrationTests
 
             Assert.AreEqual(storage.Count, 2);
             Assert.True(storage.CratesOfType<StandardConfigurationControlsCM>().Any(x => x.Label == "Configuration_Controls"));
-            Assert.True(storage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "Queryable Criteria"));
+            Assert.True(storage.CratesOfType<FieldDescriptionsCM>().Any(x => x.Label == "Queryable Criteria"));
 
             return storage;
         }
 
-        private async Task<CrateStorage> WriteToSqlServer_ConfigureInitial(ActivityDTO curActionDTO)
+        private async Task<ICrateStorage> WriteToSqlServer_ConfigureInitial(ActivityDTO curActionDTO)
         {
             curActionDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(_writeToSqlServerActivityTemplate);
-            curActionDTO.ActivityTemplateId = _writeToSqlServerActivityTemplate.Id;
             curActionDTO.CrateStorage = new CrateStorageDTO();
 
-            var curActionController = CreateActionController();
+            var curActionController = CreateActivityController();
             var result = await curActionController.Configure(curActionDTO) as OkNegotiatedContentResult<ActivityDTO>;
 
             Assert.NotNull(result);
@@ -381,7 +380,7 @@ namespace terminalIntegrationTests
             return storage;
         }
 
-        private void WriteToSqlServer_InputConnectionString(CrateStorage curCrateStorage)
+        private void WriteToSqlServer_InputConnectionString(ICrateStorage curCrateStorage)
         {
             var controlsMS = curCrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
@@ -391,9 +390,9 @@ namespace terminalIntegrationTests
             connectionStringControl.Value = "Server = tcp:s79ifqsqga.database.windows.net,1433; Database = demodb_health; User ID = alexeddodb@s79ifqsqga; Password = Thales89; Trusted_Connection = False; Encrypt = True; Connection Timeout = 30;";
         }
 
-        private async Task<CrateStorage> WriteToSqlServer_ConfigureFollowUp(ActivityDTO curActionDTO)
+        private async Task<ICrateStorage> WriteToSqlServer_ConfigureFollowUp(ActivityDTO curActionDTO)
         {
-            var curActionController = CreateActionController();
+            var curActionController = CreateActivityController();
 
             var activityDTO = await curActionController.Configure(curActionDTO) as OkNegotiatedContentResult<ActivityDTO>;
 
@@ -405,7 +404,7 @@ namespace terminalIntegrationTests
 
             Assert.AreEqual(2, storage.Count);//replace this with 3 when 1123 is fixed
             Assert.True(storage.CratesOfType<StandardConfigurationControlsCM>().Any(x => x.Label == "Configuration_Controls"));
-            Assert.True(storage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "Sql Table Columns"));
+            Assert.True(storage.CratesOfType<FieldDescriptionsCM>().Any(x => x.Label == "Sql Table Columns"));
 
             return storage;
         }
@@ -416,7 +415,7 @@ namespace terminalIntegrationTests
         [Test, Ignore]
         public async Task TerminalIntegration_WaitForDocuSign_ConfigureInitial()
         {
-            var savedActionDTO = CreateEmptyAction(_waitForDocuSignEventActivityTemplate);
+            var savedActionDTO = CreateEmptyActivity(_waitForDocuSignEventActivityTemplate);
 
             await WaitForDocuSignEvent_ConfigureInitial(savedActionDTO);
         }
@@ -428,7 +427,7 @@ namespace terminalIntegrationTests
         public async Task TerminalIntegration_WaitForDocuSign_ConfigureFollowUp()
         {
             // Create blank WaitForDocuSignEventAction.
-            var savedActionDTO = CreateEmptyAction(_waitForDocuSignEventActivityTemplate);
+            var savedActionDTO = CreateEmptyActivity(_waitForDocuSignEventActivityTemplate);
 
             // Call Configure Initial for WaitForDocuSignEvent action.
             var initCrateStorageDTO = await WaitForDocuSignEvent_ConfigureInitial(savedActionDTO);
@@ -436,9 +435,9 @@ namespace terminalIntegrationTests
             // Select first available DocuSign template.
             WaitForDocuSignEvent_SelectFirstTemplate(initCrateStorageDTO);
 
-            using (var updater = _crateManager.UpdateStorage(savedActionDTO))
+            using (var crateStorage = _crateManager.GetUpdatableStorage(savedActionDTO))
             {
-                updater.CrateStorage = initCrateStorageDTO;
+                crateStorage.Replace(initCrateStorageDTO);
             }
 
             // Call Configure FollowUp for WaitForDocuSignEvent action.
@@ -452,7 +451,7 @@ namespace terminalIntegrationTests
         public async Task TerminalIntegration_TestIncomingData_ConfigureInitial()
         {
             // Create blank WaitForDocuSignEvent action.
-            var waitForDocuSignEventAction = CreateEmptyAction(_waitForDocuSignEventActivityTemplate);
+            var waitForDocuSignEventAction = CreateEmptyActivity(_waitForDocuSignEventActivityTemplate);
 
             // Call Configure Initial for WaitForDocuSignEvent action.
             var initWaitForDocuSignEventCS = await WaitForDocuSignEvent_ConfigureInitial(waitForDocuSignEventAction);
@@ -460,31 +459,31 @@ namespace terminalIntegrationTests
             // Select first available DocuSign template.
             WaitForDocuSignEvent_SelectFirstTemplate(initWaitForDocuSignEventCS);
 
-            using (var updater = _crateManager.UpdateStorage(waitForDocuSignEventAction))
+            using (var crateStorage = _crateManager.GetUpdatableStorage(waitForDocuSignEventAction))
             {
-                updater.CrateStorage = initWaitForDocuSignEventCS;
+                crateStorage.Replace(initWaitForDocuSignEventCS);
             }
 
-            FixActionNavProps(waitForDocuSignEventAction.Id);
+            //FixActionNavProps(waitForDocuSignEventAction.Id);
 
             // Call Configure FollowUp for WaitForDocuSignEvent action.
             await WaitForDocuSignEvent_ConfigureFollowUp(waitForDocuSignEventAction);
 
-            FixActionNavProps(waitForDocuSignEventAction.Id);
+         //   FixActionNavProps(waitForDocuSignEventAction.Id);
 
             // Save WaitForDocuSignEvent action.
-            SaveAction(waitForDocuSignEventAction);
+            SaveActivity(waitForDocuSignEventAction);
 
-            FixActionNavProps(waitForDocuSignEventAction.Id);
+        //    FixActionNavProps(waitForDocuSignEventAction.Id);
 
             // Create blank TestIncomingData action.
-            var filterAction = CreateEmptyAction(_testIncomingDataActivityTemplate);
+            var filterAction = CreateEmptyActivity(_testIncomingDataActivityTemplate);
 
 
             // Call Configure Initial for TestIncomingData action.
             await TestIncomingData_ConfigureInitial(filterAction);
 
-            FixActionNavProps(filterAction.Id);
+           // FixActionNavProps(filterAction.Id);
         }
 
         /// <summary>
@@ -494,7 +493,7 @@ namespace terminalIntegrationTests
         public async Task TerminalIntegration_WriteToSqlServer_ConfigureInitial()
         {
             // Create blank WaitForDocuSignEvent action.
-            var emptyAction = CreateEmptyAction(_writeToSqlServerActivityTemplate);
+            var emptyAction = CreateEmptyActivity(_writeToSqlServerActivityTemplate);
 
             // Call Configure Initial for WriteToSqlServer action.
             await WriteToSqlServer_ConfigureInitial(emptyAction);
@@ -508,7 +507,7 @@ namespace terminalIntegrationTests
         public async Task TerminalIntegration_WriteToSqlServer_ConfigureFollowUp()
         {
             // Create blank WaitForDocuSignEventAction.
-            var savedActionDTO = CreateEmptyAction(_writeToSqlServerActivityTemplate);
+            var savedActionDTO = CreateEmptyActivity(_writeToSqlServerActivityTemplate);
 
             // Call Configure Initial for WaitForDocuSignEvent action.
             var initCrateStorageDTO = await WriteToSqlServer_ConfigureInitial(savedActionDTO);
@@ -516,12 +515,12 @@ namespace terminalIntegrationTests
             // Select first available DocuSign template.
             WriteToSqlServer_InputConnectionString(initCrateStorageDTO);
 
-            using (var updater = _crateManager.UpdateStorage(savedActionDTO))
+            using (var crateStorage = _crateManager.GetUpdatableStorage(savedActionDTO))
             {
-                updater.CrateStorage = initCrateStorageDTO;
+                crateStorage.Replace(initCrateStorageDTO);
             }
 
-            FixActionNavProps(savedActionDTO.Id);
+          //  FixActionNavProps(savedActionDTO.Id);
 
             // Call Configure FollowUp for WaitForDocuSignEvent action.
             await WriteToSqlServer_ConfigureFollowUp(savedActionDTO);
@@ -530,9 +529,9 @@ namespace terminalIntegrationTests
         /// <summary>
         /// Create ActionController instance.
         /// </summary>
-        public ActionsController CreateActionController()
+        public ActivitiesController CreateActivityController()
         {
-            return CreateController<ActionsController>(_testUserAccount.Id);
+            return CreateController<ActivitiesController>(_testUserAccount.Id);
         }
     }
 }

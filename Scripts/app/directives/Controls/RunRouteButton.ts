@@ -26,7 +26,7 @@ module dockyard.directives {
         };
 
         var getRoute = function ($q, $http, actionId): ng.IPromise<any> {
-            var url = '/api/routes/getByAction/' + actionId;
+            var url = '/api/routes/getByActivity/' + actionId;
 
             return $q(function (resolve, reject) {
                 $http.get(url)

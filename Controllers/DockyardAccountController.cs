@@ -1,5 +1,5 @@
 
-﻿using System;
+using System;
 using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
@@ -15,36 +15,10 @@ using Hub.Services;
 using Utilities;
 using Utilities.Logging;
 using HubWeb.ViewModels;
+using Data.Migrations;
 
 namespace HubWeb.Controllers
 {
-    /// <summary>
-    /// Email service
-    /// </summary>
-    public class KwasantEmailService : IIdentityMessageService
-    {
-        public Task SendAsync(IdentityMessage message)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                String senderMailAddress =
-                    ObjectFactory.GetInstance<IConfigRepository>().Get("EmailAddress_GeneralInfo");
-
-                EmailDO emailDO = new EmailDO();
-                emailDO.AddEmailRecipient(EmailParticipantType.To,
-                    Email.GenerateEmailAddress(uow, new MailAddress(message.Destination)));
-                emailDO.From = Email.GenerateEmailAddress(uow, new MailAddress(senderMailAddress));
-
-                emailDO.Subject = message.Subject;
-                emailDO.HTMLText = message.Body;
-
-                //uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
-                uow.SaveChanges();
-                return Task.FromResult(0);
-            }
-        }
-    }
-
     [DockyardAuthorize]
     public class DockyardAccountController : Controller
     {
@@ -85,7 +59,7 @@ namespace HubWeb.Controllers
         [AllowAnonymous]
         public ActionResult Register()
         {
-            ViewBag.GuestUserEmail =  TempData["tempEmail"];            
+            ViewBag.GuestUserEmail = TempData["tempEmail"];
             return View();
         }
 
@@ -124,7 +98,7 @@ namespace HubWeb.Controllers
                     {
                         curRegStatus = await _account.UpdateGuestUserRegistration(submittedRegData.Email.Trim()
                             , submittedRegData.Password.Trim()
-                            ,submittedRegData.GuestUserTempEmail);
+                            , submittedRegData.GuestUserTempEmail);
                     }
                     else
                     {
@@ -138,11 +112,11 @@ namespace HubWeb.Controllers
                     else
                     {
                         // return RedirectToAction("Index", "Home");
-	                  return this.Login(new LoginVM
-	                  {
-                          Email = submittedRegData.Email.Trim(),
-                          Password = submittedRegData.Password.Trim(),
-		                  RememberMe = false
+                        return this.Login(new LoginVM
+                        {
+                            Email = submittedRegData.Email.Trim(),
+                            Password = submittedRegData.Password.Trim(),
+                            RememberMe = false
                         }, string.Empty).Result;
                     }
                 }
@@ -363,7 +337,7 @@ Please register first.");
         [AllowAnonymous]
         public async Task<ActionResult> ProcessGuestUserMode()
         {
-            LoginStatus loginStatus  = await _account.CreateAuthenticateGuestUser();
+            LoginStatus loginStatus = await _account.CreateAuthenticateGuestUser();
 
             if (loginStatus == LoginStatus.Successful)
             {

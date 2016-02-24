@@ -1,26 +1,31 @@
-﻿<div class="pane-configure-action" block-if="processing === true" ng-click="reloadConfiguration()">
-    <div ng-if="!(currentAction.activityTemplate.category==='Solution' && mode !== 'solution')">
-        <div ng-if="!currentAction.currentView" ng-repeat="field in currentAction.configurationControls.fields">
-            <configuration-control current-action="currentAction" field="field" />
-        </div>
-        <div ng-if="currentAction.currentView">
-            <div ng-repeat="field in currentAction.configurationControls.fields">
-                <configuration-control current-action="currentAction" field="field" ng-if="field.fieldLabel==currentAction.currentView" />
+﻿<div>
+    <div class="pane-configure-action" block-if="processing === true" ng-click="reloadConfiguration()" ng-hide="collapsed">
+        <div ng-if="!(currentAction.activityTemplate.category==='Solution' && mode !== 'solution')">
+            <div ng-if="!currentAction.currentView" ng-repeat="field in currentAction.configurationControls.fields">
+                <configuration-control current-action="currentAction" field="field" />
+            </div>
+            <div ng-if="currentAction.currentView">
+                <div ng-repeat="field in currentAction.configurationControls.fields">
+                    <configuration-control current-action="currentAction" field="field" ng-if="field.fieldLabel==currentAction.currentView" />
+                </div>
             </div>
         </div>
-    </div>
-    <div class="pane-configure-action-returnToSolution" ng-if="currentAction.activityTemplate.category==='Solution' && mode !== 'solution'">
-        <label>This solution has {{currentAction.childrenActions.length}} {{currentAction.childrenActions.length > 1 ? "parts" : "part"}}: </label>
-        <div class="solution-parts">
-            <label ng-repeat="childAction in currentAction.childrenActions">
-                {{$index +1}}. {{childAction.activityTemplate.label}}
-            </label>
+
+        <div class="pane-configure-action-returnToSolution" ng-if="currentAction.activityTemplate.category==='Solution' && mode !== 'solution'">
+            <label>This solution has {{currentAction.childrenActivities.length}} {{currentAction.childrenActivities.length > 1 ? "parts" : "part"}}: </label>
+            <div class="solution-parts">
+                <label ng-repeat="childAction in currentAction.childrenActivities">
+                    {{$index +1}}. {{childAction.activityTemplate.label}}
+                </label>
+            </div>
         </div>
-        
+        <div class="return-to-solution-container" ng-if="currentAction.activityTemplate.category==='Solution' && mode !== 'solution'">
+            <a stop-click-propagation ng-click="setSolutionMode()">
+                <span class="return-to-solution">Return to Solution Introduction</span>
+            </a>
+        </div>
     </div>
-    <div class="return-to-solution-container" ng-if="currentAction.activityTemplate.category==='Solution' && mode !== 'solution'">
-        <a stop-click-propagation ng-click="setSolutionMode()">
-            <span class="return-to-solution">Return to Solution Introduction</span>
-        </a>
-    </div>
+    <a href="#" class="btn badge badge-primary resize-pane" ng-click="resize()">
+        <span class="glyphicon" ng-class="{'glyphicon-resize-full': collapsed, 'glyphicon-resize-small': !collapsed}"></span>
+    </a>
 </div>

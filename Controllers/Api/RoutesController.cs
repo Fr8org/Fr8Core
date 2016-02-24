@@ -21,9 +21,11 @@ using HubWeb.ViewModels;
 using Newtonsoft.Json;
 using Hub.Managers;
 using Data.Crates;
+using Data.Interfaces.DataTransferObjects.Helpers;
 using Utilities.Interfaces;
 using HubWeb.Infrastructure;
 using Data.Interfaces.Manifests;
+using System.Text;
 
 namespace HubWeb.Controllers
 {
@@ -97,10 +99,11 @@ namespace HubWeb.Controllers
                     return BadRequest("Some of the request data is invalid");
                 }
                 var curPlanDO = Mapper.Map<RouteEmptyDTO, PlanDO>(routeDto, opts => opts.Items.Add("ptid", routeDto.Id));
-                curPlanDO.Fr8Account = _security.GetCurrentAccount(uow);
+
                 _plan.CreateOrUpdate(uow, curPlanDO, updateRegistrations);
+
                 uow.SaveChanges();
-                var result = RouteMappingHelper.MapRouteToDto(uow, curPlanDO);
+                var result = RouteMappingHelper.MapRouteToDto(uow, uow.PlanRepository.GetById<PlanDO>(curPlanDO.Id));
                 return Ok(result);
             }
         }
@@ -114,7 +117,7 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var plan = uow.PlanRepository.GetByKey(id);
+                var plan = uow.PlanRepository.GetById<PlanDO>(id);
                 var result = RouteMappingHelper.MapRouteToDto(uow, plan);
 
                 return Ok(result);
@@ -125,12 +128,11 @@ namespace HubWeb.Controllers
         [ResponseType(typeof(RouteFullDTO))]
         [HttpGet]
 
-        public IHttpActionResult GetByAction(Guid id)
+        public IHttpActionResult GetByActivity(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var activity = uow.ActivityRepository.GetByKey(id);
-                var plan = _plan.GetPlan(activity);
+                var plan = _plan.GetPlanByActivityId(uow, id);
                 var result = RouteMappingHelper.MapRouteToDto(uow, plan);
 
                 return Ok(result);
@@ -185,7 +187,7 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curPlanDO = uow.PlanRepository.GetByKey(id);
+                var curPlanDO = uow.PlanRepository.GetById<PlanDO>(id);
                 if (curPlanDO == null)
                 {
                     throw new ApplicationException("Unable to find plan with specified id.");
@@ -230,9 +232,9 @@ namespace HubWeb.Controllers
         }
 
         [HttpPost]
-        [ActionName("action")]
+        [ActionName("activity")]
         [Fr8ApiAuthorize]
-        public IHttpActionResult PutAction(ActivityDTO activityDto)
+        public IHttpActionResult PutActivity(ActivityDTO activityDto)
         {
             //A stub until the functionaltiy is ready
             return Ok();
@@ -292,20 +294,19 @@ namespace HubWeb.Controllers
         }
 
         [HttpPost]
-        //[Route("deactivate")]
         [Fr8ApiAuthorize]
-        public async Task<IHttpActionResult> Deactivate(PlanDO curRoute)
+        public async Task<IHttpActionResult> Deactivate(Guid planId)
         {
             var eventManager = ObjectFactory.GetInstance<Event>();
-            string activityDTO = await _plan.Deactivate(curRoute.Id);
-            var routeDTO = Mapper.Map<RouteEmptyDTO>(curRoute);
-            await eventManager.Publish("RouteDeactivated", ObjectFactory.GetInstance<ISecurityServices>().GetCurrentUser(), curRoute.Id.ToString(), JsonConvert.SerializeObject(routeDTO).ToString(), "Success");
+            string activityDTO = await _plan.Deactivate(planId);
+
+            var routeDeactivateTask = Task.Run(() => eventManager.Publish("RouteDeactivated", ObjectFactory.GetInstance<ISecurityServices>().GetCurrentUser(),
+                    planId.ToString(), null, "Success")).ConfigureAwait(false);
 
             return Ok(activityDTO);
         }
 
         [HttpPost]
-        //[Route("find_objects/create")]
         [Fr8ApiAuthorize]
         public IHttpActionResult CreateFindObjectsRoute()
         {
@@ -321,7 +322,6 @@ namespace HubWeb.Controllers
         }
 
         [Fr8ApiAuthorize("Admin", "Customer")]
-        //[Route("run")]
         [HttpPost]
         public async Task<IHttpActionResult> Run(Guid planId, [FromBody]PayloadVM model)
         {
@@ -330,25 +330,32 @@ namespace HubWeb.Controllers
             bool inActive = false;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var routeDO = uow.PlanRepository.GetByKey(planId);
+                var routeDO = uow.PlanRepository.GetById<PlanDO>(planId);
 
                 if (routeDO.RouteState == RouteState.Inactive)
                     inActive = true;
             }
 
+            string pusherChannel = String.Format("fr8pusher_{0}", User.Identity.Name);
+
             if (inActive)
             {
-                await _plan.Activate(planId, false);
-                await eventManager.Publish("RouteActivated", ObjectFactory.GetInstance<ISecurityServices>().GetCurrentAccount
-                    (ObjectFactory.GetInstance<IUnitOfWork>()).Id.ToString(), planId.ToString(), JsonConvert.SerializeObject(planId).ToString(), "Success");
-            }
+                var activateDTO = await _plan.Activate(planId, false);
 
+                if (activateDTO != null && activateDTO.Status == "validation_error")
+                {
+                    //this container holds wrapped inside the ErrorDTO
+                    return Ok(activateDTO.Container);
+                }
+
+                var routeActiveTask = Task.Run(() => eventManager.Publish("RouteActivated", ObjectFactory.GetInstance<ISecurityServices>().GetCurrentAccount
+                    (ObjectFactory.GetInstance<IUnitOfWork>()).Id.ToString(), planId.ToString(), JsonConvert.SerializeObject(planId).ToString(), "Success")).
+                    ConfigureAwait(false);
+            }
 
             //RUN
             CrateDTO curCrateDto;
             Crate curCrate = null;
-
-            string pusherChannel = String.Format("fr8pusher_{0}", User.Identity.Name);
 
             if (model != null)
             {
@@ -366,7 +373,7 @@ namespace HubWeb.Controllers
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var planDO = uow.PlanRepository.GetByKey(planId);
+                var planDO = uow.PlanRepository.GetById<PlanDO>(planId);
 
                 try
                 {
@@ -381,9 +388,13 @@ namespace HubWeb.Controllers
 
                         string responseMsg = "";
 
-                        if (response != null && (response.ResponseMessageDTO != null && !String.IsNullOrEmpty(response.ResponseMessageDTO.Message)))
+                        ResponseMessageDTO responseMessage;
+                        if (response != null && response.CurrentActivityResponse != null && response.CurrentActivityResponse.TryParseResponseMessageDTO(out responseMessage))
                         {
-                            responseMsg = "\n" + response.ResponseMessageDTO.Message;
+                            if (responseMessage != null && !string.IsNullOrEmpty(responseMessage.Message))
+                            {
+                                responseMsg = "\n" + responseMessage.Message;
+                            }
                         }
 
                         string message = String.Format("Complete processing for Plan \"{0}\".{1}", planDO.Name, responseMsg);
@@ -394,15 +405,16 @@ namespace HubWeb.Controllers
 
 
 
-                        await eventManager.Publish("ContainerLaunched"
-                            , planDO.Fr8Account.Id
-                            , planDO.Id.ToString()
-                            , JsonConvert.SerializeObject(containerDTO).ToString(), "Success");
+                        var containerLaunched = Task.Run( () =>eventManager.Publish("ContainerLaunched"
+                              , planDO.Fr8AccountId
+                              , planDO.Id.ToString()
+                              , JsonConvert.SerializeObject(containerDTO).ToString(), "Success")).ConfigureAwait(false);
 
-                        await eventManager.Publish("ContainerExecutionComplete"
-                            , planDO.Fr8Account.Id
+
+                        var containerExecutedTask = Task.Run(()=> eventManager.Publish("ContainerExecutionComplete"
+                            , planDO.Fr8AccountId
                             , planDO.Id.ToString()
-                            , JsonConvert.SerializeObject(containerDTO).ToString(), "Success");
+                            , JsonConvert.SerializeObject(containerDTO).ToString(), "Success")).ConfigureAwait(false);
 
                         return Ok(containerDTO);
                     }
@@ -411,9 +423,8 @@ namespace HubWeb.Controllers
                 }
                 catch (ErrorResponseException exception)
                 {
-                    string message = String.Format("Plan \"{0}\" failed. {1}", planDO.Name, exception.Message);
-
-                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, message);
+                    //this response contains details about the error that happened on some terminal and need to be shown to client
+                    return Ok(exception.ContainerDTO);
                 }
                 catch (Exception e)
                 {

@@ -13,6 +13,7 @@ using Hub.Managers.APIManagers.Transmitters.Restful;
 using System.Linq;
 using NUnit.Framework;
 using Data.Constants;
+using Data.Interfaces.DataTransferObjects.Helpers;
 using StructureMap;
 
 namespace HealthMonitor.Utility
@@ -60,10 +61,13 @@ namespace HealthMonitor.Utility
             var storage = Crate.GetStorage(payload);
             var operationalStateCM = storage.CrateContentsOfType<OperationalStateCM>().Single();
 
-            Assert.AreEqual(ActivityResponse.Error, operationalStateCM.CurrentActivityResponse);
-            Assert.AreEqual(ActionErrorCode.NO_AUTH_TOKEN_PROVIDED, operationalStateCM.CurrentActivityErrorCode);
-            Assert.AreEqual("No AuthToken provided.", operationalStateCM.CurrentActivityErrorMessage);
+            //extract current error message from current activity response
+            ErrorDTO errorMessage;
+            operationalStateCM.CurrentActivityResponse.TryParseErrorDTO(out errorMessage);
 
+            Assert.AreEqual(ActivityResponse.Error.ToString(), operationalStateCM.CurrentActivityResponse.Type);
+            Assert.AreEqual(ActivityErrorCode.NO_AUTH_TOKEN_PROVIDED, operationalStateCM.CurrentActivityErrorCode);
+            Assert.AreEqual("No AuthToken provided.", errorMessage.Message);
         }
 
         public string GetTerminalDiscoverUrl()
@@ -73,27 +77,27 @@ namespace HealthMonitor.Utility
 
         public string GetTerminalConfigureUrl()
         {
-            return GetTerminalUrl() + "/actions/configure";
+            return GetTerminalUrl() + "/activities/configure";
         }
 
         public string GetTerminalActivateUrl()
         {
-            return GetTerminalUrl() + "/actions/activate";
+            return GetTerminalUrl() + "/activities/activate";
         }
 
         public string GetTerminalDeactivateUrl()
         {
-            return GetTerminalUrl() + "/actions/deactivate";
+            return GetTerminalUrl() + "/activities/deactivate";
         }
 
         public string GetTerminalRunUrl()
         {
-            return GetTerminalUrl() + "/actions/run";
+            return GetTerminalUrl() + "/activities/run";
         }
 
-        private void AddHubCrate<T>(ActivityDTO activityDTO, T crateManifest, string label, string innerLabel)
+        private void AddHubCrate<T>(Fr8DataDTO dataDTO, T crateManifest, string label, string innerLabel)
         {
-            var crateStorage = Crate.GetStorage(activityDTO.ExplicitData);
+            var crateStorage = Crate.GetStorage(dataDTO.ExplicitData);
 
             var fullLabel = label;
             if (!string.IsNullOrEmpty(innerLabel))
@@ -104,52 +108,48 @@ namespace HealthMonitor.Utility
             var crate = Crate<T>.FromContent(fullLabel, crateManifest);
             crateStorage.Add(crate);
 
-            activityDTO.ExplicitData = Crate.CrateStorageAsStr(crateStorage);
+            dataDTO.ExplicitData = Crate.CrateStorageAsStr(crateStorage);
         }
 
-        public void AddCrate<T>(ActivityDTO activityDTO, T crateManifest, string label)
+        public void AddCrate<T>(Fr8DataDTO dataDTO, T crateManifest, string label)
         {
-            var crateStorage = Crate.GetStorage(activityDTO.ExplicitData);
+            var crateStorage = Crate.GetStorage(dataDTO.ExplicitData);
 
             var crate = Crate<T>.FromContent(label, crateManifest);
             crateStorage.Add(crate);
 
-            activityDTO.ExplicitData = Crate.CrateStorageAsStr(crateStorage);
+            dataDTO.ExplicitData = Crate.CrateStorageAsStr(crateStorage);
         }
 
-        public void AddActivityTemplate(ActivityDTO activityDTO, ActivityTemplateDTO activityTemplate)
+        public void AddActivityTemplate(Fr8DataDTO dataDTO, ActivityTemplateDTO activityTemplate)
         {
-            AddHubCrate(
-                activityDTO,
-                new StandardDesignTimeFieldsCM(
-                    new FieldDTO("ActivityTemplate", JsonConvert.SerializeObject(activityTemplate))
-                ),
+            AddHubCrate(dataDTO, new FieldDescriptionsCM(new FieldDTO("ActivityTemplate", JsonConvert.SerializeObject(activityTemplate))),
                 "HealthMonitor_ActivityTemplate",
                 ""
             );
         }
 
-        public void AddUpstreamCrate<T>(ActivityDTO activityDTO, T crateManifest, string crateLabel = "")
+        public void AddUpstreamCrate<T>(Fr8DataDTO dataDTO, T crateManifest, string crateLabel = "")
         {
-            AddHubCrate(activityDTO, crateManifest, "HealthMonitor_UpstreamCrate", crateLabel);
+            AddHubCrate(dataDTO, crateManifest, "HealthMonitor_UpstreamCrate", crateLabel);
         }
 
-        public void AddDownstreamCrate<T>(ActivityDTO activityDTO, T crateManifest, string crateLabel = "")
+        public void AddDownstreamCrate<T>(Fr8DataDTO dataDTO, T crateManifest, string crateLabel = "")
         {
-            AddHubCrate(activityDTO, crateManifest, "HealthMonitor_DownstreamCrate", crateLabel);
+            AddHubCrate(dataDTO, crateManifest, "HealthMonitor_DownstreamCrate", crateLabel);
         }
 
-        public void AddPayloadCrate<T>(ActivityDTO activityDTO, T crateManifest, string crateLabel = "")
+        public void AddPayloadCrate<T>(Fr8DataDTO dataDTO, T crateManifest, string crateLabel = "")
         {
-            AddHubCrate(activityDTO, crateManifest, "HealthMonitor_PayloadCrate", crateLabel);
+            AddHubCrate(dataDTO, crateManifest, "HealthMonitor_PayloadCrate", crateLabel);
         }
 
-        public void AddOperationalStateCrate(ActivityDTO activityDTO, OperationalStateCM operationalState)
+        public void AddOperationalStateCrate(Fr8DataDTO dataDTO, OperationalStateCM operationalState)
         {
-            AddPayloadCrate(activityDTO, operationalState, "Operational Status");
+            AddPayloadCrate(dataDTO, operationalState, "Operational Status");
         }
 
-        private async Task<Dictionary<string, string>> GetHMACHeader<T>(Uri requestUri, string userId, T content)
+        protected async Task<Dictionary<string, string>> GetHMACHeader<T>(Uri requestUri, string userId, T content)
         {
             return await HMACService.GenerateHMACHeader(requestUri, TerminalId, TerminalSecret, userId, content);
         }

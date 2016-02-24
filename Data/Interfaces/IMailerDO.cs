@@ -10,5 +10,6 @@ namespace Data.Interfaces
         string TemplateName { get; set; }
         IDictionary<String, Object> MergeData { get; }
         IEmailDO Email { get; set; }
+        string Footer { get; set; }
     }
 }
