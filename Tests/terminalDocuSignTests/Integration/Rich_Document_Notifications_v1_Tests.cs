@@ -30,9 +30,9 @@ namespace terminalDocuSignTests.Integration
         {
             Assert.AreEqual(4, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "AvailableTemplates"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "AvailableHandlers"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "AvailableRecipientEvents"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "AvailableTemplates"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "AvailableHandlers"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "AvailableRecipientEvents"));
             
         }
 
@@ -162,7 +162,7 @@ namespace terminalDocuSignTests.Integration
             AssertControls(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single());
         }
 
-        private async Task<ActivityDTO> GetActionDTO_WithEventsAndDelayValue()
+        private async Task<ActivityDTO> GetActivityDTO_WithEventsAndDelayValue()
         {
             var configureUrl = GetTerminalConfigureUrl();
             var dataDTO = HealthMonitor_FixtureData.Rich_Document_Notifications_v1_InitialConfiguration_Fr8DataDTO();
@@ -186,11 +186,11 @@ namespace terminalDocuSignTests.Integration
                 radioGroup.Radios[0].Selected = true;
 
                 var availableEventCM = crateStorage
-                    .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "AvailableEvents")
+                    .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "AvailableEvents")
                     .Single();
 
                 var availableHandlers = crateStorage
-                    .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "AvailableHandlers")
+                    .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "AvailableHandlers")
                     .Single();
 
                 Assert.IsTrue(availableEventCM.Fields.Count > 0);
@@ -212,7 +212,7 @@ namespace terminalDocuSignTests.Integration
             return responseActionDTO;
         }
 
-        private async Task<ActivityDTO> GetActionDTO_WithEventsValue()
+        private async Task<ActivityDTO> GetActivityDTO_WithEventsValue()
         {
             var configureUrl = GetTerminalConfigureUrl();
             var dataDTO = HealthMonitor_FixtureData.Rich_Document_Notifications_v1_InitialConfiguration_Fr8DataDTO();
@@ -236,11 +236,11 @@ namespace terminalDocuSignTests.Integration
                 radioGroup.Radios[0].Selected = true;
 
                 var availableEventCM = crateStorage
-                    .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "AvailableEvents")
+                    .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "AvailableEvents")
                     .Single();
 
                 var availableHandlers = crateStorage
-                    .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "AvailableHandlers")
+                    .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "AvailableHandlers")
                     .Single();
 
                 Assert.IsTrue(availableEventCM.Fields.Count > 0);
@@ -328,7 +328,7 @@ namespace terminalDocuSignTests.Integration
         }
         */
         [Test]
-        public async Task Rich_Document_Notifications_Activate_Returns_ActionDTO()
+        public async Task Rich_Document_Notifications_Activate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
@@ -349,7 +349,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async Task Rich_Document_Notifications_Deactivate_Returns_ActionDTO()
+        public async Task Rich_Document_Notifications_Deactivate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();

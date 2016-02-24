@@ -25,7 +25,7 @@ namespace terminalAtlassian
             public ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
             {
                 return new Type[] {
-                    typeof(Controllers.ActionController),
+                    typeof(Controllers.ActivityController),
                     typeof(Controllers.TerminalController),
                     typeof(Controllers.AuthenticationController)
                 };

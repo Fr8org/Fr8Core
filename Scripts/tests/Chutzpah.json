@@ -71,9 +71,12 @@
     },    
     {
       "Path": "../../bower_components/angular-bootstrap-switch/dist/angular-bootstrap-switch.js"
-    },    
+    },
     {
       "Path": "../../bower_components/dndLists/angular-drag-and-drop-lists.min.js"
+    },
+    {
+      "Path": "../../bower_components/angular-ivh-treeview/dist/ivh-treeview.min.js"
     },
     {
       "Path": "../app/app.js"

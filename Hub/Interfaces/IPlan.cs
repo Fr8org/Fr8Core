@@ -18,7 +18,7 @@ namespace Hub.Interfaces
         void Delete(IUnitOfWork uow, Guid id);
         
         IList<PlanDO> GetMatchingPlans(string userId, EventReportCM curEventReport);
-        Task<ActivateActionsDTO> Activate(Guid planId, bool routeBuilderActivate);
+        Task<ActivateActivitiesDTO> Activate(Guid planId, bool routeBuilderActivate);
         Task<string> Deactivate(Guid curPlanId);
         
         PlanDO GetPlanByActivityId(IUnitOfWork uow, Guid planActivityId);

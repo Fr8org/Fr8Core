@@ -46,7 +46,7 @@ namespace UtilitiesTesting.Fixtures
         }
 
         // DO-1214
-        public static ActionListDO TestActionList_ImmediateActions()
+        public static ActionListDO TestActivityList_ImmediateActivities()
         {
             return new ActionListDO()
             {
@@ -204,7 +204,7 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static ActivityDO TestAction_Blank()
+        public static ActivityDO TestActivity_Blank()
         {
             return new ActivityDO()
             {
