@@ -132,7 +132,7 @@ namespace terminalTwilioTests.Integration
         }
 
         [Test, Category("Integration.terminalTwilio")]
-        public async Task Send_Via_Twilio_Activate_Returns_ActionDTO()
+        public async Task Send_Via_Twilio_Activate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
@@ -153,7 +153,7 @@ namespace terminalTwilioTests.Integration
         }
 
         [Test, Category("Integration.terminalTwilio")]
-        public async Task Send_Via_Twilio_Deactivate_Returns_ActionDTO()
+        public async Task Send_Via_Twilio_Deactivate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();

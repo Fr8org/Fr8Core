@@ -106,7 +106,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Actions\Get_Jira_Issue_v1Tests.cs" />
+    <Compile Include="Activities\Get_Jira_Issue_v1Tests.cs" />
     <Compile Include="Fixtures\FixtureData.cs" />
     <Compile Include="Integration\Terminal_Authentication_v1_Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

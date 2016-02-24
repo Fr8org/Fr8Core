@@ -31,9 +31,9 @@ namespace terminalPapertrailTests.Integration
             var papertrailTerminalDiscoveryResponse = await HttpGetAsync<StandardFr8TerminalCM>(discoverUrl);
 
             Assert.IsNotNull(papertrailTerminalDiscoveryResponse, "Terminal Papertrail discovery did not happen.");
-            Assert.IsNotNull(papertrailTerminalDiscoveryResponse.Actions, "Papertrail terminal does not have the write to log activity.");
-            Assert.AreEqual(1, papertrailTerminalDiscoveryResponse.Actions.Count, "Papertrail terminal does not have the write to log activity.");
-            Assert.AreEqual("Write_To_Log", papertrailTerminalDiscoveryResponse.Actions[0].Name, "Name of the write to log activity is wrong.");
+            Assert.IsNotNull(papertrailTerminalDiscoveryResponse.Activities, "Papertrail terminal does not have the write to log activity.");
+            Assert.AreEqual(1, papertrailTerminalDiscoveryResponse.Activities.Count, "Papertrail terminal does not have the write to log activity.");
+            Assert.AreEqual("Write_To_Log", papertrailTerminalDiscoveryResponse.Activities[0].Name, "Name of the write to log activity is wrong.");
         }
     }
 }

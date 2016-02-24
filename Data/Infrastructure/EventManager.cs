@@ -32,7 +32,7 @@ namespace Data.Infrastructure
         public delegate void IncidentTerminalInternalFailureHandler(string terminalUrl, string curActionDTO, Exception e, string objectId);
         public static event IncidentTerminalInternalFailureHandler IncidentTerminalInternalFailureOccurred;
 
-        public delegate void IncidentTerminalActionActivationPOSTFailureHandler(string terminalUrl, string curActionDTO, string objectId);
+        public delegate void IncidentTerminalActionActivationPOSTFailureHandler(string terminalUrl, string curActivityDTO, string objectId);
         public static event IncidentTerminalActionActivationPOSTFailureHandler IncidentTerminalActionActivationFailed;
 
         public delegate void TerminalActionActivatedHandler(ActivityDO activity);

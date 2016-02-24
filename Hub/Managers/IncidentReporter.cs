@@ -30,7 +30,7 @@ namespace Hub.Managers
             EventManager.IncidentTerminalConfigureFailed += ProcessIncidentTerminalConfigureFailed;
             EventManager.IncidentTerminalRunFailed += ProcessIncidentTerminalRunFailed;
             EventManager.AlertError_EmailSendFailure += ProcessEmailSendFailure;
-            EventManager.IncidentTerminalActionActivationFailed += ProcessIncidentTerminalActionActivationFailed;
+            EventManager.IncidentTerminalActionActivationFailed += ProcessIncidentTerminalActivityActivationFailed;
             EventManager.IncidentTerminalInternalFailureOccurred += ProcessIncidentTerminalInternalFailureOccurred;
             //EventManager.IncidentPluginConfigureFailed += ProcessIncidentPluginConfigureFailed;
             //AlertManager.AlertErrorSyncingCalendar += ProcessErrorSyncingCalendar;
@@ -144,7 +144,7 @@ namespace Hub.Managers
             SaveAndLogIncident(incident);
         }
 
-        private void ProcessIncidentTerminalActionActivationFailed(string terminalUrl, string curActionDTO, string objectId)
+        private void ProcessIncidentTerminalActivityActivationFailed(string terminalUrl, string curActionDTO, string objectId)
         {
             var incident = new IncidentDO
             {

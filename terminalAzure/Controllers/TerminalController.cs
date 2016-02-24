@@ -56,7 +56,7 @@ namespace terminalAzure.Controllers
             StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
              {
                  Definition = terminal,
-                 Actions = result
+                 Activities = result
              };
 
             return Json(curStandardFr8TerminalCM);

@@ -40,7 +40,7 @@ namespace TerminalBase.BaseClasses
         private readonly ITerminal _terminal;
         protected static readonly string ConfigurationControlsLabel = "Configuration_Controls";
         protected string CurrentFr8UserId { get; set; }
-        protected string _actionName { get; set; }
+        protected string _activityName { get; set; }
 
         private List<ActivityTemplateDTO> _activityTemplateCache = null;
 
@@ -64,7 +64,7 @@ namespace TerminalBase.BaseClasses
             Activity = ObjectFactory.GetInstance<IActivity>();
             _terminal = ObjectFactory.GetInstance<ITerminal>();
             HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
-            _actionName = actionName;
+            _activityName = actionName;
         }
 
         public void SetCurrentUser(string userId)
@@ -123,13 +123,13 @@ namespace TerminalBase.BaseClasses
             return payload;
         }
 
-        protected PayloadDTO ExecuteClientAction(PayloadDTO payload, string clientActionName)
+        protected PayloadDTO ExecuteClientActivity(PayloadDTO payload, string clientActionName)
         {
             using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
                 var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.ExecuteClientAction);
-                operationalState.CurrentClientActionName = clientActionName;
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.ExecuteClientActivity);
+                operationalState.CurrentClientActivityName = clientActionName;
             }
 
             return payload;
@@ -160,7 +160,7 @@ namespace TerminalBase.BaseClasses
         /// <param name="currentActivity">Activity where the error occured</param>
         /// <param name="currentTerminal">Terminal where the error occured</param>
         /// <returns></returns>
-        protected PayloadDTO Error(PayloadDTO payload, string errorMessage = null, ActionErrorCode? errorCode = null, string currentActivity = null, string currentTerminal = null)
+        protected PayloadDTO Error(PayloadDTO payload, string errorMessage = null, ActivityErrorCode? errorCode = null, string currentActivity = null, string currentTerminal = null)
         {
             using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
@@ -180,7 +180,7 @@ namespace TerminalBase.BaseClasses
         /// <returns></returns>
         protected PayloadDTO NeedsAuthenticationError(PayloadDTO payload)
         {
-            return Error(payload, "No AuthToken provided.", ActionErrorCode.NO_AUTH_TOKEN_PROVIDED);
+            return Error(payload, "No AuthToken provided.", ActivityErrorCode.NO_AUTH_TOKEN_PROVIDED);
         }
 
         /// <summary>
@@ -188,7 +188,7 @@ namespace TerminalBase.BaseClasses
         /// </summary>
         /// <param name="payload"></param>
         /// <returns></returns>
-        protected PayloadDTO ReProcessChildActions(PayloadDTO payload)
+        protected PayloadDTO ReProcessChildActivities(PayloadDTO payload)
         {
             using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
@@ -763,7 +763,7 @@ namespace TerminalBase.BaseClasses
 
             var baseEvent = new BaseTerminalEvent();
             var exceptionMessage = string.Format("No field found with specified key: {0}.", fieldKey);
-            baseEvent.SendTerminalErrorIncident(_actionName, exceptionMessage, _actionName);
+            baseEvent.SendTerminalErrorIncident(_activityName, exceptionMessage, _activityName);
 
             throw new ApplicationException(exceptionMessage);
         }

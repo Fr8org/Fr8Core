@@ -181,9 +181,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actions\Get_Jira_Issue_v1.cs" />
+    <Compile Include="Activities\Get_Jira_Issue_v1.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Controllers\ActionController.cs" />
+    <Compile Include="Controllers\ActivityController.cs" />
     <Compile Include="Controllers\AuthenticationController.cs" />
     <Compile Include="Controllers\TerminalController.cs" />
     <Compile Include="Global.asax.cs">

@@ -20,7 +20,7 @@ namespace Data.Interfaces.DataTransferObjects
         public string ManifestType { get; set; }
 
         [JsonProperty("currentActionId")]
-        public Guid CurrentActionId { get; set; }
+        public Guid CurrentActivityId { get; set; }
 
         public FieldValidationDTO()
         {
@@ -33,13 +33,13 @@ namespace Data.Interfaces.DataTransferObjects
             CrateLabel = crateLabel;
             Direction = direction;
             ManifestType = manifestType;
-            CurrentActionId = currentActionId;
+            CurrentActivityId = currentActionId;
         }
 
         public FieldValidationDTO(Guid currentActionId, string fieldName)
         {
             FieldName = fieldName;
-            CurrentActionId = currentActionId;
+            CurrentActivityId = currentActionId;
             Direction = ActivityDirection.Up;
         }
     }
