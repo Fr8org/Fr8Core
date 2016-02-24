@@ -25,7 +25,7 @@ namespace terminalDocuSign.Actions
 {
     public class Track_DocuSign_Recipients_v1 : BaseDocuSignActivity
     {
-        private const string SolutionName = "Rich Document Notifications";
+        private const string SolutionName = "Track DocuSign Recipients";
         private const double SolutionVersion = 1.0;
         private const string TerminalName = "DocuSign";
         private class ActivityUi : StandardConfigurationControlsCM
@@ -388,7 +388,7 @@ namespace terminalDocuSign.Actions
             }
             if (curDocumentation.Contains("HelpMenu"))
             {
-                if (curDocumentation.Contains("ExplainRichDocumentation"))
+                if (curDocumentation.Contains("TrackDocuSignRecipients"))
                 {
                     return Task.FromResult(GenerateDocumentationRepsonce(@"This solution work with notifications"));
                 }
