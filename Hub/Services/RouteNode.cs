@@ -83,12 +83,12 @@ namespace Hub.Services
             }
         }
 
-        public FieldDescriptionsCM GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType? availability)
+        public FieldDescriptionsCM GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability)
         {
             FieldDescriptionsCM mergedFields = new FieldDescriptionsCM();
 
             Func<FieldDTO, bool> fieldPredicate;
-            if (availability == null)
+            if (availability == AvailabilityType.NotSet)
             {
                 fieldPredicate = (FieldDTO f) => true;
             }

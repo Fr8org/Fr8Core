@@ -47,7 +47,7 @@ namespace DockyardTest.Services
             }
 
             IRouteNode _routeNodeService = ObjectFactory.GetInstance<IRouteNode>();
-            var fieldsCrate = _routeNodeService.GetDesignTimeFieldsByDirection(testActionTree.ChildNodes.Last().Id, CrateDirection.Upstream, null);
+            var fieldsCrate = _routeNodeService.GetDesignTimeFieldsByDirection(testActionTree.ChildNodes.Last().Id, CrateDirection.Upstream, AvailabilityType.NotSet);
             Assert.NotNull(fieldsCrate);
             Assert.NotNull(fieldsCrate.Fields);
             Assert.IsInstanceOfType(typeof(FieldDescriptionsCM), fieldsCrate);
