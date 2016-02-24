@@ -38,6 +38,8 @@ namespace terminalDocuSign.Actions
         private const string SolutionName = "Mail Merge Into DocuSign";
         private const double SolutionVersion = 1.0;
         private const string TerminalName = "DocuSign";
+        private const string SolutionBody = @"<p>This is a solution action</p>";
+
         public Mail_Merge_Into_DocuSign_v1()
             : base()
         {
@@ -312,15 +314,10 @@ namespace terminalDocuSign.Actions
         {
             if (curDocumentation.Contains("MainPage"))
             {
-            var curSolutionPage = new SolutionPageDTO
-            {
-                Name = SolutionName,
-                Version = SolutionVersion,
-                Terminal = TerminalName,
-                Body = @"<p>This is a solution action</p>"
-            };
-            return Task.FromResult(curSolutionPage);
-        }
+                var curSolutionPage = GetDefaultDocumentation(SolutionName, SolutionVersion, TerminalName, SolutionBody);
+                return Task.FromResult(curSolutionPage);
+              
+            }
             if (curDocumentation.Contains("HelpMenu"))
             {
                 if (curDocumentation.Contains("ExplainMailMerge"))

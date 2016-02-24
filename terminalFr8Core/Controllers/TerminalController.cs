@@ -263,7 +263,7 @@ namespace terminalFr8Core.Controllers
                 NeedsAuthentication = false,
                 Terminal = terminal,
                 WebService = webService,
-                MinPaneWidth = 430,
+                MinPaneWidth = 400,
                 Tags = "HideChildren"
             });
 

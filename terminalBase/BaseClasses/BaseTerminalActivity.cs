@@ -265,7 +265,7 @@ namespace TerminalBase.BaseClasses
         }
 
 
-        public virtual async Task<PayloadDTO> ChildrenExecuted(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public virtual async Task<PayloadDTO> ExecuteChildActivities(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             return Success(await GetPayload(curActivityDO, containerId));
         }
@@ -1154,6 +1154,19 @@ namespace TerminalBase.BaseClasses
                 Body = errorMessage,
                 Type = ActivityResponse.ShowDocumentation.ToString()
             };
+        }
+
+        public SolutionPageDTO GetDefaultDocumentation(string solutionName, double solutionVersion, string terminalName, string body)
+        {
+            var curSolutionPage = new SolutionPageDTO
+            {
+                Name = solutionName,
+                Version = solutionVersion,
+                Terminal = terminalName,
+                Body = body
+            };
+
+            return curSolutionPage;
         }
     }
 }

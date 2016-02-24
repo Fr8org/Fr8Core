@@ -68,9 +68,9 @@ namespace terminalBaseTests.Actions
             return await Task.FromResult(processPayload);
         }
 
-        public async Task<PayloadDTO> ChildrenExecuted(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> ExecuteChildActivities(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            AddCrateMethodInvoked(curActivityDO, "ChildrenExecuted");
+            AddCrateMethodInvoked(curActivityDO, "ExecuteChildActivities");
             var processPayload = new PayloadDTO(Guid.NewGuid());
             
             return await Task.FromResult(processPayload);

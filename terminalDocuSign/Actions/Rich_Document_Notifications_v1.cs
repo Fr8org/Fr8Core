@@ -28,6 +28,8 @@ namespace terminalDocuSign.Actions
         private const string SolutionName = "Rich Document Notifications";
         private const double SolutionVersion = 1.0;
         private const string TerminalName = "DocuSign";
+        private const string SolutionBody = @"<p>This is Rich Document Notification solution action</p>";
+
         private class ActionUi : StandardConfigurationControlsCM
         {
             public ActionUi()
@@ -377,13 +379,7 @@ namespace terminalDocuSign.Actions
         {
             if (curDocumentation.Contains("MainPage"))
             {
-                var curSolutionPage = new SolutionPageDTO
-                {
-                    Name = SolutionName,
-                    Version = SolutionVersion,
-                    Terminal = TerminalName,
-                    Body = @"<p>This is Rich Document Notification solution action</p>"
-                };
+                var curSolutionPage = GetDefaultDocumentation(SolutionName, SolutionVersion, TerminalName, SolutionBody);
                 return Task.FromResult(curSolutionPage);
             }
             if (curDocumentation.Contains("HelpMenu"))

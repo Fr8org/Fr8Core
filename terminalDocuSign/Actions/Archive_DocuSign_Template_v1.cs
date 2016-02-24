@@ -25,6 +25,8 @@ namespace terminalDocuSign.Actions
         private const string SolutionName = "Archive DocuSign Template";
         private const double SolutionVersion = 1.0;
         private const string TerminalName = "DocuSign";
+        private const string SolutionBody = @"<p>This is Archive DocuSign Template solution action</p>";
+
         private class ActionUi : StandardConfigurationControlsCM
         {
             public ActionUi()
@@ -215,13 +217,7 @@ namespace terminalDocuSign.Actions
         {
             if (curDocumentation.Contains("MainPage"))
             {
-                var curSolutionPage = new SolutionPageDTO
-                {
-                    Name = SolutionName,
-                    Version = SolutionVersion,
-                    Terminal = TerminalName,
-                    Body = @"<p>This is Archive DocuSign Template solution action</p>"
-                };
+                var curSolutionPage = GetDefaultDocumentation(SolutionName, SolutionVersion, TerminalName, SolutionBody);
                 return Task.FromResult(curSolutionPage);
             }
             if (curDocumentation.Contains("HelpMenu"))
