@@ -22,7 +22,6 @@ namespace Data.Repositories
             typeof(double), typeof(double?), typeof(DateTime), typeof(DateTime?)
         };
 
-
         private MT_Field _mtField;
         private MT_Data _mtData;
         private MT_Object _mtObject;
