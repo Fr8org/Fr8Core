@@ -60,7 +60,7 @@ namespace UtilitiesTesting.Fixtures
             return curActionTemplate;
         }
 
-        public static ActivityTemplateDTO TestActionTemplateDTOV2()
+        public static ActivityTemplateDTO TestActivityTemplateDTOV2()
         {
             var curActionTemplate = new ActivityTemplateDTO
             {

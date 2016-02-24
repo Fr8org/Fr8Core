@@ -243,9 +243,9 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="Controllers\ActionListControllerTest.cs" />
+    <Compile Include="Controllers\ActivityListControllerTest.cs" />
     <Compile Include="Controllers\Api\ApiControllerTestBase.cs" />
-    <Compile Include="Controllers\ActionControllerTest.cs" />
+    <Compile Include="Controllers\ActivityControllerTest.cs" />
     <Compile Include="Controllers\AuthenticationControllerTest.cs" />
     <Compile Include="Controllers\ContainerControllerTests.cs" />
     <Compile Include="Controllers\ManifestControllerTest.cs" />
@@ -260,9 +260,9 @@
     <Compile Include="CsvReaderTests.cs" />
     <Compile Include="Daemons\DaemonTests.cs" />
     <Compile Include="Daemons\OutboundEmailTests.cs" />
-    <Compile Include="Entities\ActionRegistrationTests.cs" />
+    <Compile Include="Entities\ActivityRegistrationTests.cs" />
     <Compile Include="Entities\ProcessTemplateTests.cs" />
-    <Compile Include="Entities\ActionTests .cs" />
+    <Compile Include="Entities\ActivityTests .cs" />
     <Compile Include="Entities\EmailAddressTests.cs" />
     <Compile Include="Entities\EnvelopeTests.cs" />
     <Compile Include="Entities\UserTests.cs" />
@@ -293,7 +293,7 @@
     <Compile Include="Services\DisableCacheSettings.cs" />
     <Compile Include="Services\DockyardAccountTest.cs" />
     <Compile Include="Services\ActionDTO.cs" />
-    <Compile Include="Services\ActionServiceTests.cs" />
+    <Compile Include="Services\ActivityServiceTests2.cs" />
     <Compile Include="Services\EventTests.cs" />
     <Compile Include="Services\HMACAuthenticatorTests.cs" />
     <Compile Include="Services\ITerminalClient.cs" />
@@ -372,7 +372,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Actions\" />
+    <Folder Include="Activities\" />
     <Folder Include="DocuSign\" />
     <Folder Include="Timeslots\" />
   </ItemGroup>

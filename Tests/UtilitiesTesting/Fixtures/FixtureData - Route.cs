@@ -100,7 +100,7 @@ namespace UtilitiesTesting.Fixtures
                 };
                 uow.PlanRepository.Add(planDO);
 
-                var actionTemplate = ActionTemplate();
+                var actionTemplate = ActivityTemplate();
 
                 var containerDO = new ContainerDO()
                 {
@@ -179,7 +179,7 @@ namespace UtilitiesTesting.Fixtures
                 };
                 uow.PlanRepository.Add(planDO);
 
-                var actionTemplate = ActionTemplate();
+                var actionTemplate = ActivityTemplate();
 
                 var containerDO = new ContainerDO()
                 {
@@ -256,7 +256,7 @@ namespace UtilitiesTesting.Fixtures
                     Name = string.Format("curSubrouteDO-{0}", i),
                     ParentRouteNode = curPlanDO,
                   //  RootRouteNode = curPlanDO,
-                    ChildNodes = FixtureData.TestActionList1(i*3),
+                    ChildNodes = FixtureData.TestActivityList1(i*3),
                 };
                 curPlanDO.ChildNodes.Add(curSubrouteDO);
             }
@@ -282,7 +282,7 @@ namespace UtilitiesTesting.Fixtures
                     Name = string.Format("curSubrouteDO-{0}", i),
                     ParentRouteNode = curPlanDO,
                    // RootRouteNode = curPlanDO,
-                    ChildNodes = FixtureData.TestActionListParentActivityID12()
+                    ChildNodes = FixtureData.TestActivityListParentActivityID12()
                 };
                 curPlanDO.ChildNodes.Add(curSubrouteDO);
             }
@@ -316,7 +316,7 @@ namespace UtilitiesTesting.Fixtures
         }
 
 
-        public static PlanDO TestRouteWithStartingSubrouteAndActionList()
+        public static PlanDO TestRouteWithStartingSubrouteAndActivityList()
         {
             var curPlanDO = new PlanDO
             {
@@ -336,7 +336,7 @@ namespace UtilitiesTesting.Fixtures
             };
             curPlanDO.ChildNodes.Add(curSubrouteDO);
 
-            var curImmediateActionList = FixtureData.TestActionList_ImmediateActions();
+            var curImmediateActionList = FixtureData.TestActivityList_ImmediateActivities();
             
             curSubrouteDO.ChildNodes.AddRange(curImmediateActionList);
 

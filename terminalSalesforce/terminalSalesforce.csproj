@@ -237,12 +237,12 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actions\Create_Account_v1.cs" />
-    <Compile Include="Actions\Create_Contact_v1.cs" />
-    <Compile Include="Actions\Create_Lead_v1.cs" />
+    <Compile Include="Activities\Create_Account_v1.cs" />
+    <Compile Include="Activities\Create_Contact_v1.cs" />
+    <Compile Include="Activities\Create_Lead_v1.cs" />
     <Compile Include="App_Start\RoutesConfig.cs" />
-    <Compile Include="Actions\Get_Data_v1.cs" />
-    <Compile Include="Controllers\ActionController.cs" />
+    <Compile Include="Activities\Get_Data_v1.cs" />
+    <Compile Include="Controllers\ActivityController.cs" />
     <Compile Include="Controllers\AuthenticationController.cs" />
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\TerminalController.cs" />

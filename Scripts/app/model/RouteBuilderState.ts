@@ -14,11 +14,11 @@
         criteria: model.CriteriaDTO;
 
         // Current action. This variable is set null as soon as action is done editing.
-        action: model.ActivityDTO;
+        activities: model.ActivityDTO;
 
         constructor() {
             this.criteria = <model.CriteriaDTO> {};
-            this.action = null;
+            this.activities = null;
             this.subroute = null;
             this.route = null;
         }

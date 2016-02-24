@@ -110,7 +110,7 @@ namespace terminalFr8Core.Managers
             return standardLoggingCM;
         }
 
-        public StandardLoggingCM ProcessingTerminatedPerActionResponse(EventLoggingDTO eventLogging)
+        public StandardLoggingCM ProcessingTerminatedPerActivityResponse(EventLoggingDTO eventLogging)
         {
             StandardLoggingCM standardLoggingCM = new StandardLoggingCM();
             standardLoggingCM.LoggingMTkey = Guid.NewGuid().ToString();

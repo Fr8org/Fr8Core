@@ -31,7 +31,7 @@ namespace terminalFr8CoreTests.Integration
 		{
 			var configureUrl = GetTerminalConfigureUrl();
 
-			var requestActionDTO = CreateRequestActionFixture();
+			var requestActionDTO = CreateRequestActivityFixture();
             var dataDTO = new Fr8DataDTO { ActivityDTO = requestActionDTO };
 			var responseActionDTO = HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO).Result;
 
@@ -60,7 +60,7 @@ namespace terminalFr8CoreTests.Integration
 		{
 			var configureUrl = GetTerminalConfigureUrl();
 
-			var requestActionDTO = CreateRequestActionFixture();
+			var requestActionDTO = CreateRequestActivityFixture();
             var dataDTO = new Fr8DataDTO { ActivityDTO = requestActionDTO };
             var responseActionDTO = HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO).Result;
             dataDTO.ActivityDTO = responseActionDTO;
@@ -95,7 +95,7 @@ namespace terminalFr8CoreTests.Integration
 		public void Run_With_Route_Payload_Initial_Run()
 		{
 			var configureUrl = GetTerminalConfigureUrl();
-			var requestActionDTO = CreateRequestActionFixture();
+			var requestActionDTO = CreateRequestActivityFixture();
 
             var dataDTO = new Fr8DataDTO { ActivityDTO = requestActionDTO };
 
@@ -115,7 +115,7 @@ namespace terminalFr8CoreTests.Integration
         public void Run_With_Route_Payload_Second_Run()
         {
             var configureUrl = GetTerminalConfigureUrl();
-            var requestActionDTO = CreateRequestActionFixture();
+            var requestActionDTO = CreateRequestActivityFixture();
             var dataDTO = new Fr8DataDTO { ActivityDTO = requestActionDTO };
 
             dataDTO.ActivityDTO = HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO).Result;
@@ -146,7 +146,7 @@ namespace terminalFr8CoreTests.Integration
 			return activityTemplate;
 		}
 
-		private ActivityDTO CreateRequestActionFixture()
+		private ActivityDTO CreateRequestActivityFixture()
 		{
 			var activityTemplate = CreateActivityTemplateFixture();
 
@@ -191,7 +191,7 @@ namespace terminalFr8CoreTests.Integration
 
 			var configurationControlEvents = configurationControl.Events;
 
-			Assert.IsNull(configurationControlEvents);
+			Assert.IsEmpty(configurationControlEvents);
             Assert.IsNull(configurationControl.Source);
 		}
 	}

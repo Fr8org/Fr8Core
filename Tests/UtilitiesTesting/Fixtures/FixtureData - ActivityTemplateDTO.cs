@@ -41,7 +41,7 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static ActivityTemplateDO TwilioActionTemplateDTO()
+        public static ActivityTemplateDO TwilioActivityTemplateDTO()
         {
             return new ActivityTemplateDO
             {

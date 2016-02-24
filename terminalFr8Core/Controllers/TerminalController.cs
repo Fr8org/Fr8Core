@@ -255,10 +255,23 @@ namespace terminalFr8Core.Controllers
                 Type = ActivityType.Standard
             });
 
+            result.Add(new ActivityTemplateDTO
+            {
+                Name = "SearchFr8Warehouse",
+                Label = "Search Fr8 Warehouse",
+                Version = "1",
+                Category = ActivityCategory.Solution,
+                NeedsAuthentication = false,
+                Terminal = terminal,
+                WebService = webService,
+                MinPaneWidth = 400,
+                Tags = "HideChildren"
+            });
+
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
                 Definition = terminal,
-                Actions = result
+                Activities = result
             };
 
             return Json(curStandardFr8TerminalCM);

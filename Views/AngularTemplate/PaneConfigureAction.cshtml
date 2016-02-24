@@ -12,9 +12,9 @@
         </div>
 
         <div class="pane-configure-action-returnToSolution" ng-if="currentAction.activityTemplate.category==='Solution' && mode !== 'solution'">
-            <label>This solution has {{currentAction.childrenActions.length}} {{currentAction.childrenActions.length > 1 ? "parts" : "part"}}: </label>
+            <label>This solution has {{currentAction.childrenActivities.length}} {{currentAction.childrenActivities.length > 1 ? "parts" : "part"}}: </label>
             <div class="solution-parts">
-                <label ng-repeat="childAction in currentAction.childrenActions">
+                <label ng-repeat="childAction in currentAction.childrenActivities">
                     {{$index +1}}. {{childAction.activityTemplate.label}}
                 </label>
             </div>
