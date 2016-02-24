@@ -128,7 +128,7 @@ namespace HubWeb.Controllers
         [ResponseType(typeof(RouteFullDTO))]
         [HttpGet]
 
-        public IHttpActionResult GetByAction(Guid id)
+        public IHttpActionResult GetByActivity(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -232,9 +232,9 @@ namespace HubWeb.Controllers
         }
 
         [HttpPost]
-        [ActionName("action")]
+        [ActionName("activity")]
         [Fr8ApiAuthorize]
-        public IHttpActionResult PutAction(ActivityDTO activityDto)
+        public IHttpActionResult PutActivity(ActivityDTO activityDto)
         {
             //A stub until the functionaltiy is ready
             return Ok();

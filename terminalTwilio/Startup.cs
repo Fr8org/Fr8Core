@@ -34,7 +34,7 @@ namespace terminalTwilio
         public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
         {
             return new Type[] {
-                    typeof(Controllers.ActionController),
+                    typeof(Controllers.ActivityController),
                     typeof(Controllers.EventController),
                     typeof(Controllers.TerminalController)
                 };

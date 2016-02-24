@@ -80,7 +80,7 @@ namespace terminalGoogle.Controllers
             return Json(new StandardFr8TerminalCM()
             {
                 Definition = terminal,
-                Actions = new List<ActivityTemplateDTO>
+                Activities = new List<ActivityTemplateDTO>
                 {
                     extractDataAction,
                     receiveGoogleForm,

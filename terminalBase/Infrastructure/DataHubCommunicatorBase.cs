@@ -142,7 +142,7 @@ namespace TerminalBase.Infrastructure
             var activityTemplates = crateStorage
                 .Where(x => x.Label == searchLabel)
                 .Select(x => JsonConvert.DeserializeObject<ActivityTemplateDTO>(
-                    x.Get<StandardDesignTimeFieldsCM>().Fields[0].Value
+                    x.Get<FieldDescriptionsCM>().Fields[0].Value
                     )
                 )
                 .ToList();
@@ -180,17 +180,17 @@ namespace TerminalBase.Infrastructure
             return Task.FromResult(new List<FieldValidationResult>());
         }
 
-        public async Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability, string userId)
+        public async Task<FieldDescriptionsCM> GetDesignTimeFieldsByDirection(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability, string userId)
         {
             //This code only supports integration testing scenarios
 
-            var mergedFields = new StandardDesignTimeFieldsCM();
-            var curCrates = await GetCratesByDirection<StandardDesignTimeFieldsCM>(activityDO, direction, userId);
+            var mergedFields = new FieldDescriptionsCM();
+            var curCrates = await GetCratesByDirection<FieldDescriptionsCM>(activityDO, direction, userId);
             mergedFields.Fields.AddRange(Crate.MergeContentFields(curCrates).Fields);
             return mergedFields;
         }
 
-        public Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(Guid actionId, CrateDirection direction, AvailabilityType availability, string userId)
+        public Task<FieldDescriptionsCM> GetDesignTimeFieldsByDirection(Guid actionId, CrateDirection direction, AvailabilityType availability, string userId)
         {
             throw new NotImplementedException();
         }

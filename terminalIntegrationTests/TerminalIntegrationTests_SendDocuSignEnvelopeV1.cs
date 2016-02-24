@@ -33,7 +33,7 @@ namespace terminalIntegrationTests
 		[Test, Ignore]
         public async Task TerminalIntegration_SendDocuSignEnvelope_ConfigureInitial()
 		{
-			var curActionDTO = CreateEmptyAction(_sendDocuSignEnvelopeActivityTemplate);
+			var curActionDTO = CreateEmptyActivity(_sendDocuSignEnvelopeActivityTemplate);
 			await SendDocuSignEnvelope_ConfigureInitial(curActionDTO);
 		}
 
@@ -44,7 +44,7 @@ namespace terminalIntegrationTests
         public async Task TerminalIntegration_SendDocuSignEnvelopeV1_ConfigureFollowUp()
 		{
 			// Create blank WaitForDocuSignEventAction.
-			var savedActionDTO = CreateEmptyAction(_sendDocuSignEnvelopeActivityTemplate);
+			var savedActionDTO = CreateEmptyActivity(_sendDocuSignEnvelopeActivityTemplate);
 
 			// Call Configure Initial for WaitForDocuSignEvent action.
 			var initCrateStorageDTO = await SendDocuSignEnvelope_ConfigureInitial(savedActionDTO);
@@ -69,7 +69,7 @@ namespace terminalIntegrationTests
 		    curActionDTO.CrateStorage = new CrateStorageDTO();
 
 			// Send initial configure request.
-			var curActionController = CreateActionController();
+			var curActionController = CreateActivityController();
 			var activityDTO = await curActionController.Configure(curActionDTO)
 				 as OkNegotiatedContentResult<ActivityDTO>;
 
@@ -82,7 +82,7 @@ namespace terminalIntegrationTests
 
             Assert.AreEqual(storage.Count, 3);
             Assert.True((storage.CratesOfType<StandardConfigurationControlsCM>().Any(x => x.Label == "Configuration_Controls")));
-            Assert.True((storage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "Available Templates")));
+            Assert.True((storage.CratesOfType<FieldDescriptionsCM>().Any(x => x.Label == "Available Templates")));
 
 			return storage;
 		}
@@ -90,7 +90,7 @@ namespace terminalIntegrationTests
         private void SendDocuSignEnvelope_SelectFirstTemplate(ICrateStorage curCrateStorage)
 		{
 			// Fetch Available Template crate and parse StandardDesignTimeFieldsMS.
-            var availableTemplatesCrateDTO = curCrateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Single(x => x.Label == "Available Templates");
+            var availableTemplatesCrateDTO = curCrateStorage.CratesOfType<FieldDescriptionsCM>().Single(x => x.Label == "Available Templates");
 
 		    var fieldsMS = availableTemplatesCrateDTO.Content;
 
@@ -108,7 +108,7 @@ namespace terminalIntegrationTests
 
 		private async Task<ICrateStorage> SendDocuSignEnvelope_ConfigureFollowUp(ActivityDTO curActionDTO)
 		{
-			var curActionController = CreateActionController();
+			var curActionController = CreateActivityController();
 
 			var activityDTO = await curActionController.Configure(curActionDTO)
 				 as OkNegotiatedContentResult<ActivityDTO>;
@@ -121,8 +121,8 @@ namespace terminalIntegrationTests
             var storage = _crateManager.GetStorage(activityDTO.Content);
 
             Assert.AreEqual(storage.Count, 2);
-            Assert.True((storage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "DocuSignTemplateUserDefinedFields")));
-            Assert.True((storage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "DocuSignTemplateStandardFields")));
+            Assert.True((storage.CratesOfType<FieldDescriptionsCM>().Any(x => x.Label == "DocuSignTemplateUserDefinedFields")));
+            Assert.True((storage.CratesOfType<FieldDescriptionsCM>().Any(x => x.Label == "DocuSignTemplateStandardFields")));
 
 			return storage;
 		}

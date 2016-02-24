@@ -236,9 +236,9 @@ namespace Hub.StructureMap
                 return _terminal.GetAll();
             }
 
-            public Task<IList<ActivityTemplateDO>> GetAvailableActions(string uri)
+            public Task<IList<ActivityTemplateDO>> GetAvailableActivities(string uri)
             {
-                return _terminal.GetAvailableActions(uri);
+                return _terminal.GetAvailableActivities(uri);
             }
 
             public TerminalDO RegisterOrUpdate(TerminalDO terminalDo)

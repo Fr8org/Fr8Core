@@ -72,7 +72,7 @@ namespace HubWeb.Controllers
                         info.Tests.Select(a => new DiagnosticActionVM {ServerAction = a.Key, DisplayName = a.Value})
                             .ToList(),
                     Actions =
-                        info.Actions.Select(a => new DiagnosticActionVM {ServerAction = a.Key, DisplayName = a.Value})
+                        info.Activities.Select(a => new DiagnosticActionVM {ServerAction = a.Key, DisplayName = a.Value})
                             .ToList(),
                     Key = info.Key,
                     Events =

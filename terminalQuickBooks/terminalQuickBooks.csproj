@@ -253,9 +253,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\RoutesConfig.cs" />
-    <Compile Include="Actions\Create_Journal_Entry_v1.cs" />
-    <Compile Include="Actions\Convert_TableData_To_AccountingTransactions_v1.cs" />
-    <Compile Include="Controllers\ActionController.cs" />
+    <Compile Include="Activities\Create_Journal_Entry_v1.cs" />
+    <Compile Include="Activities\Convert_TableData_To_AccountingTransactions_v1.cs" />
+    <Compile Include="Controllers\ActivityController.cs" />
     <Compile Include="Controllers\AuthenticationController.cs" />
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\TerminalController.cs" />

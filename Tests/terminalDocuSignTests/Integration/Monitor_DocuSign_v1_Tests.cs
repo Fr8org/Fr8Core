@@ -33,8 +33,8 @@ namespace terminalDocuSignTests.Integration
             Assert.AreEqual(4, crateStorage.Count);
 
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "Available Templates"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "DocuSign Event Fields"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Available Templates"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "DocuSign Event Fields"));
             Assert.AreEqual(1, crateStorage.CratesOfType<EventSubscriptionCM>().Count(x => x.Label == "Standard Event Subscriptions"));
         }
 
@@ -97,7 +97,7 @@ namespace terminalDocuSignTests.Integration
             Assert.AreEqual("requestConfig", radioButtonGroup.Radios[1].Controls[0].Events[0].Handler);
         }
 
-        private async Task<ActivityDTO> GetActionDTO_WithRecipientValue()
+        private async Task<ActivityDTO> GetActivityDTO_WithRecipientValue()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -128,7 +128,7 @@ namespace terminalDocuSignTests.Integration
             return responseActionDTO;
         }
 
-        private async Task<Tuple<ActivityDTO, string>> GetActionDTO_WithTemplateValue()
+        private async Task<Tuple<ActivityDTO, string>> GetActivityDTO_WithTemplateValue()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -156,7 +156,7 @@ namespace terminalDocuSignTests.Integration
                 var templateDdl = (DropDownList)radioGroup.Radios[1].Controls[0];
 
                 var availableTemplatesCM = crateStorage
-                    .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Available Templates")
+                    .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "Available Templates")
                     .Single();
                 Assert.IsTrue(availableTemplatesCM.Fields.Count > 0);
 
@@ -259,7 +259,7 @@ namespace terminalDocuSignTests.Integration
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var activityDTO = await GetActionDTO_WithRecipientValue();
+            var activityDTO = await GetActivityDTO_WithRecipientValue();
             var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
             var responseActionDTO =
                 await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
@@ -269,7 +269,7 @@ namespace terminalDocuSignTests.Integration
 
             var crateStorage = Crate.GetStorage(responseActionDTO);
             var docuSignEventFields = crateStorage
-                .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "DocuSign Event Fields")
+                .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "DocuSign Event Fields")
                 .Single();
 
             Assert.AreEqual(11, docuSignEventFields.Fields.Count);
@@ -288,7 +288,7 @@ namespace terminalDocuSignTests.Integration
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var activityDTO = await GetActionDTO_WithTemplateValue();
+            var activityDTO = await GetActivityDTO_WithTemplateValue();
             var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO.Item1 };
             var responseActionDTO =
                 await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
@@ -298,7 +298,7 @@ namespace terminalDocuSignTests.Integration
 
             var crateStorage = Crate.GetStorage(responseActionDTO);
             var docuSignEventFields = crateStorage
-                .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "DocuSign Event Fields")
+                .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "DocuSign Event Fields")
                 .Single();
 
             Assert.AreEqual(11, docuSignEventFields.Fields.Count());
@@ -341,7 +341,7 @@ namespace terminalDocuSignTests.Integration
 
             var runUrl = GetTerminalRunUrl();
 
-            var activityDTO = await GetActionDTO_WithRecipientValue();
+            var activityDTO = await GetActivityDTO_WithRecipientValue();
 
             var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
 
@@ -386,7 +386,7 @@ namespace terminalDocuSignTests.Integration
             var configureUrl = GetTerminalConfigureUrl();
             var runUrl = GetTerminalRunUrl();
 
-            var activityDTO = await GetActionDTO_WithTemplateValue();
+            var activityDTO = await GetActivityDTO_WithTemplateValue();
             activityDTO.Item1.AuthToken = HealthMonitor_FixtureData.DocuSign_AuthToken();
             var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO.Item1 };
             var preparedActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
@@ -437,7 +437,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async Task Monitor_DocuSign_Activate_Returns_ActionDTO()
+        public async Task Monitor_DocuSign_Activate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
@@ -463,7 +463,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async Task Monitor_DocuSign_Deactivate_Returns_ActionDTO()
+        public async Task Monitor_DocuSign_Deactivate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();

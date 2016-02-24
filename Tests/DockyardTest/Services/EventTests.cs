@@ -104,12 +104,12 @@ namespace DockyardTest.Services
             throw new NotImplementedException();
         }
 
-        public StandardDesignTimeFieldsCM GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability)
+        public FieldDescriptionsCM GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability)
         {
             throw new NotImplementedException();
         }
 
-        public Task Process(Guid curActivityId, ActionState curActionState, ContainerDO curContainerDO)
+        public Task Process(Guid curActivityId, ActivityState curActionState, ContainerDO curContainerDO)
         {
             if (RouteTreeHelper.Linearize(_planNodes[curActivityId]).OfType<ActivityDO>().Any(x => x.Id == curActivityId))
             {

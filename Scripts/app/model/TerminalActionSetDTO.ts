@@ -1,11 +1,11 @@
 ﻿module dockyard.model {
 	export class TerminalActionSetDTO {
 		terminalUrl: string;
-		actions: Array<ActivityTemplate>;
+		activities: Array<ActivityTemplate>;
 
         constructor(terminalUrl: string, actions: Array<ActivityTemplate>) {
             this.terminalUrl = terminalUrl;
-			this.actions = actions;
+			this.activities = actions;
 		}
 	}
 }

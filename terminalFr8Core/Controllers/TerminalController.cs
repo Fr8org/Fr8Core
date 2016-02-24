@@ -56,7 +56,7 @@ namespace terminalFr8Core.Controllers
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 Version = "1",
-                MinPaneWidth = 330,
+                MinPaneWidth = 550,
                 WebService = webService
             });
 
@@ -206,7 +206,8 @@ namespace terminalFr8Core.Controllers
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 WebService = webService,
-                Version = "1"
+                Version = "1",
+                MinPaneWidth = 550
             });
 
             result.Add(new ActivityTemplateDTO
@@ -270,7 +271,7 @@ namespace terminalFr8Core.Controllers
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
                 Definition = terminal,
-                Actions = result
+                Activities = result
             };
 
             return Json(curStandardFr8TerminalCM);

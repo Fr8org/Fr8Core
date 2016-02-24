@@ -36,7 +36,7 @@ namespace DockyardTest.Services
             var route = new PlanDO();
             route.Name = "sdfasdfasdf";
             route.RouteState = RouteState.Active;
-            var testActionTree = FixtureData.TestActionTree();
+            var testActionTree = FixtureData.TestActivity2Tree();
             
             route.ChildNodes.Add(testActionTree);
             
@@ -50,7 +50,7 @@ namespace DockyardTest.Services
             var fieldsCrate = _routeNodeService.GetDesignTimeFieldsByDirection(testActionTree.ChildNodes.Last().Id, CrateDirection.Upstream, AvailabilityType.NotSet);
             Assert.NotNull(fieldsCrate);
             Assert.NotNull(fieldsCrate.Fields);
-            Assert.IsInstanceOfType(typeof(StandardDesignTimeFieldsCM), fieldsCrate);
+            Assert.IsInstanceOfType(typeof(FieldDescriptionsCM), fieldsCrate);
             Assert.AreEqual(66, fieldsCrate.Fields.Count());
         }
     }

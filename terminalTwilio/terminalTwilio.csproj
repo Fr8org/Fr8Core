@@ -251,9 +251,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actions\Send_Via_Twilio_v1.cs" />
+    <Compile Include="Activities\Send_Via_Twilio_v1.cs" />
     <Compile Include="App_Start\RoutesConfig.cs" />
-    <Compile Include="Controllers\ActionController.cs" />
+    <Compile Include="Controllers\ActivityController.cs" />
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\TerminalController.cs" />
     <Compile Include="Global.asax.cs">
@@ -269,7 +269,7 @@
     </Compile>
     <Compile Include="Startup.cs" />
     <Compile Include="TerminalTwilioMapBootstrapper.cs" />
-    <Compile Include="Tests\Actions\Send_Via_Twilio_v1Tests.cs" />
+    <Compile Include="Tests\Activities\Send_Via_Twilio_v1Tests.cs" />
     <Compile Include="Tests\BaseTest.cs" />
     <Compile Include="Tests\Fixtures\FixtureData.cs" />
   </ItemGroup>

@@ -122,7 +122,7 @@ namespace terminalDocuSign.Services
         }
 
 
-        public StandardPayloadDataCM CreateActionPayload(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO, string curEnvelopeId, string templateId)
+        public StandardPayloadDataCM CreateActivityPayload(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO, string curEnvelopeId, string templateId)
         {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 

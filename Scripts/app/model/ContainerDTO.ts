@@ -9,7 +9,7 @@
         lastUpdated: string;
         createDate: string;
         currentActivityResponse: ActivityResponse;
-        currentClientActionName: string;
+        currentClientActivityName: string;
         error: any;
     }
 

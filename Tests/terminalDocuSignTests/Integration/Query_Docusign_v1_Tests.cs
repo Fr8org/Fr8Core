@@ -21,7 +21,7 @@ namespace terminalDocuSignTests.Integration
         {
             var storage = new CrateStorage();
 
-            storage.Add(Data.Crates.Crate.FromContent("Config", new Query_DocuSign_v1.ActionUi()));
+            storage.Add(Data.Crates.Crate.FromContent("Config", new Query_DocuSign_v1.ActivityUi()));
             
             return storage;
         }
@@ -89,7 +89,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async Task Query_DocuSign_Activate_Returns_ActionDTO()
+        public async Task Query_DocuSign_Activate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
@@ -110,7 +110,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async Task Query_DocuSign_Deactivate_Returns_ActionDTO()
+        public async Task Query_DocuSign_Deactivate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();
