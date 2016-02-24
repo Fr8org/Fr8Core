@@ -167,9 +167,9 @@ module dockyard.services {
                         .then((container: model.ContainerDTO) => {
                             if (container
                                 && container.currentActivityResponse == model.ActivityResponse.ExecuteClientAction
-                                && container.currentClientActionName) {
+                                && container.currentClientActivityName) {
 
-                                switch (container.currentClientActionName) {
+                                switch (container.currentClientActivityName) {
                                     case 'ShowTableReport':
                                         var path = '/findObjects/' + container.id + '/results';
                                         $location.path(path);
