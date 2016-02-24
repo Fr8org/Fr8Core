@@ -23,6 +23,7 @@ using Utilities.Configuration.Azure;
 using terminalDocuSign.Infrastructure;
 using Data.Constants;
 using Data.Repositories;
+using Data.States;
 using UtilitiesTesting.Fixtures;
 
 namespace terminalDocuSign.Actions
@@ -272,8 +273,6 @@ namespace terminalDocuSign.Actions
 
             //let's check if activity template generates table data
             var selectedReceiver = curActivityTemplates.Single(x => x.Name == _dataSourceValue);
-
-
             var dataSourceActivity = await AddAndConfigureChildActivity(curActivityDO, selectedReceiver.Id.ToString(), order: 1);
 
             ActivityDO parentOfSendDocusignEnvelope = null;
@@ -281,8 +280,19 @@ namespace terminalDocuSign.Actions
 
             if (DoesActivityTemplateGenerateTableData(selectedReceiver))
             {
-                //we need to configure this but it is hard to do
+                //let's get first table related CrateDescription in upstream activities and apply it to Loop
                 var loopActivity = await AddAndConfigureChildActivity(curActivityDO, "Loop", "Loop", "Loop", 2);
+                using (var crateStorage = CrateManager.GetUpdatableStorage(loopActivity))
+                {
+                    var loopConfigControls = GetConfigurationControls(crateStorage);
+                    var crateChooser = GetControl<CrateChooser>(loopConfigControls, "Available_Crates");
+                    var tableDescription = crateChooser.CrateDescriptions.FirstOrDefault(c => c.ManifestId == (int) MT.StandardTableData);
+                    if (tableDescription != null)
+                    {
+                        tableDescription.Selected = true;
+                    }
+                }
+
                 parentOfSendDocusignEnvelope = loopActivity;
                 orderOfSendDocusignEnvelope = 1;
             }

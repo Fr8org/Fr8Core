@@ -422,8 +422,8 @@ module dockyard.directives.paneConfigureAction {
 
                                 var contents = <any>operationalStatus.contents;
 
-                                if (contents.CurrentActivityResponse.type === 'ExecuteClientAction'
-                                    && contents.CurrentClientActionName === 'ExecuteAfterConfigure') {
+                                if (contents.CurrentActivityResponse.type === 'ExecuteClientActivity'
+                                    && contents.CurrentClientActivityName === 'ExecuteAfterConfigure') {
 
                                     $scope.$emit(MessageType[MessageType.PaneConfigureAction_ExecutePlan]);
                                 }

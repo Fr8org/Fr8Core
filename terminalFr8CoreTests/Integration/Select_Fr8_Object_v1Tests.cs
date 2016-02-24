@@ -29,11 +29,13 @@ namespace terminalFr8CoreTests.Integration
 		[Test]
 		public void Check_Initial_Configuration_Crate_Structure()
 		{
+            Assert.AreEqual(1, 2);
 			var configureUrl = GetTerminalConfigureUrl();
 
 			var requestActionDTO = CreateRequestActivityFixture();
 
-			var responseActionDTO = HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, requestActionDTO).Result;
+            var dataDTO = new Fr8DataDTO { ActivityDTO = requestActionDTO };
+            var responseActionDTO = HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO).Result;
 
 			Assert.NotNull(responseActionDTO);
 			Assert.NotNull(responseActionDTO.CrateStorage);
@@ -66,11 +68,13 @@ namespace terminalFr8CoreTests.Integration
 
 			var requestActionDTO = CreateRequestActivityFixture();
 
-			var responseActionDTO = HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, requestActionDTO).Result;
+            var dataDTO = new Fr8DataDTO { ActivityDTO = requestActionDTO };
+            var responseActionDTO = HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO).Result;
 
 			SetRoutesOptionSelected(responseActionDTO);
 
-			responseActionDTO = HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, responseActionDTO).Result;
+		    dataDTO.ActivityDTO = responseActionDTO;
+            responseActionDTO = HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO).Result;
 
 			Assert.NotNull(responseActionDTO);
 			Assert.NotNull(responseActionDTO.CrateStorage);
@@ -140,12 +144,12 @@ namespace terminalFr8CoreTests.Integration
 			var configureUrl = GetTerminalConfigureUrl();
 
 			var requestActionDTO = CreateRequestActivityFixture();
-
-			var responseActionDTO = HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, requestActionDTO).Result;
+            var dataDTO = new Fr8DataDTO { ActivityDTO = requestActionDTO };
+            var responseActionDTO = HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO).Result;
 
 			SetContainersOptionSelected(responseActionDTO);
-
-			responseActionDTO = HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, responseActionDTO).Result;
+		    dataDTO.ActivityDTO = responseActionDTO;
+			responseActionDTO = HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO).Result;
 
 			Assert.NotNull(responseActionDTO);
 			Assert.NotNull(responseActionDTO.CrateStorage);
@@ -227,6 +231,8 @@ namespace terminalFr8CoreTests.Integration
 				RouteState = "Some state",
 				SubRoutes = new List<SubrouteDTO>()
 			});
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
+            
 
 			var runResponse = HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO).Result;
 
@@ -257,8 +263,9 @@ namespace terminalFr8CoreTests.Integration
 				LastUpdated = DateTime.UtcNow,
 				CreatedDate = DateTime.UtcNow
 			});
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
 
-			var runResponse = HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO).Result;
+            var runResponse = HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO).Result;
 
 			Assert.NotNull(runResponse);
 		}
@@ -344,7 +351,7 @@ namespace terminalFr8CoreTests.Integration
 			var configurationControlSourceField = configurationControl.Source;
 
 			Assert.AreEqual("Select Fr8 Object", configurationControlSourceField.Label);
-			Assert.AreEqual("Standard Design-Time Fields", configurationControlSourceField.ManifestType);
+			Assert.AreEqual("Field Description", configurationControlSourceField.ManifestType);
 		}
 
 		private static void ValidateFr8ObjectCrateStructure(FieldDescriptionsCM designTimeCrate)
