@@ -29,6 +29,7 @@ namespace terminalFr8CoreTests.Integration
 		[Test]
 		public void Check_Initial_Configuration_Crate_Structure()
 		{
+            Assert.AreEqual(1, 2);
 			var configureUrl = GetTerminalConfigureUrl();
 
 			var requestActionDTO = CreateRequestActivityFixture();
