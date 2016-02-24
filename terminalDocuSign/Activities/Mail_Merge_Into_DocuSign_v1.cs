@@ -39,7 +39,10 @@ namespace terminalDocuSign.Actions
         private const string SolutionName = "Mail Merge Into DocuSign";
         private const double SolutionVersion = 1.0;
         private const string TerminalName = "DocuSign";
-        private const string SolutionBody = @"<p>This is a solution action</p>";
+        private const string SolutionBody = @"<p>Pull data from a variety of sources, including Excel files, 
+                                            Google Sheets, and databases, and merge the data into your DocuSign template. 
+                                            You can link specific fields from your source data to DocuSign fields</p>";
+
 
         public Mail_Merge_Into_DocuSign_v1()
             : base()

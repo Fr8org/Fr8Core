@@ -28,7 +28,9 @@ namespace terminalDocuSign.Actions
         private const string SolutionName = "Rich Document Notifications";
         private const double SolutionVersion = 1.0;
         private const string TerminalName = "DocuSign";
-        private const string SolutionBody = @"<p>This is Rich Document Notification solution action</p>";
+        private const string SolutionBody = @"<p>Link your important outgoing envelopes to Fr8's powerful notification Activities, 
+                                            which allow you to receive SMS notices, emails, or receive posts to popular tracking systems like Slack and Yammer. 
+                                            Get notified when recipients take too long to sign!</p>";
 
         private class ActivityUi : StandardConfigurationControlsCM
         {
