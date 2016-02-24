@@ -478,6 +478,7 @@
     <Content Include="Api\GetEmailHTML.aspx" />
     <Content Include="Content\img\gray-crate.png" />
     <Content Include="Content\img\green-crate.png" />
+    <Content Include="Content\img\backgrounds\solution-bg.png" />
     <Content Include="Content\img\Management\Alex_Edelstein_Round.png" />
     <Content Include="Content\img\Management\Benjamin_Black.png" />
     <Content Include="Content\css\additionalcss\bootstrap23\css\bootstrap2.3.css" />

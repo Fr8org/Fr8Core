@@ -151,7 +151,7 @@ namespace terminalDocuSign.Actions
                     Name = SolutionName,
                     Version = SolutionVersion,
                     Terminal = TerminalName,
-                    Body = @"<p>This is Extract Data From Envelopes solution action</p>"
+                    Body = @"<p>DocuSign is a powerful forms engine. Now you can take advantage of the full range of possibilities. Fr8 will process each Envelope that gets signed, extracting the field data you've configured and putting it somewhere useful: like a spreadsheet or a Slack channel</p>"
                 };
                 return Task.FromResult(curSolutionPage);
             }
