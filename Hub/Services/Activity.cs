@@ -503,7 +503,7 @@ namespace Hub.Services
 
             try
             {
-                var actionName = curActionState == ActivityState.InitialRun ? "Run" : "ChildrenExecuted";
+                var actionName = curActionState == ActivityState.InitialRun ? "Run" : "ExecuteChildActivities";
                 var payloadDTO = await CallTerminalActivityAsync<PayloadDTO>(uow, actionName, curActivityDO, curContainerDO.Id);
 
                 // this will break the infinite loop created for logFr8InternalEvents...

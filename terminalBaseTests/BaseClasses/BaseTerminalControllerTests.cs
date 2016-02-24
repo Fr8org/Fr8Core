@@ -99,9 +99,9 @@ namespace terminalBaseTests.BaseClasses
         }
 
         [Test]
-        public async Task HandleFr8Request_ChildrenExecuted_ReturnsPayloadDTO()
+        public async Task HandleFr8Request_ExecuteChildActivities_ReturnsPayloadDTO()
         {
-            var result = await _baseTerminalController.HandleFr8Request(terminalName, "childrenexecuted", Fixture_HandleRequest.terminalMockFr8DataDTO());
+            var result = await _baseTerminalController.HandleFr8Request(terminalName, "executechildactivities", Fixture_HandleRequest.terminalMockFr8DataDTO());
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOf(typeof(PayloadDTO), result);
