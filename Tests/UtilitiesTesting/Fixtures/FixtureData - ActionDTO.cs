@@ -10,14 +10,14 @@ namespace UtilitiesTesting.Fixtures
 {
     partial class FixtureData
     {
-        public static ActivityDTO TestActionDTO1()
+        public static ActivityDTO TestActivityDTO1()
         {
             return new ActivityDTO()
             {
                 ActivityTemplate = FixtureData.TestActivityTemplateDTO1(),
             };
         }
-        public static ActivityDTO TestActionDTO2()
+        public static ActivityDTO TestActivityDTO2()
         {
             ActivityDTO curActionDTO = new ActivityDTO()
             {
@@ -32,7 +32,7 @@ namespace UtilitiesTesting.Fixtures
             return curActionDTO;
         }
 
-        public static ActivityDTO TestActionDTO3()
+        public static ActivityDTO TestActivityDTO3()
         {
             ActivityDTO curActionDTO = new ActivityDTO()
             {
@@ -62,7 +62,7 @@ namespace UtilitiesTesting.Fixtures
             return curActionDTO;
         }
 
-        public static ActivityDTO TestActionDTOForSalesforce()
+        public static ActivityDTO TestActivityDTOForSalesforce()
         {
             return new ActivityDTO()
             {
@@ -70,14 +70,14 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static ActivityDTO TestActionDTOForSendGrid()
+        public static ActivityDTO TestActivityDTOForSendGrid()
         {
             return new ActivityDTO()
             {
                 ActivityTemplate = FixtureData.TestActivityTemplateSendGrid()
             };
         }
-        public static ActivityDTO TestActionDTOSelectFr8ObjectInitial()
+        public static ActivityDTO TestActivityDTOSelectFr8ObjectInitial()
         {
             ActivityDTO curActionDTO = new ActivityDTO()
             {
@@ -87,7 +87,7 @@ namespace UtilitiesTesting.Fixtures
 
             return curActionDTO;
         }
-        public static ActivityDTO TestActionDTOSelectFr8ObjectFollowup(string selected)
+        public static ActivityDTO TestActivityDTOSelectFr8ObjectFollowup(string selected)
         {
             ActivityDTO curActionDTO = new ActivityDTO()
             {

@@ -28,7 +28,7 @@ namespace terminalAtlassianTests.Fixtures
             };
         }
 
-        public static ActivityDO GetJiraIssueTestActionDO1()
+        public static ActivityDO GetJiraIssueTestActivityDO1()
         {
             ICrateManager _crate = ObjectFactory.GetInstance<ICrateManager>();
 

@@ -33,7 +33,7 @@ namespace terminalIntegrationTests
 		[Test, Ignore]
         public async Task TerminalIntegration_SendDocuSignEnvelope_ConfigureInitial()
 		{
-			var curActionDTO = CreateEmptyAction(_sendDocuSignEnvelopeActivityTemplate);
+			var curActionDTO = CreateEmptyActivity(_sendDocuSignEnvelopeActivityTemplate);
 			await SendDocuSignEnvelope_ConfigureInitial(curActionDTO);
 		}
 
@@ -44,7 +44,7 @@ namespace terminalIntegrationTests
         public async Task TerminalIntegration_SendDocuSignEnvelopeV1_ConfigureFollowUp()
 		{
 			// Create blank WaitForDocuSignEventAction.
-			var savedActionDTO = CreateEmptyAction(_sendDocuSignEnvelopeActivityTemplate);
+			var savedActionDTO = CreateEmptyActivity(_sendDocuSignEnvelopeActivityTemplate);
 
 			// Call Configure Initial for WaitForDocuSignEvent action.
 			var initCrateStorageDTO = await SendDocuSignEnvelope_ConfigureInitial(savedActionDTO);
@@ -69,7 +69,7 @@ namespace terminalIntegrationTests
 		    curActionDTO.CrateStorage = new CrateStorageDTO();
 
 			// Send initial configure request.
-			var curActionController = CreateActionController();
+			var curActionController = CreateActivityController();
 			var activityDTO = await curActionController.Configure(curActionDTO)
 				 as OkNegotiatedContentResult<ActivityDTO>;
 
@@ -108,7 +108,7 @@ namespace terminalIntegrationTests
 
 		private async Task<ICrateStorage> SendDocuSignEnvelope_ConfigureFollowUp(ActivityDTO curActionDTO)
 		{
-			var curActionController = CreateActionController();
+			var curActionController = CreateActivityController();
 
 			var activityDTO = await curActionController.Configure(curActionDTO)
 				 as OkNegotiatedContentResult<ActivityDTO>;

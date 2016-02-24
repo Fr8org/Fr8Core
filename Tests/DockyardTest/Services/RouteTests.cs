@@ -98,7 +98,7 @@ namespace DockyardTest.Services
 
         [Test]
         [Ignore("ActivityTemplates are not being added to ActivityTemplate respository. Should be fixed if test is needed")]
-        public void Activate_NoMatchingParentActivityId_ReturnsNoAction()
+        public void Activate_NoMatchingParentActivityId_ReturnsNoActivity()
         {
             var curPlanDO = FixtureData.TestRouteNoMatchingParentActivity();
             
@@ -119,7 +119,7 @@ namespace DockyardTest.Services
 
                 //Create activity mock to process the actions
                 Mock<IRouteNode> activityMock = new Mock<IRouteNode>(MockBehavior.Default);
-                activityMock.Setup(a => a.Process(FixtureData.GetTestGuidById(1), It.IsAny<ActionState>(), It.IsAny<ContainerDO>())).Returns(Task.Delay(1));
+                activityMock.Setup(a => a.Process(FixtureData.GetTestGuidById(1), It.IsAny<ActivityState>(), It.IsAny<ContainerDO>())).Returns(Task.Delay(1));
                 activityMock.Setup(a => a.HasChildren(It.Is<RouteNodeDO>(r => r.Id == curPlan.StartingSubroute.Id))).Returns(true);
                 activityMock.Setup(a => a.HasChildren(It.Is<RouteNodeDO>(r => r.Id != curPlan.StartingSubroute.Id))).Returns(false);
                 activityMock.Setup(a => a.GetFirstChild(It.IsAny<RouteNodeDO>())).Returns(curPlan.ChildNodes.First().ChildNodes.First());
@@ -131,7 +131,7 @@ namespace DockyardTest.Services
 
                 //Assert
                 //since we have only one action in the template, the process should be called exactly once
-                activityMock.Verify(activity => activity.Process(FixtureData.GetTestGuidById(1), It.IsAny<ActionState>(), It.IsAny<ContainerDO>()), Times.Exactly(1));
+                activityMock.Verify(activity => activity.Process(FixtureData.GetTestGuidById(1), It.IsAny<ActivityState>(), It.IsAny<ContainerDO>()), Times.Exactly(1));
             }
         }
 
@@ -141,7 +141,7 @@ namespace DockyardTest.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var plan = FixtureData.TestRouteWithStartingSubrouteAndActionList();
+                var plan = FixtureData.TestRouteWithStartingSubrouteAndActivityList();
 
                 uow.PlanRepository.Add(plan);
                 uow.SaveChanges();

@@ -162,7 +162,7 @@ namespace terminalDocuSignTests.Integration
             AssertControls(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single());
         }
 
-        private async Task<ActivityDTO> GetActionDTO_WithEventsAndDelayValue()
+        private async Task<ActivityDTO> GetActivityDTO_WithEventsAndDelayValue()
         {
             var configureUrl = GetTerminalConfigureUrl();
             var dataDTO = HealthMonitor_FixtureData.Track_DocuSign_Recipients_v1_InitialConfiguration_Fr8DataDTO();
@@ -212,7 +212,7 @@ namespace terminalDocuSignTests.Integration
             return responseActionDTO;
         }
 
-        private async Task<ActivityDTO> GetActionDTO_WithEventsValue()
+        private async Task<ActivityDTO> GetActivityDTO_WithEventsValue()
         {
             var configureUrl = GetTerminalConfigureUrl();
             var dataDTO = HealthMonitor_FixtureData.Track_DocuSign_Recipients_v1_InitialConfiguration_Fr8DataDTO();
@@ -328,7 +328,7 @@ namespace terminalDocuSignTests.Integration
         }
         */
         [Test]
-        public async Task Track_DocuSign_Recipients_Activate_Returns_ActionDTO()
+        public async Task Track_DocuSign_Recipients_Activate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
@@ -349,7 +349,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async Task Track_DocuSign_Recipients_Deactivate_Returns_ActionDTO()
+        public async Task Track_DocuSign_Recipients_Deactivate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();

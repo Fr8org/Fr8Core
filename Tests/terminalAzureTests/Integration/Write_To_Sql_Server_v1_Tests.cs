@@ -225,7 +225,7 @@ namespace terminalAzureTests.Integration
         }
 
         [Test]
-        public async Task Write_To_Sql_Server_Activate_Returns_ActionDTO()
+        public async Task Write_To_Sql_Server_Activate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
@@ -246,7 +246,7 @@ namespace terminalAzureTests.Integration
         }
 
         [Test]
-        public async Task Write_To_Sql_Server_Deactivate_Returns_ActionDTO()
+        public async Task Write_To_Sql_Server_Deactivate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();

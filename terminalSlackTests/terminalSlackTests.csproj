@@ -64,7 +64,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actions\Monitor_Channel_v1Test.cs" />
+    <Compile Include="Activities\Monitor_Channel_v1Test.cs" />
     <Compile Include="Fixtures\HealthMonitor_FixtureData.cs" />
     <Compile Include="Integration\Publish_To_Slack_v1_Tests.cs" />
     <Compile Include="Integration\Terminal_Authentication_v1_Tests.cs" />

@@ -570,6 +570,15 @@ div.action-header {
     margin-top: 4px;
 }
 
+.query-builder-table date-picker .btn.btn-default {
+    padding: 1px 3px 2px 3px;
+    border: 1px solid #acacac;
+}
+
+ul.dropdown-menu {
+    padding: 3px 3px 10px 2px;
+}
+
 .table-delete-button {
     width: 15px;
     height: 15px;

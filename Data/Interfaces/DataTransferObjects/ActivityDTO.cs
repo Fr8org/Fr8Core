@@ -24,7 +24,7 @@ namespace Data.Interfaces.DataTransferObjects
 
         public CrateStorageDTO CrateStorage { get; set; }
 
-        public ActivityDTO[] ChildrenActions { get; set; }
+        public ActivityDTO[] ChildrenActivities { get; set; }
 
         public AuthorizationTokenDTO AuthToken { get; set; }
 

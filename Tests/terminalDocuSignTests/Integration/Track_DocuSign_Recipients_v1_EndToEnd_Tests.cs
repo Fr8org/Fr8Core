@@ -77,7 +77,7 @@ namespace terminalDocuSignTests.Integration
         {
             string baseUrl = GetHubApiBaseUrl();
             
-            var solutionCreateUrl = baseUrl + "actions/create?solutionName=Track_DocuSign_Recipients";
+            var solutionCreateUrl = baseUrl + "activities/create?solutionName=Track_DocuSign_Recipients";
 
             //
             // Create solution
@@ -88,7 +88,7 @@ namespace terminalDocuSignTests.Integration
             //
             // Send configuration request without authentication token
             //
-            this._solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure?id=" + solution.Id, solution);
+            this._solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "activities/configure?id=" + solution.Id, solution);
             _crateStorage = _crateManager.FromDto(this._solution.CrateStorage);
             var stAuthCrate = _crateStorage.CratesOfType<StandardAuthenticationCM>().FirstOrDefault();
             bool defaultDocuSignAuthTokenExists = stAuthCrate == null;
@@ -132,11 +132,11 @@ namespace terminalDocuSignTests.Integration
             //
             // Send configuration request with authentication token
             //
-            this._solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure?id=" + solution.Id, solution);
+            this._solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "activities/configure?id=" + solution.Id, solution);
             _crateStorage = _crateManager.FromDto(this._solution.CrateStorage);
 
             ShouldHaveCorrectCrateStructure(_crateStorage);
-            Assert.True(this._solution.ChildrenActions.Length == 0);
+            Assert.True(this._solution.ChildrenActivities.Length == 0);
 
             var controlsCrate = _crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
             var controls = controlsCrate.Content.Controls;
@@ -177,10 +177,10 @@ namespace terminalDocuSignTests.Integration
                 updater.Add(controlsCrate);
             }
 
-            this._solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure?id=" + this._solution.Id, this._solution);
+            this._solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "activities/configure?id=" + this._solution.Id, this._solution);
             _crateStorage = _crateManager.FromDto(this._solution.CrateStorage);
             ShouldHaveCorrectCrateStructure(_crateStorage);
-            Assert.True(this._solution.ChildrenActions.Length == 0);
+            Assert.True(this._solution.ChildrenActivities.Length == 0);
 
             //everything seems perfect for now
             //let's force RDN for a followup configuration
@@ -206,22 +206,22 @@ namespace terminalDocuSignTests.Integration
                 updatableStorage.Add(controlsCrate);
             }
 
-            this._solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure?id=" + this._solution.Id, this._solution);
+            this._solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "activities/configure?id=" + this._solution.Id, this._solution);
             _crateStorage = _crateManager.FromDto(this._solution.CrateStorage);
 
             //from now on our solution should have followup crate structure
-            Assert.True(this._solution.ChildrenActions.Length == 5, "Solution child actions failed to create.");
+            Assert.True(this._solution.ChildrenActivities.Length == 5, "Solution child actions failed to create.");
 
-            Assert.True(this._solution.ChildrenActions.Any(a => a.Label == "Monitor Docusign Envelope Activity" && a.Ordering == 1));
-            Assert.True(this._solution.ChildrenActions.Any(a => a.Label == "Set Delay" && a.Ordering == 2));
-            Assert.True(this._solution.ChildrenActions.Any(a => a.Label == "Query Fr8 Warehouse" && a.Ordering == 3));
-            Assert.True(this._solution.ChildrenActions.Any(a => a.Label == "Test Incoming Data" && a.Ordering == 4));
-            Assert.True(this._solution.ChildrenActions.Any(a => a.Label == notificationHandler.selectedKey && a.Ordering == 5));
+            Assert.True(this._solution.ChildrenActivities.Any(a => a.Label == "Monitor Docusign Envelope Activity" && a.Ordering == 1));
+            Assert.True(this._solution.ChildrenActivities.Any(a => a.Label == "Set Delay" && a.Ordering == 2));
+            Assert.True(this._solution.ChildrenActivities.Any(a => a.Label == "Query Fr8 Warehouse" && a.Ordering == 3));
+            Assert.True(this._solution.ChildrenActivities.Any(a => a.Label == "Test Incoming Data" && a.Ordering == 4));
+            Assert.True(this._solution.ChildrenActivities.Any(a => a.Label == notificationHandler.selectedKey && a.Ordering == 5));
 
             //let's configure email settings
-            var emailActivity = this._solution.ChildrenActions.Single(a => a.Label == notificationHandler.selectedKey && a.Ordering == 5);
+            var emailActivity = this._solution.ChildrenActivities.Single(a => a.Label == notificationHandler.selectedKey && a.Ordering == 5);
             //let's configure this
-            emailActivity = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/configure?id=" + emailActivity.Id, emailActivity);
+            emailActivity = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "activities/configure?id=" + emailActivity.Id, emailActivity);
             var emailCrateStorage = _crateManager.GetStorage(emailActivity);
 
             var emailControlsCrate = emailCrateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
@@ -248,7 +248,7 @@ namespace terminalDocuSignTests.Integration
             }
 
             //save changes
-            await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "actions/save", emailActivity);
+            await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "activities/save", emailActivity);
 
             //
             //Rename route
@@ -282,7 +282,7 @@ namespace terminalDocuSignTests.Integration
             EmailAssert._timeout = TimeSpan.FromSeconds(45);
             // Verify that test email has been received
             //EmailAssert.EmailReceived("fr8ops@fr8.company", "Fr8-TrackDocuSignRecipientsTest");
-
+            
         }
     }
 }
