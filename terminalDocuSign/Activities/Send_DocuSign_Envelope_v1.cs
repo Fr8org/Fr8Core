@@ -23,6 +23,7 @@ using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using TerminalBase.Infrastructure.Behaviors;
 using Newtonsoft.Json.Linq;
+using NUnit.Framework.Constraints;
 
 namespace terminalDocuSign.Actions
 {
@@ -124,6 +125,7 @@ namespace terminalDocuSign.Actions
                 var nonEmptyValues = values.Where(x => !string.IsNullOrEmpty(x.Value));
                 foreach (var pair in nonEmptyValues)
                 {
+
                     valuesToAdd.Add(new RoleTextTab()
                     {
                         tabLabel = pair.Key,
@@ -133,6 +135,28 @@ namespace terminalDocuSign.Actions
                 curEnvelope.TemplateRoles = templateRoles;
                 curEnvelope.TemplateRoles[0].tabs = new RoleTabs();
                 curEnvelope.TemplateRoles[0].tabs.textTabs = valuesToAdd.ToArray();
+
+                //set radio button tabs
+
+                var radiopGroupMappingBehavior = new RadioButtonGroupMappingBehavior(crateStorage);
+                var radioButtonGroups = radiopGroupMappingBehavior.GetValues(payloadCrateStorage).ToList();
+                
+                //curEnvelope.TemplateRoles[0].tabs.
+                var radioGroupTabsToAdd = new List<TemplateRadioGroupTab>();
+                foreach (RadioButtonGroup item in radioButtonGroups)
+                {
+                    radioGroupTabsToAdd.Add(new TemplateRadioGroupTab()
+                    {
+                        groupName = item.GroupName,
+                        radios = item.Radios.Select(x=> new radio()
+                        {
+                            selected = x.Selected,
+                            value = x.Value
+                        }).ToArray()
+                    });
+                }
+
+                curEnvelope.TemplateRoles[0].tabs.radioGroupTabs = radioGroupTabsToAdd.ToArray();
             }
 
             curEnvelope.TemplateRoles = templateRoles;
@@ -233,12 +257,18 @@ namespace terminalDocuSign.Actions
                 // when we're in design mode, there are no values
                 // we just want the names of the fields
                 var userDefinedFields = new List<FieldDTO>();
+                var userDefinedGroupFields = new List<FieldDTO>();
+
+                var userDefinedGroupItems = new List<GroupWrapperEnvelopeDataDTO>();
+                
                 foreach (var x in envelopeDataDTO)
                 {
-                    //special case for 
+                    //special case for radio buttons
                     if (x is GroupWrapperEnvelopeDataDTO)
                     {
-                        userDefinedFields.Add(new FieldDTO() { Key = x.Name, Value = x.Name, Availability = AvailabilityType.RunTime });
+                        userDefinedGroupFields.Add(new FieldDTO() { Key = x.Name, Value = x.Name, Availability = AvailabilityType.RunTime });
+                        //add check here for has key
+                        userDefinedGroupItems.Add((GroupWrapperEnvelopeDataDTO) x);
                     }
                     else
                     {
@@ -254,7 +284,7 @@ namespace terminalDocuSign.Actions
 
                 var crateUserDefinedDTO = CrateManager.CreateDesignTimeFieldsCrate(
                     "DocuSignTemplateUserDefinedFields",
-                    userDefinedFields.ToArray()
+                    userDefinedFields.Concat(userDefinedGroupFields).ToArray()
                 );
 
                 var crateStandardDTO = CrateManager.CreateDesignTimeFieldsCrate(
@@ -277,33 +307,16 @@ namespace terminalDocuSign.Actions
                 );
                 mappingBehavior.Clear();
                 mappingBehavior.Append(allFields, "Upstream Terminal-Provided Fields");
+
+                var radioButtonGroupBehavior = new RadioButtonGroupMappingBehavior(
+                    crateStorage);
+
+                radioButtonGroupBehavior.Clear();
+                radioButtonGroupBehavior.Append(userDefinedGroupItems);
             }
 
             return await Task.FromResult(curActivityDO);
         }
-
-        private ControlDefinitionDTO CreateUserDefinedRadioButtonGroup(GroupWrapperEnvelopeDataDTO radioButtonEnvelopeData)
-        {
-            var userDefinedRadioButtonGroup = new RadioButtonGroup()
-            {
-                GroupName = radioButtonEnvelopeData.Name,
-                Name = radioButtonEnvelopeData.Name,
-                Radios = new List<RadioButtonOption>()
-            };
-
-            foreach (var item in radioButtonEnvelopeData.Items)
-            {
-                userDefinedRadioButtonGroup.Radios.Add(new RadioButtonOption
-                {
-                    Value = item.Value,
-                    Name = item.Value,
-                    Selected = item.Selected
-                });
-            }
-
-            return userDefinedRadioButtonGroup;
-        }
-
 
         private Crate CreateDocusignTemplateConfigurationControls(ActivityDO curActivityDO)
         {

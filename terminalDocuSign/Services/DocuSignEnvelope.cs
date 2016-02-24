@@ -180,33 +180,30 @@ namespace terminalDocuSign.Services
                         continue;
                     }
                     envelopeData = AddEnvelopeData(envelopeData, tabs, "textTabs", "value");
-                    envelopeData = AddEnvelopeData(envelopeData, tabs, "fullNameTabs", "value");
-                    envelopeData = AddEnvelopeData(envelopeData, tabs, "firstNameTabs", "value");
-                    envelopeData = AddEnvelopeData(envelopeData, tabs, "lastNameTabs", "value");
+                   // envelopeData = AddEnvelopeData(envelopeData, tabs, "fullNameTabs", "value");
+                   // envelopeData = AddEnvelopeData(envelopeData, tabs, "firstNameTabs", "value");
+                    //envelopeData = AddEnvelopeData(envelopeData, tabs, "lastNameTabs", "value");
                     envelopeData = AddEnvelopeData(envelopeData, tabs, "companyTabs", "value");
                     envelopeData = AddEnvelopeData(envelopeData, tabs, "titleTabs", "value");
                     envelopeData = AddEnvelopeData(envelopeData, tabs, "noteTabs", "value");
                     envelopeData = AddEnvelopeData(envelopeData, tabs, "numberTabs", "value");
                     envelopeData = AddEnvelopeData(envelopeData, tabs, "formulaTabs", "value");
-                    if (tabs["checkboxTabs"] == null)
+                    if (tabs["checkboxTabs"] != null)
                     {
-                        continue;
+                        envelopeData = AddEnvelopeData(envelopeData, tabs, "checkboxTabs", "selected");
                     }
-                    envelopeData = AddEnvelopeData(envelopeData, tabs, "checkboxTabs", "selected");
 
                     //create radio button groups
-                    if (tabs["radioGroupTabs"] == null)
+                    if (tabs["radioGroupTabs"] != null)
                     {
-                        continue;
+                        envelopeData = AddRadioButtonGroupEnvelopeData(envelopeData, tabs, "radioGroupTabs", "radios");
                     }
-                    envelopeData = AddRadioButtonGroupEnvelopeData(envelopeData, tabs, "radioGroupTabs", "radios");
 
                     //create dropdown control as envelope data from tabs
-                    if (tabs["listTabs"] == null)
+                    if (tabs["listTabs"] != null)
                     {
-                        continue;
+                        envelopeData = AdDropdownListEnvelopeData(envelopeData, tabs, "listTabs", "listItems");
                     }
-                    envelopeData = AdDropdownListEnvelopeData(envelopeData, tabs, "listTabs", "listItems");
                 }
             }
 
