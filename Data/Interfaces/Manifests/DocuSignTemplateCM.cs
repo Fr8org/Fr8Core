@@ -9,7 +9,7 @@ namespace Data.Interfaces.Manifests
     public class DocuSignTemplateCM : Manifest
     {
         public string Status { get; set; }
-        public string CreateDate { get; set; }
+        public DateTime? CreateDate { get; set; }
         public string Body { get; set; }
         public string Name { get; set; }
         public DocuSignTemplateCM()
