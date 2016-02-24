@@ -98,7 +98,7 @@ namespace Hub.Services
             }
 
             Func<Crate<FieldDescriptionsCM>, bool> cratePredicate;
-            if (availability == null)
+            if (availability == AvailabilityType.NotSet)
             {
                 cratePredicate = (Crate<FieldDescriptionsCM> f) => true;
             }
