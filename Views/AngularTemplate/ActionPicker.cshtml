@@ -18,7 +18,7 @@
                     <div data-ng-repeat="webServiceAction in webServiceActionList"
                          data-ng-click="setActiveTerminal($index)"
                          class="web-service-action">
-                        <div class="media" style="padding-bottom: 5px; padding-top: 5px; border-bottom: 1px solid #e5e5e5; white-space: normal !important;">
+                        <div class="media activity-list">
                             <div class="media-left">
                                 <img src="{{webServiceAction.webServiceIconPath}}" />
                             </div>
@@ -39,7 +39,7 @@
                     <div data-ng-repeat="action in webServiceActionList[activeTerminal].activities"
                             data-ng-click="setActiveAction(action, group)"
                             class="action-action">
-                        <div class="media" style="padding-bottom: 5px; padding-top: 5px; border-bottom: 1px solid #e5e5e5; white-space: normal !important;">
+                        <div class="media activity-list">
                             <div class="media-left" style="vertical-align: middle;">
                                 <i class="fa fa-cogs" style="font-size: 24px;"></i>
                             </div>

@@ -892,3 +892,17 @@ div[dnd-list].dndDragover {
 .invisible-icon {
     visibility: hidden;
 }
+
+.activity-list {
+    padding-bottom: 5px; padding-top: 5px; white-space: normal !important;
+}
+
+div.activity-list::after {
+    content: '';
+    display: block;
+    position: relative;
+    width: 50%;
+    left: 25%;
+    border-top: 1px solid #e5e5e5;
+    margin-top: 10px;
+}

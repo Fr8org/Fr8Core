@@ -8,6 +8,21 @@ module dockyard.directives {
         return {
             restrict: 'E',
             templateUrl: '/AngularTemplate/ActionPicker',
+            link: (scope: IActionPickerScope, element, attr) => {
+                $(document).bind('click', (event) => {
+                    var isClickedElementChildOfPopup = element
+                        .find(event.target)
+                        .length > 0;
+
+                    if (isClickedElementChildOfPopup)
+                        return;
+
+                    scope.$apply(() => {
+                        scope.activeCategory = null;
+                        scope.activeTerminal = null;
+                    });
+                });
+            },
             controller: ['$scope', 'WebServiceService',
                 ($scope: IActionPickerScope,webServiceService: services.IWebServiceService) => {
 
