@@ -38,6 +38,8 @@ namespace terminalDocuSign.Actions
         private const string TerminalName = "DocuSign";
         private const string SolutionBody = @"<p>This is Generate DocuSign Report solution action</p>";
 
+        private const int MaxResultSize = 1000;
+
         // Here in this action we have query builder control to build queries against docusign API and out mt database.
         // Docusign and MT DB have different set of fileds and we want to provide ability to search by any field.
         // Our action should "plan" queries on the particular fields to the corresponding backend.
@@ -372,6 +374,31 @@ namespace terminalDocuSign.Actions
                         query.SearchText = condition.Value;
                     }
                 }
+                else if (fieldBackedRoutingInfo.DocusignQueryName == "CreatedDateTime")
+                {
+                    DateTime dt;
+                    if (condition.Operator == "gt" || condition.Operator == "gte")
+                    {
+                        if (DateTime.TryParseExact(condition.Value, "dd-MM-yyyy", CultureInfo.CurrentCulture, DateTimeStyles.None, out dt))
+                        {
+                            query.FromDate = dt;
+                        }
+                    }
+                    else if (condition.Operator == "lt")
+                    {
+                        if (DateTime.TryParseExact(condition.Value, "dd-MM-yyyy", CultureInfo.CurrentCulture, DateTimeStyles.None, out dt))
+                        {
+                            query.ToDate = dt.AddDays(-1);
+                        }
+                    }
+                    else if (condition.Operator == "lte")
+                    {
+                        if (DateTime.TryParseExact(condition.Value, "dd-MM-yyyy", CultureInfo.CurrentCulture, DateTimeStyles.None, out dt))
+                        {
+                            query.ToDate = dt;
+                        }
+                    }
+                }
                 else
                 {
                     query.Conditions.Add(new FilterConditionDTO()
@@ -406,6 +433,16 @@ namespace terminalDocuSign.Actions
             return Task.FromResult(curActivityDO);
         }
 
+        private int ExtractDocuSignResultSize(
+            DocuSignAuthTokenDTO authToken,
+            List<FilterConditionDTO> criteria)
+        {
+            var docusignQuery = BuildDocusignQuery(authToken, criteria);
+            var count = _docuSignManager.CountEnvelopes(authToken, docusignQuery);
+
+            return count;
+        }
+
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO activityDO, AuthorizationTokenDO authTokenDO)
         {
             var activityTemplates = (await HubCommunicator.GetActivityTemplates(activityDO, null))
@@ -419,6 +456,7 @@ namespace terminalDocuSign.Actions
                 using (var crateStorage = CrateManager.GetUpdatableStorage(activityDO))
                 {
                     crateStorage.Remove<StandardQueryCM>();
+                    RemoveControl(crateStorage, "CannotProceedMessage");
 
                     var queryCrate = ExtractQueryCrate(crateStorage);
                     crateStorage.Add(queryCrate);
@@ -435,6 +473,28 @@ namespace terminalDocuSign.Actions
                         if (continueButton.Clicked)
                         {
                             continueButton.Clicked = false;
+                        }
+                    }
+
+                    if (continueClicked)
+                    {
+                        var docuSignAuthToken = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
+                        var criteria = queryCrate.Content.Queries.First().Criteria;
+                        var resultSize = ExtractDocuSignResultSize(docuSignAuthToken, criteria);
+
+                        if (resultSize > MaxResultSize)
+                        {
+                            continueClicked = false;
+                            InsertControlAfter(
+                                crateStorage,
+                                new TextBlock()
+                                {
+                                    Name = "CannotProceedMessage",
+                                    Value = "Fr8 can not currently generate this report because the set size is too big.",
+                                    CssClass = "well well-lg"
+                                },
+                                "QueryBuilder"
+                            );
                         }
                     }
                 }
