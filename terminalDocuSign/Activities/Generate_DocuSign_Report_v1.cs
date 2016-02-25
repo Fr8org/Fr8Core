@@ -83,7 +83,7 @@ namespace terminalDocuSign.Actions
                 {
                     IsReadOnly = true,
                     Label = "",
-                    Value = "<p>Search for DocuSign Envelopes where the following are true:</p>"
+                    Value = "<p>Search for DocuSign Envelopes where:</p>"
                 });
 
                 var filterConditions = new[]
@@ -108,7 +108,7 @@ namespace terminalDocuSign.Actions
 
                 Controls.Add(new Button()
                 {
-                    Label = "Continue",
+                    Label = "Generate Report",
                     Name = "Continue",
                     Events = new List<ControlEvent>()
                     {
@@ -210,7 +210,7 @@ namespace terminalDocuSign.Actions
             // Real-time search.
             var criteria = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(actionUi.QueryBuilder.Value);
             var existingEnvelopes = new HashSet<string>();
-            var searchResult = new StandardPayloadDataCM();
+            var searchResult = new StandardPayloadDataCM() { Name = "Docusign Report" };
             var docuSignAuthToken = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 
             SearchDocusignInRealTime(docuSignAuthToken, criteria, searchResult, existingEnvelopes);
