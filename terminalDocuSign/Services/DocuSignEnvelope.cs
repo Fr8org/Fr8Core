@@ -8,6 +8,7 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using DocuSign.Integrations.Client;
+using terminalDocuSign.DataTransferObjects;
 using Utilities.Serializers.Json;
 using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Interfaces;
@@ -74,7 +75,7 @@ namespace terminalDocuSign.Services
         /// List of Envelope Data.
         /// It returns empty list of envelope data if tab and signers not found.
         /// </summary>
-        public IList<EnvelopeDataDTO> GetEnvelopeData(string curEnvelopeId)
+        public IList<DocuSignTabDTO> GetEnvelopeData(string curEnvelopeId)
         {
             if (string.IsNullOrEmpty(curEnvelopeId))
             {
@@ -112,7 +113,7 @@ namespace terminalDocuSign.Services
         /// List of Envelope Data.
         /// It returns empty list of envelope data if tab and signers not found.
         /// </returns>
-        public IList<EnvelopeDataDTO> GetEnvelopeData(DocuSign.Integrations.Client.Envelope envelope)
+        public IList<DocuSignTabDTO> GetEnvelopeData(DocuSign.Integrations.Client.Envelope envelope)
         {
             Signer[] curSignersSet = _signer.GetFromRecipients(envelope);
             if (curSignersSet != null)
@@ -122,7 +123,7 @@ namespace terminalDocuSign.Services
                     return _tab.ExtractEnvelopeData(envelope, curSigner);
                 }
             }
-            return new List<EnvelopeDataDTO>();
+            return new List<DocuSignTabDTO>();
         }
 
         /// <summary>
@@ -133,7 +134,7 @@ namespace terminalDocuSign.Services
         /// <param name="curEnvelopeData"></param>
         /// <returns></returns>
         public IList<FieldDTO> FormEnvelopePayload(List<FieldDTO> curTemplateFields, string curEnvelopeId,
-            IList<EnvelopeDataDTO> curEnvelopeData)
+            IList<DocuSignTabDTO> curEnvelopeData)
         {
             var payload = new List<FieldDTO>();
 
@@ -151,9 +152,9 @@ namespace terminalDocuSign.Services
             return payload;
         }
 
-        public IEnumerable<EnvelopeDataDTO> GetEnvelopeDataByTemplate(string templateId)
+        public IEnumerable<DocuSignTabDTO> GetEnvelopeDataByTemplate(string templateId)
         {
-            var envelopeData = new List<EnvelopeDataDTO>();
+            var envelopeData = new List<DocuSignTabDTO>();
 
             var curDocuSignTemplate = new DocuSignTemplate();
 
@@ -180,9 +181,6 @@ namespace terminalDocuSign.Services
                         continue;
                     }
                     envelopeData = AddEnvelopeData(envelopeData, tabs, "textTabs", "value");
-                   // envelopeData = AddEnvelopeData(envelopeData, tabs, "fullNameTabs", "value");
-                   // envelopeData = AddEnvelopeData(envelopeData, tabs, "firstNameTabs", "value");
-                    //envelopeData = AddEnvelopeData(envelopeData, tabs, "lastNameTabs", "value");
                     envelopeData = AddEnvelopeData(envelopeData, tabs, "companyTabs", "value");
                     envelopeData = AddEnvelopeData(envelopeData, tabs, "titleTabs", "value");
                     envelopeData = AddEnvelopeData(envelopeData, tabs, "noteTabs", "value");
@@ -191,6 +189,12 @@ namespace terminalDocuSign.Services
                     if (tabs["checkboxTabs"] != null)
                     {
                         envelopeData = AddEnvelopeData(envelopeData, tabs, "checkboxTabs", "selected");
+                    }
+
+                    //extract Date data and add it to envelope 
+                    if (tabs["dateTabs"] != null)
+                    {
+                        //TODO: implement date source control first and revisit this part 
                     }
 
                     //create radio button groups
@@ -210,9 +214,9 @@ namespace terminalDocuSign.Services
             return envelopeData;
         }
 
-        private EnvelopeDataDTO CreateEnvelopeData(dynamic tab, string value)
+        private DocuSignTabDTO CreateEnvelopeData(dynamic tab, string value)
         {
-            return new EnvelopeDataDTO
+            return new DocuSignTabDTO
             {
                 DocumentId = tab.documentId,
                 RecipientId = tab.recipientId,
@@ -246,7 +250,7 @@ namespace terminalDocuSign.Services
             curEnv.Create();
         }
 
-        private List<EnvelopeDataDTO> AddEnvelopeData(List<EnvelopeDataDTO> envelopes, JToken tabs, string tabName, string tabField)
+        private List<DocuSignTabDTO> AddEnvelopeData(List<DocuSignTabDTO> envelopes, JToken tabs, string tabName, string tabField)
         {
             if (tabs[tabName] != null)
             {
@@ -258,14 +262,14 @@ namespace terminalDocuSign.Services
             return envelopes;
         }
 
-        private List<EnvelopeDataDTO> AddRadioButtonGroupEnvelopeData(List<EnvelopeDataDTO> envelopes, JToken tabs, string tabName, string radiosName)
+        private List<DocuSignTabDTO> AddRadioButtonGroupEnvelopeData(List<DocuSignTabDTO> envelopes, JToken tabs, string tabName, string radiosName)
         {
             if (tabs[tabName] != null)
             {
                 foreach (var groupTab in tabs[tabName])
                 {
                     dynamic grpTab = groupTab;
-                    var groupWrapperEnvelopeData = new GroupWrapperEnvelopeDataDTO
+                    var groupWrapperEnvelopeData = new DocuSignMultipleOptionsTabDTO()
                     {
                         DocumentId = grpTab.documentId,
                         RecipientId = grpTab.recipientId,
@@ -279,10 +283,10 @@ namespace terminalDocuSign.Services
                         foreach (var listItem in groupTab[radiosName])
                         {
                             dynamic lstItem = listItem;
-                            groupWrapperEnvelopeData.Items.Add(new GroupItemEnvelopeDataDTO
+                            groupWrapperEnvelopeData.Items.Add(new DocuSignOptionItemTabDTO()
                             {
                                 Value = lstItem.value,
-                                Selected = lstItem.selected //todo: convert from string to bool
+                                Selected = lstItem.selected
                             });
                         }
                     }
@@ -293,14 +297,14 @@ namespace terminalDocuSign.Services
             return envelopes;
         }
 
-        private List<EnvelopeDataDTO> AdDropdownListEnvelopeData(List<EnvelopeDataDTO> envelopes, JToken tabs, string tabName, string listItemsName)
+        private List<DocuSignTabDTO> AdDropdownListEnvelopeData(List<DocuSignTabDTO> envelopes, JToken tabs, string tabName, string listItemsName)
         {
             if (tabs[tabName] != null)
             {
                 foreach (var groupTab in tabs[tabName])
                 {
                     dynamic grpTab = groupTab;
-                    var groupWrapperEnvelopeData = new GroupWrapperEnvelopeDataDTO
+                    var groupWrapperEnvelopeData = new DocuSignMultipleOptionsTabDTO
                     {
                         DocumentId = grpTab.documentId,
                         RecipientId = grpTab.recipientId,
@@ -316,11 +320,11 @@ namespace terminalDocuSign.Services
                         foreach (var listItem in groupTab[listItemsName])
                         {
                             dynamic lstItem = listItem;
-                            groupWrapperEnvelopeData.Items.Add(new GroupItemEnvelopeDataDTO
+                            groupWrapperEnvelopeData.Items.Add(new DocuSignOptionItemTabDTO
                             {
                                 Text = lstItem.text,
                                 Value = lstItem.value,
-                                Selected = lstItem.selected //todo: convert from string to bool
+                                Selected = lstItem.selected
                             });
                         }
                     }

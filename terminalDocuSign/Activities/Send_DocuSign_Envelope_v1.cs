@@ -138,7 +138,7 @@ namespace terminalDocuSign.Actions
    
                 //set radio button tabs
                 var radiopGroupMappingBehavior = new RadioButtonGroupMappingBehavior(crateStorage, "RadioGroupMapping");
-                var radioButtonGroups = radiopGroupMappingBehavior.GetValues(payloadCrateStorage).ToList();
+                var radioButtonGroups = radiopGroupMappingBehavior.GetValues(payloadCrateStorage);
                 
                 var radioGroupTabsToAdd = new List<TemplateRadioGroupTab>();
                 foreach (RadioButtonGroup item in radioButtonGroups)
@@ -156,7 +156,32 @@ namespace terminalDocuSign.Actions
 
                 curEnvelope.TemplateRoles[0].tabs.radioGroupTabs = radioGroupTabsToAdd.ToArray();
 
-                //set checkboxTabs 
+                //set checkboxes tabs
+                var checkBoxMappingBehavior = new CheckBoxMappingBehavior(crateStorage, "ChekBoxMapping");
+                var checkboxes = checkBoxMappingBehavior.GetValues(payloadCrateStorage);
+                curEnvelope.TemplateRoles[0].tabs.checkboxTabs = checkboxes.Select(x => new CheckboxTab()
+                {
+                    tabLabel = x.Name,
+                    selected = x.Selected
+                }).ToArray();
+                
+                //set dropdown list items
+                //var dropDownListMappingBehavior = new DropDownListMappingBehavior(crateStorage, "DropDownListMapping");
+                //var dropDownLists = dropDownListMappingBehavior.GetValues(payloadCrateStorage).ToList();
+
+                //var radioGroupTabsToAdd = new List<TemplateRa>();
+                //foreach (RadioButtonGroup item in radioButtonGroups)
+                //{
+                //    radioGroupTabsToAdd.Add(new TemplateRadioGroupTab()
+                //    {
+                //        groupName = item.GroupName,
+                //        radios = item.Radios.Select(x => new radio()
+                //        {
+                //            selected = x.Selected,
+                //            value = x.Value
+                //        }).ToArray()
+                //    });
+                //}
             }
 
             curEnvelope.TemplateRoles = templateRoles;
@@ -293,7 +318,7 @@ namespace terminalDocuSign.Actions
                 radioButtonGroupBehavior.Clear();
                 foreach (var item in envelopeDataDTO.Where(x=>x.Type == ControlTypes.RadioButtonGroup).ToList())
                 {
-                    var radioButtonGroupDTO = item as GroupWrapperEnvelopeDataDTO;
+                    var radioButtonGroupDTO = item as DocuSignMultipleOptionsTabDTO;
                     if (radioButtonGroupDTO == null) continue;
 
                     radioButtonGroupBehavior.Append(radioButtonGroupDTO.Name, radioButtonGroupDTO.Items.Select(x => new RadioButtonOption()
@@ -314,7 +339,7 @@ namespace terminalDocuSign.Actions
                 dropdownListMappingBehavior.Clear();
                 foreach (var item in envelopeDataDTO.Where(x => x.Type == ControlTypes.DropDownList).ToList())
                 {
-                    var dropDownListDTO = item as GroupWrapperEnvelopeDataDTO;
+                    var dropDownListDTO = item as DocuSignMultipleOptionsTabDTO;
                     if (dropDownListDTO == null) continue;
 
                     dropdownListMappingBehavior.Append(dropDownListDTO.Name, dropDownListDTO.Items.Select(x => new ListItem()

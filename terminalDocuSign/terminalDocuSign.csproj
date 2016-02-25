@@ -252,6 +252,7 @@
     <Compile Include="Controllers\TerminalController.cs" />
     <Compile Include="DataTransferObjects\DocuSignAuthDTO.cs" />
     <Compile Include="DataTransferObjects\DocuSignEventDTO.cs" />
+    <Compile Include="DataTransferObjects\DocuSignTabDTO.cs" />
     <Compile Include="Infrastructure\DataContracts\CustomField.cs" />
     <Compile Include="Infrastructure\DataContracts\FolderItem.cs" />
     <Compile Include="Infrastructure\DataContracts\FolderListResponse.cs" />

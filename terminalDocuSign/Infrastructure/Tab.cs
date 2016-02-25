@@ -3,19 +3,20 @@
 using DocuSign.Integrations.Client;
 
 using Data.Interfaces.DataTransferObjects;
+using terminalDocuSign.DataTransferObjects;
 
 namespace terminalDocuSign.Infrastructure
 {
     public interface ITab
     {
-        List<EnvelopeDataDTO> ExtractEnvelopeData(DocuSign.Integrations.Client.Envelope envelope, Signer curSigner);
+        List<DocuSignTabDTO> ExtractEnvelopeData(DocuSign.Integrations.Client.Envelope envelope, Signer curSigner);
     }
 
     public class Tab : DocuSign.Integrations.Client.Tab, ITab
     {
-        public List<EnvelopeDataDTO> ExtractEnvelopeData(DocuSign.Integrations.Client.Envelope envelope, Signer curSigner)
+        public List<DocuSignTabDTO> ExtractEnvelopeData(DocuSign.Integrations.Client.Envelope envelope, Signer curSigner)
         {
-            List<EnvelopeDataDTO> curEnvelopeDataSet = new List<EnvelopeDataDTO>();
+            List<DocuSignTabDTO> curEnvelopeDataSet = new List<DocuSignTabDTO>();
 
             Tabs curTabsSet = curSigner.tabs;
             if (curTabsSet != null)
@@ -23,7 +24,7 @@ namespace terminalDocuSign.Infrastructure
                 if (curTabsSet.textTabs != null)
                     foreach (TextTab curTextTab in curTabsSet.textTabs)
                     {
-                        EnvelopeDataDTO curEnvelopeData = new EnvelopeDataDTO
+                        DocuSignTabDTO curEnvelopeData = new DocuSignTabDTO
                         {
                             RecipientId = curSigner.recipientId,
                             EnvelopeId = envelope.EnvelopeId,

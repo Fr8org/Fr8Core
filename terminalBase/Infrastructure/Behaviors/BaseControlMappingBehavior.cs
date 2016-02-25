@@ -20,7 +20,7 @@ namespace TerminalBase.Infrastructure.Behaviors
         protected ICrateStorage _crateStorage;
         protected string _behaviorName;
 
-        public BaseControlMappingBehavior(ICrateStorage crateStorage,string behaviorName)
+        protected BaseControlMappingBehavior(ICrateStorage crateStorage,string behaviorName)
         {
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
             _crateStorage = crateStorage;
