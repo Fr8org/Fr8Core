@@ -129,6 +129,14 @@ namespace terminalSalesforce.Infrastructure
             string authAttributes = curAuthTokenDO.AdditionalAttributes;
             string refreshToken = authAttributes.Substring(authAttributes.IndexOf("refresh_token"), authAttributes.IndexOf("instance_url") - 1);
             refreshToken = refreshToken.Replace("refresh_token=", "");
+
+            //In Test scenario, the refresh token will be empty as we use Salesforce's UserName & Password login method. 
+            //In that case, there will no refresh token be available. Return the input auth token.
+            if(string.IsNullOrEmpty(refreshToken))
+            {
+                return curAuthTokenDO;
+            }
+
             await auth.TokenRefreshAsync(salesforceConsumerKey, refreshToken);
             curAuthTokenDO.Token = auth.AccessToken;
             curAuthTokenDO.AdditionalAttributes = "refresh_token=" + auth.RefreshToken + ";instance_url=" + auth.InstanceUrl + ";api_version=" + auth.ApiVersion;
