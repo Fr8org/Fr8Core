@@ -270,7 +270,7 @@ namespace TerminalBase.BaseClasses
         }
 
 
-        public virtual async Task<PayloadDTO> ChildrenExecuted(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public virtual async Task<PayloadDTO> ExecuteChildActivities(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             return Success(await GetPayload(curActivityDO, containerId));
         }
@@ -785,6 +785,30 @@ namespace TerminalBase.BaseClasses
             controlsCrate.Content.Controls.Add(control);
         }
 
+        protected void InsertControlAfter(ICrateStorage storage, ControlDefinitionDTO control, string afterControlName)
+        {
+            var controlsCrate = EnsureControlsCrate(storage);
+
+            if (controlsCrate.Content == null) { return; }
+
+            for (var i = 0; i < controlsCrate.Content.Controls.Count; ++i)
+            {
+                if (controlsCrate.Content.Controls[i].Name == afterControlName)
+                {
+                    if (i == controlsCrate.Content.Controls.Count - 1)
+                    {
+                        controlsCrate.Content.Controls.Add(control);
+                    }
+                    else
+                    {
+                        controlsCrate.Content.Controls.Insert(i + 1, control);
+                    }
+
+                    break;
+                }
+            }
+        }
+
         protected ControlDefinitionDTO FindControl(ICrateStorage storage, string name)
         {
             var controlsCrate = storage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
@@ -1181,6 +1205,19 @@ namespace TerminalBase.BaseClasses
                 Body = errorMessage,
                 Type = ActivityResponse.ShowDocumentation.ToString()
             };
+        }
+
+        public SolutionPageDTO GetDefaultDocumentation(string solutionName, double solutionVersion, string terminalName, string body)
+        {
+            var curSolutionPage = new SolutionPageDTO
+            {
+                Name = solutionName,
+                Version = solutionVersion,
+                Terminal = terminalName,
+                Body = body
+            };
+
+            return curSolutionPage;
         }
     }
 }

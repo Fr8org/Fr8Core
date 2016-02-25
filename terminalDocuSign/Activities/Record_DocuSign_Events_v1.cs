@@ -140,12 +140,12 @@ namespace terminalDocuSign.Actions
 
                 var envelope = new DocuSignEnvelopeCM
                 {
-                    CompletedDate = docuSignFields.GetValueOrDefault("CompletedDate"), //.First(field => field.Key.Equals("CompletedDate")).Value,
-                    CreateDate = docuSignFields.GetValueOrDefault("CreateDate"),//.First(field => field.Key.Equals("CreateDate")).Value,
-                    DeliveredDate = docuSignFields.GetValueOrDefault("DeliveredDate"),//First(field => field.Key.Equals("DeliveredDate")).Value,
+                    CompletedDate = DateTimeHelper.Parse(docuSignFields.GetValueOrDefault("CompletedDate")), //.First(field => field.Key.Equals("CompletedDate")).Value,
+                    CreateDate = DateTimeHelper.Parse(docuSignFields.GetValueOrDefault("CreateDate")),//.First(field => field.Key.Equals("CreateDate")).Value,
+                    DeliveredDate = DateTimeHelper.Parse(docuSignFields.GetValueOrDefault("DeliveredDate")),//First(field => field.Key.Equals("DeliveredDate")).Value,
                     EnvelopeId = docuSignFields.GetValueOrDefault("EnvelopeId"),//First(field => field.Key.Equals("EnvelopeId")).Value,
                     ExternalAccountId = docuSignFields.GetValueOrDefault("HolderEmail"),//First(field => field.Key.Equals("Email")).Value,
-                    SentDate = docuSignFields.GetValueOrDefault("SentDate"),//First(field => field.Key.Equals("SentDate")).Value,
+                    SentDate = DateTimeHelper.Parse(docuSignFields.GetValueOrDefault("SentDate")),//First(field => field.Key.Equals("SentDate")).Value,
                     Status = docuSignFields.GetValueOrDefault("Status"),//First(field => field.Key.Equals("Status")).Value
                 };
 

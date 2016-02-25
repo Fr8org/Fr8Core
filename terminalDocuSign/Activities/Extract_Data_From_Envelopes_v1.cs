@@ -25,6 +25,10 @@ namespace terminalDocuSign.Actions
         private const string SolutionName = "Extract Data From Envelopes";
         private const double SolutionVersion = 1.0;
         private const string TerminalName = "DocuSign";
+        private const string SolutionBody = @"<p>This powerful report generator extends the capabilities of the standard DocuSign reporting tools. 
+                                                Search by Recipient or Template and build powerful queries with a few mouse clicks</p>";
+
+
         private class ActivityUi : StandardConfigurationControlsCM
         {
             [JsonIgnore]
@@ -146,13 +150,7 @@ namespace terminalDocuSign.Actions
         {
             if (curDocumentation.Contains("MainPage"))
             {
-                var curSolutionPage = new SolutionPageDTO
-                {
-                    Name = SolutionName,
-                    Version = SolutionVersion,
-                    Terminal = TerminalName,
-                    Body = @"<p>This is Extract Data From Envelopes solution action</p>"
-                };
+                var curSolutionPage = GetDefaultDocumentation(SolutionName, SolutionVersion, TerminalName, SolutionBody);
                 return Task.FromResult(curSolutionPage);
             }
             if (curDocumentation.Contains("HelpMenu"))
