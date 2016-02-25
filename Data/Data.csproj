@@ -627,6 +627,10 @@
     <Compile Include="Migrations\201602191529576_RemoveActivityTemplateDupesAndAddConstaints.Designer.cs">
       <DependentUpon>201602191529576_RemoveActivityTemplateDupesAndAddConstaints.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201602241821266_UpdateMtFieldTypes.cs" />
+    <Compile Include="Migrations\201602241821266_UpdateMtFieldTypes.Designer.cs">
+      <DependentUpon>201602241821266_UpdateMtFieldTypes.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryBase.cs" />
@@ -1057,6 +1061,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201602191529576_RemoveActivityTemplateDupesAndAddConstaints.resx">
       <DependentUpon>201602191529576_RemoveActivityTemplateDupesAndAddConstaints.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602241821266_UpdateMtFieldTypes.resx">
+      <DependentUpon>201602241821266_UpdateMtFieldTypes.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

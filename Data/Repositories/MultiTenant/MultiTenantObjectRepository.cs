@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 using Data.Expressions;
 using Data.Infrastructure.MultiTenant;
@@ -21,7 +21,6 @@ namespace Data.Repositories
             typeof(int?), typeof(long), typeof(long?), typeof(float), typeof(float?), 
             typeof(double), typeof(double?), typeof(DateTime), typeof(DateTime?)
         };
-
 
         private MT_Field _mtField;
         private MT_Data _mtData;
@@ -341,7 +340,7 @@ namespace Data.Repositories
 
                 if (IsOfPrimitiveType(val))
                 {
-                    corrDataCell.SetValue(data, val);
+                    corrDataCell.SetValue(data, Convert.ChangeType(val, typeof(string), CultureInfo.InvariantCulture));
                 }
                 else
                 {
@@ -370,10 +369,21 @@ namespace Data.Repositories
             return PrimitiveTypes.Contains(type);
         }
 
+        private static bool TryGetNullableType(Type orignalType, out Type underlyingType)
+        {
+            if (orignalType.IsGenericType && orignalType.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                underlyingType = orignalType.GetGenericArguments()[0];
+                return true;
+            }
+
+            underlyingType = orignalType;
+            return false;
+        }
+
         //instantiate object from MTData
         private T MapMTDataToManifest<T>(Entities.MT_Data data, Entities.MT_Object correspondingDTObject)
         {
-
             var correspondingDTFields = correspondingDTObject.Fields;
             var objMTType = correspondingDTObject.MT_FieldType;
             object obj = Activator.CreateInstance(objMTType.AssemblyName, objMTType.TypeName).Unwrap();
@@ -382,21 +392,32 @@ namespace Data.Repositories
 
             if (correspondingDTFields != null)
             {
-                foreach (var DTField in correspondingDTFields)
+                foreach (var dtField in correspondingDTFields)
                 {
-                    var correspondingProperty = properties.FirstOrDefault(a => a.Name == DTField.Name);
-                    var valueCell = dataValueCells.FirstOrDefault(a => a.Name == "Value" + DTField.FieldColumnOffset);
+                    var correspondingProperty = properties.FirstOrDefault(a => a.Name == dtField.Name);
+                    var valueCell = dataValueCells.FirstOrDefault(a => a.Name == "Value" + dtField.FieldColumnOffset);
+                    Type manifestPropType;
 
-                    object val = null;
-                    if (!correspondingProperty.PropertyType.IsValueType && valueCell != null)
-                        val = valueCell.GetValue(data);
-                    else
+                    if (valueCell == null || correspondingProperty == null)
                     {
-                        object boxedObject = RuntimeHelpers.GetObjectValue(correspondingProperty);
+                        continue;
                     }
 
-                    if (IsOfPrimitiveType(correspondingProperty.PropertyType))
+                    bool isNullable = TryGetNullableType(correspondingProperty.PropertyType, out manifestPropType);
+                    var val = valueCell.GetValue(data);
+
+                    if (IsOfPrimitiveType(manifestPropType))
                     {
+                        if (val != null)
+                        {
+                            val = Convert.ChangeType(val, manifestPropType, CultureInfo.InvariantCulture);
+
+                            if (isNullable)
+                            {
+                                val = Activator.CreateInstance(typeof (Nullable<>).MakeGenericType(manifestPropType), val);
+                            }
+                        }
+
                         correspondingProperty.SetValue(obj, val);
                     }
                     else
@@ -404,12 +425,12 @@ namespace Data.Repositories
                         correspondingProperty.SetValue(
                             obj,
                             ConvertValueFromJson(correspondingProperty.PropertyType, val)
-                        );
+                            );
                     }
                 }
             }
 
-            return (T)obj;
+            return (T) obj;
         }
 
         private object ConvertValueFromJson(Type type, object sourceValue)
