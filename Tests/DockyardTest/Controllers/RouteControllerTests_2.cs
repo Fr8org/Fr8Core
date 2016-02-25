@@ -29,7 +29,8 @@ namespace DockyardTest.Controllers
 			Mock<IPlanRepository> rrMock = new Mock<IPlanRepository>();
             rrMock.Setup(x => x.GetById<PlanDO>(It.IsAny<Guid>())).Returns(new PlanDO()
             {
-                Fr8Account = FixtureData.TestDockyardAccount1()
+                Fr8Account = FixtureData.TestDockyardAccount1(),
+                StartingSubroute = new SubrouteDO()
             });
 
 			Mock<IUnitOfWork> uowMock = new Mock<IUnitOfWork>();
@@ -65,7 +66,10 @@ namespace DockyardTest.Controllers
 		{
 			// Arrange
 			Mock<IPlanRepository> rrMock = new Mock<IPlanRepository>();
-			rrMock.Setup(x => x.GetById<PlanDO>(It.IsAny<Guid>())).Returns(new PlanDO());
+			rrMock.Setup(x => x.GetById<PlanDO>(It.IsAny<Guid>())).Returns(new PlanDO()
+            {
+                StartingSubroute = new SubrouteDO()
+            });
 
 			Mock<IUnitOfWork> uowMock = new Mock<IUnitOfWork>();
             uowMock.Setup(x => x.PlanRepository).Returns(rrMock.Object);
@@ -97,7 +101,8 @@ namespace DockyardTest.Controllers
 			Mock<IPlanRepository> rrMock = new Mock<IPlanRepository>();
             rrMock.Setup(x => x.GetById<PlanDO>(It.IsAny<Guid>())).Returns(new PlanDO()
             {
-                Fr8Account = FixtureData.TestDockyardAccount1()
+                Fr8Account = FixtureData.TestDockyardAccount1(),
+                StartingSubroute = new SubrouteDO()
             });
 
 			Mock<IUnitOfWork> uowMock = new Mock<IUnitOfWork>();
