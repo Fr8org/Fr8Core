@@ -126,7 +126,6 @@ namespace terminalDocuSign.Actions
                 var nonEmptyValues = values.Where(x => !string.IsNullOrEmpty(x.Value));
                 foreach (var pair in nonEmptyValues)
                 {
-
                     valuesToAdd.Add(new RoleTextTab()
                     {
                         tabLabel = pair.Key,
@@ -255,25 +254,7 @@ namespace terminalDocuSign.Actions
 
                 // when we're in design mode, there are no values
                 // we just want the names of the fields
-                var userDefinedFields = new List<FieldDTO>();
-                var userDefinedGroupFields = new List<FieldDTO>();
-
-                var userDefinedGroupItems = new List<GroupWrapperEnvelopeDataDTO>();
-                
-                foreach (var x in envelopeDataDTO)
-                {
-                    //special case for radio buttons
-                    if (x is GroupWrapperEnvelopeDataDTO)
-                    {
-                        userDefinedGroupFields.Add(new FieldDTO() { Key = x.Name, Value = x.Name, Availability = AvailabilityType.RunTime });
-                        //add check here for has key
-                        userDefinedGroupItems.Add((GroupWrapperEnvelopeDataDTO) x);
-                    }
-                    else
-                    {
-                        userDefinedFields.Add(new FieldDTO() { Key = x.Name, Value = x.Name, Availability = AvailabilityType.RunTime });
-                    }
-                }
+                var userDefinedFields = envelopeDataDTO.Select(x => new FieldDTO() {Key = x.Name, Value = x.Name, Availability = AvailabilityType.RunTime}).ToList();
 
                 // we're in design mode, there are no values 
                 var standartFields = new List<FieldDTO>()
@@ -283,7 +264,7 @@ namespace terminalDocuSign.Actions
 
                 var crateUserDefinedDTO = CrateManager.CreateDesignTimeFieldsCrate(
                     "DocuSignTemplateUserDefinedFields",
-                    userDefinedFields.Concat(userDefinedGroupFields).ToArray()
+                    userDefinedFields.ToArray()
                 );
 
                 var crateStandardDTO = CrateManager.CreateDesignTimeFieldsCrate(
@@ -296,26 +277,48 @@ namespace terminalDocuSign.Actions
                 crateStorage.Add(crateUserDefinedDTO);
                 crateStorage.Add(crateStandardDTO);
 
-                var allFields = new List<string>();
-                allFields.AddRange(userDefinedFields.Select(x => x.Key));
-                allFields.AddRange(standartFields.Select(x => x.Key));
-
+                //Create Text Source controls
+                var textSourceFields = new List<string>();
+                textSourceFields = envelopeDataDTO.Where(x=>x.Type == ControlTypes.TextSource).Select(x=>x.Name).ToList();
                 var mappingBehavior = new TextSourceMappingBehavior(
                     crateStorage,
                     "Mapping"
                 );
                 mappingBehavior.Clear();
-                mappingBehavior.Append(allFields, "Upstream Terminal-Provided Fields");
+                mappingBehavior.Append(textSourceFields, "Upstream Terminal-Provided Fields");
 
-                var radioButtonGroupBehavior = new RadioButtonGroupMappingBehavior(
-                    crateStorage, "RadioGroupMapping");
+                //Create radio Button Groups
+                var radioButtonGroupBehavior = new RadioButtonGroupMappingBehavior(crateStorage, "RadioGroupMapping");
 
                 radioButtonGroupBehavior.Clear();
-                foreach (var item in userDefinedGroupItems)
+                foreach (var item in envelopeDataDTO.Where(x=>x.Type == ControlTypes.RadioButtonGroup).ToList())
                 {
-                    radioButtonGroupBehavior.Append(item.Name, item.Items.Select(x => new RadioButtonOption()
+                    var radioButtonGroupDTO = item as GroupWrapperEnvelopeDataDTO;
+                    if (radioButtonGroupDTO == null) continue;
+
+                    radioButtonGroupBehavior.Append(radioButtonGroupDTO.Name, radioButtonGroupDTO.Items.Select(x => new RadioButtonOption()
                     {
                         Name = x.Value,
+                        Value = x.Value,
+                        Selected = x.Selected
+                    }).ToList());
+                }
+
+                //create checkbox controls
+                var checkBoxMappingBehavior = new CheckBoxMappingBehavior(crateStorage, "CheckBoxMapping");
+                checkBoxMappingBehavior.Clear();
+                checkBoxMappingBehavior.Append(envelopeDataDTO.Where(x=>x.Type == ControlTypes.CheckBox).Select(x=>x.Name).ToList());
+
+                //create dropdown controls
+                var dropdownListMappingBehavior = new DropDownListMappingBehavior(crateStorage, "DropDownMapping");
+                dropdownListMappingBehavior.Clear();
+                foreach (var item in envelopeDataDTO.Where(x => x.Type == ControlTypes.DropDownList).ToList())
+                {
+                    var dropDownListDTO = item as GroupWrapperEnvelopeDataDTO;
+                    if (dropDownListDTO == null) continue;
+
+                    dropdownListMappingBehavior.Append(dropDownListDTO.Name, dropDownListDTO.Items.Select(x => new ListItem()
+                    {
                         Value = x.Value,
                         Selected = x.Selected
                     }).ToList());

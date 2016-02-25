@@ -14,9 +14,6 @@ namespace TerminalBase.Infrastructure.Behaviors
 {
     public class RadioButtonGroupMappingBehavior : BaseControlMappingBehavior<RadioButtonGroup>
     {
-        private ICrateManager _crateManager;
-        private ICrateStorage _crateStorage;
-   
         public RadioButtonGroupMappingBehavior(ICrateStorage crateStorage, string behaviorName) 
             : base(crateStorage, behaviorName)
         {
