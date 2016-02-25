@@ -70,6 +70,7 @@ namespace HubWeb.Controllers
                     .Where(x => x.ActivityTemplateState == ActivityTemplateState.Active)
                     .Where(x => categories == null || categories.Contains(x.Category))
                     .Where(x => x.ClientVisibility != false)
+                    .Where(x => x.Tags == null || !x.Tags.Contains("internal"))
                     .GroupBy(x => x.WebService, x => x, (key, group) => new
                     {
                         WebService = key,
