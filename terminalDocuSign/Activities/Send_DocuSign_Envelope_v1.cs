@@ -12,7 +12,6 @@ using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
-
 using Hub.Managers;
 using Utilities;
 using terminalDocuSign.DataTransferObjects;
@@ -24,6 +23,8 @@ using TerminalBase.Infrastructure;
 using TerminalBase.Infrastructure.Behaviors;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework.Constraints;
+using Envelope = DocuSign.Integrations.Client.Envelope;
+using TemplateRole = DocuSign.Integrations.Client.TemplateRole;
 
 namespace terminalDocuSign.Actions
 {
@@ -65,7 +66,7 @@ namespace terminalDocuSign.Actions
                 //in case of problem with extract payload field values raise and Error alert to the user
                 return Error(payloadCrates, exception.Message, null, "Send DocuSign Envelope", "DocuSign");
             }
-
+            
             curEnvelope.EmailSubject = "Test Message from Fr8";
             curEnvelope.Status = "sent";
 
@@ -111,7 +112,7 @@ namespace terminalDocuSign.Actions
                         roleName = "Signer"   // need to fetch this
                     },
             };  
-
+            
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 var mappingBehavior = new TextSourceMappingBehavior(
@@ -135,13 +136,11 @@ namespace terminalDocuSign.Actions
                 curEnvelope.TemplateRoles = templateRoles;
                 curEnvelope.TemplateRoles[0].tabs = new RoleTabs();
                 curEnvelope.TemplateRoles[0].tabs.textTabs = valuesToAdd.ToArray();
-
+   
                 //set radio button tabs
-
-                var radiopGroupMappingBehavior = new RadioButtonGroupMappingBehavior(crateStorage);
+                var radiopGroupMappingBehavior = new RadioButtonGroupMappingBehavior(crateStorage, "RadioGroupMapping");
                 var radioButtonGroups = radiopGroupMappingBehavior.GetValues(payloadCrateStorage).ToList();
                 
-                //curEnvelope.TemplateRoles[0].tabs.
                 var radioGroupTabsToAdd = new List<TemplateRadioGroupTab>();
                 foreach (RadioButtonGroup item in radioButtonGroups)
                 {
@@ -157,6 +156,8 @@ namespace terminalDocuSign.Actions
                 }
 
                 curEnvelope.TemplateRoles[0].tabs.radioGroupTabs = radioGroupTabsToAdd.ToArray();
+
+                //set checkboxTabs 
             }
 
             curEnvelope.TemplateRoles = templateRoles;
@@ -214,8 +215,6 @@ namespace terminalDocuSign.Actions
 
                 await UpdateUpstreamCrate(curActivityDO, crateStorage);
             }
-
-
 
             return curActivityDO;
         }
@@ -309,10 +308,18 @@ namespace terminalDocuSign.Actions
                 mappingBehavior.Append(allFields, "Upstream Terminal-Provided Fields");
 
                 var radioButtonGroupBehavior = new RadioButtonGroupMappingBehavior(
-                    crateStorage);
+                    crateStorage, "RadioGroupMapping");
 
                 radioButtonGroupBehavior.Clear();
-                radioButtonGroupBehavior.Append(userDefinedGroupItems);
+                foreach (var item in userDefinedGroupItems)
+                {
+                    radioButtonGroupBehavior.Append(item.Name, item.Items.Select(x => new RadioButtonOption()
+                    {
+                        Name = x.Value,
+                        Value = x.Value,
+                        Selected = x.Selected
+                    }).ToList());
+                }
             }
 
             return await Task.FromResult(curActivityDO);
