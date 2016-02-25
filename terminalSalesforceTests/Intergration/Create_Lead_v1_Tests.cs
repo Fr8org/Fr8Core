@@ -80,7 +80,7 @@ namespace terminalSalesforceTests.Intergration
             var initialConfigActionDto = await PerformInitialConfiguration();
             initialConfigActionDto = SetSpecificValues(initialConfigActionDto);
             initialConfigActionDto = ExcludeValue(initialConfigActionDto, "LastName");
-            initialConfigActionDto.AuthToken = HealthMonitor_FixtureData.Salesforce_AuthToken();
+            initialConfigActionDto.AuthToken = HealthMonitor_FixtureData.Salesforce_AuthToken().Result;
             var dataDTO = new Fr8DataDTO { ActivityDTO = initialConfigActionDto };
             AddOperationalStateCrate(dataDTO, new OperationalStateCM());
             
@@ -103,7 +103,7 @@ namespace terminalSalesforceTests.Intergration
             var initialConfigActionDto = await PerformInitialConfiguration();
             initialConfigActionDto = SetSpecificValues(initialConfigActionDto);
             initialConfigActionDto = ExcludeValue(initialConfigActionDto, "Company");
-            initialConfigActionDto.AuthToken = HealthMonitor_FixtureData.Salesforce_AuthToken();
+            initialConfigActionDto.AuthToken = HealthMonitor_FixtureData.Salesforce_AuthToken().Result;
             var dataDTO = new Fr8DataDTO { ActivityDTO = initialConfigActionDto };
             AddOperationalStateCrate(dataDTO, new OperationalStateCM());
             
@@ -125,7 +125,7 @@ namespace terminalSalesforceTests.Intergration
             //Arrange
             var initialConfigActionDto = await PerformInitialConfiguration();
             initialConfigActionDto = SetSpecificValues(initialConfigActionDto);
-            initialConfigActionDto.AuthToken = HealthMonitor_FixtureData.Salesforce_AuthToken();
+            initialConfigActionDto.AuthToken = HealthMonitor_FixtureData.Salesforce_AuthToken().Result;
             var dataDTO = new Fr8DataDTO { ActivityDTO = initialConfigActionDto };
             AddOperationalStateCrate(dataDTO, new OperationalStateCM());
             

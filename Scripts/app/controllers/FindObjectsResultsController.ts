@@ -7,6 +7,7 @@
         dtColumnDefs: any;
         columns: any;
         data: any;
+        title: string;
     }
 
     export class FindObjectsResultsController {
@@ -33,6 +34,7 @@
 
             $scope.payload = ContainerService.getPayload({ id: $stateParams.id });
 
+            $scope.title = 'Loading data...';
             $scope.data = [];
             $scope.columns = [];
 
@@ -48,6 +50,8 @@
                 .then(function () {
                     var crate = self.CrateHelper.findByLabel(<model.CrateStorage>($scope.payload.crateStorage), 'Sql Query Result');
                     var contents = <any>crate.contents;
+
+                    $scope.title = contents.Name || 'Find Objects Results';
 
                     if (contents.PayloadObjects && contents.PayloadObjects.length) {
                         // Create columns.
