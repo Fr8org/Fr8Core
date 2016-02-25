@@ -91,6 +91,7 @@ namespace HubWeb.Controllers
                             TerminalId = p.Terminal.Id,
                             Version = p.Version,
                             Type = p.Type,
+                            Description = p.Description,
                             WebService = Mapper.Map<WebServiceDTO>(p.WebService)
 			            }).ToList()
 			        }).ToList();

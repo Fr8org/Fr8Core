@@ -378,7 +378,7 @@ div.action-header {
     height:300px;
 }
 .action-slider .slide .web-service-action, .action-slider .slide .action-action{
-    padding:8px 16px;
+    padding:8px 5px;
 }
 .action-slider .slide .web-service-action:hover, .action-slider .slide .action-action:hover{
     cursor:pointer;
@@ -887,4 +887,8 @@ div[dnd-list].dndDragover {
 
 .green {
     color: green;
+}
+
+.invisible-icon {
+    visibility: hidden;
 }

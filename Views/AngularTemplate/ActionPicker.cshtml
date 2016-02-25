@@ -1,31 +1,53 @@
-﻿<div ng-class="{'action-add': true, 'action-add--active': activeCategory >= 0}">
-    <div style="display:flex">
+﻿<div class="action-add" ng-class="{'action-add--active': activeCategory != null}">
+    <div style="display: flex;">
         <div class="action-categories">
             <div data-ng-repeat="actionCategory in actionCategories"
-                 ng-class="{'action-category': true,'action-category--active': actionCategory.id === activeCategory}" class="ng-isolate-scope">
-                <i class="fa fa-{{actionCategory.icon}} action-category-icon"
-                   data-ng-click="setActive(actionCategory.id)"></i>
+                 ng-class="{'action-category--active': actionCategory.id === activeCategory, 'invisible-icon': activeCategory !== null && activeCategory != actionCategory.id}" class="ng-isolate-scope action-category" data-ng-click="setActive(actionCategory.id)">
+                <i class="fa fa-{{actionCategory.icon}} action-category-icon"></i>
                 <div class="action-category-name">{{actionCategory.name}}</div>
             </div>
         </div>
         <i class="fa fa-plus action-add-button"></i>
-        <div ng-class="{'action-slider': true, 'action-slider--active': activeCategory > 0, 'action-terminal-active': activeTerminal >= 0}" class="ng-isolate-scope">
+        <div ng-class="{'action-slider': true, 'action-slider--active': activeCategory != null, 'action-terminal-active': activeTerminal != null}" class="ng-isolate-scope" style="box-shadow: 5px 5px 5px grey;">
             <div class="slide">
-                <div style="height:100%" mb-scrollbar="scrollbar('vertical', true)">
+                <div class="modal-header">
+                    <button type="button" class="close" ng-click="activeCategory=null;"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title">Terminals</h4>
+                </div>
+                <div style="height: 100%;overflow: hidden;max-height: 230px;" mb-scrollbar="">
                     <div data-ng-repeat="webServiceAction in webServiceActionList"
                          data-ng-click="setActiveTerminal($index)"
                          class="web-service-action">
-                        <img src="{{webServiceAction.webServiceIconPath}}" />
-                        {{webServiceAction.webServiceName ? webServiceAction.webServiceName : 'Unknown Service'}}
+                        <div class="media" style="padding-bottom: 5px; padding-top: 5px; border-bottom: 1px solid #e5e5e5; white-space: normal !important;">
+                            <div class="media-left">
+                                <img src="{{webServiceAction.webServiceIconPath}}" />
+                            </div>
+                            <div class="media-body">
+                                <h4 class="media-heading">{{webServiceAction.webServiceName ? webServiceAction.webServiceName : 'Unknown Service'}}</h4>
+                                Description
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div><div class="slide">
-                <div data-ng-click="deactivateTerminal()" class="action-action"><i class="fa fa-arrow-left"></i> Back</div>
-                <div style="height:100%" mb-scrollbar="scrollbar('vertical', true)">
+            </div>
+            <div class="slide">
+                <div class="modal-header">
+                    <button type="button" class="close" ng-click="activeCategory=null;"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title"><i class="fa fa-arrow-left" style="cursor: pointer; font-size: 16px; padding-right: 15px;" ng-click="deactivateTerminal()"></i> Activities</h4>
+                </div>
+                <div style="height: 100%;overflow: hidden;max-height: 230px;" mb-scrollbar="">
                     <div data-ng-repeat="action in webServiceActionList[activeTerminal].activities"
-                         data-ng-click="setActiveAction(action, group)"
-                         class="action-action">
-                        {{action.label}}
+                            data-ng-click="setActiveAction(action, group)"
+                            class="action-action">
+                        <div class="media" style="padding-bottom: 5px; padding-top: 5px; border-bottom: 1px solid #e5e5e5; white-space: normal !important;">
+                            <div class="media-left" style="vertical-align: middle;">
+                                <i class="fa fa-cogs" style="font-size: 24px;"></i>
+                            </div>
+                            <div class="media-body">
+                                <h4 class="media-heading">{{action.label}}</h4>
+                                Description
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
