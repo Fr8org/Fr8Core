@@ -378,7 +378,7 @@ div.action-header {
     height:300px;
 }
 .action-slider .slide .web-service-action, .action-slider .slide .action-action{
-    padding:8px 16px;
+    padding:8px 5px;
 }
 .action-slider .slide .web-service-action:hover, .action-slider .slide .action-action:hover{
     cursor:pointer;
@@ -887,4 +887,22 @@ div[dnd-list].dndDragover {
 
 .green {
     color: green;
+}
+
+.invisible-icon {
+    visibility: hidden;
+}
+
+.activity-list {
+    padding-bottom: 5px; padding-top: 5px; white-space: normal !important;
+}
+
+div.activity-list::after {
+    content: '';
+    display: block;
+    position: relative;
+    width: 50%;
+    left: 25%;
+    border-top: 1px solid #e5e5e5;
+    margin-top: 10px;
 }
