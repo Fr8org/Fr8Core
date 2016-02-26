@@ -27,6 +27,8 @@ using terminalDocuSign.Services;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using TerminalBase.Services;
+using Hub.Infrastructure;
+using Hub.Interfaces;
 
 namespace terminalDocuSign.Actions
 {
@@ -137,11 +139,12 @@ namespace terminalDocuSign.Actions
 
         private readonly DocuSignManager _docuSignManager;
         private readonly IDocuSignFolder _docuSignFolder;
-
+        private readonly IPlan _plan;
         public Generate_DocuSign_Report_v1()
         {
             _docuSignManager = ObjectFactory.GetInstance<DocuSignManager>();
             _docuSignFolder = ObjectFactory.GetInstance<IDocuSignFolder>();
+            _plan = ObjectFactory.GetInstance<IPlan>();
 
             InitQueryBuilderFields();
         }
@@ -431,11 +434,14 @@ namespace terminalDocuSign.Actions
 
             try
             {
+
                 var continueClicked = false;
 
                 using (var crateStorage = CrateManager.GetUpdatableStorage(activityDO))
                 {
                     crateStorage.Remove<StandardQueryCM>();
+
+                    //RenamePlanName(activityDO);
 
                     var queryCrate = ExtractQueryCrate(crateStorage);
                     crateStorage.Add(queryCrate);
@@ -563,6 +569,42 @@ namespace terminalDocuSign.Actions
             );
 
             return Crate<StandardQueryCM>.FromContent(QueryCrateLabel, queryCM);
+        }
+
+        private void RenamePlanName(ActivityDO activityDO)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var planDO = uow.PlanRepository.GetById<PlanDO>(activityDO.RootRouteNodeId);
+
+                if(planDO.Name.Equals("Generate a DocuSign Report", StringComparison.OrdinalIgnoreCase))
+                {
+                    using (var crateStorage = CrateManager.GetUpdatableStorage(activityDO))
+                    {
+                        var configurationControls = crateStorage
+                        .CrateContentsOfType<StandardConfigurationControlsCM>()
+                        .SingleOrDefault();
+
+                        if (configurationControls == null)
+                        {
+                            throw new ApplicationException("Action was not configured correctly");
+                        }
+
+                        var actionUi = new ActivityUi();
+                        actionUi.ClonePropertiesFrom(configurationControls);
+
+                        var criteria = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(
+                            actionUi.QueryBuilder.Value
+                        );
+
+                        planDO.Name = FilterConditionPredicateBuilder<StandardQueryCM>.ParseConditionToText(criteria);
+
+                        _plan.CreateOrUpdate(uow, planDO, false);
+
+                        uow.SaveChanges();
+                    }
+                }
+            }
         }
 
         public QueryFieldDTO[] GetFieldListForQueryBuilder(DocuSignAuthTokenDTO authToken)

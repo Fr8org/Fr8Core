@@ -98,14 +98,15 @@ namespace Hub.Services
             }
         }
 
-        public PlanDO Create(IUnitOfWork uow, string name)
+        public PlanDO Create(IUnitOfWork uow, string name, string category = "")
         {
             var plan = new PlanDO
             {
                 Id = Guid.NewGuid(),
                 Name = name,
                 Fr8Account = _security.GetCurrentAccount(uow),
-                RouteState = RouteState.Inactive
+                RouteState = RouteState.Inactive,
+                Category = category
             };
 
             uow.PlanRepository.Add(plan);

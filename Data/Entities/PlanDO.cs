@@ -16,6 +16,7 @@ namespace Data.Entities
             typeof(PlanDO).GetProperty("Tag"),
             typeof(PlanDO).GetProperty("Description"),
             typeof(PlanDO).GetProperty("RouteState"),
+            typeof(PlanDO).GetProperty("Category")
         };
      
         [Required]
@@ -79,7 +80,9 @@ namespace Data.Entities
         public virtual _RouteStateTemplate RouteStateTemplate { get; set; }
 
         public string Tag { get; set; }
-        
+
+        public string Category { get; set; }
+
         [NotMapped]
         public IEnumerable<SubrouteDO> Subroutes
         {
@@ -117,7 +120,7 @@ namespace Data.Entities
             Tag = plan.Tag;
             RouteState = plan.RouteState;
             Description = plan.Description;
-
+            Category = plan.Category;
         }
     }
 }
