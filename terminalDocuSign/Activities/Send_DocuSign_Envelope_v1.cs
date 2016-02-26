@@ -87,12 +87,13 @@ namespace terminalDocuSign.Actions
 
                 var mappingBehavior = new TextSourceMappingBehavior(
                     crateStorage,
-                    "Mapping"
+                    "RolesMapping"
                 );
+
 
                 var values = mappingBehavior.GetValues(payloadCrateStorage);
 
-
+                values = values.Where(b => (!fieldList.Any(a => a.Key == b.Key))).ToDictionary(b => b.Key, c => c.Value);
             }
 
             return false;
@@ -264,6 +265,15 @@ namespace terminalDocuSign.Actions
 
                 var template = docuSignEnvelope.GetTemplateDetails(docusignTemplateId);
                 var roles = docuSignEnvelope.GetTemplateRoles(template);
+                var crateRolesDTO = CrateManager.CreateDesignTimeFieldsCrate(
+                  "DocuSignTemplateRolesFields",
+                  roles.ToArray()
+              );
+
+
+                crateStorage.RemoveByLabel("DocuSignTemplateRolesFields");
+                crateStorage.Add(crateRolesDTO);
+
                 var envelopeDataDTO = docuSignEnvelope.GetTemplateEnvelopeData(template).ToList();
 
                 // when we're in design mode, there are no values
@@ -280,6 +290,8 @@ namespace terminalDocuSign.Actions
 
                 crateStorage.RemoveByLabel("DocuSignTemplateUserDefinedFields");
                 crateStorage.Add(crateUserDefinedDTO);
+
+
 
                 //Create Text Source controls for TABS
                 var textSourceFields = new List<string>();
@@ -302,7 +314,7 @@ namespace terminalDocuSign.Actions
                     var radioButtonGroupDTO = item as DocuSignMultipleOptionsTabDTO;
                     if (radioButtonGroupDTO == null) continue;
                     //todo: migrate the string format for label into template
-                    radioButtonGroupBehavior.Append(radioButtonGroupDTO.Name, string.Format("For the <strong>{0}</strong>, use:", radioButtonGroupDTO.Name) , radioButtonGroupDTO.Items.Select(x => new RadioButtonOption()
+                    radioButtonGroupBehavior.Append(radioButtonGroupDTO.Name, string.Format("For the <strong>{0}</strong>, use:", radioButtonGroupDTO.Name), radioButtonGroupDTO.Items.Select(x => new RadioButtonOption()
                     {
                         Name = x.Value,
                         Value = x.Value,
