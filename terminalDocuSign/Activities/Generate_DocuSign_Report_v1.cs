@@ -563,7 +563,7 @@ namespace terminalDocuSign.Actions
                         var operationalStatus = new OperationalStateCM();
                         operationalStatus.CurrentActivityResponse =
                             ActivityResponseDTO.Create(ActivityResponse.ExecuteClientActivity);
-                        operationalStatus.CurrentClientActivityName = "ExecuteAfterConfigure";
+                        operationalStatus.CurrentClientActivityName = "RunImmediately";
 
                         var operationsCrate = Data.Crates.Crate.FromContent("Operational Status", operationalStatus);
                         crateStorage.Add(operationsCrate);
