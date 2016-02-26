@@ -290,11 +290,8 @@ namespace terminalDocuSign.Actions
                 );
                 mappingBehavior.Clear();
                 mappingBehavior.Append(textSourceFields, "Upstream Terminal-Provided Fields");
-
                 //Create TextSource controls for ROLES
-                var roles_mappingBehaviour = new TextSourceMappingBehavior(crateStorage, "RolesMapping");
-                roles_mappingBehaviour.Clear();
-                roles_mappingBehaviour.Append(roles.Select(x => x.Key).ToList(), "Upstream Terminal-Provided Fields");
+                mappingBehavior.Append(roles.Select(x => x.Key).ToList(), "Upstream Terminal-Provided Fields");
 
                 //Create radio Button Groups
                 var radioButtonGroupBehavior = new RadioButtonGroupMappingBehavior(crateStorage, "RadioGroupMapping");
@@ -305,7 +302,7 @@ namespace terminalDocuSign.Actions
                     var radioButtonGroupDTO = item as DocuSignMultipleOptionsTabDTO;
                     if (radioButtonGroupDTO == null) continue;
                     //todo: migrate the string format for label into template
-                    radioButtonGroupBehavior.Append(radioButtonGroupDTO.Name, string.Format("For the {0}, use:", radioButtonGroupDTO.Name), radioButtonGroupDTO.Items.Select(x => new RadioButtonOption()
+                    radioButtonGroupBehavior.Append(radioButtonGroupDTO.Name, string.Format("For the <strong>{0}</strong>, use:", radioButtonGroupDTO.Name) , radioButtonGroupDTO.Items.Select(x => new RadioButtonOption()
                     {
                         Name = x.Value,
                         Value = x.Value,
