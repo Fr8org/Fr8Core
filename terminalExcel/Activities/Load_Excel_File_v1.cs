@@ -282,7 +282,7 @@ namespace terminalExcel.Actions
                 var curCrateDTO = CrateManager.CreateDesignTimeFieldsCrate(
                     "Spreadsheet Column Headers", 
                     AvailabilityType.RunTime,
-                    headers.Select(col => new FieldDTO() { Key = col, Value = col }).ToArray());
+                    headers.Select(col => new FieldDTO() { Key = col, Value = col, Availability = AvailabilityType.RunTime }).ToArray());
 
                 storage.RemoveByLabel("Spreadsheet Column Headers");
                 storage.Add(curCrateDTO);
@@ -298,7 +298,7 @@ namespace terminalExcel.Actions
                 var curRowsCrateDTO = CrateManager.CreateDesignTimeFieldsCrate(
                     "Spreadsheet Rows",
                     AvailabilityType.RunTime,
-                    rows.Select(col => new FieldDTO() { Key = col, Value = col }).ToArray());
+                    rows.Select(col => new FieldDTO() { Key = col, Value = col, Availability = AvailabilityType.RunTime }).ToArray());
 
                 storage.RemoveByLabel("Spreadsheet Rows");
                 storage.Add(curRowsCrateDTO);
