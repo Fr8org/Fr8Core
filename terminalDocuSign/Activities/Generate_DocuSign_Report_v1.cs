@@ -445,7 +445,7 @@ namespace terminalDocuSign.Actions
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO activityDO, AuthorizationTokenDO authTokenDO)
         {
-            var activityTemplates = (await HubCommunicator.GetActivityTemplates(activityDO, null))
+            var activityTemplates = (await HubCommunicator.GetActivityTemplates(null))
                 .Select(x => Mapper.Map<ActivityTemplateDO>(x))
                 .ToList();
 
