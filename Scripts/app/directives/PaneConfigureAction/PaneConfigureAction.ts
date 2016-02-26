@@ -415,7 +415,7 @@ module dockyard.directives.paneConfigureAction {
                         .then((res: interfaces.IActionVM) => {
                             var childActionsDetected = false;
 
-                            // Detect OperationalState crate with CurrentClientActionName = 'ExecuteAfterConfigure'.
+                            // Detect OperationalState crate with CurrentClientActionName = 'RunImmediately'.
                             if (crateHelper.hasCrateOfManifestType(res.crateStorage, 'Operational State')) {
                                 var operationalStatus = crateHelper
                                     .findByManifestType(res.crateStorage, 'Operational State');
@@ -423,11 +423,13 @@ module dockyard.directives.paneConfigureAction {
                                 var contents = <any>operationalStatus.contents;
 
                                 if (contents.CurrentActivityResponse.type === 'ExecuteClientActivity'
-                                    && contents.CurrentClientActivityName === 'ExecuteAfterConfigure') {
+                                    && (contents.CurrentClientActivityName === 'RunImmediately')
+                                    ) {
 
                                     $scope.$emit(MessageType[MessageType.PaneConfigureAction_ExecutePlan]);
                                 }
                             }
+
                             var oldAction = $scope.currentAction;
                             if (res.childrenActivities && res.childrenActivities.length > 0 && (!oldAction.childrenActivities || oldAction.childrenActivities.length < 1)) {
                                 // If the directive is used for configuring solutions,

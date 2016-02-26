@@ -378,7 +378,7 @@ div.action-header {
     height:300px;
 }
 .action-slider .slide .web-service-action, .action-slider .slide .action-action{
-    padding:8px 16px;
+    padding:8px 5px;
 }
 .action-slider .slide .web-service-action:hover, .action-slider .slide .action-action:hover{
     cursor:pointer;
@@ -617,6 +617,18 @@ input[type=radio]:checked ~ div.nested-controls {
     height: 26px;
     padding-top: 3px;
     padding-bottom: 3px;
+}
+
+.ui-select-match > .ui-select-toggle {
+    min-width: 175px !important;
+}
+
+.ui-select-match > .ui-select-toggle > span.ui-select-placeholder {
+    overflow-x: hidden;
+    position: absolute;
+    left: 0;
+    right: 25px;
+    min-width: 150px !important;
 }
 
 /*Class to display the text block properly*/
@@ -887,4 +899,22 @@ div[dnd-list].dndDragover {
 
 .green {
     color: green;
+}
+
+.invisible-icon {
+    visibility: hidden;
+}
+
+.activity-list {
+    padding-bottom: 5px; padding-top: 5px; white-space: normal !important;
+}
+
+div.activity-list::after {
+    content: '';
+    display: block;
+    position: relative;
+    width: 50%;
+    left: 25%;
+    border-top: 1px solid #e5e5e5;
+    margin-top: 10px;
 }

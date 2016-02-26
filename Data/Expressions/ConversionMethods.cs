@@ -12,7 +12,23 @@ namespace Data.Expressions
 
         static ConversionMethods()
         {
-            GenericChangeTypeMethodInfo = typeof(Convert).GetMethod("ChangeType", new[] { typeof(object), typeof(Type), typeof(IFormatProvider) });
+            GenericChangeTypeMethodInfo = typeof(ConversionMethods).GetMethod("ChangeType", new[] { typeof(object), typeof(Type), typeof(IFormatProvider) });
+        }
+
+        public static object ChangeType(object value, Type targetType, IFormatProvider formatProvider)
+        {
+            if (targetType.IsGenericType && targetType.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                if (value == null)
+                {
+                    return null;
+                }
+
+                var rawValue = Convert.ChangeType(value, targetType.GetGenericArguments()[0], formatProvider);
+                return Activator.CreateInstance(targetType, new[] { rawValue });
+            }
+
+            return Convert.ChangeType(value, targetType, formatProvider);
         }
     }
 }

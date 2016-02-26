@@ -48,8 +48,7 @@ namespace terminalDocuSign.Controllers
                 NeedsAuthentication = true,
                 MinPaneWidth = 330,
                 WebService = webService,
-                ShowDocumentation = ActivityResponseDTO.CreateDocumentationResponse("MenuItem", "Monitor_DocuSign_Envelope_Activity_SampleHelp1"),
-                ClientVisibility = false
+                ShowDocumentation = ActivityResponseDTO.CreateDocumentationResponse("MenuItem", "Monitor_DocuSign_Envelope_Activity_SampleHelp1")
             };
 
             var sendDocuSignEnvelopeActionTemplate = new ActivityTemplateDTO()
@@ -98,7 +97,8 @@ namespace terminalDocuSign.Controllers
                 Terminal = terminal,
                 NeedsAuthentication = true,
                 WebService = webService,
-                MinPaneWidth = 330
+                MinPaneWidth = 330,
+                Tags = "internal"
             };
 
             var mailMergeActionTemplate = new ActivityTemplateDTO

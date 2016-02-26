@@ -38,6 +38,8 @@ namespace terminalDocuSign.Actions
         private const string TerminalName = "DocuSign";
         private const string SolutionBody = @"<p>This is Generate DocuSign Report solution action</p>";
 
+        private const int MaxResultSize = 1000;
+
         // Here in this action we have query builder control to build queries against docusign API and out mt database.
         // Docusign and MT DB have different set of fileds and we want to provide ability to search by any field.
         // Our action should "plan" queries on the particular fields to the corresponding backend.
@@ -81,7 +83,7 @@ namespace terminalDocuSign.Actions
                 {
                     IsReadOnly = true,
                     Label = "",
-                    Value = "<p>Search for DocuSign Envelopes where the following are true:</p>"
+                    Value = "<p>Search for DocuSign Envelopes where:</p>"
                 });
 
                 var filterConditions = new[]
@@ -106,7 +108,7 @@ namespace terminalDocuSign.Actions
 
                 Controls.Add(new Button()
                 {
-                    Label = "Continue",
+                    Label = "Generate Report",
                     Name = "Continue",
                     Events = new List<ControlEvent>()
                     {
@@ -208,7 +210,7 @@ namespace terminalDocuSign.Actions
             // Real-time search.
             var criteria = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(actionUi.QueryBuilder.Value);
             var existingEnvelopes = new HashSet<string>();
-            var searchResult = new StandardPayloadDataCM();
+            var searchResult = new StandardPayloadDataCM() { Name = "Docusign Report" };
             var docuSignAuthToken = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 
             SearchDocusignInRealTime(docuSignAuthToken, criteria, searchResult, existingEnvelopes);
@@ -328,25 +330,7 @@ namespace terminalDocuSign.Actions
 
             return row;
         }
-
-        private static PayloadObjectDTO CreatePayloadObjectFromEnvelope(DocuSignEnvelopeCM envelope)
-        {
-            var row = new PayloadObjectDTO();
-
-            row.PayloadObject.Add(new FieldDTO("EnvelopeId", envelope.EnvelopeId));
-            row.PayloadObject.Add(new FieldDTO("Name", string.Empty));
-            row.PayloadObject.Add(new FieldDTO("Subject", string.Empty));
-            row.PayloadObject.Add(new FieldDTO("Status", envelope.Status));
-            row.PayloadObject.Add(new FieldDTO("OwnerName", string.Empty));
-            row.PayloadObject.Add(new FieldDTO("SenderName", string.Empty));
-            row.PayloadObject.Add(new FieldDTO("SenderEmail", string.Empty));
-            row.PayloadObject.Add(new FieldDTO("Shared", string.Empty));
-            row.PayloadObject.Add(new FieldDTO("CompletedDate", envelope.CompletedDate));
-            row.PayloadObject.Add(new FieldDTO("CreatedDate", envelope.CreateDate));
-
-            return row;
-        }
-
+        
         public DocusignQuery BuildDocusignQuery(DocuSignAuthTokenDTO authToken, List<FilterConditionDTO> conditions)
         {
             var query = new DocusignQuery();
@@ -390,6 +374,31 @@ namespace terminalDocuSign.Actions
                         query.SearchText = condition.Value;
                     }
                 }
+                else if (fieldBackedRoutingInfo.DocusignQueryName == "CreatedDateTime")
+                {
+                    DateTime dt;
+                    if (condition.Operator == "gt" || condition.Operator == "gte")
+                    {
+                        if (DateTime.TryParseExact(condition.Value, "dd-MM-yyyy", CultureInfo.CurrentCulture, DateTimeStyles.None, out dt))
+                        {
+                            query.FromDate = dt;
+                        }
+                    }
+                    else if (condition.Operator == "lt")
+                    {
+                        if (DateTime.TryParseExact(condition.Value, "dd-MM-yyyy", CultureInfo.CurrentCulture, DateTimeStyles.None, out dt))
+                        {
+                            query.ToDate = dt.AddDays(-1);
+                        }
+                    }
+                    else if (condition.Operator == "lte")
+                    {
+                        if (DateTime.TryParseExact(condition.Value, "dd-MM-yyyy", CultureInfo.CurrentCulture, DateTimeStyles.None, out dt))
+                        {
+                            query.ToDate = dt;
+                        }
+                    }
+                }
                 else
                 {
                     query.Conditions.Add(new FilterConditionDTO()
@@ -424,6 +433,16 @@ namespace terminalDocuSign.Actions
             return Task.FromResult(curActivityDO);
         }
 
+        private int ExtractDocuSignResultSize(
+            DocuSignAuthTokenDTO authToken,
+            List<FilterConditionDTO> criteria)
+        {
+            var docusignQuery = BuildDocusignQuery(authToken, criteria);
+            var count = _docuSignManager.CountEnvelopes(authToken, docusignQuery);
+
+            return count;
+        }
+
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO activityDO, AuthorizationTokenDO authTokenDO)
         {
             var activityTemplates = (await HubCommunicator.GetActivityTemplates(activityDO, null))
@@ -437,6 +456,7 @@ namespace terminalDocuSign.Actions
                 using (var crateStorage = CrateManager.GetUpdatableStorage(activityDO))
                 {
                     crateStorage.Remove<StandardQueryCM>();
+                    RemoveControl(crateStorage, "CannotProceedMessage");
 
                     var queryCrate = ExtractQueryCrate(crateStorage);
                     crateStorage.Add(queryCrate);
@@ -453,6 +473,28 @@ namespace terminalDocuSign.Actions
                         if (continueButton.Clicked)
                         {
                             continueButton.Clicked = false;
+                        }
+                    }
+
+                    if (continueClicked)
+                    {
+                        var docuSignAuthToken = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
+                        var criteria = queryCrate.Content.Queries.First().Criteria;
+                        var resultSize = ExtractDocuSignResultSize(docuSignAuthToken, criteria);
+
+                        if (resultSize > MaxResultSize)
+                        {
+                            continueClicked = false;
+                            InsertControlAfter(
+                                crateStorage,
+                                new TextBlock()
+                                {
+                                    Name = "CannotProceedMessage",
+                                    Value = "Fr8 can not currently generate this report because the set size is too big.",
+                                    CssClass = "well well-lg"
+                                },
+                                "QueryBuilder"
+                            );
                         }
                     }
                 }
@@ -521,7 +563,7 @@ namespace terminalDocuSign.Actions
                         var operationalStatus = new OperationalStateCM();
                         operationalStatus.CurrentActivityResponse =
                             ActivityResponseDTO.Create(ActivityResponse.ExecuteClientActivity);
-                        operationalStatus.CurrentClientActivityName = "ExecuteAfterConfigure";
+                        operationalStatus.CurrentClientActivityName = "RunImmediately";
 
                         var operationsCrate = Data.Crates.Crate.FromContent("Operational Status", operationalStatus);
                         crateStorage.Add(operationsCrate);

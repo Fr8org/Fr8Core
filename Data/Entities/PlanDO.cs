@@ -5,6 +5,9 @@ using Data.States.Templates;
 using System.Linq;
 using System;
 using System.Reflection;
+using StructureMap;
+using Data.Interfaces;
+using Data.States;
 
 namespace Data.Entities
 {
@@ -118,6 +121,24 @@ namespace Data.Entities
             RouteState = plan.RouteState;
             Description = plan.Description;
 
+        }
+
+        public bool IsOngoingPlan()
+        {
+            bool isOngoingPlan = false;
+            var initialActivity = this.StartingSubroute.ChildNodes.FirstOrDefault() as ActivityDO;
+            if (initialActivity != null)
+            {
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    var activityTemplate = uow.ActivityTemplateRepository.GetByKey(initialActivity.ActivityTemplateId);
+                    if (activityTemplate != null && activityTemplate.Category == ActivityCategory.Monitors)
+                    {
+                        isOngoingPlan = true;
+                    }
+                }
+            }
+            return isOngoingPlan;
         }
     }
 }
