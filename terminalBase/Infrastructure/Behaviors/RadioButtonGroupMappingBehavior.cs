@@ -13,11 +13,11 @@ using StructureMap;
 namespace TerminalBase.Infrastructure.Behaviors
 {
     public class RadioButtonGroupMappingBehavior : BaseControlMappingBehavior<RadioButtonGroup>
-    {
+    { 
         public RadioButtonGroupMappingBehavior(ICrateStorage crateStorage, string behaviorName) 
             : base(crateStorage, behaviorName)
         {
-            BehaviorPrefix = "RadioButtonGroupMappingBehavior-";
+           // BehaviorPrefix = "RadioButtonGroupMappingBehavior-";
         }
         
         public void Append(string name, string label, List<RadioButtonOption> radios )

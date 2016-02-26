@@ -13,7 +13,7 @@ namespace TerminalBase.Infrastructure.Behaviors
     {
         public TextSourceMappingBehavior(ICrateStorage crateStorage,string behaviorName) : base(crateStorage, behaviorName)
         {
-            BehaviorPrefix = "TextSourceMappingBehavior-";
+            //BehaviorPrefix = "TextSourceMappingBehavior-";
         }
 
         public void Append(IEnumerable<string> fieldIds, string upstreamSourceLabel)

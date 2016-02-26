@@ -84,6 +84,8 @@ namespace terminalDocuSign.Actions
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 var fieldList = MapControlsToFields(CrateManager.GetStorage(curActivityDO), payloadCrateStorage);
+                var rolesList = MapRoleControlsToFields(CrateManager.GetStorage(curActivityDO), payloadCrateStorage);
+
 
                 var mappingBehavior = new TextSourceMappingBehavior(
                     crateStorage,
@@ -173,6 +175,31 @@ namespace terminalDocuSign.Actions
             return resultCollection;
         }
 
+        private List<FieldDTO> MapRoleControlsToFields(ICrateStorage activityCrateStorage,
+            ICrateStorage payloadCrateStorage)
+        {
+            var resultCollection = new List<FieldDTO>();
+
+            //get existing userDefinedFields 
+            var usedDefinedFields = activityCrateStorage.CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "DocuSignTemplateUserDefinedFields").FirstOrDefault();
+            if (usedDefinedFields != null)
+            {
+                var tempFieldCollection = usedDefinedFields.Fields;
+
+                var mappingBehavior = new TextSourceMappingBehavior(activityCrateStorage, "RolesMapping");
+                var textSourceValues = mappingBehavior.GetValues(payloadCrateStorage);
+                foreach (var item in textSourceValues)
+                {
+                    var field = tempFieldCollection.FirstOrDefault(x => x.Key == item.Key);
+                    if (field != null)
+                    {
+                        field.Value = item.Value;
+                        resultCollection.Add(field);
+                    }
+                }
+            }
+            return resultCollection;
+        }
 
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
@@ -284,10 +311,9 @@ namespace terminalDocuSign.Actions
 
                 var crateUserDefinedDTO = CrateManager.CreateDesignTimeFieldsCrate(
                     "DocuSignTemplateUserDefinedFields",
-                    userDefinedFields.ToArray()
+                    userDefinedFields.Concat(roles).ToArray()
                 );
-
-
+                
                 crateStorage.RemoveByLabel("DocuSignTemplateUserDefinedFields");
                 crateStorage.Add(crateUserDefinedDTO);
 
@@ -303,6 +329,9 @@ namespace terminalDocuSign.Actions
                 mappingBehavior.Clear();
                 mappingBehavior.Append(textSourceFields, "Upstream Terminal-Provided Fields");
                 //Create TextSource controls for ROLES
+
+                var rolesMappingBehavior = new TextSourceMappingBehavior(crateStorage,"RolesMapping");
+                rolesMappingBehavior.Clear();
                 mappingBehavior.Append(roles.Select(x => x.Key).ToList(), "Upstream Terminal-Provided Fields");
 
                 //Create radio Button Groups
