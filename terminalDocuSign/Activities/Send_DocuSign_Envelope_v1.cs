@@ -310,11 +310,14 @@ namespace terminalDocuSign.Actions
                     "DocuSignTemplateUserDefinedFields",
                     userDefinedFields.Concat(roles).ToArray()
                 );
-
+                
                 crateStorage.RemoveByLabel("DocuSignTemplateUserDefinedFields");
                 crateStorage.Add(crateUserDefinedDTO);
 
-
+                //Create TextSource controls for ROLES
+                var rolesMappingBehavior = new TextSourceMappingBehavior(crateStorage, "RolesMapping");
+                rolesMappingBehavior.Clear();
+                rolesMappingBehavior.Append(roles.Select(x => x.Key).ToList(), "Upstream Terminal-Provided Fields");
 
                 //Create Text Source controls for TABS
                 var textSourceFields = new List<string>();
