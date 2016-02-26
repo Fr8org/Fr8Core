@@ -3,8 +3,6 @@
 	[string]$dbName
 )
 
-$dbName = $dbName.Replace(".", "")
-
 Write-Host "Deletes the specified database."
 $errorMessage = "An error while executing the query. Please check connection string for the DeleteDatabase action."
 
