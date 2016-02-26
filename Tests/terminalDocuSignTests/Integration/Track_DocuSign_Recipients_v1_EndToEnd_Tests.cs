@@ -23,7 +23,7 @@ namespace terminalDocuSignTests.Integration
     /// It prevents test case from running when CI is building the solution,
     /// but allows to trigger that class from HealthMonitor.
     /// </summary>
-    [Explicit]
+    [Explicit, Ignore]
     [Category("terminalDocuSignTests.Integration")]
     public class Track_DocuSign_Recipients_v1_EndToEnd_Tests : BaseHubIntegrationTest
     {
@@ -72,7 +72,7 @@ namespace terminalDocuSignTests.Integration
             await PostFakeEvent();
         }
 
-        [Test, Ignore]
+        [Test]
         public async Task Track_DocuSign_Recipients_EndToEnd()
         {
             string baseUrl = GetHubApiBaseUrl();
