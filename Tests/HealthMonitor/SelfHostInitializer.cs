@@ -86,7 +86,7 @@ namespace HealthMonitor
             string hubLauncherDirectory = GetHubLauncherDirectory();
             string args = "--endpoint " + hub.Url + " --selfHostFactory \"" + hub.Type + "\" --connectionString \"" + connectionString + "\"";
             ProcessStartInfo psi = new ProcessStartInfo(Path.Combine(hubLauncherDirectory, "HealthMonitor.HubLauncher.exe"), args);
-            Console.WriteLine("HubLauncher Path: " + psi.FileName + " " + args);
+            Console.WriteLine("HubLauncher Path: " + psi.FileName);
             psi.UseShellExecute = false;
             psi.RedirectStandardError = true;
             psi.RedirectStandardInput = true;
