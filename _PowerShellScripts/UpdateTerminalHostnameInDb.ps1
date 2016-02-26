@@ -5,13 +5,18 @@
 #>
 param(
     [string]$connectionString,
-	[string]$newHostname
+	[string]$newHostname,
+	[string]$overrideDbName
 )
 
 Write-Host "Update terminal URLs to $newHostname"
 
 $commandText = "UPDATE Terminals SET [Endpoint] = '$newHostname" + ":' + RIGHT([Endpoint], 5)"
 Write-Host $commandText
+
+$builder = new SqlConnectionStringBuilder(connectionString);
+builder.InitialCatalog = $overrideDbName;
+$connectionString = builder.ToString;
 
 $connection = new-object system.data.SqlClient.SQLConnection($connectionString)
 $command = new-object system.data.sqlclient.sqlcommand($commandText, $connection)
