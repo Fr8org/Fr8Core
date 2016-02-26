@@ -66,7 +66,7 @@ namespace terminalDocuSign.Actions
                 //in case of problem with extract payload field values raise and Error alert to the user
                 return Error(payloadCrates, exception.Message, null, "Send DocuSign Envelope", "DocuSign");
             }
-            
+
             curEnvelope.EmailSubject = "Test Message from Fr8";
             curEnvelope.Status = "sent";
 
@@ -111,14 +111,14 @@ namespace terminalDocuSign.Actions
                         name = curRecipientName,
                         roleName = "Signer"   // need to fetch this
                     },
-            };  
-            
+            };
+
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 var fieldList = MapControlsToFields(CrateManager.GetStorage(curActivityDO), payloadCrateStorage);
 
                 var mappingBehavior = new TextSourceMappingBehavior(
-                    crateStorage,   
+                    crateStorage,
                     "Mapping"
                 );
 
@@ -137,18 +137,18 @@ namespace terminalDocuSign.Actions
                 curEnvelope.TemplateRoles = templateRoles;
                 curEnvelope.TemplateRoles[0].tabs = new RoleTabs();
                 curEnvelope.TemplateRoles[0].tabs.textTabs = valuesToAdd.ToArray();
-   
+
                 //set radio button tabs
                 var radiopGroupMappingBehavior = new RadioButtonGroupMappingBehavior(crateStorage, "RadioGroupMapping");
                 var radioButtonGroups = radiopGroupMappingBehavior.GetValues(payloadCrateStorage);
-                
+
                 var radioGroupTabsToAdd = new List<TemplateRadioGroupTab>();
                 foreach (RadioButtonGroup item in radioButtonGroups)
                 {
                     radioGroupTabsToAdd.Add(new TemplateRadioGroupTab()
                     {
                         groupName = item.GroupName,
-                        radios = item.Radios.Select(x=> new radio()
+                        radios = item.Radios.Select(x => new radio()
                         {
                             selected = x.Selected,
                             value = x.Value
@@ -166,7 +166,7 @@ namespace terminalDocuSign.Actions
                     tabLabel = x.Name,
                     selected = x.Selected
                 }).ToArray();
-                
+
             }
 
             curEnvelope.TemplateRoles = templateRoles;
@@ -184,7 +184,7 @@ namespace terminalDocuSign.Actions
             if (usedDefinedFields != null)
             {
                 var tempFieldCollection = usedDefinedFields.Fields;
-              
+
                 //extract data from text source Controls
                 var mappingBehavior = new TextSourceMappingBehavior(activityCrateStorage, "Mapping");
                 var textSourceValues = mappingBehavior.GetValues(payloadCrateStorage);
@@ -197,7 +197,7 @@ namespace terminalDocuSign.Actions
                         resultCollection.Add(field);
                     }
                 }
-                
+
                 var radiopGroupMappingBehavior = new RadioButtonGroupMappingBehavior(activityCrateStorage, "RadioGroupMapping");
                 var radioButtonGroups = radiopGroupMappingBehavior.GetValues(payloadCrateStorage);
                 foreach (var item in radioButtonGroups)
@@ -248,7 +248,7 @@ namespace terminalDocuSign.Actions
         }
 
 
-             
+
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
             // Do we have any crate? If no, it means that it's Initial configuration
@@ -336,36 +336,29 @@ namespace terminalDocuSign.Actions
 
                 // Get Template
                 var docuSignEnvelope = new DocuSignEnvelope(docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
-                var envelopeDataDTO = docuSignEnvelope.GetEnvelopeDataByTemplate(docusignTemplateId).ToList();
+
+                var template = docuSignEnvelope.GetTemplateDetails(docusignTemplateId);
+                var roles = docuSignEnvelope.GetTemplateRoles(template);
+                var envelopeDataDTO = docuSignEnvelope.GetTemplateEnvelopeData(template).ToList();
 
                 // when we're in design mode, there are no values
                 // we just want the names of the fields
-                var userDefinedFields = envelopeDataDTO.Select(x => new FieldDTO() {Key = x.Name, Value = x.Name, Availability = AvailabilityType.RunTime, Tags = x.TabName }).ToList();
+                var userDefinedFields = envelopeDataDTO.Select(x => new FieldDTO() { Key = x.Name, Value = x.Name, Availability = AvailabilityType.RunTime, Tags = x.TabName }).ToList();
 
-                // we're in design mode, there are no values 
-                var standartFields = new List<FieldDTO>()
-                {
-                    new FieldDTO() {Key = "recipient", Value = "recipient", Availability = AvailabilityType.RunTime }
-                };
+               
 
                 var crateUserDefinedDTO = CrateManager.CreateDesignTimeFieldsCrate(
                     "DocuSignTemplateUserDefinedFields",
                     userDefinedFields.ToArray()
                 );
 
-                var crateStandardDTO = CrateManager.CreateDesignTimeFieldsCrate(
-                    "DocuSignTemplateStandardFields",
-                    standartFields.ToArray()
-                );
 
                 crateStorage.RemoveByLabel("DocuSignTemplateUserDefinedFields");
-                crateStorage.RemoveByLabel("DocuSignTemplateStandardFields");
                 crateStorage.Add(crateUserDefinedDTO);
-                crateStorage.Add(crateStandardDTO);
 
-                //Create Text Source controls
+                //Create Text Source controls for TABS
                 var textSourceFields = new List<string>();
-                textSourceFields = envelopeDataDTO.Where(x=>x.Type == ControlTypes.TextBox).Select(x=>x.Name).ToList();
+                textSourceFields = envelopeDataDTO.Where(x => x.Type == ControlTypes.TextBox).Select(x => x.Name).ToList();
                 var mappingBehavior = new TextSourceMappingBehavior(
                     crateStorage,
                     "Mapping"
@@ -373,16 +366,21 @@ namespace terminalDocuSign.Actions
                 mappingBehavior.Clear();
                 mappingBehavior.Append(textSourceFields, "Upstream Terminal-Provided Fields");
 
+                //Create TextSource controls for ROLES
+                var roles_mappingBehaviour = new TextSourceMappingBehavior(crateStorage, "RolesMapping");
+                roles_mappingBehaviour.Clear();
+                roles_mappingBehaviour.Append(roles.Select(x => x.Key).ToList(), "Upstream Terminal-Provided Fields");
+
                 //Create radio Button Groups
                 var radioButtonGroupBehavior = new RadioButtonGroupMappingBehavior(crateStorage, "RadioGroupMapping");
 
                 radioButtonGroupBehavior.Clear();
-                foreach (var item in envelopeDataDTO.Where(x=>x.Type == ControlTypes.RadioButtonGroup).ToList())
+                foreach (var item in envelopeDataDTO.Where(x => x.Type == ControlTypes.RadioButtonGroup).ToList())
                 {
                     var radioButtonGroupDTO = item as DocuSignMultipleOptionsTabDTO;
                     if (radioButtonGroupDTO == null) continue;
                     //todo: migrate the string format for label into template
-                    radioButtonGroupBehavior.Append(radioButtonGroupDTO.Name, string.Format("For the {0}, use:", radioButtonGroupDTO.Name) , radioButtonGroupDTO.Items.Select(x => new RadioButtonOption()
+                    radioButtonGroupBehavior.Append(radioButtonGroupDTO.Name, string.Format("For the {0}, use:", radioButtonGroupDTO.Name), radioButtonGroupDTO.Items.Select(x => new RadioButtonOption()
                     {
                         Name = x.Value,
                         Value = x.Value,
@@ -393,7 +391,7 @@ namespace terminalDocuSign.Actions
                 //create checkbox controls
                 var checkBoxMappingBehavior = new CheckBoxMappingBehavior(crateStorage, "CheckBoxMapping");
                 checkBoxMappingBehavior.Clear();
-                checkBoxMappingBehavior.Append(envelopeDataDTO.Where(x=>x.Type == ControlTypes.CheckBox).Select(x=>x.Name).ToList());
+                checkBoxMappingBehavior.Append(envelopeDataDTO.Where(x => x.Type == ControlTypes.CheckBox).Select(x => x.Name).ToList());
 
                 //create dropdown controls
                 var dropdownListMappingBehavior = new DropDownListMappingBehavior(crateStorage, "DropDownMapping");
@@ -434,17 +432,7 @@ namespace terminalDocuSign.Actions
 
             var fieldsDTO = new List<ControlDefinitionDTO>()
             {
-                fieldSelectDocusignTemplateDTO,
-                new TextSource("Email Address", "Upstream Terminal-Provided Fields", "Recipient")
-                {
-                    selectedKey = "Recipient",
-                    ValueSource = "upstream"
-                },
-               new TextSource("Recipient Name", "Upstream Terminal-Provided Fields", "RecipientName")
-                {
-                    selectedKey = "RecipientName",
-                    ValueSource = "upstream"
-                }
+                fieldSelectDocusignTemplateDTO
             };
 
             var controls = new StandardConfigurationControlsCM()
