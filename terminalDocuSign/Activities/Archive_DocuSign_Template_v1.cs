@@ -102,7 +102,7 @@ namespace terminalDocuSign.Actions
             }
 
             curActivityDO.ChildNodes = new List<RouteNodeDO>();
-            var activityTemplates = await HubCommunicator.GetActivityTemplates(curActivityDO, CurrentFr8UserId);
+            var activityTemplates = await HubCommunicator.GetActivityTemplates(CurrentFr8UserId);
             var getDocusignTemplate = GetActivityTemplate(activityTemplates, "Get_DocuSign_Template");
             var convertCratesTemplate = GetActivityTemplate(activityTemplates, "ConvertCrates");
             var storeFileTemplate = GetActivityTemplate(activityTemplates, "StoreFile");
