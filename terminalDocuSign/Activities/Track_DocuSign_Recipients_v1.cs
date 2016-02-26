@@ -23,9 +23,9 @@ using AutoMapper;
 
 namespace terminalDocuSign.Actions
 {
-    public class Rich_Document_Notifications_v1 : BaseDocuSignActivity
+    public class Track_DocuSign_Recipients_v1 : BaseDocuSignActivity
     {
-        private const string SolutionName = "Rich Document Notifications";
+        private const string SolutionName = "Track DocuSign Recipients";
         private const double SolutionVersion = 1.0;
         private const string TerminalName = "DocuSign";
         private const string SolutionBody = @"<p>Link your important outgoing envelopes to Fr8's powerful notification Activities, 
@@ -116,7 +116,7 @@ namespace terminalDocuSign.Actions
 
         public DocuSignManager DocuSignManager { get; set; }
 
-        public Rich_Document_Notifications_v1()
+        public Track_DocuSign_Recipients_v1()
         {
             DocuSignManager = new DocuSignManager();
         }
@@ -160,13 +160,13 @@ namespace terminalDocuSign.Actions
             {
                 return activityDO;
             }
-
+            
             //DocuSign
             var monitorDocuSignActionTask = AddAndConfigureChildActivity(activityDO, "Monitor_DocuSign_Envelope_Activity", "Monitor Docusign Envelope Activity", "Monitor Docusign Envelope Activity", 1);
             var setDelayActionTask = AddAndConfigureChildActivity(activityDO, "SetDelay", "Set Delay", "Set Delay", 2);
             var queryFr8WarehouseActionTask = AddAndConfigureChildActivity(activityDO, "QueryFr8Warehouse", "Query Fr8 Warehouse", "Query Fr8 Warehouse", 3);
             var filterActionTask = AddAndConfigureChildActivity(activityDO, "TestIncomingData", "Test Incoming Data", "Test Incoming Data", 4);
-            var notifierActivityTask = AddAndConfigureChildActivity(activityDO, howToBeNotifiedDdl.Value, howToBeNotifiedDdl.selectedKey, howToBeNotifiedDdl.selectedKey, 5);
+            var notifierActivityTask = AddAndConfigureChildActivity((Guid)activityDO.ParentRouteNodeId, howToBeNotifiedDdl.Value, howToBeNotifiedDdl.selectedKey, howToBeNotifiedDdl.selectedKey, 2);
 
             await Task.WhenAll(monitorDocuSignActionTask, setDelayActionTask, queryFr8WarehouseActionTask, filterActionTask, notifierActivityTask);
 
@@ -351,7 +351,7 @@ namespace terminalDocuSign.Actions
 
         private async Task<Crate> PackAvailableHandlers(ActivityDO activityDO)
         {
-            var templates = await HubCommunicator.GetActivityTemplates(activityDO, CurrentFr8UserId);
+            var templates = await HubCommunicator.GetActivityTemplates(CurrentFr8UserId);
             var taggedTemplates = templates.Where(x => x.Tags != null && x.Tags.Contains("Notifier"));
 
             var availableHandlersCrate =
@@ -386,7 +386,7 @@ namespace terminalDocuSign.Actions
             }
             if (curDocumentation.Contains("HelpMenu"))
             {
-                if (curDocumentation.Contains("ExplainRichDocumentation"))
+                if (curDocumentation.Contains("TrackDocuSignRecipients"))
                 {
                     return Task.FromResult(GenerateDocumentationRepsonce(@"This solution work with notifications"));
                 }

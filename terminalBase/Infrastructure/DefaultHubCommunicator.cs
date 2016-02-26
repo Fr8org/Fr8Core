@@ -188,7 +188,7 @@ namespace TerminalBase.Infrastructure
             await _restfulServiceClient.PostAsync(uri, alarmDTO, null, await GetHMACHeader(uri, userId, alarmDTO));
         }
 
-        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityDO activityDO, string userId)
+        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(string userId)
         {
             var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl") 
                 + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routenodes/available";
@@ -200,15 +200,15 @@ namespace TerminalBase.Infrastructure
             return templates.ToList();
         }
 
-        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityDO activityDO, ActivityCategory category, string userId)
+        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityCategory category, string userId)
         {
-            var allTemplates = await GetActivityTemplates(activityDO, userId);
+            var allTemplates = await GetActivityTemplates(userId);
             var templates = allTemplates.Where(x => x.Category == category);
 
             return templates.ToList();
         }
 
-        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityDO activityDO, string tag, string userId)
+        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(string tag, string userId)
         {
             var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                 + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routenodes/available?tag=";

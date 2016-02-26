@@ -18,7 +18,7 @@ namespace terminalDocuSignTests.Integration
         private const string Monitor_DocuSign_Name = "Monitor_DocuSign_Envelope_Activity";
         private const string Get_DocuSign_Envelope_Name = "Get_DocuSign_Envelope";
         private const string Record_DocuSign_Events_Name = "Record_DocuSign_Events";
-        private const string Rich_Document_Notification_Name = "Rich_Document_Notifications";
+        private const string Track_DocuSign_Recipients_Name = "Track_DocuSign_Recipients";
         private const string Send_DocuSign_Envelope_Name = "Send_DocuSign_Envelope";
         private const string Query_DocuSign_Name = "Query_DocuSign";
         private const string Search_DocuSign_History_Name = "Search_DocuSign_History";
@@ -49,7 +49,7 @@ namespace terminalDocuSignTests.Integration
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == Monitor_DocuSign_Name));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == Get_DocuSign_Envelope_Name));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == Record_DocuSign_Events_Name));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == Rich_Document_Notification_Name));
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == Track_DocuSign_Recipients_Name));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == Send_DocuSign_Envelope_Name));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == Query_DocuSign_Name));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == Search_DocuSign_History_Name));
