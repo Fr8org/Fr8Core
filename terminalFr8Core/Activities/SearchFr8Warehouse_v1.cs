@@ -283,7 +283,7 @@ namespace terminalFr8Core.Actions
 
                 operationalStatus.CurrentActivityResponse =
                     ActivityResponseDTO.Create(ActivityResponse.ExecuteClientActivity);
-                operationalStatus.CurrentClientActivityName = "ExecuteAfterConfigure";
+                operationalStatus.CurrentClientActivityName = "RunImmediately";
                 var operationsCrate = Data.Crates.Crate.FromContent("Operational Status", operationalStatus);
                 crateStorage.Add(operationsCrate);
             }
