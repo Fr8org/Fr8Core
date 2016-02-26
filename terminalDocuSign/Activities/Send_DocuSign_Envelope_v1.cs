@@ -25,6 +25,7 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework.Constraints;
 using Envelope = DocuSign.Integrations.Client.Envelope;
 using TemplateRole = DocuSign.Integrations.Client.TemplateRole;
+using terminalDocuSign.Services.New_Api;
 
 namespace terminalDocuSign.Actions
 {
@@ -52,25 +53,9 @@ namespace terminalDocuSign.Actions
             }
 
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
+            var loginInfo = DocuSignService.Login(docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
 
-            var curEnvelope = new Envelope();
-            curEnvelope.Login = new DocuSignPackager()
-                .Login(docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
-
-            try
-            {
-                curEnvelope = AddTemplateData(curActivityDO, payloadCrates, curEnvelope);
-            }
-            catch (ApplicationException exception)
-            {
-                //in case of problem with extract payload field values raise and Error alert to the user
-                return Error(payloadCrates, exception.Message, null, "Send DocuSign Envelope", "DocuSign");
-            }
-
-            curEnvelope.EmailSubject = "Test Message from Fr8";
-            curEnvelope.Status = "sent";
-
-            var result = curEnvelope.Create();
+            HandleTemplateData(curActivityDO, loginInfo, payloadCrates);
 
             return Success(payloadCrates);
         }
@@ -90,28 +75,11 @@ namespace terminalDocuSign.Actions
             return result;
         }
 
-        private Envelope AddTemplateData(ActivityDO curActivityDO, PayloadDTO payloadCrates, Envelope curEnvelope)
+        private bool HandleTemplateData(ActivityDO curActivityDO, DocuSignLoginInformation loginInfo, PayloadDTO payloadCrates)
         {
             var curTemplateId = ExtractTemplateId(curActivityDO);
             var payloadCrateStorage = CrateManager.GetStorage(payloadCrates);
             var configurationControls = GetConfigurationControls(curActivityDO);
-            var recipientField = (TextSource)GetControl(configurationControls, "Recipient", ControlTypes.TextSource);
-            var recipientNameField = (TextSource)GetControl(configurationControls, "RecipientName", ControlTypes.TextSource);
-
-            var curRecipientAddress = recipientField.GetValue(payloadCrateStorage, true);
-            var curRecipientName = recipientNameField.GetValue(payloadCrateStorage, true);
-
-            curEnvelope.TemplateId = curTemplateId;
-
-            var templateRoles = new TemplateRole[]
-            {
-                    new TemplateRole()
-                    {
-                        email = curRecipientAddress,
-                        name = curRecipientName,
-                        roleName = "Signer"   // need to fetch this
-                    },
-            };
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
@@ -124,53 +92,10 @@ namespace terminalDocuSign.Actions
 
                 var values = mappingBehavior.GetValues(payloadCrateStorage);
 
-                var valuesToAdd = new List<RoleTextTab>();
-                var nonEmptyValues = values.Where(x => !string.IsNullOrEmpty(x.Value));
-                foreach (var pair in nonEmptyValues)
-                {
-                    valuesToAdd.Add(new RoleTextTab()
-                    {
-                        tabLabel = pair.Key,
-                        value = pair.Value,
-                    });
-                }
-                curEnvelope.TemplateRoles = templateRoles;
-                curEnvelope.TemplateRoles[0].tabs = new RoleTabs();
-                curEnvelope.TemplateRoles[0].tabs.textTabs = valuesToAdd.ToArray();
-
-                //set radio button tabs
-                var radiopGroupMappingBehavior = new RadioButtonGroupMappingBehavior(crateStorage, "RadioGroupMapping");
-                var radioButtonGroups = radiopGroupMappingBehavior.GetValues(payloadCrateStorage);
-
-                var radioGroupTabsToAdd = new List<TemplateRadioGroupTab>();
-                foreach (RadioButtonGroup item in radioButtonGroups)
-                {
-                    radioGroupTabsToAdd.Add(new TemplateRadioGroupTab()
-                    {
-                        groupName = item.GroupName,
-                        radios = item.Radios.Select(x => new radio()
-                        {
-                            selected = x.Selected,
-                            value = x.Value
-                        }).ToArray()
-                    });
-                }
-
-                curEnvelope.TemplateRoles[0].tabs.radioGroupTabs = radioGroupTabsToAdd.ToArray();
-
-                //set checkboxes tabs
-                var checkBoxMappingBehavior = new CheckBoxMappingBehavior(crateStorage, "ChekBoxMapping");
-                var checkboxes = checkBoxMappingBehavior.GetValues(payloadCrateStorage);
-                curEnvelope.TemplateRoles[0].tabs.checkboxTabs = checkboxes.Select(x => new CheckboxTab()
-                {
-                    tabLabel = x.Name,
-                    selected = x.Selected
-                }).ToArray();
 
             }
 
-            curEnvelope.TemplateRoles = templateRoles;
-            return curEnvelope;
+            return false;
         }
 
         private List<FieldDTO> MapControlsToFields(ICrateStorage activityCrateStorage,
@@ -345,7 +270,7 @@ namespace terminalDocuSign.Actions
                 // we just want the names of the fields
                 var userDefinedFields = envelopeDataDTO.Select(x => new FieldDTO() { Key = x.Name, Value = x.Name, Availability = AvailabilityType.RunTime, Tags = x.TabName }).ToList();
 
-               
+
 
                 var crateUserDefinedDTO = CrateManager.CreateDesignTimeFieldsCrate(
                     "DocuSignTemplateUserDefinedFields",
