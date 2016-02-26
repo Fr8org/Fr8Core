@@ -317,8 +317,11 @@ namespace terminalDocuSign.Actions
                 crateStorage.RemoveByLabel("DocuSignTemplateUserDefinedFields");
                 crateStorage.Add(crateUserDefinedDTO);
 
-
-
+                //Create TextSource controls for ROLES
+                var rolesMappingBehavior = new TextSourceMappingBehavior(crateStorage, "RolesMapping");
+                rolesMappingBehavior.Clear();
+                rolesMappingBehavior.Append(roles.Select(x => x.Key).ToList(), "Upstream Terminal-Provided Fields");
+                
                 //Create Text Source controls for TABS
                 var textSourceFields = new List<string>();
                 textSourceFields = envelopeDataDTO.Where(x => x.Type == ControlTypes.TextBox).Select(x => x.Name).ToList();
@@ -328,11 +331,6 @@ namespace terminalDocuSign.Actions
                 );
                 mappingBehavior.Clear();
                 mappingBehavior.Append(textSourceFields, "Upstream Terminal-Provided Fields");
-                //Create TextSource controls for ROLES
-
-                var rolesMappingBehavior = new TextSourceMappingBehavior(crateStorage,"RolesMapping");
-                rolesMappingBehavior.Clear();
-                mappingBehavior.Append(roles.Select(x => x.Key).ToList(), "Upstream Terminal-Provided Fields");
 
                 //Create radio Button Groups
                 var radioButtonGroupBehavior = new RadioButtonGroupMappingBehavior(crateStorage, "RadioGroupMapping");
