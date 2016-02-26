@@ -9,7 +9,7 @@ Write-Host "Deletes old target database if exists and creates a new one from the
 $errorMessage = "An error while executing the query. Possibly cannot connect to the database to clone it. Please check connection string for CloneDatabase action."
 
 $commandText = "DECLARE @kill varchar(8000) = ''; SELECT @kill = @kill + 'kill ' + CONVERT(varchar(5), spid) + ';' FROM master..sysprocesses WHERE dbid = db_id('$($targetDbName)') EXEC(@kill); "
-$commandText += "DROP DATABASE IF EXISTS $($targetDbName)"
+$commandText += "DROP DATABASE IF EXISTS [$($targetDbName)]"
 Write-Host $commandText
 
 $connection = new-object system.data.SqlClient.SQLConnection($connectionString)
@@ -24,7 +24,7 @@ if ($command.ExecuteNonQuery() -ne -1)
 }
 Write-Host "Successfully deleted old target database."
 
-$commandText = "CREATE DATABASE $($targetDbName) AS COPY OF $($serverName).$($sourceDbName) (EDITION='standard', SERVICE_OBJECTIVE = 'S0');"
+$commandText = "CREATE DATABASE [$($targetDbName)] AS COPY OF [$($serverName)].[$($sourceDbName)] (EDITION='standard', SERVICE_OBJECTIVE = 'S0');"
 Write-Host $commandText
 $command.CommandText = $commandText
 if ($command.ExecuteNonQuery() -ne -1)
