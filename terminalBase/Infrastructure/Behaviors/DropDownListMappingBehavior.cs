@@ -39,6 +39,11 @@ namespace TerminalBase.Infrastructure.Behaviors
             var dropDownLists = controlsCM
                 .Controls.Where(IsBehaviorControl).OfType<DropDownList>();
 
+            foreach (var list in dropDownLists)
+            {
+                list.Name = GetFieldId(list);
+            }
+
             return dropDownLists.ToList();
         }
     }

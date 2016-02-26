@@ -20,17 +20,17 @@ namespace TerminalBase.Infrastructure.Behaviors
             BehaviorPrefix = "RadioButtonGroupMappingBehavior-";
         }
         
-        public void Append(string labelName, List<RadioButtonOption> radios )
+        public void Append(string name, string label, List<RadioButtonOption> radios )
         {
             var controlsCM = GetOrCreateStandardConfigurationControlsCM();
 
-            var name = string.Concat(BehaviorPrefix, labelName);
+            var mappingName = string.Concat(BehaviorPrefix, name);
 
             var userDefinedRadioButtonGroup = new RadioButtonGroup()
             {
-                GroupName = name,
-                Name = name,
-                Label = name,
+                GroupName = mappingName,
+                Name = mappingName,
+                Label = string.IsNullOrEmpty(label) ? name : label,
                 Radios = radios
             };
 
@@ -43,6 +43,11 @@ namespace TerminalBase.Infrastructure.Behaviors
 
             var radioButtonGroups = controlsCM
                 .Controls.Where(IsBehaviorControl).OfType<RadioButtonGroup>();
+
+            foreach (var rbGroup in radioButtonGroups)
+            {
+                rbGroup.GroupName = GetFieldId(rbGroup);
+            }
 
             return radioButtonGroups.ToList();
         }

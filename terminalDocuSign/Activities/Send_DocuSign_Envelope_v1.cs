@@ -304,7 +304,7 @@ namespace terminalDocuSign.Actions
 
                 //Create Text Source controls
                 var textSourceFields = new List<string>();
-                textSourceFields = envelopeDataDTO.Where(x=>x.Type == ControlTypes.TextSource).Select(x=>x.Name).ToList();
+                textSourceFields = envelopeDataDTO.Where(x=>x.Type == ControlTypes.TextBox).Select(x=>x.Name).ToList();
                 var mappingBehavior = new TextSourceMappingBehavior(
                     crateStorage,
                     "Mapping"
@@ -320,8 +320,8 @@ namespace terminalDocuSign.Actions
                 {
                     var radioButtonGroupDTO = item as DocuSignMultipleOptionsTabDTO;
                     if (radioButtonGroupDTO == null) continue;
-
-                    radioButtonGroupBehavior.Append(radioButtonGroupDTO.Name, radioButtonGroupDTO.Items.Select(x => new RadioButtonOption()
+                    //todo: migrate the string format for label into template
+                    radioButtonGroupBehavior.Append(radioButtonGroupDTO.Name, string.Format("For the {0}, use:", radioButtonGroupDTO.Name) , radioButtonGroupDTO.Items.Select(x => new RadioButtonOption()
                     {
                         Name = x.Value,
                         Value = x.Value,
