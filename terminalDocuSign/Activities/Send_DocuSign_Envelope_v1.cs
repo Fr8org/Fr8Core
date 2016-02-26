@@ -365,11 +365,8 @@ namespace terminalDocuSign.Actions
                 );
                 mappingBehavior.Clear();
                 mappingBehavior.Append(textSourceFields, "Upstream Terminal-Provided Fields");
-
                 //Create TextSource controls for ROLES
-                var roles_mappingBehaviour = new TextSourceMappingBehavior(crateStorage, "RolesMapping");
-                roles_mappingBehaviour.Clear();
-                roles_mappingBehaviour.Append(roles.Select(x => x.Key).ToList(), "Upstream Terminal-Provided Fields");
+                mappingBehavior.Append(roles.Select(x => x.Key).ToList(), "Upstream Terminal-Provided Fields");
 
                 //Create radio Button Groups
                 var radioButtonGroupBehavior = new RadioButtonGroupMappingBehavior(crateStorage, "RadioGroupMapping");
