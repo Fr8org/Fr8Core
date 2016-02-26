@@ -23,9 +23,9 @@ using AutoMapper;
 
 namespace terminalDocuSign.Actions
 {
-    public class Rich_Document_Notifications_v1 : BaseDocuSignActivity
+    public class Track_DocuSign_Recipients_v1 : BaseDocuSignActivity
     {
-        private const string SolutionName = "Rich Document Notifications";
+        private const string SolutionName = "Track DocuSign Recipients";
         private const double SolutionVersion = 1.0;
         private const string TerminalName = "DocuSign";
         private const string SolutionBody = @"<p>Link your important outgoing envelopes to Fr8's powerful notification Activities, 
@@ -116,7 +116,7 @@ namespace terminalDocuSign.Actions
 
         public DocuSignManager DocuSignManager { get; set; }
 
-        public Rich_Document_Notifications_v1()
+        public Track_DocuSign_Recipients_v1()
         {
             DocuSignManager = new DocuSignManager();
         }
@@ -386,7 +386,7 @@ namespace terminalDocuSign.Actions
             }
             if (curDocumentation.Contains("HelpMenu"))
             {
-                if (curDocumentation.Contains("ExplainRichDocumentation"))
+                if (curDocumentation.Contains("TrackDocuSignRecipients"))
                 {
                     return Task.FromResult(GenerateDocumentationRepsonce(@"This solution work with notifications"));
                 }
