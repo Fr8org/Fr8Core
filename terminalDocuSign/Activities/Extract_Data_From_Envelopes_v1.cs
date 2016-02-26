@@ -84,7 +84,7 @@ namespace terminalDocuSign.Actions
             {
                 crateStorage.Clear();
                 crateStorage.Add(PackControls(new ActivityUi()));
-                crateStorage.AddRange(await PackSources(curActivtyDO));
+                crateStorage.AddRange(await PackSources());
             }
 
             return curActivtyDO;
@@ -120,15 +120,15 @@ namespace terminalDocuSign.Actions
 
         private async Task<IEnumerable<ActivityTemplateDO>> FindTemplates(ActivityDO activityDO, Predicate<ActivityTemplateDO> query)
         {
-            var templates = await HubCommunicator.GetActivityTemplates(activityDO, CurrentFr8UserId);
+            var templates = await HubCommunicator.GetActivityTemplates(CurrentFr8UserId);
             return templates.Select(x => Mapper.Map<ActivityTemplateDO>(x)).Where(x => query(x));
         }
 
-        private async Task<IEnumerable<Crate>> PackSources(ActivityDO activityDO)
+        private async Task<IEnumerable<Crate>> PackSources()
         {
             var sources = new List<Crate>();
 
-            var templates = await HubCommunicator.GetActivityTemplates(activityDO, ActivityCategory.Forwarders, CurrentFr8UserId);
+            var templates = await HubCommunicator.GetActivityTemplates(ActivityCategory.Forwarders, CurrentFr8UserId);
             sources.Add(
                 CrateManager.CreateDesignTimeFieldsCrate(
                     "AvailableActions",

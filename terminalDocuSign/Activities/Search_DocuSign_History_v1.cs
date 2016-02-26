@@ -177,7 +177,7 @@ namespace terminalDocuSign.Actions
 
         private async Task<IEnumerable<ActivityTemplateDO>> FindTemplates(ActivityDO activityDO, Predicate<ActivityTemplateDO> query)
         {
-            var templates = await HubCommunicator.GetActivityTemplates(activityDO, CurrentFr8UserId);
+            var templates = await HubCommunicator.GetActivityTemplates(CurrentFr8UserId);
             return templates.Select(x => Mapper.Map<ActivityTemplateDO>(x)).Where(x => query(x));
         }
 
