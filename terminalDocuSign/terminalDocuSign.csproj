@@ -239,7 +239,7 @@
     <Compile Include="Activities\Get_DocuSign_Envelope_v1.cs" />
     <Compile Include="Activities\Monitor_DocuSign_Envelope_Activity_v1.cs" />
     <Compile Include="Activities\Record_DocuSign_Events_v1.cs" />
-    <Compile Include="Activities\Rich_Document_Notifications_v1.cs" />
+    <Compile Include="Activities\Track_DocuSign_Recipients_v1.cs" />
     <Compile Include="Activities\Send_DocuSign_Envelope_v1.cs" />
     <Compile Include="App_Start\RoutesConfig.cs" />
     <Compile Include="Controllers\AuthenticationController.cs" />
