@@ -115,6 +115,8 @@ namespace terminalDocuSign.Actions
             
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
+                var fieldList = MapControlsToFields(CrateManager.GetStorage(curActivityDO), payloadCrateStorage);
+
                 var mappingBehavior = new TextSourceMappingBehavior(
                     crateStorage,   
                     "Mapping"
@@ -165,29 +167,88 @@ namespace terminalDocuSign.Actions
                     selected = x.Selected
                 }).ToArray();
                 
-                //set dropdown list items
-                //var dropDownListMappingBehavior = new DropDownListMappingBehavior(crateStorage, "DropDownListMapping");
-                //var dropDownLists = dropDownListMappingBehavior.GetValues(payloadCrateStorage).ToList();
-
-                //var radioGroupTabsToAdd = new List<TemplateRa>();
-                //foreach (RadioButtonGroup item in radioButtonGroups)
-                //{
-                //    radioGroupTabsToAdd.Add(new TemplateRadioGroupTab()
-                //    {
-                //        groupName = item.GroupName,
-                //        radios = item.Radios.Select(x => new radio()
-                //        {
-                //            selected = x.Selected,
-                //            value = x.Value
-                //        }).ToArray()
-                //    });
-                //}
             }
 
             curEnvelope.TemplateRoles = templateRoles;
             return curEnvelope;
         }
 
+        private List<FieldDTO> MapControlsToFields(ICrateStorage activityCrateStorage,
+            ICrateStorage payloadCrateStorage)
+        {
+            //todo: refactor the method
+            var resultCollection = new List<FieldDTO>();
+
+            //get existing userDefinedFields 
+            var usedDefinedFields = activityCrateStorage.CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "DocuSignTemplateUserDefinedFields").FirstOrDefault();
+            if (usedDefinedFields != null)
+            {
+                var tempFieldCollection = usedDefinedFields.Fields;
+              
+                //extract data from text source Controls
+                var mappingBehavior = new TextSourceMappingBehavior(activityCrateStorage, "Mapping");
+                var textSourceValues = mappingBehavior.GetValues(payloadCrateStorage);
+                foreach (var item in textSourceValues)
+                {
+                    var field = tempFieldCollection.FirstOrDefault(x => x.Key == item.Key);
+                    if (field != null)
+                    {
+                        field.Value = item.Value;
+                        resultCollection.Add(field);
+                    }
+                }
+                
+                var radiopGroupMappingBehavior = new RadioButtonGroupMappingBehavior(activityCrateStorage, "RadioGroupMapping");
+                var radioButtonGroups = radiopGroupMappingBehavior.GetValues(payloadCrateStorage);
+                foreach (var item in radioButtonGroups)
+                {
+                    var field = tempFieldCollection.FirstOrDefault(x => x.Key == item.GroupName);
+                    if (field != null)
+                    {
+                        //get index of selected value 
+                        var selectedItem = item.Radios.FirstOrDefault(x => x.Selected);
+                        var selectedIndex = -1;
+                        if (selectedItem != null)
+                        {
+                            selectedIndex = item.Radios.IndexOf(selectedItem);
+                        }
+
+                        field.Value = selectedIndex.ToString();
+                        resultCollection.Add(field);
+                    }
+                }
+
+                var checkBoxMappingBehavior = new CheckBoxMappingBehavior(activityCrateStorage, "ChekBoxMapping");
+                var checkboxes = checkBoxMappingBehavior.GetValues(payloadCrateStorage);
+                foreach (var item in checkboxes)
+                {
+                    var field = tempFieldCollection.FirstOrDefault(x => x.Key == item.Name);
+                    if (field != null)
+                    {
+                        field.Value = item.Selected.ToString();
+                        resultCollection.Add(field);
+                    }
+                }
+
+                var dropdownListMappingBehavior = new DropDownListMappingBehavior(activityCrateStorage, "DropDownMapping");
+                var dropDownLists = dropdownListMappingBehavior.GetValues();
+                foreach (var item in dropDownLists)
+                {
+                    var field = tempFieldCollection.FirstOrDefault(x => x.Key == item.Name);
+                    if (field != null)
+                    {
+                        field.Value = item.selectedKey;
+                        resultCollection.Add(field);
+                    }
+                }
+
+            }
+
+            return resultCollection;
+        }
+
+
+             
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
             // Do we have any crate? If no, it means that it's Initial configuration
@@ -279,7 +340,7 @@ namespace terminalDocuSign.Actions
 
                 // when we're in design mode, there are no values
                 // we just want the names of the fields
-                var userDefinedFields = envelopeDataDTO.Select(x => new FieldDTO() {Key = x.Name, Value = x.Name, Availability = AvailabilityType.RunTime}).ToList();
+                var userDefinedFields = envelopeDataDTO.Select(x => new FieldDTO() {Key = x.Name, Value = x.Name, Availability = AvailabilityType.RunTime, Tags = x.TabName }).ToList();
 
                 // we're in design mode, there are no values 
                 var standartFields = new List<FieldDTO>()
@@ -342,7 +403,7 @@ namespace terminalDocuSign.Actions
                     var dropDownListDTO = item as DocuSignMultipleOptionsTabDTO;
                     if (dropDownListDTO == null) continue;
 
-                    dropdownListMappingBehavior.Append(dropDownListDTO.Name, dropDownListDTO.Items.Select(x => new ListItem()
+                    dropdownListMappingBehavior.Append(dropDownListDTO.Name, string.Format("For the {0}, use:", item.Name), dropDownListDTO.Items.Select(x => new ListItem()
                     {
                         Value = x.Value,
                         Selected = x.Selected

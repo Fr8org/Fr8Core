@@ -16,16 +16,16 @@ namespace TerminalBase.Infrastructure.Behaviors
             BehaviorPrefix = "DropDownListMappingBehavior-";
         }
 
-        public void Append(string labelName, List<ListItem> items)
+        public void Append(string name, string labelName,  List<ListItem> items)
         {
             var controlsCM = GetOrCreateStandardConfigurationControlsCM();
 
-            var name = string.Concat(BehaviorPrefix, labelName);
+            var theName = string.Concat(BehaviorPrefix, name);
 
             var userDefinedDropDownList = new DropDownList()
             {
-                Name = name,
-                Label = name,
+                Name = theName,
+                Label = labelName,
                 ListItems = items
             };
 

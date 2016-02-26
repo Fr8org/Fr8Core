@@ -175,20 +175,22 @@ namespace terminalDocuSign.Services
             {
                 foreach (var signer in recipients["signers"])
                 {
+                    var roleName = signer["roleName"].ToString();
+
                     var tabs = signer["tabs"];
                     if (tabs == null)
                     {
                         continue;
                     }
-                    envelopeData = AddEnvelopeData(envelopeData, tabs, "textTabs", "value");
-                    envelopeData = AddEnvelopeData(envelopeData, tabs, "companyTabs", "value");
-                    envelopeData = AddEnvelopeData(envelopeData, tabs, "titleTabs", "value");
-                    envelopeData = AddEnvelopeData(envelopeData, tabs, "noteTabs", "value");
-                    envelopeData = AddEnvelopeData(envelopeData, tabs, "numberTabs", "value");
-                    envelopeData = AddEnvelopeData(envelopeData, tabs, "formulaTabs", "value");
+                    envelopeData = AddEnvelopeData(envelopeData, tabs, "textTabs", "value", roleName);
+                    envelopeData = AddEnvelopeData(envelopeData, tabs, "companyTabs", "value", roleName);
+                    envelopeData = AddEnvelopeData(envelopeData, tabs, "titleTabs", "value", roleName);
+                    envelopeData = AddEnvelopeData(envelopeData, tabs, "noteTabs", "value", roleName);
+                    envelopeData = AddEnvelopeData(envelopeData, tabs, "numberTabs", "value", roleName);
+                    envelopeData = AddEnvelopeData(envelopeData, tabs, "formulaTabs", "value", roleName);
                     if (tabs["checkboxTabs"] != null)
                     {
-                        envelopeData = AddEnvelopeData(envelopeData, tabs, "checkboxTabs", "selected");
+                        envelopeData = AddEnvelopeData(envelopeData, tabs, "checkboxTabs", "selected", roleName);
                     }
 
                     //extract Date data and add it to envelope 
@@ -200,13 +202,13 @@ namespace terminalDocuSign.Services
                     //create radio button groups
                     if (tabs["radioGroupTabs"] != null)
                     {
-                        envelopeData = AddRadioButtonGroupEnvelopeData(envelopeData, tabs, "radioGroupTabs", "radios");
+                        envelopeData = AddRadioButtonGroupEnvelopeData(envelopeData, tabs, "radioGroupTabs", "radios", roleName);
                     }
 
                     //create dropdown control as envelope data from tabs
                     if (tabs["listTabs"] != null)
                     {
-                        envelopeData = AdDropdownListEnvelopeData(envelopeData, tabs, "listTabs", "listItems");
+                        envelopeData = AdDropdownListEnvelopeData(envelopeData, tabs, "listTabs", "listItems", roleName);
                     }
                 }
             }
@@ -214,16 +216,18 @@ namespace terminalDocuSign.Services
             return envelopeData;
         }
 
-        private DocuSignTabDTO CreateEnvelopeData(dynamic tab, string value)
+        private DocuSignTabDTO CreateEnvelopeData(dynamic tab, string value, string roleName, string tabName)
         {
             return new DocuSignTabDTO
             {
                 DocumentId = tab.documentId,
                 RecipientId = tab.recipientId,
-                Name = tab.tabLabel,
+                Name = string.Format("{0}({1})", tab.tabLabel.groupName, roleName),
                 TabId = tab.tabId,
                 Value = value,
-                Type = GetFieldType((string)tab.name)
+                Type = GetFieldType((string)tab.name),
+                RoleName = roleName,
+                TabName = tabName
             };
         }
 
@@ -238,7 +242,13 @@ namespace terminalDocuSign.Services
                 case "Date Signed":
                     return ControlTypes.DatePicker;
                 default:
+                {
+                    if (name.StartsWith("Drop Down"))
+                    {
+                        return ControlTypes.DropDownList;
+                    }
                     return ControlTypes.TextBox;
+                }
             }
         }
 
@@ -250,19 +260,19 @@ namespace terminalDocuSign.Services
             curEnv.Create();
         }
 
-        private List<DocuSignTabDTO> AddEnvelopeData(List<DocuSignTabDTO> envelopes, JToken tabs, string tabName, string tabField)
+        private List<DocuSignTabDTO> AddEnvelopeData(List<DocuSignTabDTO> envelopes, JToken tabs, string tabName, string tabField, string roleName)
         {
             if (tabs[tabName] != null)
             {
                 foreach (var textTab in tabs[tabName])
                 {
-                    envelopes.Add(CreateEnvelopeData(textTab, textTab[tabField].ToString()));
+                    envelopes.Add(CreateEnvelopeData(textTab, textTab[tabField].ToString(), roleName, tabName));
                 }
             }
             return envelopes;
         }
 
-        private List<DocuSignTabDTO> AddRadioButtonGroupEnvelopeData(List<DocuSignTabDTO> envelopes, JToken tabs, string tabName, string radiosName)
+        private List<DocuSignTabDTO> AddRadioButtonGroupEnvelopeData(List<DocuSignTabDTO> envelopes, JToken tabs, string tabName, string radiosName, string roleName)
         {
             if (tabs[tabName] != null)
             {
@@ -273,9 +283,11 @@ namespace terminalDocuSign.Services
                     {
                         DocumentId = grpTab.documentId,
                         RecipientId = grpTab.recipientId,
-                        Name = grpTab.groupName,
+                        Name = string.Format("{0}({1})", grpTab.groupName, roleName),
                         TabId = grpTab.tabId,
-                        Type = ControlTypes.RadioButtonGroup
+                        Type = ControlTypes.RadioButtonGroup,
+                        RoleName = roleName,
+                        TabName = tabName
                     };
 
                     if (groupTab[radiosName] != null)
@@ -297,7 +309,7 @@ namespace terminalDocuSign.Services
             return envelopes;
         }
 
-        private List<DocuSignTabDTO> AdDropdownListEnvelopeData(List<DocuSignTabDTO> envelopes, JToken tabs, string tabName, string listItemsName)
+        private List<DocuSignTabDTO> AdDropdownListEnvelopeData(List<DocuSignTabDTO> envelopes, JToken tabs, string tabName, string listItemsName, string roleName)
         {
             if (tabs[tabName] != null)
             {
@@ -308,12 +320,13 @@ namespace terminalDocuSign.Services
                     {
                         DocumentId = grpTab.documentId,
                         RecipientId = grpTab.recipientId,
-                        Name = grpTab.tabLabel,
+                        Name = string.Format("{0}({1})",grpTab.tabLabel, roleName),
                         TabId = grpTab.tabId,
                         Type = ControlTypes.DropDownList,
-                        Value = grpTab.Value
+                        Value = grpTab.Value,
+                        RoleName = roleName,
+                        TabName = tabName
                     };
-
                     
                     if (groupTab[listItemsName] != null)
                     {

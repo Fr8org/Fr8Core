@@ -20,6 +20,10 @@ namespace terminalDocuSign.DataTransferObjects
         public int DocumentId { get; set; }
 
         public string Type { get; set; }
+
+        public string RoleName { get; set; }
+
+        public string TabName { get; set; }
     }
 
     /// <summary>
