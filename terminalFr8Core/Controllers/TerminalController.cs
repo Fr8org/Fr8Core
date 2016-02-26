@@ -68,7 +68,8 @@ namespace terminalFr8Core.Controllers
                 Terminal = terminal,
                 Version = "1",
                 MinPaneWidth = 330,
-                WebService = webService
+                WebService = webService,
+                Tags = "internal"
             });
 
             result.Add(new ActivityTemplateDTO
@@ -77,7 +78,7 @@ namespace terminalFr8Core.Controllers
                 Label = "Map Fields",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
-                Tags = "AggressiveReload",
+                Tags = "AggressiveReload,internal",
                 Version = "1",
                 MinPaneWidth = 380,
                 WebService = webService
@@ -112,7 +113,8 @@ namespace terminalFr8Core.Controllers
                 Terminal = terminal,
                 WebService = webService,
                 Version = "1",
-                MinPaneWidth = 330
+                MinPaneWidth = 330,
+                Tags = "internal"
             });
 
             result.Add(new ActivityTemplateDTO
@@ -122,7 +124,8 @@ namespace terminalFr8Core.Controllers
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 WebService = webService,
-                Version = "1"
+                Version = "1",
+                Tags = "internal"
             });
 
             result.Add(new ActivityTemplateDTO
@@ -132,7 +135,8 @@ namespace terminalFr8Core.Controllers
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 WebService = webService,
-                Version = "1"
+                Version = "1",
+                Tags = "internal"
             });
 
             result.Add(new ActivityTemplateDTO
@@ -142,7 +146,8 @@ namespace terminalFr8Core.Controllers
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 WebService = webService,
-                Version = "1"
+                Version = "1",
+                Tags = "internal"
             });
 
             result.Add(new ActivityTemplateDTO
@@ -152,7 +157,8 @@ namespace terminalFr8Core.Controllers
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 WebService = webService,
-                Version = "1"
+                Version = "1",
+                Tags = "internal"
             });
 
             result.Add(new ActivityTemplateDTO()
@@ -230,7 +236,9 @@ namespace terminalFr8Core.Controllers
                 Category = ActivityCategory.Monitors,
                 NeedsAuthentication = false,
                 Terminal = terminal,
-                MinPaneWidth = 380
+                MinPaneWidth = 380,
+                WebService = webService,
+                Tags = "internal"
             });
 
             result.Add(new ActivityTemplateDTO()

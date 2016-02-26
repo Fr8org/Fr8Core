@@ -81,7 +81,7 @@ namespace terminalDocuSign.Actions
                 Controls.Add(new Duration
                 {
                     Label = "After you send a Tracked Envelope, Fr8 will wait.",
-                    InnerLabel = "Wait how long:",
+                    InnerLabel = "Wait this long:",
                     Name = "TimePeriod"
                 });
                 Controls.Add(new DropDownList
@@ -97,7 +97,7 @@ namespace terminalDocuSign.Actions
                 Controls.Add(new TextBlock
                 {
                     Name = "EventInfo",
-                    Label = "the Envelope"
+                    Label = "the Envelope."
                 });
 
                 Controls.Add(new DropDownList()
@@ -339,7 +339,7 @@ namespace terminalDocuSign.Actions
 
         private Crate PackAvailableRecipientEvents(ActivityDO activityDO)
         {
-            var events = new[] { "Delivered", "Signed", "Declined", "AutoResponded" };
+            var events = new[] { "Taken Delivery", "Signed" };
 
             var availableRecipientEventsCrate =
                 CrateManager.CreateDesignTimeFieldsCrate(
