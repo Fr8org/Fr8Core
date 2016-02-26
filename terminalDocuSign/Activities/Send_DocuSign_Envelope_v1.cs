@@ -55,9 +55,7 @@ namespace terminalDocuSign.Actions
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
             var loginInfo = DocuSignService.Login(docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
 
-            HandleTemplateData(curActivityDO, loginInfo, payloadCrates);
-
-            return Success(payloadCrates);
+            return HandleTemplateData(curActivityDO, loginInfo, payloadCrates);
         }
 
         private string ExtractTemplateId(ActivityDO curActivityDO)
@@ -75,7 +73,7 @@ namespace terminalDocuSign.Actions
             return result;
         }
 
-        private bool HandleTemplateData(ActivityDO curActivityDO, DocuSignLoginInformation loginInfo, PayloadDTO payloadCrates)
+        private PayloadDTO HandleTemplateData(ActivityDO curActivityDO, DocuSignLoginInformation loginInfo, PayloadDTO payloadCrates)
         {
             var curTemplateId = ExtractTemplateId(curActivityDO);
             var payloadCrateStorage = CrateManager.GetStorage(payloadCrates);
@@ -86,19 +84,17 @@ namespace terminalDocuSign.Actions
                 var fieldList = MapControlsToFields(CrateManager.GetStorage(curActivityDO), payloadCrateStorage);
                 var rolesList = MapRoleControlsToFields(CrateManager.GetStorage(curActivityDO), payloadCrateStorage);
 
-
-                var mappingBehavior = new TextSourceMappingBehavior(
-                    crateStorage,
-                    "RolesMapping"
-                );
-
-
-                var values = mappingBehavior.GetValues(payloadCrateStorage);
-
-                values = values.Where(b => (!fieldList.Any(a => a.Key == b.Key))).ToDictionary(b => b.Key, c => c.Value);
+                try
+                {
+                    DocuSignService.SendAnEnvelopeFromTemplate(loginInfo, rolesList, fieldList, curTemplateId);
+                }
+                catch
+                {
+                    return Error(payloadCrates, "Couldn't send an envelope");
+                }
             }
 
-            return false;
+            return Success(payloadCrates);
         }
 
         private List<FieldDTO> MapControlsToFields(ICrateStorage activityCrateStorage,
@@ -193,6 +189,7 @@ namespace terminalDocuSign.Actions
                     var field = tempFieldCollection.FirstOrDefault(x => x.Key == item.Key);
                     if (field != null)
                     {
+                        //field.Tags = "RecepientId:" + item.Value;
                         field.Value = item.Value;
                         resultCollection.Add(field);
                     }
@@ -305,7 +302,7 @@ namespace terminalDocuSign.Actions
 
                 // when we're in design mode, there are no values
                 // we just want the names of the fields
-                var userDefinedFields = envelopeDataDTO.Select(x => new FieldDTO() { Key = x.Name, Value = x.Name, Availability = AvailabilityType.RunTime, Tags = x.TabName }).ToList();
+                var userDefinedFields = envelopeDataDTO.Select(x => new FieldDTO() { Key = x.Name, Value = x.Name, Availability = AvailabilityType.RunTime, Tags = x.TabName + " " + "recipientId:" + x.RecipientId }).ToList();
 
 
 
@@ -313,7 +310,7 @@ namespace terminalDocuSign.Actions
                     "DocuSignTemplateUserDefinedFields",
                     userDefinedFields.Concat(roles).ToArray()
                 );
-                
+
                 crateStorage.RemoveByLabel("DocuSignTemplateUserDefinedFields");
                 crateStorage.Add(crateUserDefinedDTO);
 
@@ -330,7 +327,7 @@ namespace terminalDocuSign.Actions
                 mappingBehavior.Append(textSourceFields, "Upstream Terminal-Provided Fields");
                 //Create TextSource controls for ROLES
 
-                var rolesMappingBehavior = new TextSourceMappingBehavior(crateStorage,"RolesMapping");
+                var rolesMappingBehavior = new TextSourceMappingBehavior(crateStorage, "RolesMapping");
                 rolesMappingBehavior.Clear();
                 mappingBehavior.Append(roles.Select(x => x.Key).ToList(), "Upstream Terminal-Provided Fields");
 
