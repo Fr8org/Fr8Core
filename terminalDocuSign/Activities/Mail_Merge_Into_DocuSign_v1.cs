@@ -23,6 +23,7 @@ using Utilities.Configuration.Azure;
 using terminalDocuSign.Infrastructure;
 using Data.Constants;
 using Data.Repositories;
+using Data.States;
 using UtilitiesTesting.Fixtures;
 
 namespace terminalDocuSign.Actions
@@ -38,6 +39,11 @@ namespace terminalDocuSign.Actions
         private const string SolutionName = "Mail Merge Into DocuSign";
         private const double SolutionVersion = 1.0;
         private const string TerminalName = "DocuSign";
+        private const string SolutionBody = @"<p>Pull data from a variety of sources, including Excel files, 
+                                            Google Sheets, and databases, and merge the data into your DocuSign template. 
+                                            You can link specific fields from your source data to DocuSign fields</p>";
+
+
         public Mail_Merge_Into_DocuSign_v1()
             : base()
         {
@@ -272,8 +278,6 @@ namespace terminalDocuSign.Actions
 
             //let's check if activity template generates table data
             var selectedReceiver = curActivityTemplates.Single(x => x.Name == _dataSourceValue);
-
-
             var dataSourceActivity = await AddAndConfigureChildActivity(curActivityDO, selectedReceiver.Id.ToString(), order: 1);
 
             ActivityDO parentOfSendDocusignEnvelope = null;
@@ -281,8 +285,19 @@ namespace terminalDocuSign.Actions
 
             if (DoesActivityTemplateGenerateTableData(selectedReceiver))
             {
-                //we need to configure this but it is hard to do
+                //let's get first table related CrateDescription in upstream activities and apply it to Loop
                 var loopActivity = await AddAndConfigureChildActivity(curActivityDO, "Loop", "Loop", "Loop", 2);
+                using (var crateStorage = CrateManager.GetUpdatableStorage(loopActivity))
+                {
+                    var loopConfigControls = GetConfigurationControls(crateStorage);
+                    var crateChooser = GetControl<CrateChooser>(loopConfigControls, "Available_Crates");
+                    var tableDescription = crateChooser.CrateDescriptions.FirstOrDefault(c => c.ManifestId == (int) MT.StandardTableData);
+                    if (tableDescription != null)
+                    {
+                        tableDescription.Selected = true;
+                    }
+                }
+
                 parentOfSendDocusignEnvelope = loopActivity;
                 orderOfSendDocusignEnvelope = 1;
             }
@@ -312,15 +327,10 @@ namespace terminalDocuSign.Actions
         {
             if (curDocumentation.Contains("MainPage"))
             {
-            var curSolutionPage = new SolutionPageDTO
-            {
-                Name = SolutionName,
-                Version = SolutionVersion,
-                Terminal = TerminalName,
-                Body = @"<p>This is a solution action</p>"
-            };
-            return Task.FromResult(curSolutionPage);
-        }
+                var curSolutionPage = GetDefaultDocumentation(SolutionName, SolutionVersion, TerminalName, SolutionBody);
+                return Task.FromResult(curSolutionPage);
+              
+            }
             if (curDocumentation.Contains("HelpMenu"))
             {
                 if (curDocumentation.Contains("ExplainMailMerge"))

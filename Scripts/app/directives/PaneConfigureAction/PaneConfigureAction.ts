@@ -422,12 +422,14 @@ module dockyard.directives.paneConfigureAction {
 
                                 var contents = <any>operationalStatus.contents;
 
-                                if (contents.CurrentActivityResponse.type === 'ExecuteClientAction'
-                                    && contents.CurrentClientActionName === 'ExecuteAfterConfigure') {
+                                if (contents.CurrentActivityResponse.type === 'ExecuteClientActivity'
+                                    && (contents.CurrentClientActivityName === 'ExecuteAfterConfigure')
+                                    ) {
 
                                     $scope.$emit(MessageType[MessageType.PaneConfigureAction_ExecutePlan]);
                                 }
                             }
+
                             var oldAction = $scope.currentAction;
                             if (res.childrenActivities && res.childrenActivities.length > 0 && (!oldAction.childrenActivities || oldAction.childrenActivities.length < 1)) {
                                 // If the directive is used for configuring solutions,

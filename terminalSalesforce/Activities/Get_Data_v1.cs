@@ -75,14 +75,11 @@ namespace terminalSalesforce.Actions
                     //new FieldDTO("File") {Availability = AvailabilityType.Configuration}
                 });
 
-            //Note: This design time fields are used to populate the Fileter Pane controls. It has to be labelled as Queryable Criteria
-            var emptyFieldsSource = CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", new FieldDTO[] {});
-
             var configurationControlsCrate = CreateControlsCrate();
 
             using (var crateStorage = CrateManager.UpdateStorage(() => curActivityDO.CrateStorage))
             {
-                crateStorage.Replace(AssembleCrateStorage(availableSalesforceObjects, emptyFieldsSource, configurationControlsCrate));
+                crateStorage.Replace(AssembleCrateStorage(availableSalesforceObjects, configurationControlsCrate));
             }
 
             return await Task.FromResult(curActivityDO);
@@ -105,10 +102,14 @@ namespace terminalSalesforce.Actions
             var objectFieldsList = await _salesforce.GetFields(curSelectedObject, _salesforce.CreateForceClient(authTokenDO));
 
             //replace the object fields for the newly selected object name
-            var queryableCriteriaFields = CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", objectFieldsList.ToArray());
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                crateStorage.ReplaceByLabel(queryableCriteriaFields);
+                //Note: This design time fields are used to populate the Fileter Pane controls. It has to be labelled as Queryable Criteria
+                crateStorage.RemoveByLabel("Queryable Criteria");
+                crateStorage.Add(
+                    Crate.FromContent("Queryable Criteria", new StandardQueryFieldsCM(
+                        objectFieldsList.OrderBy(field => field.Key)
+                                        .Select(field => new QueryFieldDTO(field.Key, field.Value, QueryFieldType.String, new TextBox { Name = field.Key })))));
             }
 
             return await Task.FromResult(curActivityDO);
@@ -137,7 +138,7 @@ namespace terminalSalesforce.Actions
             //if without filter, just get all selected objects
             //else prepare SOQL query to filter the objects based on the filter conditions
             StandardPayloadDataCM resultObjects;
-            if (filterDataDTO.First().Field == null)
+            if (!filterDataDTO.Any())
             {
                 resultObjects = await _salesforce.GetObjectByQuery(curSelectedSalesForceObject, string.Empty, _salesforce.CreateForceClient(authTokenDO));
             }
@@ -185,7 +186,7 @@ namespace terminalSalesforce.Actions
                 Source = new FieldSourceDTO
                 {
                     Label = "Queryable Criteria",
-                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
+                    ManifestType = CrateManifestTypes.StandardQueryFields
                 }
             };
 

@@ -211,7 +211,7 @@ namespace TerminalBase.BaseClasses
                             return await resutlActionDO.ContinueWith(x => Mapper.Map<ActivityDTO>(x.Result));
                         }
                     case "run":
-                    case "childrenexecuted":
+                    case "executechildactivities":
                         {
                             OnStartActivity(curTerminal, activityTemplateName, IntegrationTestMode);
                             var resultPayloadDTO = await (Task<PayloadDTO>)curMethodInfo

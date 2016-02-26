@@ -46,32 +46,41 @@ namespace Data.Expressions
 
             /**********************************************************************************/
 
-            public override Expression Visit(Expression node)
+            protected override Expression VisitMember(MemberExpression node)
             {
-                if (node.NodeType == ExpressionType.MemberAccess)
+                var expr = node;
+
+                if (node.Member.DeclaringType != null && node.Member.DeclaringType.IsGenericType && node.Member.DeclaringType.GetGenericTypeDefinition() == typeof(Nullable<>))
                 {
-                    var expr = (MemberExpression)node;
-                    Type propType;
-
-                    if (expr.Member is System.Reflection.PropertyInfo)
+                    while (expr.Expression is MemberExpression)
                     {
-                        propType = ((System.Reflection.PropertyInfo)expr.Member).PropertyType;
+                        expr = (MemberExpression)expr.Expression;
                     }
-                    else if (expr.Member is FieldInfo)
-                    {
-                        propType = ((FieldInfo)expr.Member).FieldType;
-                    }
-                    else
-                    {
-                        throw new NotSupportedException(string.Format("Member {0} has unsupported member type {1}", expr.Member.Name, expr.Member.GetType().Name));
-                    }
-
-                    _discoveredProperties.Add(new PropertyInfo(expr.Member.Name, propType));
-
-                    return GetMtPropertyExpression(expr.Member.Name, propType, _paramExpr);
                 }
 
-                return base.Visit(node);
+                Type propType;
+
+                if (!typeof(TSource).IsAssignableFrom(expr.Member.DeclaringType))
+                {
+                    return base.VisitMember(node);
+                }
+
+                if (node.Member is System.Reflection.PropertyInfo)
+                {
+                    propType = ((System.Reflection.PropertyInfo)node.Member).PropertyType;
+                }
+                else if (node.Member is FieldInfo)
+                {
+                    propType = ((FieldInfo)node.Member).FieldType;
+                }
+                else
+                {
+                    throw new NotSupportedException(string.Format("Member {0} has unsupported member type {1}", node.Member.Name, node.Member.GetType().Name));
+                }
+
+                _discoveredProperties.Add(new PropertyInfo(expr.Member.Name, propType));
+
+                return GetMtPropertyExpression(expr.Member.Name, propType, _paramExpr);
             }
 
             /**********************************************************************************/

@@ -61,8 +61,7 @@ namespace Hub.Infrastructure
         public Expression<Func<T, bool>> ToPredicate()
         {
             var paramExpr = Expression.Parameter(typeof(T));
-            var trueExpr = Expression.Constant(true);
-            Expression expr = trueExpr;
+            Expression expr = null;
 
             if (Conditions.Any())
             {
@@ -88,31 +87,56 @@ namespace Hub.Infrastructure
 
                     if (conditionExpr != null)
                     {
-                        expr = Expression.AndAlso(expr, conditionExpr);
+                        expr = expr == null ? conditionExpr : Expression.AndAlso(expr, conditionExpr);
                     }
                 }
             }
 
-            return Expression.Lambda<Func<T, bool>>(expr, paramExpr);
+            return Expression.Lambda<Func<T, bool>>(expr ?? Expression.Constant(true), paramExpr);
+        }
+
+        private static bool TryGetNullableType(Type orignalType, out Type underlyingType)
+        {
+            if (orignalType.IsGenericType && orignalType.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                underlyingType = orignalType.GetGenericArguments()[0];
+                return true;
+            }
+
+            underlyingType = orignalType;
+            return false;
         }
 
         private static Expression CreateFieldCondition(
             Expression rootExpr, FieldInfo fieldInfo, FilterConditionDTO condition)
         {
             object constValue;
+            Type underlyingType = fieldInfo.FieldType;
+            var isNullable = TryGetNullableType(underlyingType, out underlyingType);
 
-            if (!ExtractConstantValue(fieldInfo.FieldType, condition.Value, out constValue))
+            if (!ExtractConstantValue(underlyingType, condition.Value, out constValue))
             {
                 return null;
             }
 
-            var fieldExpr = Expression.Field(rootExpr, fieldInfo);
+            var fieldExpr = (Expression)Expression.Field(rootExpr, fieldInfo);
+
+            if (isNullable)
+            {
+                fieldExpr = Expression.Property(fieldExpr, "Value");
+            }
+
             var constExpr = Expression.Constant(constValue);
 
             Expression result;
             if (!CreateOperatorExpression(fieldExpr, constExpr, condition.Operator, out result))
             {
                 return null;
+            }
+
+            if (isNullable)
+            {
+                result = Expression.AndAlso(Expression.NotEqual(Expression.Field(rootExpr, fieldInfo), Expression.Constant(null)), result);
             }
 
             return result;
@@ -122,19 +146,31 @@ namespace Hub.Infrastructure
             Expression rootExpr, PropertyInfo propInfo, FilterConditionDTO condition)
         {
             object constValue;
+            Type underlyingType = propInfo.PropertyType;
+            var isNullable = TryGetNullableType(underlyingType, out underlyingType);
 
-            if (!ExtractConstantValue(propInfo.PropertyType, condition.Value, out constValue))
+            if (!ExtractConstantValue(underlyingType, condition.Value, out constValue))
             {
                 return null;
             }
 
-            var propExpr = Expression.Property(rootExpr, propInfo);
+            var propExpr = (Expression)Expression.Property(rootExpr, propInfo);
             var constExpr = Expression.Constant(constValue);
+
+            if (isNullable)
+            {
+                propExpr = Expression.Property(propExpr, "Value");
+            }
 
             Expression result;
             if (!CreateOperatorExpression(propExpr, constExpr, condition.Operator, out result))
             {
                 return null;
+            }
+
+            if (isNullable)
+            {
+                result = Expression.AndAlso(Expression.NotEqual(Expression.Property(rootExpr, propInfo), Expression.Constant(null)), result);
             }
 
             return result;
@@ -147,7 +183,8 @@ namespace Hub.Infrastructure
                 result = value;
                 return true;
             }
-            else if (type == typeof(DateTime))
+
+            if (type == typeof(DateTime))
             {
                 if (string.IsNullOrEmpty(value))
                 {
@@ -161,17 +198,13 @@ namespace Hub.Infrastructure
                     result = tempDateTime;
                     return true;
                 }
-                else
-                {
-                    result = null;
-                    return false;
-                }
-            }
-            else
-            {
+
                 result = null;
                 return false;
             }
+
+            result = null;
+            return false;
         }
 
         private static bool CreateOperatorExpression(

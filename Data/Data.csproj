@@ -76,8 +76,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.ApplicationInsights, Version=1.2.3.490, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.ApplicationInsights.1.2.3\lib\net45\Microsoft.ApplicationInsights.dll</HintPath>
+    <Reference Include="Microsoft.ApplicationInsights, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.2.0.0-rc1\lib\net45\Microsoft.ApplicationInsights.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -627,7 +627,11 @@
     <Compile Include="Migrations\201602191529576_RemoveActivityTemplateDupesAndAddConstaints.Designer.cs">
       <DependentUpon>201602191529576_RemoveActivityTemplateDupesAndAddConstaints.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201602240454143_AddCategoryColumnInPlanDO.cs" />
+    <Compile Include="Migrations\201602241821266_UpdateMtFieldTypes.cs" />
+    <Compile Include="Migrations\201602241821266_UpdateMtFieldTypes.Designer.cs">
+      <DependentUpon>201602241821266_UpdateMtFieldTypes.cs</DependentUpon>
+    </Compile>
+	<Compile Include="Migrations\201602240454143_AddCategoryColumnInPlanDO.cs" />
     <Compile Include="Migrations\201602240454143_AddCategoryColumnInPlanDO.Designer.cs">
       <DependentUpon>201602240454143_AddCategoryColumnInPlanDO.cs</DependentUpon>
     </Compile>
@@ -1062,7 +1066,10 @@
     <EmbeddedResource Include="Migrations\201602191529576_RemoveActivityTemplateDupesAndAddConstaints.resx">
       <DependentUpon>201602191529576_RemoveActivityTemplateDupesAndAddConstaints.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201602240454143_AddCategoryColumnInPlanDO.resx">
+    <EmbeddedResource Include="Migrations\201602241821266_UpdateMtFieldTypes.resx">
+      <DependentUpon>201602241821266_UpdateMtFieldTypes.cs</DependentUpon>
+    </EmbeddedResource>
+	<EmbeddedResource Include="Migrations\201602240454143_AddCategoryColumnInPlanDO.resx">
       <DependentUpon>201602240454143_AddCategoryColumnInPlanDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>

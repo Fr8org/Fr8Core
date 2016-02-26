@@ -79,7 +79,7 @@ namespace terminalDocuSign.Actions
             var manifest = new DocuSignTemplateCM
             {
                 Body = JsonConvert.SerializeObject(template),
-                CreateDate = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture),
+                CreateDate = DateTime.UtcNow,
                 Name = template.Name,
                 Status = template.EnvelopeData.status
             };

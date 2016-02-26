@@ -7,17 +7,17 @@ module dockyard.directives {
         field: any;
         fieldValue: string;
         formatError: boolean;
+        opened: boolean;
+        dateOptions: any;
+        dateFormat: string;
+
+        open: () => void;
     }
 
     export function DatePicker(): ng.IDirective {
         return {
             restrict: 'E',
-            template:
-                '<label class="control-label" ng-if="field.label">{{::field.label}}</label>'
-                + '<input type="text" ng-model="fieldValue" ng-model-options="{ updateOn: \'default blur\', debounce: { \'default\': 500, \'blur\': 0 } }" '
-                    + 'ng-blur="onChange($event)" ng-required="field.required" data-field-name="{{::field.name}}" id="pca__txt__{{::field.name | validId}}" '
-                    + 'class="form-control form-control-focus" name="pca__txt__{{::field.name | validId}}" stop-click-propagation />'
-                + '<div style="color: red" ng-show="formatError">Date format: dd-mm-yyyy</div>',
+            templateUrl: '/AngularTemplate/DatePicker',
             scope: {
                 field: '='
             },
@@ -26,41 +26,50 @@ module dockyard.directives {
                 ($scope: IDatePickerScope) => {
                     $scope.formatError = false;
                     $scope.fieldValue = '';
+                    $scope.opened = false;
+                    $scope.dateFormat = 'dd-MM-yyyy';
 
-                    var isValidDate = (value) => {
-                        if (!value) { return true; }
-                    
-                        var tokens = value.split('-');
-                        if (tokens.length !== 3) { return false; }
-                    
-                        if (tokens[0].length !== 2
-                            || tokens[1].length !== 2
-                            || tokens[2].length !== 4) {
-                            return false;
+                    var extractDateString = function (date) {
+                        if (!angular.isDate(date)) {
+                            return date;
                         }
-                    
-                        var days = parseInt(tokens[0]);
-                        if (days < 1 || days > 31) { return false; }
-                    
-                        var months = parseInt(tokens[1]);
-                        if (months < 1 || months > 12) { return false; }
-                    
-                        return true;
+
+                        var padLeft = (str, char, n) => {
+                            if (!str || str.length >= n) {
+                                return str;
+                            }
+
+                            var result = str;
+                            for (var i = str.length; i < n; ++i) {
+                                result = char + str;
+                            }
+
+                            return result;
+                        };
+
+                        var days = padLeft(date.getDate().toString(), '0', 2);
+                        var months = padLeft((date.getMonth() + 1).toString(), '0', 2);
+                        var years = padLeft(date.getFullYear().toString(), '0', 4);
+
+                        return days + '-' + months + '-' + years;
                     };
 
-                    var validate = function () {
-                        $scope.formatError = !isValidDate($scope.fieldValue);
-                    };
-
-                    $scope.$watch('fieldValue', function (value) {
-                        validate();
-                        $scope.field.value = (!$scope.formatError && value) ? value : null;
+                    $scope.$watch('fieldValue', (value) => {
+                        $scope.field.value = value ? extractDateString(value) : null;
                     });
+
+                    $scope.open = () => {
+                        $scope.opened = true;
+                    };
+
+                    $scope.dateOptions = {
+                        formatYear: 'yy',
+                        startingDay: 1
+                    };
 
                     var updateFieldValue = function (field: any) {
                         if (field) {
                             $scope.fieldValue = field.value;
-                            validate();
                         }
                         else {
                             $scope.fieldValue = '';

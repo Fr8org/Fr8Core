@@ -33,6 +33,8 @@ namespace Data.Interfaces.Manifests
 
     public class StandardPayloadDataCM : Manifest
     {
+        public string Name { get; set; }
+
         public List<PayloadObjectDTO> PayloadObjects { get; set; }
 
         public string ObjectType { get; set; }

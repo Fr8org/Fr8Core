@@ -31,6 +31,12 @@ namespace terminalSlack.Controllers
                 AuthenticationType = AuthenticationType.External
             };
 
+            var webService = new WebServiceDTO
+            {
+                Name = "Slack",
+                IconPath = "/Content/icons/web_services/slack-icon-64x64.png"
+            };
+
             var monitorChannelAction = new ActivityTemplateDTO
             {
                 Name = "Monitor_Channel",
@@ -39,6 +45,7 @@ namespace terminalSlack.Controllers
                 Terminal = terminal,
                 NeedsAuthentication = true,
                 Version = "1",
+                WebService = webService,
                 MinPaneWidth = 330
             };
 
@@ -52,6 +59,7 @@ namespace terminalSlack.Controllers
                 NeedsAuthentication = true,
                 Version = "1",
                 Description = "Publish To Slack: Description",
+                WebService = webService,
                 MinPaneWidth = 330
             };
 
