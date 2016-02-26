@@ -382,7 +382,7 @@ namespace terminalDocuSign.Actions
                     var radioButtonGroupDTO = item as DocuSignMultipleOptionsTabDTO;
                     if (radioButtonGroupDTO == null) continue;
                     //todo: migrate the string format for label into template
-                    radioButtonGroupBehavior.Append(radioButtonGroupDTO.Name, string.Format("For the {0}, use:", radioButtonGroupDTO.Name) , radioButtonGroupDTO.Items.Select(x => new RadioButtonOption()
+                    radioButtonGroupBehavior.Append(radioButtonGroupDTO.Name, string.Format("For the <strong>{0}</strong>, use:", radioButtonGroupDTO.Name) , radioButtonGroupDTO.Items.Select(x => new RadioButtonOption()
                     {
                         Name = x.Value,
                         Value = x.Value,
