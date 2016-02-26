@@ -24,7 +24,7 @@ namespace TerminalBase.Infrastructure.Behaviors
         {
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
             _crateStorage = crateStorage;
-            _behaviorName = behaviorName;
+            BehaviorPrefix = behaviorName;
         }
 
         public ICrateStorage CrateStorage

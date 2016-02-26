@@ -13,7 +13,7 @@ namespace TerminalBase.Infrastructure.Behaviors
         public CheckBoxMappingBehavior(ICrateStorage crateStorage, string behaviorName) 
             : base(crateStorage, behaviorName)
         {
-            BehaviorPrefix = "CheckBoxMappingBehavior-";
+           // BehaviorPrefix = behaviorName;
         }
 
         public void Append(IEnumerable<string> fieldIds)
