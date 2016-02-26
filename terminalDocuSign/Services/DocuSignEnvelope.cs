@@ -222,7 +222,7 @@ namespace terminalDocuSign.Services
             {
                 DocumentId = tab.documentId,
                 RecipientId = tab.recipientId,
-                Name = string.Format("{0}({1})", tab.tabLabel.groupName, roleName),
+                Name = string.Format("{0}({1})", tab.tabLabel, roleName),
                 TabId = tab.tabId,
                 Value = value,
                 Type = GetFieldType((string)tab.name),
