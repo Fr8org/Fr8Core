@@ -25,6 +25,7 @@ namespace HealthMonitor
             int errorCount = 0;
             var overrideDbName = string.Empty;
             var connectionString = string.Empty;
+            var csName = string.Empty;
 
             Debug.AutoFlush = true;
 
@@ -91,6 +92,7 @@ namespace HealthMonitor
                     }
 
                     connectionString = match.Groups[2].Value;
+                    csName = match.Groups[1].Value;
 
                     if (!string.IsNullOrEmpty(overrideDbName))
                     {
@@ -100,7 +102,7 @@ namespace HealthMonitor
                         connectionString = builder.ToString();
                     }
 
-                    UpdateConnectionString(match.Groups[1].Value, connectionString);
+                    UpdateConnectionString(csName, connectionString);
                 }
 
             }
@@ -108,7 +110,7 @@ namespace HealthMonitor
             var selfHostInitializer = new SelfHostInitializer();
             if (selfHosting)
             {
-                selfHostInitializer.Initialize(connectionStringArg);
+                selfHostInitializer.Initialize(csName + "=\"" + connectionString + "\"");
             }
 
             try
