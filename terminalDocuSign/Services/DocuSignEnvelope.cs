@@ -221,7 +221,7 @@ namespace terminalDocuSign.Services
             {
                 foreach (var signer in recipients["signers"])
                 {
-                    var roleName = signer["roleName"].ToString();
+                    var roleName = signer["roleName"] != null ? signer["roleName"].ToString() : string.Empty;
 
                     var tabs = signer["tabs"];
                     if (tabs == null)
