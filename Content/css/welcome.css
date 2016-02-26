@@ -92,10 +92,6 @@ a:hover {
             padding-top: 5%;
         }
 
-            .HomePage .HomeLeftSide img.left-btm-img {
-                margin-right: 39%;
-            }
-
     .HomePage .HomeRightSide img {
         margin: 0 auto 0;
         max-width: 100%;
@@ -103,10 +99,17 @@ a:hover {
         padding-top: 50px;
     }
 
+a.HomeRightSide.docusign-route-builder-header:link,
+a.HomeRightSide.docusign-route-builder-header:visited,
+a.HomeRightSide.docusign-route-builder-header:hover,
+a.HomeRightSide.docusign-route-builder-header:focus,
+a.HomeRightSide.docusign-route-builder-header:active {
+    text-decoration: none;
+    color: #fff;
+}
+
 .docusing-pane {
     display: block;
-    margin-left: 22%;
-    margin-right: 19%;
     font-family: Arial;
     color: white;
 }
@@ -120,6 +123,28 @@ a:hover {
     color: white;
     margin-top: 50px;
 }
+
+
+
+.docusign-route-builder-header {
+    color: #fff;
+    margin-top: 75px;
+}
+
+    .docusign-route-builder-header h1 {
+        font-size: 95px;
+        font-weight: bold;
+        width: 2350px;
+        height: 75px;
+        background: url(/Content/img/dockyard_logo.png) top right no-repeat;
+        margin: 0 0 0 -2000px;
+    }
+
+    .docusign-route-builder-header h2 {
+        font-size: 55px;
+        font-weight: bold;
+        margin-top: 10px;
+    }
 
 .docusing-pane p {
     margin-top: 10px;
@@ -142,9 +167,17 @@ a:hover {
     display: block;
     font-family: Arial;
     margin-top: 45px;
-    margin-left: 7%;
-    text-align: left;
+    text-align: center;
 }
+
+    .docusign-info ul {
+        list-style-type: none;
+        padding-left: 0;
+    }
+
+    .docusign-info .btn {
+        margin-left: 0;
+    }
 
 .HomePage .HomeRightSide {
     background: url(../img/welcome/right-pane-bg.png)left top repeat;
