@@ -234,14 +234,16 @@ namespace terminalDocuSignTests.Integration
 
                 var emailNameField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name== "RolesMappingfreight testing role name");
                 emailNameField.ValueSource = "specific";
-                emailNameField.Value = testEmailName;
-                emailNameField.TextValue = testEmailName;
+                emailNameField.Value = TestEmailName;
+                emailNameField.TextValue = TestEmailName;
 
                 using (var updatableStorage = _crateManager.GetUpdatableStorage(sendEnvelopeAction))
                 {
                     updatableStorage.Remove<StandardConfigurationControlsCM>();
                     updatableStorage.Add(controlsCrate);
                 }
+
+                sendEnvelopeAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", sendEnvelopeAction);
 
                 crateStorage = _crateManager.FromDto(sendEnvelopeAction.CrateStorage);
                 controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
@@ -255,8 +257,8 @@ namespace terminalDocuSignTests.Integration
                 Assert.AreEqual(TestEmail, emailField.TextValue, "Email did not save on Send DocuSign Envelope action.");
 
                 emailNameField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingfreight testing role name");
-                Assert.AreEqual(testEmailName, emailField.Value, "Email Name did not save on Send DocuSign Envelope action.");
-                Assert.AreEqual(testEmailName, emailField.TextValue, "Email Name did not save on Send DocuSign Envelope action.");
+                Assert.AreEqual(TestEmailName, emailNameField.Value, "Email Name did not save on Send DocuSign Envelope action.");
+                Assert.AreEqual(TestEmailName, emailNameField.TextValue, "Email Name did not save on Send DocuSign Envelope action.");
                 //
                 // Configure Map Fields action
                 //
