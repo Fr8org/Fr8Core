@@ -41,7 +41,7 @@
         RadioButtonGroup template
         -->
     <div ng-if='field.type == "RadioButtonGroup"'>
-        <label class='control-label'>{{::field.label}}</label>
+        <label class='control-label' ng-bind-html="field.label"></label>
         <radio-button-group field='field' current-action='currentAction' change='onChange'></radio-button-group>
         <div data-ng-if="field.errorMessage != null && field.errorMessage !==''" class="validationWraper">
             <span class="validation-Icon"></span><div class="validation-message">{{field.errorMessage}}</div>
