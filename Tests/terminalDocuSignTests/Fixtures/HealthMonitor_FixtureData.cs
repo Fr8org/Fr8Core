@@ -10,7 +10,7 @@ namespace terminalDocuSignTests.Fixtures
             return new AuthorizationTokenDTO()
             {
                 UserId = "testUser",
-                Token = @"{ ""Email"": ""freight.testing@gmail.com"", ""ApiPassword"": ""7HwITvrrL9qPamM/s5i3GZZuR+o="" }"
+                Token = @"{ ""Email"": ""freight.testing@gmail.com"", ""ApiPassword"": ""I6HmXEbCxN"" }"
             };
         }
 

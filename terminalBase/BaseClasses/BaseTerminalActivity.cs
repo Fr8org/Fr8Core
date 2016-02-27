@@ -560,9 +560,12 @@ namespace TerminalBase.BaseClasses
         /// </summary>
         /// <param name="activityDO">ActionDO.</param>
         /// <returns></returns>
-        protected async Task<Crate> CreateAvailableFieldsCrate(ActivityDO activityDO, string crateLabel = "Upstream Terminal-Provided Fields")
+        protected async Task<Crate> CreateAvailableFieldsCrate(ActivityDO activityDO, 
+            string crateLabel = "Upstream Terminal-Provided Fields", 
+            AvailabilityType availabilityTypeUpstream = AvailabilityType.RunTime,
+            AvailabilityType availabilityTypeFieldsCrate = AvailabilityType.Configuration)
         {
-            var curUpstreamFields = await HubCommunicator.GetDesignTimeFieldsByDirection(activityDO, CrateDirection.Upstream, AvailabilityType.RunTime, CurrentFr8UserId);
+            var curUpstreamFields = await HubCommunicator.GetDesignTimeFieldsByDirection(activityDO, CrateDirection.Upstream, availabilityTypeUpstream, CurrentFr8UserId);
 
             if (curUpstreamFields == null)
             {
@@ -572,7 +575,7 @@ namespace TerminalBase.BaseClasses
             var availableFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(
                     crateLabel,
                     curUpstreamFields.Fields,
-                    AvailabilityType.Configuration
+                    availabilityTypeFieldsCrate
                 );
 
             return availableFieldsCrate;
