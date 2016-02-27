@@ -82,7 +82,9 @@ namespace Data.Entities
         public virtual _RouteStateTemplate RouteStateTemplate { get; set; }
 
         public string Tag { get; set; }
-        
+
+        public PlanVisibility Visibility { get; set; }
+
         [NotMapped]
         public IEnumerable<SubrouteDO> Subroutes
         {
