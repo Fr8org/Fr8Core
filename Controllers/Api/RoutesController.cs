@@ -125,9 +125,9 @@ namespace HubWeb.Controllers
         }
 
         //[Route("getByAction/{id:guid}")]
+        [Fr8HubWebHMACAuthenticate]
         [ResponseType(typeof(RouteFullDTO))]
         [HttpGet]
-
         public IHttpActionResult GetByActivity(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -142,7 +142,7 @@ namespace HubWeb.Controllers
         [Fr8ApiAuthorize]
         [ActionName("status")]
         [HttpGet]
-        public IHttpActionResult GetByStatus(Guid? id = null, int? status = null)
+        public IHttpActionResult GetByStatus(Guid? id = null, int? status = null, string category = "")
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -151,7 +151,8 @@ namespace HubWeb.Controllers
                     _security.GetCurrentAccount(uow),
                     _security.IsCurrentUserHasRole(Roles.Admin),
                     id,
-                    status
+                    status,
+                    category
                 );
 
                 if (curPlans.Any())

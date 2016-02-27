@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class AddCategoryColumnInPlanDO : DbMigration
+    public partial class AddCategoryColumn_PlanDO : DbMigration
     {
         public override void Up()
         {

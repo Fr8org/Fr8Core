@@ -301,6 +301,7 @@
     <Compile Include="Tests\Activities\Search_DocuSign_Tests.cs" />
     <Compile Include="Tests\DocusignApiHelper.cs" />
     <Compile Include="Tests\Fixtures\AppSettingsFixture.cs" />
+    <Compile Include="Tests\Fixtures\TerminalFixtureData - DocuSignReport.cs" />
     <Compile Include="Tests\Fixtures\TerminalFixtureData - DocusignAccount.cs" />
     <Compile Include="Tests\Fixtures\TerminalFixtureData - Folders.cs" />
     <Compile Include="Tests\Fixtures\TerminalFixtureData - Recipient.cs" />

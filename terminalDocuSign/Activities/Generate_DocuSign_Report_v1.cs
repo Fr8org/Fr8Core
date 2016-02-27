@@ -29,6 +29,8 @@ using TerminalBase.Infrastructure;
 using TerminalBase.Services;
 using Hub.Infrastructure;
 using Hub.Interfaces;
+using Hub.Managers.APIManagers.Transmitters.Restful;
+using Utilities.Configuration.Azure;
 
 namespace terminalDocuSign.Actions
 {
@@ -462,7 +464,7 @@ namespace terminalDocuSign.Actions
                     crateStorage.Remove<StandardQueryCM>();
                     RemoveControl(crateStorage, "CannotProceedMessage");
 
-                    //RenamePlanName(activityDO);
+                    await RenamePlanName(activityDO);
 
                     var queryCrate = ExtractQueryCrate(crateStorage);
                     crateStorage.Add(queryCrate);
@@ -614,13 +616,12 @@ namespace terminalDocuSign.Actions
             return Crate<StandardQueryCM>.FromContent(QueryCrateLabel, queryCM);
         }
 
-        private void RenamePlanName(ActivityDO activityDO)
+        private async Task<RouteFullDTO> RenamePlanName(ActivityDO activityDO)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            try
             {
-                var planDO = uow.PlanRepository.GetById<PlanDO>(activityDO.RootRouteNodeId);
-
-                if(planDO.Name.Equals("Generate a DocuSign Report", StringComparison.OrdinalIgnoreCase))
+                RouteFullDTO plan = await GetPlansByActivity(activityDO.Id.ToString());
+                if (plan != null && plan.Name.Equals("Generate a DocuSign Report", StringComparison.OrdinalIgnoreCase))
                 {
                     using (var crateStorage = CrateManager.GetUpdatableStorage(activityDO))
                     {
@@ -628,26 +629,33 @@ namespace terminalDocuSign.Actions
                         .CrateContentsOfType<StandardConfigurationControlsCM>()
                         .SingleOrDefault();
 
-                        if (configurationControls == null)
+                        if (configurationControls != null)
                         {
-                            throw new ApplicationException("Action was not configured correctly");
+                            var actionUi = new ActivityUi();
+                            actionUi.ClonePropertiesFrom(configurationControls);
+
+                            var criteria = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(
+                                actionUi.QueryBuilder.Value
+                            );
+
+                            if (criteria.Count > 0)
+                            {
+                                plan.Name = FilterConditionPredicateBuilder<StandardQueryCM>.ParseConditionToText(criteria);
+
+                                var emptyPlanDTO = Mapper.Map<RouteEmptyDTO>(plan);
+                                plan = await UpdatePlan(emptyPlanDTO);
+                            }
                         }
-
-                        var actionUi = new ActivityUi();
-                        actionUi.ClonePropertiesFrom(configurationControls);
-
-                        var criteria = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(
-                            actionUi.QueryBuilder.Value
-                        );
-
-                        planDO.Name = FilterConditionPredicateBuilder<StandardQueryCM>.ParseConditionToText(criteria);
-
-                        _plan.CreateOrUpdate(uow, planDO, false);
-
-                        uow.SaveChanges();
                     }
                 }
+
+                return plan;
+
             }
+            catch (Exception ex)
+            {
+            }
+            return null;
         }
 
         public QueryFieldDTO[] GetFieldListForQueryBuilder(DocuSignAuthTokenDTO authToken)

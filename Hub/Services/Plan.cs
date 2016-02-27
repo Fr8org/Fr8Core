@@ -48,13 +48,19 @@ namespace Hub.Services
         }
 
         public IList<PlanDO> GetForUser(IUnitOfWork unitOfWork, Fr8AccountDO account, bool isAdmin = false,
-            Guid? id = null, int? status = null)
+            Guid? id = null, int? status = null, string category = "")
         {
             var queryableRepo = unitOfWork.PlanRepository.GetPlanQueryUncached();
 
             queryableRepo = (id == null
                 ? queryableRepo.Where(pt => pt.Fr8Account.Id == account.Id)
                 : queryableRepo.Where(pt => pt.Id == id && pt.Fr8Account.Id == account.Id));
+
+            if (!string.IsNullOrEmpty(category))
+                queryableRepo = queryableRepo.Where(c => c.Category == category);
+            else
+                queryableRepo = queryableRepo.Where(c => string.IsNullOrEmpty(c.Category));
+
             return (status == null
                 ? queryableRepo
                 : queryableRepo.Where(pt => pt.RouteState == status)).ToList();

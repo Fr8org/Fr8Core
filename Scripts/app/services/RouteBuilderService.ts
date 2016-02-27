@@ -5,7 +5,7 @@
 */
 module dockyard.services {
     export interface IRouteService extends ng.resource.IResourceClass<interfaces.IRouteVM> {
-        getbystatus: (id: { id: number; status: number; }) => Array<interfaces.IRouteVM>;
+        getbystatus: (id: { id: number; status: number; category?: string }) => Array<interfaces.IRouteVM>;
         getFull: (id: Object) => interfaces.IRouteVM;
         getByActivity: (id: { id: string }) => interfaces.IRouteVM;
         execute: (id: { id: number }, payload: { payload: string }, success: any, error: any) => void;
@@ -96,9 +96,10 @@ module dockyard.services {
                     'getbystatus': {
                         method: 'GET',
                         isArray: true,
-                        url: '/api/routes/status?status=:status',
+                        url: '/api/routes/status?status=:status&category=:category',
                         params: {
-                            status: '@status'
+                            status: '@status',
+                            category: '@category'
                         }
                     },
                     'getByActivity': {

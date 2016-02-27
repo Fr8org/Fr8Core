@@ -631,9 +631,9 @@
     <Compile Include="Migrations\201602241821266_UpdateMtFieldTypes.Designer.cs">
       <DependentUpon>201602241821266_UpdateMtFieldTypes.cs</DependentUpon>
     </Compile>
-	<Compile Include="Migrations\201602240454143_AddCategoryColumnInPlanDO.cs" />
-    <Compile Include="Migrations\201602240454143_AddCategoryColumnInPlanDO.Designer.cs">
-      <DependentUpon>201602240454143_AddCategoryColumnInPlanDO.cs</DependentUpon>
+    <Compile Include="Migrations\201602260515140_AddCategoryColumn_PlanDO.cs" />
+    <Compile Include="Migrations\201602260515140_AddCategoryColumn_PlanDO.Designer.cs">
+      <DependentUpon>201602260515140_AddCategoryColumn_PlanDO.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -1069,8 +1069,8 @@
     <EmbeddedResource Include="Migrations\201602241821266_UpdateMtFieldTypes.resx">
       <DependentUpon>201602241821266_UpdateMtFieldTypes.cs</DependentUpon>
     </EmbeddedResource>
-	<EmbeddedResource Include="Migrations\201602240454143_AddCategoryColumnInPlanDO.resx">
-      <DependentUpon>201602240454143_AddCategoryColumnInPlanDO.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201602260515140_AddCategoryColumn_PlanDO.resx">
+      <DependentUpon>201602260515140_AddCategoryColumn_PlanDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

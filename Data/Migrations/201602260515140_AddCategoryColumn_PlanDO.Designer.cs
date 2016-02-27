@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class AddCategoryColumnInPlanDO : IMigrationMetadata
+    public sealed partial class AddCategoryColumn_PlanDO : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(AddCategoryColumnInPlanDO));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(AddCategoryColumn_PlanDO));
         
         string IMigrationMetadata.Id
         {
-            get { return "201602240454143_AddCategoryColumnInPlanDO"; }
+            get { return "201602260515140_AddCategoryColumn_PlanDO"; }
         }
         
         string IMigrationMetadata.Source

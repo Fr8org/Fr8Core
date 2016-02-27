@@ -296,6 +296,17 @@ namespace TerminalBase.BaseClasses
         {
             return await HubCommunicator.GetCurrentUser(activityDO, containerId, CurrentFr8UserId);
         }
+
+        protected async Task<RouteFullDTO> GetPlansByActivity(string activityId)
+        {
+            return await HubCommunicator.GetPlansByActivity(activityId, CurrentFr8UserId);
+        }
+
+        protected async Task<RouteFullDTO> UpdatePlan(RouteEmptyDTO plan)
+        {
+            return await HubCommunicator.UpdatePlan(plan, CurrentFr8UserId);
+        }
+
         protected async Task<Crate> ValidateFields(List<FieldValidationDTO> requiredFieldList)
         {
             var result = await HubCommunicator.ValidateFields(requiredFieldList, CurrentFr8UserId);

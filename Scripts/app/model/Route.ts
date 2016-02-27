@@ -10,6 +10,7 @@
         externalEventSubscription: Array<number>; 
         startingSubrouteId: number;
         subroutes: Array<SubrouteDTO>;
+        category: string;
     }
 
     export enum RouteState {
