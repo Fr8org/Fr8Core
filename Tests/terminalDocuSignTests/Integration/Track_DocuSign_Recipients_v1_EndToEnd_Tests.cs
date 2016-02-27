@@ -25,7 +25,7 @@ namespace terminalDocuSignTests.Integration
     /// </summary>
     [Explicit]
     [Category("terminalDocuSignTests.Integration")]
-    public class Rich_Document_Notifications_v1_EndToEnd_Tests : BaseHubIntegrationTest
+    public class Track_DocuSign_Recipients_v1_EndToEnd_Tests : BaseHubIntegrationTest
     {
         public override string TerminalName
         {
@@ -72,13 +72,13 @@ namespace terminalDocuSignTests.Integration
             await PostFakeEvent();
         }
 
-        [Test]
-        public async Task Rich_Document_Notifications_EndToEnd()
+        [Test, Ignore]
+        public async Task Track_DocuSign_Recipients_EndToEnd()
         {
             string baseUrl = GetHubApiBaseUrl();
             
-            var solutionCreateUrl = baseUrl + "activities/create?solutionName=Rich_Document_Notifications";
-            
+            var solutionCreateUrl = baseUrl + "activities/create?solutionName=Track_DocuSign_Recipients";
+
 
             //
             // Create solution
@@ -241,12 +241,12 @@ namespace terminalDocuSignTests.Integration
             emailAddress.TextValue = "freight.testing@gmail.com";
 
             emailSubject.ValueSource = "specific";
-            emailSubject.Value = "Fr8-RichDocumentNotificationsTest";
-            emailSubject.TextValue = "Fr8-RichDocumentNotificationsTest";
+            emailSubject.Value = "Fr8-TrackDocuSignRecipientsTest";
+            emailSubject.TextValue = "Fr8-TrackDocuSignRecipientsTest";
 
             emailBody.ValueSource = "specific";
-            emailBody.Value = "Fr8-RichDocumentNotificationsTest";
-            emailBody.TextValue = "Fr8-RichDocumentNotificationsTest";
+            emailBody.Value = "Fr8-TrackDocuSignRecipientsTest";
+            emailBody.TextValue = "Fr8-TrackDocuSignRecipientsTest";
 
             using (var updatableStorage = _crateManager.GetUpdatableStorage(emailActivity))
             {
@@ -288,7 +288,7 @@ namespace terminalDocuSignTests.Integration
             EmailAssert.RecentMsgThreshold = TimeSpan.FromSeconds(45);
             EmailAssert._timeout = TimeSpan.FromSeconds(45);
             // Verify that test email has been received
-            //EmailAssert.EmailReceived("fr8ops@fr8.company", "Fr8-RichDocumentNotificationsTest");
+            //EmailAssert.EmailReceived("fr8ops@fr8.company", "Fr8-TrackDocuSignRecipientsTest");
             
         }
     }

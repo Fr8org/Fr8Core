@@ -162,24 +162,24 @@ namespace terminalDocuSignTests.Fixtures
             return ConvertToFr8Data(activityDTO);
         }
 
-        public static ActivityTemplateDTO Rich_Document_Notifications_v1_ActivityTemplate()
+        public static ActivityTemplateDTO Track_DocuSign_Recipients_v1_ActivityTemplate()
         {
             return new ActivityTemplateDTO()
             {
                 Id = 7,
-                Name = "Rich_Document_Notifications_TEST",
+                Name = "Track_DocuSign_Recipients_TEST",
                 Version = "1"
             };
         }
 
-        public static Fr8DataDTO Rich_Document_Notifications_v1_InitialConfiguration_Fr8DataDTO()
+        public static Fr8DataDTO Track_DocuSign_Recipients_v1_InitialConfiguration_Fr8DataDTO()
         {
-            var activityTemplate = Rich_Document_Notifications_v1_ActivityTemplate();
+            var activityTemplate = Track_DocuSign_Recipients_v1_ActivityTemplate();
 
             var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Label = "Rich Document Notifications",
+                Label = "Track DocuSign Recipients",
                 AuthToken = DocuSign_AuthToken(),
                 ActivityTemplate = activityTemplate
             };
