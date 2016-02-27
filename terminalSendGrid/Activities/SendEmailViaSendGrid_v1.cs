@@ -55,7 +55,7 @@ namespace terminalSendGrid.Actions
             {
                 crateStorage.Clear();
                 crateStorage.Add(CreateControlsCrate());
-                crateStorage.Add(await CreateAvailableFieldsCrate(curActivityDO));
+                crateStorage.Add(await CreateAvailableFieldsCrate(curActivityDO, availabilityTypeUpstream: AvailabilityType.RunTime, availabilityTypeFieldsCrate: AvailabilityType.RunTime));
             }
 
             return await Task.FromResult(curActivityDO);
@@ -65,7 +65,7 @@ namespace terminalSendGrid.Actions
         {
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                crateStorage.ReplaceByLabel(await CreateAvailableFieldsCrate(curActivityDO));
+                crateStorage.ReplaceByLabel(await CreateAvailableFieldsCrate(curActivityDO, availabilityTypeUpstream: AvailabilityType.RunTime, availabilityTypeFieldsCrate: AvailabilityType.RunTime));
             }
 
             return await Task.FromResult(curActivityDO);
@@ -105,7 +105,7 @@ namespace terminalSendGrid.Actions
         /// <returns></returns>
         private ControlDefinitionDTO CreateEmailAddressTextSourceControl()
         {
-            var control = CreateSpecificOrUpstreamValueChooser("Email Address", "EmailAddress", "Upstream Terminal-Provided Fields");
+            var control = CreateSpecificOrUpstreamValueChooser("Email Address", "EmailAddress", "Upstream Terminal-Provided Fields", addRequestConfigEvent: true);
                 
             //CreateSpecificOrUpstreamValueChooser(
             //    "Email Address",
