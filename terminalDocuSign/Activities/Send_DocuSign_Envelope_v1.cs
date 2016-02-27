@@ -360,9 +360,10 @@ namespace terminalDocuSign.Actions
                     var dropDownListDTO = item as DocuSignMultipleOptionsTabDTO;
                     if (dropDownListDTO == null) continue;
 
-                    dropdownListMappingBehavior.Append(dropDownListDTO.Name, string.Format("For the <strong>{0}</strong>, use:", item.Name), dropDownListDTO.Items.Select(x => new ListItem()
+                    dropdownListMappingBehavior.Append(dropDownListDTO.Name, string.Format("For the <strong>{0}</strong>, use:", item.Name), dropDownListDTO.Items.Where(x=>x.Text != string.Empty || x.Value != string.Empty ).Select(x => new ListItem()
                     {
-                        Value = x.Value,
+                        Key = string.IsNullOrEmpty(x.Value) ? x.Text : x.Value, 
+                        Value = string.IsNullOrEmpty(x.Text) ? x.Value : x.Text,
                         Selected = x.Selected,
                     }).ToList());
                 }
