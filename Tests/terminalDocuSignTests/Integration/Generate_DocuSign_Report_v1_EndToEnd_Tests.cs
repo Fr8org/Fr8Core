@@ -198,21 +198,6 @@ namespace terminalDocuSignTests.Integration
             }
         }
 
-        private async Task SaveActivity(ActivityDTO activity)
-        {
-            await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", activity);
-        }
-
-        private async Task<ActivityDTO> ConfigureActivity(ActivityDTO activity)
-        {
-            activity = await HttpPostAsync<ActivityDTO, ActivityDTO>(
-                _baseUrl + "activities/configure",
-                activity
-            );
-
-            return activity;
-        }
-
         private void ValidateChildrenActivities(ActivityDTO solution)
         {
             Assert.AreEqual(1, solution.ChildrenActivities.Length);
@@ -234,29 +219,10 @@ namespace terminalDocuSignTests.Integration
             );
         }
 
-        private async Task<ContainerDTO> ExecutePlan(RouteFullDTO plan)
-        {
-            var container = await HttpPostAsync<string, ContainerDTO>(
-                _baseUrl + "routes/run?planId=" + plan.Id.ToString(),
-                null
-            );
-
-            return container;
-        }
-
         private void ValidateContainer(ContainerDTO container)
         {
             Assert.AreEqual(ActivityResponse.ExecuteClientActivity, container.CurrentActivityResponse);
             Assert.AreEqual("ShowTableReport", container.CurrentClientActivityName);
-        }
-
-        private async Task<PayloadDTO> ExtractContainerPayload(ContainerDTO container)
-        {
-            var payload = await HttpGetAsync<PayloadDTO>(
-                _baseUrl + "containers/payload?id=" + container.Id.ToString()
-            );
-
-            return payload;
         }
 
         private void ValidateContainerPayload(PayloadDTO payload)
