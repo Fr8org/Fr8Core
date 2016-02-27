@@ -60,78 +60,76 @@ namespace terminalSalesforceTests.Actions
             _getData_v1 = new Get_Data_v1();
         }
 
-        [Test, Ignore, Category("terminalSalesforceTests.Get_Data.Configure")]
+        [Test, Category("terminalSalesforceTests.Get_Data.Configure")]
         public async Task Configure_InitialConfig_CheckControlsCrate()
         {
             //Arrange
             var activityDO = FixtureData.GetFileListTestActivityDO1();
 
             //Act
-            var result = await _getData_v1.Configure(activityDO, FixtureData.Salesforce_AuthToken());
+            var result = await _getData_v1.Configure(activityDO, await FixtureData.Salesforce_AuthToken());
 
             //Assert
             var stroage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(result);
-            Assert.AreEqual(3, stroage.Count, "Number of configuration crates not populated correctly");
+            Assert.AreEqual(2, stroage.Count, "Number of configuration crates not populated correctly");
 
             var configControlCM = stroage.CratesOfType<StandardConfigurationControlsCM>().Single();
             Assert.IsNotNull(configControlCM, "Configuration controls is not present");
 
-            Assert.AreEqual(2, configControlCM.Content.Controls.Count, "Number of configuration controls are not correct");
+            Assert.AreEqual(3, configControlCM.Content.Controls.Count, "Number of configuration controls are not correct");
             Assert.IsTrue(configControlCM.Content.Controls.Any(control => control.Name.Equals("WhatKindOfData")), "WhatKindOfData DDLB is not present");
-            Assert.IsTrue(configControlCM.Content.Controls.Any(control => control.Name.Equals("SelectedFilter")), "SelectedFilter DDLB is not present");
-
-            Assert.AreEqual(0,
-                stroage.CratesOfType<FieldDescriptionsCM>()
-                    .Single(c => c.Label.Equals("Queryable Criteria"))
-                    .Content.Fields.Count, "Queryable Criteria is filled with invalid data");
+            Assert.IsTrue(configControlCM.Content.Controls.Any(control => control.Name.Equals("SelectedQuery")), "SelectedQuery DDLB is not present");
         }
 
-        [Test, Ignore, Category("terminalSalesforceTests.Get_Data.Configure")]
+        [Test, Category("terminalSalesforceTests.Get_Data.Configure")]
         public async Task Configure_FollowUpConfig_CheckObjectFields()
         {
             //Arrange
+            var authToken = await FixtureData.Salesforce_AuthToken();
             var activityDO = FixtureData.GetFileListTestActivityDO1();
-            activityDO = await _getData_v1.Configure(activityDO, FixtureData.Salesforce_AuthToken());
+            activityDO = await _getData_v1.Configure(activityDO, authToken);
             activityDO = SelectSalesforceAccount(activityDO);
 
             Mock<ISalesforceManager> salesforceIntegrationMock = Mock.Get(ObjectFactory.GetInstance<ISalesforceManager>());
 
             //Act
-            activityDO = await _getData_v1.Configure(activityDO, FixtureData.Salesforce_AuthToken());
+            activityDO = await _getData_v1.Configure(activityDO, authToken);
 
             //Assert
             var stroage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(activityDO);
             Assert.AreEqual(3, stroage.Count, "Number of configuration crates not populated correctly");
 
-            Assert.AreEqual(stroage.CratesOfType<FieldDescriptionsCM>()
+            Assert.AreEqual(stroage.CratesOfType<StandardQueryFieldsCM>()
                     .Single(c => c.Label.Equals("Queryable Criteria"))
                     .Content.Fields.Count, 1, "Queryable Criteria is NOT filled with invalid data");
 
             salesforceIntegrationMock.Verify(s => s.GetFields("Account", It.IsAny<ForceClient>()), Times.Exactly(1));
         }
 
-        [Test, Ignore, Category("terminalSalesforceTests.Get_Data.Run")]
+        [Test, Category("terminalSalesforceTests.Get_Data.Run")]
         public async Task Run_Check_PayloadDTO_ForObjectData()
         {
             //Arrange
+            var authToken = await FixtureData.Salesforce_AuthToken();
             var activityDO = FixtureData.GetFileListTestActivityDO1();
 
             //perform initial configuration
-            activityDO = await _getData_v1.Configure(activityDO, FixtureData.Salesforce_AuthToken());
+            activityDO = await _getData_v1.Configure(activityDO, authToken);
             activityDO = SelectSalesforceAccount(activityDO);
             //perform follow up configuration
-            activityDO = await _getData_v1.Configure(activityDO, FixtureData.Salesforce_AuthToken());
+            activityDO = await _getData_v1.Configure(activityDO, authToken);
 
             using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().GetUpdatableStorage(activityDO))
             {
                 crateStorage.CratesOfType<StandardConfigurationControlsCM>()
                     .Single()
-                    .Content.Controls.Single(control => control.Type == ControlTypes.FilterPane)
-                    .Value = JsonConvert.SerializeObject(new FilterDataDTO() {Conditions = new List<FilterConditionDTO>()});
+                    .Content.Controls.Single(control => control.Type == ControlTypes.QueryBuilder)
+                    //.Value = JsonConvert.SerializeObject(new FilterDataDTO() {Conditions = new List<FilterConditionDTO>()});
+                    .Value = JsonConvert.SerializeObject(new List<FilterConditionDTO>());
             }
 
             //Act
-            var resultPayload = await _getData_v1.Run(activityDO, new Guid(), FixtureData.Salesforce_AuthToken());
+            var resultPayload = await _getData_v1.Run(activityDO, new Guid(), authToken);
 
             //Assert
             var stroage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(resultPayload);
