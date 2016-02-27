@@ -202,6 +202,8 @@ namespace terminalDocuSignTests.Integration
                 //
                 // Configure Send DocuSign Envelope action
                 //
+
+                // Initial Configuration
                 var sendEnvelopeAction = fr8CoreLoop.ChildrenActivities.Single(a => a.Label == "Send DocuSign Envelope");
 
                 crateStorage = _crateManager.FromDto(sendEnvelopeAction.CrateStorage);
@@ -212,18 +214,36 @@ namespace terminalDocuSignTests.Integration
                 docuSignTemplate.selectedKey = "Medical_Form_v1";
                 docuSignTemplate.ListItems.Add(new ListItem() { Value = "9a4d2154-5b18-4316-9824-09432e62f458", Key = "Medical_Form_v1" });
 
-                var emailField = controlsCrate.Content.Controls.OfType<TextSource>().First();
+                using (var updatableStorage = _crateManager.GetUpdatableStorage(sendEnvelopeAction))
+                {
+                    updatableStorage.Remove<StandardConfigurationControlsCM>();
+                    updatableStorage.Add(controlsCrate);
+                }
+
+                sendEnvelopeAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", sendEnvelopeAction);
+                sendEnvelopeAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure", sendEnvelopeAction);
+
+                
+                // Follow-up Configuration
+                crateStorage = _crateManager.FromDto(sendEnvelopeAction.CrateStorage);
+                controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
+                var emailField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name== "RolesMappingfreight testing role email");
                 emailField.ValueSource = "specific";
                 emailField.Value = TestEmail;
-                emailField.TextValue = TestEmail;
+                emailField.TextValue = TestEmail;   
+
+                var emailNameField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name== "RolesMappingfreight testing role name");
+                emailNameField.ValueSource = "specific";
+                emailNameField.Value = TestEmailName;
+                emailNameField.TextValue = TestEmailName;
 
                 using (var updatableStorage = _crateManager.GetUpdatableStorage(sendEnvelopeAction))
                 {
                     updatableStorage.Remove<StandardConfigurationControlsCM>();
                     updatableStorage.Add(controlsCrate);
                 }
+
                 sendEnvelopeAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", sendEnvelopeAction);
-                sendEnvelopeAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure", sendEnvelopeAction);
 
                 crateStorage = _crateManager.FromDto(sendEnvelopeAction.CrateStorage);
                 controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
@@ -232,10 +252,13 @@ namespace terminalDocuSignTests.Integration
                 Assert.AreEqual("9a4d2154-5b18-4316-9824-09432e62f458", docuSignTemplate.Value, "Selected DocuSign Template did not save on Send DocuSign Envelope action.");
                 Assert.AreEqual("Medical_Form_v1", docuSignTemplate.selectedKey, "Selected DocuSign Template did not save on Send DocuSign Envelope action.");
 
-                emailField = controlsCrate.Content.Controls.OfType<TextSource>().First();
+                emailField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingfreight testing role email");
                 Assert.AreEqual(TestEmail, emailField.Value, "Email did not save on Send DocuSign Envelope action.");
                 Assert.AreEqual(TestEmail, emailField.TextValue, "Email did not save on Send DocuSign Envelope action.");
 
+                emailNameField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingfreight testing role name");
+                Assert.AreEqual(TestEmailName, emailNameField.Value, "Email Name did not save on Send DocuSign Envelope action.");
+                Assert.AreEqual(TestEmailName, emailNameField.TextValue, "Email Name did not save on Send DocuSign Envelope action.");
                 //
                 // Configure Map Fields action
                 //
@@ -277,7 +300,7 @@ namespace terminalDocuSignTests.Integration
             }
             catch (Exception ex)
                 {
-                throw;
+                    throw;
             }
         }
     }
