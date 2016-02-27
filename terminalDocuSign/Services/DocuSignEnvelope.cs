@@ -177,7 +177,10 @@ namespace terminalDocuSign.Services
             {
                 foreach (var signer in recipients["signers"])
                 {
-                    string rolename = signer["roleName"].ToString();
+                    string rolename = signer["roleName"] == null 
+                        ? (signer["name"] == null 
+                            ? signer["email"].ToString() : signer["name"].ToString()) 
+                        : signer["roleName"].ToString();
                     result.Add(new FieldDTO(string.Format("{0} role name", rolename)) { Tags = "recipientId:" + signer["recipientId"].ToString() });
                     result.Add(new FieldDTO(string.Format("{0} role email", rolename)) { Tags = "recipientId:" + signer["recipientId"].ToString() });
                 }

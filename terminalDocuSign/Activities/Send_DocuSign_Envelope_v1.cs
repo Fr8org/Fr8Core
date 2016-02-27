@@ -294,7 +294,6 @@ namespace terminalDocuSign.Actions
                   roles.ToArray()
               );
 
-
                 crateStorage.RemoveByLabel("DocuSignTemplateRolesFields");
                 crateStorage.Add(crateRolesDTO);
 
@@ -303,8 +302,6 @@ namespace terminalDocuSign.Actions
                 // when we're in design mode, there are no values
                 // we just want the names of the fields
                 var userDefinedFields = envelopeDataDTO.Select(x => new FieldDTO() { Key = x.Name, Value = x.Name, Availability = AvailabilityType.RunTime, Tags = x.TabName + " " + "recipientId:" + x.RecipientId }).ToList();
-
-
 
                 var crateUserDefinedDTO = CrateManager.CreateDesignTimeFieldsCrate(
                     "DocuSignTemplateUserDefinedFields",
@@ -330,7 +327,6 @@ namespace terminalDocuSign.Actions
                 mappingBehavior.Append(textSourceFields, "Upstream Terminal-Provided Fields");
                 //Create TextSource controls for ROLES
 
-       
                 //Create radio Button Groups
                 var radioButtonGroupBehavior = new RadioButtonGroupMappingBehavior(crateStorage, "RadioGroupMapping");
 
