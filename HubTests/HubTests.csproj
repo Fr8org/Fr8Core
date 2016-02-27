@@ -97,6 +97,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Integration\ReportControllerTest.cs" />
     <Compile Include="Managers\CrateManagerTests.cs" />
     <Compile Include="Managers\CrateManagerTests.Fixtures.cs" />
     <Compile Include="Managers\IncidentReporterTests.cs" />
@@ -113,6 +114,10 @@
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Hub</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Tests\HealthMonitorUtility\HealthMonitorUtility.csproj">
+      <Project>{459fe39a-a5cc-41d8-b06e-8fae3a1a623b}</Project>
+      <Name>HealthMonitorUtility</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Tests\UtilitiesTesting\UtilitiesTesting.csproj">
       <Project>{6B855C3F-07A9-4787-9FDE-29FA567C43E2}</Project>
       <Name>UtilitiesTesting</Name>
@@ -122,9 +127,7 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Integration\" />
-  </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

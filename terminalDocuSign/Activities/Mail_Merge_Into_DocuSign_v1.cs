@@ -123,7 +123,7 @@ namespace terminalDocuSign.Actions
 
         private async Task<List<ListItem>> GetDataSourceListItems(ActivityDO activityDO, string tag)
         {
-            var curActivityTemplates = await HubCommunicator.GetActivityTemplates(activityDO, tag)
+            var curActivityTemplates = await HubCommunicator.GetActivityTemplates(tag)
                 .ContinueWith(x => x.Result.Where(y => y.Name.StartsWith("Get", StringComparison.InvariantCultureIgnoreCase) && y.Category == Data.States.ActivityCategory.Receivers));
             return curActivityTemplates.Select(at => new ListItem() { Key = at.Label, Value = at.Name }).ToList();
         }
@@ -272,7 +272,7 @@ namespace terminalDocuSign.Actions
             //extract fields in docusign form
             _docuSignManager.UpdateUserDefinedFields(curActivityDO, authTokenDO, CrateManager.GetUpdatableStorage(curActivityDO), _docuSignTemplate.Value);
 
-            var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(curActivityDO, null))
+            var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null))
                 .Select(x => Mapper.Map<ActivityTemplateDO>(x))
                 .ToList();
 

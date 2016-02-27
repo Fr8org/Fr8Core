@@ -32,7 +32,7 @@ namespace terminalDocuSign.Actions
         private class ActivityUi : StandardConfigurationControlsCM
         {
             [JsonIgnore]
-            public DropDownList FinalActivitiesList { get; set; }
+            public DropDownList FinalActionsList { get; set; }
 
             public ActivityUi()
             {
@@ -48,7 +48,7 @@ namespace terminalDocuSign.Actions
 
                 });
 
-                Controls.Add((FinalActivitiesList = new DropDownList
+                Controls.Add((FinalActionsList = new DropDownList
                 {
                     Name = "FinalActionsList",
                     Required = true,
@@ -84,7 +84,7 @@ namespace terminalDocuSign.Actions
             {
                 crateStorage.Clear();
                 crateStorage.Add(PackControls(new ActivityUi()));
-                crateStorage.AddRange(await PackSources(curActivtyDO));
+                crateStorage.AddRange(await PackSources());
             }
 
             return curActivtyDO;
@@ -97,7 +97,7 @@ namespace terminalDocuSign.Actions
             actionUi.ClonePropertiesFrom(CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().First());
 
             //don't add child actions until a selection is made
-            if (string.IsNullOrEmpty(actionUi.FinalActivitiesList.Value))
+            if (string.IsNullOrEmpty(actionUi.FinalActionsList.Value))
             {
                 return curActivityDO;
             }
@@ -108,7 +108,7 @@ namespace terminalDocuSign.Actions
             const string firstTemplateName = "Monitor_DocuSign_Envelope_Activity";
 
             var firstActivity = await AddAndConfigureChildActivity(curActivityDO, firstTemplateName);
-            var secondActivity = await AddAndConfigureChildActivity(curActivityDO, actionUi.FinalActivitiesList.Value, "Final activity");
+            var secondActivity = await AddAndConfigureChildActivity(curActivityDO, actionUi.FinalActionsList.Value, "Final activity");
 
             return curActivityDO;
         }
@@ -120,15 +120,15 @@ namespace terminalDocuSign.Actions
 
         private async Task<IEnumerable<ActivityTemplateDO>> FindTemplates(ActivityDO activityDO, Predicate<ActivityTemplateDO> query)
         {
-            var templates = await HubCommunicator.GetActivityTemplates(activityDO, CurrentFr8UserId);
+            var templates = await HubCommunicator.GetActivityTemplates(CurrentFr8UserId);
             return templates.Select(x => Mapper.Map<ActivityTemplateDO>(x)).Where(x => query(x));
         }
 
-        private async Task<IEnumerable<Crate>> PackSources(ActivityDO activityDO)
+        private async Task<IEnumerable<Crate>> PackSources()
         {
             var sources = new List<Crate>();
 
-            var templates = await HubCommunicator.GetActivityTemplates(activityDO, ActivityCategory.Forwarders, CurrentFr8UserId);
+            var templates = await HubCommunicator.GetActivityTemplates(ActivityCategory.Forwarders, CurrentFr8UserId);
             sources.Add(
                 CrateManager.CreateDesignTimeFieldsCrate(
                     "AvailableActions",
