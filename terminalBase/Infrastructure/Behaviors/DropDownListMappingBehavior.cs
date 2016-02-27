@@ -13,7 +13,7 @@ namespace TerminalBase.Infrastructure.Behaviors
         public DropDownListMappingBehavior(ICrateStorage crateStorage, string behaviorName) 
             : base(crateStorage, behaviorName)
         {
-            BehaviorPrefix = "DropDownListMappingBehavior-";
+           // BehaviorPrefix = "DropDownListMappingBehavior-";
         }
 
         public void Append(string name, string labelName,  List<ListItem> items)

@@ -149,7 +149,7 @@ namespace terminalDocuSign.Actions
                     var field = tempFieldCollection.FirstOrDefault(x => x.Key == item.Name);
                     if (field != null)
                     {
-                        field.Value = item.Selected.ToString();
+                        field.Value = item.Selected.ToString().ToLower();
                         resultCollection.Add(field);
                     }
                 }

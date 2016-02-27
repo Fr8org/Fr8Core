@@ -36,13 +36,14 @@ namespace TerminalBase.Infrastructure.Behaviors
 
             var checkBoxes = controlsCM
                 .Controls.Where(IsBehaviorControl).OfType<CheckBox>();
-
+            var checkBoxesResult = new List<CheckBox>();
             foreach (var checkBox in checkBoxes)
             {
                 checkBox.Name = GetFieldId(checkBox);
+                checkBoxesResult.Add(checkBox);
             }
 
-            return checkBoxes.ToList();
+            return checkBoxesResult;
         }
     }
 }
