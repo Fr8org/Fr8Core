@@ -25,6 +25,11 @@ namespace Data.Infrastructure.MultiTenant
             int i = 1;
             foreach (var property in curDataProperties)
             {
+                var entity = _uow.MTFieldRepository.FindOne(f => f.Name == property.Name && f.MT_ObjectId == correspondingMTObject.Id);
+                if (entity != null)
+                {
+                    continue;
+                }
                 Data.Entities.MT_Field mtField = new Data.Entities.MT_Field();
                 mtField.FieldColumnOffset = i;
                 mtField.MT_ObjectId = correspondingMTObject.Id;
