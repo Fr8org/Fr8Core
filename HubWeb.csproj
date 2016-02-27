@@ -818,6 +818,7 @@
     <Content Include="_PowerShellScripts\SetTerminalDocuSignCS.ps1" />
     <Content Include="_PowerShellScripts\CloneDatabase.ps1" />
     <Content Include="_PowerShellScripts\UpdateTerminalHostnameInDb.ps1" />
+    <Content Include="_PowerShellScripts\DeleteDatabase.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryListController.ts" />

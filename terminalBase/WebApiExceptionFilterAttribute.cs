@@ -5,16 +5,11 @@ using System.Text;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
 using Newtonsoft.Json;
-using StructureMap;
-using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Errors;
 using Utilities;
-using System.Threading.Tasks;
 using Microsoft.ApplicationInsights;
 using System.Collections.Generic;
-using Data.Interfaces.DataTransferObjects;
-using System.Linq;
 
 namespace TerminalBase
 {

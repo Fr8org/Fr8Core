@@ -216,9 +216,10 @@ namespace terminalDocuSign.Actions
             var criteria = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(actionUi.QueryBuilder.Value);
             var existingEnvelopes = new HashSet<string>();
             var searchResult = new StandardPayloadDataCM() { Name = "Docusign Report" };
-            var docuSignAuthToken = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 
-            SearchDocusignInRealTime(docuSignAuthToken, criteria, searchResult, existingEnvelopes);
+            // Commented out by yakov.gnusin in scope of FR-2462.
+            // var docuSignAuthToken = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
+            // SearchDocusignInRealTime(docuSignAuthToken, criteria, searchResult, existingEnvelopes);
 
             // Merge data from QueryMT action.
             var payloadCrateStorage = CrateManager.FromDto(payload.CrateStorage);
@@ -450,7 +451,7 @@ namespace terminalDocuSign.Actions
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO activityDO, AuthorizationTokenDO authTokenDO)
         {
-            var activityTemplates = (await HubCommunicator.GetActivityTemplates(activityDO, null))
+            var activityTemplates = (await HubCommunicator.GetActivityTemplates(null))
                 .Select(x => Mapper.Map<ActivityTemplateDO>(x))
                 .ToList();
 
@@ -484,27 +485,28 @@ namespace terminalDocuSign.Actions
                         }
                     }
 
-                    if (continueClicked)
-                    {
-                        var docuSignAuthToken = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
-                        var criteria = queryCrate.Content.Queries.First().Criteria;
-                        var resultSize = ExtractDocuSignResultSize(docuSignAuthToken, criteria);
-
-                        if (resultSize > MaxResultSize)
-                        {
-                            continueClicked = false;
-                            InsertControlAfter(
-                                crateStorage,
-                                new TextBlock()
-                                {
-                                    Name = "CannotProceedMessage",
-                                    Value = "Fr8 can not currently generate this report because the set size is too big.",
-                                    CssClass = "well well-lg"
-                                },
-                                "QueryBuilder"
-                            );
-                        }
-                    }
+                    // Commented out by yakov.gnusin in scope of FR-2462.
+                    // if (continueClicked)
+                    // {
+                    //     var docuSignAuthToken = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
+                    //     var criteria = queryCrate.Content.Queries.First().Criteria;
+                    //     var resultSize = ExtractDocuSignResultSize(docuSignAuthToken, criteria);
+                    // 
+                    //     if (resultSize > MaxResultSize)
+                    //     {
+                    //         continueClicked = false;
+                    //         InsertControlAfter(
+                    //             crateStorage,
+                    //             new TextBlock()
+                    //             {
+                    //                 Name = "CannotProceedMessage",
+                    //                 Value = "Fr8 can not currently generate this report because the set size is too big.",
+                    //                 CssClass = "well well-lg"
+                    //             },
+                    //             "QueryBuilder"
+                    //         );
+                    //     }
+                    // }
                 }
 
                 if (continueClicked)
@@ -571,7 +573,7 @@ namespace terminalDocuSign.Actions
                         var operationalStatus = new OperationalStateCM();
                         operationalStatus.CurrentActivityResponse =
                             ActivityResponseDTO.Create(ActivityResponse.ExecuteClientActivity);
-                        operationalStatus.CurrentClientActivityName = "ExecuteAfterConfigure";
+                        operationalStatus.CurrentClientActivityName = "RunImmediately";
 
                         var operationsCrate = Data.Crates.Crate.FromContent("Operational Status", operationalStatus);
                         crateStorage.Add(operationsCrate);

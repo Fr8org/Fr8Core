@@ -134,7 +134,7 @@ namespace TerminalBase.Infrastructure
             return Task.FromResult(fileDO);
         }
 
-        public Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityDO activityDO, string userId)
+        public Task<List<ActivityTemplateDTO>> GetActivityTemplates(string userId)
         {
             var searchLabel = LabelPrefix + "_ActivityTemplate";
 
@@ -150,9 +150,9 @@ namespace TerminalBase.Infrastructure
             return Task.FromResult(activityTemplates);
         }
 
-        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityDO activityDO, ActivityCategory category, string userId)
+        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityCategory category, string userId)
         {
-            var allTemplates = await GetActivityTemplates(activityDO, userId);
+            var allTemplates = await GetActivityTemplates(userId);
             var activityTemplates = allTemplates
                 .Where(x => x.Category == category)
                 .ToList();
@@ -160,9 +160,9 @@ namespace TerminalBase.Infrastructure
             return activityTemplates;
         }
 
-        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityDO activityDO, string tag, string userId)
+        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(string tag, string userId)
         {
-            var allTemplates = await GetActivityTemplates(activityDO, userId);
+            var allTemplates = await GetActivityTemplates(userId);
             if (string.IsNullOrEmpty(tag))
             {
                 return allTemplates;

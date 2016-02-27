@@ -327,7 +327,6 @@
     <Compile Include="Interfaces\DataTransferObjects\CrateStorageDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\CrateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\CriteriaDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\EnvelopeDataDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ErrorDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EventCM.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ExternalEventDTO.cs" />

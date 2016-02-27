@@ -2,7 +2,6 @@
 using System.Data.Entity;
 using System.Linq;
 using System.Security.Claims;
-using System.Security.Principal;
 using System.Threading;
 using System.Web;
 using System.Web.Http;
@@ -24,10 +23,6 @@ using StructureMap;
 using Utilities;
 using Logger = Utilities.Logging.Logger;
 using HubWeb.Infrastructure;
-using System.Threading.Tasks;
-using Microsoft.ApplicationInsights.Extensibility;
-using TerminalBase.Infrastructure;
-using Data.Infrastructure;
 
 namespace HubWeb
 {

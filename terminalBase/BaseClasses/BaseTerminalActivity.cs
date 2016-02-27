@@ -1023,11 +1023,10 @@ namespace TerminalBase.BaseClasses
             return await Task.FromResult<FieldDTO[]>(null);
         }
 
-        protected async Task<ActivityDO> AddAndConfigureChildActivity(ActivityDO parent, string templateName_Or_templateID, string name = null, string label = null, int? order = null)
+        protected async Task<ActivityDO> AddAndConfigureChildActivity(Guid parentActivityId, string templateName_Or_templateID, string name = null, string label = null, int? order = null)
         {
-
             //search activity template by name or id
-            var allActivityTemplates = _activityTemplateCache != null ? _activityTemplateCache : _activityTemplateCache = await HubCommunicator.GetActivityTemplates(parent, CurrentFr8UserId);
+            var allActivityTemplates = _activityTemplateCache ?? (_activityTemplateCache = await HubCommunicator.GetActivityTemplates(CurrentFr8UserId));
             int templateId;
             var activityTemplate = Int32.TryParse(templateName_Or_templateID, out templateId) ?
                 allActivityTemplates.FirstOrDefault(a => a.Id == templateId)
@@ -1043,8 +1042,15 @@ namespace TerminalBase.BaseClasses
             //If Route is specified as a parent, then a new subroute will be created
             //Guid parentId = (parent.ChildNodes.Count > 0) ? parent.ChildNodes[0].ParentRouteNodeId.Value : parent.RootRouteNodeId.Value;
 
-            var result = await HubCommunicator.CreateAndConfigureActivity(activityTemplate.Id, CurrentFr8UserId, label, order, parent.Id);
+            var result = await HubCommunicator.CreateAndConfigureActivity(activityTemplate.Id, CurrentFr8UserId, label, order, parentActivityId);
             var resultDO = Mapper.Map<ActivityDO>(result);
+            return resultDO;
+        }
+
+        protected async Task<ActivityDO> AddAndConfigureChildActivity(ActivityDO parent, string templateName_Or_templateID, string name = null, string label = null, int? order = null)
+        {
+
+            var resultDO = await AddAndConfigureChildActivity(parent.Id, templateName_Or_templateID, name, label, order);
 
             if (resultDO != null)
             {

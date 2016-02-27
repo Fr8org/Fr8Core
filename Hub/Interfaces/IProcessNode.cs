@@ -11,6 +11,8 @@ namespace Hub.Interfaces
 	    ProcessNodeDO Create(IUnitOfWork uow, Guid parentProcessId, Guid subrouteId, string name);
 
         void CreateTruthTransition(ProcessNodeDO sourcePNode, ProcessNodeDO targetPNode);
-		string Execute(List<EnvelopeDataDTO> curEnvelopeData, ProcessNodeDO curProcessNode);
+
+        //Obsolete
+        //string Execute(List<EnvelopeDataDTO> curEnvelopeData, ProcessNodeDO curProcessNode);
 	}
 }
