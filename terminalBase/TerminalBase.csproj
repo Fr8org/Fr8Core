@@ -105,6 +105,10 @@
     <Compile Include="Errors\AuthorizationTokenExpiredException.cs" />
     <Compile Include="Errors\TerminalErrorCode.cs" />
     <Compile Include="Infrastructure\BaseTerminalEvent.cs" />
+    <Compile Include="Infrastructure\Behaviors\BaseControlMappingBehavior.cs" />
+    <Compile Include="Infrastructure\Behaviors\CheckBoxMappingBehavior.cs" />
+    <Compile Include="Infrastructure\Behaviors\DropDownListMappingBehavior.cs" />
+    <Compile Include="Infrastructure\Behaviors\RadioButtonGroupMappingBehavior.cs" />
     <Compile Include="Infrastructure\Behaviors\TextSourceMappingBehavior.cs" />
     <Compile Include="Infrastructure\DefaultHubCommunicator.cs" />
     <Compile Include="Infrastructure\DataHubCommunicatorBase.cs" />
