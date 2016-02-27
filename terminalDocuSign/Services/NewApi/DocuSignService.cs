@@ -89,13 +89,16 @@ namespace terminalDocuSign.Services.New_Api
             EnvelopeSummary envelopeSummary = envelopesApi.CreateEnvelope(loginInfo.AccountId, envDef);
             var envelope = envelopesApi.GetEnvelope(loginInfo.AccountId, envelopeSummary.EnvelopeId);
 
+            var templatesApi = new TemplatesApi((Configuration)loginInfo.Configuration);
+            var templateRecepients = templatesApi.ListRecipients(loginInfo.AccountId, curTemplateId);
 
             var recepients = envelopesApi.ListRecipients(loginInfo.AccountId, envelopeSummary.EnvelopeId);
 
             //updating recipients
             foreach (var recepient in recepients.Signers)
             {
-                var related_fields = rolesList.Where(a => a.Tags.Contains("recipientId:" + recepient.RecipientId));
+                var corresponding_template_recipient = templateRecepients.Signers.Where(a => a.RoutingOrder == recepient.RoutingOrder).FirstOrDefault();
+                var related_fields = rolesList.Where(a => a.Tags.Contains("recipientId:" + corresponding_template_recipient.RecipientId));
                 recepient.Name = related_fields.Where(a => a.Key.Contains("role name")).FirstOrDefault().Value;
                 recepient.Email = related_fields.Where(a => a.Key.Contains("role email")).FirstOrDefault().Value;
 
@@ -105,7 +108,7 @@ namespace terminalDocuSign.Services.New_Api
                 foreach (var item in jobj.Properties())
                 {
                     string tab_type = item.Name;
-                    var fields = fieldList.Where(a => a.Tags.Contains(tab_type) && a.Tags.Contains("recipientId:" + recepient.RecipientId));
+                    var fields = fieldList.Where(a => a.Tags.Contains(tab_type) && a.Tags.Contains("recipientId:" + corresponding_template_recipient.RecipientId));
                     foreach (JObject tab in item.Value)
                     {
                         FieldDTO corresponding_field = null;
