@@ -5,19 +5,25 @@ using System.Text;
 using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
+using Salesforce.Common;
 
 namespace terminalSalesforceTests.Fixtures
 {
     public class FixtureData
     {
-        public static AuthorizationTokenDO Salesforce_AuthToken()
+        public static async Task<AuthorizationTokenDO>  Salesforce_AuthToken()
         {
+            var auth = new AuthenticationClient();
+            await auth.UsernamePasswordAsync(
+                "3MVG9KI2HHAq33RzZO3sQ8KU8JPwmpiZBpe_fka3XktlR5qbCWstH3vbAG.kLmaldx8L1V9OhqoAYUedWAO_e",
+                "611998545425677937",
+                "alex@dockyard.company",
+                "thales@34");
+
             return new AuthorizationTokenDO()
             {
-                Token =
-                    @"00D610000007nIo!AQ8AQHb7zGj8FFNh8Cimj9f_f174biQ3ZYT3TBjFUx_fCrOHZZgBwUusnbKeqOBf5QQdX6w1KpRfoo_LE5KGf78zPbPyL35m",
-                AdditionalAttributes =
-                    @"refresh_token=5Aep861tbt360sO1.uiSjP9QVIPyR8s6bD9ipi.zZtsHJjep8f9D6MxcRJRKyYoiUo.U.XfZX0wx8JWmboZNVqm;instance_url=https://na34.salesforce.com;api_version=v34.0"
+                Token = auth.AccessToken,
+                AdditionalAttributes = string.Format("refresh_token=;instance_url={0};api_version={1}", auth.InstanceUrl, auth.ApiVersion)
             };
         }
 
