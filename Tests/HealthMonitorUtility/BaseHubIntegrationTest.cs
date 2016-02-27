@@ -223,5 +223,41 @@ namespace HealthMonitor.Utility
             return formToken;
         }
 
+        protected async Task<ActivityDTO> ConfigureActivity(ActivityDTO activity)
+        {
+            activity = await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                _baseUrl + "activities/configure",
+                activity
+            );
+
+            return activity;
+        }
+
+        protected async Task<PayloadDTO> ExtractContainerPayload(ContainerDTO container)
+        {
+            var payload = await HttpGetAsync<PayloadDTO>(
+                _baseUrl + "containers/payload?id=" + container.Id.ToString()
+            );
+
+            return payload;
+        }
+
+        protected async Task<ContainerDTO> ExecutePlan(RouteFullDTO plan)
+        {
+            var container = await HttpPostAsync<string, ContainerDTO>(
+                _baseUrl + "routes/run?planId=" + plan.Id.ToString(),
+                null
+            );
+
+            return container;
+        }
+
+        protected async Task SaveActivity(ActivityDTO activity)
+        {
+            await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                _baseUrl + "activities/save",
+                activity
+            );
+        }
     }
 }
