@@ -20,7 +20,7 @@ namespace Data.Entities
             typeof(PlanDO).GetProperty("Description"),
             typeof(PlanDO).GetProperty("RouteState"),
         };
-     
+
         [Required]
         public string Name { get; set; }
 
@@ -58,15 +58,16 @@ namespace Data.Entities
                 return Subroutes.SingleOrDefault(pnt => pnt.StartingSubroute == true);
             }
 
-            set {
+            set
+            {
                 var startingSubroute = Subroutes.SingleOrDefault(pnt => pnt.StartingSubroute == true);
                 if (null != startingSubroute)
                     startingSubroute = value;
                 else
                 {
                     Subroutes.ToList().ForEach(pnt => pnt.StartingSubroute = false);
-                    if (value != null) 
-                    { 
+                    if (value != null)
+                    {
                         value.StartingSubroute = true;
                         ChildNodes.Add(value);
                     }
@@ -82,7 +83,7 @@ namespace Data.Entities
         public virtual _RouteStateTemplate RouteStateTemplate { get; set; }
 
         public string Tag { get; set; }
-        
+
         [NotMapped]
         public IEnumerable<SubrouteDO> Subroutes
         {
@@ -132,6 +133,20 @@ namespace Data.Entities
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     var activityTemplate = uow.ActivityTemplateRepository.GetByKey(initialActivity.ActivityTemplateId);
+                    if (activityTemplate.Category == ActivityCategory.Solution)
+                    {
+                        // Handle solutions
+                        initialActivity = initialActivity.ChildNodes.FirstOrDefault() as ActivityDO;
+                        if (initialActivity != null)
+                        {
+                            activityTemplate = uow.ActivityTemplateRepository.GetByKey(initialActivity.ActivityTemplateId);
+                        }
+                        else
+                        {
+                            return isOngoingPlan;
+                        }
+                    }
+
                     if (activityTemplate != null && activityTemplate.Category == ActivityCategory.Monitors)
                     {
                         isOngoingPlan = true;
