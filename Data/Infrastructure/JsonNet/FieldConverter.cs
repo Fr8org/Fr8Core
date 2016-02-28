@@ -40,7 +40,6 @@ namespace Data.Infrastructure.JsonNet
             var instance = (FieldDTO)Activator.CreateInstance(objectType);
             serializer.Populate(jsonObject.CreateReader(), instance);
             return instance;
-
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
