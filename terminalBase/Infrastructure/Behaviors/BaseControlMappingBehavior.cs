@@ -19,7 +19,7 @@ namespace TerminalBase.Infrastructure.Behaviors
         protected ICrateManager _crateManager;
         protected ICrateStorage _crateStorage;
         protected string _behaviorName;
-
+        
         protected BaseControlMappingBehavior(ICrateStorage crateStorage,string behaviorName)
         {
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
@@ -62,13 +62,13 @@ namespace TerminalBase.Infrastructure.Behaviors
         {
             var controlsCM = GetOrCreateStandardConfigurationControlsCM();
 
-            var textSources = controlsCM.Controls.Where(IsBehaviorControl)
+            var controls = controlsCM.Controls.Where(IsBehaviorControl)
                 .OfType<T>()
                 .ToList();
 
-            foreach (var textSource in textSources)
+            foreach (var control in controls)
             {
-                controlsCM.Controls.Remove(textSource);
+                controlsCM.Controls.Remove(control);
             }
         }
     }

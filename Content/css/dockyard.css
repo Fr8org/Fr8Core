@@ -284,7 +284,7 @@ div.action-header {
 .action-add {
 	display: inline-block;
     vertical-align:top;
-    min-height:300px;
+    min-height:375px;
 }
 .action-add-button, .action-category-icon{
     background: #fCfCfC; 
@@ -311,7 +311,8 @@ div.action-header {
     transition: all 0.2s ease-out
 }
 .action-category{
-    display:flex; 
+    display:flex;
+    position: relative;
     align-items:center; 
     margin-top:-72px;
     transition: all 0.2s ease-out
@@ -320,7 +321,9 @@ div.action-header {
     margin-left:8px;
     width:56px;
     opacity:0;
-    transition: all 0.2s ease-out
+    transition: all 0.2s ease-out;
+    font-weight: bold;
+
 }
 .action-category-icon:hover, .action-category--active .action-category-icon{
     cursor:pointer;
@@ -341,6 +344,7 @@ div.action-header {
 .action-add:hover .action-category, .action-add--active .action-category{
     margin-top:8px;
 }
+
 .action-add:hover .action-category-name, .action-add--active .action-category-name{
     opacity:1
 }
@@ -362,6 +366,7 @@ div.action-header {
     max-width:240px;
     min-height: 296px;
     max-height:300px;
+    margin-left: 80px;
 }
 .action-slider--active:before{
     height:2px;

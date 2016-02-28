@@ -26,6 +26,7 @@ namespace terminalAtlassian.Services
         }
         public bool IsValidUser(CredentialsDTO curCredential)
         {
+            /*
             var base64Credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(string.Format("{0}:{1}", curCredential.Username, curCredential.Password)));
             var headers = new Dictionary<string, string>()
             {
@@ -40,7 +41,8 @@ namespace terminalAtlassian.Services
             }
 
             return true;
-            /*
+            */
+            
 
             using (HttpClient client = new HttpClient())
             {
@@ -58,7 +60,7 @@ namespace terminalAtlassian.Services
                     return response.StatusCode == HttpStatusCode.OK;
                 }
             }
-            */
+           
         }
 
         public void SetBasicAuthHeader(WebRequest request, String userName, String userPassword)

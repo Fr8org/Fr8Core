@@ -13,7 +13,7 @@ namespace TerminalBase.Infrastructure.Behaviors
         public DropDownListMappingBehavior(ICrateStorage crateStorage, string behaviorName) 
             : base(crateStorage, behaviorName)
         {
-            BehaviorPrefix = "DropDownListMappingBehavior-";
+           // BehaviorPrefix = "DropDownListMappingBehavior-";
         }
 
         public void Append(string name, string labelName,  List<ListItem> items)
@@ -29,6 +29,13 @@ namespace TerminalBase.Infrastructure.Behaviors
                 ListItems = items
             };
 
+            //set selected key to first item
+            var firstItem = items.FirstOrDefault();
+            if (firstItem != null)
+            {
+                userDefinedDropDownList.selectedKey = firstItem.Key;
+            }
+
             controlsCM.Controls.Add(userDefinedDropDownList);
         }
 
@@ -38,13 +45,14 @@ namespace TerminalBase.Infrastructure.Behaviors
 
             var dropDownLists = controlsCM
                 .Controls.Where(IsBehaviorControl).OfType<DropDownList>();
-
+            var resultDropDownCollection = new List<DropDownList>();
             foreach (var list in dropDownLists)
             {
                 list.Name = GetFieldId(list);
+                resultDropDownCollection.Add(list);
             }
 
-            return dropDownLists.ToList();
+            return resultDropDownCollection;
         }
     }
  }

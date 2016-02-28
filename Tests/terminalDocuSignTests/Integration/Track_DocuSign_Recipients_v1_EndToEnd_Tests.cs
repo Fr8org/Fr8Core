@@ -72,7 +72,7 @@ namespace terminalDocuSignTests.Integration
             await PostFakeEvent();
         }
 
-        [Test, Ignore]
+        [Test]
         public async Task Track_DocuSign_Recipients_EndToEnd()
         {
             string baseUrl = GetHubApiBaseUrl();
