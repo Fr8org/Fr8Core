@@ -142,14 +142,14 @@ namespace terminalDocuSign.Actions
                     }
                 }
 
-                var checkBoxMappingBehavior = new CheckBoxMappingBehavior(activityCrateStorage, "ChekBoxMapping");
+                var checkBoxMappingBehavior = new CheckBoxMappingBehavior(activityCrateStorage, "CheckBoxMapping");
                 var checkboxes = checkBoxMappingBehavior.GetValues(payloadCrateStorage);
                 foreach (var item in checkboxes)
                 {
                     var field = tempFieldCollection.FirstOrDefault(x => x.Key == item.Name);
                     if (field != null)
                     {
-                        field.Value = item.Selected.ToString();
+                        field.Value = item.Selected.ToString().ToLower();
                         resultCollection.Add(field);
                     }
                 }
@@ -347,7 +347,10 @@ namespace terminalDocuSign.Actions
                 //create checkbox controls
                 var checkBoxMappingBehavior = new CheckBoxMappingBehavior(crateStorage, "CheckBoxMapping");
                 checkBoxMappingBehavior.Clear();
-                checkBoxMappingBehavior.Append(envelopeDataDTO.Where(x => x.Type == ControlTypes.CheckBox).Select(x => x.Name).ToList());
+                foreach (var item in envelopeDataDTO.Where(x => x.Type == ControlTypes.CheckBox).ToList())
+                {
+                    checkBoxMappingBehavior.Append(item.Name,item.Name);
+                }
 
                 //create dropdown controls
                 var dropdownListMappingBehavior = new DropDownListMappingBehavior(crateStorage, "DropDownMapping");
@@ -357,10 +360,11 @@ namespace terminalDocuSign.Actions
                     var dropDownListDTO = item as DocuSignMultipleOptionsTabDTO;
                     if (dropDownListDTO == null) continue;
 
-                    dropdownListMappingBehavior.Append(dropDownListDTO.Name, string.Format("For the {0}, use:", item.Name), dropDownListDTO.Items.Select(x => new ListItem()
+                    dropdownListMappingBehavior.Append(dropDownListDTO.Name, string.Format("For the <strong>{0}</strong>, use:", item.Name), dropDownListDTO.Items.Where(x=>x.Text != string.Empty || x.Value != string.Empty ).Select(x => new ListItem()
                     {
-                        Value = x.Value,
-                        Selected = x.Selected
+                        Key = string.IsNullOrEmpty(x.Value) ? x.Text : x.Value, 
+                        Value = string.IsNullOrEmpty(x.Text) ? x.Value : x.Text,
+                        Selected = x.Selected,
                     }).ToList());
                 }
             }

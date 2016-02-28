@@ -16,21 +16,18 @@ namespace TerminalBase.Infrastructure.Behaviors
            // BehaviorPrefix = behaviorName;
         }
 
-        public void Append(IEnumerable<string> fieldIds)
+        public void Append(string fieldId, string label)
         {
             var controlsCM = GetOrCreateStandardConfigurationControlsCM();
 
-            foreach (var fieldId in fieldIds)
-            {
-                var name = string.Concat(BehaviorPrefix, fieldId);
+            var name = string.Concat(BehaviorPrefix, fieldId);
 
-                var textSource = new CheckBox()
-                {
-                    Label = name,
-                    Name = name
-                };
-                controlsCM.Controls.Add(textSource);
-            }
+            var textSource = new CheckBox()
+            {
+                Label = label,
+                Name = name
+            };
+            controlsCM.Controls.Add(textSource);
         }
 
         public List<CheckBox> GetValues(ICrateStorage payload = null)
@@ -39,13 +36,14 @@ namespace TerminalBase.Infrastructure.Behaviors
 
             var checkBoxes = controlsCM
                 .Controls.Where(IsBehaviorControl).OfType<CheckBox>();
-
+            var checkBoxesResult = new List<CheckBox>();
             foreach (var checkBox in checkBoxes)
             {
                 checkBox.Name = GetFieldId(checkBox);
+                checkBoxesResult.Add(checkBox);
             }
 
-            return checkBoxes.ToList();
+            return checkBoxesResult;
         }
     }
 }

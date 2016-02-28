@@ -116,7 +116,7 @@ namespace Hub.Services
                     var eventManager = ObjectFactory.GetInstance<Hub.Managers.Event>();
                     var plan = uow.PlanRepository.GetById<PlanDO>(curContainerDo.PlanId);
 
-                    await eventManager.Publish("ProcessingTerminatedPerActionResponse",
+                    await eventManager.Publish("ProcessingTerminatedPerActivityResponse",
                             plan.Fr8AccountId, curContainerDo.Id.ToString(),
                             JsonConvert.SerializeObject(Mapper.Map<ContainerDTO>(curContainerDo)), "Terminated");
                     break;
