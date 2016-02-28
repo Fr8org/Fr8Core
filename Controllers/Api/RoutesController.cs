@@ -383,6 +383,10 @@ namespace HubWeb.Controllers
                             string.Format("Launching a new Container for Plan \"{0}\"", planDO.Name));
 
                         var containerDO = await _plan.Run(planDO, curCrate);
+                        if (!planDO.IsOngoingPlan())
+                        {
+                            var deactivateDTO = await _plan.Deactivate(planId);
+                        }
 
                         var response = _crate.GetContentType<OperationalStateCM>(containerDO.CrateStorage);
 
@@ -403,15 +407,12 @@ namespace HubWeb.Controllers
 
                         var containerDTO = Mapper.Map<ContainerDTO>(containerDO);
 
+                        var containerLaunched = Task.Run(() => eventManager.Publish("ContainerLaunched"
+                             , planDO.Fr8AccountId
+                             , planDO.Id.ToString()
+                             , JsonConvert.SerializeObject(containerDTO).ToString(), "Success")).ConfigureAwait(false);
 
-
-                        var containerLaunched = Task.Run( () =>eventManager.Publish("ContainerLaunched"
-                              , planDO.Fr8AccountId
-                              , planDO.Id.ToString()
-                              , JsonConvert.SerializeObject(containerDTO).ToString(), "Success")).ConfigureAwait(false);
-
-
-                        var containerExecutedTask = Task.Run(()=> eventManager.Publish("ContainerExecutionComplete"
+                        var containerExecutedTask = Task.Run(() => eventManager.Publish("ContainerExecutionComplete"
                             , planDO.Fr8AccountId
                             , planDO.Id.ToString()
                             , JsonConvert.SerializeObject(containerDTO).ToString(), "Success")).ConfigureAwait(false);
@@ -431,6 +432,13 @@ namespace HubWeb.Controllers
                     string message = String.Format("Plan \"{0}\" failed", planDO.Name);
 
                     _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, message);
+                }
+                finally
+                {
+                    if (!planDO.IsOngoingPlan())
+                    {
+                        var deactivateDTO = await _plan.Deactivate(planId);
+                    }
                 }
 
                 return Ok();

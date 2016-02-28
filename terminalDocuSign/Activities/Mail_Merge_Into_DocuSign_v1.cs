@@ -39,6 +39,11 @@ namespace terminalDocuSign.Actions
         private const string SolutionName = "Mail Merge Into DocuSign";
         private const double SolutionVersion = 1.0;
         private const string TerminalName = "DocuSign";
+        private const string SolutionBody = @"<p>Pull data from a variety of sources, including Excel files, 
+                                            Google Sheets, and databases, and merge the data into your DocuSign template. 
+                                            You can link specific fields from your source data to DocuSign fields</p>";
+
+
         public Mail_Merge_Into_DocuSign_v1()
             : base()
         {
@@ -118,7 +123,7 @@ namespace terminalDocuSign.Actions
 
         private async Task<List<ListItem>> GetDataSourceListItems(ActivityDO activityDO, string tag)
         {
-            var curActivityTemplates = await HubCommunicator.GetActivityTemplates(activityDO, tag)
+            var curActivityTemplates = await HubCommunicator.GetActivityTemplates(tag)
                 .ContinueWith(x => x.Result.Where(y => y.Name.StartsWith("Get", StringComparison.InvariantCultureIgnoreCase) && y.Category == Data.States.ActivityCategory.Receivers));
             return curActivityTemplates.Select(at => new ListItem() { Key = at.Label, Value = at.Name }).ToList();
         }
@@ -267,7 +272,7 @@ namespace terminalDocuSign.Actions
             //extract fields in docusign form
             _docuSignManager.UpdateUserDefinedFields(curActivityDO, authTokenDO, CrateManager.GetUpdatableStorage(curActivityDO), _docuSignTemplate.Value);
 
-            var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(curActivityDO, null))
+            var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null))
                 .Select(x => Mapper.Map<ActivityTemplateDO>(x))
                 .ToList();
 
@@ -322,15 +327,10 @@ namespace terminalDocuSign.Actions
         {
             if (curDocumentation.Contains("MainPage"))
             {
-            var curSolutionPage = new SolutionPageDTO
-            {
-                Name = SolutionName,
-                Version = SolutionVersion,
-                Terminal = TerminalName,
-                Body = @"<p>This is a solution action</p>"
-            };
-            return Task.FromResult(curSolutionPage);
-        }
+                var curSolutionPage = GetDefaultDocumentation(SolutionName, SolutionVersion, TerminalName, SolutionBody);
+                return Task.FromResult(curSolutionPage);
+              
+            }
             if (curDocumentation.Contains("HelpMenu"))
             {
                 if (curDocumentation.Contains("ExplainMailMerge"))

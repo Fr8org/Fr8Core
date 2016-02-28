@@ -76,7 +76,7 @@ namespace terminalSalesforce.Controllers
             {
                 Version = "1",
                 Name = "Get_Data",
-                Label = "Get Data from Salesforce.com",
+                Label = "Get Data",
                 Terminal = terminal,
                 NeedsAuthentication = true,
                 Category = ActivityCategory.Receivers,

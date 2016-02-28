@@ -84,28 +84,30 @@ namespace terminalDocuSign.Infrastructure
                     {
                         DocuSignEnvelopeCM docuSignEnvelope = new DocuSignEnvelopeCM
                         {
-                            CompletedDate = envelope.CompletedDate,
-                            CreateDate = envelope.CreateDate,
+                            CompletedDate = DateTimeHelper.Parse(envelope.CompletedDate),
+                            CreateDate = DateTimeHelper.Parse(envelope.CreateDate),
                             EnvelopeId = envelope.EnvelopeId,
                             ExternalAccountId = currentAuthToken.ExternalAccountId,
                             Status = envelope.Status,
-                            StatusChangedDateTime=envelope.StatusChangedDateTime
+                            StatusChangedDateTime= DateTimeHelper.Parse(envelope.StatusChangedDateTime)
                         };
                         uow.MultiTenantObjectRepository.AddOrUpdate<DocuSignEnvelopeCM>(uow, currentAuthToken.UserID, docuSignEnvelope, e => e.EnvelopeId);
                         uow.SaveChanges();
                     }
                     else
                     {
-                        if (DateTime.Parse(envelope.StatusChangedDateTime) > DateTime.Parse(savedEnvelope.StatusChangedDateTime))
+                        var envelopeStatusChangedTime = DateTimeHelper.Parse(envelope.StatusChangedDateTime);
+
+                        if (savedEnvelope.StatusChangedDateTime == null || envelopeStatusChangedTime > savedEnvelope.StatusChangedDateTime)
                         {
                             DocuSignEnvelopeCM docuSignEnvelope = new DocuSignEnvelopeCM
                             {
-                                CompletedDate = envelope.CompletedDate,
-                                CreateDate = envelope.CreateDate,
+                                CompletedDate = DateTimeHelper.Parse(envelope.CompletedDate),
+                                CreateDate = DateTimeHelper.Parse(envelope.CreateDate),
                                 EnvelopeId = envelope.EnvelopeId,
                                 ExternalAccountId = currentAuthToken.ExternalAccountId,
                                 Status = envelope.Status,
-                                StatusChangedDateTime = envelope.StatusChangedDateTime
+                                StatusChangedDateTime = DateTimeHelper.Parse(envelope.StatusChangedDateTime)
                             };
                             uow.MultiTenantObjectRepository.AddOrUpdate<DocuSignEnvelopeCM>(uow, currentAuthToken.UserID, docuSignEnvelope, e => e.EnvelopeId);
                             uow.SaveChanges();

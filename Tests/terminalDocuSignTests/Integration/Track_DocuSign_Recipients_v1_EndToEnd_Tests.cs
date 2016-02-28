@@ -25,7 +25,7 @@ namespace terminalDocuSignTests.Integration
     /// </summary>
     [Explicit]
     [Category("terminalDocuSignTests.Integration")]
-    public class Rich_Document_Notifications_v1_EndToEnd_Tests : BaseHubIntegrationTest
+    public class Track_DocuSign_Recipients_v1_EndToEnd_Tests : BaseHubIntegrationTest
     {
         public override string TerminalName
         {
@@ -73,17 +73,20 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async Task Rich_Document_Notifications_EndToEnd()
+        public async Task Track_DocuSign_Recipients_EndToEnd()
         {
             string baseUrl = GetHubApiBaseUrl();
             
-            var solutionCreateUrl = baseUrl + "activities/create?solutionName=Rich_Document_Notifications";
+            var solutionCreateUrl = baseUrl + "activities/create?solutionName=Track_DocuSign_Recipients";
+
 
             //
             // Create solution
             //
             var plan = await HttpPostAsync<string, RouteFullDTO>(solutionCreateUrl, null);
             var solution = plan.Subroutes.FirstOrDefault().Activities.FirstOrDefault();
+
+            var routeReloadUrl = string.Format(baseUrl + "routes/full/{0}", plan.Id);
 
             //
             // Send configuration request without authentication token
@@ -210,16 +213,20 @@ namespace terminalDocuSignTests.Integration
             _crateStorage = _crateManager.FromDto(this._solution.CrateStorage);
 
             //from now on our solution should have followup crate structure
-            Assert.True(this._solution.ChildrenActivities.Length == 5, "Solution child actions failed to create.");
+            Assert.True(this._solution.ChildrenActivities.Length == 4, "Solution child actions failed to create.");
 
             Assert.True(this._solution.ChildrenActivities.Any(a => a.Label == "Monitor Docusign Envelope Activity" && a.Ordering == 1));
             Assert.True(this._solution.ChildrenActivities.Any(a => a.Label == "Set Delay" && a.Ordering == 2));
             Assert.True(this._solution.ChildrenActivities.Any(a => a.Label == "Query Fr8 Warehouse" && a.Ordering == 3));
             Assert.True(this._solution.ChildrenActivities.Any(a => a.Label == "Test Incoming Data" && a.Ordering == 4));
-            Assert.True(this._solution.ChildrenActivities.Any(a => a.Label == notificationHandler.selectedKey && a.Ordering == 5));
+
+            plan = await HttpGetAsync<RouteFullDTO>(routeReloadUrl);
+            Assert.AreEqual(2, plan.Subroutes.First().Activities.Count);
+            var emailActivity = plan.Subroutes.First().Activities.Last();
+            Assert.True(emailActivity.Label == notificationHandler.selectedKey);
 
             //let's configure email settings
-            var emailActivity = this._solution.ChildrenActivities.Single(a => a.Label == notificationHandler.selectedKey && a.Ordering == 5);
+            
             //let's configure this
             emailActivity = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "activities/configure?id=" + emailActivity.Id, emailActivity);
             var emailCrateStorage = _crateManager.GetStorage(emailActivity);
@@ -230,16 +237,16 @@ namespace terminalDocuSignTests.Integration
             var emailBody = (TextSource)emailControlsCrate.Content.Controls.Single(c => c.Name == "EmailBody");
             
             emailAddress.ValueSource = "specific";
-            emailAddress.Value = "bahadir.bb@gmail.com";
-            emailAddress.TextValue = "bahadir.bb@gmail.com";
+            emailAddress.Value = "freight.testing@gmail.com";
+            emailAddress.TextValue = "freight.testing@gmail.com";
 
             emailSubject.ValueSource = "specific";
-            emailSubject.Value = "Fr8-RichDocumentNotificationsTest";
-            emailSubject.TextValue = "Fr8-RichDocumentNotificationsTest";
+            emailSubject.Value = "Fr8-TrackDocuSignRecipientsTest";
+            emailSubject.TextValue = "Fr8-TrackDocuSignRecipientsTest";
 
             emailBody.ValueSource = "specific";
-            emailBody.Value = "Fr8-RichDocumentNotificationsTest";
-            emailBody.TextValue = "Fr8-RichDocumentNotificationsTest";
+            emailBody.Value = "Fr8-TrackDocuSignRecipientsTest";
+            emailBody.TextValue = "Fr8-TrackDocuSignRecipientsTest";
 
             using (var updatableStorage = _crateManager.GetUpdatableStorage(emailActivity))
             {
@@ -281,7 +288,7 @@ namespace terminalDocuSignTests.Integration
             EmailAssert.RecentMsgThreshold = TimeSpan.FromSeconds(45);
             EmailAssert._timeout = TimeSpan.FromSeconds(45);
             // Verify that test email has been received
-            //EmailAssert.EmailReceived("fr8ops@fr8.company", "Fr8-RichDocumentNotificationsTest");
+            //EmailAssert.EmailReceived("fr8ops@fr8.company", "Fr8-TrackDocuSignRecipientsTest");
             
         }
     }

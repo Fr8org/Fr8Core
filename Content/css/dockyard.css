@@ -284,7 +284,7 @@ div.action-header {
 .action-add {
 	display: inline-block;
     vertical-align:top;
-    min-height:300px;
+    min-height:375px;
 }
 .action-add-button, .action-category-icon{
     background: #fCfCfC; 
@@ -311,7 +311,8 @@ div.action-header {
     transition: all 0.2s ease-out
 }
 .action-category{
-    display:flex; 
+    display:flex;
+    position: relative;
     align-items:center; 
     margin-top:-72px;
     transition: all 0.2s ease-out
@@ -320,7 +321,9 @@ div.action-header {
     margin-left:8px;
     width:56px;
     opacity:0;
-    transition: all 0.2s ease-out
+    transition: all 0.2s ease-out;
+    font-weight: bold;
+
 }
 .action-category-icon:hover, .action-category--active .action-category-icon{
     cursor:pointer;
@@ -341,6 +344,7 @@ div.action-header {
 .action-add:hover .action-category, .action-add--active .action-category{
     margin-top:8px;
 }
+
 .action-add:hover .action-category-name, .action-add--active .action-category-name{
     opacity:1
 }
@@ -362,6 +366,7 @@ div.action-header {
     max-width:240px;
     min-height: 296px;
     max-height:300px;
+    margin-left: 80px;
 }
 .action-slider--active:before{
     height:2px;
@@ -378,7 +383,7 @@ div.action-header {
     height:300px;
 }
 .action-slider .slide .web-service-action, .action-slider .slide .action-action{
-    padding:8px 16px;
+    padding:8px 5px;
 }
 .action-slider .slide .web-service-action:hover, .action-slider .slide .action-action:hover{
     cursor:pointer;
@@ -617,6 +622,18 @@ input[type=radio]:checked ~ div.nested-controls {
     height: 26px;
     padding-top: 3px;
     padding-bottom: 3px;
+}
+
+.ui-select-match > .ui-select-toggle {
+    min-width: 175px !important;
+}
+
+.ui-select-match > .ui-select-toggle > span.ui-select-placeholder {
+    overflow-x: hidden;
+    position: absolute;
+    left: 0;
+    right: 25px;
+    min-width: 150px !important;
 }
 
 /*Class to display the text block properly*/
@@ -887,4 +904,22 @@ div[dnd-list].dndDragover {
 
 .green {
     color: green;
+}
+
+.invisible-icon {
+    visibility: hidden;
+}
+
+.activity-list {
+    padding-bottom: 5px; padding-top: 5px; white-space: normal !important;
+}
+
+div.activity-list::after {
+    content: '';
+    display: block;
+    position: relative;
+    width: 50%;
+    left: 25%;
+    border-top: 1px solid #e5e5e5;
+    margin-top: 10px;
 }

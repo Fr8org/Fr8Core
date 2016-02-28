@@ -5,6 +5,9 @@ using Data.States.Templates;
 using System.Linq;
 using System;
 using System.Reflection;
+using StructureMap;
+using Data.Interfaces;
+using Data.States;
 
 namespace Data.Entities
 {
@@ -17,6 +20,11 @@ namespace Data.Entities
             typeof(PlanDO).GetProperty("Description"),
             typeof(PlanDO).GetProperty("RouteState"),
         };
+
+        public PlanDO()
+        {
+            Visibility = PlanVisibility.Standard;
+        }
      
         [Required]
         public string Name { get; set; }
@@ -55,15 +63,16 @@ namespace Data.Entities
                 return Subroutes.SingleOrDefault(pnt => pnt.StartingSubroute == true);
             }
 
-            set {
+            set
+            {
                 var startingSubroute = Subroutes.SingleOrDefault(pnt => pnt.StartingSubroute == true);
                 if (null != startingSubroute)
                     startingSubroute = value;
                 else
                 {
                     Subroutes.ToList().ForEach(pnt => pnt.StartingSubroute = false);
-                    if (value != null) 
-                    { 
+                    if (value != null)
+                    {
                         value.StartingSubroute = true;
                         ChildNodes.Add(value);
                     }
@@ -79,7 +88,9 @@ namespace Data.Entities
         public virtual _RouteStateTemplate RouteStateTemplate { get; set; }
 
         public string Tag { get; set; }
-        
+
+        public PlanVisibility Visibility { get; set; }
+
         [NotMapped]
         public IEnumerable<SubrouteDO> Subroutes
         {
@@ -117,7 +128,39 @@ namespace Data.Entities
             Tag = plan.Tag;
             RouteState = plan.RouteState;
             Description = plan.Description;
+            Visibility = plan.Visibility;
+        }
 
+        public bool IsOngoingPlan()
+        {
+            bool isOngoingPlan = false;
+            var initialActivity = this.StartingSubroute.ChildNodes.FirstOrDefault() as ActivityDO;
+            if (initialActivity != null)
+            {
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    var activityTemplate = uow.ActivityTemplateRepository.GetByKey(initialActivity.ActivityTemplateId);
+                    if (activityTemplate.Category == ActivityCategory.Solution)
+                    {
+                        // Handle solutions
+                        initialActivity = initialActivity.ChildNodes.FirstOrDefault() as ActivityDO;
+                        if (initialActivity != null)
+                        {
+                            activityTemplate = uow.ActivityTemplateRepository.GetByKey(initialActivity.ActivityTemplateId);
+                        }
+                        else
+                        {
+                            return isOngoingPlan;
+                        }
+                    }
+
+                    if (activityTemplate != null && activityTemplate.Category == ActivityCategory.Monitors)
+                    {
+                        isOngoingPlan = true;
+                    }
+                }
+            }
+            return isOngoingPlan;
         }
     }
 }

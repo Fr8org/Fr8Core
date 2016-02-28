@@ -270,7 +270,7 @@ namespace TerminalBase.BaseClasses
         }
 
 
-        public virtual async Task<PayloadDTO> ChildrenExecuted(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public virtual async Task<PayloadDTO> ExecuteChildActivities(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             return Success(await GetPayload(curActivityDO, containerId));
         }
@@ -560,9 +560,12 @@ namespace TerminalBase.BaseClasses
         /// </summary>
         /// <param name="activityDO">ActionDO.</param>
         /// <returns></returns>
-        protected async Task<Crate> CreateAvailableFieldsCrate(ActivityDO activityDO, string crateLabel = "Upstream Terminal-Provided Fields")
+        protected async Task<Crate> CreateAvailableFieldsCrate(ActivityDO activityDO, 
+            string crateLabel = "Upstream Terminal-Provided Fields", 
+            AvailabilityType availabilityTypeUpstream = AvailabilityType.RunTime,
+            AvailabilityType availabilityTypeFieldsCrate = AvailabilityType.Configuration)
         {
-            var curUpstreamFields = await HubCommunicator.GetDesignTimeFieldsByDirection(activityDO, CrateDirection.Upstream, AvailabilityType.RunTime, CurrentFr8UserId);
+            var curUpstreamFields = await HubCommunicator.GetDesignTimeFieldsByDirection(activityDO, CrateDirection.Upstream, availabilityTypeUpstream, CurrentFr8UserId);
 
             if (curUpstreamFields == null)
             {
@@ -572,7 +575,7 @@ namespace TerminalBase.BaseClasses
             var availableFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(
                     crateLabel,
                     curUpstreamFields.Fields,
-                    AvailabilityType.Configuration
+                    availabilityTypeFieldsCrate
                 );
 
             return availableFieldsCrate;
@@ -785,6 +788,30 @@ namespace TerminalBase.BaseClasses
             controlsCrate.Content.Controls.Add(control);
         }
 
+        protected void InsertControlAfter(ICrateStorage storage, ControlDefinitionDTO control, string afterControlName)
+        {
+            var controlsCrate = EnsureControlsCrate(storage);
+
+            if (controlsCrate.Content == null) { return; }
+
+            for (var i = 0; i < controlsCrate.Content.Controls.Count; ++i)
+            {
+                if (controlsCrate.Content.Controls[i].Name == afterControlName)
+                {
+                    if (i == controlsCrate.Content.Controls.Count - 1)
+                    {
+                        controlsCrate.Content.Controls.Add(control);
+                    }
+                    else
+                    {
+                        controlsCrate.Content.Controls.Insert(i + 1, control);
+                    }
+
+                    break;
+                }
+            }
+        }
+
         protected ControlDefinitionDTO FindControl(ICrateStorage storage, string name)
         {
             var controlsCrate = storage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
@@ -988,11 +1015,10 @@ namespace TerminalBase.BaseClasses
             return await Task.FromResult<FieldDTO[]>(null);
         }
 
-        protected async Task<ActivityDO> AddAndConfigureChildActivity(ActivityDO parent, string templateName_Or_templateID, string name = null, string label = null, int? order = null)
+        protected async Task<ActivityDO> AddAndConfigureChildActivity(Guid parentActivityId, string templateName_Or_templateID, string name = null, string label = null, int? order = null)
         {
-
             //search activity template by name or id
-            var allActivityTemplates = _activityTemplateCache != null ? _activityTemplateCache : _activityTemplateCache = await HubCommunicator.GetActivityTemplates(parent, CurrentFr8UserId);
+            var allActivityTemplates = _activityTemplateCache ?? (_activityTemplateCache = await HubCommunicator.GetActivityTemplates(CurrentFr8UserId));
             int templateId;
             var activityTemplate = Int32.TryParse(templateName_Or_templateID, out templateId) ?
                 allActivityTemplates.FirstOrDefault(a => a.Id == templateId)
@@ -1008,8 +1034,15 @@ namespace TerminalBase.BaseClasses
             //If Route is specified as a parent, then a new subroute will be created
             //Guid parentId = (parent.ChildNodes.Count > 0) ? parent.ChildNodes[0].ParentRouteNodeId.Value : parent.RootRouteNodeId.Value;
 
-            var result = await HubCommunicator.CreateAndConfigureActivity(activityTemplate.Id, CurrentFr8UserId, label, order, parent.Id);
+            var result = await HubCommunicator.CreateAndConfigureActivity(activityTemplate.Id, CurrentFr8UserId, label, order, parentActivityId);
             var resultDO = Mapper.Map<ActivityDO>(result);
+            return resultDO;
+        }
+
+        protected async Task<ActivityDO> AddAndConfigureChildActivity(ActivityDO parent, string templateName_Or_templateID, string name = null, string label = null, int? order = null)
+        {
+
+            var resultDO = await AddAndConfigureChildActivity(parent.Id, templateName_Or_templateID, name, label, order);
 
             if (resultDO != null)
             {
@@ -1181,6 +1214,19 @@ namespace TerminalBase.BaseClasses
                 Body = errorMessage,
                 Type = ActivityResponse.ShowDocumentation.ToString()
             };
+        }
+
+        public SolutionPageDTO GetDefaultDocumentation(string solutionName, double solutionVersion, string terminalName, string body)
+        {
+            var curSolutionPage = new SolutionPageDTO
+            {
+                Name = solutionName,
+                Version = solutionVersion,
+                Terminal = terminalName,
+                Body = body
+            };
+
+            return curSolutionPage;
         }
     }
 }

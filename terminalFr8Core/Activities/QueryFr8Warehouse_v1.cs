@@ -277,7 +277,7 @@ namespace terminalFr8Core.Actions
                 }
 
                 int objectId;
-                if (!int.TryParse(availableObjects.Value, out objectId))
+                if (int.TryParse(availableObjects.Value, out objectId))
                 {
                     selectedObjectId = objectId;
                 }
@@ -330,8 +330,7 @@ namespace terminalFr8Core.Actions
                 var foundObjects = queryBuilder.Query(
                     uow,
                     authTokenDO.UserID,
-                    // Currently MT supports only EQ and NEQ operators, since all fields are strings.
-                    conditions.Where(x => x.Operator == "eq" || x.Operator == "neq").ToList()
+                    conditions.ToList()
                 )
                 .ToArray();
 

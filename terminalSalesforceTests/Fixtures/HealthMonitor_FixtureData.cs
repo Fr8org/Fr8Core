@@ -1,20 +1,28 @@
 ﻿
 using Data.Interfaces.DataTransferObjects;
+using Salesforce.Common;
 using System;
+using System.Threading.Tasks;
+using terminalSalesforce.Infrastructure;
 
 namespace terminalSalesforceTests.Fixtures
 {
     public static class HealthMonitor_FixtureData
     {
-        public static AuthorizationTokenDTO Salesforce_AuthToken()
+        public static async Task<AuthorizationTokenDTO> Salesforce_AuthToken()
         {
+            var auth = new AuthenticationClient();
+            await auth.UsernamePasswordAsync(
+                "3MVG9KI2HHAq33RzZO3sQ8KU8JPwmpiZBpe_fka3XktlR5qbCWstH3vbAG.kLmaldx8L1V9OhqoAYUedWAO_e",
+                "611998545425677937",
+                "alex@dockyard.company",
+                "thales@34");
+
             return new AuthorizationTokenDTO()
             {
-                Token =
-                    @"00D610000007nIo!AQ8AQHb7zGj8FFNh8Cimj9f_f174biQ3ZYT3TBjFUx_fCrOHZZgBwUusnbKeqOBf5QQdX6w1KpRfoo_LE5KGf78zPbPyL35m",
-                AdditionalAttributes =
-                    @"refresh_token=5Aep861tbt360sO1.uiSjP9QVIPyR8s6bD9ipi.zZtsHJjep8f9D6MxcRJRKyYoiUo.U.XfZX0wx8JWmboZNVqm;instance_url=https://na34.salesforce.com;api_version=v34.0"
-            };
+                Token = auth.AccessToken,
+                AdditionalAttributes = string.Format("refresh_token=;instance_url={0};api_version={1}", auth.InstanceUrl, auth.ApiVersion)
+            };                                                                                                                            
         }
 
         public static ActivityTemplateDTO Create_Account_v1_ActivityTemplate()
@@ -69,7 +77,7 @@ namespace terminalSalesforceTests.Fixtures
             {
                 Id = Guid.NewGuid(),
                 Label = "Create Account",
-                AuthToken = Salesforce_AuthToken(),
+                AuthToken = Salesforce_AuthToken().Result,
                 ActivityTemplate = activityTemplate
             };
 
@@ -84,7 +92,7 @@ namespace terminalSalesforceTests.Fixtures
             {
                 Id = Guid.NewGuid(),
                 Label = "Create Contact",
-                AuthToken = Salesforce_AuthToken(),
+                AuthToken = Salesforce_AuthToken().Result,
                 ActivityTemplate = activityTemplate
             };
 
@@ -99,7 +107,7 @@ namespace terminalSalesforceTests.Fixtures
             {
                 Id = Guid.NewGuid(),
                 Label = "Create Lead",
-                AuthToken = Salesforce_AuthToken(),
+                AuthToken = Salesforce_AuthToken().Result,
                 ActivityTemplate = activityTemplate
             };
             return new Fr8DataDTO { ActivityDTO = activityDTO };
@@ -113,7 +121,7 @@ namespace terminalSalesforceTests.Fixtures
             {
                 Id = Guid.NewGuid(),
                 Label = "Get Data from Salesforce.com",
-                AuthToken = Salesforce_AuthToken(),
+                AuthToken = Salesforce_AuthToken().Result,
                 ActivityTemplate = activityTemplate
             };
         }

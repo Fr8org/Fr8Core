@@ -41,7 +41,7 @@
         RadioButtonGroup template
         -->
     <div ng-if='field.type == "RadioButtonGroup"'>
-        <label class='control-label'>{{::field.label}}</label>
+        <label class='control-label' ng-bind-html="field.label"></label>
         <radio-button-group field='field' current-action='currentAction' change='onChange'></radio-button-group>
         <div data-ng-if="field.errorMessage != null && field.errorMessage !==''" class="validationWraper">
             <span class="validation-Icon"></span><div class="validation-message">{{field.errorMessage}}</div>
@@ -52,7 +52,7 @@
         DownDownList template
         -->
     <div ng-if='field.type == "DropDownList"'>
-        <label ng-if="field.label !== null && field.label.length > 0" class='control-label'>{{::field.label}}</label>
+        <label ng-if="field.label !== null && field.label.length > 0" class='control-label' ng-bind-html="field.label"></label>
         <drop-down-list-box field='field' click='onClick' change='onChange' data-field-name='{{::field.name}}'></drop-down-list-box>
         <div data-ng-if="field.errorMessage != null && field.errorMessage !==''" class="validationWraper">
             <span class="validation-Icon"></span><div class="validation-message">{{field.errorMessage}}</div>
@@ -63,7 +63,7 @@
         TextBlock template
         -->
     <div ng-if='field.type == "TextBlock"'>
-        <label class='control-label'>{{::field.label}}</label>
+        <label ng-if="field.label !== null && field.label.length > 0" class='control-label'>{{::field.label}}</label>
         <text-block field='field'></text-block>
     </div>
 
