@@ -24,7 +24,6 @@ namespace Data.Interfaces.Manifests
             Fields.AddRange(fields);
         }
 
-        //[JsonConverter(typeof(FieldListConverter))]
         public List<FieldDTO> Fields { get; set; }
     }
 }
