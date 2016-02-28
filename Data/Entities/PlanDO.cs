@@ -21,6 +21,11 @@ namespace Data.Entities
             typeof(PlanDO).GetProperty("RouteState"),
         };
 
+        public PlanDO()
+        {
+            Visibility = PlanVisibility.Standard;
+        }
+     
         [Required]
         public string Name { get; set; }
 
@@ -84,6 +89,8 @@ namespace Data.Entities
 
         public string Tag { get; set; }
 
+        public PlanVisibility Visibility { get; set; }
+
         [NotMapped]
         public IEnumerable<SubrouteDO> Subroutes
         {
@@ -121,7 +128,7 @@ namespace Data.Entities
             Tag = plan.Tag;
             RouteState = plan.RouteState;
             Description = plan.Description;
-
+            Visibility = plan.Visibility;
         }
 
         public bool IsOngoingPlan()
