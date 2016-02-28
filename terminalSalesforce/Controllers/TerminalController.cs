@@ -76,7 +76,7 @@ namespace terminalSalesforce.Controllers
             {
                 Version = "1",
                 Name = "Get_Data",
-                Label = "Get Data from Salesforce.com",
+                Label = "Get Data",
                 Terminal = terminal,
                 NeedsAuthentication = true,
                 Category = ActivityCategory.Receivers,
@@ -92,7 +92,7 @@ namespace terminalSalesforce.Controllers
             StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
                 Definition = terminal,
-                Actions = actionList
+                Activities = actionList
             };
 
             return Json(curStandardFr8TerminalCM);

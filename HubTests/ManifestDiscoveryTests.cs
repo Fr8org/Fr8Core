@@ -29,7 +29,7 @@ namespace HubTests
         [Test]
         public void TryResolveTypeForKnownType_ReturnsTrue()
         {
-            var manifest = new StandardDesignTimeFieldsCM();
+            var manifest = new FieldDescriptionsCM();
             Type dummy;
 
             Assert.IsTrue(ManifestDiscovery.Default.TryResolveType(manifest.ManifestType, out dummy));
@@ -38,7 +38,7 @@ namespace HubTests
         [Test]
         public void TryResolveTypeForKnownType_ReturnsCorrectType()
         {
-            var manifest = new StandardDesignTimeFieldsCM();
+            var manifest = new FieldDescriptionsCM();
             Type dummy;
 
             ManifestDiscovery.Default.TryResolveType(manifest.ManifestType, out dummy);

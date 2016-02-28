@@ -47,6 +47,8 @@ namespace Data.Control
         public const string UpstreamDataChooser = "UpstreamDataChooser";
         public const string UpstreamFieldChooser = "UpstreamFieldChooser";
         public const string UpstreamCrateChooser = "UpstreamCrateChooser";
+        public const string DatePicker = "DatePicker";
+        public const string CrateChooser = "CrateChooser";
     }
 
     public class CheckBox : ControlDefinitionDTO
@@ -100,6 +102,14 @@ namespace Data.Control
         public TextBox()
         {
             Type = ControlTypes.TextBox;
+        }
+    }
+
+    public class DatePicker : ControlDefinitionDTO
+    {
+        public DatePicker()
+        {
+            Type = ControlTypes.DatePicker;
         }
     }
 
@@ -529,6 +539,21 @@ namespace Data.Control
 
     }
 
+    public class CrateChooser : ControlDefinitionDTO
+    {
+        public CrateChooser()
+        {
+            Type = ControlTypes.CrateChooser;
+        }
+
+        [JsonProperty("crateDescriptions")]
+        public List<CrateDescriptionDTO> CrateDescriptions { get; set; }
+
+        [JsonProperty("singleManifestOnly")]
+        public bool SingleManifestOnly { get; set; }
+        
+    }
+
     public class UpstreamFieldChooser : ControlDefinitionDTO
     {
         public UpstreamFieldChooser()
@@ -557,8 +582,8 @@ namespace Data.Control
             get
             {
                 if (string.IsNullOrEmpty(ContentPath))
-                    return "/actions/documentation";
-                return string.Format("/actions/documentation/{0}", ContentPath);
+                    return "/activites/documentation";
+                return string.Format("/activites/documentation/{0}", ContentPath);
             }
         }
     }

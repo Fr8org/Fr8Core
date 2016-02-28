@@ -75,37 +75,37 @@ namespace Hub.Services
         }
 
         
+        //Obsolete
+        //public string Execute(List<EnvelopeDataDTO> curEventData, ProcessNodeDO curProcessNode)
+        //{
+        //    string nextTransitionKey;
 
-        public string Execute(List<EnvelopeDataDTO> curEventData, ProcessNodeDO curProcessNode)
-        {
-           string nextTransitionKey;
+        //    var result = _criteria.Evaluate(curEventData, curProcessNode);
+        //    if (result)
+        //    {
+        //        var activityService = ObjectFactory.GetInstance<IRouteNode>();
 
-            var result = _criteria.Evaluate(curEventData, curProcessNode);
-            if (result)
-            {
-                var activityService = ObjectFactory.GetInstance<IRouteNode>();
+        //        using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //        {
+        //            var curSubroute = uow.PlanRepository.GetById<SubrouteDO>(curProcessNode.SubrouteId);
+        //            RouteNodeDO currentAction = curSubroute;
 
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    var curSubroute = uow.PlanRepository.GetById<SubrouteDO>(curProcessNode.SubrouteId);
-                    RouteNodeDO currentAction = curSubroute;
+        //            do
+        //            {
+        //                activityService.Process(currentAction.Id, ActivityState.InitialRun, curProcessNode.ParentContainer);
+        //                currentAction = activityService.GetNextActivity(currentAction, curSubroute);
+        //            } while (currentAction != null);
+        //        }
 
-                    do
-                    {
-                        activityService.Process(currentAction.Id, ActionState.InitialRun, curProcessNode.ParentContainer);
-                        currentAction = activityService.GetNextActivity(currentAction, curSubroute);
-                    } while (currentAction != null);
-                }
+        //        nextTransitionKey = "true";
+        //    }
+        //    else
+        //    {
+        //        nextTransitionKey = "false";
+        //    }
 
-                nextTransitionKey = "true";
-            }
-            else
-            {
-                nextTransitionKey = "false";
-            }
-
-            return nextTransitionKey;
-        }
+        //    return nextTransitionKey;
+        //}
 
         
         /// <summary>

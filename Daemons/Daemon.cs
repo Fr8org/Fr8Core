@@ -45,8 +45,8 @@ namespace Daemons
         protected Daemon()
         {
             _serviceManager = new ServiceManager<T>(GetType().Name, ServiceGroupName, this);
-            _serviceManager.AddAction("StartDaemon", "Start");
-            _serviceManager.AddAction("StopDaemon", "Stop");
+            _serviceManager.AddActivity("StartDaemon", "Start");
+            _serviceManager.AddActivity("StopDaemon", "Stop");
         }
 
         protected void AddTest(String serverCall, String displayName)

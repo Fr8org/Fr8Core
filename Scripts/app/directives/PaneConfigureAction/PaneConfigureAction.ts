@@ -110,6 +110,8 @@ module dockyard.directives.paneConfigureAction {
         reconfigureChildrenActions: boolean;
         setSolutionMode: () => void;
         currentActiveElement: model.ControlDefinitionDTO;
+        collapsed: boolean;
+        resize: () => void;
     }
     
     export class CancelledEventArgs extends CancelledEventArgsBase { }
@@ -174,6 +176,7 @@ module dockyard.directives.paneConfigureAction {
             PaneConfigureAction.prototype.controller = ($scope: IPaneConfigureActionScope, $element: ng.IAugmentedJQuery, $attrs: ng.IAttributes) => {
 
                 var configLoadingError: boolean = false;
+                $scope.collapsed = false;
 
                 $scope.$on("onChange", onControlChange);
                 $scope.$on("onClick", onClickEvent);
@@ -185,6 +188,10 @@ module dockyard.directives.paneConfigureAction {
                 $scope.onConfigurationChanged = onConfigurationChanged;
                 $scope.processConfiguration = processConfiguration;
                 $scope.setSolutionMode = setSolutionMode;
+
+                $scope.resize = () => {
+                    $scope.collapsed = !$scope.collapsed;
+                };
 
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Reconfigure], (event: ng.IAngularEvent, reConfigureActionEventArgs: ActionReconfigureEventArgs) => {
                     //this might be a general reconfigure command
@@ -259,11 +266,11 @@ module dockyard.directives.paneConfigureAction {
                     }
                     $scope.currentAction = <interfaces.IActionVM>reloadActionEventArgs.action;
                     $scope.processConfiguration();
-                    if ($scope.currentAction.childrenActions
-                        && $scope.currentAction.childrenActions.length > 0) {
+                    if ($scope.currentAction.childrenActivities
+                        && $scope.currentAction.childrenActivities.length > 0) {
 
                         if ($scope.reconfigureChildrenActions) {
-                            $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsReconfiguration], new ChildActionReconfigurationEventArgs($scope.currentAction.childrenActions));
+                            $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsReconfiguration], new ChildActionReconfigurationEventArgs($scope.currentAction.childrenActivities));
                         }
                     }
                 }
@@ -324,11 +331,11 @@ module dockyard.directives.paneConfigureAction {
                     ActionService.save({ id: $scope.currentAction.id }, $scope.currentAction, null, null)
                         .$promise
                         .then(() => {
-                            if ($scope.currentAction.childrenActions
-                                && $scope.currentAction.childrenActions.length > 0) {
+                            if ($scope.currentAction.childrenActivities
+                                && $scope.currentAction.childrenActivities.length > 0) {
 
                                 if ($scope.reconfigureChildrenActions) {
-                                    $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsReconfiguration], new ChildActionReconfigurationEventArgs($scope.currentAction.childrenActions));
+                                    $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsReconfiguration], new ChildActionReconfigurationEventArgs($scope.currentAction.childrenActivities));
                                 }
                             }
                         });
@@ -408,25 +415,30 @@ module dockyard.directives.paneConfigureAction {
                         .then((res: interfaces.IActionVM) => {
                             var childActionsDetected = false;
 
-                            // Detect OperationalState crate with CurrentClientActionName = 'ExecuteAfterConfigure'.
+                            // Detect OperationalState crate with CurrentClientActionName = 'RunImmediately'.
                             if (crateHelper.hasCrateOfManifestType(res.crateStorage, 'Operational State')) {
                                 var operationalStatus = crateHelper
                                     .findByManifestType(res.crateStorage, 'Operational State');
 
                                 var contents = <any>operationalStatus.contents;
 
-                                if (contents.CurrentActivityResponse.type === 'ExecuteClientAction'
-                                    && contents.CurrentClientActionName === 'ExecuteAfterConfigure') {
+                                if (contents.CurrentActivityResponse.type === 'ExecuteClientActivity'
+                                    && (contents.CurrentClientActivityName === 'RunImmediately')
+                                    ) {
 
                                     $scope.$emit(MessageType[MessageType.PaneConfigureAction_ExecutePlan]);
                                 }
                             }
+
                             var oldAction = $scope.currentAction;
-                            if (res.childrenActions && res.childrenActions.length > 0 &&  (!oldAction.childrenActions || oldAction.childrenActions.length < 1)) {
+                            if (res.childrenActivities && res.childrenActivities.length > 0 && (!oldAction.childrenActivities || oldAction.childrenActivities.length < 1)) {
                                 // If the directive is used for configuring solutions,
                                 // the SolutionController would listen to this event 
                                 // and redirect user to the RouteBuilder once if is received.
-                                // It means that solution configuration is complete. 
+                                // It means that solution configuration is complete.
+                                
+                                // not needed in case of Loop action reconfigure
+                                
                                 $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsDetected]);
 
                                 childActionsDetected = true;
@@ -434,14 +446,20 @@ module dockyard.directives.paneConfigureAction {
 
                             $scope.reconfigureChildrenActions = false;
 
-                            if ($scope.currentAction.childrenActions) {
-                                if (angular.toJson($scope.currentAction.childrenActions) != angular.toJson(res.childrenActions)) {
+                            if ($scope.currentAction.childrenActivities) {
+                                if (angular.toJson($scope.currentAction.childrenActivities) != angular.toJson(res.childrenActivities)) {
                                     $scope.reconfigureChildrenActions = true;
+                                    //in case of reconfiguring the solution check the child actions again
+
+                                    //not needed in case of Loop action
+                                    if ($scope.currentAction.label !== "Loop") {
+                                        $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsDetected]);
+                                    }
                                 }
                             }
 
                             $scope.currentAction.crateStorage = res.crateStorage;
-                            $scope.currentAction.childrenActions = res.childrenActions;
+                            $scope.currentAction.childrenActivities = res.childrenActivities;
 
                             $scope.processConfiguration();
                             configLoadingError = false;

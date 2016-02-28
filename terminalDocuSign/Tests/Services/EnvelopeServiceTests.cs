@@ -10,6 +10,7 @@ using NUnit.Framework;
 using Utilities;
 
 using Data.Interfaces.DataTransferObjects;
+using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services;
 using terminalDocuSign.Interfaces;
 using UtilitiesTesting;
@@ -45,7 +46,7 @@ namespace terminalDocuSign.Tests.Services
 
 			IDocuSignEnvelope envelopeService = new DocuSignEnvelope();
 			var env = new DocuSignEnvelope();
-			IList<EnvelopeDataDTO> envelopeDatas = envelopeService.GetEnvelopeData(envelope);
+			IList<DocuSignTabDTO> envelopeDatas = envelopeService.GetEnvelopeData(envelope);
 
 			Assert.IsNotNull(envelopeDatas);
 			//Assert.IsTrue(envelopeDatas.Count > 0); //Todo orkan: remove back when you completed the EnvelopeService.

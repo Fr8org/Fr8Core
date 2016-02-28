@@ -148,7 +148,7 @@ namespace DockyardTest.Services
         {
             var _activity = new Mock<IRouteNode>();
             _activity
-                .Setup(c => c.Process(It.IsAny<Guid>(), It.IsAny<ActionState>(), It.IsAny<ContainerDO>()))
+                .Setup(c => c.Process(It.IsAny<Guid>(), It.IsAny<ActivityState>(), It.IsAny<ContainerDO>()))
                 .Returns(Task.Delay(100))
                 .Verifiable();
             ContainerDO containerDO = FixtureData.TestContainerWithCurrentActivityAndNextActivity();
@@ -159,7 +159,7 @@ namespace DockyardTest.Services
 
                 plan.ChildNodes.AddRange(new[] {FixtureData.TestActivity10(), FixtureData.TestActivity7()});
                 uow.PlanRepository.Add(plan);
-                uow.ActivityTemplateRepository.Add(FixtureData.ActionTemplate());
+                uow.ActivityTemplateRepository.Add(FixtureData.ActivityTemplate());
                 uow.SaveChanges();
             }
 
@@ -179,7 +179,7 @@ namespace DockyardTest.Services
 
             Assert.AreNotEqual(originalCurrentActivityId, containerDO.CurrentRouteNodeId);
             Assert.IsNull(containerDO.CurrentRouteNodeId);
-            _activity.Verify(p => p.Process(It.IsAny<Guid>(), It.IsAny<ActionState>(), It.IsAny<ContainerDO>()));
+            _activity.Verify(p => p.Process(It.IsAny<Guid>(), It.IsAny<ActivityState>(), It.IsAny<ContainerDO>()));
         }
 
         //        [Test]

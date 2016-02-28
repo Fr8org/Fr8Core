@@ -49,7 +49,7 @@ namespace Data.Interfaces.Manifests
     ///             Label = "Envelope is in folder:",
     ///             Name = "Folder",
     ///             Events = new List<ControlEvent> {ControlEvent.RequestConfig},
-    ///             Source = new FieldSourceDTO(CrateManifestTypes.StandardDesignTimeFields, "Folders")
+    ///             Source = new FieldSourceDTO(CrateManifestTypes.FieldDescription, "Folders")
     ///         }));
     ///
     ///         Controls.Add((Status = new DropDownList
@@ -57,7 +57,7 @@ namespace Data.Interfaces.Manifests
     ///             Label = "Envelope has status:",
     ///             Name = "Status",
     ///             Events = new List<ControlEvent> {ControlEvent.RequestConfig},
-    ///             Source = new FieldSourceDTO(CrateManifestTypes.StandardDesignTimeFields, "Statuses")
+    ///             Source = new FieldSourceDTO(CrateManifestTypes.FieldDescription, "Statuses")
     ///         }));
     ///     }
     /// }

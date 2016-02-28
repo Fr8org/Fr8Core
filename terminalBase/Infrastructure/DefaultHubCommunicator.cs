@@ -163,7 +163,7 @@ namespace TerminalBase.Infrastructure
             return curCrates;
         }
 
-        public async Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability, string userId)
+        public async Task<FieldDescriptionsCM> GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability, string userId)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                 + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routenodes/designtime_fields_dir"
@@ -171,11 +171,11 @@ namespace TerminalBase.Infrastructure
                 + "&direction=" + (int)direction
                 + "&availability=" + (int)availability;
             var uri = new Uri(url, UriKind.Absolute);
-            var curFields = await _restfulServiceClient.GetAsync<StandardDesignTimeFieldsCM>(uri, null, await GetHMACHeader(uri, userId));
+            var curFields = await _restfulServiceClient.GetAsync<FieldDescriptionsCM>(uri, null, await GetHMACHeader(uri, userId));
             return curFields;
         }
 
-        public async Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability, string userId)
+        public async Task<FieldDescriptionsCM> GetDesignTimeFieldsByDirection(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability, string userId)
         {
             return await GetDesignTimeFieldsByDirection(activityDO.Id, direction, availability, userId);
         }
@@ -188,7 +188,7 @@ namespace TerminalBase.Infrastructure
             await _restfulServiceClient.PostAsync(uri, alarmDTO, null, await GetHMACHeader(uri, userId, alarmDTO));
         }
 
-        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityDO activityDO, string userId)
+        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(string userId)
         {
             var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl") 
                 + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routenodes/available";
@@ -200,15 +200,15 @@ namespace TerminalBase.Infrastructure
             return templates.ToList();
         }
 
-        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityDO activityDO, ActivityCategory category, string userId)
+        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityCategory category, string userId)
         {
-            var allTemplates = await GetActivityTemplates(activityDO, userId);
+            var allTemplates = await GetActivityTemplates(userId);
             var templates = allTemplates.Where(x => x.Category == category);
 
             return templates.ToList();
         }
 
-        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityDO activityDO, string tag, string userId)
+        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(string tag, string userId)
         {
             var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                 + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routenodes/available?tag=";
@@ -239,7 +239,7 @@ namespace TerminalBase.Infrastructure
         public async Task<ActivityDTO> ConfigureActivity(ActivityDTO activityDTO, string userId)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                      + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/actions/configure";
+                      + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/activities/configure";
             var uri = new Uri(url);
             return await _restfulServiceClient.PostAsync<ActivityDTO, ActivityDTO>(uri, activityDTO, null, await GetHMACHeader(uri, userId, activityDTO));
         }
@@ -247,7 +247,7 @@ namespace TerminalBase.Infrastructure
         public async Task<ActivityDTO> CreateAndConfigureActivity(int templateId, string userId, string label = null, int? order = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                      + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/actions/create";
+                      + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/activities/create";
             
             
             var postUrl = "?actionTemplateId={0}&createRoute={1}";
@@ -305,6 +305,15 @@ namespace TerminalBase.Infrastructure
             var uri = new Uri(url);
 
             return await _restfulServiceClient.GetAsync<IEnumerable<RouteFullDTO>>(uri, null, await GetHMACHeader(uri, userId));
+        }
+
+        public async Task DeleteExistingChildNodesFromActivity(Guid curActivityId, string userId)
+        {
+            var hubAlarmsUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/activities/deletechildnodes?activityId=" + curActivityId;
+            var uri = new Uri(hubAlarmsUrl);
+
+            await _restfulServiceClient.DeleteAsync(uri, null, await GetHMACHeader(uri, userId));
         }
 
         public static byte[] ReadFully(Stream input)

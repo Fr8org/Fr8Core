@@ -53,10 +53,10 @@ namespace HubWeb.Controllers
 		}
 
         [HttpPost]
-		[ActionName("actions")]
-		public IHttpActionResult GetActions(ActivityCategory[] categories)
+		[ActionName("activities")]
+		public IHttpActionResult GetActivities(ActivityCategory[] categories)
 		{
-			List<WebServiceActionSetDTO> webServiceList;
+			List<WebServiceActivitySetDTO> webServiceList;
 
 			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			{
@@ -70,17 +70,18 @@ namespace HubWeb.Controllers
                     .Where(x => x.ActivityTemplateState == ActivityTemplateState.Active)
                     .Where(x => categories == null || categories.Contains(x.Category))
                     .Where(x => x.ClientVisibility != false)
+                    .Where(x => x.Tags == null || !x.Tags.Contains("internal"))
                     .GroupBy(x => x.WebService, x => x, (key, group) => new
                     {
                         WebService = key,
                         SortOrder = key == null ? 1 : 0,
                         Actions = group
                     }).OrderBy(x => x.SortOrder)
-                    .Select(x => new WebServiceActionSetDTO
+                    .Select(x => new WebServiceActivitySetDTO
                     {
                         WebServiceIconPath = x.WebService != null ? x.WebService.IconPath : (unknwonService != null ? unknwonService.IconPath : null),
                         WebServiceName = x.WebService != null ? x.WebService.Name : string.Empty,
-                        Actions = x.Actions.Select(p => new ActivityTemplateDTO
+                        Activities = x.Actions.Select(p => new ActivityTemplateDTO
                         {
                             Id = p.Id,
                             Name = p.Name,
@@ -91,6 +92,7 @@ namespace HubWeb.Controllers
                             TerminalId = p.Terminal.Id,
                             Version = p.Version,
                             Type = p.Type,
+                            Description = p.Description,
                             WebService = Mapper.Map<WebServiceDTO>(p.WebService)
 			            }).ToList()
 			        }).ToList();

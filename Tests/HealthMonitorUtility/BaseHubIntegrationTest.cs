@@ -49,6 +49,7 @@ namespace HealthMonitor.Utility
         protected string TestUserEmail = "integration_test_runner@fr8.company";
         protected string TestUserPassword = "fr8#s@lt!";
         protected string TestEmail;
+        protected string TestEmailName;
 
         public BaseHubIntegrationTest()
         {
@@ -70,7 +71,8 @@ namespace HealthMonitor.Utility
             LoginUser(TestUserEmail, TestUserPassword).Wait();
 
             // Initailize EmailAssert utility.
-            string TestEmail = ConfigurationManager.AppSettings["TestEmail"];
+            TestEmail = ConfigurationManager.AppSettings["TestEmail"];
+            TestEmailName = ConfigurationManager.AppSettings["TestEmail_Name"];
             string hostname = ConfigurationManager.AppSettings["TestEmail_Pop3Server"];
             int port = int.Parse(ConfigurationManager.AppSettings["TestEmail_Port"]);
             bool useSsl = ConfigurationManager.AppSettings["TestEmail_UseSsl"] == "true" ? true : false;
@@ -88,22 +90,22 @@ namespace HealthMonitor.Utility
 
         public string GetTerminalConfigureUrl()
         {
-            return GetTerminalUrl() + "/actions/configure";
+            return GetTerminalUrl() + "/activities/configure";
         }
 
         public string GetTerminalActivateUrl()
         {
-            return GetTerminalUrl() + "/actions/activate";
+            return GetTerminalUrl() + "/activities/activate";
         }
 
         public string GetTerminalDeactivateUrl()
         {
-            return GetTerminalUrl() + "/actions/deactivate";
+            return GetTerminalUrl() + "/activities/deactivate";
         }
 
         public string GetTerminalRunUrl()
         {
-            return GetTerminalUrl() + "/actions/run";
+            return GetTerminalUrl() + "/activities/run";
         }
 
         public string GetTerminalUrl()
@@ -126,7 +128,7 @@ namespace HealthMonitor.Utility
             operationalStateCM.CurrentActivityResponse.TryParseErrorDTO(out errorMessage);
 
             Assert.AreEqual(ActivityResponse.Error.ToString(), operationalStateCM.CurrentActivityResponse.Type);
-            Assert.AreEqual(ActionErrorCode.NO_AUTH_TOKEN_PROVIDED, operationalStateCM.CurrentActivityErrorCode);
+            Assert.AreEqual(ActivityErrorCode.NO_AUTH_TOKEN_PROVIDED, operationalStateCM.CurrentActivityErrorCode);
             Assert.AreEqual("No AuthToken provided.", errorMessage.Message);
         }
 
@@ -167,8 +169,15 @@ namespace HealthMonitor.Utility
 
             // Login user
             //await Authenticate(email, password, antiFogeryToken, _httpClient);
-            await AuthenticateWebApi(email, password);
+            try
+            {
+                await AuthenticateWebApi(email, password);
+            }
+            catch (Exception ex)
+            {
+            }
         }
+
 
         private Uri GetHubBaseUrl()
         {
@@ -216,5 +225,41 @@ namespace HealthMonitor.Utility
             return formToken;
         }
 
+        protected async Task<ActivityDTO> ConfigureActivity(ActivityDTO activity)
+        {
+            activity = await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                _baseUrl + "activities/configure",
+                activity
+            );
+
+            return activity;
+        }
+
+        protected async Task<PayloadDTO> ExtractContainerPayload(ContainerDTO container)
+        {
+            var payload = await HttpGetAsync<PayloadDTO>(
+                _baseUrl + "containers/payload?id=" + container.Id.ToString()
+            );
+
+            return payload;
+        }
+
+        protected async Task<ContainerDTO> ExecutePlan(RouteFullDTO plan)
+        {
+            var container = await HttpPostAsync<string, ContainerDTO>(
+                _baseUrl + "routes/run?planId=" + plan.Id.ToString(),
+                null
+            );
+
+            return container;
+        }
+
+        protected async Task SaveActivity(ActivityDTO activity)
+        {
+            await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                _baseUrl + "activities/save",
+                activity
+            );
+        }
     }
 }

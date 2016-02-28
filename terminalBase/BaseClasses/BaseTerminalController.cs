@@ -53,12 +53,6 @@ namespace TerminalBase.BaseClasses
             if (_integrationTestMode)
                 return Ok();
 
-            // Wirte exception to App Insights
-            var telemetry = new Microsoft.ApplicationInsights.TelemetryClient();
-            var prop = new System.Collections.Generic.Dictionary<string, string>();
-            prop.Add("Terminal", terminalName);
-            telemetry.TrackException(terminalError);
-
             var exceptionMessage = terminalError.GetFullExceptionMessage() + "      \r\n" + terminalError.ToString();//string.Format("{0}\r\n{1}", terminalError.Message, terminalError.StackTrace);
             try
             {
@@ -217,12 +211,12 @@ namespace TerminalBase.BaseClasses
                             return await resutlActionDO.ContinueWith(x => Mapper.Map<ActivityDTO>(x.Result));
                         }
                     case "run":
-                    case "childrenexecuted":
+                    case "executechildactivities":
                         {
-                            OnStartAction(curTerminal, activityTemplateName, IntegrationTestMode);
+                            OnStartActivity(curTerminal, activityTemplateName, IntegrationTestMode);
                             var resultPayloadDTO = await (Task<PayloadDTO>)curMethodInfo
                                 .Invoke(curObject, new Object[] { curActivityDO, curDataDTO.ContainerId, curAuthTokenDO });
-                            await OnCompletedAction(curTerminal, IntegrationTestMode);
+                            await OnCompletedActivity(curTerminal, IntegrationTestMode);
 
                             return resultPayloadDTO;
                         }
@@ -282,7 +276,7 @@ namespace TerminalBase.BaseClasses
                 throw;
             }
         }
-        private void OnStartAction(string terminalName, string actionName, bool isTestActivityTemplate)
+        private void OnStartActivity(string terminalName, string actionName, bool isTestActivityTemplate)
         {
             if (isTestActivityTemplate)
                 return;
@@ -292,7 +286,7 @@ namespace TerminalBase.BaseClasses
                 string.Format("{0} began processing this Container at {1}. Sending to Action {2}", terminalName, DateTime.Now.ToString("G"), actionName));
         }
 
-        private Task OnCompletedAction(string terminalName, bool isTestActivityTemplate)
+        private Task OnCompletedActivity(string terminalName, bool isTestActivityTemplate)
         {
             if (isTestActivityTemplate)
                 return Task.FromResult<object>(null);
@@ -303,7 +297,7 @@ namespace TerminalBase.BaseClasses
                  string.Format("{0} completed processing this Container at {1}.", terminalName, DateTime.Now.ToString("G"))));
         }
 
-        public HttpResponseMessage GetActionDocumentation(string helpPath)
+        public HttpResponseMessage GetActivityDocumentation(string helpPath)
         {
             string htmlContent = FindDocumentation(helpPath);
 

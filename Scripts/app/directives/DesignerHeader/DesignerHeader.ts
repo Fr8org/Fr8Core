@@ -9,7 +9,7 @@ module dockyard.directives.designerHeader {
         onTitleChange(): void;
         runRoute(): void;
         deactivatePlan(): void;
-
+        resetPlanStatus(): void;
         route: model.RouteDTO;
     }
 
@@ -18,6 +18,7 @@ module dockyard.directives.designerHeader {
     class DesignerHeader implements ng.IDirective {
         public link: (scope: IDesignerHeaderScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
         public controller: (
+            $rootScope: interfaces.IAppRootScope,
             $scope: IDesignerHeaderScope,
             element: ng.IAugmentedJQuery,
             attrs: ng.IAttributes,
@@ -41,6 +42,7 @@ module dockyard.directives.designerHeader {
             };
 
             DesignerHeader.prototype.controller = (
+                $rootScope: interfaces.IAppRootScope,
                 $scope: IDesignerHeaderScope,
                 $element: ng.IAugmentedJQuery,
                 $attrs: ng.IAttributes,
@@ -58,11 +60,44 @@ module dockyard.directives.designerHeader {
                 };
 
                 $scope.runRoute = () => {
+                    // mark plan as Active
+                    $scope.route.routeState = 2;
                     var promise = RouteService.runAndProcessClientAction($scope.route.id);
-                    promise.then(() => {
-                        // mark plan as active
-                        $scope.route.routeState = 2;
+                    promise.finally(() => {
+                        $scope.resetPlanStatus();
+
+                        // This is to notify dashboad/view all page to reArrangeRoutes themselves so that plans get rendered in desired sections i.e Running or Plans Library
+                        // This is required when user Run a plan and immediately navigates(before run completion) to dashboad or view all page in order 
+                        // to make sure plans get rendered in desired sections
+                        if (location.href.indexOf('/builder') === -1) {
+                            $rootScope.$broadcast("planExecutionCompleted-rearrangePlans", $scope.route);
+                            //$scope.$root.$broadcast("planExecutionCompleted", $scope.route);
+                        }
                     });
+                };
+
+                $scope.resetPlanStatus = () => {
+                    var subRoute = $scope.route.subroutes[0];
+                    var initialActivity: interfaces.IActivityDTO = subRoute ? subRoute.activities[0] : null;
+                    if (initialActivity == null) {
+                        // mark plan as Inactive
+                        $scope.route.routeState = 1;
+                        return;
+                    }
+
+                    if (initialActivity.activityTemplate.category.toLowerCase() === "solution") {
+                        initialActivity = initialActivity.childrenActivities[0];
+                        if (initialActivity == null) {
+                            // mark plan as Inactive
+                            $scope.route.routeState = 1;
+                            return;
+                        }
+                    }
+
+                    if (initialActivity.activityTemplate.category.toLowerCase() !== "monitors") {
+                        // mark plan as Inactive
+                        $scope.route.routeState = 1;
+                    }
                 };
 
                 $scope.deactivatePlan = () => {
@@ -80,7 +115,7 @@ module dockyard.directives.designerHeader {
                 };
             };
 
-            DesignerHeader.prototype.controller['$inject'] = ['$scope', '$element', '$attrs', 'ngToast', 'RouteService'];
+            DesignerHeader.prototype.controller['$inject'] = ['$rootScope', '$scope', '$element', '$attrs', 'ngToast', 'RouteService'];
         }
 
         //The factory function returns Directive object as per Angular requirements

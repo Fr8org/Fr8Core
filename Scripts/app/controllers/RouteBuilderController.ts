@@ -117,7 +117,7 @@ module dockyard.controllers {
             };
 
             this.$scope.selectAction = (action: model.ActivityDTO) => {
-                if (!this.$scope.current.action || this.$scope.current.action.id !== action.id)
+                if (!this.$scope.current.activities || this.$scope.current.activities.id !== action.id)
                     this.selectAction(action, null);
 
             }
@@ -137,9 +137,9 @@ module dockyard.controllers {
 
                 //TODO check parent action change with a more solid method
                 //this action is moved to a different parent
-                if (realAction.parentRouteNodeId !== group.actions[0].parentRouteNodeId) {
+                if (realAction.parentRouteNodeId !== group.activities[0].parentRouteNodeId) {
                     //set new parent
-                    realAction.parentRouteNodeId = group.actions[0].parentRouteNodeId;
+                    realAction.parentRouteNodeId = group.activities[0].parentRouteNodeId;
                 } else {
                     //this action is moved to same parent
                     //our index calculation might have been wrong
@@ -148,7 +148,7 @@ module dockyard.controllers {
                     if (realAction.ordering <= index) {
                         index -= 1;
                     }
-                }
+                } 
 
                 //now we should inject it to proper position and get downstream actions
                 downstreamActions = downstreamActions.concat(this.insertActionToParent(realAction, index));
@@ -185,7 +185,7 @@ module dockyard.controllers {
                             RouteService.activate(<any>{ planId: $scope.current.route.id, routeBuilderActivate: true })
                                     .$promise.then((result) => {
                                     if (result != null && result.status === "validation_error") {
-                                        this.renderActions(result.actionsCollection);
+                                        this.renderActions(result.activitiesCollection);
                                         $scope.current.route.routeState = model.RouteState.Inactive;
                                     }
                             });
@@ -215,8 +215,8 @@ module dockyard.controllers {
         private reConfigure(actions: model.ActivityDTO[]) {
             for (var i = 0; i < actions.length; i++) {
                 this.$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Reconfigure], new pca.ActionReconfigureEventArgs(actions[i]));
-                if (actions[i].childrenActions.length > 0) {
-                    this.reConfigure(<model.ActivityDTO[]>actions[i].childrenActions);
+                if (actions[i].childrenActivities.length > 0) {
+                    this.reConfigure(<model.ActivityDTO[]>actions[i].childrenActivities);
                 }
             }
         }
@@ -228,7 +228,7 @@ module dockyard.controllers {
             var newList: interfaces.IActivityDTO[];
             //might be root level
             if (newParent !== null) {
-                newList = newParent.childrenActions;
+                newList = newParent.childrenActivities;
             } else {
                 //lets check subroutes
                 var subRoute = this.findSubRouteById(action.parentRouteNodeId);
@@ -251,7 +251,7 @@ module dockyard.controllers {
             var listToRemoveActionFrom: interfaces.IActivityDTO[];
             //might be root level
             if (currentParent !== null) {
-                listToRemoveActionFrom = currentParent.childrenActions;
+                listToRemoveActionFrom = currentParent.childrenActivities;
             } else {
                 //lets check subroutes
                 var subRoute = this.findSubRouteById(action.parentRouteNodeId);
@@ -301,8 +301,8 @@ module dockyard.controllers {
                 if (actionList[i].id === id) {
                     return actionList[i];
                 }
-                if (actionList[i].childrenActions.length) {
-                    var foundAction = this.searchAction(id, <model.ActivityDTO[]>actionList[i].childrenActions);
+                if (actionList[i].childrenActivities.length) {
+                    var foundAction = this.searchAction(id, <model.ActivityDTO[]>actionList[i].childrenActivities);
                     if (foundAction !== null) {
                         return foundAction;
                     }
@@ -405,9 +405,9 @@ module dockyard.controllers {
             this.$scope.actionGroups = this.LayoutService.placeActions(actions, curRoute.startingSubrouteId);
         }
 
-        private renderActions(actionsCollection: model.ActivityDTO[]) {
-            if (actionsCollection != null && actionsCollection.length != 0) {
-                this.$scope.actionGroups = this.LayoutService.placeActions(actionsCollection,
+        private renderActions(activitiesCollection: model.ActivityDTO[]) {
+            if (activitiesCollection != null && activitiesCollection.length != 0) {
+                this.$scope.actionGroups = this.LayoutService.placeActions(activitiesCollection,
                     this.$scope.current.route.startingSubrouteId);  
             }
         }
@@ -416,7 +416,7 @@ module dockyard.controllers {
         private handleActionUpdate(action: model.ActivityDTO) {
             if (!action) return;
 
-            this.$scope.current.action = action;
+            this.$scope.current.activities = action;
             //self.$scope.current.action.id = result.action.id;
             //self.$scope.current.action.isTempId = false;
 
@@ -444,7 +444,7 @@ module dockyard.controllers {
         private getDownstreamActions(currentAction: model.ActivityDTO) {
             var results: Array<model.ActivityDTO> = [];
             this.$scope.actionGroups.forEach(group => {
-                group.actions.filter((action: model.ActivityDTO) => {
+                group.activities.filter((action: model.ActivityDTO) => {
                     return action.parentRouteNodeId === currentAction.parentRouteNodeId && action.ordering > currentAction.ordering;
                 }).forEach(action => {
                     results.push(action);
@@ -508,15 +508,15 @@ module dockyard.controllers {
 
             action.label = activityTemplate.label;
             // Add action to Workflow Designer.
-            this.$scope.current.action = action.toActionVM();
-            this.$scope.current.action.activityTemplate = activityTemplate;
+            this.$scope.current.activities = action.toActionVM();
+            this.$scope.current.activities.activityTemplate = activityTemplate;
             this.selectAction(action, eventArgs.group);
         }
 
         private addActionToUI(action: model.ActivityDTO, group: model.ActionGroup) {
-            this.$scope.current.action = action;
+            this.$scope.current.activities = action;
             if (group !== null && group.parentAction !== null) {
-                group.parentAction.childrenActions.push(action);
+                group.parentAction.childrenActivities.push(action);
             } else {
                 this.$scope.currentSubroute.activities.push(action);
             }
@@ -540,8 +540,8 @@ module dockyard.controllers {
                 actionId = action.id,
                 canBypassActionLoading = false; // Whether we can avoid reloading an action from the backend
 
-            if (this.$scope.current.action) {
-                originalId = this.$scope.current.action.id;
+            if (this.$scope.current.activities) {
+                originalId = this.$scope.current.activities.id;
             }
             // Save previously selected action (and associated entities)
             // If a new action has just been added, it will be saved. 
@@ -549,12 +549,12 @@ module dockyard.controllers {
 
             promise.then((result: model.RouteBuilderState) => {
 
-                if (result.action != null) {
+                if (result.activities != null) {
                     // Notity interested parties of action update and update $scope
-                    this.handleActionUpdate(result.action);
+                    this.handleActionUpdate(result.activities);
 
                     // Whether id of the previusly selected action has changed after calling save
-                    var idChangedFromTempToPermanent = (originalId != result.action.id);
+                    var idChangedFromTempToPermanent = (originalId != result.activities.id);
 
                     // Since actions are saved immediately after addition, assume that 
                     // any selected action with a temporary id has just been added by user. 
@@ -563,8 +563,8 @@ module dockyard.controllers {
 
                     // If earlier we saved a newly added action, set current action id to
                     // the permanent id we received after saving operation. 
-                    actionId = idChangedFromTempToPermanent && result.action
-                        ? result.action.id
+                    actionId = idChangedFromTempToPermanent && result.activities
+                        ? result.activities.id
                         : action.id;
 
                     //Whether user selected a new action or just clicked on the current one
@@ -580,7 +580,7 @@ module dockyard.controllers {
                         'to action type selection for an unpersisted action.');
                 }
                 if (canBypassActionLoading) {
-                    this.addActionToUI(result.action, group);
+                    this.addActionToUI(result.activities, group);
                 }
                 else {
                     this.ActionService.get({ id: actionId }).$promise.then(action => {
@@ -598,7 +598,7 @@ module dockyard.controllers {
             this.RouteBuilderService.saveCurrent(this.$scope.current)
                 .then((result: model.RouteBuilderState) => {
                     // Notity interested parties of action update and update $scope
-                    this.handleActionUpdate(result.action);
+                    this.handleActionUpdate(result.activities);
 
                 });
         }
@@ -702,9 +702,7 @@ module dockyard.controllers {
                     return;
                 }
             }
-
             
-
             // scann all actions to find actions with tag AgressiveReload in ActivityTemplate
             this.reConfigure(results);
 
@@ -720,7 +718,7 @@ module dockyard.controllers {
         private getAgressiveReloadingActions (actionGroups: Array<model.ActionGroup>, currentAction: interfaces.IActivityDTO) {
             var results: Array<model.ActivityDTO> = [];
             actionGroups.forEach(group => {
-                group.actions.filter(action => {
+                group.activities.filter(action => {
                     return action.activityTemplate.tags !== null && action.activityTemplate.tags.indexOf('AggressiveReload') !== -1;
                 }).forEach(action => {
                     results.push(action);

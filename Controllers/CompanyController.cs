@@ -4,7 +4,9 @@ namespace HubWeb.Controllers
 {
     public class CompanyController : Controller
     {
-        public ActionResult Jobs()
+        // GET: Company
+        [HttpGet]
+        public ActionResult Index()
         {
             return View();
         }

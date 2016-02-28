@@ -122,7 +122,7 @@ namespace terminalDocuSign.Services
         }
 
 
-        public StandardPayloadDataCM CreateActionPayload(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO, string curEnvelopeId, string templateId)
+        public StandardPayloadDataCM CreateActivityPayload(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO, string curEnvelopeId, string templateId)
         {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 
@@ -220,6 +220,34 @@ namespace terminalDocuSign.Services
             return null;
         }
 
+        public int CountEnvelopes(DocuSignAuthTokenDTO authToken, DocusignQuery query)
+        {
+            int result = 0;
+
+            if (string.IsNullOrWhiteSpace(query.Folder) || query.Folder == "<any>")
+            {
+                var searchFolders = _docuSignFolder
+                    .GetSearchFolders(authToken.Email, authToken.ApiPassword);
+
+                foreach (var folder in searchFolders)
+                {
+                    try
+                    {
+                        result += CountFolder(authToken, query, folder.FolderId);
+                    }
+                    catch (Exception ex)
+                    {
+                    }
+                }
+            }
+            else
+            {
+                result = CountFolder(authToken, query, query.Folder);
+            }
+
+            return result;
+        }
+
         public List<FolderItem> SearchDocusign(DocuSignAuthTokenDTO authToken, DocusignQuery query)
         {
             var envelopes = new List<FolderItem>();
@@ -250,6 +278,11 @@ namespace terminalDocuSign.Services
         private void SearchFolder(DocuSignAuthTokenDTO authToken, DocusignQuery query, string folder, List<FolderItem> envelopes)
         {
             envelopes.AddRange(_docuSignFolder.Search(authToken.Email, authToken.ApiPassword, query.SearchText, folder, query.Status == "<any>" ? null : query.Status, query.FromDate, query.ToDate, query.Conditions));
+        }
+
+        private int CountFolder(DocuSignAuthTokenDTO authToken, DocusignQuery query, string folder)
+        {
+            return _docuSignFolder.Count(authToken.Email, authToken.ApiPassword, query.SearchText, folder, query.Status == "<any>" ? null : query.Status, query.FromDate, query.ToDate);
         }
     }
 }

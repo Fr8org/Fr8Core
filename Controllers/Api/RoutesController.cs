@@ -128,7 +128,7 @@ namespace HubWeb.Controllers
         [ResponseType(typeof(RouteFullDTO))]
         [HttpGet]
 
-        public IHttpActionResult GetByAction(Guid id)
+        public IHttpActionResult GetByActivity(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -232,9 +232,9 @@ namespace HubWeb.Controllers
         }
 
         [HttpPost]
-        [ActionName("action")]
+        [ActionName("activity")]
         [Fr8ApiAuthorize]
-        public IHttpActionResult PutAction(ActivityDTO activityDto)
+        public IHttpActionResult PutActivity(ActivityDTO activityDto)
         {
             //A stub until the functionaltiy is ready
             return Ok();
@@ -299,7 +299,9 @@ namespace HubWeb.Controllers
         {
             var eventManager = ObjectFactory.GetInstance<Event>();
             string activityDTO = await _plan.Deactivate(planId);
-            await eventManager.Publish("RouteDeactivated", ObjectFactory.GetInstance<ISecurityServices>().GetCurrentUser(), planId.ToString(), null, "Success");
+
+            var routeDeactivateTask = Task.Run(() => eventManager.Publish("RouteDeactivated", ObjectFactory.GetInstance<ISecurityServices>().GetCurrentUser(),
+                    planId.ToString(), null, "Success")).ConfigureAwait(false);
 
             return Ok(activityDTO);
         }
@@ -346,8 +348,9 @@ namespace HubWeb.Controllers
                     return Ok(activateDTO.Container);
                 }
 
-                await eventManager.Publish("RouteActivated", ObjectFactory.GetInstance<ISecurityServices>().GetCurrentAccount
-                    (ObjectFactory.GetInstance<IUnitOfWork>()).Id.ToString(), planId.ToString(), JsonConvert.SerializeObject(planId).ToString(), "Success");
+                var routeActiveTask = Task.Run(() => eventManager.Publish("RouteActivated", ObjectFactory.GetInstance<ISecurityServices>().GetCurrentAccount
+                    (ObjectFactory.GetInstance<IUnitOfWork>()).Id.ToString(), planId.ToString(), JsonConvert.SerializeObject(planId).ToString(), "Success")).
+                    ConfigureAwait(false);
             }
 
             //RUN
@@ -380,6 +383,10 @@ namespace HubWeb.Controllers
                             string.Format("Launching a new Container for Plan \"{0}\"", planDO.Name));
 
                         var containerDO = await _plan.Run(planDO, curCrate);
+                        if (!planDO.IsOngoingPlan())
+                        {
+                            var deactivateDTO = await _plan.Deactivate(planId);
+                        }
 
                         var response = _crate.GetContentType<OperationalStateCM>(containerDO.CrateStorage);
 
@@ -400,15 +407,15 @@ namespace HubWeb.Controllers
 
                         var containerDTO = Mapper.Map<ContainerDTO>(containerDO);
 
-                        await eventManager.Publish("ContainerLaunched"
-                            , planDO.Fr8AccountId
-                            , planDO.Id.ToString()
-                            , JsonConvert.SerializeObject(containerDTO).ToString(), "Success");
+                        var containerLaunched = Task.Run(() => eventManager.Publish("ContainerLaunched"
+                             , planDO.Fr8AccountId
+                             , planDO.Id.ToString()
+                             , JsonConvert.SerializeObject(containerDTO).ToString(), "Success")).ConfigureAwait(false);
 
-                        await eventManager.Publish("ContainerExecutionComplete"
+                        var containerExecutedTask = Task.Run(() => eventManager.Publish("ContainerExecutionComplete"
                             , planDO.Fr8AccountId
                             , planDO.Id.ToString()
-                            , JsonConvert.SerializeObject(containerDTO).ToString(), "Success");
+                            , JsonConvert.SerializeObject(containerDTO).ToString(), "Success")).ConfigureAwait(false);
 
                         return Ok(containerDTO);
                     }
@@ -425,6 +432,13 @@ namespace HubWeb.Controllers
                     string message = String.Format("Plan \"{0}\" failed", planDO.Name);
 
                     _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, message);
+                }
+                finally
+                {
+                    if (!planDO.IsOngoingPlan())
+                    {
+                        var deactivateDTO = await _plan.Deactivate(planId);
+                    }
                 }
 
                 return Ok();

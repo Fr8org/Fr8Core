@@ -41,8 +41,8 @@ module dockyard.controllers {
             $scope.activeTerminal = 1
 		}
         private setActive(actionCategoryId) {
-            console.log(this.WebServiceService.getActions([actionCategoryId]))
-            this.$scope.webServiceActionList = this.WebServiceService.getActions([actionCategoryId]);
+            console.log(this.WebServiceService.getActivities([actionCategoryId]))
+            this.$scope.webServiceActionList = this.WebServiceService.getActivities([actionCategoryId]);
         }
         
         private setActiveTerminal(index) {

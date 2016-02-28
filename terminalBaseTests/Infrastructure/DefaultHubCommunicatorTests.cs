@@ -29,7 +29,7 @@ namespace terminaBaselTests.Infrastructure
         public void GetDesignTimeFieldsByDirectionTerminal_ShouldGenerateCorrectDesigntimeURL()
         {
             var _restfulServiceClient = new Mock<IRestfulServiceClient>();
-            _restfulServiceClient.Setup(r => r.GetAsync<StandardDesignTimeFieldsCM>(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()));
+            _restfulServiceClient.Setup(r => r.GetAsync<FieldDescriptionsCM>(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()));
             ObjectFactory.Configure(cfg => cfg.For<IRestfulServiceClient>().Use(_restfulServiceClient.Object));
             IHubCommunicator _hubCommunicator = new DefaultHubCommunicator();
             _hubCommunicator.Configure("sampleterminal");
@@ -45,7 +45,7 @@ namespace terminaBaselTests.Infrastructure
                 ((int)availability).ToString());
             _hubCommunicator.GetDesignTimeFieldsByDirection(id, direction, availability, null);
 
-            _restfulServiceClient.Verify(o => o.GetAsync<StandardDesignTimeFieldsCM>(It.Is<Uri>(p => p.ToString() == resultUrl), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()));
+            _restfulServiceClient.Verify(o => o.GetAsync<FieldDescriptionsCM>(It.Is<Uri>(p => p.ToString() == resultUrl), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()));
         }
     }
 }

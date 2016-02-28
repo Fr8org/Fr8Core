@@ -6,12 +6,17 @@ namespace Data.Interfaces.Manifests
     {
         public static string StandardDesignTimeFields
         {
-            get { return ManifestDiscovery.Default.GetManifestType<StandardDesignTimeFieldsCM>().Type; }
+            get { return ManifestDiscovery.Default.GetManifestType<FieldDescriptionsCM>().Type; }
         }
 
         public static string StandardConfigurationControls
         {
             get { return ManifestDiscovery.Default.GetManifestType<StandardConfigurationControlsCM>().Type; }
+        }
+
+        public static string StandardQueryFields
+        {
+            get { return ManifestDiscovery.Default.GetManifestType<StandardQueryFieldsCM>().Type; }
         }
     }
 }

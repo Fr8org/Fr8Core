@@ -50,7 +50,8 @@ namespace Hub.Services
         public IList<PlanDO> GetForUser(IUnitOfWork unitOfWork, Fr8AccountDO account, bool isAdmin = false,
             Guid? id = null, int? status = null)
         {
-            var queryableRepo = unitOfWork.PlanRepository.GetPlanQueryUncached();
+            var queryableRepo = unitOfWork.PlanRepository.GetPlanQueryUncached()
+                .Where(x => x.Visibility == PlanVisibility.Standard);
 
             queryableRepo = (id == null
                 ? queryableRepo.Where(pt => pt.Fr8Account.Id == account.Id)
@@ -132,12 +133,12 @@ namespace Hub.Services
         }
 
 
-        public async Task<ActivateActionsDTO> Activate(Guid curPlanId, bool routeBuilderActivate)
+        public async Task<ActivateActivitiesDTO> Activate(Guid curPlanId, bool routeBuilderActivate)
         {
-            var result = new ActivateActionsDTO
+            var result = new ActivateActivitiesDTO
             {
                 Status = "no action",
-                ActionsCollections = new List<ActivityDTO>()
+                ActivitiesCollections = new List<ActivityDTO>()
             };
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -163,7 +164,7 @@ namespace Hub.Services
                         //if the activate call is comming from the Route Builder just render again the action group with the errors
                         if (routeBuilderActivate)
                         {
-                            result.ActionsCollections.Add(resultActivate);
+                            result.ActivitiesCollections.Add(resultActivate);
                         }
                         else if (validationErrorChecker)
                         {
