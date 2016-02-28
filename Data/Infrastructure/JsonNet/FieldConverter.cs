@@ -63,10 +63,10 @@ namespace Data.Infrastructure.JsonNet
                 writer.WriteValue(item.Availability);
             }
             
-            if (item.SourceCrateManifest != null && item.SourceCrateManifest.Type != null)
+            if (item.SourceCrateManifest != null && item.SourceCrateManifest.Type != null && item.SourceCrateManifest.Id != 0)
             {
                 writer.WritePropertyName("sourceCrateManifest");
-                writer.WriteValue(JsonConvert.SerializeObject(item.SourceCrateManifest));
+                writer.WriteRawValue(JsonConvert.SerializeObject(item.SourceCrateManifest));
             }
             if (item.SourceCrateLabel != null)
             {
