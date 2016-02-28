@@ -95,7 +95,7 @@ namespace terminalDocuSignTests.Integration
                 var creds = new CredentialsDTO()
                 {
                     Username = "freight.testing@gmail.com",
-                    Password = "I6HmXEbCxNN",
+                    Password = "I6HmXEbCxN",
                     IsDemoAccount = true,
                     TerminalId = solution.ActivityTemplate.TerminalId
                 };
