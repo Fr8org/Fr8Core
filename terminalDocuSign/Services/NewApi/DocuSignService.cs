@@ -127,9 +127,20 @@ namespace terminalDocuSign.Services.New_Api
                                 if (corresponding_field == null)
                                     break;
                                 tab["listItems"].Where(a => a["value"].ToString() == corresponding_field.Value).FirstOrDefault()["selected"] = "true";
+                                foreach (var listItem in tab["listItems"].Where(a => a["value"].ToString() != corresponding_field.Value))
+                                {
+                                    //set all other to false
+                                    listItem["selected"] = "false";
+                                }
+                                    //["selected"] = "true";
                                 tab["value"] = corresponding_field.Value;
                                 break;
-
+                            case "checkboxTabs":
+                                corresponding_field = fields.Where(a => a.Key.Contains(tab.Property("tabLabel").Value.ToString())).FirstOrDefault();
+                                if (corresponding_field == null)
+                                    break;
+                                tab["selected"] = corresponding_field.Value;
+                                break;
                             default:
                                 corresponding_field = fields.Where(a => a.Key.Contains(tab.Property("tabLabel").Value.ToString())).FirstOrDefault();
                                 if (corresponding_field == null)
