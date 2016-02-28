@@ -20,7 +20,7 @@ namespace terminalQuickBooksTests.Integration
     /// but allows to trigger that class from HealthMonitor.
     /// </summary>
     [Explicit]
-    internal class Convert_TableData_To_AccountingTransactions_v1Tests : BaseTerminalIntegrationTest
+    internal class Convert_TableData_To_AccountingTransactions_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {
