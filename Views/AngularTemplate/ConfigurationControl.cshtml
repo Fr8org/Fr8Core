@@ -63,7 +63,7 @@
         TextBlock template
         -->
     <div ng-if='field.type == "TextBlock"'>
-        <label class='control-label'>{{::field.label}}</label>
+        <label ng-if="field.label !== null && field.label.length > 0" class='control-label'>{{::field.label}}</label>
         <text-block field='field'></text-block>
     </div>
 
