@@ -65,7 +65,7 @@ namespace Data.Infrastructure.JsonNet
             writer.WritePropertyName("availability");
             if (item.Availability == AvailabilityType.NotSet)
             {
-                writer.WriteValue((int?)null);
+                writer.WriteNull();
             }
             else
             {

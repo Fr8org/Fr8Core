@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using Data.Constants;
 using Data.Interfaces.DataTransferObjects;
+using Newtonsoft.Json;
+using Data.Infrastructure.JsonNet;
 
 namespace Data.Interfaces.Manifests
 {
@@ -22,6 +24,7 @@ namespace Data.Interfaces.Manifests
             Fields.AddRange(fields);
         }
 
+        //[JsonConverter(typeof(FieldListConverter))]
         public List<FieldDTO> Fields { get; set; }
     }
 }

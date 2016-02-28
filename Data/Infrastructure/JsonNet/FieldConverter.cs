@@ -1,10 +1,12 @@
-﻿using Data.Interfaces.DataTransferObjects;
+﻿using Data.Crates;
+using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -38,6 +40,7 @@ namespace Data.Infrastructure.JsonNet
             var instance = (FieldDTO)Activator.CreateInstance(objectType);
             serializer.Populate(jsonObject.CreateReader(), instance);
             return instance;
+
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
@@ -53,16 +56,17 @@ namespace Data.Infrastructure.JsonNet
             writer.WritePropertyName("availability");
             if (item.Availability == AvailabilityType.NotSet)
             {
-                writer.WriteValue((int?)null);
+                writer.WriteNull();
             }
             else
             {
                 writer.WriteValue(item.Availability);
             }
+            
             if (item.SourceCrateManifest != null && item.SourceCrateManifest.Type != null)
             {
                 writer.WritePropertyName("sourceCrateManifest");
-                writer.WriteRawValue(JsonConvert.SerializeObject(item.SourceCrateManifest));
+                writer.WriteValue(JsonConvert.SerializeObject(item.SourceCrateManifest));
             }
             if (item.SourceCrateLabel != null)
             {
