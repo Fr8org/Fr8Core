@@ -49,13 +49,13 @@ namespace terminalDocuSign.Actions
             Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payloadCrates = await GetPayload(activityDO, containerId);
-            
+
             if (NeedsAuthentication(authTokenDO))
             {
                 return NeedsAuthenticationError(payloadCrates);
             }
             //Get envlopeId
-            var control = (DropDownList) FindControl(CrateManager.GetStorage(activityDO), "Available_Templates");
+            var control = (DropDownList)FindControl(CrateManager.GetStorage(activityDO), "Available_Templates");
             string selectedDocusignTemplateId = control.Value;
             if (selectedDocusignTemplateId == null)
             {
@@ -100,35 +100,32 @@ namespace terminalDocuSign.Actions
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
-            var docuSignTemplatesCrate = _docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
-            var controls = CreateControlsCrate();
+            var controls = CreateControlsCrate(docuSignAuthDTO);
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Clear();
                 crateStorage.Add(controls);
-                crateStorage.Add(docuSignTemplatesCrate);
-
             }
-
             return curActivityDO;
         }
 
-        private Crate CreateControlsCrate()
+        private Crate CreateControlsCrate(DocuSignAuthTokenDTO authToken)
         {
-            
             var availableTemplates = new DropDownList
             {
                 Label = "Get which template",
                 Name = "Available_Templates",
                 Value = null,
-                Source = new FieldSourceDTO
-                {
-                    Label = "Available Templates",
-                    ManifestType = MT.FieldDescription.GetEnumDisplayName()
-                }
+                ListItems = GetDocuSignTemplates(authToken)
             };
             return PackControlsCrate(availableTemplates);
+        }
+
+        private List<ListItem> GetDocuSignTemplates(DocuSignAuthTokenDTO authToken)
+        {
+            var templates = _docuSignManager.GetDocuSignTemplates(authToken);
+            return templates.Select(x => new ListItem() { Key = x.Key, Value = x.Value }).ToList();
         }
     }
 }

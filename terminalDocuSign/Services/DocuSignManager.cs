@@ -109,6 +109,13 @@ namespace terminalDocuSign.Services
             return templateDTO;
         }
 
+        public List<KeyValuePair<string, string>> GetDocuSignTemplates(DocuSignAuthTokenDTO authToken)
+        {
+            var template = new DocuSignTemplate();
+            var templates = template.GetTemplateNames(authToken.Email, authToken.ApiPassword);
+            return templates.Select(x => new KeyValuePair<string, string>(x.Name, x.Id)).ToList();
+        }
+
         public Crate PackCrate_DocuSignTemplateNames(DocuSignAuthTokenDTO authToken)
         {
             var template = new DocuSignTemplate();
@@ -129,7 +136,7 @@ namespace terminalDocuSign.Services
             var docusignEnvelope = new DocuSignEnvelope(
                 docuSignAuthDTO.Email,
                 docuSignAuthDTO.ApiPassword);
-            
+
             var templateFields = ExtractTemplateFieldsAndAddToCrate(templateId, docuSignAuthDTO, curActivityDO);
 
             var curEnvelopeData = docusignEnvelope.GetEnvelopeData(curEnvelopeId);

@@ -37,11 +37,6 @@ namespace terminalDocuSign.Actions
                     Label = "Archive which template",
                     Name = "Available_Templates",
                     Value = null,
-                    Source = new FieldSourceDTO
-                    {
-                        Label = "Available Templates",
-                        ManifestType = MT.FieldDescription.GetEnumDisplayName()
-                    },
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 });
 
@@ -54,12 +49,12 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        private readonly DocuSignManager DocuSignManager;
+        private readonly DocuSignManager _docuSignManager;
 
 
         public Archive_DocuSign_Template_v1()
         {
-            DocuSignManager = new DocuSignManager();
+            _docuSignManager = new DocuSignManager();
         }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
@@ -75,15 +70,28 @@ namespace terminalDocuSign.Actions
         protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
-            var docuSignTemplatesCrate = DocuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Clear();
-                crateStorage.Add(PackControls(new ActivityUi()));
-                crateStorage.Add(docuSignTemplatesCrate);
+                crateStorage.Add(CrateUi(docuSignAuthDTO));
             }
-
             return Task.FromResult(curActivityDO);
+        }
+
+        private Crate CrateUi(DocuSignAuthTokenDTO authToken)
+        {
+            ActivityUi ui = new ActivityUi();
+            FillAvailableTemplatesSource(ui, authToken);
+            return PackControls(ui);
+        }
+
+        private void FillAvailableTemplatesSource(ActivityUi ui, DocuSignAuthTokenDTO authToken)
+        {
+            var templates = _docuSignManager.GetDocuSignTemplates(authToken);
+            var items= templates.Select(x => new ListItem() { Key = x.Key, Value = x.Value }).ToList();
+
+            var control = (DropDownList)ui.Controls.First(x => x.Name == "Available_Templates");
+            control.ListItems = items;
         }
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
