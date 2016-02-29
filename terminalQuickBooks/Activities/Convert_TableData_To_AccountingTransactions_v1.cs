@@ -18,6 +18,7 @@ using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using Utilities;
 using Task = System.Threading.Tasks.Task;
+using System.Globalization;
 
 namespace terminalQuickBooks.Actions
 {
@@ -393,7 +394,7 @@ namespace terminalQuickBooks.Actions
                     var curAmount = curCellList[i].Cell.Value;
                     var creditLine = GenerateFinacialLine(curAccount, curDate, curDescription, curAmount, "Credit");
                     var debitLine = GenerateFinacialLine(debitAccount, curDate, curDescription, curAmount, "Debit");
-                    curTransaction.TransactionDate = DateTime.Parse(curDate);
+                    curTransaction.TransactionDate = DateTime.Parse(curDate, new CultureInfo("en-US"));
                     curTransaction.Memo = memoText;
                     curTransaction.FinancialLines = new List<FinancialLineDTO> { creditLine, debitLine };
                 }

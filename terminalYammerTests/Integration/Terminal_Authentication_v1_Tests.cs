@@ -8,7 +8,7 @@ using HealthMonitor.Utility;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using NUnit.Framework;
 
-namespace terminalDocuSignTests.Integration
+namespace terminalYammerTests.Integration
 {
     [Explicit]
     public class Terminal_Authentication_v1_Tests : BaseTerminalIntegrationTest
