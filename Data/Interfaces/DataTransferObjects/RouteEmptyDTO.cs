@@ -21,5 +21,7 @@ namespace Data.Interfaces.DataTransferObjects
         public int RouteState { get; set; }
 
         public Guid StartingSubrouteId { get; set; }
+
+        public string Category { get; set; }
     }
 }

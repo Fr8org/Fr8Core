@@ -1236,5 +1236,88 @@ namespace TerminalBase.BaseClasses
 
             return curSolutionPage;
         }
+
+        public string ParseConditionToText(List<FilterConditionDTO> filterData)
+        {
+            var parsedConditions = new List<string>();
+
+            filterData.ForEach(condition =>
+            {
+                string parsedCondition = condition.Field;
+
+                switch (condition.Operator)
+                {
+                    case "eq":
+                        parsedCondition += " = ";
+                        break;
+                    case "neq":
+                        parsedCondition += " != ";
+                        break;
+                    case "gt":
+                        parsedCondition += " > ";
+                        break;
+                    case "gte":
+                        parsedCondition += " >= ";
+                        break;
+                    case "lt":
+                        parsedCondition += " < ";
+                        break;
+                    case "lte":
+                        parsedCondition += " <= ";
+                        break;
+                    default:
+                        throw new NotSupportedException(string.Format("Not supported operator: {0}", condition.Operator));
+                }
+
+                parsedCondition += string.Format("'{0}'", condition.Value);
+                parsedConditions.Add(parsedCondition);
+            });
+
+            var finalCondition = string.Join(" AND ", parsedConditions);
+
+            return finalCondition;
+        }
+
+        /// <summary>
+        /// Update Plan name if the current Plan name is the same as the passed parameter OriginalPlanName to avoid overwriting the changes made by the user
+        /// </summary>
+        /// <param name="activityDO"></param>
+        /// <param name="OriginalPlanName"></param>
+        /// <returns></returns>
+        public async Task<RouteFullDTO> UpdatePlanName(Guid activityId, string OriginalPlanName, string NewPlanName)
+        {
+            try
+            {
+                RouteFullDTO plan = await GetPlansByActivity(activityId.ToString());
+                if (plan != null && plan.Name.Equals(OriginalPlanName, StringComparison.OrdinalIgnoreCase))
+                {
+                    plan.Name = NewPlanName;
+
+                    var emptyPlanDTO = Mapper.Map<RouteEmptyDTO>(plan);
+                    plan = await UpdatePlan(emptyPlanDTO);
+                }
+
+                return plan;
+
+            }
+            catch (Exception ex)
+            {
+            }
+            return null;
+        }
+
+        public async Task<RouteFullDTO> UpdatePlanCategory(Guid activityId, string category)
+        {
+            RouteFullDTO plan = await GetPlansByActivity(activityId.ToString());
+            if (plan != null)
+            {
+                plan.Category = category;
+
+                var emptyPlanDTO = Mapper.Map<RouteEmptyDTO>(plan);
+                plan = await UpdatePlan(emptyPlanDTO);
+            }
+
+            return plan;
+        }
     }
 }

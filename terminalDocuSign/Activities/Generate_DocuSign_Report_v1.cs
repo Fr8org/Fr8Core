@@ -419,7 +419,7 @@ namespace terminalDocuSign.Actions
             return query;
         }
 
-        protected override Task<ActivityDO> InitialConfigurationResponse(
+        protected override async Task<ActivityDO> InitialConfigurationResponse(
             ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             if (NeedsAuthentication(authTokenDO))
@@ -436,7 +436,9 @@ namespace terminalDocuSign.Actions
                 crateStorage.AddRange(PackDesignTimeData(docuSignAuthToken));
             }
 
-            return Task.FromResult(curActivityDO);
+            RouteFullDTO plan = await UpdatePlanCategory(curActivityDO.Id, "report");
+
+            return await Task.FromResult(curActivityDO);
         }
 
         private int ExtractDocuSignResultSize(
@@ -465,7 +467,7 @@ namespace terminalDocuSign.Actions
                     crateStorage.Remove<StandardQueryCM>();
                     RemoveControl(crateStorage, "CannotProceedMessage");
 
-                    await RenamePlanName(activityDO);
+                    await UpdatePlanName(activityDO);
 
                     var queryCrate = ExtractQueryCrate(crateStorage);
                     crateStorage.Add(queryCrate);
@@ -618,44 +620,28 @@ namespace terminalDocuSign.Actions
             return Crate<StandardQueryCM>.FromContent(QueryCrateLabel, queryCM);
         }
 
-        private async Task<RouteFullDTO> RenamePlanName(ActivityDO activityDO)
+        private async Task<RouteFullDTO> UpdatePlanName(ActivityDO activityDO)
         {
-            try
+            using (var crateStorage = CrateManager.GetUpdatableStorage(activityDO))
             {
-                RouteFullDTO plan = await GetPlansByActivity(activityDO.Id.ToString());
-                if (plan != null && plan.Name.Equals("Generate a DocuSign Report", StringComparison.OrdinalIgnoreCase))
+                var configurationControls = crateStorage
+                .CrateContentsOfType<StandardConfigurationControlsCM>()
+                .SingleOrDefault();
+
+                if (configurationControls != null)
                 {
-                    using (var crateStorage = CrateManager.GetUpdatableStorage(activityDO))
+                    var actionUi = new ActivityUi();
+                    actionUi.ClonePropertiesFrom(configurationControls);
+
+                    var criteria = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(
+                        actionUi.QueryBuilder.Value
+                    );
+
+                    if (criteria.Count > 0)
                     {
-                        var configurationControls = crateStorage
-                        .CrateContentsOfType<StandardConfigurationControlsCM>()
-                        .SingleOrDefault();
-
-                        if (configurationControls != null)
-                        {
-                            var actionUi = new ActivityUi();
-                            actionUi.ClonePropertiesFrom(configurationControls);
-
-                            var criteria = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(
-                                actionUi.QueryBuilder.Value
-                            );
-
-                            if (criteria.Count > 0)
-                            {
-                                plan.Name = FilterConditionPredicateBuilder<StandardQueryCM>.ParseConditionToText(criteria);
-
-                                var emptyPlanDTO = Mapper.Map<RouteEmptyDTO>(plan);
-                                plan = await UpdatePlan(emptyPlanDTO);
-                            }
-                        }
+                        return await UpdatePlanName(activityDO.Id, "Generate a DocuSign Report", ParseConditionToText(criteria));
                     }
                 }
-
-                return plan;
-
-            }
-            catch (Exception ex)
-            {
             }
             return null;
         }

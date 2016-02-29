@@ -260,11 +260,7 @@ namespace Hub.Services
 
             if (createRoute)
             {
-                string category = "";
-                if (activityTemplateName.Equals("Generate_DocuSign_Report", StringComparison.OrdinalIgnoreCase))
-                    category = "report";
-
-                plan = ObjectFactory.GetInstance<IPlan>().Create(uow, label, category);
+                plan = ObjectFactory.GetInstance<IPlan>().Create(uow, label);
 
                 plan.ChildNodes.Add(parentNode = new SubrouteDO
                 {

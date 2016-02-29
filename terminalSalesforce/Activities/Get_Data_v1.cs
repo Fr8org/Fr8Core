@@ -147,7 +147,7 @@ namespace terminalSalesforce.Actions
                 EventManager.CriteriaEvaluationStarted(containerId);
 
 
-                string parsedCondition = FilterConditionPredicateBuilder<StandardPayloadDataCM>.ParseConditionToText(filterDataDTO);
+                string parsedCondition = ParseConditionToText(filterDataDTO);
 
                 resultObjects = await _salesforce.GetObjectByQuery(curSelectedSalesForceObject, parsedCondition, _salesforce.CreateForceClient(authTokenDO));
             }

@@ -68,22 +68,6 @@ namespace terminalDocuSign.Tests.Services
             }
         }
 
-        [Test, Category("DocuSignRoute_CreateRoute")]
-        public async Task CreateSolution_GenerateDocuSignReport_SetPlanCategoryToReport()
-        {
-            PlanDO plan = null;
-            ActivityTemplateDTO activityTemplate = TerminalFixtureData.Generate_DocuSign_ReportTemplate();
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var result = await _activity.CreateAndConfigure(uow, FixtureData.TestDeveloperAccount().Id,
-                    activityTemplate.Id, activityTemplate.Label, null, null, true, null, activityTemplate.Name);
-                result = (PlanDO)result;
-            }
-
-            Assert.IsNotNull(plan);
-            Assert.AreEqual(plan.Category.ToLower(), "report");
-        }
-
         private void SetupForAutomaticRoute()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
