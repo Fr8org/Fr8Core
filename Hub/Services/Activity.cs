@@ -237,7 +237,7 @@ namespace Hub.Services
             return uow.PlanRepository.GetById<ActivityDO>(id);
         }
 
-        public async Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, string label = null, int? order = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null, string activityTemplateName = "")
+        public async Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, string label = null, int? order = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null)
         {
             if (parentNodeId != null && createRoute)
             {

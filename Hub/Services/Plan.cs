@@ -50,7 +50,7 @@ namespace Hub.Services
         public IList<PlanDO> GetForUser(IUnitOfWork unitOfWork, Fr8AccountDO account, bool isAdmin = false,
             Guid? id = null, int? status = null, string category = "")
         {
-            var queryableRepo = unitOfWork.PlanRepository.GetPlanQueryUncached()
+            var planQuery = unitOfWork.PlanRepository.GetPlanQueryUncached()
                 .Where(x => x.Visibility == PlanVisibility.Standard);
 
             planQuery = (id == null
