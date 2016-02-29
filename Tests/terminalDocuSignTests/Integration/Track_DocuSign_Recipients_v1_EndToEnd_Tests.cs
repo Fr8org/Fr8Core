@@ -221,7 +221,8 @@ namespace terminalDocuSignTests.Integration
             Assert.True(this._solution.ChildrenActivities.Any(a => a.Label == "Test Incoming Data" && a.Ordering == 4));
 
             plan = await HttpGetAsync<RouteFullDTO>(routeReloadUrl);
-            Assert.AreEqual(2, plan.Subroutes.First().Activities.Count);
+            Assert.AreEqual(3, plan.Subroutes.First().Activities.Count);
+            Assert.True(plan.Subroutes.First().Activities.Any(a => a.Label == "Build a Message" && a.Ordering == 2));
             var emailActivity = plan.Subroutes.First().Activities.Last();
             Assert.True(emailActivity.Label == notificationHandler.selectedKey);
 

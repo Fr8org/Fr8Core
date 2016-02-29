@@ -847,6 +847,7 @@ namespace TerminalBase.BaseClasses
                         {
                             case "TextBlock":
                             case "TextBox":
+                            case ControlTypes.TextArea:
                                 control.Value = (string)value;
                                 break;
                             case "CheckBox":
