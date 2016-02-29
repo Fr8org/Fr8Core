@@ -261,10 +261,15 @@ namespace terminalDocuSign.Actions
                 using (var updater = CrateManager.GetUpdatableStorage(notifierActivity))
                 {
                     var configControls = GetConfigurationControls(updater);
-                    var emailBodyField = (TextSource)GetControl(configControls, "Select_Message_Field", ControlTypes.TextSource);
-                    emailBodyField.ValueSource = "upstream";
-                    emailBodyField.Value = "NotificationMessage";
-                    emailBodyField.selectedKey = "NotificationMessage";
+                    var messageField = (TextSource)GetControl(configControls, "Select_Message_Field", ControlTypes.TextSource);
+                    if (messageField == null)
+                    {
+                        //user is not authenticated yet - there is nothing we can do now
+                        return;
+                    }
+                    messageField.ValueSource = "upstream";
+                    messageField.Value = "NotificationMessage";
+                    messageField.selectedKey = "NotificationMessage";
                 }
             }
             
@@ -292,7 +297,11 @@ namespace terminalDocuSign.Actions
                     Conditions = conditions
                 });
 
-                var queryFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", new FieldDTO[] { new FieldDTO("Status", "Status") });
+                var queryableCriteria = new StandardQueryFieldsCM(new QueryFieldDTO[] {new QueryFieldDTO("Status", "Status", QueryFieldType.String, new TextBox()
+                            {
+                                Name = "QueryField_Status"
+                            })});
+                var queryFieldsCrate = Crate.FromContent("Queryable Criteria", queryableCriteria);
                 crateStorage.RemoveByLabel("Queryable Criteria");
                 crateStorage.Add(queryFieldsCrate);
             }
@@ -344,11 +353,12 @@ namespace terminalDocuSign.Actions
                     Conditions = conditions
                 });
 
-                crateStorage.Add(CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", GetFieldsByObjectId(selectedObject.Id).ToArray()));
+                var queryCriteria = Crate.FromContent("Queryable Criteria", new StandardQueryFieldsCM(GetFieldsByObjectId(selectedObject.Id)));
+                crateStorage.Add(queryCriteria);
             }
         }
 
-        private IEnumerable<FieldDTO> GetFieldsByObjectId(int objectId)
+        private IEnumerable<QueryFieldDTO> GetFieldsByObjectId(int objectId)
         {
             var fields = new Dictionary<string, string>();
 
@@ -373,7 +383,18 @@ namespace terminalDocuSign.Actions
                 }
             }
 
-            return fields.OrderBy(x => x.Key).Select(x => new FieldDTO(x.Key, x.Key));
+            return fields.OrderBy(x => x.Key)
+                .Select(x =>
+                    new QueryFieldDTO(
+                        x.Key,
+                        x.Key,
+                        QueryFieldType.String,
+                        new TextBox()
+                        {
+                            Name = "QueryField_" + x.Key
+                        }
+                    )
+                );
         }
 
 
