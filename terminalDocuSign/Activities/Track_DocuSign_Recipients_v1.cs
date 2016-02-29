@@ -20,6 +20,7 @@ using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using terminalDocuSign.Infrastructure;
 using AutoMapper;
+using Data.States;
 
 namespace terminalDocuSign.Actions
 {
@@ -460,7 +461,33 @@ namespace terminalDocuSign.Actions
 
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            return Success(await GetPayload(curActivityDO, containerId));
+            var payload = await GetPayload(curActivityDO, containerId);
+
+            var configControls = (await HubCommunicator.GetCratesByDirection<StandardConfigurationControlsCM>(curActivityDO, CrateDirection.Downstream, CurrentFr8UserId)).SelectMany(c => c.Content.Controls);
+
+            var delayValue = (Duration)configControls.Single(c => c.Name == "Delay_Duration" && c.Type == ControlTypes.Duration);
+
+            var runTimePayloadData = new List<FieldDTO>();
+            var delayTimeString = delayValue.Days + " days, " + delayValue.Hours + " hours and "+delayValue.Minutes+" minutes";
+            runTimePayloadData.Add(new FieldDTO("DelayTime", delayTimeString, AvailabilityType.RunTime));
+
+            var filterPane = (FilterPane) configControls.Single(c => c.Name == "Selected_Filter" && c.Type == ControlTypes.FilterPane);
+
+            var conditions = JsonConvert.DeserializeObject<FilterDataDTO>(filterPane.Value);
+
+            var statusField = conditions.Conditions.FirstOrDefault(c => c.Field == "Status");
+            if (statusField != null)
+            {
+                runTimePayloadData.Add(new FieldDTO("ActionBeingTracked", statusField.Value, AvailabilityType.RunTime));
+            }
+
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
+            {
+                crateStorage.Add(Data.Crates.Crate.FromContent("Track DocuSign Recipients Payload Data", new StandardPayloadDataCM(runTimePayloadData)));   
+            }
+
+
+            return Success(payload);
         }
         /// <summary>
         /// This method provides documentation in two forms:

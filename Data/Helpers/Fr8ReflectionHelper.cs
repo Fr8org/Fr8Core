@@ -12,6 +12,10 @@ namespace Data.Helpers
         public static IEnumerable<FieldDTO> FindFieldsRecursive(Object obj)
         {
             var fields = new List<FieldDTO>();
+            if (obj == null)
+            {
+                return fields;
+            }
             if (obj is IEnumerable)
             {
 
