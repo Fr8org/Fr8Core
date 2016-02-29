@@ -86,7 +86,7 @@ namespace terminalDocuSignTests.Integration
             //
             // Configure Monitor DocuSign Envelope action
             //
-            var monitorDocuSignAction = _solution.ChildrenActivities.Single(a => a.Label == "Monitor DocuSign Envelope Activity");
+            var monitorDocuSignAction = _solution.ChildrenActivities.Single(a => a.Label == "Monitor Docusign Envelope Activity");
             _crateStorage = _crateManager.FromDto(monitorDocuSignAction.CrateStorage);
                         
             controlsCrate = _crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
