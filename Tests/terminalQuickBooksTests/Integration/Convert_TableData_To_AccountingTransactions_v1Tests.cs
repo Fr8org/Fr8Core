@@ -11,6 +11,7 @@ using HealthMonitor.Utility;
 using Hub.Managers;
 using NUnit.Framework;
 using terminalQuickBooksTests.Fixtures;
+using System.Globalization;
 
 namespace terminalQuickBooksTests.Integration
 {
@@ -82,7 +83,7 @@ namespace terminalQuickBooksTests.Integration
             var firstLine1 = firstTransaction.FinancialLines[0];
             var secondLine1 = firstTransaction.FinancialLines[1];
             //First transaction data
-            Assert.IsTrue(DateTime.Equals(DateTime.Parse("30/12/2015"), firstTransaction.TransactionDate), "The dates are not equal");
+            Assert.IsTrue(DateTime.Equals(DateTime.Parse("30-Dec-2015", new CultureInfo("en-US")), firstTransaction.TransactionDate), "The dates are not equal");
             Assert.AreEqual("The testing transactions", firstTransaction.Memo);
             //First transaction, first line
             Assert.AreEqual("Trip to Samarkand", firstLine1.Description);
