@@ -29,7 +29,7 @@ namespace terminalDocuSign.Infrastructure
                             RecipientId = curSigner.recipientId,
                             EnvelopeId = envelope.EnvelopeId,
                             DocumentId = curTextTab.documentId,
-                            Name = curTextTab.tabLabel,
+                            Name = curTextTab.tabLabel + "(" + curSigner.roleName + ")",
                             TabId = curTextTab.tabId,
                             Value = curTextTab.value
                         };

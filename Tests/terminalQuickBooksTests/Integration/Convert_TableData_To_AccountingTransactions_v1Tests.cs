@@ -11,6 +11,7 @@ using HealthMonitor.Utility;
 using Hub.Managers;
 using NUnit.Framework;
 using terminalQuickBooksTests.Fixtures;
+using System.Globalization;
 
 namespace terminalQuickBooksTests.Integration
 {
@@ -20,7 +21,7 @@ namespace terminalQuickBooksTests.Integration
     /// but allows to trigger that class from HealthMonitor.
     /// </summary>
     [Explicit]
-    internal class Convert_TableData_To_AccountingTransactions_v1Tests : BaseTerminalIntegrationTest
+    internal class Convert_TableData_To_AccountingTransactions_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {
@@ -82,7 +83,7 @@ namespace terminalQuickBooksTests.Integration
             var firstLine1 = firstTransaction.FinancialLines[0];
             var secondLine1 = firstTransaction.FinancialLines[1];
             //First transaction data
-            Assert.IsTrue(DateTime.Equals(DateTime.Parse("30/12/2015"), firstTransaction.TransactionDate), "The dates are not equal");
+            Assert.IsTrue(DateTime.Equals(DateTime.Parse("30-Dec-2015", new CultureInfo("en-US")), firstTransaction.TransactionDate), "The dates are not equal");
             Assert.AreEqual("The testing transactions", firstTransaction.Memo);
             //First transaction, first line
             Assert.AreEqual("Trip to Samarkand", firstLine1.Description);
@@ -102,7 +103,7 @@ namespace terminalQuickBooksTests.Integration
             var firstLine2 = secondTransaction.FinancialLines[0];
             var secondLine2 = secondTransaction.FinancialLines[1];
             //Second transaction data
-            Assert.IsTrue(DateTime.Equals(DateTime.Parse("30/12/2015"), secondTransaction.TransactionDate), "The dates are not equal");
+            Assert.IsTrue(DateTime.Equals(DateTime.Parse("30-Dec-2015", new CultureInfo("en-US")), secondTransaction.TransactionDate), "The dates are not equal");
             Assert.AreEqual("The testing transactions", secondTransaction.Memo);
             //Second transaction, first line
             Assert.AreEqual("Trip to Samarkand", firstLine2.Description);
