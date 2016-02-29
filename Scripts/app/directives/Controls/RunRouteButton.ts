@@ -12,7 +12,7 @@ module dockyard.directives {
 
     export function RunRouteButton (): ng.IDirective {
         var runContainer = function ($q, $http, planId): ng.IPromise<any> {
-            var url = '/api/routes/run?planId=' + planId;
+            var url = '/api/plans/run?planId=' + planId;
 
             return $q(function (resolve, reject) {
                 $http.post(url)
@@ -26,7 +26,7 @@ module dockyard.directives {
         };
 
         var getRoute = function ($q, $http, actionId): ng.IPromise<any> {
-            var url = '/api/routes/getByActivity/' + actionId;
+            var url = '/api/plans/getByActivity/' + actionId;
 
             return $q(function (resolve, reject) {
                 $http.get(url)

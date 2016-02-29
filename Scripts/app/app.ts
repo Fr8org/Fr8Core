@@ -180,7 +180,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
         })
 
         .state('routeDetails', {
-            url: "/routes/{id}/details",
+            url: "/plans/{id}/details",
             templateUrl: "/AngularTemplate/RouteDetails",
             data: { pageTitle: 'Route Details', pageSubTitle: '' }
         })

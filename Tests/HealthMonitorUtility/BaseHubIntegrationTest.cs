@@ -247,7 +247,7 @@ namespace HealthMonitor.Utility
         protected async Task<ContainerDTO> ExecutePlan(RouteFullDTO plan)
         {
             var container = await HttpPostAsync<string, ContainerDTO>(
-                _baseUrl + "routes/run?planId=" + plan.Id.ToString(),
+                _baseUrl + "plans/run?planId=" + plan.Id.ToString(),
                 null
             );
 

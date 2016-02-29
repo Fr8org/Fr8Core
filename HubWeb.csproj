@@ -373,7 +373,7 @@
     <Compile Include="Controllers\Api\ConfigurationController.cs" />
     <Compile Include="Controllers\Api\ManifestRegistryController.cs" />
     <Compile Include="Controllers\Api\ManifestsController.cs" />
-    <Compile Include="Controllers\Api\RoutesController.cs" />
+    <Compile Include="Controllers\Api\PlansController.cs" />
     <Compile Include="Controllers\Api\TerminalsController.cs" />
     <Compile Include="Controllers\CompanyController.cs" />
     <Compile Include="Controllers\RedirectController.cs" />

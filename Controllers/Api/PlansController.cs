@@ -31,7 +31,7 @@ namespace HubWeb.Controllers
 {
     //[RoutePrefix("routes")]
     [Fr8ApiAuthorize]
-    public class RoutesController : ApiController
+    public class PlansController : ApiController
     {
         private const string PUSHER_EVENT_GENERIC_SUCCESS = "fr8pusher_generic_success";
         private const string PUSHER_EVENT_GENERIC_FAILURE = "fr8pusher_generic_failure";
@@ -42,7 +42,7 @@ namespace HubWeb.Controllers
         private readonly ICrateManager _crate;
         private readonly IPusherNotifier _pusherNotifier;
 
-        public RoutesController()
+        public PlansController()
         {
             _plan = ObjectFactory.GetInstance<IPlan>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();

@@ -56,27 +56,27 @@ namespace DockyardTest.Controllers
         [Test]
         public void RoutesController_ShouldHaveFr8ApiAuthorize()
         {
-            ShouldHaveFr8ApiAuthorize(typeof(RoutesController));
+            ShouldHaveFr8ApiAuthorize(typeof(PlansController));
         }
 
         [Test]
         public void RoutesController_ShouldHaveHMACOnPostMethod()
         {
 
-            ShouldHaveFr8HMACAuthorizeOnFunction(typeof(RoutesController), "Post");
+            ShouldHaveFr8HMACAuthorizeOnFunction(typeof(PlansController), "Post");
         }
 
         [Test]
         public void RoutesController_ShouldHaveHMACOnGetByNameMethod()
         {
             
-            ShouldHaveFr8HMACAuthorizeOnFunction(typeof(RoutesController), "GetByName");
+            ShouldHaveFr8HMACAuthorizeOnFunction(typeof(PlansController), "GetByName");
         }
 
         [Test]
         public void RoutesController_ShouldHaveHMACOnActivateMethod()
         {
-            ShouldHaveFr8HMACAuthorizeOnFunction(typeof(RoutesController), "Activate");
+            ShouldHaveFr8HMACAuthorizeOnFunction(typeof(PlansController), "Activate");
         }
 
         [Test]
@@ -123,7 +123,7 @@ namespace DockyardTest.Controllers
         public void RouteController_Will_ReturnEmptyOkResult_If_No_Route_Found()
         {
             //Act
-            RoutesController routeController = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
+            PlansController routeController = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
 
             //Assert
             var postResult = routeController.Get(FixtureData.GetTestGuidById(55));
@@ -279,7 +279,7 @@ namespace DockyardTest.Controllers
             externalEventList.AddRange(new int?[] { 1, 3 });
 
             //Act: first add a process template, then modify it. 
-            RoutesController ptc = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
+            PlansController ptc = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
             var response = ptc.Post(routeDto);
             routeDto.Name = "updated";
             response = ptc.Post(routeDto, true);
@@ -299,7 +299,7 @@ namespace DockyardTest.Controllers
         [Test]
         public void ShouldGetFullRoute()
         {
-            var curRouteController = new RoutesController();
+            var curRouteController = new PlansController();
             var curPlanDO = FixtureData.TestRoute3();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -338,9 +338,9 @@ namespace DockyardTest.Controllers
         }
 
         // Current user shoud be resolved using mocked ISecurityServices.
-        private static RoutesController CreateRouteController(string userId, string email)
+        private static PlansController CreateRouteController(string userId, string email)
         {
-            return new RoutesController();
+            return new PlansController();
         }
     }
 }
