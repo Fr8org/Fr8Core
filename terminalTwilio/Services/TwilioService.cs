@@ -101,6 +101,11 @@ namespace terminalTwilio.Services
             }
         }
 
+        private void ValidatePhoneNumber(string phoneNumber)
+        {
+
+        }
+
         /**********************************************************************************/
     }
 }

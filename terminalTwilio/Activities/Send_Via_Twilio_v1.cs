@@ -20,6 +20,7 @@ using terminalTwilio.Services;
 using Twilio;
 using Utilities;
 using TextBox = Data.Control.TextBox;
+using System.Text.RegularExpressions;
 
 namespace terminalTwilio.Actions
 {
@@ -125,6 +126,10 @@ namespace terminalTwilio.Actions
                     PackCrate_WarningMessage(curActivityDO, "No SMS Number Provided", "No Number");
                     return Error(payloadCrates, "No SMS Number Provided");
                 }
+                if (IsValidPhoneNumber(smsNumber))
+                {
+
+                }
                 try
                 {
                     curMessage = _twilio.SendSms(smsNumber, smsBody);
@@ -205,7 +210,7 @@ namespace terminalTwilio.Actions
                 default:
                     throw new ApplicationException("Could not extract number, unknown mode.");
             }
-
+            
             if (smsNumber.Trim().Length == 10 && !smsNumber.Contains("+"))
                 smsNumber = "+1" + smsNumber;
 
@@ -230,7 +235,7 @@ namespace terminalTwilio.Actions
                     smsBody = CrateManager.GetFieldByKey<StandardPayloadDataCM>(payloadCrates.CrateStorage, control.Value);
                     break;
                 default:
-                    throw new ApplicationException("Could not extract number, unknown mode.");
+                    throw new ApplicationException("Could not extract body, unknown mode.");
             }
             smsBody = "Fr8 Alert: " + smsBody + " For more info, visit http://fr8.co/sms";
 
@@ -258,6 +263,20 @@ namespace terminalTwilio.Actions
             {
                 crateStorage.Clear();
                 crateStorage.Add(PackControlsCrate(textBlock));
+            }
+        }
+
+        private bool IsValidPhoneNumber(string phoneNumber)
+        {
+            Regex regex = new Regex(@"^\+?(\d[\d-. ]+)?(\([\d-. ]+\))?[\d-. ]+\d$");
+            Match match = regex.Match(phoneNumber);
+            if (match.Success)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
     }
