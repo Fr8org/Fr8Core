@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Data.Interfaces.DataTransferObjects;
 
 namespace Data.Helpers
@@ -33,8 +34,8 @@ namespace Data.Helpers
                     return new List<FieldDTO> { field };
                 }
 
-                var objProperties = objType.GetProperties();
-                var objFields = objType.GetFields();
+                var objProperties = objType.GetProperties(BindingFlags.NonPublic | BindingFlags.Public| BindingFlags.Instance | BindingFlags.Static);
+                var objFields = objType.GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
                 foreach (var prop in objProperties)
                 {
                     fields.AddRange(FindFieldsRecursive(prop.GetValue(obj)));
