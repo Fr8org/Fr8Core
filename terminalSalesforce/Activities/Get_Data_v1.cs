@@ -109,6 +109,10 @@ namespace terminalSalesforce.Actions
                     Crate.FromContent("Queryable Criteria", new StandardQueryFieldsCM(
                         objectFieldsList.OrderBy(field => field.Key)
                                         .Select(field => new QueryFieldDTO(field.Key, field.Value, QueryFieldType.String, new TextBox { Name = field.Key })))));
+
+                //FR-2459 - The activity should create another design time fields crate of type FieldDescriptionsCM for downstream activities.
+                crateStorage.RemoveByLabel("Salesforce Object Fields");                                                                                     
+                crateStorage.Add(CrateManager.CreateDesignTimeFieldsCrate("Salesforce Object Fields", objectFieldsList.ToList(), AvailabilityType.RunTime));
             }
 
             return await Task.FromResult(curActivityDO);
