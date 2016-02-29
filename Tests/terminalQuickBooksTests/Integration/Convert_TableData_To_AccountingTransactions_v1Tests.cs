@@ -103,7 +103,7 @@ namespace terminalQuickBooksTests.Integration
             var firstLine2 = secondTransaction.FinancialLines[0];
             var secondLine2 = secondTransaction.FinancialLines[1];
             //Second transaction data
-            Assert.IsTrue(DateTime.Equals(DateTime.Parse("30/12/2015"), secondTransaction.TransactionDate), "The dates are not equal");
+            Assert.IsTrue(DateTime.Equals(DateTime.Parse("30-Dec-2015", new CultureInfo("en-US")), secondTransaction.TransactionDate), "The dates are not equal");
             Assert.AreEqual("The testing transactions", secondTransaction.Memo);
             //Second transaction, first line
             Assert.AreEqual("Trip to Samarkand", firstLine2.Description);
