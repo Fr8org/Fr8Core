@@ -164,7 +164,18 @@ namespace terminalDocuSign.Actions
             {
                 return activityDO;
             }
-            
+            var specificRecipient = specificRecipientOption.Controls.Single();
+            if (specificRecipientOption.Selected && string.IsNullOrEmpty(specificRecipient.Value))
+            {
+                return activityDO;
+            }
+
+            var specificTemplate = specificTemplateOption.Controls.Single();
+            if (specificTemplateOption.Selected && string.IsNullOrEmpty(specificTemplate.Value))
+            {
+                return activityDO;
+            }
+
             //DocuSign
             var monitorDocuSignActionTask = AddAndConfigureChildActivity(activityDO, "Monitor_DocuSign_Envelope_Activity", "Monitor Docusign Envelope Activity", "Monitor Docusign Envelope Activity", 1);
             var setDelayActionTask = AddAndConfigureChildActivity(activityDO, "SetDelay", "Set Delay", "Set Delay", 2);
