@@ -95,13 +95,17 @@ namespace terminalTwilio.Actions
                 crate = Crate.CreateDesignTimeFieldsCrate("Available Fields", curUpstreamFields);
             }
 
-            return crate;
+            ////return crate;
         }*/
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            //not currently any requirements that need attention at FollowupConfigurationResponse
-            return await Task.FromResult(curActivityDO);
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            {
+                crateStorage.RemoveByLabel("Upstream Terminal-Provided Fields");
+                crateStorage.Add(await CreateAvailableFieldsCrate(curActivityDO));
+            }
+            return curActivityDO;
         }
 
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
