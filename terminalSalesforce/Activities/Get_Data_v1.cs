@@ -192,6 +192,8 @@ namespace terminalSalesforce.Actions
 
             var textArea = new TextArea()
             {
+                //Setting the name as UT fails when checking the controls
+                Name = string.Empty,
                 IsReadOnly = true,
                 Label = "",
                 Value = "<p>Meeting which conditions?</p>"

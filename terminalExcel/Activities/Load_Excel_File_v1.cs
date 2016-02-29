@@ -18,6 +18,7 @@ using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using terminalExcel.Infrastructure;
+using Data.States;
 
 namespace terminalExcel.Actions
 {
@@ -279,13 +280,29 @@ namespace terminalExcel.Actions
             {
                 var headers = headersArray.ToList();
                 var curCrateDTO = CrateManager.CreateDesignTimeFieldsCrate(
-                            "Spreadsheet Column Headers",
-                            headers.Select(col => new FieldDTO() { Key = col, Value = col }).ToArray()
-                        );
+                    "Spreadsheet Column Headers", 
+                    AvailabilityType.RunTime,
+                    headers.Select(col => new FieldDTO() { Key = col, Value = col, Availability = AvailabilityType.RunTime }).ToArray());
 
                 storage.RemoveByLabel("Spreadsheet Column Headers");
                 storage.Add(curCrateDTO);
             }
+
+            //FR-2449 - The use mentioned in this issue involves with Excel File Rows too.
+            //Extract the rows and put them in the design time fields.
+            var rowsArray = ExcelUtils.GetTabularData(fileAsByteArray, ext);
+            if(rowsArray != null)
+            {
+                var rows = rowsArray.SelectMany(r => r.Value.Select(rv => rv.Item2)).Where(rowValue => !string.IsNullOrEmpty(rowValue));
+
+                var curRowsCrateDTO = CrateManager.CreateDesignTimeFieldsCrate(
+                    "Spreadsheet Rows",
+                    AvailabilityType.RunTime,
+                    rows.Select(col => new FieldDTO() { Key = col, Value = col, Availability = AvailabilityType.RunTime }).ToArray());
+
+                storage.RemoveByLabel("Spreadsheet Rows");
+                storage.Add(curRowsCrateDTO);
+            }                                
         }
 
         private void CreatePayloadCrate_ExcelRows(ICrateStorage storage)

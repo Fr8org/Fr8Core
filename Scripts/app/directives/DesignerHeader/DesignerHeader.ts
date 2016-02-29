@@ -9,7 +9,7 @@ module dockyard.directives.designerHeader {
         onTitleChange(): void;
         runRoute(): void;
         deactivatePlan(): void;
-
+        resetPlanStatus(): void;
         route: model.RouteDTO;
     }
 
@@ -64,12 +64,8 @@ module dockyard.directives.designerHeader {
                     $scope.route.routeState = 2;
                     var promise = RouteService.runAndProcessClientAction($scope.route.id);
                     promise.finally(() => {
-                        var subRoute = $scope.route.subroutes[0];
-                        var initialActivity = subRoute ? subRoute.activities[0] : null;
-                        if (initialActivity && initialActivity.activityTemplate.category.toLowerCase() !== "monitors") {
-                            // mark plan as Inactive
-                            $scope.route.routeState = 1;
-                        }
+                        $scope.resetPlanStatus();
+
                         // This is to notify dashboad/view all page to reArrangeRoutes themselves so that plans get rendered in desired sections i.e Running or Plans Library
                         // This is required when user Run a plan and immediately navigates(before run completion) to dashboad or view all page in order 
                         // to make sure plans get rendered in desired sections
@@ -78,6 +74,30 @@ module dockyard.directives.designerHeader {
                             //$scope.$root.$broadcast("planExecutionCompleted", $scope.route);
                         }
                     });
+                };
+
+                $scope.resetPlanStatus = () => {
+                    var subRoute = $scope.route.subroutes[0];
+                    var initialActivity: interfaces.IActivityDTO = subRoute ? subRoute.activities[0] : null;
+                    if (initialActivity == null) {
+                        // mark plan as Inactive
+                        $scope.route.routeState = 1;
+                        return;
+                    }
+
+                    if (initialActivity.activityTemplate.category.toLowerCase() === "solution") {
+                        initialActivity = initialActivity.childrenActivities[0];
+                        if (initialActivity == null) {
+                            // mark plan as Inactive
+                            $scope.route.routeState = 1;
+                            return;
+                        }
+                    }
+
+                    if (initialActivity.activityTemplate.category.toLowerCase() !== "monitors") {
+                        // mark plan as Inactive
+                        $scope.route.routeState = 1;
+                    }
                 };
 
                 $scope.deactivatePlan = () => {
