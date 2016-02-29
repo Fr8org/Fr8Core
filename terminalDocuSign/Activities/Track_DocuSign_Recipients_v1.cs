@@ -20,6 +20,7 @@ using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using terminalDocuSign.Infrastructure;
 using AutoMapper;
+using Data.Repositories.MultiTenant;
 
 namespace terminalDocuSign.Actions
 {
@@ -248,14 +249,15 @@ namespace terminalDocuSign.Actions
                 radioButtonGroup.Radios[0].Selected = false;
                 radioButtonGroup.Radios[1].Selected = true;
                 var objectList = (DropDownList)(radioButtonGroup.Radios[1].Controls.FirstOrDefault(c => c.Name == "AvailableObjects"));
-                MT_Object selectedObject;
+                MtTypeReference selectedObject;
+
                 if (string.IsNullOrEmpty(recipientEmail))
                 {
-                    selectedObject = await GetMTObject(MT.DocuSignEvent);
+                    selectedObject = GetMtType(typeof(DocuSignEventCM));
                 }
                 else
                 {
-                    selectedObject = await GetMTObject(MT.DocuSignRecipient);
+                    selectedObject = GetMtType(typeof(DocuSignRecipientCM));
                 }
 
                 if (selectedObject == null)
@@ -263,8 +265,8 @@ namespace terminalDocuSign.Actions
                     return;
                 }
 
-                objectList.Value = selectedObject.Id.ToString(CultureInfo.InvariantCulture);
-                objectList.selectedKey = selectedObject.Name;
+                objectList.Value = selectedObject.Id.ToString("N");
+                objectList.selectedKey = selectedObject.Alias;
 
                 var filterPane = (FilterPane)radioButtonGroup.Radios[1].Controls.First(c => c.Name == "Filter");
 
@@ -284,44 +286,31 @@ namespace terminalDocuSign.Actions
                     Conditions = conditions
                 });
 
-                crateStorage.Add(CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", GetFieldsByObjectId(selectedObject.Id).ToArray()));
+                crateStorage.Add(CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", GetMtTypeFields(selectedObject.Id).ToArray()));
             }
         }
 
-        private IEnumerable<FieldDTO> GetFieldsByObjectId(int objectId)
+        private IEnumerable<FieldDTO> GetMtTypeFields(Guid typeId)
         {
-            var fields = new Dictionary<string, string>();
+            var fields = new List<FieldDTO>();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                foreach (var field in uow.MTFieldRepository.GetQuery().Where(x => x.MT_ObjectId == objectId))
+                foreach (var field in uow.MultiTenantObjectRepository.ListTypePropertyReferences(typeId).OrderBy(x => x.Name))
                 {
-                    var alias = "Value" + field.FieldColumnOffset;
-                    string existingAlias;
-
-                    if (fields.TryGetValue(field.Name, out existingAlias))
-                    {
-                        if (existingAlias != alias)
-                        {
-                            throw new InvalidOperationException(string.Format("Duplicate field definition. MT object type: {0}. Field {1} is mapped to {2} and {3}", objectId, field.Name, existingAlias, alias));
-                        }
-                    }
-                    else
-                    {
-                        fields[field.Name] = alias;
-                    }
+                    fields.Add(new FieldDTO(field.Name, field.Name));
                 }
             }
 
-            return fields.OrderBy(x => x.Key).Select(x => new FieldDTO(x.Key, x.Key));
+            return fields;
         }
 
 
-        private async Task<MT_Object> GetMTObject(MT manifestType)
+        private MtTypeReference GetMtType(Type clrType)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return await uow.MTObjectRepository.GetQuery().FirstOrDefaultAsync(o => o.ManifestId == (int)MT.DocuSignRecipient);
+                return uow.MultiTenantObjectRepository.FindTypeReference(clrType);
             }
         }
 

@@ -17,7 +17,6 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
 using StructureMap;
-using MT_Field = Data.Entities.MT_Field;
 //using MT_FieldService = Data.Infrastructure.MultiTenant.MT_Field;
 
 namespace Data.Migrations

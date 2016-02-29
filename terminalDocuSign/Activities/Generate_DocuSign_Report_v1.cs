@@ -599,6 +599,8 @@ namespace terminalDocuSign.Actions
                 actionUi.QueryBuilder.Value
             );
 
+            // This is weird to use query's name as the way to address MT type. 
+            // MT type has unique ID that should be used for this reason. Query name is something that is displayed to user. It should not contain any internal data.
             var queryCM = new StandardQueryCM(
                 new QueryDTO()
                 {

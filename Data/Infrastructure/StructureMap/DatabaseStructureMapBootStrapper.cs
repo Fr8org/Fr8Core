@@ -2,9 +2,11 @@ using System;
 using System.Data.Entity;
 using Data.Entities;
 using Data.Infrastructure.AutoMapper;
-using Data.Infrastructure.MultiTenant;
 using Data.Interfaces;
 using Data.Repositories;
+using Data.Repositories.MultiTenant;
+using Data.Repositories.MultiTenant.InMemory;
+using Data.Repositories.MultiTenant.Sql;
 using Data.Repositories.Plan;
 using Microsoft.Data.Edm.Library.Values;
 using StructureMap.Configuration.DSL;
@@ -37,6 +39,9 @@ namespace Data.Infrastructure.StructureMap
                 For<IAspNetRolesDO>().Use<AspNetRolesDO>();
                 For<IAspNetUserRolesDO>().Use<AspNetUserRolesDO>();
                 For<IUnitOfWork>().Use<UnitOfWork>();
+                For<IMultiTenantObjectRepository>().Use<MultitenantRepository>();
+                For<IMtObjectConverter>().Use<MtObjectConverter>().Singleton();
+                For<IMtTypeStorage>().Use<MtTypeStorage>().Singleton();
                 For<IPlanCacheExpirationStrategy>().Use(_ => new SlidingExpirationStrategy(planCacheExpiration)).Singleton();
                 For<IPlanCache>().Use<PlanCache>().Singleton();
                 For<PlanStorage>().Use<PlanStorage>();
@@ -51,7 +56,7 @@ namespace Data.Infrastructure.StructureMap
                 For<DbContext>().Use<DockyardDbContext>();
                 For<IDBContext>().Use<DockyardDbContext>();
                 For<CloudFileManager>().Use<CloudFileManager>();
-
+               
                 var mode = CloudConfigurationManager.GetSetting("AuthorizationTokenStorageMode");
                 if (mode != null)
                 {
@@ -75,8 +80,9 @@ namespace Data.Infrastructure.StructureMap
                 }
 
                 For<IPlanStorageProvider>().Use<PlanStorageProviderEf>();
-
-                DataAutoMapperBootStrapper.ConfigureAutoMapper();
+                For<IMtObjectsStorage>().Use<SqlMtObjectsStorage>().Singleton();
+                For<IMtTypeStorageProvider>().Use<SqlMtTypeStorageProvider>();
+               DataAutoMapperBootStrapper.ConfigureAutoMapper();
             }
         }
 
@@ -90,6 +96,8 @@ namespace Data.Infrastructure.StructureMap
                 For<IPlanCacheExpirationStrategy>().Use(_ => new SlidingExpirationStrategy(TimeSpan.FromDays(365))).Singleton(); // in test mode cache will never expire in practice
                 For<IPlanCache>().Use<PlanCache>().Singleton();
                 For<IPlanStorageProvider>().Use<PlanStorageProviderMockedDb>();
+                For<IMtObjectsStorage>().Use<InMemoryMtObjectsStorage>().Singleton();
+                For<IMtTypeStorageProvider>().Use<InMemoryMtTypeStorageProvider>();
                 DataAutoMapperBootStrapper.ConfigureAutoMapper();
             }
         }

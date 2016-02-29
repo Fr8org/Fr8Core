@@ -215,17 +215,17 @@ namespace terminalFr8Core.Actions
 
                 var config = new ActivityUi();
                 config.ClonePropertiesFrom(ui);
-                int selectedObjectId;
+                Guid selectedObjectId;
 
                 crateStorage.RemoveByLabel("Queryable Criteria");
 
-                if (int.TryParse(config.AvailableObjects.Value, out selectedObjectId))
+                if (Guid.TryParse(config.AvailableObjects.Value, out selectedObjectId))
                 {
-                    // crateStorage.Add(CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", GetFieldsByObjectId(selectedObjectId).ToArray()));
+                    // crateStorage.Add(CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", GetFieldsByTypeId(selectedObjectId).ToArray()));
                     crateStorage.Add(
                         Crate.FromContent(
                             "Queryable Criteria",
-                            new StandardQueryFieldsCM(GetFieldsByObjectId(selectedObjectId))
+                            new StandardQueryFieldsCM(GetFieldsByTypeId(selectedObjectId))
                         )
                     );
                 }
@@ -248,7 +248,7 @@ namespace terminalFr8Core.Actions
             var queryPicker = ui.FindByName<RadioButtonGroup>("QueryPicker");
 
             List<FilterConditionDTO> conditions;
-            int? selectedObjectId = null;
+            Guid? selectedObjectId = null;
 
             if (queryPicker.Radios[0].Selected)
             {
@@ -263,7 +263,7 @@ namespace terminalFr8Core.Actions
                 var query = queryCM.Queries[0];
 
                 conditions = query.Criteria ?? new List<FilterConditionDTO>();
-                selectedObjectId = ExtractUpstreamObjectId(query);
+                selectedObjectId = ExtractUpstreamTypeId(query);
             }
             else
             {
@@ -276,8 +276,8 @@ namespace terminalFr8Core.Actions
                     return Error(payload, "This action is designed to query the Fr8 Warehouse for you, but you don't currently have any objects stored there.");
                 }
 
-                int objectId;
-                if (int.TryParse(availableObjects.Value, out objectId))
+                Guid objectId;
+                if (Guid.TryParse(availableObjects.Value, out objectId))
                 {
                     selectedObjectId = objectId;
                 }
@@ -312,19 +312,15 @@ namespace terminalFr8Core.Actions
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var objectId = selectedObjectId.GetValueOrDefault();
-                var obj = uow.MTObjectRepository.GetQuery().FirstOrDefault(x => x.Id == objectId);
+                var mtType = uow.MultiTenantObjectRepository.FindTypeReference(objectId);
 
-                if (obj == null)
+                if (mtType == null)
                 {
                     return Error(payload, "Invalid object selected");
                 }
 
-                Type manifestType;
-                if (!ManifestDiscovery.Default.TryResolveType(new CrateManifestType(null, obj.ManifestId), out manifestType))
-                {
-                    return Error(payload, string.Format("Unknown manifest id: {0}", obj.ManifestId));
-                }
-
+                Type manifestType = mtType.ClrType;
+              
                 var queryBuilder = MTSearchHelper.CreateQueryProvider(manifestType);
                 var converter = CrateManifestToRowConverter(manifestType);
                 var foundObjects = queryBuilder.Query(
@@ -376,21 +372,20 @@ namespace terminalFr8Core.Actions
             return upstreamQueryCrate.Content;
         }
 
-        private int? ExtractUpstreamObjectId(
-            QueryDTO query)
+        // This is weird to use query's name as the way to address MT type. 
+        // MT type has unique ID that should be used for this reason. Query name is something that is displayed to user. It should not contain any internal data.
+        private Guid? ExtractUpstreamTypeId(QueryDTO query)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var obj = uow.MTObjectRepository
-                    .GetQuery()
-                    .FirstOrDefault(x => x.Name == query.Name);
+                var type = uow.MultiTenantObjectRepository.ListTypeReferences().FirstOrDefault(x => x.Alias != query.Name);
 
-                if (obj == null)
+                if (type == null)
                 {
                     return null;
                 }
 
-                return obj.Id;
+                return type.Id;
             }
         }
 
@@ -438,50 +433,35 @@ namespace terminalFr8Core.Actions
             };
         }
 
-        private IEnumerable<QueryFieldDTO> GetFieldsByObjectId(int objectId)
+        private IEnumerable<QueryFieldDTO> GetFieldsByTypeId(Guid typeId)
         {
             var fields = new Dictionary<string, string>();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                foreach (var field in uow.MTFieldRepository.GetQuery().Where(x => x.MT_ObjectId == objectId))
-                {
-                    var alias = "Value" + field.FieldColumnOffset;
-                    string existingAlias;
 
-                    if (fields.TryGetValue(field.Name, out existingAlias))
-                    {
-                        if (existingAlias != alias)
-                        {
-                            throw new InvalidOperationException(string.Format("Duplicate field definition. MT object type: {0}. Field {1} is mapped to {2} and {3}", objectId, field.Name, existingAlias, alias));
-                        }
-                    }
-                    else
-                    {
-                        fields[field.Name] = alias;
-                    }
-                }
+
+
+                return uow.MultiTenantObjectRepository.ListTypePropertyReferences(typeId).OrderBy(x => x.Name)
+                    .Select(x =>
+                        new QueryFieldDTO(
+                            x.Name,
+                            x.Name,
+                            QueryFieldType.String,
+                            new TextBox()
+                            {
+                                Name = "QueryField_" + x.Name
+                            }
+                            )
+                    );
             }
-
-            return fields.OrderBy(x => x.Key)
-                .Select(x =>
-                    new QueryFieldDTO(
-                        x.Key,
-                        x.Key,
-                        QueryFieldType.String,
-                        new TextBox()
-                        {
-                            Name = "QueryField_" + x.Key
-                        }
-                    )
-                );
         }
 
         private IEnumerable<FieldDTO> GetObjects()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return uow.MTObjectRepository.GetAll().Select(c => new FieldDTO(c.Name, c.Id.ToString(CultureInfo.InvariantCulture)));
+               return uow.MultiTenantObjectRepository.ListTypeReferences().Select(c => new FieldDTO(c.Alias, c.Id.ToString("N"))).ToArray();
             }
         }
     }
