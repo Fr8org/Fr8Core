@@ -32,7 +32,7 @@ namespace terminalDocuSign.Actions
                                             which allow you to receive SMS notices, emails, or receive posts to popular tracking systems like Slack and Yammer. 
                                             Get notified when recipients take too long to sign!</p>";
 
-        private const string MessageBody = @"Fr8 Alert: The DocuSign Envelope [EnvelopeName] has not been [ActionBeingTracked] by [RecipientName] at [RecipientAddress]. You had requested a notification after a delay of [DelayTime].";
+        private const string MessageBody = @"Fr8 Alert: The DocuSign Envelope [TemplateName] has not been [ActionBeingTracked] by [RecipientUserName] at [RecipientEmail]. You had requested a notification after a delay of [DelayTime].";
 
         private class ActivityUi : StandardConfigurationControlsCM
         {
