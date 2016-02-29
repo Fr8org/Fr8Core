@@ -134,7 +134,7 @@ namespace Data.Entities
         public bool IsOngoingPlan()
         {
             bool isOngoingPlan = false;
-            var initialActivity = this.StartingSubroute.ChildNodes.FirstOrDefault() as ActivityDO;
+            var initialActivity = this.StartingSubroute.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault() as ActivityDO;
             if (initialActivity != null)
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -143,7 +143,7 @@ namespace Data.Entities
                     if (activityTemplate.Category == ActivityCategory.Solution)
                     {
                         // Handle solutions
-                        initialActivity = initialActivity.ChildNodes.FirstOrDefault() as ActivityDO;
+                        initialActivity = initialActivity.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault() as ActivityDO;
                         if (initialActivity != null)
                         {
                             activityTemplate = uow.ActivityTemplateRepository.GetByKey(initialActivity.ActivityTemplateId);
