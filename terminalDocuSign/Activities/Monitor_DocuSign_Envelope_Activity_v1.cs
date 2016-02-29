@@ -231,6 +231,8 @@ namespace terminalDocuSign.Actions
 
             string envelopeId = string.Empty;
 
+            
+
             //retrieve envelope ID based on the selected option and its value
             if (!string.IsNullOrEmpty(curSelectedOption))
             {
@@ -296,6 +298,8 @@ namespace terminalDocuSign.Actions
                     }
                 }
             };
+
+            
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
             {
