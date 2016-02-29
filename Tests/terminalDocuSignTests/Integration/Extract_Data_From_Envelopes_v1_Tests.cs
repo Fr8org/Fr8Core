@@ -2,7 +2,6 @@
 using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Data.Control;
 using Data.Crates;
