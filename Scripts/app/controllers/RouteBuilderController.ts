@@ -286,11 +286,9 @@ module dockyard.controllers {
 
         private findActionById(id: string): model.ActivityDTO {
             for (var subroute of this.$scope.current.route.subroutes) {
-                for (var action of subroute.activities) {
-                    var foundAction = this.searchAction(id, subroute.activities);
-                    if (foundAction !== null) {
-                        return foundAction;
-                    }
+                var foundAction = this.searchAction(id, subroute.activities);
+                if (foundAction !== null) {
+                    return foundAction;
                 }
             }
 
@@ -497,12 +495,7 @@ module dockyard.controllers {
             var activityTemplate = eventArgs.activityTemplate;
             // Generate next Id.
             var id = this.LocalIdentityGenerator.getNextId();
-//            var parentId = this.$scope.currentSubroute.id;
-            if (eventArgs.group !== null && eventArgs.group.parentAction !== null) {
-                parentId = eventArgs.group.parentAction.id;
-            }
-            // Create new action object.
-
+            var parentId = eventArgs.group.parentId;
             var action = new model.ActivityDTO(this.$scope.planId, parentId, id);
 
             action.label = activityTemplate.label;
@@ -514,16 +507,14 @@ module dockyard.controllers {
 
         private addActionToUI(action: model.ActivityDTO, group: model.ActionGroup) {
             this.$scope.current.activities = action;
-            if (group !== null && group.parentAction !== null) {
-                group.parentAction.childrenActivities.push(action);
-            } else {
-                //this.$scope.currentSubroute.activities.push(action);
-            }
 
-            //lets check if this add operation requires a complete re-render
-            /*if (action.childrenActions.length < 1 && action.activityTemplate.type !== 'Loop') {
-                return;
-            }*/
+            var parentAction = this.findActionById(action.parentRouteNodeId);
+            if (parentAction != null) {
+                parentAction.childrenActivities.push(action);
+            } else {
+                var subRoute = this.findSubRouteById(action.parentRouteNodeId);
+                subRoute.activities.push(action);
+            }
 
             this.renderRoute(<interfaces.IRouteVM>this.$scope.current.route);
         }

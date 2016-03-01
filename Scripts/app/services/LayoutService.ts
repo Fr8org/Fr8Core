@@ -16,18 +16,19 @@ module dockyard.services {
         constructor(private CrateHelper: services.CrateHelper) {
         }
 
-        placeActions(actions: model.ActivityDTO[], startingId: string): model.ActionGroup[] {
+        placeActions(actions: model.ActivityDTO[], parentId: string): model.ActionGroup[] {
             var processedGroups: model.ActionGroup[] = [];
+
 
             var actionGroups = _.toArray<model.ActivityDTO[]>(
                 _.groupBy<model.ActivityDTO>(actions, (action) => action.parentRouteNodeId)
             );
 
             if (actions.length) {
-                var startingGroup = this.findChildGroup(actionGroups, startingId);
-                this.processGroup(actionGroups, new model.ActionGroup(startingGroup, null), processedGroups);
+                var startingGroup = this.findChildGroup(actionGroups, parentId);
+                this.processGroup(actionGroups, new model.ActionGroup(startingGroup, null, parentId), processedGroups);
             } else {
-                processedGroups.push(new model.ActionGroup([], null));
+                processedGroups.push(new model.ActionGroup([], null, parentId));
             }
 
             return processedGroups;
@@ -57,11 +58,11 @@ module dockyard.services {
             for (var i = group.activities.length - 1; i > -1; i--) {
                 //var childGroup = this.findChildGroup(actionGroups, group.actions[i].id);
                 if (group.activities[i].childrenActivities.length) {
-                    var newGroup = new model.ActionGroup(<model.ActivityDTO[]>group.activities[i].childrenActivities, group.activities[i]);
+                    var newGroup = new model.ActionGroup(<model.ActivityDTO[]>group.activities[i].childrenActivities, group.activities[i], group.activities[i].id);
                     this.calculateGroupPosition(newGroup, group, processedGroups);
                     this.processGroup(actionGroups, newGroup, processedGroups);
                 } else if (this.allowsChildren(group.activities[i])) { //has no children, but allows it. we should place an add action button below
-                    var potentialGroup = new model.ActionGroup([], group.activities[i]);
+                    var potentialGroup = new model.ActionGroup([], group.activities[i], group.activities[i].id);
                     this.calculateGroupPosition(potentialGroup, group, processedGroups);
                     this.processGroup(actionGroups, potentialGroup, processedGroups);
                 }
