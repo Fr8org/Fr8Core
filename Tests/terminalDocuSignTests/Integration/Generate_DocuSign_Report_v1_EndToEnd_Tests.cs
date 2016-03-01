@@ -49,7 +49,7 @@ namespace terminalDocuSignTests.Integration
                 ValidateConfigurationControls(crateStorage);
                 ValidateChildrenActivities(solution);
                 ValidateSolutionOperationalState(crateStorage);
-                var planFollowup = await GetPlan(plan.Id);
+                var planFollowup = await GetPlanByActivity(solution.Id);
                 ValidatePlanName(planFollowup, crateStorage);
                 await SaveActivity(solution);
 
@@ -234,10 +234,10 @@ namespace terminalDocuSignTests.Integration
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardPayloadDataCM>().Count(x => x.Label == "Sql Query Result"));
         }
 
-        private async Task<RouteFullDTO> GetPlan(Guid id)
+        private async Task<RouteFullDTO> GetPlanByActivity(Guid id)
         {
-            var solutionCreateUrl = _baseUrl + "plans/full?id=" + id.ToString();
-            var plan = await HttpPostAsync<string, RouteFullDTO>(solutionCreateUrl, null);
+            var solutionCreateUrl = _baseUrl + "/plans/getByActivity?id=" + id.ToString();
+            var plan = await HttpGetAsync<RouteFullDTO>(solutionCreateUrl);
 
             return plan;
         }
