@@ -3,24 +3,19 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Web.UI.WebControls;
-using Data.Constants;
 using Data.Control;
 using StructureMap;
 using Data.Crates;
 using Data.Entities;
-using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.Infrastructure;
-using Data.States;
 using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using terminalTwilio.Services;
 using Twilio;
-using Utilities;
-using TextBox = Data.Control.TextBox;
-using System.Text.RegularExpressions;
+using PhoneNumbers;
 
 namespace terminalTwilio.Actions
 {
@@ -126,10 +121,14 @@ namespace terminalTwilio.Actions
                     PackCrate_WarningMessage(curActivityDO, "No SMS Number Provided", "No Number");
                     return Error(payloadCrates, "No SMS Number Provided");
                 }
-                if (IsValidPhoneNumber(smsNumber))
-                {
 
+                PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance();
+                PhoneNumber phoneNumber = phoneUtil.Parse(smsNumber, "");
+                if (!phoneUtil.IsValidNumber(phoneNumber))
+                {
+                    throw new ArgumentException("SMS Number Is Invalid");
                 }
+
                 try
                 {
                     curMessage = _twilio.SendSms(smsNumber, smsBody);
@@ -151,6 +150,12 @@ namespace terminalTwilio.Actions
             {
                 PackCrate_WarningMessage(curActivityDO, appEx.Message, "SMS Number");
                 return Error(payloadCrates, appEx.Message);
+            }
+            catch (NumberParseException npe)
+            {
+                string message = "Failed to parse SMS number: " + npe.Message;
+                PackCrate_WarningMessage(curActivityDO, message, "SMS Number");
+                return Error(payloadCrates, message);
             }
             return Success(payloadCrates);
         }
@@ -211,8 +216,7 @@ namespace terminalTwilio.Actions
                     throw new ApplicationException("Could not extract number, unknown mode.");
             }
             
-            if (smsNumber.Trim().Length == 10 && !smsNumber.Contains("+"))
-                smsNumber = "+1" + smsNumber;
+            
 
             return smsNumber;
         }
@@ -237,6 +241,11 @@ namespace terminalTwilio.Actions
                 default:
                     throw new ApplicationException("Could not extract body, unknown mode.");
             }
+            if (smsBody == null)
+            {
+                throw new ArgumentException("SMS body can not be null.");
+            }
+
             smsBody = "Fr8 Alert: " + smsBody + " For more info, visit http://fr8.co/sms";
 
             return smsBody;
@@ -263,20 +272,6 @@ namespace terminalTwilio.Actions
             {
                 crateStorage.Clear();
                 crateStorage.Add(PackControlsCrate(textBlock));
-            }
-        }
-
-        private bool IsValidPhoneNumber(string phoneNumber)
-        {
-            Regex regex = new Regex(@"^\+?(\d[\d-. ]+)?(\([\d-. ]+\))?[\d-. ]+\d$");
-            Match match = regex.Match(phoneNumber);
-            if (match.Success)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
             }
         }
     }
