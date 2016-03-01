@@ -10,7 +10,7 @@ module dockyard.directives {
                     scope.action.height = newValue;
                     if (newValue > scope.group.height)
                         scope.group.height = newValue;
-                    LayoutService.recalculateTop(scope.actionGroups);
+                    LayoutService.recalculateTop(scope.pSubRoute.actionGroups);
                 });
             }
         };

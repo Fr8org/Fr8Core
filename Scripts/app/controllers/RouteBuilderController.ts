@@ -16,7 +16,7 @@ module dockyard.controllers {
         planId: string;
         subroutes: Array<model.SubrouteDTO>;
         fields: Array<model.Field>;
-        currentSubroute: model.SubrouteDTO;
+        //currentSubroute: model.SubrouteDTO;
 
         // Identity of currently edited processNodeTemplate.
         //curNodeId: number;
@@ -24,6 +24,7 @@ module dockyard.controllers {
         //curNodeIsTempId: boolean;
         current: model.RouteBuilderState;
         actionGroups: model.ActionGroup[];
+        processedSubRoutes: any[];
 
         addAction(group: model.ActionGroup): void;
         deleteAction: (action: model.ActivityDTO) => void;
@@ -347,7 +348,7 @@ module dockyard.controllers {
 
             this.$scope.mode = mode;
             this.$scope.current.route = curRoute;
-            this.$scope.currentSubroute = curRoute.subroutes[0];
+            //this.$scope.currentSubroute = curRoute.subroutes[0];
             this.renderRoute(curRoute);
         }
 
@@ -395,15 +396,12 @@ module dockyard.controllers {
 
         private renderRoute(curRoute: interfaces.IRouteVM) {
             if (curRoute.subroutes.length == 0) return;
-
-            var actions = [];
+            
+            this.$scope.processedSubRoutes = [];
             for (var subroute of curRoute.subroutes) {
-                for (var action of subroute.activities) {
-                    actions.push(action);
-                }
+                var actionGroups = this.LayoutService.placeActions(subroute.activities, subroute.id);
+                this.$scope.processedSubRoutes.push({ subroute: subroute, actionGroups: actionGroups });
             }
-
-            this.$scope.actionGroups = this.LayoutService.placeActions(actions, curRoute.startingSubrouteId);
         }
 
         private renderActions(activitiesCollection: model.ActivityDTO[]) {
@@ -499,7 +497,7 @@ module dockyard.controllers {
             var activityTemplate = eventArgs.activityTemplate;
             // Generate next Id.
             var id = this.LocalIdentityGenerator.getNextId();
-            var parentId = this.$scope.currentSubroute.id;
+//            var parentId = this.$scope.currentSubroute.id;
             if (eventArgs.group !== null && eventArgs.group.parentAction !== null) {
                 parentId = eventArgs.group.parentAction.id;
             }
@@ -519,7 +517,7 @@ module dockyard.controllers {
             if (group !== null && group.parentAction !== null) {
                 group.parentAction.childrenActivities.push(action);
             } else {
-                this.$scope.currentSubroute.activities.push(action);
+                //this.$scope.currentSubroute.activities.push(action);
             }
 
             //lets check if this add operation requires a complete re-render
