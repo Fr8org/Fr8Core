@@ -31,11 +31,14 @@ using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
 using Microsoft.ApplicationInsights;
+using Utilities.Interfaces;
 
 namespace Hub.Services
 {
     public class Activity : IActivity
     {
+        #region Fields
+
         private readonly ICrateManager _crate;
         private readonly IAuthorization _authorizationToken;
         private readonly TelemetryClient _telemetryClient;
@@ -43,6 +46,11 @@ namespace Hub.Services
         private readonly IActivityTemplate _activityTemplate;
         private readonly IRouteNode _routeNode;
         private readonly Hub.Managers.Event _event;
+        private readonly IPusherNotifier _pusherNotifier;
+
+        private const string PUSHER_EVENT_ACTIVITY_EXECUTION_INFO = "fr8pusher_activity_execution_info";
+
+        #endregion
 
         public Activity()
         {
@@ -52,7 +60,8 @@ namespace Hub.Services
             _crate = ObjectFactory.GetInstance<ICrateManager>();
             _telemetryClient = ObjectFactory.GetInstance<TelemetryClient>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
-            _event = ObjectFactory.GetInstance<Hub.Managers.Event>(); ;
+            _event = ObjectFactory.GetInstance<Hub.Managers.Event>();
+            _pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
         }
 
         public IEnumerable<TViewModel> GetAllActivities<TViewModel>()
@@ -501,11 +510,20 @@ namespace Hub.Services
 
             try
             {
+                //create client notification that activity is starting with execution
+                string pusherChannel = String.Format("fr8pusher_{0}", curActivityDO.Fr8Account.UserName);
+                _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_ACTIVITY_EXECUTION_INFO,
+                    new
+                    {
+                        ActivityName = curActivityDO.Label,
+                        PlanName = curContainerDO.Name,
+                        ContainerId = curContainerDO.Id.ToString(),
+                    });
+
                 var actionName = curActionState == ActivityState.InitialRun ? "Run" : "ExecuteChildActivities";
                 var payloadDTO = await CallTerminalActivityAsync<PayloadDTO>(uow, actionName, curActivityDO, curContainerDO.Id);
 
                 // this will break the infinite loop created for logFr8InternalEvents...
-
                 var plan = uow.PlanRepository.GetById<PlanDO>(curContainerDO.PlanId);
 
                 if (plan != null && plan.Name != "LogFr8InternalEvents")
