@@ -56,7 +56,8 @@ $site = Get-AzureWebsite -Name "fr8" -Slot "production"
 New-AzureWebsiteJob -Name $site[0].Name `
   -JobName "HealthMonitor-Master" `
   -JobType Triggered `
-  -JobFile $outputArchiveFile;
+  -JobFile $outputArchiveFile `
+  -Slot Staging;
 
 # New-AzureWebsiteJob -Name $site.Name `
 #   -JobName "HealthMonitor-Continuous" `
