@@ -23,7 +23,7 @@ namespace Data.Infrastructure.JsonNet
             }
             else
             {
-                createTime = (DateTime)createTime;
+                createTime = (DateTime)createTime; 
             }
             return createTime;
         }
