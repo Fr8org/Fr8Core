@@ -36,6 +36,7 @@ namespace Data.Interfaces.DataTransferObjects
         public string ParentCrateId { get; set; }
 
         [JsonProperty("createTime")]
+        [JsonConverter(typeof(CreateTimeConverter))]
         public DateTime CreateTime { get; set; }
 
         [JsonProperty("availability")]
