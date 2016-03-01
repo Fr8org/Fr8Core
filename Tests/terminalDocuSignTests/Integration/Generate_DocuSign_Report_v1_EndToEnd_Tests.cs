@@ -36,7 +36,8 @@ namespace terminalDocuSignTests.Integration
                 var crateStorage = _crateManager.FromDto(solution.CrateStorage);
                 ValidateCrateStructure(crateStorage);
                 ValidateConfigurationControls(crateStorage);
-                ValidatePlanCategory(plan);
+                var planConfigure = await GetPlanByActivity(solution.Id);
+                ValidatePlanCategory(planConfigure);
                 await SaveActivity(solution);
 
 
