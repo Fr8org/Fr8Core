@@ -110,7 +110,8 @@ namespace terminalDocuSign.Controllers
                 Category = ActivityCategory.Solution,
                 Terminal = terminal,
                 WebService = webService,
-                MinPaneWidth = 500
+                MinPaneWidth = 500,
+                Tags = "UsesReconfigureList"
             };
 
             var collectFormDataSolution = new ActivityTemplateDTO
