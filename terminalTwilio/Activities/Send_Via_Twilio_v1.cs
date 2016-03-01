@@ -215,8 +215,9 @@ namespace terminalTwilio.Actions
                 default:
                     throw new ApplicationException("Could not extract number, unknown mode.");
             }
-            
-            
+
+            if (smsNumber.Trim().Length == 10 && !smsNumber.Contains("+"))
+                smsNumber = "+1" + smsNumber;
 
             return smsNumber;
         }
