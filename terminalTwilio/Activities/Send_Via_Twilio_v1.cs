@@ -91,13 +91,17 @@ namespace terminalTwilio.Actions
                 crate = Crate.CreateDesignTimeFieldsCrate("Available Fields", curUpstreamFields);
             }
 
-            return crate;
+            ////return crate;
         }*/
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            //not currently any requirements that need attention at FollowupConfigurationResponse
-            return await Task.FromResult(curActivityDO);
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            {
+                crateStorage.RemoveByLabel("Upstream Terminal-Provided Fields");
+                crateStorage.Add(await CreateAvailableFieldsCrate(curActivityDO));
+            }
+            return curActivityDO;
         }
 
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
@@ -114,7 +118,7 @@ namespace terminalTwilio.Actions
             {
                 FieldDTO smsFieldDTO = ParseSMSNumberAndMsg(controlsCrate, payloadCrates);
                 string smsNumber = smsFieldDTO.Key;
-                string smsBody = smsFieldDTO.Value;
+                string smsBody = smsFieldDTO.Value + " - https://fr8.co/c/"+containerId;
 
                 if (String.IsNullOrEmpty(smsNumber))
                 {
@@ -123,8 +127,9 @@ namespace terminalTwilio.Actions
                 }
 
                 PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance();
+                bool isAlphaNumber = phoneUtil.IsAlphaNumber(smsNumber);
                 PhoneNumber phoneNumber = phoneUtil.Parse(smsNumber, "");
-                if (!phoneUtil.IsValidNumber(phoneNumber))
+                if (isAlphaNumber || !phoneUtil.IsValidNumber(phoneNumber))
                 {
                     throw new ArgumentException("SMS Number Is Invalid");
                 }
@@ -172,8 +177,9 @@ namespace terminalTwilio.Actions
             {
                 throw new ArgumentException("CrateDTO is not a standard UI control");
             }
-            var smsNumber = GetSMSNumber((TextSource)standardControls.Controls[0], payloadCrates);
-            var smsBody = GetSMSBody((TextSource)standardControls.Controls[1], payloadCrates);
+            var payloadCrateStorage = CrateManager.GetStorage(payloadCrates);
+            var smsNumber = GetSMSNumber((TextSource)standardControls.Controls[0], payloadCrateStorage);
+            var smsBody = GetSMSBody((TextSource)standardControls.Controls[1], payloadCrateStorage);
 
             return new FieldDTO(smsNumber, smsBody);
         }
@@ -196,52 +202,29 @@ namespace terminalTwilio.Actions
         //    return smsNumber;
         //}
 
-        private string GetSMSNumber(TextSource control, PayloadDTO payloadCrates)
+        private string GetSMSNumber(TextSource control, ICrateStorage payloadCrates)
         {
             string smsNumber = "";
             if (control == null)
             {
                 throw new ApplicationException("TextSource control was expected but not found.");
             }
-            switch (control.ValueSource)
-            {
-                case "specific":
-                    smsNumber = control.TextValue;
-                    break;
-                case "upstream":
-                    //get the payload data 'Key' based on the selected control.Value and get its 'Value' from payload data
-                    smsNumber = CrateManager.GetFieldByKey<StandardPayloadDataCM>(payloadCrates.CrateStorage, control.Value);
-                    break;
-                default:
-                    throw new ApplicationException("Could not extract number, unknown mode.");
-            }
-
-            if (smsNumber.Trim().Length == 10 && !smsNumber.Contains("+"))
+            smsNumber = control.GetValue(payloadCrates).Trim();
+            if (smsNumber.Length == 10 && !smsNumber.Contains("+"))
                 smsNumber = "+1" + smsNumber;
 
             return smsNumber;
         }
 
-        private string GetSMSBody(TextSource control, PayloadDTO payloadCrates)
+        private string GetSMSBody(TextSource control, ICrateStorage payloadCrates)
         {
-
             string smsBody = "";
             if (control == null)
             {
                 throw new ApplicationException("TextSource control was expected but not found.");
             }
-            switch (control.ValueSource)
-            {
-                case "specific":
-                    smsBody = control.TextValue;
-                    break;
-                case "upstream":
-                    //get the payload data 'Key' based on the selected control.Value and get its 'Value' from payload data
-                    smsBody = CrateManager.GetFieldByKey<StandardPayloadDataCM>(payloadCrates.CrateStorage, control.Value);
-                    break;
-                default:
-                    throw new ApplicationException("Could not extract body, unknown mode.");
-            }
+
+            smsBody = control.GetValue(payloadCrates);
             if (smsBody == null)
             {
                 throw new ArgumentException("SMS body can not be null.");

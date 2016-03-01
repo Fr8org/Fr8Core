@@ -1,0 +1,102 @@
+﻿<div class="row">
+    <div class="col-md-12 col-sm-12">
+        <div class="portlet light">
+
+            <div class="portlet-title">
+                <div class="caption caption-md">
+                    <i class="icon-bar-chart font-green-haze hide"></i>
+                    <span class="caption-subject font-green-haze bold uppercase">RUNNING Reports</span>
+                    <span class="caption-helper hide">weekly stats...</span>
+                </div>
+            </div>
+
+            <div class="portlet-body">
+                <div ng-if="activeRoutesCategory.$resolved != true">Loading routes...</div>
+                <div ng-if="activeRoutesCategory.$resolved == true && activeRoutesCategory.length == 0">No running reports found. To make a report running, click on the Run Now button after your report is fully configured.</div>
+                <div ng-if="activeRoutesCategory.$resolved == true && activeRoutesCategory.length > 0">
+                    <div class="table-scrollable table-scrollable-borderless">
+                        <table datatable="ng" dt-options="dtOptionsBuilder" dt-column-defs="dtColumnDefs" class="row-border hover table table-hover table-light table-linkrows table-routes">
+                            <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Last Used</th>
+                                <th>Status</th>
+                                <th style="text-align: right">Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="route in activeRoutesCategory | filter: {routeState:2}">
+                                <td ng-click="goToRouteDetailsPage(route.id)">{{ route.name }}</td>
+                                <td ng-click="goToRouteDetailsPage(route.id)">{{ route.description }}</td>
+                                <td ng-click="goToRouteDetailsPage(route.id)">{{ route.lastUpdated }}</td>
+                                <td ng-click="goToRouteDetailsPage(route.id)">
+                                    <span class="bold font-green-haze">{{route.routeState == 2 ? 'Active' : 'Inactive' }}</span>
+                                </td>
+                                <td>
+                                    <div>
+                                        <button type="button" class="btn btn-sm red" ng-click="deactivateRoute(route);">Deactivate</button>
+                                        <button type="button" class="btn btn-sm red" ng-click="deleteRoute(route.id,route.routeState);">Delete</button>
+                                        <button type="button" class="btn btn-sm green" ng-click="goToRoutePage(route.id);">Edit</button>
+                                        <button type="button" class="btn btn-sm btn-primary" ng-click="executeRoute(route.id,$event);">Run Now</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <br/>
+                <hr/>
+
+                <div class="portlet-title">
+                    <div class="caption caption-md">
+                        <i class="icon-bar-chart font-green-haze hide"></i>
+                        <span class="caption-subject font-green-haze bold uppercase">Report Library</span>
+                        <span class="caption-helper hide">weekly stats...</span>
+                    </div>
+                    <div class="actions">
+                    </div>
+                </div>
+
+                <div class="portlet-body">
+                    <div ng-if="inActiveRoutesCategory.$resolved != true">Loading reports...</div>
+                    <div ng-if="inActiveRoutesCategory.$resolved == true && inActiveRoutesCategory.length == 0">No inactive reports are found. To make a report inactive, click on the Deactivate button for an Active report you wish to disable.</div>
+                    <div ng-if="inActiveRoutesCategory.$resolved == true && inActiveRoutesCategory.length > 0">
+                        <div class="table-scrollable table-scrollable-borderless">
+                            <table datatable="ng" dt-options="dtOptionsBuilder" dt-column-defs="dtColumnDefs" class="row-border hover table table-hover table-light table-linkrows table-routes">
+                                <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Last Used</th>
+                                    <th>Status</th>
+                                    <th style="text-align: right">Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="route in inActiveRoutesCategory | filter: {routeState:1}">
+                                    <td ng-click="goToRouteDetailsPage(route.id)">{{ route.name }}</td>
+                                    <td ng-click="goToRouteDetailsPage(route.id)">{{ route.description }}</td>
+                                    <td ng-click="goToRouteDetailsPage(route.id)">{{ route.lastUpdated }}</td>
+                                    <td ng-click="goToRouteDetailsPage(route.id)">
+                                    <span class="bold font-green-haze">{{route.routeState == 2 ? 'Active' : 'Inactive' }}</span>
+                                    <td>
+                                        <div>
+                                            <button type="button" class="btn btn-sm red" ng-click="deleteRoute(route.id,route.routeState);">Delete</button>
+                                            <button type="button" class="btn btn-sm green" ng-click="goToRoutePage(route.id);">Edit</button>
+                                            <button type="button" class="btn btn-sm btn-primary" ng-click="executeRoute(route.id,$event);">Run Now</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>

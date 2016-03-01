@@ -123,7 +123,7 @@ namespace terminalDocuSignTests.Integration
                 //
                 var newName = plan.Name + " | " + DateTime.UtcNow.ToShortDateString() + " " +
                     DateTime.UtcNow.ToShortTimeString();
-                await HttpPostAsync<object, RouteFullDTO>(_baseUrl + "routes?id=" + plan.Id,
+                await HttpPostAsync<object, RouteFullDTO>(_baseUrl + "plans?id=" + plan.Id,
                     new { id = plan.Id, name = newName });
 
                 //
@@ -283,17 +283,17 @@ namespace terminalDocuSignTests.Integration
                 //
                 // Activate and run plan
                 //
-                await HttpPostAsync<string, string>(_baseUrl + "routes/run?planId=" + plan.Id, null);
+                await HttpPostAsync<string, string>(_baseUrl + "plans/run?planId=" + plan.Id, null);
 
                 //
                 // Deactivate plan
                 //
-                await HttpPostAsync<string, string>(_baseUrl + "routes/deactivate?planId=" + plan.Id, null);
+                await HttpPostAsync<string, string>(_baseUrl + "plans/deactivate?planId=" + plan.Id, null);
     
                 //
                 // Delete plan
                 //
-                await HttpDeleteAsync(_baseUrl + "routes?id=" + plan.Id);
+                await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Id);
 
                 // Verify that test email has been received
                 //EmailAssert.EmailReceived("dse_demo@docusign.net", "Test Message from Fr8");

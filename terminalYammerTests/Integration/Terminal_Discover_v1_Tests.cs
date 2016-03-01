@@ -12,7 +12,7 @@ namespace terminalYammerTests.Integration
     /// but allows to trigger that class from HealthMonitor.
     /// </summary>
     [Explicit]
-    public class Terminal_Discover_v1Tests : BaseTerminalIntegrationTest
+    public class Terminal_Discover_v1_Tests : BaseTerminalIntegrationTest
     {
         private const int ActivityCount = 1;
         private const string Post_To_Yammer_Activity_Name = "Post_To_Yammer";

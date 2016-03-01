@@ -11,6 +11,9 @@ namespace terminalDocuSign.Infrastructure.DocuSignParserModels
         [XmlElement("Status")]
         public string Status { get; set; }
 
+        [XmlElement("UserName")]
+        public string UserName { get; set; }
+
         [XmlElement("Email")]
         public string Email { get; set; }
 

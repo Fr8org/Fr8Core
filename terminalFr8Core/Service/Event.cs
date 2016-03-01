@@ -52,12 +52,18 @@ namespace terminalFr8Core.Services
 
                 StandardLoggingCM loggingManifest =  (StandardLoggingCM)curMethodInfo.Invoke(curObject, new Object[] { eventLogging });
 
-                MethodInfo method = typeof(MultiTenantObjectRepository).GetMethod("AddOrUpdate");
-                MethodInfo addOrUpdate = method.MakeGenericMethod(loggingManifest.GetType());
+            
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     var systemUser = uow.UserRepository.GetQuery().Single(x => x.EmailAddress.Address == systemUserMail);
-                    addOrUpdate.Invoke(uow.MultiTenantObjectRepository, new object[] {uow, systemUser.Id, loggingManifest, null});
+
+                    try
+                    {
+                        uow.MultiTenantObjectRepository.Add(uow, loggingManifest, systemUser.Id);
+                        uow.SaveChanges();
+                    }
+                    catch
+                    { }
                 }
                 /*
                 // Create the eventReportContent from the posted JSON and the using the account.

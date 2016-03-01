@@ -12,9 +12,9 @@
             private $http: ng.IHttpService,
             private $location: ng.ILocationService) {
 
-            $http.post('/api/routes/createFindObjectsRoute', {})
+            $http.post('/api/plans/createFindObjectsRoute', {})
                 .then(function (res: any) {
-                    $location.path('/routes/' + res.data.id + '/builder');
+                    $location.path('/plans/' + res.data.id + '/builder');
                 });
         }
     }

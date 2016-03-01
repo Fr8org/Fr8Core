@@ -20,6 +20,7 @@ using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using terminalDocuSign.Infrastructure;
 using AutoMapper;
+using Data.States;
 
 namespace terminalDocuSign.Actions
 {
@@ -31,6 +32,8 @@ namespace terminalDocuSign.Actions
         private const string SolutionBody = @"<p>Link your important outgoing envelopes to Fr8's powerful notification Activities, 
                                             which allow you to receive SMS notices, emails, or receive posts to popular tracking systems like Slack and Yammer. 
                                             Get notified when recipients take too long to sign!</p>";
+
+        private const string MessageBody = @"Fr8 Alert: The DocuSign Envelope [TemplateName] has not been [ActionBeingTracked] by [RecipientUserName] at [RecipientEmail]. You had requested a notification after a delay of [DelayTime].";
 
         private class ActivityUi : StandardConfigurationControlsCM
         {
@@ -139,6 +142,7 @@ namespace terminalDocuSign.Actions
                 crateStorage.Add(PackAvailableTemplates(authTokenDO));
                 crateStorage.Add(await PackAvailableHandlers(activityDO));
                 crateStorage.Add(PackAvailableRecipientEvents(activityDO));
+                crateStorage.Add(PackAvailableRunTimeDataFields());
             }
 
             return activityDO;
@@ -160,21 +164,35 @@ namespace terminalDocuSign.Actions
             {
                 return activityDO;
             }
-            
+            var specificRecipient = specificRecipientOption.Controls.Single();
+            if (specificRecipientOption.Selected && string.IsNullOrEmpty(specificRecipient.Value))
+            {
+                return activityDO;
+            }
+
+            var specificTemplate = specificTemplateOption.Controls.Single();
+            if (specificTemplateOption.Selected && string.IsNullOrEmpty(specificTemplate.Value))
+            {
+                return activityDO;
+            }
+
             //DocuSign
             var monitorDocuSignActionTask = AddAndConfigureChildActivity(activityDO, "Monitor_DocuSign_Envelope_Activity", "Monitor Docusign Envelope Activity", "Monitor Docusign Envelope Activity", 1);
             var setDelayActionTask = AddAndConfigureChildActivity(activityDO, "SetDelay", "Set Delay", "Set Delay", 2);
             var queryFr8WarehouseActionTask = AddAndConfigureChildActivity(activityDO, "QueryFr8Warehouse", "Query Fr8 Warehouse", "Query Fr8 Warehouse", 3);
             var filterActionTask = AddAndConfigureChildActivity(activityDO, "TestIncomingData", "Test Incoming Data", "Test Incoming Data", 4);
-            var notifierActivityTask = AddAndConfigureChildActivity((Guid)activityDO.ParentRouteNodeId, howToBeNotifiedDdl.Value, howToBeNotifiedDdl.selectedKey, howToBeNotifiedDdl.selectedKey, 2);
 
-            await Task.WhenAll(monitorDocuSignActionTask, setDelayActionTask, queryFr8WarehouseActionTask, filterActionTask, notifierActivityTask);
+            var buildMessageActivityTask = AddAndConfigureChildActivity((Guid)activityDO.ParentRouteNodeId, "Build_Message", "Build a Message", "Build a Message", 2);
+            var notifierActivityTask = AddAndConfigureChildActivity((Guid)activityDO.ParentRouteNodeId, howToBeNotifiedDdl.Value, howToBeNotifiedDdl.selectedKey, howToBeNotifiedDdl.selectedKey, 3);
+
+            await Task.WhenAll(monitorDocuSignActionTask, setDelayActionTask, queryFr8WarehouseActionTask, filterActionTask, notifierActivityTask, buildMessageActivityTask);
 
             var monitorDocuSignAction = monitorDocuSignActionTask.Result;
             var setDelayAction = setDelayActionTask.Result;
             var queryFr8WarehouseAction = queryFr8WarehouseActionTask.Result;
             var filterAction = filterActionTask.Result;
             var notifierActivity = notifierActivityTask.Result;
+            var buildMessageActivity = buildMessageActivityTask.Result;
 
             if (specificRecipientOption.Selected)
             {
@@ -189,6 +207,15 @@ namespace terminalDocuSign.Actions
 
             SetControlValue(monitorDocuSignAction, "Event_Envelope_Sent", "true");
 
+            SetControlValue(buildMessageActivity, "Body", MessageBody);
+            SetControlValue(buildMessageActivity, "Name", "NotificationMessage");
+
+            buildMessageActivity = await HubCommunicator.ConfigureActivity(buildMessageActivity, CurrentFr8UserId);
+
+            SetNotifierActivityBody(notifierActivity);
+
+            var configureNotifierTask = HubCommunicator.ConfigureActivity(notifierActivity, CurrentFr8UserId);
+
             //let's make followup configuration for monitorDocuSignEventAction
             //followup call places EventSubscription crate in storage
             var configureMonitorDocusignTask = HubCommunicator.ConfigureActivity(monitorDocuSignAction, CurrentFr8UserId);
@@ -202,13 +229,63 @@ namespace terminalDocuSign.Actions
             var recipientEventStatus = (DropDownList)controls.FindByName("RecipientEvent");
             SetFilterUsingRunTimeActivityFields(filterAction, recipientEventStatus.Value);
 
-            await Task.WhenAll(configureMonitorDocusignTask, configureQueryMTTask);
+            await Task.WhenAll(configureMonitorDocusignTask, configureQueryMTTask, configureNotifierTask);
 
             monitorDocuSignAction = configureMonitorDocusignTask.Result;
             activityDO.ChildNodes = activityDO.ChildNodes.OrderBy(a => a.Ordering).ToList();
             activityDO.ChildNodes[0] = monitorDocuSignAction;
 
             return activityDO;
+        }
+
+        private void SetNotifierActivityBody(ActivityDO notifierActivity)
+        {
+            if (notifierActivity.ActivityTemplate.Name == "SendEmailViaSendGrid")
+            {
+                using (var updater = CrateManager.GetUpdatableStorage(notifierActivity))
+                {
+                    var configControls = GetConfigurationControls(updater);
+                    var emailBodyField = (TextSource)GetControl(configControls, "EmailBody", ControlTypes.TextSource);
+                    emailBodyField.ValueSource = "upstream";
+                    emailBodyField.Value = "NotificationMessage";
+                    emailBodyField.selectedKey = "NotificationMessage";
+
+                    var emailSubjectField = (TextSource)GetControl(configControls, "EmailSubject", ControlTypes.TextSource);
+                    emailSubjectField.ValueSource = "specific";
+                    emailSubjectField.TextValue = "Fr8 Notification Message";
+                }
+                
+
+            }
+            else if (notifierActivity.ActivityTemplate.Name == "Send_Via_Twilio")
+            {
+                using (var updater = CrateManager.GetUpdatableStorage(notifierActivity))
+                {
+                    var configControls = GetConfigurationControls(updater);
+                    var emailBodyField = (TextSource)GetControl(configControls, "SMS_Body", ControlTypes.TextSource);
+                    emailBodyField.ValueSource = "upstream";
+                    emailBodyField.Value = "NotificationMessage";
+                    emailBodyField.selectedKey = "NotificationMessage";
+                }
+            }
+            else if (notifierActivity.ActivityTemplate.Name == "Publish_To_Slack")
+            {
+                using (var updater = CrateManager.GetUpdatableStorage(notifierActivity))
+                {
+                    var configControls = GetConfigurationControls(updater);
+                    var messageField = (TextSource)GetControl(configControls, "Select_Message_Field", ControlTypes.TextSource);
+                    if (messageField == null)
+                    {
+                        //user is not authenticated yet - there is nothing we can do now
+                        return;
+                    }
+                    messageField.ValueSource = "upstream";
+                    messageField.Value = "NotificationMessage";
+                    messageField.selectedKey = "NotificationMessage";
+                }
+            }
+            
+
         }
 
         private void SetFilterUsingRunTimeActivityFields(ActivityDO filterUsingRunTimeAction, string status)
@@ -232,7 +309,11 @@ namespace terminalDocuSign.Actions
                     Conditions = conditions
                 });
 
-                var queryFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", new FieldDTO[] { new FieldDTO("Status", "Status") });
+                var queryableCriteria = new StandardQueryFieldsCM(new QueryFieldDTO[] {new QueryFieldDTO("Status", "Status", QueryFieldType.String, new TextBox()
+                            {
+                                Name = "QueryField_Status"
+                            })});
+                var queryFieldsCrate = Crate.FromContent("Queryable Criteria", queryableCriteria);
                 crateStorage.RemoveByLabel("Queryable Criteria");
                 crateStorage.Add(queryFieldsCrate);
             }
@@ -284,11 +365,12 @@ namespace terminalDocuSign.Actions
                     Conditions = conditions
                 });
 
-                crateStorage.Add(CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", GetFieldsByObjectId(selectedObject.Id).ToArray()));
+                var queryCriteria = Crate.FromContent("Queryable Criteria", new StandardQueryFieldsCM(GetFieldsByObjectId(selectedObject.Id)));
+                crateStorage.Add(queryCriteria);
             }
         }
 
-        private IEnumerable<FieldDTO> GetFieldsByObjectId(int objectId)
+        private IEnumerable<QueryFieldDTO> GetFieldsByObjectId(int objectId)
         {
             var fields = new Dictionary<string, string>();
 
@@ -313,7 +395,18 @@ namespace terminalDocuSign.Actions
                 }
             }
 
-            return fields.OrderBy(x => x.Key).Select(x => new FieldDTO(x.Key, x.Key));
+            return fields.OrderBy(x => x.Key)
+                .Select(x =>
+                    new QueryFieldDTO(
+                        x.Key,
+                        x.Key,
+                        QueryFieldType.String,
+                        new TextBox()
+                        {
+                            Name = "QueryField_" + x.Key
+                        }
+                    )
+                );
         }
 
 
@@ -349,6 +442,18 @@ namespace terminalDocuSign.Actions
             return availableRecipientEventsCrate;
         }
 
+        private Crate PackAvailableRunTimeDataFields()
+        {
+            var events = new[] { "ActionBeingTracked", "DelayTime" };
+
+            var availableRecipientEventsCrate =
+                CrateManager.CreateDesignTimeFieldsCrate(
+                    "AvailableRunTimeDataFields", events.Select(x => new FieldDTO(x, x)).ToArray()
+                );
+
+            return availableRecipientEventsCrate;
+        }
+
         private async Task<Crate> PackAvailableHandlers(ActivityDO activityDO)
         {
             var templates = await HubCommunicator.GetActivityTemplates(CurrentFr8UserId);
@@ -367,7 +472,33 @@ namespace terminalDocuSign.Actions
 
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            return Success(await GetPayload(curActivityDO, containerId));
+            var payload = await GetPayload(curActivityDO, containerId);
+
+            var configControls = (await HubCommunicator.GetCratesByDirection<StandardConfigurationControlsCM>(curActivityDO, CrateDirection.Downstream, CurrentFr8UserId)).SelectMany(c => c.Content.Controls);
+
+            var delayValue = (Duration)configControls.Single(c => c.Name == "Delay_Duration" && c.Type == ControlTypes.Duration);
+
+            var runTimePayloadData = new List<FieldDTO>();
+            var delayTimeString = delayValue.Days + " days, " + delayValue.Hours + " hours and "+delayValue.Minutes+" minutes";
+            runTimePayloadData.Add(new FieldDTO("DelayTime", delayTimeString, AvailabilityType.RunTime));
+
+            var filterPane = (FilterPane) configControls.Single(c => c.Name == "Selected_Filter" && c.Type == ControlTypes.FilterPane);
+
+            var conditions = JsonConvert.DeserializeObject<FilterDataDTO>(filterPane.Value);
+
+            var statusField = conditions.Conditions.FirstOrDefault(c => c.Field == "Status");
+            if (statusField != null)
+            {
+                runTimePayloadData.Add(new FieldDTO("ActionBeingTracked", statusField.Value, AvailabilityType.RunTime));
+            }
+
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
+            {
+                crateStorage.Add(Data.Crates.Crate.FromContent("Track DocuSign Recipients Payload Data", new StandardPayloadDataCM(runTimePayloadData)));   
+            }
+
+
+            return Success(payload);
         }
         /// <summary>
         /// This method provides documentation in two forms:

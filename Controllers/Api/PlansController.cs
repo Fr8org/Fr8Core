@@ -31,7 +31,7 @@ namespace HubWeb.Controllers
 {
     //[RoutePrefix("routes")]
     [Fr8ApiAuthorize]
-    public class RoutesController : ApiController
+    public class PlansController : ApiController
     {
         private const string PUSHER_EVENT_GENERIC_SUCCESS = "fr8pusher_generic_success";
         private const string PUSHER_EVENT_GENERIC_FAILURE = "fr8pusher_generic_failure";
@@ -42,7 +42,7 @@ namespace HubWeb.Controllers
         private readonly ICrateManager _crate;
         private readonly IPusherNotifier _pusherNotifier;
 
-        public RoutesController()
+        public PlansController()
         {
             _plan = ObjectFactory.GetInstance<IPlan>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
@@ -125,9 +125,9 @@ namespace HubWeb.Controllers
         }
 
         //[Route("getByAction/{id:guid}")]
+        [Fr8HubWebHMACAuthenticate]
         [ResponseType(typeof(RouteFullDTO))]
         [HttpGet]
-
         public IHttpActionResult GetByActivity(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -142,7 +142,7 @@ namespace HubWeb.Controllers
         [Fr8ApiAuthorize]
         [ActionName("status")]
         [HttpGet]
-        public IHttpActionResult GetByStatus(Guid? id = null, int? status = null)
+        public IHttpActionResult GetByStatus(Guid? id = null, int? status = null, string category = "")
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -151,7 +151,8 @@ namespace HubWeb.Controllers
                     _security.GetCurrentAccount(uow),
                     _security.IsCurrentUserHasRole(Roles.Admin),
                     id,
-                    status
+                    status,
+                    category
                 );
 
                 if (curPlans.Any())
