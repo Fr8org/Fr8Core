@@ -316,13 +316,12 @@ namespace terminalDocuSign.Actions
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 
             var crateControls = PackCrate_ConfigurationControls();
-            var crateDesignTimeFields = _docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
+            FillAvailableTemplatesSource(crateControls, docuSignAuthDTO);
             var eventFields = CrateManager.CreateDesignTimeFieldsCrate("DocuSign Event Fields", AvailabilityType.RunTime, CreateDocuSignEventFields().ToArray());
-
+         
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Add(crateControls);
-                crateStorage.Add(crateDesignTimeFields);
                 crateStorage.Add(eventFields);
 
                 // Remove previously added crate of "Standard Event Subscriptions" schema
@@ -503,11 +502,6 @@ namespace terminalDocuSign.Actions
                             {
                                 Label = "",
                                 Name = "UpstreamCrate",
-                                Source = new FieldSourceDTO
-                                {
-                                    Label = "Available Templates",
-                                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                                },
                                 Events = new List<ControlEvent> {new ControlEvent("onChange", "requestConfig")},
                                 ShowDocumentation = ActivityResponseDTO.CreateDocumentationResponse("Minicon", "ExplainMonitoring")
                             }
@@ -517,6 +511,16 @@ namespace terminalDocuSign.Actions
             };
 
             return templateRecipientPicker;
+        }
+
+        private void FillAvailableTemplatesSource(Crate uiCrate, DocuSignAuthTokenDTO authToken)
+        {
+            var configurationControl = uiCrate.Get<StandardConfigurationControlsCM>();
+            var templateRecipientPickerControl = (RadioButtonGroup)configurationControl.FindByName("TemplateRecipientPicker");
+            var upstreamCrateControl = (DropDownList)templateRecipientPickerControl.Radios[1].Controls[0];
+            var templates = _docuSignManager.GetDocuSignTemplates(authToken);
+            var items = templates.Select(x => new ListItem() { Key = x.Key, Value = x.Value }).ToList();
+            upstreamCrateControl.ListItems = items;
         }
     }
 }
