@@ -812,7 +812,7 @@
     <Content Include="_PowerShellScripts\RunIntegrationTests-MASTER.ps1" />
     <Content Include="_PowerShellScripts\MASTER-job-run.cmd" />
     <Content Include="_PowerShellScripts\MASTER-settings.job" />
-    <Content Include="_PowerShellScripts\DeployAzureWebJob-HealthMonitor-MASTER.ps1" />
+    <Content Include="_PowerShellScripts\DeployAzureWebJob-HealthMonitor-MASTER-Staging.ps1" />
     <Content Include="_PowerShellScripts\KillProcess.ps1" />
     <Content Include="_PowerShellScripts\SetCloudServiceSize.ps1" />
     <Content Include="_PowerShellScripts\SetTerminalFr8CoreCS.ps1" />
