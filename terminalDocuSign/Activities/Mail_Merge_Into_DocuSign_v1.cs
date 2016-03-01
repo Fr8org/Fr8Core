@@ -262,6 +262,8 @@ namespace terminalDocuSign.Actions
         {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 
+            // TODO: FR-2488, modify code here. 
+            // We do not want to delete previously created child activities.
             if (curActivityDO.ChildNodes.Any())
             {
                 await HubCommunicator.DeleteExistingChildNodesFromActivity(curActivityDO.Id, CurrentFr8UserId);
@@ -278,14 +280,22 @@ namespace terminalDocuSign.Actions
 
             //let's check if activity template generates table data
             var selectedReceiver = curActivityTemplates.Single(x => x.Name == _dataSourceValue);
-            var dataSourceActivity = await AddAndConfigureChildActivity(curActivityDO, selectedReceiver.Id.ToString(), order: 1);
+            var dataSourceActivity = await AddAndConfigureChildActivity(
+                curActivityDO,
+                selectedReceiver.Id.ToString(),
+                order: 1
+            );
 
             ActivityDO parentOfSendDocusignEnvelope = null;
             int orderOfSendDocusignEnvelope = 0;
 
+            // We check whether first activity generates tabled data.
             if (DoesActivityTemplateGenerateTableData(selectedReceiver))
             {
-                //let's get first table related CrateDescription in upstream activities and apply it to Loop
+                // If first activity does generate tabled data, we first create Loop,
+                // and then add SendDocuSignEnvelope inside Loop activity.
+
+                // Let's get first table related CrateDescription in upstream activities and apply it to Loop
                 var loopActivity = await AddAndConfigureChildActivity(curActivityDO, "Loop", "Loop", "Loop", 2);
                 using (var crateStorage = CrateManager.GetUpdatableStorage(loopActivity))
                 {
@@ -303,6 +313,8 @@ namespace terminalDocuSign.Actions
             }
             else
             {
+                // If not, we add SendDocuSignEnvelope activity to solution's activity.
+
                 parentOfSendDocusignEnvelope = curActivityDO;
                 orderOfSendDocusignEnvelope = 2;
             }
