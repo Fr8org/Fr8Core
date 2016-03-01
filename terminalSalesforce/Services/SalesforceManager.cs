@@ -90,6 +90,12 @@ namespace terminalSalesforce.Services
                     {
                         prop.SetValue(requiredObject, string.Empty);
                     }
+                    else if(applicationException.Message.StartsWith("No field found with specified key:"))
+                    {
+                        //FR-2502 - This else case handles, the user asked to pick up the value from the current payload.
+                        //But the payload does not contain the value of this property. In that case, set it as "Not Available"
+                        prop.SetValue(requiredObject, "Not Available");
+                    }
                 }
             });
 

@@ -373,7 +373,7 @@
     <Compile Include="Controllers\Api\ConfigurationController.cs" />
     <Compile Include="Controllers\Api\ManifestRegistryController.cs" />
     <Compile Include="Controllers\Api\ManifestsController.cs" />
-    <Compile Include="Controllers\Api\RoutesController.cs" />
+    <Compile Include="Controllers\Api\PlansController.cs" />
     <Compile Include="Controllers\Api\TerminalsController.cs" />
     <Compile Include="Controllers\CompanyController.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
@@ -604,6 +604,7 @@
     <Content Include="Content\img\welcome\header_green.png" />
     <Content Include="Content\img\welcome\welcome_header.png" />
     <Content Include="Documentation\DocuSignRESTAPI.html" />
+    <Content Include="Documentation\UpstreamCrates.html" />
     <Content Include="fr8terminals.txt" />
     <Content Include="Documentation\AccountCustomFields.html" />
     <Content Include="Documentation\AddaNewGroup.html" />
@@ -944,6 +945,8 @@
     <Content Include="Views\AngularTemplate\QueryBuilderCondition.cshtml" />
     <Content Include="Views\AngularTemplate\SourceableCriteria.cshtml" />
     <Content Include="Views\AngularTemplate\CrateChooser.cshtml" />
+    <Content Include="Views\AngularTemplate\_RouteReportList.cshtml" />
+    <Content Include="Views\AngularTemplate\RouteReportList.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

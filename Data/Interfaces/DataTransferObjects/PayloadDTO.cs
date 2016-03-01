@@ -1,17 +1,19 @@
 ﻿using System;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
 {   
     public class PayloadDTO
     {
-        public PayloadDTO(Guid processId)
+        public PayloadDTO(Guid containerId)
         {
-            ProcessId = processId;
+            ContainerId = containerId;
         }
 
+        [JsonProperty("container")]
         public CrateStorageDTO CrateStorage { get; set; }
 
-        public Guid ProcessId { get; set; }
+        public Guid ContainerId { get; set; }
     }
 }
