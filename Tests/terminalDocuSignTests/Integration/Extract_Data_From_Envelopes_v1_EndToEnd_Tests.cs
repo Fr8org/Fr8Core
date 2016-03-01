@@ -71,7 +71,7 @@ namespace terminalDocuSignTests.Integration
             _solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "activities/configure?id=" + _solution.Id, _solution);
             _crateStorage = _crateManager.FromDto(_solution.CrateStorage);
             
-            Assert.AreEqual(2, _solution.ChildrenActivities.Count(), "Solution child actions failed to create.");
+            Assert.AreEqual(2, _solution.ChildrenActivities.Count(), "Solution child activities failed to create.");
             Assert.True(_solution.ChildrenActivities.Any(a => a.Label == "Monitor DocuSign Envelope Activity" && a.Ordering == 1));
             Assert.True(_solution.ChildrenActivities.Any(a => a.Label == "Send DocuSign Envelope" && a.Ordering == 2));
 
@@ -80,13 +80,13 @@ namespace terminalDocuSignTests.Integration
             //
             var newName = plan.Name + " | " + DateTime.UtcNow.ToShortDateString() + " " +
                 DateTime.UtcNow.ToShortTimeString();
-            await HttpPostAsync<object, RouteFullDTO>(_baseUrl + "routes?id=" + plan.Id,
+            await HttpPostAsync<object, RouteFullDTO>(_baseUrl + "plans?id=" + plan.Id,
                 new { id = plan.Id, name = newName });
 
             //
             // Configure Monitor DocuSign Envelope action
             //
-            var monitorDocuSignAction = _solution.ChildrenActivities.Single(a => a.Label == "Monitor Docusign Envelope Activity");
+            var monitorDocuSignAction = _solution.ChildrenActivities.Single(a => a.Label == "Monitor DocuSign Envelope Activity");
             _crateStorage = _crateManager.FromDto(monitorDocuSignAction.CrateStorage);
                         
             controlsCrate = _crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
@@ -189,17 +189,17 @@ namespace terminalDocuSignTests.Integration
             //
             // Activate and run plan
             //
-            await HttpPostAsync<string, string>(_baseUrl + "routes/run?planId=" + plan.Id, null);
+            await HttpPostAsync<string, string>(_baseUrl + "plans/run?planId=" + plan.Id, null);
 
             //
             // Deactivate plan
             //
-            await HttpPostAsync<string, string>(_baseUrl + "routes/deactivate?planId=" + plan.Id, null);
+            await HttpPostAsync<string, string>(_baseUrl + "plans/deactivate?planId=" + plan.Id, null);
 
             //
             // Delete plan
             //
-            await HttpDeleteAsync(_baseUrl + "routes?id=" + plan.Id);
+            await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Id);
 
         }
 
