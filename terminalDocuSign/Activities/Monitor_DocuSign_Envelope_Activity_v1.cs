@@ -231,6 +231,8 @@ namespace terminalDocuSign.Actions
 
             string envelopeId = string.Empty;
 
+            
+
             //retrieve envelope ID based on the selected option and its value
             if (!string.IsNullOrEmpty(curSelectedOption))
             {
@@ -241,30 +243,34 @@ namespace terminalDocuSign.Actions
                         var curAvailableTemplates = CrateManager.GetStorage(curActivityDO).CratesOfType<FieldDescriptionsCM>(x => x.Label == "Available Templates").Single().Content;
                         var selectedTemplateName = curAvailableTemplates.Fields.Single(a => a.Value == curSelectedValue).Key;
                         var incommingTemplate = GetValueForKey(payloadCrates, "TemplateName");
-                        if (selectedTemplateName == incommingTemplate)
+                        if (incommingTemplate != null)
                         {
-                            envelopeId = GetValueForKey(payloadCrates, "EnvelopeId");
+                            if (selectedTemplateName == incommingTemplate)
+                            {
+                                envelopeId = GetValueForKey(payloadCrates, "EnvelopeId");
+                            }
+                            else
+                            {
+                                //this event isn't about us let's stop execution
+                                return TerminateHubExecution(payloadCrates);
+                            }
                         }
-                        else if (incommingTemplate != null)//possible Run is comming from unify activate/run
-                        {
-                            //this event isn't about us let's stop execution
-                            return TerminateHubExecution(payloadCrates);
-                        }
-
                         break;
                     case "recipient":
                         //filter incoming envelope by recipient email address specified by the user
                         var curRecipientEmail = GetValueForKey(payloadCrates, "RecipientEmail");
-
-                        //if the incoming envelope's recipient is user specified one, get the envelope ID
-                        if (curRecipientEmail != null && curRecipientEmail.Equals(curSelectedValue))
+                        if (curRecipientEmail != null)
                         {
-                            envelopeId = GetValueForKey(payloadCrates, "EnvelopeId");
-                        }
-                        else if (curSelectedValue != null)
-                        {
-                            //this event isn't about us let's stop execution
-                            return TerminateHubExecution(payloadCrates);
+                            //if the incoming envelope's recipient is user specified one, get the envelope ID
+                            if (curRecipientEmail.Equals(curSelectedValue))
+                            {
+                                envelopeId = GetValueForKey(payloadCrates, "EnvelopeId");
+                            }
+                            else
+                            {
+                                //this event isn't about us let's stop execution
+                                return TerminateHubExecution(payloadCrates);
+                            }
                         }
                         break;
                 }
@@ -296,6 +302,8 @@ namespace terminalDocuSign.Actions
                     }
                 }
             };
+
+            
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
             {

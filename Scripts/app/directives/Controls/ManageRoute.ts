@@ -8,7 +8,7 @@ module dockyard.directives {
 
     export function ManageRoute(): ng.IDirective {
         var getRoute = function ($q, $http, actionId): ng.IPromise<any> {
-            var url = '/api/routes/getByActivity/' + actionId;
+            var url = '/api/plans/getByActivity/' + actionId;
 
             return $q(function (resolve, reject) {
                 $http.get(url)
@@ -22,7 +22,7 @@ module dockyard.directives {
         };
         
         var copyRoute = function ($q, $http, planId, routeName): ng.IPromise<any> {
-            var url = '/api/routes/copy?id=' + planId + '&name=' + routeName;
+            var url = '/api/plans/copy?id=' + planId + '&name=' + routeName;
 
             return $q(function (resolve, reject) {
                 $http.post(url)

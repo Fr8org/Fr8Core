@@ -64,7 +64,7 @@ namespace terminalSalesforceTests.Fixtures
             {
                 Version = "1",
                 Name = "Get_Data_TEST",
-                Label = "Get Data from Salesforce.com",
+                Label = "Get Data from Salesforce",
                 NeedsAuthentication = true
             };
         }

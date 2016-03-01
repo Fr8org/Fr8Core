@@ -57,7 +57,7 @@ namespace terminalFr8Core.Actions
             bool result = false;
             try
             {
-                result = Evaluate(filterPaneControl.Value, curPayloadDTO.ProcessId, curValues);
+                result = Evaluate(filterPaneControl.Value, curPayloadDTO.ContainerId, curValues);
             }
             catch (Exception e)
             {

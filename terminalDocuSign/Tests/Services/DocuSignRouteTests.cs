@@ -11,6 +11,8 @@ using terminalDocuSign.Services;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
+using terminalDocuSign.Tests.Fixtures;
 
 namespace terminalDocuSign.Tests.Services
 {
@@ -18,7 +20,7 @@ namespace terminalDocuSign.Tests.Services
     public class DocuSignRouteTests : BaseTest
     {
         private DocuSignRoute _curDocuSignRoute;
-
+        private IActivity _activity;
         public override void SetUp()
         {
             base.SetUp();
@@ -26,6 +28,8 @@ namespace terminalDocuSign.Tests.Services
             SetupForAutomaticRoute();
 
             _curDocuSignRoute = new DocuSignRoute();
+
+            _activity = ObjectFactory.GetInstance<IActivity>();
         }
 
         [Test, Category("DocuSignRoute_CreateRoute")]

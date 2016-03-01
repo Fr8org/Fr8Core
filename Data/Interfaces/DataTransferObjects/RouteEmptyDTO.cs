@@ -24,5 +24,7 @@ namespace Data.Interfaces.DataTransferObjects
         public Guid StartingSubrouteId { get; set; }
 
         public PlanVisibility Visibility { get; set; }
+
+        public string Category { get; set; }
     }
 }

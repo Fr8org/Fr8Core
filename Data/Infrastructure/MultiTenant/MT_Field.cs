@@ -26,8 +26,10 @@ namespace Data.Infrastructure.MultiTenant
             foreach (var property in curDataProperties)
             {
                 var entity = _uow.MTFieldRepository.FindOne(f => f.Name == property.Name && f.MT_ObjectId == correspondingMTObject.Id);
+               
                 if (entity != null)
                 {
+                    fieldsList.Add(entity);
                     continue;
                 }
                 Data.Entities.MT_Field mtField = new Data.Entities.MT_Field();
@@ -37,6 +39,7 @@ namespace Data.Infrastructure.MultiTenant
                 mtField.MT_Object = correspondingMTObject;
                 //get or create FieldType
                 mtField.MT_FieldType = _mtFieldType.GetOrCreateMT_FieldType(_uow, property.PropertyType);
+
                 fieldsList.Add(mtField);
                 _uow.MTFieldRepository.Add(mtField);
                 i++;

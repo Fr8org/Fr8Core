@@ -41,5 +41,7 @@ namespace TerminalBase.Infrastructure
         Task Configure(string terminalName);
         bool IsConfigured { get; set; }
         Task DeleteExistingChildNodesFromActivity(Guid curActivityId, string userId);
+        Task<RouteFullDTO> GetPlansByActivity(string activityId, string userId);
+        Task<RouteFullDTO> UpdatePlan(RouteEmptyDTO plan, string userId);
     }
 }
