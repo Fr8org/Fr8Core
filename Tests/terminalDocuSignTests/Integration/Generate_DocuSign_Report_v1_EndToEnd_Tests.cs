@@ -236,7 +236,7 @@ namespace terminalDocuSignTests.Integration
 
         private async Task<RouteFullDTO> GetPlan(Guid id)
         {
-            var solutionCreateUrl = _baseUrl + "activities/full?id=" + id.ToString();
+            var solutionCreateUrl = _baseUrl + "plans/full?id=" + id.ToString();
             var plan = await HttpPostAsync<string, RouteFullDTO>(solutionCreateUrl, null);
 
             return plan;
