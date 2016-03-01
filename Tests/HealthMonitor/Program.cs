@@ -210,7 +210,7 @@ namespace HealthMonitor
                 }
             }
 
-            ReportToConsole(appName, report);
+            //ReportToConsole(appName, report); We now have real-time reporting
             return report.Tests.Count(x => !x.Success);
         }
     }

@@ -19,8 +19,9 @@ namespace Data.Entities
             typeof(PlanDO).GetProperty("Tag"),
             typeof(PlanDO).GetProperty("Description"),
             typeof(PlanDO).GetProperty("RouteState"),
+            typeof(PlanDO).GetProperty("Category")
         };
-
+     
         public PlanDO()
         {
             Visibility = PlanVisibility.Standard;
@@ -71,8 +72,8 @@ namespace Data.Entities
                 else
                 {
                     Subroutes.ToList().ForEach(pnt => pnt.StartingSubroute = false);
-                    if (value != null)
-                    {
+                    if (value != null) 
+                    { 
                         value.StartingSubroute = true;
                         ChildNodes.Add(value);
                     }
@@ -88,8 +89,10 @@ namespace Data.Entities
         public virtual _RouteStateTemplate RouteStateTemplate { get; set; }
 
         public string Tag { get; set; }
-
+        
         public PlanVisibility Visibility { get; set; }
+
+        public string Category { get; set; }
 
         [NotMapped]
         public IEnumerable<SubrouteDO> Subroutes
@@ -129,12 +132,13 @@ namespace Data.Entities
             RouteState = plan.RouteState;
             Description = plan.Description;
             Visibility = plan.Visibility;
+            Category = plan.Category;
         }
 
         public bool IsOngoingPlan()
         {
             bool isOngoingPlan = false;
-            var initialActivity = this.StartingSubroute.ChildNodes.FirstOrDefault() as ActivityDO;
+            var initialActivity = this.StartingSubroute.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault() as ActivityDO;
             if (initialActivity != null)
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -143,7 +147,7 @@ namespace Data.Entities
                     if (activityTemplate.Category == ActivityCategory.Solution)
                     {
                         // Handle solutions
-                        initialActivity = initialActivity.ChildNodes.FirstOrDefault() as ActivityDO;
+                        initialActivity = initialActivity.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault() as ActivityDO;
                         if (initialActivity != null)
                         {
                             activityTemplate = uow.ActivityTemplateRepository.GetByKey(initialActivity.ActivityTemplateId);

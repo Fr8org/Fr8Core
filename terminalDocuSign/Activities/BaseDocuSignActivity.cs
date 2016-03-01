@@ -20,6 +20,7 @@ namespace terminalDocuSign.Actions
         {
             return new List<FieldDTO>(){
                 new FieldDTO("RecipientEmail", AvailabilityType.RunTime) {Tags = "EmailAddress" },
+                new FieldDTO("RecipientUserName", AvailabilityType.RunTime) {Tags = "UserName" },
                 new FieldDTO("DocumentName", AvailabilityType.RunTime),
                 new FieldDTO("TemplateName", AvailabilityType.RunTime),
                 new FieldDTO("Status", AvailabilityType.RunTime),

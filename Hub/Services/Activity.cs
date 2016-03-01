@@ -494,8 +494,6 @@ namespace Hub.Services
         // Maxim Kostyrkin: this should be refactored once the TO-DO snippet below is redesigned
         public async Task<PayloadDTO> Run(IUnitOfWork uow, ActivityDO curActivityDO, ActivityState curActionState, ContainerDO curContainerDO)
         {
-
-
             if (curActivityDO == null)
             {
                 throw new ArgumentNullException("curActivityDO");
@@ -513,7 +511,8 @@ namespace Hub.Services
                 if (plan != null && plan.Name != "LogFr8InternalEvents")
                 {
                     var actionDTO = Mapper.Map<ActivityDTO>(curActivityDO);
-                    await _event.Publish("ActionExecuted", curActivityDO.Fr8AccountId, curActivityDO.Id.ToString(), JsonConvert.SerializeObject(actionDTO).ToString(), "Success");
+                    // fire and forget.
+                    var notification = Task.Run(() => _event.Publish("ActionExecuted", curActivityDO.Fr8AccountId, curActivityDO.Id.ToString(), JsonConvert.SerializeObject(actionDTO).ToString(), "Success")).ConfigureAwait(false);
                 }
 
                 return payloadDTO;
