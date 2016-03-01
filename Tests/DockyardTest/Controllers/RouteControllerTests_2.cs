@@ -51,7 +51,7 @@ namespace DockyardTest.Controllers
 			ObjectFactory.Container.Inject(typeof(IPusherNotifier), pusherMock.Object);
             ObjectFactory.Container.Inject(typeof(Hub.Managers.Event), eventMock.Object);
 
-			var controller = new RoutesController();
+			var controller = new PlansController();
 
 			// Act
 			var result = controller.Run(Guid.NewGuid(), null);
@@ -84,7 +84,7 @@ namespace DockyardTest.Controllers
 			ObjectFactory.Container.Inject(typeof(IPlan), routeMock.Object);
 			ObjectFactory.Container.Inject(typeof(IPusherNotifier), pusherMock.Object);
 
-			var controller = new RoutesController();
+			var controller = new PlansController();
 
 			// Act
 			var result = controller.Run(Guid.NewGuid(), new PayloadVM { Payload = "Some crap data" });
@@ -124,7 +124,7 @@ namespace DockyardTest.Controllers
 
             ObjectFactory.Container.Inject(typeof(Hub.Managers.Event), eventMock.Object);
 
-			var controller = new RoutesController();
+			var controller = new PlansController();
 
 			// Act
 			var payload = new PayloadVM

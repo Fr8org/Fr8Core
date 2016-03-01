@@ -86,7 +86,7 @@ namespace terminalDocuSignTests.Integration
             var plan = await HttpPostAsync<string, RouteFullDTO>(solutionCreateUrl, null);
             var solution = plan.Subroutes.FirstOrDefault().Activities.FirstOrDefault();
 
-            var routeReloadUrl = string.Format(baseUrl + "routes/full/{0}", plan.Id);
+            var routeReloadUrl = string.Format(baseUrl + "plans/full/{0}", plan.Id);
 
             //
             // Send configuration request without authentication token
@@ -262,10 +262,10 @@ namespace terminalDocuSignTests.Integration
             //Rename route
             //
             var newName = plan.Name + " | " + DateTime.UtcNow.ToShortDateString() + " " + DateTime.UtcNow.ToShortTimeString();
-            await HttpPostAsync<object, RouteFullDTO>(baseUrl + "routes?id=" + plan.Id, new { id = plan.Id, name = newName });
+            await HttpPostAsync<object, RouteFullDTO>(baseUrl + "plans?id=" + plan.Id, new { id = plan.Id, name = newName });
 
             //let's activate our route
-            await HttpPostAsync<string, string>(baseUrl + "routes/activate?planId=" + plan.Id, null);
+            await HttpPostAsync<string, string>(baseUrl + "plans/activate?planId=" + plan.Id, null);
             
             
             //everything seems perfect -> let's fake a docusign event
@@ -279,12 +279,12 @@ namespace terminalDocuSignTests.Integration
             //
             // Deactivate plan
             //
-            //await HttpPostAsync<string, string>(baseUrl + "routes/deactivate?id=" + plan.Id, plan);
+            //await HttpPostAsync<string, string>(baseUrl + "plans/deactivate?id=" + plan.Id, plan);
 
             //
             // Delete plan
             //
-            await HttpDeleteAsync(baseUrl + "routes?id=" + plan.Id);
+            await HttpDeleteAsync(baseUrl + "plans?id=" + plan.Id);
 
             EmailAssert.RecentMsgThreshold = TimeSpan.FromSeconds(45);
             EmailAssert._timeout = TimeSpan.FromSeconds(45);

@@ -122,7 +122,7 @@ namespace terminalTwilio.Actions
             {
                 FieldDTO smsFieldDTO = ParseSMSNumberAndMsg(controlsCrate, payloadCrates);
                 string smsNumber = smsFieldDTO.Key;
-                string smsBody = smsFieldDTO.Value;
+                string smsBody = smsFieldDTO.Value + " - https://fr8.co/c/"+containerId;
 
                 if (String.IsNullOrEmpty(smsNumber))
                 {
