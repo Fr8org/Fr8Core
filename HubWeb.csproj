@@ -604,6 +604,7 @@
     <Content Include="Content\img\welcome\header_green.png" />
     <Content Include="Content\img\welcome\welcome_header.png" />
     <Content Include="Documentation\DocuSignRESTAPI.html" />
+    <Content Include="Documentation\UpstreamCrates.html" />
     <Content Include="fr8terminals.txt" />
     <Content Include="Documentation\AccountCustomFields.html" />
     <Content Include="Documentation\AddaNewGroup.html" />

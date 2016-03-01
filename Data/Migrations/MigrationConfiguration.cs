@@ -412,7 +412,6 @@ namespace Data.Migrations
             uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, user.Id);
 
             user.TestAccount = false;
-
             return user;
         }
 
