@@ -636,6 +636,10 @@
     <Compile Include="Migrations\201602270535022_Plan_Visibility.Designer.cs">
       <DependentUpon>201602270535022_Plan_Visibility.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201602290745114_AddedCateogryColumn_PlanDO.cs" />
+    <Compile Include="Migrations\201602290745114_AddedCateogryColumn_PlanDO.Designer.cs">
+      <DependentUpon>201602290745114_AddedCateogryColumn_PlanDO.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryBase.cs" />
@@ -1073,6 +1077,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201602270535022_Plan_Visibility.resx">
       <DependentUpon>201602270535022_Plan_Visibility.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602290745114_AddedCateogryColumn_PlanDO.resx">
+      <DependentUpon>201602290745114_AddedCateogryColumn_PlanDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
