@@ -928,4 +928,5 @@ div.activity-list::after {
     display: block;
     min-width: 200px;
     text-align: left;
+    font-size: 13px;
 }
