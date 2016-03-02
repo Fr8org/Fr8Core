@@ -510,15 +510,17 @@ namespace Hub.Services
 
             try
             {
+                var plan = uow.PlanRepository.GetById<PlanDO>(curContainerDO.PlanId);
+
                 //create client notification that activity is starting with execution
-                if (curActivityDO.Fr8Account != null)
+                if (curActivityDO.Fr8Account != null && plan.Name != "LogFr8InternalEvents")
                 {
                     string pusherChannel = string.Format("fr8pusher_{0}", curActivityDO.Fr8Account.UserName);
                     _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_ACTIVITY_EXECUTION_INFO,
                         new
                         {
                             ActivityName = curActivityDO.Label,
-                            PlanName = curContainerDO.Name,
+                            PlanName = plan.Name,
                             ContainerId = curContainerDO.Id.ToString(),
                         });
                 }
@@ -527,8 +529,6 @@ namespace Hub.Services
                 var payloadDTO = await CallTerminalActivityAsync<PayloadDTO>(uow, actionName, curActivityDO, curContainerDO.Id);
 
                 // this will break the infinite loop created for logFr8InternalEvents...
-                var plan = uow.PlanRepository.GetById<PlanDO>(curContainerDO.PlanId);
-
                 if (plan != null && plan.Name != "LogFr8InternalEvents")
                 {
                     var actionDTO = Mapper.Map<ActivityDTO>(curActivityDO);
