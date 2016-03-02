@@ -234,7 +234,11 @@ namespace terminalDocuSign.Actions
             // "Follow up" phase is when Continue button is clicked 
             Button button = GetStdConfigurationControl<Button>(storage, "Continue");
             if (button == null) return ConfigurationRequestType.Initial;
-            if (button.Clicked == false) return ConfigurationRequestType.Initial;
+            if (button.Clicked == false &&
+                (curActivityDO.ChildNodes == null || curActivityDO.ChildNodes.Count == 0))
+            {
+                return ConfigurationRequestType.Initial;
+            }
 
             // If no values selected in textboxes, remain on initial phase
             DropDownList dataSource = GetStdConfigurationControl<DropDownList>(storage, "DataSource");
@@ -370,7 +374,7 @@ namespace terminalDocuSign.Actions
 
         private Task<bool> HasFirstChildActivity(ReconfigurationContext context)
         {
-            if (context.SolutionActivity.ChildNodes != null)
+            if (context.SolutionActivity.ChildNodes == null)
             {
                 return Task.FromResult(false);
             }
@@ -555,6 +559,15 @@ namespace terminalDocuSign.Actions
             sendDocuSignEnvelope.CrateStorage = string.Empty;
 
             sendDocuSignEnvelope = await HubCommunicator.ConfigureActivity(sendDocuSignEnvelope, CurrentFr8UserId);
+
+            SetControlValue(
+                sendDocuSignEnvelope,
+                "target_docusign_template",
+                _docuSignTemplate.ListItems
+                    .FirstOrDefault(a => a.Key == _docuSignTemplate.selectedKey)
+            );
+
+            sendDocuSignEnvelope = await ConfigureChildActivity(parentActivity, sendDocuSignEnvelope);
 
             return sendDocuSignEnvelope;
         }
