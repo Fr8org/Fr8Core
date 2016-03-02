@@ -374,7 +374,7 @@ namespace terminalDocuSignTests.Integration
         /// <summary>
         /// Test run-time for action from Monitor_DocuSign_FollowUp_Configuration_TemplateValue.
         /// </summary>
-        [Test, Ignore]
+        [Test]
         public async Task Monitor_DocuSign_Run_TemplateValue()
         {
             var envelopeId = Guid.NewGuid().ToString();
