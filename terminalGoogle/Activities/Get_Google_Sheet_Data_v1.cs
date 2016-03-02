@@ -61,10 +61,12 @@ namespace terminalGoogle.Actions
             }
 
             ///// ********** This code is what have to be done by FR-2246 **************
+            var dropDownListControl =
+                (DropDownList) Activity.GetControlsManifest(curActivityDO).FindByName("select_spreadsheet");
             //get the spreadsheet name
-            var spreadsheetName = ((DropDownList)Activity.GetControlsManifest(curActivityDO).FindByName("select_spreadsheet")).selectedKey;
+            var spreadsheetName = dropDownListControl.selectedKey;
             //get the link to spreadsheet
-            var spreadsheetsFromUserSelection = Activity.GetControlsManifest(curActivityDO).FindByName("select_spreadsheet").Value;
+            var spreadsheetsFromUserSelection = dropDownListControl.Value;
             var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
             //get the data
             var data = _google.EnumerateDataRows(spreadsheetsFromUserSelection, authDTO);
