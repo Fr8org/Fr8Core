@@ -21,7 +21,7 @@ New-Item -ItemType Directory -Force -Path $archiveFolderName | Out-Null
 
 # Copy HealthMonitor DLLs to archive folder.
 Write-Host "Copying HealthMonitor executable & DLLs"
-$srcFiles = "$rootDir\..\Tests\HealthMonitor\bin\Debug\*"
+$srcFiles = "$rootDir\..\Tests\HealthMonitor\bin\Release\*"
 $exclude = @("HealthMonitor.vshost.exe", "HealthMonitor.vshost.exe.config", "HealthMonitor.vshost.exe.manifest")
 Copy-Item $srcFiles -Destination $archiveFolderName -Exclude $exclude -Force -Recurse
 
