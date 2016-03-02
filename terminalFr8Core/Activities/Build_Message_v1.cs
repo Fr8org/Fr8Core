@@ -110,8 +110,8 @@ namespace terminalFr8Core.Actions
             {
                 updater.RemoveByLabel("Build Message");
 
-                FieldDTO[] bodyFieldDTO = new FieldDTO[] { new FieldDTO() { Key = key, Value = key } };
-                updater.Add(CrateManager.CreateDesignTimeFieldsCrate("Build Message", bodyFieldDTO));
+                var bodyFieldDTO = new List<FieldDTO> { new FieldDTO() { Key = key, Value = key, Availability = AvailabilityType.RunTime} };
+                updater.Add(CrateManager.CreateDesignTimeFieldsCrate("Build Message", bodyFieldDTO, AvailabilityType.RunTime));
             }
         }
 

@@ -17,6 +17,8 @@ module dockyard.controllers {
         dtColumnDefs: any;
         activeRoutes: Array<interfaces.IRouteVM>;
         inActiveRoutes: Array<interfaces.IRouteVM>;
+        activeRoutesCategory: Array<interfaces.IRouteVM>;
+        inActiveRoutesCategory: Array<interfaces.IRouteVM>;
         reArrangeRoutes: (route: interfaces.IRouteVM) => void;
     }
 
@@ -58,8 +60,10 @@ module dockyard.controllers {
             //Load Process Templates view model
             $scope.dtOptionsBuilder = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withDisplayLength(10);
             $scope.dtColumnDefs = this.getColumnDefs();
-            $scope.activeRoutes = RouteService.getbystatus({ id: null, status: 2 });
-            $scope.inActiveRoutes = RouteService.getbystatus({ id: null, status: 1 });
+            $scope.activeRoutes = RouteService.getbystatus({ id: null, status: 2, category: '' });
+            $scope.inActiveRoutes = RouteService.getbystatus({ id: null, status: 1, category: '' });
+            $scope.activeRoutesCategory = RouteService.getbystatus({ id: null, status: 2, category: 'report' });
+            $scope.inActiveRoutesCategory = RouteService.getbystatus({ id: null, status: 1, category: 'report' });
             $scope.executeRoute = <(route: interfaces.IRouteVM) => void>angular.bind(this, this.executeRoute);
             $scope.goToRoutePage = <(route: interfaces.IRouteVM) => void>angular.bind(this, this.goToRoutePage);
             $scope.goToRouteDetailsPage = <(route: interfaces.IRouteVM) => void>angular.bind(this, this.goToRouteDetailsPage);

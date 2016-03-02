@@ -147,8 +147,8 @@ namespace terminalSlack.Actions
 
             AddControl(
                 crateStorage,
-                GenerateTextBlock("Info_Label",
-                    "Slack doesn't currently offer a way for us to automatically request events for this channel. You can do it manually here. use the following values: URL: <strong>https://terminalSlack.fr8.co/terminals/terminalSlack/events</strong>",
+                GenerateTextBlock("",
+                    "Slack doesn't currently offer a way for us to automatically request events for this channel. You can do it manually here. use the following values: URL: <strong>http://www.fr8.company/events?dockyard_plugin=terminalSlack&version=1.0</strong>",
                     "", "Info_Label"));
         }
 

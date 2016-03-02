@@ -189,7 +189,7 @@ namespace terminalDocuSign.Services
                     .Select(f => new FieldDTO
                     {
                         Key = f.Name,
-                        Value = f.Value,
+                        Value = f.Value == string.Empty ? null : f.Value, //set value as null because is causing problems in upstream crates selection FR-2486 
                         Availability = AvailabilityType.RunTime
                     });
                 return fieldCollection;

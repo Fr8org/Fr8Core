@@ -28,12 +28,15 @@ namespace terminalDocuSignTests.Integration
 
         private void AssertCrateTypes(ICrateStorage crateStorage)
         {
-            Assert.AreEqual(4, crateStorage.Count);
+            Assert.AreEqual(5, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
             Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "AvailableTemplates"));
             Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "AvailableHandlers"));
             Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "AvailableRecipientEvents"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "AvailableRunTimeDataFields"));
             
+
+
         }
 
         private void AssertControls(StandardConfigurationControlsCM controls)

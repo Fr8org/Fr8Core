@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using Data.Constants;
 using Data.Interfaces.DataTransferObjects;
+using Newtonsoft.Json;
+using Data.Infrastructure.JsonNet;
 
 namespace Data.Interfaces.Manifests
 {

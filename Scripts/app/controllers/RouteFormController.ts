@@ -50,6 +50,10 @@ module dockyard.controllers {
                         $scope.ptvm.routeState = dockyard.model.RouteState.Inactive;
                     }
 
+                    if (!$scope.ptvm.visibility) {
+                        $scope.ptvm.visibility = dockyard.model.PlanVisibility.Standard;
+                    }
+
                     var result = RouteService.save($scope.ptvm);
 
                     result.$promise

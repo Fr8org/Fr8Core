@@ -359,7 +359,7 @@ module dockyard.directives.paneConfigureAction {
                         return handler == 'requestConfig';
                     }
                     else
-                        return false; onControlChange
+                        return false; 
                 }
 
                 function onControlChange(event: ng.IAngularEvent, eventArgs: ChangeEventArgs) {

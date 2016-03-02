@@ -272,7 +272,7 @@ namespace terminalDocuSignTests.Integration
                 .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "DocuSign Event Fields")
                 .Single();
 
-            Assert.AreEqual(11, docuSignEventFields.Fields.Count);
+            Assert.AreEqual(12, docuSignEventFields.Fields.Count);
         }
 
         /// <summary>
@@ -301,7 +301,7 @@ namespace terminalDocuSignTests.Integration
                 .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "DocuSign Event Fields")
                 .Single();
 
-            Assert.AreEqual(11, docuSignEventFields.Fields.Count());
+            Assert.AreEqual(12, docuSignEventFields.Fields.Count());
         }
 
         /// <summary>
