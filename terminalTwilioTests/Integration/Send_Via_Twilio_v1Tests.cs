@@ -111,7 +111,8 @@ namespace terminalTwilioTests.Integration
             //as upon return the Run method takes this crate and updates the status to "Success"
             AddOperationalStateCrate(dataDTO, new OperationalStateCM());
             
-            var payloadDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(runUrl, dataDTO);
+            var payloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
+            
             //Assert
             //After Configure Test
             Assert.NotNull(responseActionDTO);

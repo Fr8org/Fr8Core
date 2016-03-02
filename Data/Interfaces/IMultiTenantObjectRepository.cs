@@ -14,22 +14,24 @@ namespace Data.Interfaces
         MtTypeReference[] ListTypeReferences();
         MtTypePropertyReference[] ListTypePropertyReferences(Guid typeId);
 
-        void Add(Manifest curManifest, string curFr8AccountId);
+        void Add(Manifest manifest, string curFr8AccountId);
         void AddOrUpdate(string curFr8AccountId, Manifest curManifest);
 
-        void AddOrUpdate<T>(string curFr8AccountId, T curManifest, Expression<Func<T, bool>> @where = null)
+        void AddOrUpdate<T>(string curFr8AccountId, T manifest, Expression<Func<T, bool>> @where)
             where T : Manifest;
 
-        void Update<T>(string curFr8AccountId, T curManifest, Expression<Func<T, bool>> @where = null) 
+        void Update(string fr8AccountId, Manifest manifest);
+
+        void Update<T>(string fr8AccountId, T manifest, Expression<Func<T, bool>> @where) 
             where T : Manifest;
 
-        void Delete<T>(string curFr8AccountId, Expression<Func<T, bool>> @where) 
+        void Delete<T>(string fr8AccountId, Expression<Func<T, bool>> @where) 
             where T : Manifest;
         
-        IMtQueryable<T> AsQueryable<T>(string curFr8AccountId)
+        IMtQueryable<T> AsQueryable<T>(string fr8AccountId)
             where T : Manifest;
 
-        List<T> Query<T>(string curFr8AccountId, Expression<Func<T, bool>> @where)
+        List<T> Query<T>(string fr8AccountId, Expression<Func<T, bool>> @where)
             where T : Manifest;
     }
 }

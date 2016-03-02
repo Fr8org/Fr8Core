@@ -82,6 +82,25 @@ namespace Data.Repositories.MultiTenant
             _changes.Add(new MtObjectChange(mtObject, MtObjectChangeType.Insert, constraint, fr8AccountId));
         }
 
+        public void Update(string fr8AccountId, Manifest instance)
+        {
+            if (instance == null)
+            {
+                return;
+            }
+
+            var mtType = _typeStorage.ResolveType(instance.GetType(), _typeStorageProvider, true);
+            var mtObject = _converter.ConvertToMt(instance, mtType);
+            var ast = BuildKeyPropertyExpression(instance, mtType);
+
+            if (ast == null)
+            {
+                throw new InvalidOperationException(string.Format("Primary key for manifest {0} is not defined", instance.GetType()));
+            }
+
+            _changes.Add(new MtObjectChange(mtObject, MtObjectChangeType.Update, ast, fr8AccountId));
+        }
+
         public void Update<T>(string fr8AccountId, T instance, Expression<Func<T, bool>> where = null)
              where T : Manifest
         {

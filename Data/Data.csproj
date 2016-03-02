@@ -272,6 +272,9 @@
     <Compile Include="Infrastructure\AutoMapper\StringToJSONConverter.cs" />
     <Compile Include="Infrastructure\CloudFileManager.cs" />
     <Compile Include="Infrastructure\JsonNet\ActivityTemplateActivityConverter.cs" />
+    <Compile Include="Infrastructure\JsonNet\AvailabilityConverter.cs" />
+    <Compile Include="Infrastructure\JsonNet\CreateTimeConverter.cs" />
+    <Compile Include="Infrastructure\JsonNet\FieldConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\TerminalActivityTemplateConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\WebServiceConverter.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActivityDataPackageDTO.cs" />
@@ -619,9 +622,13 @@
     <Compile Include="Migrations\201602270535022_Plan_Visibility.Designer.cs">
       <DependentUpon>201602270535022_Plan_Visibility.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201602290131396_RemoveOldMtStructure.cs" />
-    <Compile Include="Migrations\201602290131396_RemoveOldMtStructure.Designer.cs">
-      <DependentUpon>201602290131396_RemoveOldMtStructure.cs</DependentUpon>
+    <Compile Include="Migrations\201602290745114_AddedCateogryColumn_PlanDO.cs" />
+    <Compile Include="Migrations\201602290745114_AddedCateogryColumn_PlanDO.Designer.cs">
+      <DependentUpon>201602290745114_AddedCateogryColumn_PlanDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201603021529530_MoveToSqlMt.cs" />
+    <Compile Include="Migrations\201603021529530_MoveToSqlMt.Designer.cs">
+      <DependentUpon>201603021529530_MoveToSqlMt.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -1086,8 +1093,11 @@
     <EmbeddedResource Include="Migrations\201602270535022_Plan_Visibility.resx">
       <DependentUpon>201602270535022_Plan_Visibility.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201602290131396_RemoveOldMtStructure.resx">
-      <DependentUpon>201602290131396_RemoveOldMtStructure.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201602290745114_AddedCateogryColumn_PlanDO.resx">
+      <DependentUpon>201602290745114_AddedCateogryColumn_PlanDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201603021529530_MoveToSqlMt.resx">
+      <DependentUpon>201603021529530_MoveToSqlMt.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

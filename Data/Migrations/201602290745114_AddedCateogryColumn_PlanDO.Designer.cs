@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class RemoveOldMtStructure : IMigrationMetadata
+    public sealed partial class AddedCateogryColumn_PlanDO : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(RemoveOldMtStructure));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(AddedCateogryColumn_PlanDO));
         
         string IMigrationMetadata.Id
         {
-            get { return "201602290131396_RemoveOldMtStructure"; }
+            get { return "201602290745114_AddedCateogryColumn_PlanDO"; }
         }
         
         string IMigrationMetadata.Source

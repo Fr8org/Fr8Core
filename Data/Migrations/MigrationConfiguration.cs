@@ -28,6 +28,8 @@ namespace Data.Migrations
             //Do not ever turn this on! It will break database upgrades
             AutomaticMigrationsEnabled = false;
 
+            this.CommandTimeout = 60 * 15;
+
             //Do not modify this, otherwise migrations will run twice!
             ContextKey = "Data.Infrastructure.DockyardDbContext";
         }
@@ -411,7 +413,6 @@ namespace Data.Migrations
             uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, user.Id);
 
             user.TestAccount = false;
-
             return user;
         }
 
