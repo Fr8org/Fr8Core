@@ -8,12 +8,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using terminalDocuSign.DataTransferObjects;
 using Utilities.Configuration.Azure;
 
 namespace terminalDocuSign.Services.New_Api
 {
 
-    public class DocuSignLoginInformation
+    public class DocuSignApiConfiguration
     {
         public string AccountId;
         public object Configuration;
@@ -21,23 +22,29 @@ namespace terminalDocuSign.Services.New_Api
 
     public class DocuSignService
     {
-        public static DocuSignLoginInformation Login(string email, string password)
+        public static DocuSignApiConfiguration Login(DocuSignAuthTokenDTO authToken)
         {
+            //create configuration for future api calls
             string baseUrl = CloudConfigurationManager.GetSetting("environment") + "restapi/";
             string integratorKey = CloudConfigurationManager.GetSetting("DocuSignIntegratorKey");
             ApiClient apiClient = new ApiClient(baseUrl);
-            string authHeader = "{\"Username\":\"" + email + "\", \"Password\":\"" + password + "\", \"IntegratorKey\":\"" + integratorKey + "\"}";
+            string authHeader = "bearer " + authToken.ApiPassword;
             Configuration conf = new Configuration(apiClient);
-            conf.AddDefaultHeader("X-DocuSign-Authentication", authHeader);
-            conf.Username = email;
-            conf.Password = password;
+            conf.AddDefaultHeader("Authorization", authHeader);
+            DocuSignApiConfiguration result = new DocuSignApiConfiguration() { AccountId = authToken.AccountId, Configuration = conf };
 
-            AuthenticationApi authApi = new AuthenticationApi(conf);
-            LoginInformation loginInfo = authApi.Login();
-            return new DocuSignLoginInformation() { AccountId = loginInfo.LoginAccounts[0].AccountId, Configuration = conf };
+            if (string.IsNullOrEmpty(authToken.AccountId)) //we deal with and old token, that don't have accountId yet
+            {
+                AuthenticationApi authApi = new AuthenticationApi(conf);
+                LoginInformation loginInfo = authApi.Login();
+                result.AccountId = loginInfo.LoginAccounts[0].AccountId; //it seems that althought one DocuSign account can have multiple users - only one is returned, the one that oAuth token was created for
+            }
+
+            return result;
         }
 
-        public static List<FieldDTO> GetRolesAndTabs(DocuSignLoginInformation login, string templateId)
+
+        public static List<FieldDTO> GetRolesAndTabs(DocuSignApiConfiguration login, string templateId)
         {
             var result = new List<FieldDTO>();
             var templatesApi = new TemplatesApi((Configuration)login.Configuration);
@@ -76,7 +83,7 @@ namespace terminalDocuSign.Services.New_Api
             return result;
         }
 
-        public static void SendAnEnvelopeFromTemplate(DocuSignLoginInformation loginInfo, List<FieldDTO> rolesList, List<FieldDTO> fieldList, string curTemplateId)
+        public static void SendAnEnvelopeFromTemplate(DocuSignApiConfiguration loginInfo, List<FieldDTO> rolesList, List<FieldDTO> fieldList, string curTemplateId)
         {
             //creatig an envelope
             EnvelopeDefinition envDef = new EnvelopeDefinition();
@@ -87,7 +94,7 @@ namespace terminalDocuSign.Services.New_Api
             //requesting it back to update status at the end
             EnvelopesApi envelopesApi = new EnvelopesApi((Configuration)loginInfo.Configuration);
             EnvelopeSummary envelopeSummary = envelopesApi.CreateEnvelope(loginInfo.AccountId, envDef);
-            var envelope = envelopesApi.GetEnvelope(loginInfo.AccountId, envelopeSummary.EnvelopeId);
+
 
             var templatesApi = new TemplatesApi((Configuration)loginInfo.Configuration);
             var templateRecepients = templatesApi.ListRecipients(loginInfo.AccountId, curTemplateId);
@@ -103,7 +110,7 @@ namespace terminalDocuSign.Services.New_Api
                 recepient.Email = related_fields.Where(a => a.Key.Contains("role email")).FirstOrDefault().Value;
 
                 //updating tabs
-                var tabs = envelopesApi.ListTabs(loginInfo.AccountId, envelope.EnvelopeId, recepient.RecipientId);
+                var tabs = envelopesApi.ListTabs(loginInfo.AccountId, envelopeSummary.EnvelopeId, recepient.RecipientId);
                 JObject jobj = JObject.Parse(tabs.ToJson());
                 foreach (var item in jobj.Properties())
                 {
@@ -126,13 +133,13 @@ namespace terminalDocuSign.Services.New_Api
                                 corresponding_field = fields.Where(a => a.Key.Contains(tab.Property("tabLabel").Value.ToString())).FirstOrDefault();
                                 if (corresponding_field == null)
                                     break;
-                                tab["listItems"].Where(a => a["value"].ToString() == corresponding_field.Value).FirstOrDefault()["selected"] = "true";
-                                foreach (var listItem in tab["listItems"].Where(a => a["value"].ToString() != corresponding_field.Value))
+                                tab["listItems"].Where(a => a["value"].ToString() == corresponding_field.Value.Trim()).FirstOrDefault()["selected"] = "true";
+                                foreach (var listItem in tab["listItems"].Where(a => a["value"].ToString() != corresponding_field.Value.Trim()))
                                 {
                                     //set all other to false
                                     listItem["selected"] = "false";
                                 }
-                                    //["selected"] = "true";
+                                //["selected"] = "true";
                                 tab["value"] = corresponding_field.Value;
                                 break;
                             case "checkboxTabs":
@@ -153,16 +160,15 @@ namespace terminalDocuSign.Services.New_Api
 
                 tabs = jobj.ToObject<Tabs>();
 
-                envelopesApi.UpdateTabs(loginInfo.AccountId, envelope.EnvelopeId, recepient.RecipientId, tabs);
+                envelopesApi.UpdateTabs(loginInfo.AccountId, envelopeSummary.EnvelopeId, recepient.RecipientId, tabs);
                 //end of tabs updating
             }
 
-            envelopesApi.UpdateRecipients(loginInfo.AccountId, envelope.EnvelopeId, recepients);
+            envelopesApi.UpdateRecipients(loginInfo.AccountId, envelopeSummary.EnvelopeId, recepients);
 
-            envelope.Status = "sent";
-            envelope.PurgeState = "";
 
-            envelopesApi.Update(loginInfo.AccountId, envelope.EnvelopeId, envelope);
+
+            envelopesApi.Update(loginInfo.AccountId, envelopeSummary.EnvelopeId, new Envelope() { Status = "sent" });
         }
     }
 }
