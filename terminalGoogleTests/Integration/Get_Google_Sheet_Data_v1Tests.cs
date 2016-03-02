@@ -319,6 +319,7 @@ namespace terminalGoogleTests.Integration
         [Test, Category("Integration.terminalGoogle")]
         public async Task Get_Google_Sheet_Data_v1_Run_NoAuth()
         {
+
             var runUrl = GetTerminalRunUrl();
 
             var dataDTO = HealthMonitor_FixtureData.Get_Google_Sheet_Data_v1_InitialConfiguration_Fr8DataDTO();
@@ -327,23 +328,26 @@ namespace terminalGoogleTests.Integration
             var payload = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
             CheckIfPayloadHasNeedsAuthenticationError(payload);
         }
-
+        /// <summary>
+        /// This test verifies that the crate label is updated in accord with spreadsheet name
+        /// </summary>
         [Test, Category("Integration.terminalGoogle")]
         public async Task Get_Google_Sheet_Data_v1_Run_Sets_Label_Based_On_Spreadsheet_Name()
         {
+            //Arrange
             var runUrl = GetTerminalRunUrl();
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
             var requestActionDTO = fixture.Get_Google_Sheet_Data_v1_Followup_Configuration_Request_ActivityDTO_With_Crates();
-            ////Act
             fixture.Get_Google_Sheet_Data_v1_AddPayload(requestActionDTO, "Row_Only");
             var dataDTO = new Fr8DataDTO { ActivityDTO = requestActionDTO };
-            //As the ActionDTO is preconfigured configure url actually calls the follow up configuration
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
+            ////Act
             var payload = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
             var storage = Crate.GetStorage(payload);
             var tableDataCrate = storage.CratesOfType<StandardTableDataCM>().Single();
-            Assert.AreEqual("Data From Row_Only", tableDataCrate.Label);
+            ////Assert
+            Assert.AreEqual("Data from Row_Only", tableDataCrate.Label);
         }
-
         /////////////
         /// Run Tests End
         /////////////
