@@ -63,6 +63,7 @@ namespace terminalGoogle.Actions
 
 
             ///// ********** This code is what have to be done by FR-2246 **************
+
             //get the link to spreedsheet
             var spreadsheetsFromUserSelection = Activity.GetControlsManifest(curActivityDO).FindByName("select_spreadsheet").Value;
             var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
