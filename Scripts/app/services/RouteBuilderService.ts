@@ -5,7 +5,7 @@
 */
 module dockyard.services {
     export interface IRouteService extends ng.resource.IResourceClass<interfaces.IRouteVM> {
-        getbystatus: (id: { id: number; status: number; }) => Array<interfaces.IRouteVM>;
+        getbystatus: (id: { id: number; status: number; category?: string }) => Array<interfaces.IRouteVM>;
         getFull: (id: Object) => interfaces.IRouteVM;
         getByActivity: (id: { id: string }) => interfaces.IRouteVM;
         execute: (id: { id: number }, payload: { payload: string }, success: any, error: any) => void;
@@ -78,17 +78,17 @@ module dockyard.services {
         ): IRouteService {
 
             var resource = <IRouteService>$resource(
-                '/api/routes?id=:id',
+                '/api/plans?id=:id',
                 { id: '@id' },
                 {
                     'save': {
                         method: 'POST',
-                        url: '/api/routes/post'
+                        url: '/api/plans/post'
                     },
                     'getFull': {
                         method: 'GET',
                         isArray: false,
-                        url: '/api/routes/full/:id',
+                        url: '/api/plans/full/:id',
                         params: {
                             id: '@id'
                         }
@@ -96,15 +96,16 @@ module dockyard.services {
                     'getbystatus': {
                         method: 'GET',
                         isArray: true,
-                        url: '/api/routes/status?status=:status',
+                        url: '/api/plans/status?status=:status&category=:category',
                         params: {
-                            status: '@status'
+                            status: '@status',
+                            category: '@category'
                         }
                     },
                     'getByActivity': {
                         method: 'GET',
                         isArray: false,
-                        url: '/api/routes/getByActivity/:id',
+                        url: '/api/plans/getByActivity/:id',
                         params: {
                             id: '@id'
                         }
@@ -112,7 +113,7 @@ module dockyard.services {
                     'execute': {
                         method: 'POST',
                         isArray: false,
-                        url: '/api/routes/run?planId=:id',
+                        url: '/api/plans/run?planId=:id',
                         params: {
                             id: '@id'
                         }
@@ -120,7 +121,7 @@ module dockyard.services {
                     'activate': {
                         method: 'POST',
                         isArray: false,
-                        url: '/api/routes/activate/',
+                        url: '/api/plans/activate/',
                         params: {
                             planId: '@planId',
                             routeBuilderActivate: '@routeBuilderActivate'
@@ -129,14 +130,14 @@ module dockyard.services {
                     'deactivate': {
                         method: 'POST',
                         isArray: false,
-                        url: '/api/routes/deactivate/',
+                        url: '/api/plans/deactivate/',
                         params: {
                             planId: '@planId'
                         }
                     },
                     'update': {
                         method: 'POST',
-                        url: '/api/routes/',
+                        url: '/api/plans/',
                         params: {
 
                         }
@@ -144,7 +145,7 @@ module dockyard.services {
                 });
 
             resource.run = (id: string) : ng.IPromise<model.ContainerDTO> => {
-                var url = '/api/routes/run?planId=' + id;
+                var url = '/api/plans/run?planId=' + id;
 
                 var d = $q.defer();
 

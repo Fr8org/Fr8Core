@@ -275,6 +275,9 @@
     <Compile Include="Infrastructure\AutoMapper\StringToJSONConverter.cs" />
     <Compile Include="Infrastructure\CloudFileManager.cs" />
     <Compile Include="Infrastructure\JsonNet\ActivityTemplateActivityConverter.cs" />
+    <Compile Include="Infrastructure\JsonNet\AvailabilityConverter.cs" />
+    <Compile Include="Infrastructure\JsonNet\CreateTimeConverter.cs" />
+    <Compile Include="Infrastructure\JsonNet\FieldConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\TerminalActivityTemplateConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\WebServiceConverter.cs" />
     <Compile Include="Infrastructure\MultiTenant\IMT_Data.cs" />
@@ -633,6 +636,10 @@
     <Compile Include="Migrations\201602270535022_Plan_Visibility.cs" />
     <Compile Include="Migrations\201602270535022_Plan_Visibility.Designer.cs">
       <DependentUpon>201602270535022_Plan_Visibility.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201602290745114_AddedCateogryColumn_PlanDO.cs" />
+    <Compile Include="Migrations\201602290745114_AddedCateogryColumn_PlanDO.Designer.cs">
+      <DependentUpon>201602290745114_AddedCateogryColumn_PlanDO.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -1071,6 +1078,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201602270535022_Plan_Visibility.resx">
       <DependentUpon>201602270535022_Plan_Visibility.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602290745114_AddedCateogryColumn_PlanDO.resx">
+      <DependentUpon>201602290745114_AddedCateogryColumn_PlanDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
