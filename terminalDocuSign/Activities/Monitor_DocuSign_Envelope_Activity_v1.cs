@@ -58,13 +58,12 @@ namespace terminalDocuSign.Actions
         private void GetTemplateRecipientPickerValue(ICrateStorage storage, out string selectedOption, out string selectedValue, out string selectedTemplate)
         {
             var controls = storage.FirstCrate<StandardConfigurationControlsCM>(x => x.Label == "Configuration_Controls");
-
+            selectedTemplate = string.Empty;
             var group = controls.Content.Controls.OfType<RadioButtonGroup>().FirstOrDefault();
             if (group == null)
             {
                 selectedOption = "template";
-                selectedValue = controls.Content.Controls.OfType<DropDownList>().First().Value;
-                selectedTemplate = string.Empty;
+                selectedValue = controls.Content.Controls.OfType<DropDownList>().First().Value;               
             }
             else
             {
@@ -72,11 +71,14 @@ namespace terminalDocuSign.Actions
                 {
                     //get the option which is selected from the Template/Recipient picker
                     var pickedControl = group.Radios.Single(r => r.Selected);
-                    var templateControl = pickedControl.Controls[0] as DropDownList;
+                    if (pickedControl.Controls[0].Type == ControlTypes.DropDownList)
+                    {
+                        var templateControl = pickedControl.Controls[0] as DropDownList;
+                        selectedTemplate = templateControl.ListItems.Single(x => x.Value == templateControl.Value).Key;
+                    }                   
                     //set the output values
                     selectedOption = pickedControl.Name;
-                    selectedValue = templateControl.Value;
-                    selectedTemplate = templateControl.ListItems.Single(x => x.Value == templateControl.Value).Key;
+                    selectedValue = pickedControl.Controls[0].Value;                   
                 }
                 else
                 {
