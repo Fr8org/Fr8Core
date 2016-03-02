@@ -256,7 +256,7 @@ namespace terminalGoogleTests.Unit
                 AuthToken = Google_AuthToken1(),
                 ActivityTemplate = activityTemplate
             };
-            
+
             return curActivityDto;
 
         }

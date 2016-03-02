@@ -9,6 +9,7 @@ using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
+using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using NUnit.Framework;
 using terminalGoogleTests.Unit;
@@ -233,7 +234,6 @@ namespace terminalGoogleTests.Integration
         {
             //Arrange
             var runUrl = GetTerminalRunUrl();
-            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
 
             //prepare the action DTO with valid target URL
             var dataDTO = HealthMonitor_FixtureData.Get_Google_Sheet_Data_v1_InitialConfiguration_Fr8DataDTO();
@@ -327,6 +327,23 @@ namespace terminalGoogleTests.Integration
             var payload = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
             CheckIfPayloadHasNeedsAuthenticationError(payload);
         }
+
+        [Test, Category("Integration.terminalGoogle")]
+        public async Task Get_Google_Sheet_Data_v1_Run_Sets_Label_Based_On_Spreadsheet_Name()
+        {
+            var runUrl = GetTerminalRunUrl();
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+            var requestActionDTO = fixture.Get_Google_Sheet_Data_v1_Followup_Configuration_Request_ActivityDTO_With_Crates();
+            ////Act
+            fixture.Get_Google_Sheet_Data_v1_AddPayload(requestActionDTO, "Row_Only");
+            var dataDTO = new Fr8DataDTO { ActivityDTO = requestActionDTO };
+            //As the ActionDTO is preconfigured configure url actually calls the follow up configuration
+            var payload = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
+            var storage = Crate.GetStorage(payload);
+            var tableDataCrate = storage.CratesOfType<StandardTableDataCM>().Single();
+            Assert.AreEqual("Data From Row_Only", tableDataCrate.Label);
+        }
+
         /////////////
         /// Run Tests End
         /////////////
