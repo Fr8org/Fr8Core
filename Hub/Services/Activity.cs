@@ -513,7 +513,7 @@ namespace Hub.Services
                 var plan = uow.PlanRepository.GetById<PlanDO>(curContainerDO.PlanId);
 
                 //create client notification that activity is starting with execution
-                if (curActivityDO.Fr8Account != null && plan.Name != "LogFr8InternalEvents")
+                if (curActivityDO.Fr8Account != null && plan != null && plan.Name != "LogFr8InternalEvents")
                 {
                     string pusherChannel = string.Format("fr8pusher_{0}", curActivityDO.Fr8Account.UserName);
                     _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_ACTIVITY_EXECUTION_INFO,
