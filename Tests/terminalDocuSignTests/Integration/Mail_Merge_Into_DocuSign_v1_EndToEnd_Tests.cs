@@ -287,16 +287,17 @@ namespace terminalDocuSignTests.Integration
 
                 //check if container state == completed
                 var containerIds = await HttpGetAsync<IEnumerable<string>>(_baseUrl + "container/GetIdsByName/" + plan.Name);
+                var containerState = 0;
                 foreach (var containerId in containerIds)
                 {
                     var container = await HttpGetAsync<ContainerDTO>(_baseUrl + "container/" + containerId);
                     if (container.PlanId == plan.Id)
                     {
-                        Assert.AreEqual(container.ContainerState, ContainerState.Completed);
+                        containerState = container.ContainerState;
                         break;
                     }
                 }
-                
+                Assert.AreEqual(containerState, ContainerState.Completed);
 
                 //
                 // Deactivate plan
