@@ -220,7 +220,7 @@ namespace terminalGoogleTests.Unit
             return activity;
         }
 
-        public static ActivityTemplateDTO Extract_Spreadsheet_Data_v1_ActivityTemplate()
+        public static ActivityTemplateDTO Get_Google_Sheet_Data_v1_ActivityTemplate()
         {
             return new ActivityTemplateDTO()
             {
@@ -229,9 +229,9 @@ namespace terminalGoogleTests.Unit
                 Version = "1"
             };
         }
-        public static Fr8DataDTO Extract_Spreadsheet_Data_v1_InitialConfiguration_Fr8DataDTO()
+        public static Fr8DataDTO Get_Google_Sheet_Data_v1_InitialConfiguration_Fr8DataDTO()
         {
-            var activityTemplate = Extract_Spreadsheet_Data_v1_ActivityTemplate();
+            var activityTemplate = Get_Google_Sheet_Data_v1_ActivityTemplate();
 
             var activityDTO = new ActivityDTO()
             {
@@ -244,10 +244,10 @@ namespace terminalGoogleTests.Unit
             return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
 
-        public ActivityDTO Extract_Spreadsheet_Data_v1_Followup_Configuration_Request_ActivityDTO_With_Crates()
+        public ActivityDTO Get_Google_Sheet_Data_v1_Followup_Configuration_Request_ActivityDTO_With_Crates()
         {
 
-            var activityTemplate = Extract_Spreadsheet_Data_v1_ActivityTemplate();
+            var activityTemplate = Get_Google_Sheet_Data_v1_ActivityTemplate();
 
             var curActivityDto = new ActivityDTO()
             {
@@ -284,7 +284,7 @@ namespace terminalGoogleTests.Unit
                 Filetype = "Google_Spreadsheet"
             };
         }
-        private Crate Extract_Spreadsheet_Data_v1_PackCrate_ConfigurationControls(Tuple<string, string> spreadsheetTuple)
+        private Crate Get_Google_Sheet_Data_v1_PackCrate_ConfigurationControls(Tuple<string, string> spreadsheetTuple)
         {
             var controlList = new List<ControlDefinitionDTO>();
             var spreadsheetControl = new DropDownList()
@@ -304,10 +304,10 @@ namespace terminalGoogleTests.Unit
             return PackControlsCrate(controlList.ToArray());
         }
 
-        public void Extract_Spreadsheet_Data_v1_AddPayload(ActivityDTO activityDTO, string spreadsheet)
+        public void Get_Google_Sheet_Data_v1_AddPayload(ActivityDTO activityDTO, string spreadsheet)
         {
             var caseTuple = CaseTuple(spreadsheet);
-            var configurationControlsCrate = Extract_Spreadsheet_Data_v1_PackCrate_ConfigurationControls(caseTuple);
+            var configurationControlsCrate = Get_Google_Sheet_Data_v1_PackCrate_ConfigurationControls(caseTuple);
             var crateDesignTimeFields = PackCrate_GoogleSpreadsheets();
             using (var crateStorage = CrateManager.GetUpdatableStorage(activityDTO))
             {

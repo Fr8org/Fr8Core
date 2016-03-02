@@ -60,16 +60,15 @@ namespace terminalGoogle.Actions
                 return NeedsAuthenticationError(payloadCrates);
             }
 
-
-
             ///// ********** This code is what have to be done by FR-2246 **************
-
-            //get the link to spreedsheet
+            //get the spreadsheet name
+            var spreadsheetName = ((DropDownList)Activity.GetControlsManifest(curActivityDO).FindByName("select_spreadsheet")).selectedKey;
+            //get the link to spreadsheet
             var spreadsheetsFromUserSelection = Activity.GetControlsManifest(curActivityDO).FindByName("select_spreadsheet").Value;
             var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
             //get the data
             var data = _google.EnumerateDataRows(spreadsheetsFromUserSelection, authDTO);
-            var crate = CrateManager.CreateStandardTableDataCrate(TableCrateLabel, true, data.ToArray());
+            var crate = CrateManager.CreateStandardTableDataCrate("Data from " + spreadsheetName, true, data.ToArray());
             using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
             {
                 crateStorage.Add(crate);
