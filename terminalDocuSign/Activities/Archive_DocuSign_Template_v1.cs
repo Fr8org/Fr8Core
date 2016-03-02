@@ -70,28 +70,15 @@ namespace terminalDocuSign.Actions
         protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
+            var configurationCrate = PackControls(new ActivityUi());
+            _docuSignManager.FillDocuSignTemplateSource(configurationCrate, "Available_Templates", docuSignAuthDTO);
+
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Clear();
-                crateStorage.Add(CrateUi(docuSignAuthDTO));
+                crateStorage.Add(configurationCrate);
             }
             return Task.FromResult(curActivityDO);
-        }
-
-        private Crate CrateUi(DocuSignAuthTokenDTO authToken)
-        {
-            ActivityUi ui = new ActivityUi();
-            FillAvailableTemplatesSource(ui, authToken);
-            return PackControls(ui);
-        }
-
-        private void FillAvailableTemplatesSource(ActivityUi ui, DocuSignAuthTokenDTO authToken)
-        {
-            var templates = _docuSignManager.GetDocuSignTemplates(authToken);
-            var items= templates.Select(x => new ListItem() { Key = x.Key, Value = x.Value }).ToList();
-
-            var control = (DropDownList)ui.Controls.First(x => x.Name == "Available_Templates");
-            control.ListItems = items;
         }
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)

@@ -75,29 +75,15 @@ namespace terminalDocuSign.Actions
 
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivtyDO, AuthorizationTokenDO authTokenDO)
         {
+            var configurationCrate = PackControls(new ActivityUi());
+            await FillFinalActionsListSource(configurationCrate, "FinalActionsList");
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivtyDO))
             {
                 crateStorage.Clear();
-                crateStorage.Add(await CrateUi());              
+                crateStorage.Add(configurationCrate);              
             }
             return curActivtyDO;
-        }
-
-        private async Task<Crate> CrateUi()
-        {
-            ActivityUi ui = new ActivityUi();
-            await FillFinalActionsListSource(ui);
-            return PackControls(ui);
-        }
-
-        private async Task FillFinalActionsListSource(ActivityUi ui)
-        {
-            var templates = await HubCommunicator.GetActivityTemplates(ActivityCategory.Forwarders, CurrentFr8UserId);
-            var items = templates.Select(x => new ListItem() { Key = x.Label, Value = x.Id.ToString() }).ToList();
-
-            var control = (DropDownList)ui.Controls.First(x => x.Name == "FinalActionsList");
-            control.ListItems = items;
-        }
+        }      
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
@@ -164,5 +150,23 @@ namespace terminalDocuSign.Actions
                 Task.FromResult(
                     GenerateErrorRepsonce("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
         }
+
+        #region Private Methods
+        private async Task FillFinalActionsListSource(Crate configurationCrate, string controlName)
+        {
+            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
+            var control = configurationControl.FindByNameNested<DropDownList>(controlName);
+            if (control != null)
+            {
+                control.ListItems = await GetFinalActionListItems();
+            }
+        }
+
+        private async Task<List<ListItem>> GetFinalActionListItems()
+        {
+            var templates = await HubCommunicator.GetActivityTemplates(ActivityCategory.Forwarders, CurrentFr8UserId);
+            return templates.Select(x => new ListItem() { Key = x.Label, Value = x.Id.ToString() }).ToList();
+        }
+        #endregion
     }
 }

@@ -84,11 +84,7 @@ namespace terminalDocuSign.Services
                 Label = label,
                 Name = name,
                 Required = true,
-                Source = new FieldSourceDTO
-                {
-                    Label = "Available Templates",
-                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                }
+                Source = null
             };
 
             if (addOnChangeEvent)
@@ -116,6 +112,8 @@ namespace terminalDocuSign.Services
             return templates.Select(x => new KeyValuePair<string, string>(x.Name, x.Id)).ToList();
         }
 
+
+
         public Crate PackCrate_DocuSignTemplateNames(DocuSignAuthTokenDTO authToken)
         {
             var template = new DocuSignTemplate();
@@ -128,6 +126,55 @@ namespace terminalDocuSign.Services
             return createDesignTimeFields;
         }
 
+        public void FillDocuSignTemplateSource(Crate configurationCrate, string controlName,  DocuSignAuthTokenDTO authToken)
+        {
+            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
+            var control= configurationControl.FindByNameNested<DropDownList>(controlName);
+            if (control != null)
+            {
+                control.ListItems = GetDocuSignTemplates1(authToken);
+            }
+        }
+
+        private List<ListItem> GetDocuSignTemplates1(DocuSignAuthTokenDTO authToken)
+        {
+            var template = new DocuSignTemplate();
+            var templates = template.GetTemplateNames(authToken.Email, authToken.ApiPassword);
+            return templates.Select(x => new ListItem() { Key = x.Name, Value = x.Id }).ToList();
+        }
+
+        #region Fill Folder Source
+
+        public void FillFolderSource(Crate configurationCrate, string controlName, DocuSignAuthTokenDTO authToken)
+        {
+            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
+            var control = configurationControl.FindByNameNested<DropDownList>(controlName);
+            if (control != null)
+            {
+                control.ListItems = GetFolderItems(authToken);
+            }
+        }
+
+        private List<ListItem> GetFolderItems(DocuSignAuthTokenDTO authToken)
+        {
+            var folders = _docuSignFolder.GetSearchFolders(authToken.Email, authToken.ApiPassword);
+            return folders.Select(x => new ListItem() { Key = x.Name, Value = x.FolderId }).ToList();
+        }
+
+        #endregion
+
+        #region Fill Status Source
+
+        public void FillStatusSource(Crate configurationCrate, string controlName)
+        {
+            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
+            var control = configurationControl.FindByNameNested<DropDownList>(controlName);
+            if (control != null)
+            {
+                control.ListItems = DocusignQuery.Statuses.Select(x => new ListItem() { Key = x.Key, Value = x.Value }).ToList();
+            }
+        }
+        #endregion
 
         public StandardPayloadDataCM CreateActivityPayload(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO, string curEnvelopeId, string templateId)
         {

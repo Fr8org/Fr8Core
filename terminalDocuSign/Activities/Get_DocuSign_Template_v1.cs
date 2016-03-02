@@ -100,12 +100,13 @@ namespace terminalDocuSign.Actions
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
-            var controls = CreateControlsCrate(docuSignAuthDTO);
+            var configurationCrate = CreateControlsCrate(docuSignAuthDTO);
+            _docuSignManager.FillDocuSignTemplateSource(configurationCrate, "Available_Templates", docuSignAuthDTO);
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Clear();
-                crateStorage.Add(controls);
+                crateStorage.Add(configurationCrate);
             }
             return curActivityDO;
         }
@@ -117,15 +118,9 @@ namespace terminalDocuSign.Actions
                 Label = "Get which template",
                 Name = "Available_Templates",
                 Value = null,
-                ListItems = GetDocuSignTemplates(authToken)
+                Source = null
             };
             return PackControlsCrate(availableTemplates);
-        }
-
-        private List<ListItem> GetDocuSignTemplates(DocuSignAuthTokenDTO authToken)
-        {
-            var templates = _docuSignManager.GetDocuSignTemplates(authToken);
-            return templates.Select(x => new ListItem() { Key = x.Key, Value = x.Value }).ToList();
         }
     }
 }

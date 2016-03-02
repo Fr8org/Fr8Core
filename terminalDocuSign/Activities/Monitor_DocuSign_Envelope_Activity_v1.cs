@@ -231,7 +231,7 @@ namespace terminalDocuSign.Actions
 
             string envelopeId = string.Empty;
 
-            
+
 
             //retrieve envelope ID based on the selected option and its value
             if (!string.IsNullOrEmpty(curSelectedOption))
@@ -303,7 +303,7 @@ namespace terminalDocuSign.Actions
                 }
             };
 
-            
+
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
             {
@@ -323,18 +323,18 @@ namespace terminalDocuSign.Actions
         {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 
-            var crateControls = PackCrate_ConfigurationControls();
-            FillAvailableTemplatesSource(crateControls, docuSignAuthDTO);
+            var configurationCrate = PackCrate_ConfigurationControls();
+            _docuSignManager.FillDocuSignTemplateSource(configurationCrate, "UpstreamCrate", docuSignAuthDTO);
             var eventFields = CrateManager.CreateDesignTimeFieldsCrate("DocuSign Event Fields", AvailabilityType.RunTime, CreateDocuSignEventFields().ToArray());
-         
+
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                crateStorage.Add(crateControls);
+                crateStorage.Add(configurationCrate);
                 crateStorage.Add(eventFields);
 
                 // Remove previously added crate of "Standard Event Subscriptions" schema
                 crateStorage.Remove<EventSubscriptionCM>();
-                crateStorage.Add(PackCrate_EventSubscriptions(crateControls.Get<StandardConfigurationControlsCM>()));
+                crateStorage.Add(PackCrate_EventSubscriptions(configurationCrate.Get<StandardConfigurationControlsCM>()));
             }
             return await Task.FromResult<ActivityDO>(curActivityDO);
         }
@@ -521,14 +521,5 @@ namespace terminalDocuSign.Actions
             return templateRecipientPicker;
         }
 
-        private void FillAvailableTemplatesSource(Crate uiCrate, DocuSignAuthTokenDTO authToken)
-        {
-            var configurationControl = uiCrate.Get<StandardConfigurationControlsCM>();
-            var templateRecipientPickerControl = (RadioButtonGroup)configurationControl.FindByName("TemplateRecipientPicker");
-            var upstreamCrateControl = (DropDownList)templateRecipientPickerControl.Radios[1].Controls[0];
-            var templates = _docuSignManager.GetDocuSignTemplates(authToken);
-            var items = templates.Select(x => new ListItem() { Key = x.Key, Value = x.Value }).ToList();
-            upstreamCrateControl.ListItems = items;
-        }
     }
 }
