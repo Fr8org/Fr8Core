@@ -443,7 +443,7 @@ namespace Hub.Services
             try
             {
                 await _container.Run(uow, curContainerDO);
-                curContainerDO.ContainerState = ContainerState.Completed;
+                return curContainerDO;
             }
             catch
             {
@@ -459,7 +459,6 @@ namespace Hub.Services
                  * */
                 uow.SaveChanges();
             }
-            return curContainerDO;
         }
 
         public async Task<ContainerDO> Run(PlanDO curPlan, Crate curEvent)
