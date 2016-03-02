@@ -511,14 +511,17 @@ namespace Hub.Services
             try
             {
                 //create client notification that activity is starting with execution
-                string pusherChannel = String.Format("fr8pusher_{0}", curActivityDO.Fr8Account.UserName);
-                _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_ACTIVITY_EXECUTION_INFO,
-                    new
-                    {
-                        ActivityName = curActivityDO.Label,
-                        PlanName = curContainerDO.Name,
-                        ContainerId = curContainerDO.Id.ToString(),
-                    });
+                if (curActivityDO.Fr8Account != null)
+                {
+                    string pusherChannel = string.Format("fr8pusher_{0}", curActivityDO.Fr8Account.UserName);
+                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_ACTIVITY_EXECUTION_INFO,
+                        new
+                        {
+                            ActivityName = curActivityDO.Label,
+                            PlanName = curContainerDO.Name,
+                            ContainerId = curContainerDO.Id.ToString(),
+                        });
+                }
 
                 var actionName = curActionState == ActivityState.InitialRun ? "Run" : "ExecuteChildActivities";
                 var payloadDTO = await CallTerminalActivityAsync<PayloadDTO>(uow, actionName, curActivityDO, curContainerDO.Id);
