@@ -260,7 +260,7 @@ namespace terminalDocuSign.Actions
         // TODO: FR-2488, to be moved to separate behavior class.
         class ReconfigurationItem
         {
-            public Func<ReconfigurationContext, bool> HasActivityMethod { get; set; }
+            public Func<ReconfigurationContext, Task<bool>> HasActivityMethod { get; set; }
             public Func<ReconfigurationContext, Task<ActivityDO>> CreateActivityMethod { get; set; }
             public Func<ReconfigurationContext, Task<ActivityDO>> ConfigureActivityMethod { get; set; }
             public int ChildActivityIndex { get; set; }
@@ -282,6 +282,17 @@ namespace terminalDocuSign.Actions
         protected override async Task<ActivityDO> FollowupConfigurationResponse(
             ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
+            using (var updater = CrateManager.GetUpdatableStorage(curActivityDO))
+            {
+                // extract fields in docusign form
+                _docuSignManager.UpdateUserDefinedFields(
+                    curActivityDO,
+                    authTokenDO,
+                    updater,
+                    _docuSignTemplate.Value
+                );
+            }
+
             var reconfigList = new List<ReconfigurationItem>()
             {
                 new ReconfigurationItem()
@@ -326,15 +337,15 @@ namespace terminalDocuSign.Actions
                     Items = items
                 };
 
-                if (!item.HasActivityMethod(context))
+                if (!await item.HasActivityMethod(context))
                 {
                     var childActivityByIndex = solution.ChildNodes
                         .SingleOrDefault(x => x.Ordering == item.ChildActivityIndex);
 
                     if (childActivityByIndex != null)
                     {
-                        // TODO: FR-2488, implement that method in HubCommunicator.
-                        // await HubCommunicator.DeleteActivity(childActivityByIndex.Id);
+                        await HubCommunicator.DeleteActivity(childActivityByIndex.Id, CurrentFr8UserId);
+                        solution.ChildNodes.Remove(childActivityByIndex);
                     }
 
                     await item.CreateActivityMethod(context);
@@ -357,34 +368,195 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        private bool HasFirstChildActivity(ReconfigurationContext solution)
+        private Task<bool> HasFirstChildActivity(ReconfigurationContext context)
         {
-            throw new NotImplementedException();
+            if (context.SolutionActivity.ChildNodes != null)
+            {
+                return Task.FromResult(false);
+            }
+
+            var activityExists = context.SolutionActivity
+                .ChildNodes
+                .OfType<ActivityDO>()
+                .Any(x => x.ActivityTemplate.Name == _dataSourceValue
+                    && x.Ordering == 1
+                );
+
+            return Task.FromResult(activityExists);
         }
 
         private async Task<ActivityDO> CreateFirstChildActivity(ReconfigurationContext context)
         {
-            throw new NotImplementedException();
+            var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null))
+                .Select(x => Mapper.Map<ActivityTemplateDO>(x))
+                .ToList();
+            
+            // Let's check if activity template generates table data
+            var selectedReceiver = curActivityTemplates.Single(x => x.Name == _dataSourceValue);
+            var dataSourceActivity = await AddAndConfigureChildActivity(
+                context.SolutionActivity,
+                selectedReceiver.Id.ToString(),
+                order: 1
+            );
+
+            context.SolutionActivity.ChildNodes.Remove(dataSourceActivity);
+            context.SolutionActivity.ChildNodes.Insert(0, dataSourceActivity);
+
+            return dataSourceActivity;
         }
 
         private async Task<ActivityDO> ConfigureFirstChildActivity(ReconfigurationContext context)
         {
-            throw new NotImplementedException();
+            var activity = context.SolutionActivity.ChildNodes
+                .OfType<ActivityDO>()
+                .Single(x => x.Ordering == 1);
+
+            activity.CrateStorage = string.Empty;
+
+            activity = await HubCommunicator.ConfigureActivity(activity, CurrentFr8UserId);
+
+            return activity;
         }
 
-        private bool HasSecondChildActivity(ReconfigurationContext solution)
+        private async Task<bool> HasSecondChildActivity(ReconfigurationContext context)
         {
-            throw new NotImplementedException();
+            if (context.SolutionActivity.ChildNodes == null)
+            {
+                return false;
+            }
+
+            var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null))
+                .Select(x => Mapper.Map<ActivityTemplateDO>(x))
+                .ToList();
+
+            var selectedReceiver = curActivityTemplates.Single(x => x.Name == _dataSourceValue);
+            ActivityDO parentActivity;
+            int activityIndex;
+
+            if (DoesActivityTemplateGenerateTableData(selectedReceiver))
+            {
+                var loopActivity = context.SolutionActivity.ChildNodes
+                    .OfType<ActivityDO>()
+                    .SingleOrDefault(x => x.ActivityTemplate.Name == "Loop" && x.Ordering == 2);
+
+                if (loopActivity == null)
+                {
+                    return false;
+                }
+
+                parentActivity = loopActivity;
+                activityIndex = 1;
+            }
+            else
+            {
+                parentActivity = context.SolutionActivity;
+                activityIndex = 2;
+            }
+
+            if (parentActivity.ChildNodes.Count != 1)
+            {
+                return false;
+            }
+
+            var sendDocuSignEnvelope = parentActivity.ChildNodes
+                .OfType<ActivityDO>()
+                .SingleOrDefault(x => x.ActivityTemplate.Name == "Send_DocuSign_Envelope"
+                    && x.Ordering == activityIndex
+                );
+
+            return (sendDocuSignEnvelope != null);
         }
 
         private async Task<ActivityDO> CreateSecondChildActivity(ReconfigurationContext context)
         {
-            throw new NotImplementedException();
+            var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null))
+                .Select(x => Mapper.Map<ActivityTemplateDO>(x))
+                .ToList();
+
+            var selectedReceiver = curActivityTemplates.Single(x => x.Name == _dataSourceValue);
+            ActivityDO parentActivity;
+            int activityIndex;
+
+            if (DoesActivityTemplateGenerateTableData(selectedReceiver))
+            {
+                var loopActivity = await AddAndConfigureChildActivity(
+                    context.SolutionActivity, "Loop", "Loop", "Loop", 2);
+
+                using (var crateStorage = CrateManager.GetUpdatableStorage(loopActivity))
+                {
+                    var loopConfigControls = GetConfigurationControls(crateStorage);
+                    var crateChooser = GetControl<CrateChooser>(loopConfigControls, "Available_Crates");
+                    var tableDescription = crateChooser.CrateDescriptions.FirstOrDefault(c => c.ManifestId == (int) MT.StandardTableData);
+                    if (tableDescription != null)
+                    {
+                        tableDescription.Selected = true;
+                    }
+                }
+
+                parentActivity = loopActivity;
+                activityIndex = 1;
+            }
+            else
+            {
+                parentActivity = context.SolutionActivity;
+                activityIndex = 2;
+            }
+
+            var sendDocuSignActivity = await AddAndConfigureChildActivity(parentActivity, "Send_DocuSign_Envelope", order: activityIndex);
+            // Set docusign template
+            SetControlValue(
+                sendDocuSignActivity,
+                "target_docusign_template",
+                _docuSignTemplate.ListItems
+                    .FirstOrDefault(a => a.Key == _docuSignTemplate.selectedKey)
+            );
+            
+            await ConfigureChildActivity(parentActivity, sendDocuSignActivity);
+
+            return activityIndex == 1 ? sendDocuSignActivity : parentActivity;
         }
 
         private async Task<ActivityDO> ConfigureSecondChildActivity(ReconfigurationContext context)
         {
-            throw new NotImplementedException();
+            var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null))
+                .Select(x => Mapper.Map<ActivityTemplateDO>(x))
+                .ToList();
+
+            var selectedReceiver = curActivityTemplates.Single(x => x.Name == _dataSourceValue);
+            ActivityDO parentActivity;
+            int activityIndex;
+
+            if (DoesActivityTemplateGenerateTableData(selectedReceiver))
+            {
+                var loopActivity = context.SolutionActivity.ChildNodes
+                    .OfType<ActivityDO>()
+                    .SingleOrDefault(x => x.ActivityTemplate.Name == "Loop" && x.Ordering == 2);
+
+                if (loopActivity == null)
+                {
+                    throw new ApplicationException("Invalid solution structure.");
+                }
+
+                parentActivity = loopActivity;
+                activityIndex = 1;
+            }
+            else
+            {
+                parentActivity = context.SolutionActivity;
+                activityIndex = 2;
+            }
+
+            var sendDocuSignEnvelope = parentActivity.ChildNodes
+                .OfType<ActivityDO>()
+                .Single(x => x.ActivityTemplate.Name == "Send_DocuSign_Envelope"
+                    && x.Ordering == activityIndex
+                );
+
+            sendDocuSignEnvelope.CrateStorage = string.Empty;
+
+            sendDocuSignEnvelope = await HubCommunicator.ConfigureActivity(sendDocuSignEnvelope, CurrentFr8UserId);
+
+            return sendDocuSignEnvelope;
         }
 
         // TODO: FR-2488, to be removed.

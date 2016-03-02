@@ -316,6 +316,16 @@ namespace TerminalBase.Infrastructure
             await _restfulServiceClient.DeleteAsync(uri, null, await GetHMACHeader(uri, userId));
         }
 
+        public async Task DeleteActivity(Guid curActivityId, string userId)
+        {
+            var hubDeleteUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion")
+                + "/activities?id=" + curActivityId.ToString() + "&confirmed=true";
+            var uri = new Uri(hubDeleteUrl);
+
+            await _restfulServiceClient.DeleteAsync(uri, null, await GetHMACHeader(uri, userId));
+        }
+
         public static byte[] ReadFully(Stream input)
         {
             var buffer = new byte[16 * 1024];
