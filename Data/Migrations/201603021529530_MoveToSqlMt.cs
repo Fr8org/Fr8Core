@@ -463,7 +463,7 @@ CREATE TABLE [MtTypes](
         public override void Up()
         {
             Sql(CreateNewMtStructure);
-            Sql(MigrateDataToNewStructure);
+            /*Sql(MigrateDataToNewStructure);
 
             DropForeignKey("dbo.MT_Fields", "MT_FieldType_Id", "dbo.MT_FieldType");
             DropForeignKey("dbo.MT_Objects", "MT_FieldType_Id", "dbo.MT_FieldType");
@@ -476,14 +476,14 @@ CREATE TABLE [MtTypes](
             DropTable("dbo.MT_Fields");
             DropTable("dbo.MT_FieldType");
             DropTable("dbo.MT_Objects");
-            DropTable("dbo.MT_Data");
+            DropTable("dbo.MT_Data");*/
         }
         
         public override void Down()
         {
             Sql(DropNewStructure);
 
-            CreateTable(
+           /* CreateTable(
                 "dbo.MT_Data",
                 c => new
                     {
@@ -587,7 +587,7 @@ CREATE TABLE [MtTypes](
             AddForeignKey("dbo.MT_Data", "MT_ObjectId", "dbo.MT_Objects", "Id", cascadeDelete: true);
             AddForeignKey("dbo.MT_Fields", "MT_ObjectId", "dbo.MT_Objects", "Id", cascadeDelete: true);
             AddForeignKey("dbo.MT_Objects", "MT_FieldType_Id", "dbo.MT_FieldType", "Id");
-            AddForeignKey("dbo.MT_Fields", "MT_FieldType_Id", "dbo.MT_FieldType", "Id", cascadeDelete: true);
+            AddForeignKey("dbo.MT_Fields", "MT_FieldType_Id", "dbo.MT_FieldType", "Id", cascadeDelete: true);*/
         }
     }
 }
