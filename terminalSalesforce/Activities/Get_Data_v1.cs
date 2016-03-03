@@ -15,8 +15,6 @@ using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using terminalSalesforce.Infrastructure;
 using Data.Interfaces.DataTransferObjects;
-using Hub.Infrastructure;
-using Salesforce.Common;
 
 namespace terminalSalesforce.Actions
 {
@@ -100,23 +98,8 @@ namespace terminalSalesforce.Actions
             }
 
             //get fields of selected salesforce object
-            IList<FieldDTO> objectFieldsList = null;
-            try
-            {
-                objectFieldsList = await _salesforce.GetFields(curSelectedObject, _salesforce.CreateForceClient(authTokenDO));
-            }
-            catch (ForceException salesforceException)
-            {
-                if (salesforceException.Message.Equals("Session expired or invalid"))
-                {
-                    objectFieldsList = await _salesforce.GetFields(curSelectedObject, _salesforce.CreateForceClient(authTokenDO, true));
-                }
-                else
-                {
-                    throw salesforceException;
-                }
-            }
-
+            var objectFieldsList = await _salesforce.GetFields(curSelectedObject, authTokenDO);
+            
             //replace the object fields for the newly selected object name
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
@@ -157,7 +140,6 @@ namespace terminalSalesforce.Actions
 
             //if without filter, just get all selected objects
             //else prepare SOQL query to filter the objects based on the filter conditions
-            StandardPayloadDataCM resultObjects;
             string parsedCondition = string.Empty;
             if (filterDataDTO.Any())
             {
@@ -165,21 +147,7 @@ namespace terminalSalesforce.Actions
                 parsedCondition = ParseConditionToText(filterDataDTO);
             }
 
-            try
-            {
-                resultObjects = await _salesforce.GetObjectByQuery(curSelectedSalesForceObject, parsedCondition, _salesforce.CreateForceClient(authTokenDO));
-            }
-            catch (ForceException salesforceException)
-            {
-                if (salesforceException.Message.Equals("Session expired or invalid"))
-                {
-                    resultObjects = await _salesforce.GetObjectByQuery(curSelectedSalesForceObject, parsedCondition, _salesforce.CreateForceClient(authTokenDO, true));
-                }
-                else
-                {
-                    throw salesforceException;
-                }
-            }
+            var resultObjects = await _salesforce.GetObjectByQuery(curSelectedSalesForceObject, parsedCondition, authTokenDO);
 
             //update the payload with result objects
             using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))

@@ -2,7 +2,6 @@
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data.Control;
 using Data.Crates;
@@ -12,7 +11,6 @@ using TerminalBase.Infrastructure;
 using terminalSalesforce.Infrastructure;
 using terminalSalesforce.Services;
 using Data.Interfaces.Manifests;
-using Salesforce.Common;
 
 namespace terminalSalesforce.Actions
 {
@@ -97,23 +95,7 @@ namespace terminalSalesforce.Actions
             }
 
             var account = _salesforce.CreateSalesforceDTO<Infrastructure.AccountDTO>(curActivityDO, payloadCrates, ExtractSpecificOrUpstreamValue);
-            bool result = false;
-            try
-            {
-                result = await _salesforce.CreateObject(account, "Account", _salesforce.CreateForceClient(authTokenDO));
-            }
-            catch (ForceException salesforceException)
-            {
-                if (salesforceException.Message.Equals("Session expired or invalid"))
-                {
-                    result = await _salesforce.CreateObject(account, "Account", _salesforce.CreateForceClient(authTokenDO, true));
-                }
-                else
-                {
-                    throw salesforceException;
-                }
-            }
-            
+            var result = await _salesforce.CreateObject(account, "Account", authTokenDO);
 
             if (result)
             {

@@ -2,7 +2,6 @@
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data.Control;
 using Data.Crates;
@@ -12,7 +11,6 @@ using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using terminalSalesforce.Infrastructure;
 using terminalSalesforce.Services;
-using Salesforce.Common;
 
 namespace terminalSalesforce.Actions
 {
@@ -97,24 +95,8 @@ namespace terminalSalesforce.Actions
             }
 
             var contact = _salesforce.CreateSalesforceDTO<ContactDTO>(curActivityDO, payloadCrates, ExtractSpecificOrUpstreamValue);
+            var result = await _salesforce.CreateObject(contact, "Contact", authTokenDO);
             
-            bool result = false;
-            try
-            {
-                result = await _salesforce.CreateObject(contact, "Contact", _salesforce.CreateForceClient(authTokenDO));
-            }
-            catch (ForceException salesforceException)
-            {
-                if (salesforceException.Message.Equals("Session expired or invalid"))
-                {
-                    result = await _salesforce.CreateObject(contact, "Contact", _salesforce.CreateForceClient(authTokenDO, true));
-                }
-                else
-                {
-                    throw salesforceException;
-                }
-            }
-
             if (result)
             {
                 return Success(payloadCrates);
