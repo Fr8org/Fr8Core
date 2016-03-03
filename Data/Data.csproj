@@ -256,6 +256,7 @@
     <Compile Include="Crates\ManifestDiscovery.cs" />
     <Compile Include="Crates\ManifestTypeCache.cs" />
     <Compile Include="Entities\EncryptedAuthorizationData.cs" />
+    <Compile Include="Entities\OrganizationDO.cs" />
     <Compile Include="Entities\RouteNodeDO.cs" />
     <Compile Include="Entities\FileDO.cs" />
     <Compile Include="Entities\MT_Data.cs" />
@@ -641,6 +642,10 @@
     <Compile Include="Migrations\201602290745114_AddedCateogryColumn_PlanDO.Designer.cs">
       <DependentUpon>201602290745114_AddedCateogryColumn_PlanDO.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201603032212202_Add_Organizations_Table.cs" />
+    <Compile Include="Migrations\201603032212202_Add_Organizations_Table.Designer.cs">
+      <DependentUpon>201603032212202_Add_Organizations_Table.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryBase.cs" />
@@ -660,6 +665,7 @@
     <Compile Include="Expressions\ReplaceParameterVisitor.cs" />
     <Compile Include="Repositories\MultiTenant\Queryable\MtWhere.cs" />
     <Compile Include="Interfaces\IPlanRepository.cs" />
+    <Compile Include="Repositories\OrganizationRepository.cs" />
     <Compile Include="Repositories\Plan\Expiration.cs" />
     <Compile Include="Repositories\Plan\IPlanCache.cs" />
     <Compile Include="Repositories\Plan\PlanStorage.cs" />
@@ -1081,6 +1087,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201602290745114_AddedCateogryColumn_PlanDO.resx">
       <DependentUpon>201602290745114_AddedCateogryColumn_PlanDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201603032212202_Add_Organizations_Table.resx">
+      <DependentUpon>201603032212202_Add_Organizations_Table.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
