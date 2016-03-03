@@ -675,9 +675,9 @@
     <Compile Include="Interfaces\IPlanRepository.cs" />
     <Compile Include="Repositories\MultiTenant\StorageImpl\InMemory\InMemoryMtObjectsStorage.cs" />
     <Compile Include="Repositories\MultiTenant\StorageImpl\InMemory\InMemoryMtTypeStorageProvider.cs" />
-    <Compile Include="Repositories\MultiTenant\StorageImpl\Sql\AstToSqlConverter.cs" />
-    <Compile Include="Repositories\MultiTenant\StorageImpl\Sql\SqlMtObjectsStorage.cs" />
-    <Compile Include="Repositories\MultiTenant\StorageImpl\Sql\SqlMtTypeStorageProvider.cs" />
+    <Compile Include="Repositories\MultiTenant\StorageImpl\SqlBased\AstToSqlConverter.cs" />
+    <Compile Include="Repositories\MultiTenant\StorageImpl\SqlBased\SqlMtObjectsStorage.cs" />
+    <Compile Include="Repositories\MultiTenant\StorageImpl\SqlBased\SqlMtTypeStorageProvider.cs" />
     <Compile Include="Repositories\Plan\Expiration.cs" />
     <Compile Include="Repositories\Plan\IPlanCache.cs" />
     <Compile Include="Repositories\Plan\PlanStorage.cs" />
