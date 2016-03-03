@@ -65,7 +65,7 @@ namespace HealthMonitor.HubLauncher
             _initializer = new SelfHostInitializer();
             _initializer.Initialize(selfHostFactory, endpoint);
 
-            _waitForMigration = new Timer(SendNotification, null, 60*2*1000, Timeout.Infinite);
+            _waitForMigration = new Timer(SendNotification, null, 60*6*1000, Timeout.Infinite);
 
            
 
