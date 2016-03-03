@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -28,29 +29,29 @@ namespace terminalDocuSignTests.Integration
         {
             try
             {
-                Console.WriteLine(" var plan = await CreateSolution();");
+                Debug.WriteLine(" var plan = await CreateSolution();");
                 // Create Solution plan & initial configuration.
                 var plan = await CreateSolution();
-                Console.WriteLine(" var solution = ExtractSolution(plan);");
+                Debug.WriteLine(" var solution = ExtractSolution(plan);");
                 var solution = ExtractSolution(plan);
-                Console.WriteLine("solution = await EnsureSolutionAuthenticated(solution);");
+                Debug.WriteLine("solution = await EnsureSolutionAuthenticated(solution);");
                 solution = await EnsureSolutionAuthenticated(solution);
 
-                Console.WriteLine(" var crateStorage = _crateManager.FromDto(solution.CrateStorage);");
+                Debug.WriteLine(" var crateStorage = _crateManager.FromDto(solution.CrateStorage);");
                 var crateStorage = _crateManager.FromDto(solution.CrateStorage);
                 ValidateCrateStructure(crateStorage);
                 ValidateConfigurationControls(crateStorage);
-                Console.WriteLine("var planConfigure = await GetPlanByActivity(solution.Id);");
+                Debug.WriteLine("var planConfigure = await GetPlanByActivity(solution.Id);");
                 var planConfigure = await GetPlanByActivity(solution.Id);
                 ValidatePlanCategory(planConfigure);
-                Console.WriteLine("  await SaveActivity(solution);");
+                Debug.WriteLine("  await SaveActivity(solution);");
                 await SaveActivity(solution);
 
 
                 // FollowUp configuration.
-                Console.WriteLine("MockSolutionFollowUpConfigurationData(solution);");
+                Debug.WriteLine("MockSolutionFollowUpConfigurationData(solution);");
                 MockSolutionFollowUpConfigurationData(solution);
-                Console.WriteLine(" solution = await ConfigureActivity(solution);");
+                Debug.WriteLine(" solution = await ConfigureActivity(solution);");
                 solution = await ConfigureActivity(solution);
 
                 crateStorage = _crateManager.FromDto(solution.CrateStorage);
@@ -58,7 +59,7 @@ namespace terminalDocuSignTests.Integration
                 ValidateConfigurationControls(crateStorage);
                 ValidateChildrenActivities(solution);
                 ValidateSolutionOperationalState(crateStorage);
-                Console.WriteLine(" var planFollowup = await GetPlanByActivity(solution.Id);");
+                Debug.WriteLine(" var planFollowup = await GetPlanByActivity(solution.Id);");
                 var planFollowup = await GetPlanByActivity(solution.Id);
                 ValidatePlanName(planFollowup, crateStorage);
                 await SaveActivity(solution);
