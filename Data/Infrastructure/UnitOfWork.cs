@@ -591,11 +591,16 @@ namespace Data.Infrastructure
         {
             _container.GetInstance<PlanRepository>().SaveChanges();
 
-            var mtRep = _container.GetInstance<IMultiTenantObjectRepository>() as MultitenantRepository;
-            if (mtRep != null)
+            try
             {
-                mtRep.SaveChanges();
+                var mtRep = _container.GetInstance<IMultiTenantObjectRepository>() as MultitenantRepository;
+                if (mtRep != null)
+                {
+                    mtRep.SaveChanges();
+                }
             }
+            catch
+            {}
 
             _context.DetectChanges();
             var addedEntities = _context.AddedEntities;

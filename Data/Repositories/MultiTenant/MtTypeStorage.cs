@@ -15,12 +15,12 @@ namespace Data.Repositories.MultiTenant
             _typeConverter = typeConverter;
         }
 
-        public MtTypeDefinition ResolveType(Type clrType, IMtTypeStorageProvider typeStorageProvider, bool storeIfNew)
+        public MtTypeDefinition ResolveType(IMtConnectionProvider connectionProvider, Type clrType, IMtTypeStorageProvider typeStorageProvider, bool storeIfNew)
         {
-            return ResolveMtType(clrType, typeStorageProvider, false, storeIfNew);
+            return ResolveMtType(connectionProvider, clrType, typeStorageProvider, false, storeIfNew);
         }
 
-        private void CacheTypeDependences(MtTypeDefinition typeDefinition, IMtTypeStorageProvider typeStorageProvider)
+        private void CacheTypeDependences(IMtConnectionProvider connectionProvider, MtTypeDefinition typeDefinition, IMtTypeStorageProvider typeStorageProvider)
         {
             if (_clrTypeMappings.ContainsKey(typeDefinition.ClrType))
             {
@@ -32,7 +32,7 @@ namespace Data.Repositories.MultiTenant
 
             if (_isUnsavedType.Contains(typeDefinition.Id))
             {
-                typeStorageProvider.PersistType(typeDefinition);
+                typeStorageProvider.PersistType(connectionProvider, typeDefinition);
             }
 
             _clrTypeMappings[typeDefinition.ClrType] = typeDefinition;
@@ -41,12 +41,12 @@ namespace Data.Repositories.MultiTenant
             {
                 foreach (var mtPropertyInfo in typeDefinition.Properties)
                 {
-                    CacheTypeDependences(mtPropertyInfo.MtPropertyType, typeStorageProvider);
+                    CacheTypeDependences(connectionProvider, mtPropertyInfo.MtPropertyType, typeStorageProvider);
                 }
             }
         }
 
-        private MtTypeDefinition ResolveMtType(Type clrType, IMtTypeStorageProvider typeStorageProvider, bool forceComplexType, bool storeIfNew)
+        private MtTypeDefinition ResolveMtType(IMtConnectionProvider connectionProvider, Type clrType, IMtTypeStorageProvider typeStorageProvider, bool forceComplexType, bool storeIfNew)
         {
             MtTypeDefinition typeDefinition;
 
@@ -54,9 +54,9 @@ namespace Data.Repositories.MultiTenant
             {
                 if (!_clrTypeMappings.TryGetValue(clrType, out typeDefinition))
                 {
-                    if (typeStorageProvider.TryLoadType(clrType, out typeDefinition))
+                    if (typeStorageProvider.TryLoadType(connectionProvider, clrType, out typeDefinition))
                     {
-                        CacheTypeDependences(typeDefinition, typeStorageProvider);
+                        CacheTypeDependences(connectionProvider, typeDefinition, typeStorageProvider);
                         return typeDefinition;
                     }
 
@@ -65,8 +65,8 @@ namespace Data.Repositories.MultiTenant
                         return null;
                     }
 
-                    typeDefinition = BuildMtType(clrType, typeStorageProvider, forceComplexType);
-                    typeStorageProvider.PersistType(typeDefinition);
+                    typeDefinition = BuildMtType(connectionProvider, clrType, typeStorageProvider, forceComplexType);
+                    typeStorageProvider.PersistType(connectionProvider, typeDefinition);
                     _clrTypeMappings[clrType] = typeDefinition;
                     _isUnsavedType.Add(typeDefinition.Id);
                 }
@@ -90,7 +90,7 @@ namespace Data.Repositories.MultiTenant
             return !_isUnsavedType.Contains(typeId);
         }
         
-        private MtTypeDefinition BuildMtType(Type clrType, IMtTypeStorageProvider typeStorageProvider, bool forceComplexType)
+        private MtTypeDefinition BuildMtType(IMtConnectionProvider connectionProvider, Type clrType, IMtTypeStorageProvider typeStorageProvider, bool forceComplexType)
         {
             if (_typeConverter.IsPrimitiveType(clrType))
             {
@@ -110,7 +110,7 @@ namespace Data.Repositories.MultiTenant
             foreach (var prop in clrType.GetProperties(BindingFlags.Instance | BindingFlags.Public))
             {
                 // prevent type parsing for properties: set forceComplexType = true
-                var propType = ResolveMtType(prop.PropertyType, typeStorageProvider, true, true);
+                var propType = ResolveMtType(connectionProvider, prop.PropertyType, typeStorageProvider, true, true);
                 mtType.Properties.Add(new MtPropertyInfo(propId++, prop.Name, mtType, propType));
             }
 

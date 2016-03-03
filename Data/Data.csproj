@@ -648,6 +648,7 @@
     <Compile Include="Repositories\MultiTenant\Ast\MtUnaryOp.cs" />
     <Compile Include="Repositories\MultiTenant\Ast\UnaryOpNode.cs" />
     <Compile Include="Repositories\MultiTenant\ExpressionToAstConverter.cs" />
+    <Compile Include="Repositories\MultiTenant\IMtConnectionProvider.cs" />
     <Compile Include="Repositories\MultiTenant\IMtObjectConverter.cs" />
     <Compile Include="Repositories\MultiTenant\IMtObjectsStorage.cs" />
     <Compile Include="Repositories\MultiTenant\IMtTypeStorage.cs" />
@@ -673,9 +674,11 @@
     <Compile Include="Expressions\ReplaceParameterVisitor.cs" />
     <Compile Include="Repositories\MultiTenant\Queryable\MtWhere.cs" />
     <Compile Include="Interfaces\IPlanRepository.cs" />
+    <Compile Include="Repositories\MultiTenant\StorageImpl\InMemory\DummyConnectionProvider.cs" />
     <Compile Include="Repositories\MultiTenant\StorageImpl\InMemory\InMemoryMtObjectsStorage.cs" />
     <Compile Include="Repositories\MultiTenant\StorageImpl\InMemory\InMemoryMtTypeStorageProvider.cs" />
     <Compile Include="Repositories\MultiTenant\StorageImpl\SqlBased\AstToSqlConverter.cs" />
+    <Compile Include="Repositories\MultiTenant\StorageImpl\SqlBased\SqlMtConnectionProvider.cs" />
     <Compile Include="Repositories\MultiTenant\StorageImpl\SqlBased\SqlMtObjectsStorage.cs" />
     <Compile Include="Repositories\MultiTenant\StorageImpl\SqlBased\SqlMtTypeStorageProvider.cs" />
     <Compile Include="Repositories\Plan\Expiration.cs" />

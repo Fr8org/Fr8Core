@@ -12,14 +12,16 @@ namespace Data.Repositories.MultiTenant
 {
     partial class MultitenantRepository : IMultiTenantObjectRepository
     {
+        private readonly IMtConnectionProvider _connectionProvider;
         private readonly IMtTypeStorageProvider _typeStorageProvider;
         private readonly IMtTypeStorage _typeStorage;
         private readonly IMtObjectConverter _converter;
         private readonly IMtObjectsStorage _mtObjectsStorage;
         private readonly List<MtObjectChange> _changes = new List<MtObjectChange>(); 
 
-        public MultitenantRepository(IMtTypeStorageProvider typeStorageProvider, IMtTypeStorage typeStorage, IMtObjectConverter converter, IMtObjectsStorage mtObjectsStorage)
+        public MultitenantRepository(IMtConnectionProvider connectionProvider, IMtTypeStorageProvider typeStorageProvider, IMtTypeStorage typeStorage, IMtObjectConverter converter, IMtObjectsStorage mtObjectsStorage)
         {
+            _connectionProvider = connectionProvider;
             _typeStorageProvider = typeStorageProvider;
             _typeStorage = typeStorage;
             _converter = converter;
@@ -28,12 +30,12 @@ namespace Data.Repositories.MultiTenant
 
         public MtTypeReference FindTypeReference(Type clrType)
         {
-            return _typeStorageProvider.FindTypeReference(clrType);
+            return _typeStorageProvider.FindTypeReference(_connectionProvider, clrType);
         }
 
         public MtTypeReference FindTypeReference(Guid typeId)
         {
-            return _typeStorageProvider.FindTypeReference(typeId);
+            return _typeStorageProvider.FindTypeReference(_connectionProvider, typeId);
         }
 
         private bool IsManifest(Type clrType)
@@ -45,12 +47,12 @@ namespace Data.Repositories.MultiTenant
         public MtTypeReference[] ListTypeReferences()
         {
             // return only Manifests
-            return _typeStorageProvider.ListTypeReferences().Where(x=>IsManifest(x.ClrType)).ToArray();
+            return _typeStorageProvider.ListTypeReferences(_connectionProvider).Where(x=>IsManifest(x.ClrType)).ToArray();
         }
 
         public MtTypePropertyReference[] ListTypePropertyReferences(Guid typeId)
         {
-            return _typeStorageProvider.ListTypePropertyReferences(typeId).ToArray();
+            return _typeStorageProvider.ListTypePropertyReferences(_connectionProvider, typeId).ToArray();
         }
 
         public void Add(Manifest instance, string fr8AccountId)
@@ -60,7 +62,7 @@ namespace Data.Repositories.MultiTenant
                 return;
             }
 
-            var mtType = _typeStorage.ResolveType(instance.GetType(), _typeStorageProvider, true);
+            var mtType = _typeStorage.ResolveType(_connectionProvider, instance.GetType(), _typeStorageProvider, true);
             var mtObject = _converter.ConvertToMt(instance, mtType);
             var constraint = BuildKeyPropertyExpression(instance, mtType);
 
@@ -75,7 +77,7 @@ namespace Data.Repositories.MultiTenant
                 return;
             }
 
-            var mtType = _typeStorage.ResolveType(instance.GetType(), _typeStorageProvider, true);
+            var mtType = _typeStorage.ResolveType(_connectionProvider, instance.GetType(), _typeStorageProvider, true);
             var mtObject = _converter.ConvertToMt(instance, mtType);
             var constraint = ConvertToAst(uniqueConstraint, mtType) ?? BuildKeyPropertyExpression(instance, mtType);
 
@@ -89,7 +91,7 @@ namespace Data.Repositories.MultiTenant
                 return;
             }
 
-            var mtType = _typeStorage.ResolveType(instance.GetType(), _typeStorageProvider, true);
+            var mtType = _typeStorage.ResolveType(_connectionProvider, instance.GetType(), _typeStorageProvider, true);
             var mtObject = _converter.ConvertToMt(instance, mtType);
             var ast = BuildKeyPropertyExpression(instance, mtType);
 
@@ -109,7 +111,7 @@ namespace Data.Repositories.MultiTenant
                 return;
             }
 
-            var mtType = _typeStorage.ResolveType(typeof(T), _typeStorageProvider, true);
+            var mtType = _typeStorage.ResolveType(_connectionProvider, typeof(T), _typeStorageProvider, true);
             var mtObject = _converter.ConvertToMt(instance, mtType);
             var ast = ConvertToAst(where, mtType) ?? BuildKeyPropertyExpression(instance, mtType);
 
@@ -124,7 +126,7 @@ namespace Data.Repositories.MultiTenant
         public void Delete<T>(string fr8AccountId, Expression<Func<T, bool>> where)
              where T : Manifest
         {
-            var mtType = _typeStorage.ResolveType(typeof(T), _typeStorageProvider, false);
+            var mtType = _typeStorage.ResolveType(_connectionProvider, typeof(T), _typeStorageProvider, false);
             var ast = ConvertToAst(where, mtType);
 
             _changes.Add(new MtObjectChange(new MtObject(mtType), MtObjectChangeType.Delete, ast, fr8AccountId));
@@ -137,7 +139,7 @@ namespace Data.Repositories.MultiTenant
                 return;
             }
 
-            var mtType = _typeStorage.ResolveType(instance.GetType(), _typeStorageProvider, true);
+            var mtType = _typeStorage.ResolveType(_connectionProvider, instance.GetType(), _typeStorageProvider, true);
             var ast = BuildKeyPropertyExpression(instance, mtType);
             var mtObject = _converter.ConvertToMt(instance, mtType);
 
@@ -147,7 +149,7 @@ namespace Data.Repositories.MultiTenant
         public void AddOrUpdate<T>(string fr8AccountId, T instance, Expression<Func<T, bool>> where = null)
              where T : Manifest
         {
-            var mtType = _typeStorage.ResolveType(typeof(T), _typeStorageProvider, true);
+            var mtType = _typeStorage.ResolveType(_connectionProvider, typeof(T), _typeStorageProvider, true);
             var ast = ConvertToAst(where, mtType) ?? BuildKeyPropertyExpression(instance, mtType);
             var mtObject = _converter.ConvertToMt(instance, mtType);
 
@@ -157,7 +159,7 @@ namespace Data.Repositories.MultiTenant
         public List<T> Query<T>(string fr8AccountId, Expression<Func<T, bool>> where)
             where T : Manifest
         {
-            var mtType = _typeStorage.ResolveType(typeof(T), _typeStorageProvider, false);
+            var mtType = _typeStorage.ResolveType(_connectionProvider, typeof(T), _typeStorageProvider, false);
 
             var result = new List<T>();
 
@@ -166,7 +168,7 @@ namespace Data.Repositories.MultiTenant
                return result;
             }
 
-            foreach (var mtObj in _mtObjectsStorage.Query(fr8AccountId, mtType, ConvertToAst(where, mtType)))
+            foreach (var mtObj in _mtObjectsStorage.Query(_connectionProvider, fr8AccountId, mtType, ConvertToAst(where, mtType)))
             {
                 result.Add((T)_converter.ConvertToObject(mtObj));
             }
@@ -234,26 +236,26 @@ namespace Data.Repositories.MultiTenant
 
         public void SaveChanges()
         {
-            _typeStorageProvider.SaveChanges();
+            _typeStorageProvider.SaveChanges(_connectionProvider);
 
             foreach (var mtObjectChange in _changes)
             {
                 switch (mtObjectChange.Type)
                 {
                     case MtObjectChangeType.Insert:
-                        _mtObjectsStorage.Insert(mtObjectChange.Fr8AccountId, mtObjectChange.Object, mtObjectChange.Constraint);
+                        _mtObjectsStorage.Insert(_connectionProvider, mtObjectChange.Fr8AccountId, mtObjectChange.Object, mtObjectChange.Constraint);
                         break;
 
                     case MtObjectChangeType.Update:
-                        _mtObjectsStorage.Update(mtObjectChange.Fr8AccountId, mtObjectChange.Object, mtObjectChange.Constraint);
+                        _mtObjectsStorage.Update(_connectionProvider, mtObjectChange.Fr8AccountId, mtObjectChange.Object, mtObjectChange.Constraint);
                         break;
 
                     case MtObjectChangeType.Upsert:
-                        _mtObjectsStorage.Upsert(mtObjectChange.Fr8AccountId, mtObjectChange.Object, mtObjectChange.Constraint);
+                        _mtObjectsStorage.Upsert(_connectionProvider, mtObjectChange.Fr8AccountId, mtObjectChange.Object, mtObjectChange.Constraint);
                         break;
 
                     case MtObjectChangeType.Delete:
-                        _mtObjectsStorage.Delete(mtObjectChange.Fr8AccountId, mtObjectChange.Object.MtTypeDefinition, mtObjectChange.Constraint);
+                        _mtObjectsStorage.Delete(_connectionProvider,  mtObjectChange.Fr8AccountId, mtObjectChange.Object.MtTypeDefinition, mtObjectChange.Constraint);
                         break;
 
                     default:

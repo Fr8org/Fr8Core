@@ -15,18 +15,18 @@ namespace Data.Repositories.MultiTenant.Sql
         public SqlMtObjectsStorage(IMtObjectConverter converter)
         {
             _converter = converter;
-            _connectionString = ConfigurationManager.ConnectionStrings["DockyardDB"].ConnectionString;
+            //_connectionString = ConfigurationManager.ConnectionStrings["DockyardDB"].ConnectionString;
         }
 
-        private SqlConnection OpenConnection()
+        private SqlConnection OpenConnection(IMtConnectionProvider connectionProvider)
         {
-            var connection = new SqlConnection(_connectionString);
+            var connection = new SqlConnection((string)connectionProvider.ConnectionInfo);
 
             connection.Open();
             return connection;
         }
         
-        private int Upsert(string fr8AccountId, MtObject obj, AstNode @where, bool allowUpdate, bool allowInsert)
+        private int Upsert(IMtConnectionProvider connectionProvider, string fr8AccountId, MtObject obj, AstNode @where, bool allowUpdate, bool allowInsert)
         {
             var fields = new List<string>
             {
@@ -54,7 +54,7 @@ namespace Data.Repositories.MultiTenant.Sql
 
             var tableDefintion = string.Join(", ", fields);
 
-            using (var connection = OpenConnection())
+            using (var connection = OpenConnection(connectionProvider))
             {
                 using (var command = new SqlCommand())
                 {
@@ -125,14 +125,14 @@ namespace Data.Repositories.MultiTenant.Sql
             }
         }
 
-        public int Upsert(string fr8AccountId, MtObject obj, AstNode @where)
+        public int Upsert(IMtConnectionProvider connectionProvider, string fr8AccountId, MtObject obj, AstNode @where)
         {
-            return Upsert(fr8AccountId, obj, @where, true, true);
+            return Upsert(connectionProvider, fr8AccountId, obj, @where, true, true);
         }
 
-        public int Insert(string fr8AccountId, MtObject obj, AstNode uniqueConstraint)
+        public int Insert(IMtConnectionProvider connectionProvider, string fr8AccountId, MtObject obj, AstNode uniqueConstraint)
         {
-            var affectedRows = Upsert(fr8AccountId, obj, uniqueConstraint, false, true);
+            var affectedRows = Upsert(connectionProvider, fr8AccountId, obj, uniqueConstraint, false, true);
 
             if (affectedRows == 0)
             {
@@ -142,12 +142,12 @@ namespace Data.Repositories.MultiTenant.Sql
             return affectedRows;
         }
         
-        public int Update(string fr8AccountId, MtObject obj, AstNode @where)
+        public int Update(IMtConnectionProvider connectionProvider, string fr8AccountId, MtObject obj, AstNode @where)
         {
-            return Upsert(fr8AccountId, obj, @where, true, false);
+            return Upsert(connectionProvider, fr8AccountId, obj, @where, true, false);
         }
 
-        public IEnumerable<MtObject> Query(string fr8AccountId, MtTypeDefinition type, AstNode @where)
+        public IEnumerable<MtObject> Query(IMtConnectionProvider connectionProvider, string fr8AccountId, MtTypeDefinition type, AstNode @where)
         {
             var fields = new List<string>
             {
@@ -171,7 +171,7 @@ namespace Data.Repositories.MultiTenant.Sql
 
             var tableDefintion = string.Join(", ", fields);
 
-            using (var connection = OpenConnection())
+            using (var connection = OpenConnection(connectionProvider))
             {
                 using (var command = new SqlCommand())
                 {
@@ -225,7 +225,7 @@ namespace Data.Repositories.MultiTenant.Sql
             }
         }
 
-        public int Delete(string fr8AccountId, MtTypeDefinition type, AstNode @where)
+        public int Delete(IMtConnectionProvider connectionProvider, string fr8AccountId, MtTypeDefinition type, AstNode @where)
         {
             throw new System.NotImplementedException();
         }

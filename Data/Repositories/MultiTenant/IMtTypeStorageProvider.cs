@@ -5,13 +5,13 @@ namespace Data.Repositories.MultiTenant
 {
     public interface IMtTypeStorageProvider
     {
-        IEnumerable<MtTypeReference> ListTypeReferences();
-        IEnumerable<MtTypePropertyReference> ListTypePropertyReferences(Guid typeId);
-        MtTypeReference FindTypeReference(Type type);
-        MtTypeReference FindTypeReference(Guid typeId);
+        IEnumerable<MtTypeReference> ListTypeReferences(IMtConnectionProvider connectionProvider);
+        IEnumerable<MtTypePropertyReference> ListTypePropertyReferences(IMtConnectionProvider connectionProvider, Guid typeId);
+        MtTypeReference FindTypeReference(IMtConnectionProvider connectionProvider, Type type);
+        MtTypeReference FindTypeReference(IMtConnectionProvider connectionProvider, Guid typeId);
 
-        bool TryLoadType(Type clrType, out MtTypeDefinition mtType);
-        void PersistType(MtTypeDefinition mtType);
-        void SaveChanges();
+        bool TryLoadType(IMtConnectionProvider connectionProvider, Type clrType, out MtTypeDefinition mtType);
+        void PersistType(IMtConnectionProvider connectionProvider, MtTypeDefinition mtType);
+        void SaveChanges(IMtConnectionProvider connectionProvider);
     }
 }

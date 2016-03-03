@@ -16,7 +16,7 @@ namespace Data.Repositories.MultiTenant.InMemory
             _converter = converter;
         }
 
-        public int Insert(string fr8AccountId, MtObject newObject, AstNode uniqueConstraint)
+        public int Insert(IMtConnectionProvider connectionProvider, string fr8AccountId, MtObject newObject, AstNode uniqueConstraint)
         {
             if (uniqueConstraint != null)
             {
@@ -35,7 +35,7 @@ namespace Data.Repositories.MultiTenant.InMemory
             return 1;
         }
 
-        public int Upsert(string fr8AccountId, MtObject newObject, AstNode @where)
+        public int Upsert(IMtConnectionProvider connectionProvider, string fr8AccountId, MtObject newObject, AstNode @where)
         {
             if (where == null)
             {
@@ -63,7 +63,7 @@ namespace Data.Repositories.MultiTenant.InMemory
             return changed;
         }
 
-        public int Update(string fr8AccountId, MtObject newObject, AstNode @where)
+        public int Update(IMtConnectionProvider connectionProvider, string fr8AccountId, MtObject newObject, AstNode @where)
         {
             int changed = 0;
             for (int index = 0; index < _mtObjects.Count; index++)
@@ -80,7 +80,7 @@ namespace Data.Repositories.MultiTenant.InMemory
             return changed;
         }
 
-        public IEnumerable<MtObject> Query(string fr8AccountId, MtTypeDefinition type, AstNode @where)
+        public IEnumerable<MtObject> Query(IMtConnectionProvider connectionProvider, string fr8AccountId, MtTypeDefinition type, AstNode @where)
         {
             for (int index = 0; index < _mtObjects.Count; index++)
             {
@@ -93,7 +93,7 @@ namespace Data.Repositories.MultiTenant.InMemory
             }
         }
 
-        public int Delete(string fr8AccountId, MtTypeDefinition type, AstNode @where)
+        public int Delete(IMtConnectionProvider connectionProvider, string fr8AccountId, MtTypeDefinition type, AstNode @where)
         {
             int changed = 0;
 

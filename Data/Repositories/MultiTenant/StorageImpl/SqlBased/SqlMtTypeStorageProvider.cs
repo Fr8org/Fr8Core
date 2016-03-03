@@ -20,7 +20,7 @@ namespace Data.Repositories.MultiTenant.Sql
             _connectionString = ConfigurationManager.ConnectionStrings["DockyardDB"].ConnectionString;
         }
 
-        private SqlConnection OpenConnection()
+        private SqlConnection OpenConnection(IMtConnectionProvider connectionProvider)
         {
             var connection = new SqlConnection(_connectionString);
 
@@ -51,11 +51,11 @@ namespace Data.Repositories.MultiTenant.Sql
             return mtType;
         }
 
-        public IEnumerable<MtTypeReference> ListTypeReferences()
+        public IEnumerable<MtTypeReference> ListTypeReferences(IMtConnectionProvider connectionProvider)
         {
             const string loadTypeReferences = "select * from MtTypes";
 
-            using (var connection = OpenConnection())
+            using (var connection = OpenConnection(connectionProvider))
             using (var command = new SqlCommand(loadTypeReferences, connection))
             {
                 var typeReferences = new List<MtTypeReference>();
@@ -87,9 +87,9 @@ namespace Data.Repositories.MultiTenant.Sql
             }
         }
 
-        public IEnumerable<MtTypePropertyReference> ListTypePropertyReferences(Guid typeId)
+        public IEnumerable<MtTypePropertyReference> ListTypePropertyReferences(IMtConnectionProvider connectionProvider, Guid typeId)
         {
-            using (var connection = OpenConnection())
+            using (var connection = OpenConnection(connectionProvider))
             using (var loadPropCommand = new SqlCommand(@"select  MtProperties.*, ptype.IsPrimitive, ptype.IsComplex, pType.ClrName, pType.ManifestId from MtProperties 
                                                                    inner join MtTypes as ptype on ptype.Id = MtProperties.Type      
                                                                    where MtProperties.DeclaringType = @declaringType"))
@@ -133,11 +133,11 @@ namespace Data.Repositories.MultiTenant.Sql
             }
         }
 
-        public MtTypeReference FindTypeReference(Type type)
+        public MtTypeReference FindTypeReference(IMtConnectionProvider connectionProvider, Type type)
         {
             MtTypeDefinition typeDef;
 
-            if (!TryLoadType(type, out typeDef))
+            if (!TryLoadType(connectionProvider, type, out typeDef))
             {
                 return null;
             }
@@ -145,11 +145,11 @@ namespace Data.Repositories.MultiTenant.Sql
             return new MtTypeReference(typeDef.Alias, typeDef.ClrType, typeDef.Id);
         }
 
-        public MtTypeReference FindTypeReference(Guid typeId)
+        public MtTypeReference FindTypeReference(IMtConnectionProvider connectionProvider, Guid typeId)
         {
             const string loadTypeReferences = "select * from MtTypes where Id = @id";
 
-            using (var connection = OpenConnection())
+            using (var connection = OpenConnection(connectionProvider))
             using (var command = new SqlCommand(loadTypeReferences, connection))
             {
                 command.Parameters.AddWithValue("@id", typeId);
@@ -185,14 +185,14 @@ namespace Data.Repositories.MultiTenant.Sql
         // All our properties are of primitive types (types that has no own properties) and  we don't want to introduce unnecessary complications related to types graphs
         // So we make assumption that we can always safely load the type with all possible references by loading only topmost level of type hierarchy
         // This is as easy as making one sql join.
-        public bool TryLoadType(Type clrType, out MtTypeDefinition mtType)
+        public bool TryLoadType(IMtConnectionProvider connectionProvider, Type clrType, out MtTypeDefinition mtType)
         {
             // we want handle Manifests in the special way. Instead of storing manifest name as CLR type name we'll store it as manifest id.
             // this will make out system more robust because it will not depend on manifest names.
             CrateManifestType manifestType;
             mtType = null;
 
-            using (var connection = OpenConnection())
+            using (var connection = OpenConnection(connectionProvider))
             {
                 SqlCommand loadTypeCommand;
 
@@ -281,19 +281,19 @@ namespace Data.Repositories.MultiTenant.Sql
             return true;
         }
 
-        public void PersistType(MtTypeDefinition mtType)
+        public void PersistType(IMtConnectionProvider connectionProvider, MtTypeDefinition mtType)
         {
             _newTypes.Add(mtType);
         }
 
-        public void SaveChanges()
+        public void SaveChanges(IMtConnectionProvider connectionProvider)
         {
             const string insertTypeCommand = @"insert into MtTypes (Id, Alias, ClrName, IsPrimitive, IsComplex, ManifestId) values (@typeId, @alias, @clrName, @isPrimitive, @isComplex, @manifestId)";
             const string insertPropertyCommand = @"insert into MtProperties (Name, Offset, Type, DeclaringType) values (@name, @offset, @type, @declaringType)";
 
             using (var typeLock = _storage.AccureTypeTransactionLock())
             {
-                using (var connection = OpenConnection())
+                using (var connection = OpenConnection(connectionProvider))
                 using (var transaction = connection.BeginTransaction())
                 using (var insertType = new SqlCommand(insertTypeCommand))
                 using (var insertProperty = new SqlCommand(insertPropertyCommand))
