@@ -461,7 +461,7 @@ namespace HubWeb.Controllers
                 }
                 var containerDefaultDTO = new ContainerDTO();
                 containerDefaultDTO.CurrentPlanType = planDO.IsOngoingPlan() ? PlanType.OnGoing : PlanType.RunOnce;
-                return Ok(containerDefaultDTO;
+                return Ok(containerDefaultDTO);
             }
         }
     }
