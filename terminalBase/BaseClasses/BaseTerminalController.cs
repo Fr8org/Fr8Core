@@ -20,6 +20,7 @@ using System.Web.Routing;
 using System.Net;
 using System.Net.Http.Formatting;
 using System.Net.Http.Headers;
+using Data;
 
 namespace TerminalBase.BaseClasses
 {
@@ -156,6 +157,8 @@ namespace TerminalBase.BaseClasses
         // For /Configure and /Activate actions that accept ActionDTO
         public async Task<object> HandleFr8Request(string curTerminal, string curActionPath, Fr8DataDTO curDataDTO)
         {
+            ExternalLogger.Write("Handling request to terminal {0}, Path: {1}\nData:\n{2}", curTerminal, curActionPath, JsonConvert.SerializeObject(curDataDTO));
+
             if (curDataDTO?.ActivityDTO == null)
                 throw new ArgumentNullException(nameof(curDataDTO.ActivityDTO));
 
@@ -266,6 +269,8 @@ namespace TerminalBase.BaseClasses
             }
             catch (Exception e)
             {
+                ExternalLogger.Write("We have failed!\n{0}", e.ToString());
+
                 JsonSerializerSettings settings = new JsonSerializerSettings
                 {
                     PreserveReferencesHandling = PreserveReferencesHandling.Objects

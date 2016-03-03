@@ -258,15 +258,13 @@
     <Compile Include="Entities\EncryptedAuthorizationData.cs" />
     <Compile Include="Entities\RouteNodeDO.cs" />
     <Compile Include="Entities\FileDO.cs" />
-    <Compile Include="Entities\MT_Data.cs" />
-    <Compile Include="Entities\MT_Field.cs" />
-    <Compile Include="Entities\MT_Object.cs" />
     <Compile Include="Entities\TerminalSubscriptionDO.cs" />
     <Compile Include="Entities\WebServiceDO.cs" />
     <Compile Include="Expressions\ConversionMethods.cs" />
     <Compile Include="Expressions\ExpressionTransformation.cs" />
     <Compile Include="Expressions\ExpressionTransformation.PropertyInfo.cs" />
     <Compile Include="Expressions\ExpressionTransformation.TransformationVisitor.cs" />
+    <Compile Include="ExternalLogger.cs" />
     <Compile Include="Helpers\Fr8ReflectionHelper.cs" />
     <Compile Include="Infrastructure\AutoMapper\JSONToStringConverter.cs" />
     <Compile Include="Infrastructure\AutoMapper\DataAutoMapperBootstrapper.cs" />
@@ -280,14 +278,6 @@
     <Compile Include="Infrastructure\JsonNet\FieldConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\TerminalActivityTemplateConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\WebServiceConverter.cs" />
-    <Compile Include="Infrastructure\MultiTenant\IMT_Data.cs" />
-    <Compile Include="Infrastructure\MultiTenant\IMT_Field.cs" />
-    <Compile Include="Infrastructure\MultiTenant\IMT_FieldType.cs" />
-    <Compile Include="Infrastructure\MultiTenant\IMT_Object.cs" />
-    <Compile Include="Infrastructure\MultiTenant\MT_Data.cs" />
-    <Compile Include="Infrastructure\MultiTenant\MT_Field.cs" />
-    <Compile Include="Infrastructure\MultiTenant\MT_FieldType.cs" />
-    <Compile Include="Infrastructure\MultiTenant\MT_Object.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActivityDataPackageDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActivateActivitiesDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActivityResponseDTO.cs" />
@@ -350,10 +340,6 @@
     <Compile Include="Interfaces\DataTransferObjects\WebServiceActivitySetDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\WebServiceDTO.cs" />
     <Compile Include="Interfaces\IFileRepository.cs" />
-    <Compile Include="Interfaces\IMTDataRepository.cs" />
-    <Compile Include="Interfaces\IMTFieldRepository.cs" />
-    <Compile Include="Interfaces\IMTFieldTypeRepository.cs" />
-    <Compile Include="Interfaces\IMTObjectRepository.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ControlDefinitionDTOConverter.cs" />
     <Compile Include="Interfaces\ITrackingChangesRepository.cs" />
     <Compile Include="Interfaces\Manifests\CrateDescriptionCM.cs" />
@@ -641,6 +627,10 @@
     <Compile Include="Migrations\201602290745114_AddedCateogryColumn_PlanDO.Designer.cs">
       <DependentUpon>201602290745114_AddedCateogryColumn_PlanDO.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201603021529530_MoveToSqlMt.cs" />
+    <Compile Include="Migrations\201603021529530_MoveToSqlMt.Designer.cs">
+      <DependentUpon>201603021529530_MoveToSqlMt.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryBase.cs" />
@@ -651,6 +641,31 @@
     <Compile Include="Repositories\Authorization\KeyVaultAuthorizationTokenRepository.cs" />
     <Compile Include="Repositories\FileTagsRepository.cs" />
     <Compile Include="Interfaces\IMultiTenantObjectRepository.cs" />
+    <Compile Include="Repositories\MultiTenant\Ast\AstNode.cs" />
+    <Compile Include="Repositories\MultiTenant\Ast\BinaryOpNode.cs" />
+    <Compile Include="Repositories\MultiTenant\Ast\LoadConstNode.cs" />
+    <Compile Include="Repositories\MultiTenant\Ast\LoadFieldNode.cs" />
+    <Compile Include="Repositories\MultiTenant\Ast\MtBinaryOp.cs" />
+    <Compile Include="Repositories\MultiTenant\Ast\MtUnaryOp.cs" />
+    <Compile Include="Repositories\MultiTenant\Ast\UnaryOpNode.cs" />
+    <Compile Include="Repositories\MultiTenant\ExpressionToAstConverter.cs" />
+    <Compile Include="Repositories\MultiTenant\IMtConnectionProvider.cs" />
+    <Compile Include="Repositories\MultiTenant\IMtObjectConverter.cs" />
+    <Compile Include="Repositories\MultiTenant\IMtObjectsStorage.cs" />
+    <Compile Include="Repositories\MultiTenant\IMtTypeStorage.cs" />
+    <Compile Include="Repositories\MultiTenant\IMtTypeStorageProvider.cs" />
+    <Compile Include="Repositories\MultiTenant\ITypeTransactionLock.cs" />
+    <Compile Include="Repositories\MultiTenant\MtClrTypeMapping.cs" />
+    <Compile Include="Repositories\MultiTenant\MtObject.cs" />
+    <Compile Include="Repositories\MultiTenant\MtObjectConverter.cs" />
+    <Compile Include="Repositories\MultiTenant\MtPropertyInfo.cs" />
+    <Compile Include="Repositories\MultiTenant\MtTypeDefinition.cs" />
+    <Compile Include="Repositories\MultiTenant\MtTypeReference.cs" />
+    <Compile Include="Repositories\MultiTenant\MtTypeStorage.cs" />
+    <Compile Include="Repositories\MultiTenant\MtTypeStorage.TypeTransactionLock.cs" />
+    <Compile Include="Repositories\MultiTenant\MultitenantRepository.cs" />
+    <Compile Include="Repositories\MultiTenant\MultitenantRepository.MtObjectChanage.cs" />
+    <Compile Include="Repositories\MultiTenant\MultitenantRepository.MtObjectChangeType.cs" />
     <Compile Include="Repositories\MultiTenant\Queryable\IMtQueryable.cs" />
     <Compile Include="Repositories\MultiTenant\Queryable\IMtQueryExecutor.cs" />
     <Compile Include="Repositories\MultiTenant\Queryable\MtQueryable.cs" />
@@ -660,6 +675,13 @@
     <Compile Include="Expressions\ReplaceParameterVisitor.cs" />
     <Compile Include="Repositories\MultiTenant\Queryable\MtWhere.cs" />
     <Compile Include="Interfaces\IPlanRepository.cs" />
+    <Compile Include="Repositories\MultiTenant\StorageImpl\InMemory\DummyConnectionProvider.cs" />
+    <Compile Include="Repositories\MultiTenant\StorageImpl\InMemory\InMemoryMtObjectsStorage.cs" />
+    <Compile Include="Repositories\MultiTenant\StorageImpl\InMemory\InMemoryMtTypeStorageProvider.cs" />
+    <Compile Include="Repositories\MultiTenant\StorageImpl\SqlBased\AstToSqlConverter.cs" />
+    <Compile Include="Repositories\MultiTenant\StorageImpl\SqlBased\SqlMtConnectionProvider.cs" />
+    <Compile Include="Repositories\MultiTenant\StorageImpl\SqlBased\SqlMtObjectsStorage.cs" />
+    <Compile Include="Repositories\MultiTenant\StorageImpl\SqlBased\SqlMtTypeStorageProvider.cs" />
     <Compile Include="Repositories\Plan\Expiration.cs" />
     <Compile Include="Repositories\Plan\IPlanCache.cs" />
     <Compile Include="Repositories\Plan\PlanStorage.cs" />
@@ -673,11 +695,6 @@
     <Compile Include="Repositories\Plan\RouteTreeHelper.cs" />
     <Compile Include="Repositories\Plan\Internal\RouteNodeRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
-    <Compile Include="Repositories\MultiTenant\MTDataRepository.cs" />
-    <Compile Include="Repositories\MultiTenant\MTFieldRepository.cs" />
-    <Compile Include="Repositories\MultiTenant\MTFieldTypeRepository.cs" />
-    <Compile Include="Repositories\MultiTenant\MTObjectRepository.cs" />
-    <Compile Include="Repositories\MultiTenant\MultiTenantObjectRepository.cs" />
     <Compile Include="Repositories\Plan\SlidingExpirationStrategy.cs" />
     <Compile Include="Repositories\TagRepository.cs" />
     <Compile Include="Repositories\TerminalRepository.cs" />
@@ -887,6 +904,7 @@
   <ItemGroup>
     <Folder Include="Authentication\" />
     <Folder Include="Entities\Enumerations\" />
+    <Folder Include="Infrastructure\MultiTenant\" />
     <Folder Include="Wrappers\" />
   </ItemGroup>
   <ItemGroup>
@@ -1081,6 +1099,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201602290745114_AddedCateogryColumn_PlanDO.resx">
       <DependentUpon>201602290745114_AddedCateogryColumn_PlanDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201603021529530_MoveToSqlMt.resx">
+      <DependentUpon>201603021529530_MoveToSqlMt.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
