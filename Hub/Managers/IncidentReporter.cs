@@ -4,6 +4,7 @@ using Microsoft.SqlServer.Server;
 using StructureMap;
 using Data.Exceptions;
 using Data.Infrastructure;
+using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Hub.Interfaces;
@@ -17,11 +18,13 @@ namespace Hub.Managers
     {
         private readonly EventReporter _eventReporter;
         private readonly ITerminal _terminal;
+        private readonly ISecurityServices _sercurity;
 
         public IncidentReporter(EventReporter eventReporter, ITerminal terminal)
         {
             _eventReporter = eventReporter;
             _terminal = terminal;
+            _sercurity = ObjectFactory.GetInstance<ISecurityServices>();
         }
 
         public void SubscribeToAlerts()
@@ -55,7 +58,7 @@ namespace Hub.Managers
         {
             var incident = new IncidentDO
             {
-                CustomerId = "unknown",
+                CustomerId = _sercurity.GetCurrentUser(),
                 Data = string.Join(
                     "Unexpected error: ",
                     ex.Message,
@@ -74,7 +77,7 @@ namespace Hub.Managers
         {
             var incident = new IncidentDO
             {
-                CustomerId = "unknown",
+                CustomerId = _sercurity.GetCurrentUser(),
                 Data = string.Join(
                     Environment.NewLine,
                     "KeyVault method: " + keyVaultMethod,
@@ -127,7 +130,7 @@ namespace Hub.Managers
         {
             var incident = new IncidentDO
             {
-                CustomerId = "unknown",
+                CustomerId = _sercurity.GetCurrentUser(),
                 Data = string.Join(
                     Environment.NewLine,
                     "Container failure.",
@@ -160,7 +163,7 @@ namespace Hub.Managers
 
         /// <summary>
         /// Logs incident information using the standard log mechanisms.
-
+        ///</summary>
 
         private void SaveAndLogIncident(IncidentDO curIncident)
         {
@@ -234,7 +237,7 @@ namespace Hub.Managers
         {
             var incident = new IncidentDO
             {
-                CustomerId = "unknown",
+                CustomerId = _sercurity.GetCurrentUser(),
                 Data = "Query string: " + curRequestQueryString + "      \r\n" + errorMessage,
                 ObjectId = "unknown",
                 PrimaryCategory = "Terminal",
@@ -265,7 +268,7 @@ namespace Hub.Managers
             var currentIncident = new IncidentDO
             {
                 ObjectId = curNotificationPayload,
-                CustomerId = "",
+                CustomerId = _sercurity.GetCurrentUser(),
                 Data = curNotificationUrl,
                 PrimaryCategory = "Event",
                 SecondaryCategory = "External",
@@ -286,7 +289,7 @@ namespace Hub.Managers
             var currentIncident = new IncidentDO
             {
                 ObjectId = "EventController",
-                CustomerId = "",
+                CustomerId = _sercurity.GetCurrentUser(),
                 Data = curEventPayload,
                 PrimaryCategory = "Event",
                 SecondaryCategory = "External",
@@ -351,13 +354,16 @@ namespace Hub.Managers
         {
             using (var _uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                IncidentDO incidentDO = new IncidentDO();
-                incidentDO.PrimaryCategory = "Email";
-                incidentDO.SecondaryCategory = "Failure";
-                incidentDO.Priority = 5;
-                incidentDO.Activity = "Intake";
-                incidentDO.Data = errorMessage;
-                incidentDO.ObjectId = null;
+                IncidentDO incidentDO = new IncidentDO
+                {
+                    CustomerId = _sercurity.GetCurrentUser(),
+                    PrimaryCategory = "Email",
+                    SecondaryCategory = "Failure",
+                    Priority = 5,
+                    Activity = "Intake",
+                    Data = errorMessage,
+                    ObjectId = null
+                };
                 _uow.IncidentRepository.Add(incidentDO);
                 _uow.SaveChanges();
             }
@@ -386,12 +392,15 @@ namespace Hub.Managers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                IncidentDO incidentDO = new IncidentDO();
-                incidentDO.PrimaryCategory = "Email";
-                incidentDO.SecondaryCategory = "Failure";
-                incidentDO.Activity = "Send";
-                incidentDO.ObjectId = emailId.ToString();
-                incidentDO.Data = message;
+                IncidentDO incidentDO = new IncidentDO
+                {
+                    CustomerId = _sercurity.GetCurrentUser(),
+                    PrimaryCategory = "Email",
+                    SecondaryCategory = "Failure",
+                    Activity = "Send",
+                    ObjectId = emailId.ToString(),
+                    Data = message
+                };
                 uow.IncidentRepository.Add(incidentDO);
                 uow.SaveChanges();
             }
@@ -517,11 +526,13 @@ namespace Hub.Managers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                IncidentDO incidentDO = new IncidentDO();
-                incidentDO.PrimaryCategory = "DockYardAccount";
-                incidentDO.SecondaryCategory = "Error";
-                incidentDO.Activity = "Registration";
-                incidentDO.Data = ex.Message;
+                IncidentDO incidentDO = new IncidentDO
+                {
+                    PrimaryCategory = "Fr8Account",
+                    SecondaryCategory = "Error",
+                    Activity = "Registration",
+                    Data = ex.Message
+                };
                 uow.IncidentRepository.Add(incidentDO);
                 uow.SaveChanges();
 
@@ -533,11 +544,13 @@ namespace Hub.Managers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                IncidentDO incidentDO = new IncidentDO();
-                incidentDO.PrimaryCategory = "BookingRequest";
-                incidentDO.SecondaryCategory = "BookerAction";
-                incidentDO.Activity = "MergedBRs";
-                incidentDO.ObjectId = originalBRId.ToString();
+                IncidentDO incidentDO = new IncidentDO
+                {
+                    PrimaryCategory = "BookingRequest",
+                    SecondaryCategory = "BookerAction",
+                    Activity = "MergedBRs",
+                    ObjectId = originalBRId.ToString()
+                };
 
                 string logData = string.Format("{0} {1} {2}: ",
                         incidentDO.PrimaryCategory,
@@ -561,12 +574,17 @@ namespace Hub.Managers
         {
             using (var _uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                IncidentDO incidentDO = new IncidentDO();
-                incidentDO.PrimaryCategory = "Envelope";
-                incidentDO.SecondaryCategory = "";
-                incidentDO.ObjectId = envelopeId;
-                incidentDO.Activity = "Action processing";
-                incidentDO.Data = String.Format("IncidentDocuSignFieldMissing: Envelope id: {0}, Field name: {1}", envelopeId, fieldName);
+                IncidentDO incidentDO = new IncidentDO
+                {
+                    CustomerId = _sercurity.GetCurrentUser(),
+                    PrimaryCategory = "Envelope",
+                    SecondaryCategory = "",
+                    ObjectId = envelopeId,
+                    Activity = "Action processing",
+                    Data =
+                        String.Format("IncidentDocuSignFieldMissing: Envelope id: {0}, Field name: {1}", envelopeId,
+                            fieldName)
+                };
                 _uow.IncidentRepository.Add(incidentDO);
                 Logger.GetLogger().Warn(incidentDO.Data);
                 _uow.SaveChanges();
