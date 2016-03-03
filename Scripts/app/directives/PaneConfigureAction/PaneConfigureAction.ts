@@ -112,6 +112,8 @@ module dockyard.directives.paneConfigureAction {
         currentActiveElement: model.ControlDefinitionDTO;
         collapsed: boolean;
         resize: () => void;
+        populateAllActivities: () => void;
+        allActivities: Array<interfaces.IActivityDTO>;
     }
     
     export class CancelledEventArgs extends CancelledEventArgsBase { }
@@ -188,6 +190,8 @@ module dockyard.directives.paneConfigureAction {
                 $scope.onConfigurationChanged = onConfigurationChanged;
                 $scope.processConfiguration = processConfiguration;
                 $scope.setSolutionMode = setSolutionMode;
+                $scope.populateAllActivities = populateAllActivities;
+                $scope.allActivities = Array<model.ActivityDTO>();
 
                 $scope.resize = () => {
                     $scope.collapsed = !$scope.collapsed;
@@ -393,6 +397,21 @@ module dockyard.directives.paneConfigureAction {
                     if (configLoadingError) {
                         loadConfiguration();
                     }
+                }
+
+                var allActivities = Array<interfaces.IActivityDTO>();
+                function getAllActivities(activities: Array<interfaces.IActivityDTO>){
+                    for (var activity of activities) {
+                        allActivities.push(activity);
+                        if (activity.childrenActivities.length > 0) {
+                            getAllActivities(activity.childrenActivities);
+                        }
+                    }
+                }
+
+                function populateAllActivities() {
+                    getAllActivities($scope.currentAction.childrenActivities);
+                    $scope.allActivities = allActivities;
                 }
 
                 // Here we look for Crate with ManifestType == 'Standard UI Controls'.

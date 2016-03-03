@@ -104,13 +104,14 @@ namespace terminalDocuSign.Actions
             {
                 Label = "1. Where is your Source Data?",
                 Name = "DataSource",
-                ListItems = await GetDataSourceListItems(activityDO, "Table Data Generator")
+                ListItems = await GetDataSourceListItems(activityDO, "Table Data Generator"),
+                Required = true
             });
 
             controlList.Add(DocuSignManager.CreateDocuSignTemplatePicker(false, "DocuSignTemplate", "2. Use which DocuSign Template?"));
             controlList.Add(new Button()
             {
-                Label = "Continue",
+                Label = "Prepare Mail Merge",
                 Name = "Continue",
                 Events = new List<ControlEvent>()
                 {
@@ -158,9 +159,7 @@ namespace terminalDocuSign.Actions
             {
                 throw new ArgumentException("Configuration requires the submission of an Action that has a real ActionId");
             }
-
-            //validate if any DocuSignTemplates has been linked to the Account
-            ValidateDocuSignAtLeastOneTemplate(curActivityDO);
+            
             return curActivityDO;
         }
 
@@ -201,20 +200,40 @@ namespace terminalDocuSign.Actions
             return await Task.FromResult<ICrateStorage>(null);
         }
 
-        private void ValidateDocuSignAtLeastOneTemplate(ActivityDO curActivityDO)
+        private bool ValidateDocuSignAtLeastOneTemplate(ActivityDO curActivityDO)
         {
+            bool noError = true;
+
             //validate DocuSignTemplate for present selected template 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 var docuSignTemplate = crateStorage.CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "Available Templates").FirstOrDefault();
-                if (docuSignTemplate != null && docuSignTemplate.Fields != null && docuSignTemplate.Fields.Count != 0) return;//await Task.FromResult<CrateDTO>(null);
 
                 var configControl = GetStdConfigurationControl<DropDownList>(crateStorage, "DocuSignTemplate");
-                if (configControl != null)
+                if(configControl == null)
                 {
                     configControl.ErrorMessage = "Please link some templates to your DocuSign account.";
+                    noError = false;
                 }
+                else if (string.IsNullOrEmpty(configControl.Value))
+                {
+                    configControl.ErrorMessage = "Please select a value";
+                    noError = false;
+                }
+                else
+                    configControl.ErrorMessage = null;
+
+                var sourceConfigControl = GetStdConfigurationControl<DropDownList>(crateStorage, "DataSource");
+                if (string.IsNullOrEmpty(sourceConfigControl.Value))
+                {
+                    sourceConfigControl.ErrorMessage = "Please select a value";
+                    noError = false;
+                }
+                else
+                    sourceConfigControl.ErrorMessage = null;
             }
+
+            return noError;
         }
 
         /// <summary>
@@ -224,7 +243,6 @@ namespace terminalDocuSign.Actions
         {
             // Do not tarsnfer to follow up when child actions are already present 
             //if (curActivityDO.ChildNodes.Any()) return ConfigurationRequestType.Initial;
-
             var storage = CrateManager.GetStorage(curActivityDO);
             if (storage == null || !storage.Any())
             {
@@ -238,11 +256,10 @@ namespace terminalDocuSign.Actions
 
             // If no values selected in textboxes, remain on initial phase
             DropDownList dataSource = GetStdConfigurationControl<DropDownList>(storage, "DataSource");
-            if (dataSource.Value == null) return ConfigurationRequestType.Initial;
-            _dataSourceValue = dataSource.Value;
+            if (dataSource.Value != null)
+                _dataSourceValue = dataSource.Value;
 
             _docuSignTemplate = GetStdConfigurationControl<DropDownList>(storage, "DocuSignTemplate");
-            if (_docuSignTemplate.Value == null) return ConfigurationRequestType.Initial;
 
             return ConfigurationRequestType.Followup;
         }
@@ -260,59 +277,63 @@ namespace terminalDocuSign.Actions
         //if the user provides a file name, this action attempts to load the excel file and extracts the column headers from the first sheet in the file.
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
-
-            if (curActivityDO.ChildNodes.Any())
+            if (ValidateDocuSignAtLeastOneTemplate(curActivityDO))
             {
-                await HubCommunicator.DeleteExistingChildNodesFromActivity(curActivityDO.Id, CurrentFr8UserId);
+                var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 
-                curActivityDO.ChildNodes = new List<RouteNodeDO>();
-            }
-
-            //extract fields in docusign form
-            _docuSignManager.UpdateUserDefinedFields(curActivityDO, authTokenDO, CrateManager.GetUpdatableStorage(curActivityDO), _docuSignTemplate.Value);
-
-            var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null))
-                .Select(x => Mapper.Map<ActivityTemplateDO>(x))
-                .ToList();
-
-            //let's check if activity template generates table data
-            var selectedReceiver = curActivityTemplates.Single(x => x.Name == _dataSourceValue);
-            var dataSourceActivity = await AddAndConfigureChildActivity(curActivityDO, selectedReceiver.Id.ToString(), order: 1);
-
-            ActivityDO parentOfSendDocusignEnvelope = null;
-            int orderOfSendDocusignEnvelope = 0;
-
-            if (DoesActivityTemplateGenerateTableData(selectedReceiver))
-            {
-                //let's get first table related CrateDescription in upstream activities and apply it to Loop
-                var loopActivity = await AddAndConfigureChildActivity(curActivityDO, "Loop", "Loop", "Loop", 2);
-                using (var crateStorage = CrateManager.GetUpdatableStorage(loopActivity))
+                if (curActivityDO.ChildNodes.Any())
                 {
-                    var loopConfigControls = GetConfigurationControls(crateStorage);
-                    var crateChooser = GetControl<CrateChooser>(loopConfigControls, "Available_Crates");
-                    var tableDescription = crateChooser.CrateDescriptions.FirstOrDefault(c => c.ManifestId == (int) MT.StandardTableData);
-                    if (tableDescription != null)
-                    {
-                        tableDescription.Selected = true;
-                    }
+                    await HubCommunicator.DeleteExistingChildNodesFromActivity(curActivityDO.Id, CurrentFr8UserId);
+
+                    curActivityDO.ChildNodes = new List<RouteNodeDO>();
                 }
 
-                parentOfSendDocusignEnvelope = loopActivity;
-                orderOfSendDocusignEnvelope = 1;
+                //extract fields in docusign form
+                _docuSignManager.UpdateUserDefinedFields(curActivityDO, authTokenDO, CrateManager.GetUpdatableStorage(curActivityDO), _docuSignTemplate.Value);
+
+                var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null))
+                    .Select(x => Mapper.Map<ActivityTemplateDO>(x))
+                    .ToList();
+
+                //let's check if activity template generates table data
+                var selectedReceiver = curActivityTemplates.Single(x => x.Name == _dataSourceValue);
+                var dataSourceActivity = await AddAndConfigureChildActivity(curActivityDO, selectedReceiver.Id.ToString(), order: 1);
+
+                ActivityDO parentOfSendDocusignEnvelope = null;
+                int orderOfSendDocusignEnvelope = 0;
+
+                if (DoesActivityTemplateGenerateTableData(selectedReceiver))
+                {
+                    //let's get first table related CrateDescription in upstream activities and apply it to Loop
+                    var loopActivity = await AddAndConfigureChildActivity(curActivityDO, "Loop", "Loop", "Loop", 2);
+                    using (var crateStorage = CrateManager.GetUpdatableStorage(loopActivity))
+                    {
+                        var loopConfigControls = GetConfigurationControls(crateStorage);
+                        var crateChooser = GetControl<CrateChooser>(loopConfigControls, "Available_Crates");
+                        var tableDescription = crateChooser.CrateDescriptions.FirstOrDefault(c => c.ManifestId == (int)MT.StandardTableData);
+                        if (tableDescription != null)
+                        {
+                            tableDescription.Selected = true;
+                        }
+                    }
+
+                    parentOfSendDocusignEnvelope = loopActivity;
+                    orderOfSendDocusignEnvelope = 1;
+                }
+                else
+                {
+                    parentOfSendDocusignEnvelope = curActivityDO;
+                    orderOfSendDocusignEnvelope = 2;
+                }
+
+                var sendDocuSignEnvActivity = await AddAndConfigureChildActivity(parentOfSendDocusignEnvelope, "Send_DocuSign_Envelope", "Send_DocuSign_Envelope", "Send DocuSign Envelope", order: orderOfSendDocusignEnvelope);
+                //set docusign template
+                SetControlValue(sendDocuSignEnvActivity, "target_docusign_template", _docuSignTemplate.ListItems.FirstOrDefault(a => a.Key == _docuSignTemplate.selectedKey));
+
+
+                await ConfigureChildActivity(parentOfSendDocusignEnvelope, sendDocuSignEnvActivity);
             }
-            else
-            {
-                parentOfSendDocusignEnvelope = curActivityDO;
-                orderOfSendDocusignEnvelope = 2;
-            }
 
-            var sendDocuSignEnvActivity = await AddAndConfigureChildActivity(parentOfSendDocusignEnvelope, "Send_DocuSign_Envelope", order: orderOfSendDocusignEnvelope);
-            //set docusign template
-            SetControlValue(sendDocuSignEnvActivity, "target_docusign_template", _docuSignTemplate.ListItems.FirstOrDefault(a => a.Key == _docuSignTemplate.selectedKey));
-
-
-            await ConfigureChildActivity(parentOfSendDocusignEnvelope, sendDocuSignEnvActivity);
             return await Task.FromResult(curActivityDO);
         }
         /// <summary>
