@@ -102,7 +102,7 @@ namespace terminalDocuSign.Actions
                 return curActivityDO;
             }
 
-            curActivityDO.ChildNodes = new List<RouteNodeDO>();
+            curActivityDO.ChildNodes = new List<PlanNodeDO>();
 
             // Always use default template for solution
             const string firstTemplateName = "Monitor_DocuSign_Envelope_Activity";

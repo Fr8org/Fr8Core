@@ -434,7 +434,7 @@ module dockyard.directives.paneConfigureAction {
                             if (res.childrenActivities && res.childrenActivities.length > 0 && (!oldAction.childrenActivities || oldAction.childrenActivities.length < 1)) {
                                 // If the directive is used for configuring solutions,
                                 // the SolutionController would listen to this event 
-                                // and redirect user to the RouteBuilder once if is received.
+                                // and redirect user to the PlanBuilder once if is received.
                                 // It means that solution configuration is complete.
                                 
                                 // not needed in case of Loop action reconfigure
@@ -492,7 +492,7 @@ module dockyard.directives.paneConfigureAction {
                         })
                         .finally(() => {
                             ConfigureTrackerService.configureCallFinished($scope.currentAction.id);
-                            // emit ConfigureCallResponse for RouteBuilderController be able to reload actions with AgressiveReloadTag
+                            // emit ConfigureCallResponse for PlanBuilderController be able to reload actions with AgressiveReloadTag
                             $scope.$emit(MessageType[MessageType.PaneConfigureAction_ConfigureCallResponse], new CallConfigureResponseEventArgs($scope.currentAction, $scope.currentActiveElement));
                         });
 

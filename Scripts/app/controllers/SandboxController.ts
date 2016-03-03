@@ -9,14 +9,14 @@ module dockyard.controllers {
 
     export interface ISandboxScope extends ng.IScope {
         planId: number;
-        processNodeTemplates: Array<model.SubrouteDTO>,
+        processNodeTemplates: Array<model.SubPlanDTO>,
         fields: Array<model.Field>;
 
         // Identity of currently edited processNodeTemplate.
         //curNodeId: number;
         //// Flag, that indicates if currently edited processNodeTemplate has temporary identity.
         //curNodeIsTempId: boolean;
-        current: model.RouteBuilderState,
+        current: model.PlanBuilderState,
         save: Function;
         cancel: Function;
 
@@ -47,10 +47,10 @@ module dockyard.controllers {
             'ActionService',
             '$q',
             '$http',
-            'RouteService',
+            'PlanService',
             '$timeout',
             'CriteriaServiceWrapper',
-            'RouteBuilderService',
+            'PlanBuilderService',
             'ActionListService',
             'CrateHelper',
             'ActivityTemplateService'
@@ -67,10 +67,10 @@ module dockyard.controllers {
             private ActionService: services.IActionService,
             private $q: ng.IQService,
             private $http: ng.IHttpService,
-            private RouteService: services.IRouteService,
+            private PlanService: services.IPlanService,
             private $timeout: ng.ITimeoutService,
             private CriteriaServiceWrapper: services.ICriteriaServiceWrapper,
-            private RouteBuilderService: services.IRouteBuilderService,
+            private PlanBuilderService: services.IPlanBuilderService,
             
             private CrateHelper: services.CrateHelper,
             private ActivityTemplateService: services.IActivityTemplateService
@@ -81,7 +81,7 @@ module dockyard.controllers {
 
             this._scope.processNodeTemplates = [];
             this._scope.fields = [];
-            this._scope.current = new model.RouteBuilderState();
+            this._scope.current = new model.PlanBuilderState();
 
             //THIS IS FOR DEMO ONLY
             var radioDemoField = new model.RadioButtonGroup();
@@ -142,11 +142,11 @@ module dockyard.controllers {
             routingControlGroup.name = "routing";
             routingControlGroup.sourceField = "test_criteria_1";
             routingControlGroup.type = "routing";
-            var routes = new Array<model.Route>();
-            var routeTruthy = new model.Route();
-            routeTruthy.measurementValue = "TRUE";
-            routeTruthy.selection = "none";
-            var routeActionList = new model.RouteActionList();
+            var plans = new Array<model.Plan>();
+            var planTruthy = new model.Plan();
+            planTruthy.measurementValue = "TRUE";
+            planTruthy.selection = "none";
+            var planActionList = new model.PlanActionList();
             var choices = new Array<model.Choice>();
             var choice = new model.Choice();
             choice.Id = "34";
@@ -156,14 +156,14 @@ module dockyard.controllers {
             choice.Id = "50";
             choice.Label = "Extract Foo From Bar";
             choices.push(choice);
-            routeActionList.choices = choices;
-            routeTruthy.previousActionList = routeActionList;
-            routeTruthy.previousActionSelectedId = "";
-            routeTruthy.availableProcessNode = "";
-            var routeFalsy = new model.Route();
-            routeFalsy.measurementValue = "FALSE";
-            routeFalsy.selection = "none";
-            var routeActionList2 = new model.RouteActionList();
+            planActionList.choices = choices;
+            planTruthy.previousActionList = planActionList;
+            planTruthy.previousActionSelectedId = "";
+            planTruthy.availableProcessNode = "";
+            var planFalsy = new model.Plan();
+            planFalsy.measurementValue = "FALSE";
+            planFalsy.selection = "none";
+            var planActionList2 = new model.PlanActionList();
             var choices2 = new Array<model.Choice>();
             var choice2 = new model.Choice();
             choice2.Id = "341";
@@ -173,13 +173,13 @@ module dockyard.controllers {
             choice2.Id = "501";
             choice2.Label = "Extract Foo From Bar (Falsy)";
             choices2.push(choice2);
-            routeActionList2.choices = choices2;
-            routeFalsy.previousActionList = routeActionList2;
-            routeFalsy.previousActionSelectedId = "";
-            routeFalsy.availableProcessNode = "";
-            routes.push(routeTruthy);
-            routes.push(routeFalsy);
-            routingControlGroup.routes = routes;
+            planActionList2.choices = choices2;
+            planFalsy.previousActionList = planActionList2;
+            planFalsy.previousActionSelectedId = "";
+            planFalsy.availableProcessNode = "";
+            plans.push(planTruthy);
+            plans.push(planFalsy);
+            routingControlGroup.plans = plans;
             this._scope.routingControlGroup = routingControlGroup;
             //END OF DEMO CODE
         }

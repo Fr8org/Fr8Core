@@ -1031,9 +1031,9 @@ namespace TerminalBase.BaseClasses
             label = string.IsNullOrEmpty(label) ? activityTemplate.Label : label;
             name = string.IsNullOrEmpty(name) ? activityTemplate.Label : label;
 
-            //parent must be a Subroute
-            //If Route is specified as a parent, then a new subroute will be created
-            //Guid parentId = (parent.ChildNodes.Count > 0) ? parent.ChildNodes[0].ParentRouteNodeId.Value : parent.RootRouteNodeId.Value;
+            //parent must be a SubPlan
+            //If Plan is specified as a parent, then a new subPlan will be created
+            //Guid parentId = (parent.ChildNodes.Count > 0) ? parent.ChildNodes[0].ParentPlanNodeId.Value : parent.RootPlanNodeId.Value;
 
             var result = await HubCommunicator.CreateAndConfigureActivity(activityTemplate.Id, CurrentFr8UserId, label, order, parentActivityId);
             var resultDO = Mapper.Map<ActivityDO>(result);

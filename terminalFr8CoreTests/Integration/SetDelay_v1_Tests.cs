@@ -92,7 +92,7 @@ namespace terminalFr8CoreTests.Integration
 		}
 
 		[Test]
-		public void Run_With_Route_Payload_Initial_Run()
+		public void Run_With_Plan_Payload_Initial_Run()
 		{
 			var configureUrl = GetTerminalConfigureUrl();
 			var requestActionDTO = CreateRequestActivityFixture();
@@ -112,7 +112,7 @@ namespace terminalFr8CoreTests.Integration
 		}
 
         [Test]
-        public void Run_With_Route_Payload_Second_Run()
+        public void Run_With_Plan_Payload_Second_Run()
         {
             var configureUrl = GetTerminalConfigureUrl();
             var requestActionDTO = CreateRequestActivityFixture();

@@ -26,12 +26,12 @@ namespace terminalDocuSign.Services
     public class Event : terminalDocuSign.Interfaces.IEvent
     {
         private readonly EventReporter _alertReporter;
-        private readonly IDocuSignRoute _docuSignRoute;
+        private readonly IDocuSignPlan _docuSignPlan;
 
         public Event()
         {
             _alertReporter = ObjectFactory.GetInstance<EventReporter>();
-            _docuSignRoute = ObjectFactory.GetInstance<IDocuSignRoute>();
+            _docuSignPlan = ObjectFactory.GetInstance<IDocuSignPlan>();
         }
 
         public async Task<Crate> Process(string curExternalEventPayload)
@@ -56,7 +56,7 @@ namespace terminalDocuSign.Services
                 }
 
                 //create MonitorAllDocuSignEvents plan
-                await _docuSignRoute.CreateRoute_MonitorAllDocuSignEvents(curFr8UserId, authToken);
+                await _docuSignPlan.CreatePlan_MonitorAllDocuSignEvents(curFr8UserId, authToken);
                 return null;
             }
 

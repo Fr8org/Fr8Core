@@ -11,6 +11,7 @@ using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
+using Data.Interfaces;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -30,7 +31,7 @@ namespace terminalDocuSignTests.Integration
             {
                 // Create Solution plan & initial configuration.
                 var plan = await CreateSolution();
-                var solution = ExtractSolution(plan);
+                var solution = ExtractSolution(plan.Plan);
                 solution = await EnsureSolutionAuthenticated(solution);
 
                 var crateStorage = _crateManager.FromDto(solution.CrateStorage);
@@ -52,7 +53,7 @@ namespace terminalDocuSignTests.Integration
 
 
                 // Execute plan.
-                var container = await ExecutePlan(plan);
+                var container = await ExecutePlan(plan.Plan);
                 ValidateContainer(container);
 
 
@@ -66,17 +67,17 @@ namespace terminalDocuSignTests.Integration
             }
         }
 
-        private async Task<RouteFullDTO> CreateSolution()
+        private async Task<PlanDTO> CreateSolution()
         {
             var solutionCreateUrl = _baseUrl + "activities/create?solutionName=Generate_DocuSign_Report";
-            var plan = await HttpPostAsync<string, RouteFullDTO>(solutionCreateUrl, null);
+            var plan = await HttpPostAsync<string, PlanDTO>(solutionCreateUrl, null);
 
             return plan;
         }
 
-        private ActivityDTO ExtractSolution(RouteFullDTO plan)
+        private ActivityDTO ExtractSolution(PlanFullDTO plan)
         {
-            var solution = plan.Subroutes
+            var solution = plan.SubPlans
                 .FirstOrDefault()
                 .Activities
                 .FirstOrDefault();

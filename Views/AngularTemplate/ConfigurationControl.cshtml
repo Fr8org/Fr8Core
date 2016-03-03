@@ -93,8 +93,8 @@
         Routing control group template
         -->
     <div ng-if='field.type == "Routing"'>
-        <div class="container_box" ng-repeat="route in field.routes">
-            <routing-control route="route" />
+        <div class="container_box" ng-repeat="plan in field.plans">
+            <routing-control plan="plan" />
         </div>
     </div>
 
@@ -129,10 +129,10 @@
     </div>
 
     <!--
-        ManageRoute template
+        ManagePlan template
     -->
-    <div ng-if='field.type == "ManageRoute"'>
-        <manage-route current-action='currentAction'></manage-route>
+    <div ng-if='field.type == "ManagePlan"'>
+        <manage-plan current-action='currentAction'></manage-plan>
     </div>
 
     <!--
@@ -144,10 +144,10 @@
     </div>
 
     <!--
-        RunRoute button
+        RunPlan button
     -->
-    <div ng-if='field.type == "RunRouteButton"'>
-        <run-route-button current-action='currentAction' field="field"></run-route-button>
+    <div ng-if='field.type == "RunPlanButton"'>
+        <run-plan-button current-action='currentAction' field="field"></run-plan-button>
     </div>
 
     <!--

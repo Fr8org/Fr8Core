@@ -27,13 +27,13 @@ namespace Hub.Services
         // Declarations
 
         private readonly IProcessNode _processNode;
-        private readonly IRouteNode _activity;
+        private readonly IPlanNode _activity;
         private readonly ICrateManager _crate;
 
         public Container()
         {
             _processNode = ObjectFactory.GetInstance<IProcessNode>();
-            _activity = ObjectFactory.GetInstance<IRouteNode>();
+            _activity = ObjectFactory.GetInstance<IPlanNode>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
@@ -121,7 +121,7 @@ namespace Hub.Services
                             JsonConvert.SerializeObject(Mapper.Map<ContainerDTO>(curContainerDo)), "Terminated");
                     break;
                 default:
-                    throw new Exception("Unknown activity state on activity with id " + curContainerDo.CurrentRouteNodeId);
+                    throw new Exception("Unknown activity state on activity with id " + curContainerDo.CurrentPlanNodeId);
             }
         }
 
@@ -135,26 +135,26 @@ namespace Hub.Services
         * We traverse this tree in this order a-b-d-E-b-c-f-g-c-a-NULL 
         */
         /// <summary>
-        /// Moves to next Route and returns action state of this new plan
+        /// Moves to next Plan and returns action state of this new plan
         /// </summary>
         /// <param name="uow"></param>
         /// <param name="curContainerDO"></param>
         /// <param name="skipChildren"></param>
-        private ActivityState MoveToNextRoute(IUnitOfWork uow, ContainerDO curContainerDO, bool skipChildren)
+        private ActivityState MoveToNextPlan(IUnitOfWork uow, ContainerDO curContainerDO, bool skipChildren)
         {
             var state = ActivityState.InitialRun;
-            var currentNode = uow.PlanRepository.GetById<RouteNodeDO>(curContainerDO.CurrentRouteNodeId);
+            var currentNode = uow.PlanRepository.GetById<PlanNodeDO>(curContainerDO.CurrentPlanNodeId);
             
-            // we need this to make tests wokring. If we leave currentroutenode not null, MockDB will restore CurrentRouteNodeId. 
+            // we need this to make tests wokring. If we leave currentplannode not null, MockDB will restore CurrentPlanNodeId. 
             // EF should just igone navigational porperty null value if corresponding foreign key is not null.
-            curContainerDO.CurrentRouteNode = null;
+            curContainerDO.CurrentPlanNode = null;
 
             if (skipChildren || currentNode.ChildNodes.Count == 0)
             {
                 var nextSibling = _activity.GetNextSibling(currentNode);
                 if (nextSibling == null)
                 {
-                    curContainerDO.CurrentRouteNodeId = currentNode.ParentRouteNode != null ? currentNode.ParentRouteNode.Id : (Guid?)null;
+                    curContainerDO.CurrentPlanNodeId = currentNode.ParentPlanNode != null ? currentNode.ParentPlanNode.Id : (Guid?)null;
 
                    
 
@@ -162,14 +162,14 @@ namespace Hub.Services
                 }
                 else
                 {
-                    curContainerDO.CurrentRouteNodeId = nextSibling.Id;
+                    curContainerDO.CurrentPlanNodeId = nextSibling.Id;
                 }
                 
             }
             else
             {
                 var firstChild = _activity.GetFirstChild(currentNode);
-                curContainerDO.CurrentRouteNodeId = firstChild.Id;
+                curContainerDO.CurrentPlanNodeId = firstChild.Id;
             }
 
             uow.SaveChanges();
@@ -186,7 +186,7 @@ namespace Hub.Services
         /// <returns></returns>
         private async Task<ActivityResponseDTO> ProcessActivity(IUnitOfWork uow, ContainerDO curContainerDO, ActivityState state)
         {
-            await _activity.Process(curContainerDO.CurrentRouteNodeId.Value, state, curContainerDO);
+            await _activity.Process(curContainerDO.CurrentPlanNodeId.Value, state, curContainerDO);
             return GetCurrentActivityResponse(curContainerDO);
         }
 
@@ -238,13 +238,13 @@ namespace Hub.Services
             curContainerDO.ContainerState = ContainerState.Executing;
             uow.SaveChanges();
 
-            if (curContainerDO.CurrentRouteNodeId == null)
+            if (curContainerDO.CurrentPlanNodeId == null)
             {
                 throw new ArgumentNullException("CurrentActivity is null. Cannot execute CurrentActivity");
             }
 
             var actionState = ActivityState.InitialRun;
-            while (curContainerDO.CurrentRouteNodeId != null)
+            while (curContainerDO.CurrentPlanNodeId != null)
             {
                 var activityResponseDTO = await ProcessActivity(uow, curContainerDO, actionState);
 
@@ -276,7 +276,7 @@ namespace Hub.Services
                     return;
                 }
                 var shouldSkipChildren = ShouldSkipChildren(curContainerDO, actionState, activityResponse);
-                actionState = MoveToNextRoute(uow, curContainerDO, shouldSkipChildren);
+                actionState = MoveToNextPlan(uow, curContainerDO, shouldSkipChildren);
             }
 
         }

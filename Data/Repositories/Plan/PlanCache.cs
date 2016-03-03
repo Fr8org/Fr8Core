@@ -10,12 +10,12 @@ namespace Data.Repositories.Plan
     {
         /**********************************************************************************/
 
-        private class CachedRoute
+        private class CachedPlan
         {
-            public RouteNodeDO Root { get; private set; }
+            public PlanNodeDO Root { get; private set; }
             public IExpirationToken Expiration { get; set; }
 
-            public CachedRoute(RouteNodeDO root, IExpirationToken expiration)
+            public CachedPlan(PlanNodeDO root, IExpirationToken expiration)
             {
                 Root = root;
                 Expiration = expiration;
@@ -26,13 +26,13 @@ namespace Data.Repositories.Plan
 
         private class CacheItem
         {
-            public readonly RouteNodeDO Node;
-            public readonly CachedRoute Route;
+            public readonly PlanNodeDO Node;
+            public readonly CachedPlan Plan;
 
-            public CacheItem(RouteNodeDO node, CachedRoute route)
+            public CacheItem(PlanNodeDO node, CachedPlan plan)
             {
                 Node = node;
-                Route = route;
+                Plan = plan;
             }
         }
 
@@ -40,8 +40,8 @@ namespace Data.Repositories.Plan
         // Declarations
         /**********************************************************************************/
         
-        private readonly Dictionary<Guid, CacheItem> _routeNodesLookup = new Dictionary<Guid, CacheItem>();
-        private readonly Dictionary<Guid, CachedRoute> _routes = new Dictionary<Guid, CachedRoute>();
+        private readonly Dictionary<Guid, CacheItem> _planNodesLookup = new Dictionary<Guid, CacheItem>();
+        private readonly Dictionary<Guid, CachedPlan> _plans = new Dictionary<Guid, CachedPlan>();
         private readonly object _sync = new object();
         private readonly IPlanCacheExpirationStrategy _expirationStrategy;
         
@@ -52,20 +52,20 @@ namespace Data.Repositories.Plan
         public PlanCache(IPlanCacheExpirationStrategy expirationStrategy)
         {
             _expirationStrategy = expirationStrategy;
-            expirationStrategy.SetExpirationCallback(RemoveExpiredRoutes);
+            expirationStrategy.SetExpirationCallback(RemoveExpiredPlans);
         }
         
         /**********************************************************************************/
 
-        public RouteNodeDO Get(Guid id, Func<Guid, RouteNodeDO> cacheMissCallback)
+        public PlanNodeDO Get(Guid id, Func<Guid, PlanNodeDO> cacheMissCallback)
         {
-            RouteNodeDO node;
+            PlanNodeDO node;
 
             lock (_sync)
             {
                 CacheItem cacheItem;
 
-                if (!_routeNodesLookup.TryGetValue(id, out cacheItem))
+                if (!_planNodesLookup.TryGetValue(id, out cacheItem))
                 {
                     node = cacheMissCallback(id);
 
@@ -74,25 +74,25 @@ namespace Data.Repositories.Plan
                         return null;
                     }
 
-                    // Get the root of RouteNode tree. 
-                    while (node.ParentRouteNode != null)
+                    // Get the root of PlanNode tree. 
+                    while (node.ParentPlanNode != null)
                     {
-                        node = node.ParentRouteNode;
+                        node = node.ParentPlanNode;
                     }
 
                     // Check cache integrity
-                    if (RouteTreeHelper.Linearize(node).Any(x => _routeNodesLookup.ContainsKey(x.Id)))
+                    if (PlanTreeHelper.Linearize(node).Any(x => _planNodesLookup.ContainsKey(x.Id)))
                     {
-                        DropCachedRoute(node);
+                        DropCachedPlan(node);
                     }
 
                     AddToCache(node);
                 }
                 else
                 {
-                    node = cacheItem.Route.Root;
-                    // update route expiration
-                    cacheItem.Route.Expiration = _expirationStrategy.NewExpirationToken();
+                    node = cacheItem.Plan.Root;
+                    // update plan expiration
+                    cacheItem.Plan.Expiration = _expirationStrategy.NewExpirationToken();
                 }
             }
 
@@ -101,11 +101,11 @@ namespace Data.Repositories.Plan
 
         /**********************************************************************************/
         
-        public void UpdateElements(Action<RouteNodeDO> updater)
+        public void UpdateElements(Action<PlanNodeDO> updater)
         {
             lock (_sync)
             {
-                foreach (var cacheItem in _routeNodesLookup.Values)
+                foreach (var cacheItem in _planNodesLookup.Values)
                 {
                     updater(cacheItem.Node);
                 }
@@ -114,13 +114,13 @@ namespace Data.Repositories.Plan
 
         /**********************************************************************************/
 
-        public void UpdateElement(Guid id, Action<RouteNodeDO> updater)
+        public void UpdateElement(Guid id, Action<PlanNodeDO> updater)
         {
             lock (_sync)
             {
                 CacheItem node;
 
-                if (_routeNodesLookup.TryGetValue(id, out node))
+                if (_planNodesLookup.TryGetValue(id, out node))
                 {
                     updater(node.Node);
                 }
@@ -129,13 +129,13 @@ namespace Data.Repositories.Plan
 
         /**********************************************************************************/
 
-        public void Update(Guid planId, RouteSnapshot.Changes changes)
+        public void Update(Guid planId, PlanSnapshot.Changes changes)
         {
             lock (_sync)
             {
-                CachedRoute route;
+                CachedPlan plan;
 
-                if (!_routes.TryGetValue(planId, out route))
+                if (!_plans.TryGetValue(planId, out plan))
                 {
                     foreach (var insert in changes.Insert)
                     {
@@ -143,10 +143,10 @@ namespace Data.Repositories.Plan
 
                         if (insert is PlanDO)
                         {
-                            route = new CachedRoute((PlanDO) clone, _expirationStrategy.NewExpirationToken());
-                            _routes.Add(planId, route);
-                            _routeNodesLookup.Add(planId, new CacheItem(clone, route));
-                            clone.RootRouteNode = clone;
+                            plan = new CachedPlan((PlanDO) clone, _expirationStrategy.NewExpirationToken());
+                            _plans.Add(planId, plan);
+                            _planNodesLookup.Add(planId, new CacheItem(clone, plan));
+                            clone.RootPlanNode = clone;
                             break;
                         }
                     }
@@ -154,41 +154,41 @@ namespace Data.Repositories.Plan
 
                 foreach (var insert in changes.Insert)
                 {
-                    if (!_routeNodesLookup.ContainsKey(insert.Id))
+                    if (!_planNodesLookup.ContainsKey(insert.Id))
                     {
-                        _routeNodesLookup.Add(insert.Id, new CacheItem(insert.Clone(), route));
+                        _planNodesLookup.Add(insert.Id, new CacheItem(insert.Clone(), plan));
                     }
                 }
 
                 foreach (var insert in changes.Insert)
                 {
-                    var node = _routeNodesLookup[insert.Id].Node;
+                    var node = _planNodesLookup[insert.Id].Node;
 
-                    if (insert.ParentRouteNodeId != null)
+                    if (insert.ParentPlanNodeId != null)
                     {
-                        var parent = _routeNodesLookup[insert.ParentRouteNodeId.Value].Node;
+                        var parent = _planNodesLookup[insert.ParentPlanNodeId.Value].Node;
 
                         parent.ChildNodes.Add(node);
-                        node.ParentRouteNode = parent;
-                        node.RootRouteNode = route.Root;
+                        node.ParentPlanNode = parent;
+                        node.RootPlanNode = plan.Root;
                     }
                 }
 
                 foreach (var deleted in changes.Delete)
                 {
-                    CachedRoute plan;
+                    CachedPlan cachedPlan;
 
-                    if (_routes.TryGetValue(deleted.Id, out plan))
+                    if (_plans.TryGetValue(deleted.Id, out cachedPlan))
                     {
-                        RouteTreeHelper.Visit(plan.Root, x => _routeNodesLookup.Remove(x.Id));
-                        _routes.Remove(plan.Root.Id);
+                        PlanTreeHelper.Visit(cachedPlan.Root, x => _planNodesLookup.Remove(x.Id));
+                        _plans.Remove(cachedPlan.Root.Id);
                         return;
                     }
 
                     CacheItem node;
-                    if (_routeNodesLookup.TryGetValue(deleted.Id, out node))
+                    if (_planNodesLookup.TryGetValue(deleted.Id, out node))
                     {
-                        _routeNodesLookup.Remove(deleted.Id);
+                        _planNodesLookup.Remove(deleted.Id);
                         node.Node.RemoveFromParent();
                     }
                 }
@@ -197,16 +197,16 @@ namespace Data.Repositories.Plan
                 {
                     foreach (var changedProperty in update.ChangedProperties)
                     {
-                        var original = _routeNodesLookup[update.Node.Id].Node;
+                        var original = _planNodesLookup[update.Node.Id].Node;
 
                         // structure was changed
-                        if (changedProperty.Name == "ParentRouteNodeId")
+                        if (changedProperty.Name == "ParentPlanNodeId")
                         {
-                            var parent = _routeNodesLookup[update.Node.ParentRouteNodeId.Value].Node;
+                            var parent = _planNodesLookup[update.Node.ParentPlanNodeId.Value].Node;
 
                             original.RemoveFromParent();
                             parent.ChildNodes.Add(original);
-                            original.ParentRouteNode = parent;
+                            original.ParentPlanNode = parent;
                         }
                         else
                         {
@@ -219,43 +219,43 @@ namespace Data.Repositories.Plan
 
         /**********************************************************************************/
 
-        private void AddToCache(RouteNodeDO root)
+        private void AddToCache(PlanNodeDO root)
         {
             var expirOn = _expirationStrategy.NewExpirationToken();
-            var cachedRoute = new CachedRoute(root, expirOn);
-            _routes.Add(root.Id, cachedRoute);
+            var cachedPlan = new CachedPlan(root, expirOn);
+            _plans.Add(root.Id, cachedPlan);
 
-            RouteTreeHelper.Visit(root, x => _routeNodesLookup.Add(x.Id, new CacheItem(x, cachedRoute)));
+            PlanTreeHelper.Visit(root, x => _planNodesLookup.Add(x.Id, new CacheItem(x, cachedPlan)));
         }
 
         /**********************************************************************************/
 
-        private void DropCachedRoute(RouteNodeDO root)
+        private void DropCachedPlan(PlanNodeDO root)
         {
-            CachedRoute cachedRoute;
+            CachedPlan cachedPlan;
             
-            if (!_routes.TryGetValue(root.Id, out cachedRoute))
+            if (!_plans.TryGetValue(root.Id, out cachedPlan))
             {
                 return;
             }
 
-            RouteTreeHelper.Visit(root, x => _routeNodesLookup.Remove(x.Id));
+            PlanTreeHelper.Visit(root, x => _planNodesLookup.Remove(x.Id));
             
-            _routes.Remove(root.Id);
+            _plans.Remove(root.Id);
         }
 
         /**********************************************************************************/
 
-        private void RemoveExpiredRoutes()
+        private void RemoveExpiredPlans()
         {
             lock (_sync)
             {
-                foreach (var routeExpiration in _routes.ToArray())
+                foreach (var planExpiration in _plans.ToArray())
                 {
-                    if (routeExpiration.Value.Expiration.IsExpired())
+                    if (planExpiration.Value.Expiration.IsExpired())
                     {
-                        _routes.Remove(routeExpiration.Key);
-                        RouteTreeHelper.Visit(routeExpiration.Value.Root, x => _routeNodesLookup.Remove(x.Id));
+                        _plans.Remove(planExpiration.Key);
+                        PlanTreeHelper.Visit(planExpiration.Value.Root, x => _planNodesLookup.Remove(x.Id));
                     }
                 }
             }

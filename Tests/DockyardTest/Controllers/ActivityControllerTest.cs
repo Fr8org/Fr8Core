@@ -72,23 +72,23 @@ namespace DockyardTest.Controllers
         [Test]
         public void ActivityController_Save_WithEmptyActions_NewActionShouldBeCreated()
         {
-            var subroute = FixtureData.TestSubrouteDO1();
+            var subPlan = FixtureData.TestSubPlanDO1();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var plan = FixtureData.TestRoute1();
+                var plan = FixtureData.TestPlan1();
 
                 uow.PlanRepository.Add(plan);
 
 
-                plan.ChildNodes.Add(subroute);
+                plan.ChildNodes.Add(subPlan);
                 uow.SaveChanges();
             }
             //Arrange is done with empty action list
 
             //Act
             var actualAction = CreateActivityWithId(FixtureData.GetTestGuidById(1));
-            actualAction.ParentRouteNodeId = subroute.Id;
+            actualAction.ParentPlanNodeId = subPlan.Id;
                 
             var controller = new ActivitiesController();
             var result = (OkNegotiatedContentResult<ActivityDTO>) controller.Save(actualAction);
@@ -109,26 +109,26 @@ namespace DockyardTest.Controllers
         [Test]
         public void ActivityController_Save_WithActionNotExisting_NewActionShouldBeCreated()
         {
-            SubrouteDO subroute;
+            SubPlanDO subPlan;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var plan = FixtureData.TestRoute1();
+                var plan = FixtureData.TestPlan1();
 
                 uow.PlanRepository.Add(plan);
 
-                subroute = FixtureData.TestSubrouteDO1();
-                plan.ChildNodes.Add(subroute);
+                subPlan = FixtureData.TestSubPlanDO1();
+                plan.ChildNodes.Add(subPlan);
 
                 //Arrange
                 //Add one test action
                 var activity = FixtureData.TestActivity1();
-                subroute.ChildNodes.Add(activity);
+                subPlan.ChildNodes.Add(activity);
                 uow.SaveChanges();
             }
                 //Act
                 var actualAction = CreateActivityWithId(FixtureData.GetTestGuidById(2));
-                actualAction.ParentRouteNodeId = subroute.Id;
+                actualAction.ParentPlanNodeId = subPlan.Id;
 
                 var controller = new ActivitiesController();
                 var result = (OkNegotiatedContentResult<ActivityDTO>) controller.Save(actualAction);
@@ -157,7 +157,7 @@ namespace DockyardTest.Controllers
 
             var plan = new PlanDO
             {
-                RouteState = RouteState.Active,
+                PlanState = PlanState.Active,
                 Name = "name",
                 ChildNodes = {activity}
             };
@@ -172,7 +172,7 @@ namespace DockyardTest.Controllers
                 //Act
                 var actualAction = CreateActivityWithId(FixtureData.GetTestGuidById(1));
 
-            actualAction.ParentRouteNodeId = plan.Id;
+            actualAction.ParentPlanNodeId = plan.Id;
 
                 var controller = new ActivitiesController();
                 controller.Save(actualAction);
@@ -311,14 +311,14 @@ namespace DockyardTest.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var subRouteMock = new Mock<ISubroute>();
+                var subPlanMock = new Mock<ISubPlan>();
 
-                subRouteMock.Setup(a => a.DeleteActivity(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<bool>())).ReturnsAsync(true);
+                subPlanMock.Setup(a => a.DeleteActivity(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<bool>())).ReturnsAsync(true);
 
                 ActivityDO activityDO = new FixtureData(uow).TestActivity3();
-                var controller = new ActivitiesController(subRouteMock.Object);
+                var controller = new ActivitiesController(subPlanMock.Object);
                 await controller.Delete(activityDO.Id);
-                subRouteMock.Verify(a => a.DeleteActivity(null, activityDO.Id, false));
+                subPlanMock.Verify(a => a.DeleteActivity(null, activityDO.Id, false));
             }
         }
 
@@ -342,30 +342,30 @@ namespace DockyardTest.Controllers
         /// Creates one empty action list
         /// </summary>
         // DO-1214
-//        private void CreateEmptyActionList()
-//        {
-//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-//            {
-//                // 
-//                var curPlan = FixtureData.TestRoute1();
-//                uow.RouteRepository.Add(curPlan);
-//                uow.SaveChanges();
-//                //Add a processnodetemplate to processtemplate 
-//                var curSubroute = FixtureData.TestSubrouteDO1();
-//                curSubroute.ParentTemplateId = curPlan.Id;
-//
-//                uow.SubrouteRepository.Add(curSubroute);
-//                uow.SaveChanges();
-//                
-//                var actionList = FixtureData.TestEmptyActionList();
-//                actionList.Id = 1;
-//                actionList.ActionListType = 1;
-//                actionList.SubrouteID = curSubroute.Id;
-//
-//                uow.ActionListRepository.Add(actionList);
-//                uow.SaveChanges();
-//            }
-//        }
+        //        private void CreateEmptyActionList()
+        //        {
+        //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //            {
+        //                // 
+        //                var curPlan = FixtureData.TestPlan1();
+        //                uow.PlanRepository.Add(curPlan);
+        //                uow.SaveChanges();
+        //                //Add a processnodetemplate to processtemplate 
+        //                var curSubPlan = FixtureData.TestSubrouteDO1();
+        //                curSubPlan.ParentTemplateId = curPlan.Id;
+        //
+        //                uow.SubPlanRepository.Add(curSubroute);
+        //                uow.SaveChanges();
+        //                
+        //                var actionList = FixtureData.TestEmptyActionList();
+        //                actionList.Id = 1;
+        //                actionList.ActionListType = 1;
+        //                actionList.SubPlanID = curSubPlane.Id;
+        //
+        //                uow.ActionListRepository.Add(actionList);
+        //                uow.SaveChanges();
+        //            }
+        //        }
 
         private void CreateActivityTemplate()
         {

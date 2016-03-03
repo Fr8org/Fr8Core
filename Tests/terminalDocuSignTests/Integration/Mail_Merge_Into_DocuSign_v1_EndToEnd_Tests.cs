@@ -58,8 +58,8 @@ namespace terminalDocuSignTests.Integration
                 //
                 // Create solution
                 //
-                var plan = await HttpPostAsync<string, RouteFullDTO>(solutionCreateUrl, null);
-                var solution = plan.Subroutes.FirstOrDefault().Activities.FirstOrDefault();
+                var plan = await HttpPostAsync<string, PlanFullDTO>(solutionCreateUrl, null);
+                var solution = plan.SubPlans.FirstOrDefault().Activities.FirstOrDefault();
 
                 //
                 // Send configuration request without authentication token
@@ -119,11 +119,11 @@ namespace terminalDocuSignTests.Integration
                 button.Clicked = true;
 
                 //
-                //Rename route
+                //Rename plan
                 //
                 var newName = plan.Name + " | " + DateTime.UtcNow.ToShortDateString() + " " +
                     DateTime.UtcNow.ToShortTimeString();
-                await HttpPostAsync<object, RouteFullDTO>(_baseUrl + "routes?id=" + plan.Id,
+                await HttpPostAsync<object, PlanFullDTO>(_baseUrl + "plans?id=" + plan.Id,
                     new { id = plan.Id, name = newName });
 
                 //
@@ -151,8 +151,8 @@ namespace terminalDocuSignTests.Integration
                 {
                     ActivityTemplate = apmActivityTemplate,
                     Label = apmActivityTemplate.Label,
-                    ParentRouteNodeId = this.solution.Id,
-                    RootRouteNodeId = plan.Id
+                    ParentPlanNodeId = this.solution.Id,
+                    RootPlanNodeId = plan.Id
                 };
                 apmAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", apmAction);
                 Assert.NotNull(apmAction, "Add Payload Manually action failed to create");
@@ -283,17 +283,17 @@ namespace terminalDocuSignTests.Integration
                 //
                 // Activate and run plan
                 //
-                await HttpPostAsync<string, string>(_baseUrl + "routes/run?planId=" + plan.Id, null);
+                await HttpPostAsync<string, string>(_baseUrl + "plans/run?planId=" + plan.Id, null);
 
                 //
                 // Deactivate plan
                 //
-                await HttpPostAsync<string, string>(_baseUrl + "routes/deactivate?planId=" + plan.Id, null);
+                await HttpPostAsync<string, string>(_baseUrl + "plans/deactivate?planId=" + plan.Id, null);
     
                 //
                 // Delete plan
                 //
-                await HttpDeleteAsync(_baseUrl + "routes?id=" + plan.Id);
+                await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Id);
 
                 // Verify that test email has been received
                 //EmailAssert.EmailReceived("dse_demo@docusign.net", "Test Message from Fr8");

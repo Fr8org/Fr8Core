@@ -12,6 +12,7 @@ using Data.States;
 using Hub.Managers;
 using Data.Constants;
 using System.IO;
+using Data.Interfaces;
 
 namespace TerminalBase.Infrastructure
 {
@@ -200,7 +201,7 @@ namespace TerminalBase.Infrastructure
             throw new NotImplementedException();
         }
 
-        public Task<ActivityDTO> CreateAndConfigureActivity(int templateId, string userId, string label = null, int? order = null, Guid? parentNodeId = default(Guid?), bool createRoute = false, Guid? authorizationTokenId = null)
+        public Task<ActivityDTO> CreateAndConfigureActivity(int templateId, string userId, string label = null, int? order = null, Guid? parentNodeId = default(Guid?), bool createPlan = false, Guid? authorizationTokenId = null)
         {
             throw new NotImplementedException();
         }
@@ -210,7 +211,7 @@ namespace TerminalBase.Infrastructure
             throw new NotImplementedException();
         }
 
-        public Task<RouteFullDTO> CreatePlan(RouteEmptyDTO routeDTO, string userId)
+        public Task<PlanDTO> CreatePlan(PlanEmptyDTO planDTO, string userId)
         {
             throw new NotImplementedException();
         }
@@ -220,7 +221,7 @@ namespace TerminalBase.Infrastructure
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<RouteFullDTO>> GetPlansByName(string name, string userId)
+        public Task<IEnumerable<PlanDTO>> GetPlansByName(string name, string userId)
         {
             throw new NotImplementedException();
         }

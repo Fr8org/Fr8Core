@@ -61,8 +61,8 @@ namespace DockyardTest.Entities
 //                //SETUP
 //                //create a customer from fixture data
 //                
-//                var curSubrouteDO = FixtureData.TestSubrouteDO1();
-//                uow.SubrouteRepository.Add(curSubrouteDO);
+//                var curSubPlanDO = FixtureData.TestSubrouteDO1();
+//                uow.SubPlanRepository.Add(curSubrouteDO);
 //                uow.SaveChanges();
 //
 //                var curActionListDO = FixtureData.TestEmptyActionList();

@@ -136,7 +136,7 @@ namespace terminalGoogleTests.Unit
                 Label = "Receive Google Form Response",
                 AuthToken = Google_AuthToken(),
                 ActivityTemplate = activityTemplate,
-                ParentRouteNodeId = Guid.NewGuid()
+                ParentPlanNodeId = Guid.NewGuid()
             };
 
             ActivateCrateStorage(activity);

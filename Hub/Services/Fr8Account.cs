@@ -397,18 +397,18 @@ namespace Hub.Services
 
         public IEnumerable<PlanDO> GetActivePlans(string userId)
         {
-            IEnumerable<PlanDO> activeRoutes;
+            IEnumerable<PlanDO> activePlans;
             using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var routeQuery = unitOfWork.PlanRepository.GetPlanQueryUncached().Include(i => i.Fr8Account);
+                var planQuery = unitOfWork.PlanRepository.GetPlanQueryUncached().Include(i => i.Fr8Account);
 
-                routeQuery
-                    .Where(pt => pt.RouteState == RouteState.Active)//1.
+                planQuery
+                    .Where(pt => pt.PlanState == PlanState.Active)//1.
                     .Where(id => id.Fr8Account.Id == userId);//2
 
-                activeRoutes = routeQuery.ToList();
+                activePlans = planQuery.ToList();
             }
-            return activeRoutes;
+            return activePlans;
         }
 
         public Task<LoginStatus> CreateAuthenticateGuestUser()

@@ -46,12 +46,16 @@ namespace Data.Infrastructure
         public DockyardDbContext()
             : base("name=DockyardDB")
         {
+            
             Database.SetInitializer(new MigrateDatabaseToLatestVersion<DockyardDbContext, Data.Migrations.MigrationConfiguration>());
-    
+
             //Logging to ApplicationInsights
             //var telemetry = new Microsoft.ApplicationInsights.TelemetryClient();
             //this.Database.Log = (trace) => telemetry.TrackEvent("Database Access", new Dictionary<string, string> { { "SQL trace", trace }});
         }
+
+      
+            
 
         public List<PropertyChangeInformation> GetEntityModifications<T>(T entity)
             where T : class
@@ -238,6 +242,7 @@ namespace Data.Infrastructure
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+
             modelBuilder.Entity<ContainerDO>().ToTable("Containers");
             modelBuilder.Entity<AttachmentDO>().ToTable("Attachments");
             modelBuilder.Entity<CommunicationConfigurationDO>().ToTable("CommunicationConfigurations");
@@ -266,10 +271,10 @@ namespace Data.Infrastructure
             modelBuilder.Entity<ProfileNodeAncestorsCTE>().ToTable("ProfileNodeAncestorsCTEView");
             modelBuilder.Entity<ProfileNodeDescendantsCTE>().ToTable("ProfileNodeDescendantsCTEView");
             modelBuilder.Entity<ExpectedResponseDO>().ToTable("ExpectedResponses");
-            modelBuilder.Entity<PlanDO>().ToTable("Routes");
+            modelBuilder.Entity<PlanDO>().ToTable("Plans");
             modelBuilder.Entity<ActivityDO>().ToTable("Actions");
             modelBuilder.Entity<ProcessNodeDO>().ToTable("ProcessNodes");
-            modelBuilder.Entity<SubrouteDO>().ToTable("Subroutes");
+            modelBuilder.Entity<SubPlanDO>().ToTable("SubPlans");
             modelBuilder.Entity<EnvelopeDO>().ToTable("Envelopes");
             modelBuilder.Entity<ActivityTemplateDO>().ToTable("ActivityTemplate");
             modelBuilder.Entity<MT_Field>().ToTable("MT_Fields");
@@ -316,12 +321,12 @@ namespace Data.Infrastructure
             // modelBuilder.Entity<ActionDO>()
             //     .Property(p => p.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
 
-            modelBuilder.Entity<RouteNodeDO>().ToTable("RouteNodes");
+            modelBuilder.Entity<PlanNodeDO>().ToTable("PlanNodes");
 
-            modelBuilder.Entity<RouteNodeDO>()
-                .HasOptional(x => x.ParentRouteNode)
+            modelBuilder.Entity<PlanNodeDO>()
+                .HasOptional(x => x.ParentPlanNode)
                 .WithMany(x => x.ChildNodes)
-                .HasForeignKey(x => x.ParentRouteNodeId)
+                .HasForeignKey(x => x.ParentPlanNodeId)
                 .WillCascadeOnDelete(false);
             
             modelBuilder.Entity<TrackingStatusDO>()
@@ -334,10 +339,6 @@ namespace Data.Infrastructure
             modelBuilder.Entity<CriteriaDO>().ToTable("Criteria");
             modelBuilder.Entity<FileDO>().ToTable("Files");
             
-//            modelBuilder.Entity<SubrouteDO>()
-//               .HasMany<CriteriaDO>(c => c.Criteria)
-//               .WithOptional(x => x.Subroute)
-//               .WillCascadeOnDelete(true);
             
             modelBuilder.Entity<AuthorizationTokenDO>()
              .HasRequired(x => x.Terminal)

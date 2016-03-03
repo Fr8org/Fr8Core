@@ -49,7 +49,7 @@ namespace terminalDocuSign.Actions
         // Docusign -> find all envelopes where Status = Sent
         // MT DB -> find all envelopes where Status = Sent and Recipient = chucknorris@gmail.com
         //
-        // This little class is storing information about how certian field displayed in Query Builder controls is routed to the backed
+        // This little class is storing information about how certian field displayed in Query Builder controls is query to the backed
         class FieldBackedRoutingInfo
         {
             public readonly QueryFieldType FieldType;

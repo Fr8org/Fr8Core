@@ -15,47 +15,47 @@ using Data.Entities;
 namespace terminalDocuSign.Tests.Services
 {
     [TestFixture]
-    public class DocuSignRouteTests : BaseTest
+    public class DocuSignPlanTests : BaseTest
     {
-        private DocuSignRoute _curDocuSignRoute;
+        private DocuSignPlan _curDocuSignPlan;
 
         public override void SetUp()
         {
             base.SetUp();
 
-            SetupForAutomaticRoute();
+            SetupForAutomaticPlan();
 
-            _curDocuSignRoute = new DocuSignRoute();
+            _curDocuSignPlan = new DocuSignPlan();
         }
 
-        [Test, Category("DocuSignRoute_CreateRoute")]
-        public async Task CreateRoute_InitialAuthenticationSuccessful_MonitorAllDocuSignEvents_RouteCreatedWithTwoActivities()
+        [Test, Category("DocuSignPlan_CreatePlan")]
+        public async Task CreatePlan_InitialAuthenticationSuccessful_MonitorAllDocuSignEvents_PlanCreatedWithTwoActivities()
         {
             //Act
-            await _curDocuSignRoute.CreateRoute_MonitorAllDocuSignEvents(FixtureData.TestDeveloperAccount().Id, null);
+            await _curDocuSignPlan.CreatePlan_MonitorAllDocuSignEvents(FixtureData.TestDeveloperAccount().Id, null);
 
             //Assert
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 Assert.AreEqual(1, uow.PlanRepository.GetPlanQueryUncached().Count(), "Automatic plan is not created");
 
-                var automaticRoute = uow.PlanRepository.GetPlanQueryUncached().First();
+                var automaticPlan = uow.PlanRepository.GetPlanQueryUncached().First();
 
-                Assert.AreEqual("MonitorAllDocuSignEvents", automaticRoute.Name, "Automatic plan name is wrong");
-                Assert.AreEqual(1, automaticRoute.Subroutes.Count(), "Automatic subroute is not created");
-                Assert.AreEqual(2, automaticRoute.Subroutes.First().ChildNodes.Count, "Automatic plan does not contain required actions");
+                Assert.AreEqual("MonitorAllDocuSignEvents", automaticPlan.Name, "Automatic plan name is wrong");
+                Assert.AreEqual(1, automaticPlan.SubPlans.Count(), "Automatic subPlan is not created");
+                Assert.AreEqual(2, automaticPlan.SubPlans.First().ChildNodes.Count, "Automatic plan does not contain required actions");
             }
         }
 
-        [Test, Category("DocuSignRoute_CreateRoute")]
-        public async Task CreateRoute_SameUserAuthentication_MonitorAllDocuSignEvents_RouteCreatedOnlyOnce()
+        [Test, Category("DocuSignPlan_CreatePlan")]
+        public async Task CreatePlan_SameUserAuthentication_MonitorAllDocuSignEvents_PlanCreatedOnlyOnce()
         {
             //call for first time auth successfull
-            await _curDocuSignRoute.CreateRoute_MonitorAllDocuSignEvents(FixtureData.TestDeveloperAccount().Id, null);
+            await _curDocuSignPlan.CreatePlan_MonitorAllDocuSignEvents(FixtureData.TestDeveloperAccount().Id, null);
 
             //Act
             //if we call second time, the plan should not be created again.
-            await _curDocuSignRoute.CreateRoute_MonitorAllDocuSignEvents(FixtureData.TestDeveloperAccount().Id, null);
+            await _curDocuSignPlan.CreatePlan_MonitorAllDocuSignEvents(FixtureData.TestDeveloperAccount().Id, null);
 
             //Assert
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -64,7 +64,7 @@ namespace terminalDocuSign.Tests.Services
             }
         }
 
-        private void SetupForAutomaticRoute()
+        private void SetupForAutomaticPlan()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -101,12 +101,12 @@ namespace terminalDocuSign.Tests.Services
                         {
                             using (var uow1 = ObjectFactory.GetInstance<IUnitOfWork>())
                             {
-                                var subroute = uow1.PlanRepository.GetById<SubrouteDO>(uow1.PlanRepository.GetNodesQueryUncached().OfType<SubrouteDO>().First().Id);
-                                subroute.ChildNodes.Add(recordDocuSignAction);
+                                var subPlan = uow1.PlanRepository.GetById<SubPlanDO>(uow1.PlanRepository.GetNodesQueryUncached().OfType<SubPlanDO>().First().Id);
+                                subPlan.ChildNodes.Add(recordDocuSignAction);
 
                                 uow1.SaveChanges();
                             }
-                        }).Returns(Task.FromResult(recordDocuSignAction as RouteNodeDO));
+                        }).Returns(Task.FromResult(recordDocuSignAction as PlanNodeDO));
 
                 _actionMock.Setup(
                     a => a.CreateAndConfigure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<int>(),
@@ -114,12 +114,12 @@ namespace terminalDocuSign.Tests.Services
                         {
                             using (var uow1 = ObjectFactory.GetInstance<IUnitOfWork>())
                             {
-                                var subroute = uow1.PlanRepository.GetById<SubrouteDO>(uow1.PlanRepository.GetNodesQueryUncached().OfType<SubrouteDO>().First().Id);
-                                subroute.ChildNodes.Add(storeMtDataAction);
+                                var subPlan = uow1.PlanRepository.GetById<SubPlanDO>(uow1.PlanRepository.GetNodesQueryUncached().OfType<SubPlanDO>().First().Id);
+                                subPlan.ChildNodes.Add(storeMtDataAction);
 
                                 uow1.SaveChanges();
                             }
-                        }).Returns(Task.FromResult(storeMtDataAction as RouteNodeDO));
+                        }).Returns(Task.FromResult(storeMtDataAction as PlanNodeDO));
 
                 ObjectFactory.Container.Inject(typeof (IActivity), _actionMock.Object);
             }

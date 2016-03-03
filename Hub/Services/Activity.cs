@@ -41,14 +41,14 @@ namespace Hub.Services
         private readonly TelemetryClient _telemetryClient;
         private readonly ISecurityServices _security;
         private readonly IActivityTemplate _activityTemplate;
-        private readonly IRouteNode _routeNode;
+        private readonly IPlanNode _planNode;
         private readonly Hub.Managers.Event _event;
 
         public Activity()
         {
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
             _authorizationToken = ObjectFactory.GetInstance<IAuthorization>();
-            _routeNode = ObjectFactory.GetInstance<IRouteNode>();
+            _planNode = ObjectFactory.GetInstance<IPlanNode>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
             _telemetryClient = ObjectFactory.GetInstance<TelemetryClient>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
@@ -128,8 +128,8 @@ namespace Hub.Services
         //            var existingAction = SaveAndUpdateRecursive(uow, submittedActionData, pendingConfigurations);
         //
         //            // Change parent if it is necessary
-        //            existingAction.ParentRouteNode = submittedActionData.ParentRouteNode;
-        //            existingAction.ParentRouteNodeId = submittedActionData.ParentRouteNodeId;
+        //            existingAction.ParentPlanNode = submittedActionData.ParentPlanNode;
+        //            existingAction.ParentPlanNodeId = submittedActionData.ParentPlanNodeId;
         //
         //            uow.SaveChanges();
         //
@@ -172,7 +172,7 @@ namespace Hub.Services
 
         private void SaveAndUpdateActivity(IUnitOfWork uow, ActivityDO submittedActiviy, List<ActivityDO> pendingConfiguration)
         {
-            RouteTreeHelper.Visit(submittedActiviy, x =>
+            PlanTreeHelper.Visit(submittedActiviy, x =>
             {
                 var activity = (ActivityDO)x;
 
@@ -182,28 +182,28 @@ namespace Hub.Services
                 }
             });
 
-            RouteNodeDO route;
-            RouteNodeDO originalAction;
-            if (submittedActiviy.ParentRouteNodeId != null)
+            PlanNodeDO plan;
+            PlanNodeDO originalAction;
+            if (submittedActiviy.ParentPlanNodeId != null)
             {
-                route = uow.PlanRepository.Reload<RouteNodeDO>(submittedActiviy.ParentRouteNodeId);
-                originalAction = route.ChildNodes.FirstOrDefault(x => x.Id == submittedActiviy.Id);
+                plan = uow.PlanRepository.Reload<PlanNodeDO>(submittedActiviy.ParentPlanNodeId);
+                originalAction = plan.ChildNodes.FirstOrDefault(x => x.Id == submittedActiviy.Id);
             }
             else
             {
-                originalAction = uow.PlanRepository.Reload<RouteNodeDO>(submittedActiviy.Id);
-                route = originalAction.ParentRouteNode;
+                originalAction = uow.PlanRepository.Reload<PlanNodeDO>(submittedActiviy.Id);
+                plan = originalAction.ParentPlanNode;
             }
 
 
             if (originalAction != null)
             {
-                route.ChildNodes.Remove(originalAction);
+                plan.ChildNodes.Remove(originalAction);
 
-                var originalActions = RouteTreeHelper.Linearize(originalAction)
+                var originalActions = PlanTreeHelper.Linearize(originalAction)
                     .ToDictionary(x => x.Id, x => (ActivityDO)x);
 
-                foreach (var submitted in RouteTreeHelper.Linearize(submittedActiviy))
+                foreach (var submitted in PlanTreeHelper.Linearize(submittedActiviy))
                 {
                     ActivityDO existingActivity;
 
@@ -219,16 +219,16 @@ namespace Hub.Services
             }
             else
             {
-                pendingConfiguration.AddRange(RouteTreeHelper.Linearize(submittedActiviy).OfType<ActivityDO>());
+                pendingConfiguration.AddRange(PlanTreeHelper.Linearize(submittedActiviy).OfType<ActivityDO>());
             }
 
             if (submittedActiviy.Ordering <= 0)
             {
-                route.AddChildWithDefaultOrdering(submittedActiviy);
+                plan.AddChildWithDefaultOrdering(submittedActiviy);
             }
             else
             {
-                route.ChildNodes.Add(submittedActiviy);
+                plan.ChildNodes.Add(submittedActiviy);
             }
         }
 
@@ -237,16 +237,16 @@ namespace Hub.Services
             return uow.PlanRepository.GetById<ActivityDO>(id);
         }
 
-        public async Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, string label = null, int? order = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null)
+        public async Task<PlanNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, string label = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
         {
-            if (parentNodeId != null && createRoute)
+            if (parentNodeId != null && createPlan)
             {
-                throw new ArgumentException("Parent node id can't be set together with create route flag");
+                throw new ArgumentException("Parent node id can't be set together with create plan flag");
             }
 
-            if (parentNodeId == null && !createRoute)
+            if (parentNodeId == null && !createPlan)
             {
-                throw new ArgumentException("Either Parent node id or create route flag must be set");
+                throw new ArgumentException("Either Parent node id or create plan flag must be set");
             }
 
             // to avoid null pointer exception while creating parent node if label is null 
@@ -255,36 +255,36 @@ namespace Hub.Services
                 label = userId + "_" + actionTemplateId.ToString();
             }
 
-            RouteNodeDO parentNode;
+            PlanNodeDO parentNode;
             PlanDO plan = null;
 
-            if (createRoute)
+            if (createPlan)
             {
                 plan = ObjectFactory.GetInstance<IPlan>().Create(uow, label);
 
-                plan.ChildNodes.Add(parentNode = new SubrouteDO
+                plan.ChildNodes.Add(parentNode = new SubPlanDO
                 {
-                    StartingSubroute = true,
+                    StartingSubPlan = true,
                     Name = label + " #1"
                 });
             }
             else
             {
-                parentNode = uow.PlanRepository.GetById<RouteNodeDO>(parentNodeId);
+                parentNode = uow.PlanRepository.GetById<PlanNodeDO>(parentNodeId);
 
                 if (parentNode is PlanDO)
                 {
-                    if (((PlanDO)parentNode).StartingSubroute == null)
+                    if (((PlanDO)parentNode).StartingSubPlan == null)
                     {
-                        parentNode.ChildNodes.Add(parentNode = new SubrouteDO
+                        parentNode.ChildNodes.Add(parentNode = new SubPlanDO
                         {
-                            StartingSubroute = true,
+                            StartingSubPlan = true,
                             Name = label + " #1"
                         });
                     }
                     else
                     {
-                        parentNode = ((PlanDO)parentNode).StartingSubroute;
+                        parentNode = ((PlanDO)parentNode).StartingSubPlan;
                     }
 
                 }
@@ -305,7 +305,7 @@ namespace Hub.Services
 
             await ConfigureSingleActivity(uow, userId, activity);
 
-            if (createRoute)
+            if (createPlan)
             {
                 return plan;
             }
@@ -409,10 +409,10 @@ namespace Hub.Services
                 var curAction = uow.PlanRepository.GetById<ActivityDO>(id);
                 if (curAction == null)
                 {
-                    throw new InvalidOperationException("Unknown RouteNode with id: " + id);
+                    throw new InvalidOperationException("Unknown PlanNode with id: " + id);
                 }
 
-                var downStreamActivities = _routeNode.GetDownstreamActivities(uow, curAction).OfType<ActivityDO>();
+                var downStreamActivities = _planNode.GetDownstreamActivities(uow, curAction).OfType<ActivityDO>();
                 //we should clear values of configuration controls
                 var directChildren = curAction.GetDescendants().OfType<ActivityDO>();
 
@@ -671,12 +671,12 @@ namespace Hub.Services
                 var allActivityTemplates = ObjectFactory.GetInstance<IEnumerable<ActivityTemplateDTO>>();
                 if (isSolution)
                     //Get the list of all actions that are solutions from database
-                    allActivityTemplates = _routeNode.GetSolutions(uow);
+                    allActivityTemplates = _planNode.GetSolutions(uow);
                 else
                 {
                     var curUser = _security.GetCurrentAccount(uow);
                     userId = curUser.Id;
-                    allActivityTemplates = _routeNode.GetAvailableActivities(uow, curUser);
+                    allActivityTemplates = _planNode.GetAvailableActivities(uow, curUser);
                 }
                 //find the activity by the provided name
                 var curActivityTerminalDTO = allActivityTemplates.Single(a => a.Name == activityDTO.ActivityTemplate.Name);
@@ -742,7 +742,7 @@ namespace Hub.Services
         //
         //            if (direction != GetCrateDirection.None)
         //        {
-        //                var upstreamCrates = await ObjectFactory.GetInstance<IRouteNode>()
+        //                var upstreamCrates = await ObjectFactory.GetInstance<IPlanNode>()
         //                    .GetCratesByDirection(curActivityDO.Id, curSchema.ManifestName, direction).ConfigureAwait(false);
         //
         //                controlsCrates.AddRange(upstreamCrates);

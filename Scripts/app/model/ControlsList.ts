@@ -133,18 +133,18 @@
 
     export class RoutingControlGroup extends ControlDefinitionDTO {
         sourceField: string;
-        routes: Array<Route>;
+        plans: Array<Plan>;
     }
 
-    export class Route extends ControlDefinitionDTO {
+    export class Plan extends ControlDefinitionDTO {
         measurementValue: string;
         selection: string;
-        previousActionList: RouteActionList;
+        previousActionList: PlanActionList;
         previousActionSelectedId: string;
         availableProcessNode: string;
     }
 
-    export class RouteActionList extends ControlDefinitionDTO {
+    export class PlanActionList extends ControlDefinitionDTO {
         choices: Array<Choice>;
         selectionId: string;
     }

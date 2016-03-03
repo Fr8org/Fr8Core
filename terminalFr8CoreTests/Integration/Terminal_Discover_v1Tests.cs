@@ -22,7 +22,7 @@ namespace terminalFr8CoreTests.Integration
         private const string ConnectToSqlName = "ConnectToSql";
         private const string BuildQueryName = "BuildQuery";
         private const string ExecuteSqlName = "ExecuteSql";
-        private const string ManageRouteName = "ManageRoute";
+        private const string ManagePlanName = "ManagePlan";
         private const string FindObjectsSolutionName = "FindObjects_Solution";
         private const string LoopName = "Loop";
         private const string SetDelayName = "SetDelay";
@@ -59,7 +59,7 @@ namespace terminalFr8CoreTests.Integration
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ConnectToSqlName));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == BuildQueryName));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ExecuteSqlName));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ManageRouteName));
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ManagePlanName));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == FindObjectsSolutionName));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == LoopName));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == SetDelayName));

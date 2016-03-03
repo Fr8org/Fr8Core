@@ -252,8 +252,8 @@
     <Compile Include="Controllers\CriteriaControllerTest.cs" />
     <Compile Include="Controllers\EventControllerTest.cs" />
     <Compile Include="Controllers\NotificationControllerTests.cs" />
-    <Compile Include="Controllers\RouteControllerTests.cs" />
-    <Compile Include="Controllers\RouteControllerTests_2.cs" />
+    <Compile Include="Controllers\PlanControllerTests.cs" />
+    <Compile Include="Controllers\PlanControllerTests_2.cs" />
     <Compile Include="Controllers\UserApiControlle.cs" />
     <Compile Include="Controllers\UserControllerTests.cs" />
     <Compile Include="CsvReaderTests.cs" />
@@ -272,7 +272,7 @@
     <Compile Include="Integration\RunTimeTests.cs" />
     <Compile Include="Integration\AccountITests.cs" />
     <Compile Include="Managers\OAuthAuthorizerTest.cs" />
-    <Compile Include="Managers\RouteManagerTests.cs" />
+    <Compile Include="Managers\PlanManagerTests.cs" />
     <Compile Include="MockedDB\MockedDBTests.cs" />
     <Compile Include="MockedDB\MoqDemoTests.cs" />
     <Compile Include="Repositories\AuthorizationTokenRepositoryTests.cs" />
@@ -280,7 +280,7 @@
     <Compile Include="Repositories\Plan\PersistentPlanStorage.cs" />
     <Compile Include="Repositories\Plan\PlanCacheTests.cs" />
     <Compile Include="Repositories\Plan\PlanRepositoryTests.cs" />
-    <Compile Include="Repositories\Plan\RouteSnapshotTests.cs" />
+    <Compile Include="Repositories\Plan\PlanSnapshotTests.cs" />
     <Compile Include="Security\AuthorizationMethodsTests.cs" />
     <Compile Include="Security\AuthorizationTokenTests.cs" />
     <Compile Include="Managers\CommunicationManagerTest.cs" />
@@ -298,9 +298,9 @@
     <Compile Include="Services\ITerminalClient.cs" />
     <Compile Include="Services\FileTests.cs" />
     <Compile Include="Services\ContainerServiceTests.cs" />
-    <Compile Include="Services\RouteNodeTests.cs" />
-    <Compile Include="Services\SubrouteTests.cs" />
-    <Compile Include="Services\RouteTests.cs" />
+    <Compile Include="Services\PlanNodeTests.cs" />
+    <Compile Include="Services\SubPlanTests.cs" />
+    <Compile Include="Services\PlanTests.cs" />
     <Compile Include="Services\SMSMessageTests.cs" />
     <Compile Include="Services\StartupTests.cs" />
     <Compile Include="Services\SubscriptionServiceTests.cs" />

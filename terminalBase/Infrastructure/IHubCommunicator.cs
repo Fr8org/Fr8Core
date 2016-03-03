@@ -9,6 +9,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Data.Constants;
 using Data.Interfaces.Manifests;
+using Data.Interfaces;
 
 namespace TerminalBase.Infrastructure
 {
@@ -31,10 +32,10 @@ namespace TerminalBase.Infrastructure
         Task<List<FieldValidationResult>> ValidateFields(List<FieldValidationDTO> fields, string userId);
         Task<ActivityDTO> ConfigureActivity(ActivityDTO activityDTO, string userId);
         Task<ActivityDO> ConfigureActivity(ActivityDO activityDO, string userId);
-        Task<ActivityDTO> CreateAndConfigureActivity(int templateId, string userId, string label = null, int? order = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null);
-        Task<RouteFullDTO> CreatePlan(RouteEmptyDTO planDTO, string userId);
+        Task<ActivityDTO> CreateAndConfigureActivity(int templateId, string userId, string label = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null);
+        Task<PlanDTO> CreatePlan(PlanEmptyDTO planDTO, string userId);
         Task<PlanDO> ActivatePlan(PlanDO planDO, string userId);
-        Task<IEnumerable<RouteFullDTO>> GetPlansByName(string name, string userId);
+        Task<IEnumerable<PlanDTO>> GetPlansByName(string name, string userId);
         Task<FileDO> SaveFile(string name, Stream stream, string userId);
         Task<Stream> DownloadFile(int fileId, string userId);
         Task<IEnumerable<FileDTO>> GetFiles(string userId);

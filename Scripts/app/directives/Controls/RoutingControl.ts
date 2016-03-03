@@ -2,17 +2,17 @@
 module dockyard.directives.paneConfigureAction {
     'use strict';
 
-    //enum routeType {
-    //    textroute,
-    //    checkboxroute,
+    //enum planType {
+    //    textplan,
+    //    checkboxplan,
     //    routing,
     //}
 
     interface IRoutingControlScope extends ng.IScope {
-        route: model.Route;
+        plan: model.Plan;
         uniqueDirectiveId: number;
         //ChangeSelection: (scope: IRoutingControlScope) => void;
-        //ChangeSelection: (route: model.Route) => void;
+        //ChangeSelection: (route: model.Plan) => void;
     }
 
     //More detail on creating directives in TypeScript: 
@@ -22,8 +22,8 @@ module dockyard.directives.paneConfigureAction {
         var controller = ['$scope', '$element','$attrs', ($scope: IRoutingControlScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => {
             $scope.uniqueDirectiveId = ++uniqueDirectiveId;
             //var ChangeSelection = function (route: model.Route) {
-            //    $scope.route.selection = route.selection;
-            //    //route.selection
+            //    $scope.plan.selection = route.selection;
+            //    //plan.selection
             //};
         }];
 
@@ -33,7 +33,7 @@ module dockyard.directives.paneConfigureAction {
             templateUrl: '/AngularTemplate/RoutingControl',
             controller: controller,
             scope: {
-                route: '='
+                plan: '='
             }
         };
     }

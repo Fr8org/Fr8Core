@@ -66,7 +66,7 @@ namespace terminalDocuSign.Actions
                     Source = new FieldSourceDTO(CrateManifestTypes.StandardDesignTimeFields, "Statuses")
                 }));
 
-                Controls.Add(new RunRouteButton());
+                Controls.Add(new RunPlanButton());
             }
         }
         

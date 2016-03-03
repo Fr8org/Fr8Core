@@ -66,167 +66,167 @@ namespace UtilitiesTesting.Fixtures
             return GuidIdStore.Instance.Reverse(guid);
         }
 
-        public static RouteNodeDO TestActivity57()
+        public static PlanNodeDO TestActivity57()
         {
-            return new RouteNodeDO
+            return new PlanNodeDO
             {
                 Id = GetTestGuidById(57),
                 Ordering = 2,
-                ParentRouteNodeId = GetTestGuidById(54)
+                ParentPlanNodeId = GetTestGuidById(54)
             };
 
         }
 
-        public static RouteNodeDO TestActivityNotExists()
+        public static PlanNodeDO TestActivityNotExists()
         {
-            return new RouteNodeDO
+            return new PlanNodeDO
             {
                 Id = GetTestGuidById(57),
                 Ordering = 2,
-                ParentRouteNodeId = GetTestGuidById(54)
+                ParentPlanNodeId = GetTestGuidById(54)
             };
 
         }
 
-        public static RouteNodeDO TestActivityTree()
+        public static PlanNodeDO TestActivityTree()
         {
-            var tree = new RouteNodeDO
+            var tree = new PlanNodeDO
             {
                 Id = GetTestGuidById(1),
                 Ordering = 1,
-                ChildNodes = new List<RouteNodeDO>
+                ChildNodes = new List<PlanNodeDO>
                 {
-                    new RouteNodeDO
+                    new PlanNodeDO
                     {
                         Id = GetTestGuidById(23),
                         Ordering = 1,
-                        ParentRouteNodeId = GetTestGuidById(1)
+                        ParentPlanNodeId = GetTestGuidById(1)
                     },
-                    new RouteNodeDO
+                    new PlanNodeDO
                     {
                         Id = GetTestGuidById(43),
-                        ParentRouteNodeId = GetTestGuidById(1),
+                        ParentPlanNodeId = GetTestGuidById(1),
                         Ordering = 2,
-                        ChildNodes = new List<RouteNodeDO>
+                        ChildNodes = new List<PlanNodeDO>
                         {
-                            new RouteNodeDO
+                            new PlanNodeDO
                             {
                                 Id = GetTestGuidById(44),
                                 Ordering = 1,
-                                ParentRouteNodeId = GetTestGuidById(43)
+                                ParentPlanNodeId = GetTestGuidById(43)
                             },
-                            new RouteNodeDO
+                            new PlanNodeDO
                             {
                                 Id = GetTestGuidById(46),
                                 Ordering = 2,
-                                ParentRouteNodeId = GetTestGuidById(43)
+                                ParentPlanNodeId = GetTestGuidById(43)
                             },
-                            new RouteNodeDO
+                            new PlanNodeDO
                             {
                                 Id = GetTestGuidById(48),
                                 Ordering = 3,
-                                ParentRouteNodeId = GetTestGuidById(43)
+                                ParentPlanNodeId = GetTestGuidById(43)
                             },
 
                         }
                     },
-                    new RouteNodeDO
+                    new PlanNodeDO
                     {
                         Id = GetTestGuidById(52),
                         Ordering = 3,
-                        ParentRouteNodeId = GetTestGuidById(1),
-                        ChildNodes = new List<RouteNodeDO>
+                        ParentPlanNodeId = GetTestGuidById(1),
+                        ChildNodes = new List<PlanNodeDO>
                         {
-                            new RouteNodeDO
+                            new PlanNodeDO
                             {
                                 Id = GetTestGuidById(53),
                                 Ordering = 1,
-                                ParentRouteNodeId = GetTestGuidById(52)
+                                ParentPlanNodeId = GetTestGuidById(52)
                             },
-                            new RouteNodeDO
+                            new PlanNodeDO
                             {
                                 Id = GetTestGuidById(54),
-                                ParentRouteNodeId = GetTestGuidById(52),
+                                ParentPlanNodeId = GetTestGuidById(52),
                                 Ordering = 2,
 
-                                ChildNodes = new List<RouteNodeDO>
+                                ChildNodes = new List<PlanNodeDO>
                                 {
-                                    new RouteNodeDO
+                                    new PlanNodeDO
                                     {
                                         Id = GetTestGuidById(56),
-                                        ParentRouteNodeId = GetTestGuidById(54),
+                                        ParentPlanNodeId = GetTestGuidById(54),
                                         Ordering = 1
                                     },
-                                    new RouteNodeDO
+                                    new PlanNodeDO
                                     {
                                         Id = GetTestGuidById(57),
-                                        ParentRouteNodeId = GetTestGuidById(54),
+                                        ParentPlanNodeId = GetTestGuidById(54),
                                         Ordering = 2
                                     },
-                                    new RouteNodeDO
+                                    new PlanNodeDO
                                     {
                                         Id = GetTestGuidById(58),
-                                        ParentRouteNodeId = GetTestGuidById(54),
+                                        ParentPlanNodeId = GetTestGuidById(54),
                                         Ordering = 3
                                     },
 
                                 }
                             },
-                            new RouteNodeDO
+                            new PlanNodeDO
                             {
                                 Id = GetTestGuidById(55),
-                                ParentRouteNodeId = GetTestGuidById(52),
+                                ParentPlanNodeId = GetTestGuidById(52),
                                 Ordering = 3
                             },
 
                         }
                     },
-                    new RouteNodeDO
+                    new PlanNodeDO
                     {
                         Id = GetTestGuidById(59),
                         Ordering = 4,
-                        ParentRouteNodeId = GetTestGuidById(1),
-                        ChildNodes = new List<RouteNodeDO>
+                        ParentPlanNodeId = GetTestGuidById(1),
+                        ChildNodes = new List<PlanNodeDO>
                         {
-                            new RouteNodeDO
+                            new PlanNodeDO
                             {
                                 Id = GetTestGuidById(60),
-                                ParentRouteNodeId = GetTestGuidById(59),
+                                ParentPlanNodeId = GetTestGuidById(59),
                                 Ordering = 1
                             },
-                            new RouteNodeDO
+                            new PlanNodeDO
                             {
                                 Id = GetTestGuidById(61),
-                                ParentRouteNodeId = GetTestGuidById(59),
+                                ParentPlanNodeId = GetTestGuidById(59),
                                 Ordering = 2,
 
-                                ChildNodes = new List<RouteNodeDO>
+                                ChildNodes = new List<PlanNodeDO>
                                 {
-                                    new RouteNodeDO
+                                    new PlanNodeDO
                                     {
                                         Id = GetTestGuidById(63),
-                                        ParentRouteNodeId = GetTestGuidById(61),
+                                        ParentPlanNodeId = GetTestGuidById(61),
                                         Ordering = 1
                                     },
-                                    new RouteNodeDO
+                                    new PlanNodeDO
                                     {
                                         Id = GetTestGuidById(64),
-                                        ParentRouteNodeId = GetTestGuidById(61),
+                                        ParentPlanNodeId = GetTestGuidById(61),
                                         Ordering = 2
                                     },
-                                    new RouteNodeDO
+                                    new PlanNodeDO
                                     {
                                         Id = GetTestGuidById(65),
-                                        ParentRouteNodeId = GetTestGuidById(61),
+                                        ParentPlanNodeId = GetTestGuidById(61),
                                         Ordering = 3
                                     },
                                 }
                             },
 
-                            new RouteNodeDO
+                            new PlanNodeDO
                             {
                                 Id = GetTestGuidById(62),
-                                ParentRouteNodeId = GetTestGuidById(59),
+                                ParentPlanNodeId = GetTestGuidById(59),
                                 Ordering = 3
                             },
                         },
@@ -241,26 +241,26 @@ namespace UtilitiesTesting.Fixtures
 
         }
 
-        private static void FixParentActivityReferences(RouteNodeDO root)
+        private static void FixParentActivityReferences(PlanNodeDO root)
         {
-            var activitiesIndex = new Dictionary<Guid, RouteNodeDO>();
+            var activitiesIndex = new Dictionary<Guid, PlanNodeDO>();
 
             TraverseActivityTree(root, activitiesIndex);
 
             foreach (var activityDo in activitiesIndex.Values)
             {
-                RouteNodeDO temp = null;
+                PlanNodeDO temp = null;
 
-                if (activityDo.ParentRouteNodeId != null)
+                if (activityDo.ParentPlanNodeId != null)
                 {
-                    activitiesIndex.TryGetValue(activityDo.ParentRouteNodeId.Value, out temp);
+                    activitiesIndex.TryGetValue(activityDo.ParentPlanNodeId.Value, out temp);
                 }
 
-                activityDo.ParentRouteNode = temp;
+                activityDo.ParentPlanNode = temp;
             }
         }
 
-        private static void TraverseActivityTree(RouteNodeDO root, Dictionary<Guid, RouteNodeDO> allActivities)
+        private static void TraverseActivityTree(PlanNodeDO root, Dictionary<Guid, PlanNodeDO> allActivities)
         {
             allActivities.Add(root.Id, root);
 

@@ -146,24 +146,24 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             templateUrl: "/AngularTemplate/MyAccountPage",
             data: { pageTitle: 'My Account', pageSubTitle: '' }
         })
-    // Route list
-        .state('routeList', {
+    // Plan list
+        .state('planList', {
             url: "/plans",
-            templateUrl: "/AngularTemplate/RouteList",
-            data: { pageTitle: 'Routes', pageSubTitle: 'This page displays all Routes' }
+            templateUrl: "/AngularTemplate/PlanList",
+            data: { pageTitle: 'Plans', pageSubTitle: 'This page displays all Plans' }
         })
 
-    // Route form
-        .state('routeForm', {
+    // Plan form
+        .state('planForm', {
             url: "/plans/{id}",
-            templateUrl: "/AngularTemplate/RouteForm",
-            data: { pageTitle: 'Route', pageSubTitle: 'Add a new Route' },
+            templateUrl: "/AngularTemplate/PlanForm",
+            data: { pageTitle: 'Plan', pageSubTitle: 'Add a new Plan' },
         })
 
-    // Process Builder framework
-        .state('routeBuilder', {
+    // Plan Builder framework
+        .state('planBuilder', {
             url: "/plans/{id}/builder",
-            templateUrl: "/AngularTemplate/RouteBuilder",
+            templateUrl: "/AngularTemplate/PlanBuilder",
             data: { pageTitle: '' },
         })
 
@@ -179,10 +179,10 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             data: { pageTitle: 'Facts', pageSubTitle: 'This page displays all facts' },
         })
 
-        .state('routeDetails', {
-            url: "/routes/{id}/details",
-            templateUrl: "/AngularTemplate/RouteDetails",
-            data: { pageTitle: 'Route Details', pageSubTitle: '' }
+        .state('planDetails', {
+            url: "/plans/{id}/details",
+            templateUrl: "/AngularTemplate/PlanDetails",
+            data: { pageTitle: 'Plan Details', pageSubTitle: '' }
         })
 
     // Manage files
@@ -218,7 +218,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
 
         .state('configureSolution', {
             url: "/solution/{solutionName}",
-            templateUrl: "/AngularTemplate/RouteBuilder",
+            templateUrl: "/AngularTemplate/PlanBuilder",
             data: { pageTitle: 'Create a Solution', pageSubTitle: '' }
         })
 
@@ -237,7 +237,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
         .state('findObjects', {
             url: '/findObjects/create',
             templateUrl: '/AngularTemplate/FindObjects',
-            data: { pageTitle: 'Constructing Find Objects route', pageSubTitle: '' }
+            data: { pageTitle: 'Constructing Find Objects plan', pageSubTitle: '' }
         })
 
         .state('findObjectsResult', {

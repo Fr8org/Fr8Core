@@ -41,8 +41,8 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<JToken, string>().ConvertUsing<JTokenToStringConverter>();
 
             Mapper.CreateMap<ActivityDO, ActivityDTO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
-                .ForMember(a => a.RootRouteNodeId, opts => opts.ResolveUsing(ad => ad.RootRouteNodeId))
-                .ForMember(a => a.ParentRouteNodeId, opts => opts.ResolveUsing(ad => ad.ParentRouteNodeId))
+                .ForMember(a => a.RootPlanNodeId, opts => opts.ResolveUsing(ad => ad.RootPlanNodeId))
+                .ForMember(a => a.ParentPlanNodeId, opts => opts.ResolveUsing(ad => ad.ParentPlanNodeId))
                 //.ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => ad.CrateStorage == null ? null : JsonConvert.DeserializeObject(ad.CrateStorage)))
                 .ForMember(a => a.CurrentView, opts => opts.ResolveUsing(ad => ad.currentView))
                 .ForMember(a => a.ChildrenActivities, opts => opts.ResolveUsing(ad => ad.ChildNodes.OfType<ActivityDO>().OrderBy(da => da.Ordering)))
@@ -52,8 +52,8 @@ namespace Data.Infrastructure.AutoMapper
 
 
             Mapper.CreateMap<ActivityDTO, ActivityDO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
-                .ForMember(a => a.RootRouteNodeId, opts => opts.ResolveUsing(ad => ad.RootRouteNodeId))
-                .ForMember(a => a.ParentRouteNodeId, opts => opts.ResolveUsing(ad => ad.ParentRouteNodeId))
+                .ForMember(a => a.RootPlanNodeId, opts => opts.ResolveUsing(ad => ad.RootPlanNodeId))
+                .ForMember(a => a.ParentPlanNodeId, opts => opts.ResolveUsing(ad => ad.ParentPlanNodeId))
                 .ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(ad => ad.ActivityTemplate))
                 //.ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.SerializeObject(ad.CrateStorage)))
                 .ForMember(a => a.currentView, opts => opts.ResolveUsing(ad => ad.CurrentView))
@@ -92,27 +92,27 @@ namespace Data.Infrastructure.AutoMapper
             //                .ForMember(x => x.ActionListType, opts => opts.ResolveUsing(x => x.ActionListType))
             //                .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name));
 
-            Mapper.CreateMap<PlanDO, RouteEmptyDTO>();
-            Mapper.CreateMap<RouteEmptyDTO, PlanDO>();
-            Mapper.CreateMap<PlanDO, RouteEmptyDTO>();
-            Mapper.CreateMap<SubrouteDTO, SubrouteDO>()
-                .ForMember(x => x.ParentRouteNodeId, opts => opts.ResolveUsing(x => x.PlanId))
-                .ForMember(x => x.RootRouteNodeId, opts => opts.ResolveUsing(x => x.PlanId));
-            Mapper.CreateMap<SubrouteDO, SubrouteDTO>()
-                .ForMember(x => x.PlanId, opts => opts.ResolveUsing(x => x.ParentRouteNodeId))
-                .ForMember(x => x.PlanId, opts => opts.ResolveUsing(x => x.RootRouteNodeId));
+            Mapper.CreateMap<PlanDO, PlanEmptyDTO>();
+            Mapper.CreateMap<PlanEmptyDTO, PlanDO>();
+            Mapper.CreateMap<PlanDO, PlanEmptyDTO>();
+            Mapper.CreateMap<SubPlanDTO, SubPlanDO>()
+                .ForMember(x => x.ParentPlanNodeId, opts => opts.ResolveUsing(x => x.PlanId))
+                .ForMember(x => x.RootPlanNodeId, opts => opts.ResolveUsing(x => x.PlanId));
+            Mapper.CreateMap<SubPlanDO, SubPlanDTO>()
+                .ForMember(x => x.PlanId, opts => opts.ResolveUsing(x => x.ParentPlanNodeId))
+                .ForMember(x => x.PlanId, opts => opts.ResolveUsing(x => x.RootPlanNodeId));
 
             Mapper.CreateMap<CriteriaDO, CriteriaDTO>()
                 .ForMember(x => x.Conditions, opts => opts.ResolveUsing(y => y.ConditionsJSON));
             Mapper.CreateMap<CriteriaDTO, CriteriaDO>()
                 .ForMember(x => x.ConditionsJSON, opts => opts.ResolveUsing(y => y.Conditions));
 
-            Mapper.CreateMap<PlanDO, RouteFullDTO>()
-                .ConvertUsing<RouteDOFullConverter>();
+            Mapper.CreateMap<PlanDO, PlanFullDTO>()
+                .ConvertUsing<PlanDOFullConverter>();
 
-            Mapper.CreateMap<RouteEmptyDTO, RouteFullDTO>();
+            Mapper.CreateMap<PlanEmptyDTO, PlanFullDTO>();
             //  Mapper.CreateMap<ActionListDO, FullActionListDTO>();
-            Mapper.CreateMap<SubrouteDO, FullSubrouteDTO>();
+            Mapper.CreateMap<SubPlanDO, FullSubPlanDTO>();
 
             //Mapper.CreateMap<Account, DocuSignAccount>();
             Mapper.CreateMap<FileDO, FileDescriptionDTO>();
@@ -149,9 +149,9 @@ namespace Data.Infrastructure.AutoMapper
 
         }
 
-        private static List<RouteNodeDO> MapActivities(IEnumerable<ActivityDTO> actions)
+        private static List<PlanNodeDO> MapActivities(IEnumerable<ActivityDTO> actions)
         {
-            var list = new List<RouteNodeDO>();
+            var list = new List<PlanNodeDO>();
 
             if (actions != null)
             {

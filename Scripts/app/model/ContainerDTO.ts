@@ -4,7 +4,7 @@
         name: string;
         planId: number;
         containerState: number;
-        currentRouteNodeId: string;
+        currentPlanNodeId: string;
         nextRouteNodeId: string;
         lastUpdated: string;
         createDate: string;

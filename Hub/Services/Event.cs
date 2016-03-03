@@ -56,14 +56,14 @@ namespace Hub.Services
         //        throw new ArgumentNullException("Paramter Standard Event Report is null.");
 
         //    //Matchup process
-        //    IList<RouteDO> matchingRoutes = _plan.GetMatchingRoutes(userID, curEventReport);
+        //    IList<PlanDO> matchingPlans = _plan.GetMatchingPlans(userID, curEventReport);
         //    using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
         //    {
-        //        foreach (var subroute in matchingRoutes)
+        //        foreach (var subPlan in matchingPlans)
         //        {
-        //            //4. When there's a match, it means that it's time to launch a new Process based on this Route, 
-        //            //so make the existing call to Route#LaunchProcess.
-        //            _plan.LaunchProcess(unitOfWork, subroute);
+        //            //4. When there's a match, it means that it's time to launch a new Process based on this Plan, 
+        //            //so make the existing call to Plan#LaunchProcess.
+        //            _plan.LaunchProcess(unitOfWork, subPlan);
         //        }
         //    }
         //}
@@ -85,7 +85,7 @@ namespace Hub.Services
                     try
                     {
                         Fr8AccountDO systemUser = uow.UserRepository.GetOrCreateUser(systemUserEmail);
-                        await FindAndExecuteAccountRoutes(uow, eventReportMS, curCrateStandardEventReport, systemUser);
+                        await FindAndExecuteAccountPlans(uow, eventReportMS, curCrateStandardEventReport, systemUser);
                     }
                     catch (Exception ex)
                     {
@@ -100,7 +100,7 @@ namespace Hub.Services
                     foreach (var authToken in authTokenList.ToArray())
                     {
                         var curDockyardAccount = authToken.UserDO;
-                        var accountTask = FindAndExecuteAccountRoutes(uow, eventReportMS, curCrateStandardEventReport, curDockyardAccount);
+                        var accountTask = FindAndExecuteAccountPlans(uow, eventReportMS, curCrateStandardEventReport, curDockyardAccount);
                         tasks.Add(accountTask);
                     }
                     Task waitAllTask = null;
@@ -122,14 +122,14 @@ namespace Hub.Services
             }
         }
 
-        private async Task FindAndExecuteAccountRoutes(IUnitOfWork uow, EventReportCM eventReportMS,
+        private async Task FindAndExecuteAccountPlans(IUnitOfWork uow, EventReportCM eventReportMS,
                Crate curCrateStandardEventReport, Fr8AccountDO curDockyardAccount = null)
         {
-            //find this Account's Routes
-            var initialRoutesList = uow.PlanRepository.GetPlanQueryUncached().Where(pt => pt.Fr8AccountId == curDockyardAccount.Id && pt.RouteState == RouteState.Active);
-            var subscribingRoutes = _plan.MatchEvents(initialRoutesList.ToList(), eventReportMS);
+            //find this Account's Plans
+            var initialPlansList = uow.PlanRepository.GetPlanQueryUncached().Where(pt => pt.Fr8AccountId == curDockyardAccount.Id && pt.PlanState == PlanState.Active);
+            var subscribingPlans = _plan.MatchEvents(initialPlansList.ToList(), eventReportMS);
 
-            await LaunchProcesses(subscribingRoutes, curCrateStandardEventReport);
+            await LaunchProcesses(subscribingPlans, curCrateStandardEventReport);
         }
 
         public Task LaunchProcesses(List<PlanDO> curPlans, Crate curEventReport)
@@ -138,8 +138,8 @@ namespace Hub.Services
 
             foreach (var curPlan in curPlans)
             {
-                //4. When there's a match, it means that it's time to launch a new Process based on this Route, 
-                //so make the existing call to Route#LaunchProcess.
+                //4. When there's a match, it means that it's time to launch a new Process based on this Plan, 
+                //so make the existing call to Plan#LaunchProcess.
                 processes.Add(LaunchProcess(curPlan, curEventReport));
             }
 
@@ -151,7 +151,7 @@ namespace Hub.Services
             if (curPlan == null)
                 throw new EntityNotFoundException(curPlan);
 
-            if (curPlan.RouteState != RouteState.Inactive)
+            if (curPlan.PlanState != PlanState.Inactive)
             {
                 try
                 {

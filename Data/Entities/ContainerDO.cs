@@ -40,13 +40,13 @@ namespace Data.Entities
 
         public virtual _ContainerStateTemplate ContainerStateTemplate { get; set; }
 
-        [ForeignKey("CurrentRouteNode")]
-        public Guid? CurrentRouteNodeId { get; set; }
-        public virtual RouteNodeDO CurrentRouteNode { get; set; }
+        [ForeignKey("CurrentPlanNode")]
+        public Guid? CurrentPlanNodeId { get; set; }
+        public virtual PlanNodeDO CurrentPlanNode { get; set; }
 
         [ForeignKey("NextRouteNode")]
         public Guid? NextRouteNodeId { get; set; }
-        public virtual RouteNodeDO NextRouteNode { get; set; }
+        public virtual PlanNodeDO NextRouteNode { get; set; }
 
         public string CrateStorage { get; set; }
 

@@ -266,7 +266,7 @@ namespace terminalDocuSign.Actions
             {
                 await HubCommunicator.DeleteExistingChildNodesFromActivity(curActivityDO.Id, CurrentFr8UserId);
 
-                curActivityDO.ChildNodes = new List<RouteNodeDO>();
+                curActivityDO.ChildNodes = new List<PlanNodeDO>();
             }
 
             //extract fields in docusign form

@@ -22,7 +22,7 @@ namespace terminalAzure
                 For<ITerminal>().Use<Terminal>().Singleton();
                 For<ICrateManager>().Use<CrateManager>();
                 For<IDbProvider>().Use<SqlClientDbProvider>();
-                For<IRouteNode>().Use<RouteNode>();
+                For<IPlanNode>().Use<PlanNode>();
             }
         }
 

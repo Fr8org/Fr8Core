@@ -41,9 +41,9 @@ namespace Data.Control
         public const string TextSource = "TextSource";
         public const string TextArea = "TextArea";
         public const string QueryBuilder = "QueryBuilder";
-        public const string ManageRoute = "ManageRoute";
+        public const string ManagePlan = "ManagePlan";
         public const string Duration = "Duration";
-        public const string RunRouteButton = "RunRouteButton";
+        public const string RunPlanButton = "RunPlanButton";
         public const string UpstreamDataChooser = "UpstreamDataChooser";
         public const string UpstreamFieldChooser = "UpstreamFieldChooser";
         public const string UpstreamCrateChooser = "UpstreamCrateChooser";
@@ -59,11 +59,11 @@ namespace Data.Control
         }
     }
 
-    public class RunRouteButton : ControlDefinitionDTO
+    public class RunPlanButton : ControlDefinitionDTO
     {
-        public RunRouteButton()
+        public RunPlanButton()
         {
-            Type = ControlTypes.RunRouteButton;
+            Type = ControlTypes.RunPlanButton;
         }
     }
 

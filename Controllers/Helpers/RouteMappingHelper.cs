@@ -8,33 +8,37 @@ using Data.Interfaces.DataTransferObjects;
 
 namespace HubWeb.Controllers.Helpers
 {
-    public static class RouteMappingHelper
+    public static class PlanMappingHelper
     {
         // Manual mapping method to resolve DO-1164.
-        public static RouteFullDTO MapRouteToDto(IUnitOfWork uow, PlanDO curPlanDO)
+        public static PlanDTO MapPlanToDto(IUnitOfWork uow, PlanDO curPlanDO)
         {
-            var subrouteDTOList = curPlanDO.ChildNodes.OfType<SubrouteDO>()
+            var subPlanDTOList = curPlanDO.ChildNodes.OfType<SubPlanDO>()
                 .OrderBy(x => x.Ordering)
                 .ToList()
-                .Select((SubrouteDO x) =>
+                .Select((SubPlanDO x) =>
                 {
-                    var pntDTO = Mapper.Map<FullSubrouteDTO>(x);
+                    var pntDTO = Mapper.Map<FullSubPlanDTO>(x);
 
                     pntDTO.Activities = x.ChildNodes.OrderBy(y => y.Ordering).Select(Mapper.Map<ActivityDTO>).ToList();
 
                     return pntDTO;
                 }).ToList();
 
-            var result = new RouteFullDTO()
+
+            var result = new PlanDTO()
             {
-                Description = curPlanDO.Description,
-                Id = curPlanDO.Id,
-                Name = curPlanDO.Name,
-                RouteState = curPlanDO.RouteState,
-                StartingSubrouteId = curPlanDO.StartingSubrouteId,
-                Subroutes = subrouteDTOList,
-                Fr8UserId = curPlanDO.Fr8AccountId,
-                Tag = curPlanDO.Tag
+                Plan = new PlanFullDTO()
+                {
+                    Description = curPlanDO.Description,
+                    Id = curPlanDO.Id,
+                    Name = curPlanDO.Name,
+                    PlanState = curPlanDO.PlanState,
+                    StartingSubPlanId = curPlanDO.StartingSubPlanId,
+                    SubPlans = subPlanDTOList,
+                    Fr8UserId = curPlanDO.Fr8AccountId,
+                    Tag = curPlanDO.Tag
+                }
             };
 
             return result;
