@@ -222,7 +222,10 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
         {
             var responseStream = await response.Content.ReadAsStreamAsync();
             var memstream = new MemoryStream();
+
             responseStream.CopyTo(memstream);
+            memstream.Seek(0, SeekOrigin.Begin);
+
             var responseObject = await _formatter.ReadFromStreamAsync(
                 typeof(T),
                 memstream,
