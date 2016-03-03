@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Xml.Linq;
 using AutoMapper;
+using Data;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Data.Entities;
@@ -35,6 +36,8 @@ namespace terminalDocuSign.Controllers
                return await result.ContinueWith(x =>
                 {
                     var res = result.Result;
+
+                    ExternalLogger.Write("Response from '{0}' for {1}\nData:\n", curTerminal, actionType, JsonConvert.SerializeObject(res));
 
                     if (res == null)
                     {
