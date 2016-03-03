@@ -18,4 +18,10 @@ namespace Data.Constants
         ExecuteClientActivity,
         ShowDocumentation
     }
+
+    public enum PlanType
+    {
+        OnGoing,
+        RunOnce
+    }
 }

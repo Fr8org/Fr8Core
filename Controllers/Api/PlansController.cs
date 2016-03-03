@@ -26,6 +26,7 @@ using Utilities.Interfaces;
 using HubWeb.Infrastructure;
 using Data.Interfaces.Manifests;
 using System.Text;
+using Data.Constants;
 
 namespace HubWeb.Controllers
 {
@@ -326,6 +327,8 @@ namespace HubWeb.Controllers
         [HttpPost]
         public async Task<IHttpActionResult> Run(Guid planId, [FromBody]PayloadVM model)
         {
+            string currentPlanType = string.Empty;
+
             //ACTIVATE - activate route if its inactive
             var eventManager = ObjectFactory.GetInstance<Event>();
             bool inActive = false;
@@ -346,6 +349,12 @@ namespace HubWeb.Controllers
                 if (activateDTO != null && activateDTO.Status == "validation_error")
                 {
                     //this container holds wrapped inside the ErrorDTO
+                    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                    {
+                        var routeDO = uow.PlanRepository.GetById<PlanDO>(planId);
+                        activateDTO.Container.CurrentPlanType = routeDO.IsOngoingPlan() ? PlanType.OnGoing : PlanType.RunOnce;
+                    }
+
                     return Ok(activateDTO.Container);
                 }
 
@@ -368,7 +377,13 @@ namespace HubWeb.Controllers
                 catch (Exception ex)
                 {
                     _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, "You payload is invalid. Make sure that it represents a valid crate object JSON.");
-                    return BadRequest();
+
+                    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                    {
+                        var planDO = uow.PlanRepository.GetById<PlanDO>(planId);
+                        currentPlanType = planDO.IsOngoingPlan() ? PlanType.OnGoing.ToString() : PlanType.RunOnce.ToString();
+                    }
+                    return BadRequest(currentPlanType);
                 }
             }
 
@@ -407,6 +422,7 @@ namespace HubWeb.Controllers
                         _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, message);
 
                         var containerDTO = Mapper.Map<ContainerDTO>(containerDO);
+                        containerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? PlanType.OnGoing : PlanType.RunOnce;
 
                         var containerLaunched = Task.Run(() => eventManager.Publish("ContainerLaunched"
                              , planDO.Fr8AccountId
@@ -421,11 +437,13 @@ namespace HubWeb.Controllers
                         return Ok(containerDTO);
                     }
 
-                    return BadRequest();
+                    currentPlanType = planDO.IsOngoingPlan() ? PlanType.OnGoing.ToString() : PlanType.RunOnce.ToString();
+                    return BadRequest(currentPlanType);
                 }
                 catch (ErrorResponseException exception)
                 {
                     //this response contains details about the error that happened on some terminal and need to be shown to client
+                    exception.ContainerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? PlanType.OnGoing : PlanType.RunOnce;
                     return Ok(exception.ContainerDTO);
                 }
                 catch (Exception e)
@@ -441,8 +459,9 @@ namespace HubWeb.Controllers
                         var deactivateDTO = await _plan.Deactivate(planId);
                     }
                 }
-
-                return Ok();
+                var containerDefaultDTO = new ContainerDTO();
+                containerDefaultDTO.CurrentPlanType = planDO.IsOngoingPlan() ? PlanType.OnGoing : PlanType.RunOnce;
+                return Ok(containerDefaultDTO;
             }
         }
     }
