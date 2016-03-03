@@ -27,7 +27,15 @@ namespace terminalDocuSign.Controllers
         [Authorize]
         public Task<object> Execute([FromUri] String actionType, [FromBody] Fr8DataDTO curDataDTO)
         {
-             return HandleFr8Request(curTerminal, actionType, curDataDTO);
+            try
+            {
+                return HandleFr8Request(curTerminal, actionType, curDataDTO);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("terminalDocuSign failed. {0}", ex.ToString());
+                throw;
+            }
         }
     }
 }

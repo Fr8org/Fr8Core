@@ -28,21 +28,29 @@ namespace terminalDocuSignTests.Integration
         {
             try
             {
+                Console.WriteLine(" var plan = await CreateSolution();");
                 // Create Solution plan & initial configuration.
                 var plan = await CreateSolution();
+                Console.WriteLine(" var solution = ExtractSolution(plan);");
                 var solution = ExtractSolution(plan);
+                Console.WriteLine("solution = await EnsureSolutionAuthenticated(solution);");
                 solution = await EnsureSolutionAuthenticated(solution);
 
+                Console.WriteLine(" var crateStorage = _crateManager.FromDto(solution.CrateStorage);");
                 var crateStorage = _crateManager.FromDto(solution.CrateStorage);
                 ValidateCrateStructure(crateStorage);
                 ValidateConfigurationControls(crateStorage);
+                Console.WriteLine("var planConfigure = await GetPlanByActivity(solution.Id);");
                 var planConfigure = await GetPlanByActivity(solution.Id);
                 ValidatePlanCategory(planConfigure);
+                Console.WriteLine("  await SaveActivity(solution);");
                 await SaveActivity(solution);
 
 
                 // FollowUp configuration.
+                Console.WriteLine("MockSolutionFollowUpConfigurationData(solution);");
                 MockSolutionFollowUpConfigurationData(solution);
+                Console.WriteLine(" solution = await ConfigureActivity(solution);");
                 solution = await ConfigureActivity(solution);
 
                 crateStorage = _crateManager.FromDto(solution.CrateStorage);
@@ -50,6 +58,7 @@ namespace terminalDocuSignTests.Integration
                 ValidateConfigurationControls(crateStorage);
                 ValidateChildrenActivities(solution);
                 ValidateSolutionOperationalState(crateStorage);
+                Console.WriteLine(" var planFollowup = await GetPlanByActivity(solution.Id);");
                 var planFollowup = await GetPlanByActivity(solution.Id);
                 ValidatePlanName(planFollowup, crateStorage);
                 await SaveActivity(solution);

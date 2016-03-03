@@ -376,7 +376,6 @@ namespace terminalFr8Core.Actions
         // MT type has unique ID that should be used for this reason. Query name is something that is displayed to user. It should not contain any internal data.
         private Guid? ExtractUpstreamTypeId(QueryDTO query)
         {
-            return null;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var type = uow.MultiTenantObjectRepository.ListTypeReferences().FirstOrDefault(x => x.Alias == query.Name);
@@ -437,11 +436,9 @@ namespace terminalFr8Core.Actions
         private IEnumerable<QueryFieldDTO> GetFieldsByTypeId(Guid typeId)
         {
             var fields = new Dictionary<string, string>();
-            return new QueryFieldDTO[0];
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-
-
 
                 return uow.MultiTenantObjectRepository.ListTypePropertyReferences(typeId).OrderBy(x => x.Name)
                     .Select(x =>
@@ -460,7 +457,6 @@ namespace terminalFr8Core.Actions
 
         private IEnumerable<FieldDTO> GetObjects()
         {
-            return new FieldDTO[0];
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                return uow.MultiTenantObjectRepository.ListTypeReferences().Select(c => new FieldDTO(c.Alias, c.Id.ToString("N"))).ToArray();
