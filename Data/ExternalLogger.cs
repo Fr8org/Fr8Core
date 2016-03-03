@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.SqlClient;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -10,7 +11,7 @@ namespace Data
     {
         public static void Write(string format, params object [] p)
         {
-            Log(string.Format(format, p));
+            LogDb(string.Format(format, p));
         }
 
         class AsyncState
@@ -24,6 +25,22 @@ namespace Data
                 Message = message;
             }
         }
+
+        private static void LogDb(string message)
+        {
+            using (var connection = new SqlConnection("Data Source=tcp:s79ifqsqga.database.windows.net,1433;Initial Catalog=fr8Db2IntTest_20160303.34;User ID=alexeddodb@s79ifqsqga;Password=Zeus4593"))
+            {
+                connection.Open();
+
+                using (var command = new SqlCommand("insert into [dbo].[TestLogs] (Message) values (@msg)"))
+                {
+                    command.Connection = connection;
+                    command.Parameters.AddWithValue("@msg", message);
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
 
         public static void Log(string message)
         {
