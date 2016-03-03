@@ -208,7 +208,18 @@ namespace TerminalBase.BaseClasses
                     case "configure":
                         {
                             Task<ActivityDO> resutlActionDO = (Task<ActivityDO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDO, curAuthTokenDO });
-                            return await resutlActionDO.ContinueWith(x => Mapper.Map<ActivityDTO>(x.Result));
+                            
+                            return await resutlActionDO.ContinueWith(x =>
+                            {
+                                var result = x.Result;
+
+                                if (result == null || Mapper.Map<ActivityDTO>(x.Result) == null)
+                                {
+                                    return string.Format("Yes, we've just called 'configure' of type {0} and get null as the result", calledType.FullName);
+                                }
+
+                                return (object)Mapper.Map<ActivityDTO>(x.Result);
+                            });
                         }
                     case "run":
                     case "executechildactivities":
