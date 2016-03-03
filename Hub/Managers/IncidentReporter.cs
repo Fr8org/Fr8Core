@@ -252,7 +252,7 @@ namespace Hub.Managers
             var currentIncident = new IncidentDO
             {
                 ObjectId = incidentItem.ObjectId,
-                CustomerId = incidentItem.CustomerId,
+                CustomerId = _sercurity.GetCurrentUser(),
                 Data = incidentItem.Data,
                 PrimaryCategory = incidentItem.PrimaryCategory,
                 SecondaryCategory = incidentItem.SecondaryCategory,

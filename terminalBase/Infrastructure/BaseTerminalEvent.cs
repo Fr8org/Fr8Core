@@ -61,7 +61,6 @@ namespace TerminalBase.Infrastructure
             var loggingDataCrate = _loggingDataCrateFactory.Create(new LoggingDataCm
             {
                 ObjectId = terminalName,
-                CustomerId = "not_applicable",
                 Data = "service_start_up",
                 PrimaryCategory = "Operations",
                 SecondaryCategory = "System Startup",
@@ -86,7 +85,6 @@ namespace TerminalBase.Infrastructure
             var loggingDataCrate = _loggingDataCrateFactory.Create(new LoggingDataCm
             {
                 ObjectId = terminalName,
-                CustomerId = "not_applicable",
                 Data = message,
                 PrimaryCategory = "Operations",
                 SecondaryCategory = "System Startup",
@@ -117,7 +115,6 @@ namespace TerminalBase.Infrastructure
             var loggingDataCrate = _loggingDataCrateFactory.Create(new LoggingDataCm
             {
                 ObjectId = terminalName,
-                CustomerId = "",
                 Data = exceptionMessage,
                 PrimaryCategory = "TerminalError",
                 SecondaryCategory = exceptionName,
