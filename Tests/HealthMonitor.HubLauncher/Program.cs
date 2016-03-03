@@ -12,7 +12,7 @@ namespace HealthMonitor.HubLauncher
         private static bool _quitRequested = false;
         private static object _syncLock = new object();
         private static AutoResetEvent _waitHandle = new AutoResetEvent(false);
-
+        private static Timer _waitForMigration;
         static void Main(string[] args)
         {
             string endpoint = string.Empty;
@@ -65,7 +65,9 @@ namespace HealthMonitor.HubLauncher
             _initializer = new SelfHostInitializer();
             _initializer.Initialize(selfHostFactory, endpoint);
 
-            Console.WriteLine("{0} Listening...", DateTime.UtcNow.ToLongTimeString());
+            _waitForMigration = new Timer(SendNotification, null, 60*2*1000, Timeout.Infinite);
+
+           
 
             // read input to detect "quit" command
             string command = string.Empty;
@@ -77,6 +79,11 @@ namespace HealthMonitor.HubLauncher
             SetQuitRequested();
             // wait until the message pump says it's done
             _waitHandle.WaitOne();
+        }
+
+        private static void SendNotification(object state)
+        {
+            Console.WriteLine("{0} Listening...", DateTime.UtcNow.ToLongTimeString());
         }
 
         private static void SetQuitRequested()
