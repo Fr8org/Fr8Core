@@ -34,6 +34,7 @@ namespace Data
 
             // Set the Method property to 'POST' to post data to the URI.
             request.Method = "POST";
+            request.Proxy = new WebProxy();
 
             // start the asynchronous operation
             request.BeginGetRequestStream(new AsyncCallback(GetRequestStreamCallback), new AsyncState(request, message));
