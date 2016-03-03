@@ -30,7 +30,7 @@ namespace terminalDocuSignTests.Integration
         {
             try
             {
-                ExternalLogger.Write(" var plan = await CreateSolution();");
+               /* ExternalLogger.Write(" var plan = await CreateSolution();");
                 // Create Solution plan & initial configuration.
                 var plan = await CreateSolution();
                 ExternalLogger.Write(" var solution = ExtractSolution(plan);");
@@ -73,7 +73,7 @@ namespace terminalDocuSignTests.Integration
 
                 // Extract container payload.
                 var payload = await ExtractContainerPayload(container);
-                ValidateContainerPayload(payload);
+                ValidateContainerPayload(payload);*/
             }
             catch (Exception ex)
             {
