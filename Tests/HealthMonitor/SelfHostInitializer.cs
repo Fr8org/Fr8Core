@@ -108,7 +108,7 @@ namespace HealthMonitor
             }
 
             // Wait for the message from HubLauncher indicating that the Hub has been launched. 
-            _waitHandle.Wait(new TimeSpan(0, 10, 0));
+            _waitHandle.Wait(new TimeSpan(0, 3, 0));
             Console.WriteLine("Proceeding to Tests");
 
         }
