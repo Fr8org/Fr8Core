@@ -70,6 +70,11 @@ namespace HealthMonitor
             var testSuite = new TestSuite("HelthMonitor test suite");
 
             TestExecutionContext.CurrentContext.TestPackage = testPackage;
+            TestExecutionContext.CurrentContext.Tracing = true;
+            TestExecutionContext.CurrentContext.LogLevel = LoggingThreshold.All;
+            TestExecutionContext.CurrentContext.TraceWriter = Console.Out;
+            TestExecutionContext.CurrentContext.Error = Console.Out;
+            TestExecutionContext.CurrentContext.LogWriter = Console.Out;
 
             if (string.IsNullOrEmpty(specificTestName))
             {
@@ -124,10 +129,11 @@ namespace HealthMonitor
                     testSuite.Tests.Add(specificTest);
                 }
             }
-
+            
             using (NUnitTraceListener listener = new NUnitTraceListener(_appInsightsInstrumentationKey))
             {
                 var testResult = testSuite.Run(listener, new NUnitTestRunnerFilter());
+               
                 var testReport = GenerateTestReport(testResult);
                 return testReport;
             }

@@ -237,9 +237,10 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
                 memstream.Seek(0, SeekOrigin.Begin);
                 var text = Encoding.UTF8.GetString(memstream.ToArray());
                 
+                
                 // someting went wrong
-                throw new Exception(string.Format("Recieved null ActivityDTO. Response was: {0}", text));
-            }
+                throw new Exception(string.Format("Recieved null ActivityDTO.\n Request was: {0}.\nResponse was  {1}\n. Response content was: {2}", response.RequestMessage.ToString(), response.ToString(), text));
+            } 
 
             return (T)responseObject;
         }
