@@ -144,7 +144,7 @@ namespace Data.Repositories.MultiTenant
 
             if (type.ClrType == typeof(DateTime) || type.ClrType == typeof(DateTime?))
             {
-                rawValue = DateTime.ParseExact(value, "o", null);
+                rawValue = DateTime.Parse(value, null);
             }
             else
             {

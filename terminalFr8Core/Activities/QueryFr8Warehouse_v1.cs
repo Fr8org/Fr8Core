@@ -378,7 +378,7 @@ namespace terminalFr8Core.Actions
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var type = uow.MultiTenantObjectRepository.ListTypeReferences().FirstOrDefault(x => x.Alias != query.Name);
+                var type = uow.MultiTenantObjectRepository.ListTypeReferences().FirstOrDefault(x => x.Alias == query.Name);
 
                 if (type == null)
                 {
