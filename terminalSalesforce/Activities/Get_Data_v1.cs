@@ -16,6 +16,7 @@ using TerminalBase.Infrastructure;
 using terminalSalesforce.Infrastructure;
 using Data.Interfaces.DataTransferObjects;
 using Hub.Infrastructure;
+using Salesforce.Common;
 
 namespace terminalSalesforce.Actions
 {
@@ -99,7 +100,22 @@ namespace terminalSalesforce.Actions
             }
 
             //get fields of selected salesforce object
-            var objectFieldsList = await _salesforce.GetFields(curSelectedObject, _salesforce.CreateForceClient(authTokenDO));
+            IList<FieldDTO> objectFieldsList = null;
+            try
+            {
+                objectFieldsList = await _salesforce.GetFields(curSelectedObject, _salesforce.CreateForceClient(authTokenDO));
+            }
+            catch (ForceException salesforceException)
+            {
+                if (salesforceException.Message.Equals("Session expired or invalid"))
+                {
+                    objectFieldsList = await _salesforce.GetFields(curSelectedObject, _salesforce.CreateForceClient(authTokenDO, true));
+                }
+                else
+                {
+                    throw salesforceException;
+                }
+            }
 
             //replace the object fields for the newly selected object name
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
@@ -142,18 +158,27 @@ namespace terminalSalesforce.Actions
             //if without filter, just get all selected objects
             //else prepare SOQL query to filter the objects based on the filter conditions
             StandardPayloadDataCM resultObjects;
-            if (!filterDataDTO.Any())
-            {
-                resultObjects = await _salesforce.GetObjectByQuery(curSelectedSalesForceObject, string.Empty, _salesforce.CreateForceClient(authTokenDO));
-            }
-            else
+            string parsedCondition = string.Empty;
+            if (filterDataDTO.Any())
             {
                 EventManager.CriteriaEvaluationStarted(containerId);
+                parsedCondition = ParseConditionToText(filterDataDTO);
+            }
 
-
-                string parsedCondition = ParseConditionToText(filterDataDTO);
-
+            try
+            {
                 resultObjects = await _salesforce.GetObjectByQuery(curSelectedSalesForceObject, parsedCondition, _salesforce.CreateForceClient(authTokenDO));
+            }
+            catch (ForceException salesforceException)
+            {
+                if (salesforceException.Message.Equals("Session expired or invalid"))
+                {
+                    resultObjects = await _salesforce.GetObjectByQuery(curSelectedSalesForceObject, parsedCondition, _salesforce.CreateForceClient(authTokenDO, true));
+                }
+                else
+                {
+                    throw salesforceException;
+                }
             }
 
             //update the payload with result objects

@@ -12,7 +12,7 @@ namespace terminalSalesforce.Infrastructure
 {
     public interface ISalesforceManager
     {
-        ForceClient CreateForceClient(AuthorizationTokenDO authTokenDO);
+        ForceClient CreateForceClient(AuthorizationTokenDO authTokenDO, bool isRefreshTokenRequired = false);
 
         Task<bool> CreateObject<T>(T salesforceObject, string salesforceObjectType, ForceClient forceClient);
 

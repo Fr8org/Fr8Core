@@ -15,6 +15,7 @@ using Data.Entities;
 using TerminalBase.BaseClasses;
 using System;
 using Data.Control;
+using Salesforce.Common;
 
 namespace terminalSalesforce.Actions
 {
@@ -107,7 +108,22 @@ namespace terminalSalesforce.Actions
             }
 
             var lead = _salesforce.CreateSalesforceDTO<LeadDTO>(curActivityDO, payloadCrates, ExtractSpecificOrUpstreamValue);
-            bool result = await _salesforce.CreateObject(lead, "Lead", _salesforce.CreateForceClient(authTokenDO));
+            bool result = false;
+            try
+            {
+                result = await _salesforce.CreateObject(lead, "Lead", _salesforce.CreateForceClient(authTokenDO));
+            }
+            catch (ForceException salesforceException)
+            {
+                if (salesforceException.Message.Equals("Session expired or invalid"))
+                {
+                    result = await _salesforce.CreateObject(lead, "Lead", _salesforce.CreateForceClient(authTokenDO, true));
+                }
+                else
+                {
+                    throw salesforceException;
+                }
+            }
 
             if (result)
             {

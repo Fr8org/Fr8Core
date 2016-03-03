@@ -12,6 +12,7 @@ using TerminalBase.Infrastructure;
 using terminalSalesforce.Infrastructure;
 using terminalSalesforce.Services;
 using Data.Interfaces.Manifests;
+using Salesforce.Common;
 
 namespace terminalSalesforce.Actions
 {
@@ -96,7 +97,23 @@ namespace terminalSalesforce.Actions
             }
 
             var account = _salesforce.CreateSalesforceDTO<Infrastructure.AccountDTO>(curActivityDO, payloadCrates, ExtractSpecificOrUpstreamValue);
-            bool result = await _salesforce.CreateObject(account, "Account", _salesforce.CreateForceClient(authTokenDO));
+            bool result = false;
+            try
+            {
+                result = await _salesforce.CreateObject(account, "Account", _salesforce.CreateForceClient(authTokenDO));
+            }
+            catch (ForceException salesforceException)
+            {
+                if (salesforceException.Message.Equals("Session expired or invalid"))
+                {
+                    result = await _salesforce.CreateObject(account, "Account", _salesforce.CreateForceClient(authTokenDO, true));
+                }
+                else
+                {
+                    throw salesforceException;
+                }
+            }
+            
 
             if (result)
             {

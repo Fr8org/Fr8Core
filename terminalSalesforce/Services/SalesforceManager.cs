@@ -59,10 +59,21 @@ namespace terminalSalesforce.Services
             };
         }
 
-        public ForceClient CreateForceClient(AuthorizationTokenDO authTokenDO)
+        public ForceClient CreateForceClient(AuthorizationTokenDO authTokenDO, bool isRefreshTokenRequired = false)
         {
-            //TODO: Vas, Created task FR-2037
-            var authTokenResult = Task.Run(() => _authentication.RefreshAccessToken(authTokenDO)).Result;
+            AuthorizationTokenDO authTokenResult = null;
+            
+            //refresh the token only when it is required for the user of this method
+            if(isRefreshTokenRequired)
+            {
+                authTokenResult = Task.Run(() => _authentication.RefreshAccessToken(authTokenDO)).Result;
+            }
+            else
+            {
+                //else consider the supplied authtoken itself
+                authTokenResult = authTokenDO;
+            }
+            
             string instanceUrl, apiVersion;
             ParseAuthToken(authTokenResult.AdditionalAttributes, out instanceUrl, out apiVersion);
             return new ForceClient(instanceUrl, authTokenResult.Token, apiVersion);
