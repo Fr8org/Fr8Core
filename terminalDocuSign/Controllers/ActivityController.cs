@@ -37,8 +37,6 @@ namespace terminalDocuSign.Controllers
                 {
                     var res = result.Result;
 
-                    ExternalLogger.Write("Response from '{0}' for {1}\nData:\n", curTerminal, actionType, JsonConvert.SerializeObject(res));
-
                     if (res == null)
                     {
                         return string.Format("Yes, we've just called '{0}' of type {1} and get null as the result", actionType, JsonConvert.ToString(curDataDTO));

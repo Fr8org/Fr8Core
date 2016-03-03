@@ -70,11 +70,6 @@ namespace HealthMonitor
             var testSuite = new TestSuite("HelthMonitor test suite");
 
             TestExecutionContext.CurrentContext.TestPackage = testPackage;
-            TestExecutionContext.CurrentContext.Tracing = true;
-            TestExecutionContext.CurrentContext.LogLevel = LoggingThreshold.All;
-            TestExecutionContext.CurrentContext.TraceWriter = Console.Out;
-            TestExecutionContext.CurrentContext.Error = Console.Out;
-            TestExecutionContext.CurrentContext.LogWriter = Console.Out;
 
             if (string.IsNullOrEmpty(specificTestName))
             {

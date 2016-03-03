@@ -264,7 +264,6 @@
     <Compile Include="Expressions\ExpressionTransformation.cs" />
     <Compile Include="Expressions\ExpressionTransformation.PropertyInfo.cs" />
     <Compile Include="Expressions\ExpressionTransformation.TransformationVisitor.cs" />
-    <Compile Include="ExternalLogger.cs" />
     <Compile Include="Helpers\Fr8ReflectionHelper.cs" />
     <Compile Include="Infrastructure\AutoMapper\JSONToStringConverter.cs" />
     <Compile Include="Infrastructure\AutoMapper\DataAutoMapperBootstrapper.cs" />
@@ -630,6 +629,10 @@
     <Compile Include="Migrations\201603021529530_MoveToSqlMt.cs" />
     <Compile Include="Migrations\201603021529530_MoveToSqlMt.Designer.cs">
       <DependentUpon>201603021529530_MoveToSqlMt.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201603032006159_EmptyMigration1.cs" />
+    <Compile Include="Migrations\201603032006159_EmptyMigration1.Designer.cs">
+      <DependentUpon>201603032006159_EmptyMigration1.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -1102,6 +1105,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201603021529530_MoveToSqlMt.resx">
       <DependentUpon>201603021529530_MoveToSqlMt.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201603032006159_EmptyMigration1.resx">
+      <DependentUpon>201603032006159_EmptyMigration1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
