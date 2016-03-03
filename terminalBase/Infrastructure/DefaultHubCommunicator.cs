@@ -343,10 +343,11 @@ namespace TerminalBase.Infrastructure
         {
             var hubDeleteUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                 + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion")
-                + "/activities?id=" + curActivityId.ToString() + "&confirmed=true";
+                + "/activities/deleteactivity?id=" + curActivityId.ToString();
             var uri = new Uri(hubDeleteUrl);
 
-            await _restfulServiceClient.DeleteAsync(uri, null, await GetHMACHeader(uri, userId));
+            var headers = await GetHMACHeader(uri, userId);
+            await _restfulServiceClient.DeleteAsync(uri, null, headers);
         }
 
         public static byte[] ReadFully(Stream input)

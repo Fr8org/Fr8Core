@@ -17,6 +17,7 @@ using Data.Interfaces.Manifests;
 using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
+using TerminalBase.Infrastructure.Behaviors;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services;
 using Utilities.Configuration.Azure;
@@ -261,28 +262,6 @@ namespace terminalDocuSign.Actions
             return activityTemplate.Tags != null && activityTemplate.Tags.Split(',').Any(t => t.ToLowerInvariant().Contains("table"));
         }
 
-        // TODO: FR-2488, to be moved to separate behavior class.
-        class ReconfigurationItem
-        {
-            public Func<ReconfigurationContext, Task<bool>> HasActivityMethod { get; set; }
-            public Func<ReconfigurationContext, Task<ActivityDO>> CreateActivityMethod { get; set; }
-            public Func<ReconfigurationContext, Task<ActivityDO>> ConfigureActivityMethod { get; set; }
-            public int ChildActivityIndex { get; set; }
-        }
-
-        class ReconfigurationContext
-        {
-            public ReconfigurationContext()
-            {
-                AdditionalItems = new List<ReconfigurationItem>();
-            }
-
-            public ActivityDO SolutionActivity { get; set; }
-            public AuthorizationTokenDO AuthToken { get; set; }
-            public IReadOnlyList<ReconfigurationItem> Items { get; set; }
-            public List<ReconfigurationItem> AdditionalItems { get; set; }
-        }
-
         protected override async Task<ActivityDO> FollowupConfigurationResponse(
             ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
@@ -315,61 +294,10 @@ namespace terminalDocuSign.Actions
                 }
             };
 
-            await ReconfigureActivities(curActivityDO, authTokenDO, reconfigList);
+            var behavior = new ReconfigurationListBehavior(this);
+            await behavior.ReconfigureActivities(curActivityDO, authTokenDO, reconfigList);
 
             return await Task.FromResult(curActivityDO);
-        }
-
-        private async Task ReconfigureActivities(ActivityDO solution,
-            AuthorizationTokenDO authToken, IReadOnlyList<ReconfigurationItem> items)
-        {
-            var queue = new Queue<ReconfigurationItem>(items);
-
-            if (solution.ChildNodes == null)
-            {
-                solution.ChildNodes = new List<RouteNodeDO>();
-            }
-
-            while (queue.Count > 0)
-            {
-                var item = queue.Dequeue();
-
-                var context = new ReconfigurationContext()
-                {
-                    SolutionActivity = solution,
-                    AuthToken = authToken,
-                    Items = items
-                };
-
-                if (!await item.HasActivityMethod(context))
-                {
-                    var childActivityByIndex = solution.ChildNodes
-                        .SingleOrDefault(x => x.Ordering == item.ChildActivityIndex);
-
-                    if (childActivityByIndex != null)
-                    {
-                        await HubCommunicator.DeleteActivity(childActivityByIndex.Id, CurrentFr8UserId);
-                        solution.ChildNodes.Remove(childActivityByIndex);
-                    }
-
-                    await item.CreateActivityMethod(context);
-                }
-                else
-                {
-                    await item.ConfigureActivityMethod(context);
-                }
-
-                if (context.AdditionalItems.Count > 0)
-                {
-                    foreach (var additionalItem in context.AdditionalItems)
-                    {
-                        if (!queue.Any(x => x.ChildActivityIndex == additionalItem.ChildActivityIndex))
-                        {
-                            queue.Enqueue(additionalItem);
-                        }
-                    }
-                }
-            }
         }
 
         private Task<bool> HasFirstChildActivity(ReconfigurationContext context)
@@ -538,7 +466,20 @@ namespace terminalDocuSign.Actions
 
                 if (loopActivity == null)
                 {
-                    throw new ApplicationException("Invalid solution structure.");
+                    throw new ApplicationException("Invalid solution structure, no Loop activity found.");
+                }
+
+                loopActivity = await ConfigureChildActivity(context.SolutionActivity, loopActivity);
+
+                using (var crateStorage = CrateManager.GetUpdatableStorage(loopActivity))
+                {
+                    var loopConfigControls = GetConfigurationControls(crateStorage);
+                    var crateChooser = GetControl<CrateChooser>(loopConfigControls, "Available_Crates");
+                    var tableDescription = crateChooser.CrateDescriptions.FirstOrDefault(c => c.ManifestId == (int)MT.StandardTableData);
+                    if (tableDescription != null)
+                    {
+                        tableDescription.Selected = true;
+                    }
                 }
 
                 parentActivity = loopActivity;
@@ -557,8 +498,7 @@ namespace terminalDocuSign.Actions
                 );
 
             sendDocuSignEnvelope.CrateStorage = string.Empty;
-
-            sendDocuSignEnvelope = await HubCommunicator.ConfigureActivity(sendDocuSignEnvelope, CurrentFr8UserId);
+            sendDocuSignEnvelope = await ConfigureChildActivity(parentActivity, sendDocuSignEnvelope);
 
             SetControlValue(
                 sendDocuSignEnvelope,
@@ -571,79 +511,6 @@ namespace terminalDocuSign.Actions
 
             return sendDocuSignEnvelope;
         }
-
-        // TODO: FR-2488, to be removed.
-        // if the user provides a file name, this action attempts to load the excel file and extracts the column headers from the first sheet in the file.
-        // protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        // {
-        //     var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
-        // 
-        //     // TODO: FR-2488, modify code here. 
-        //     // We do not want to delete previously created child activities.
-        //     if (curActivityDO.ChildNodes.Any())
-        //     {
-        //         await HubCommunicator.DeleteExistingChildNodesFromActivity(curActivityDO.Id, CurrentFr8UserId);
-        // 
-        //         curActivityDO.ChildNodes = new List<RouteNodeDO>();
-        //     }
-        // 
-        //     //extract fields in docusign form
-        //     _docuSignManager.UpdateUserDefinedFields(curActivityDO, authTokenDO, CrateManager.GetUpdatableStorage(curActivityDO), _docuSignTemplate.Value);
-        // 
-        //     var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null))
-        //         .Select(x => Mapper.Map<ActivityTemplateDO>(x))
-        //         .ToList();
-        // 
-        //     //let's check if activity template generates table data
-        //     var selectedReceiver = curActivityTemplates.Single(x => x.Name == _dataSourceValue);
-        //     var dataSourceActivity = await AddAndConfigureChildActivity(
-        //         curActivityDO,
-        //         selectedReceiver.Id.ToString(),
-        //         order: 1
-        //     );
-        // 
-        //     ActivityDO parentOfSendDocusignEnvelope = null;
-        //     int orderOfSendDocusignEnvelope = 0;
-        // 
-        //     // We check whether first activity generates tabled data.
-        //     if (DoesActivityTemplateGenerateTableData(selectedReceiver))
-        //     {
-        //         // If first activity does generate tabled data, we first create Loop,
-        //         // and then add SendDocuSignEnvelope inside Loop activity.
-        // 
-        //         // Let's get first table related CrateDescription in upstream activities and apply it to Loop
-        //         var loopActivity = await AddAndConfigureChildActivity(curActivityDO, "Loop", "Loop", "Loop", 2);
-        //         using (var crateStorage = CrateManager.GetUpdatableStorage(loopActivity))
-        //         {
-        //             var loopConfigControls = GetConfigurationControls(crateStorage);
-        //             var crateChooser = GetControl<CrateChooser>(loopConfigControls, "Available_Crates");
-        //             var tableDescription = crateChooser.CrateDescriptions.FirstOrDefault(c => c.ManifestId == (int) MT.StandardTableData);
-        //             if (tableDescription != null)
-        //             {
-        //                 tableDescription.Selected = true;
-        //             }
-        //         }
-        // 
-        //         parentOfSendDocusignEnvelope = loopActivity;
-        //         orderOfSendDocusignEnvelope = 1;
-        //     }
-        //     else
-        //     {
-        //         // If not, we add SendDocuSignEnvelope activity to solution's activity.
-        // 
-        //         parentOfSendDocusignEnvelope = curActivityDO;
-        //         orderOfSendDocusignEnvelope = 2;
-        //     }
-        // 
-        //     var sendDocuSignEnvActivity = await AddAndConfigureChildActivity(parentOfSendDocusignEnvelope, "Send_DocuSign_Envelope", order: orderOfSendDocusignEnvelope);
-        //     //set docusign template
-        //     SetControlValue(sendDocuSignEnvActivity, "target_docusign_template", _docuSignTemplate.ListItems.FirstOrDefault(a => a.Key == _docuSignTemplate.selectedKey));
-        // 
-        // 
-        //     await ConfigureChildActivity(parentOfSendDocusignEnvelope, sendDocuSignEnvActivity);
-        //     return await Task.FromResult(curActivityDO);
-        // }
-
 
         /// <summary>
         /// This method provides documentation in two forms:

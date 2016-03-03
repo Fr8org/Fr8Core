@@ -398,6 +398,7 @@ module dockyard.directives.paneConfigureAction {
                 // Here we look for Crate with ManifestType == 'Standard UI Controls'.
                 // We parse its contents and put it into currentAction.configurationControls structure.
                 function loadConfiguration() {
+                    
                     var deferred = $q.defer();
                     // Block pane and show pane-level 'loading' spinner
                     $scope.processing = true;
