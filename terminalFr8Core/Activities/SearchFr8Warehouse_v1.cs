@@ -139,7 +139,7 @@ namespace terminalFr8Core.Actions
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Add(PackControls(new ActionUi()));
-                var designTimefieldLists = GetFr8WarehouseObject(authTokenDO);
+                var designTimefieldLists = GetFr8WarehouseTypes(authTokenDO);
                 var availableMtObjects = CrateManager.CreateDesignTimeFieldsCrate("Queryable Objects", designTimefieldLists.ToArray());
                 crateStorage.Add(availableMtObjects);
                 crateStorage.AddRange(PackDesignTimeData());
@@ -370,63 +370,34 @@ namespace terminalFr8Core.Actions
             }));
         }
 
-        // search MT Object into DB
-        private MT_Object GetFr8Object(
-           string fr8Object)
-        {
-            int id;
-
-            Int32.TryParse(fr8Object, out id);
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var obj = uow.MTObjectRepository
-                    .GetQuery()
-                    .FirstOrDefault(x => x.Id == id);
-
-                if (obj == null)
-                {
-                    return null;
-                }
-
-                return obj;
-            }
-        }
-
         // create the dropdown design time fields.
-        private List<FieldDTO> GetFr8WarehouseObject(AuthorizationTokenDO oAuthToken)
+        private List<FieldDTO> GetFr8WarehouseTypes(AuthorizationTokenDO oAuthToken)
         {
             using (var unitWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curFr8ObjectResult = unitWork.MTDataRepository.FindList(d => d.fr8AccountId == oAuthToken.UserID);
+                var warehouseTypes = new List<FieldDTO>();
 
-                var listFieldDTO = new List<FieldDTO>();
-
-                foreach (var item in curFr8ObjectResult)
+                foreach (var mtTypeReference in unitWork.MultiTenantObjectRepository.ListTypeReferences())
                 {
-                    var fr8ObjectRepository = unitWork.MTObjectRepository.GetQuery().FirstOrDefault(d => d.Id == item.MT_ObjectId);
-
-                    if (!listFieldDTO.Exists(d => d.Key == fr8ObjectRepository.Name))
+                    warehouseTypes.Add(new FieldDTO
                     {
-                        listFieldDTO.Add(new FieldDTO()
-                        {
-                            Key = fr8ObjectRepository.Name,
-                            Value = fr8ObjectRepository.Id.ToString()
-                        });
-                    }
+                        Key = mtTypeReference.Alias,
+                        Value = mtTypeReference.Id.ToString("N")
+                    });
                 }
-                return listFieldDTO;
+                
+                return warehouseTypes;
             }
         }
 
         // create the Query design time fields.
-        private List<QueryFieldDTO> GetFr8WarehouseFieldNames(string fr8ObjectName)
+        private List<QueryFieldDTO> GetFr8WarehouseFieldNames(string typeId)
         {
             List<QueryFieldDTO> designTimeQueryFields = new List<QueryFieldDTO>();
-            var mtObject = GetFr8Object(fr8ObjectName);
 
             using (var unitWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                foreach (var field in unitWork.MTFieldRepository.GetQuery().Where(x => x.MT_ObjectId == mtObject.Id))
+                foreach (var field in unitWork.MultiTenantObjectRepository.ListTypePropertyReferences(Guid.Parse(typeId)))
                 {
                     if (!designTimeQueryFields.Exists(d => d.Name == field.Name))
                     {

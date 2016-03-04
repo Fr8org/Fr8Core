@@ -20,6 +20,7 @@ using System.Web.Routing;
 using System.Net;
 using System.Net.Http.Formatting;
 using System.Net.Http.Headers;
+using Data;
 
 namespace TerminalBase.BaseClasses
 {

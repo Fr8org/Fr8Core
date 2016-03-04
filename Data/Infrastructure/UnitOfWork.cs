@@ -6,6 +6,7 @@ using System.Linq;
 using System.Transactions;
 using Data.Interfaces;
 using Data.Repositories;
+using Data.Repositories.MultiTenant;
 using Data.Repositories.Plan;
 using StructureMap;
 
@@ -476,62 +477,19 @@ namespace Data.Infrastructure
                 return _fileRepository ?? (_fileRepository = new FileRepository(this));
             }
         }
-
-        private MTFieldRepository _mtFieldRepository;
-
-        public IMTFieldRepository MTFieldRepository
-        {
-            get
-            {
-                return _mtFieldRepository ?? (_mtFieldRepository = new MTFieldRepository(this));
-            }
-        }
-
-        private MTFieldTypeRepository _mtFieldTypeRepository;
-
-        public IMTFieldTypeRepository MTFieldTypeRepository
-        {
-            get
-            {
-                return _mtFieldTypeRepository ?? (_mtFieldTypeRepository = new MTFieldTypeRepository(this));
-            }
-        }
-
-        private MTObjectRepository _mtObjectdRepository;
-
-        public IMTObjectRepository MTObjectRepository
-        {
-            get
-            {
-                return _mtObjectdRepository ?? (_mtObjectdRepository = new MTObjectRepository(this));
-            }
-        }
-
-        private MTDataRepository _mtDataRepository;
-
-        public IMTDataRepository MTDataRepository
-        {
-            get
-            {
-                return _mtDataRepository ?? (_mtDataRepository = new MTDataRepository(this));
-            }
-        }
-
+        
         public IPlanRepository PlanRepository
         {
             get { return _container.GetInstance<PlanRepository>(); }
         }
 
-        private MultiTenantObjectRepository _multiTenantObjectRepository;
-
-        public MultiTenantObjectRepository MultiTenantObjectRepository
+         public IMultiTenantObjectRepository MultiTenantObjectRepository
         {
             get
             {
-                return _multiTenantObjectRepository ?? (_multiTenantObjectRepository = new MultiTenantObjectRepository());
+               return _container.GetInstance<IMultiTenantObjectRepository>();
             }
         }
-
 
         private TerminalRepository _terminalRepository;
 
@@ -632,6 +590,17 @@ namespace Data.Infrastructure
         public void SaveChanges()
         {
             _container.GetInstance<PlanRepository>().SaveChanges();
+
+            try
+            {
+                var mtRep = _container.GetInstance<IMultiTenantObjectRepository>() as MultitenantRepository;
+                if (mtRep != null)
+                {
+                    mtRep.SaveChanges();
+                }
+            }
+            catch
+            {}
 
             _context.DetectChanges();
             var addedEntities = _context.AddedEntities;

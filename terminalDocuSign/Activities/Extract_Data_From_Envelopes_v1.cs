@@ -52,12 +52,7 @@ namespace terminalDocuSign.Actions
                 {
                     Name = "FinalActionsList",
                     Required = true,
-                    Label = "What would you like us to do with the data?",
-                    Source = new FieldSourceDTO
-                    {
-                        Label = "AvailableActions",
-                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                    },
+                    Label = "What would you like us to do with the data?",                   
                     Events = new List<ControlEvent> { new ControlEvent("onChange", "requestConfig") }
                 }));
             }
@@ -80,15 +75,15 @@ namespace terminalDocuSign.Actions
 
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivtyDO, AuthorizationTokenDO authTokenDO)
         {
+            var configurationCrate = PackControls(new ActivityUi());
+            await FillFinalActionsListSource(configurationCrate, "FinalActionsList");
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivtyDO))
             {
                 crateStorage.Clear();
-                crateStorage.Add(PackControls(new ActivityUi()));
-                crateStorage.AddRange(await PackSources());
+                crateStorage.Add(configurationCrate);              
             }
-
             return curActivtyDO;
-        }
+        }      
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
@@ -123,21 +118,7 @@ namespace terminalDocuSign.Actions
             var templates = await HubCommunicator.GetActivityTemplates(CurrentFr8UserId);
             return templates.Select(x => Mapper.Map<ActivityTemplateDO>(x)).Where(x => query(x));
         }
-
-        private async Task<IEnumerable<Crate>> PackSources()
-        {
-            var sources = new List<Crate>();
-
-            var templates = await HubCommunicator.GetActivityTemplates(ActivityCategory.Forwarders, CurrentFr8UserId);
-            sources.Add(
-                CrateManager.CreateDesignTimeFieldsCrate(
-                    "AvailableActions",
-                    templates.Select(x => new FieldDTO(x.Label, x.Id.ToString(), AvailabilityType.Configuration)).ToArray()
-                )
-            );
-
-            return sources;
-        }
+    
         /// <summary>
         /// This method provides documentation in two forms:
         /// SolutionPageDTO for general information and 
@@ -169,5 +150,23 @@ namespace terminalDocuSign.Actions
                 Task.FromResult(
                     GenerateErrorRepsonce("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
         }
+
+        #region Private Methods
+        private async Task FillFinalActionsListSource(Crate configurationCrate, string controlName)
+        {
+            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
+            var control = configurationControl.FindByNameNested<DropDownList>(controlName);
+            if (control != null)
+            {
+                control.ListItems = await GetFinalActionListItems();
+            }
+        }
+
+        private async Task<List<ListItem>> GetFinalActionListItems()
+        {
+            var templates = await HubCommunicator.GetActivityTemplates(ActivityCategory.Forwarders, CurrentFr8UserId);
+            return templates.Select(x => new ListItem() { Key = x.Label, Value = x.Id.ToString() }).ToList();
+        }
+        #endregion
     }
 }

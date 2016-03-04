@@ -13,6 +13,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Globalization;
 using System.IO;
+using Data.Interfaces.DataTransferObjects;
 
 namespace Hub.Managers.APIManagers.Transmitters.Restful
 {
@@ -220,11 +221,27 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
         private async Task<T> DeserializeResponseAsync<T>(HttpResponseMessage response)
         {
             var responseStream = await response.Content.ReadAsStreamAsync();
+            var memstream = new MemoryStream();
+
+            responseStream.CopyTo(memstream);
+            memstream.Seek(0, SeekOrigin.Begin);
+
             var responseObject = await _formatter.ReadFromStreamAsync(
                 typeof(T),
-                responseStream,
+                memstream,
                 response.Content,
                 _formatterLogger);
+
+            if (typeof (T) == typeof (ActivityDTO) && Object.ReferenceEquals(responseObject, null))
+            {
+                memstream.Seek(0, SeekOrigin.Begin);
+                var text = Encoding.UTF8.GetString(memstream.ToArray());
+                
+                
+                // someting went wrong
+                throw new Exception(string.Format("Recieved null ActivityDTO.\n Request was: {0}.\nResponse was  {1}\n. Response content was: {2}", response.RequestMessage.ToString(), response.ToString(), text));
+            } 
+
             return (T)responseObject;
         }
 
