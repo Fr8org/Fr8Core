@@ -109,6 +109,7 @@
     <Compile Include="Infrastructure\Behaviors\CheckBoxMappingBehavior.cs" />
     <Compile Include="Infrastructure\Behaviors\DropDownListMappingBehavior.cs" />
     <Compile Include="Infrastructure\Behaviors\RadioButtonGroupMappingBehavior.cs" />
+    <Compile Include="Infrastructure\Behaviors\ReconfigurationListBehavior.cs" />
     <Compile Include="Infrastructure\Behaviors\TextSourceMappingBehavior.cs" />
     <Compile Include="Infrastructure\DefaultHubCommunicator.cs" />
     <Compile Include="Infrastructure\DataHubCommunicatorBase.cs" />
