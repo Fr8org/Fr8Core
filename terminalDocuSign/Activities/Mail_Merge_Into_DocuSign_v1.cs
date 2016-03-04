@@ -17,6 +17,7 @@ using Data.Interfaces.Manifests;
 using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
+using TerminalBase.Infrastructure.Behaviors;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services;
 using Utilities.Configuration.Azure;
@@ -146,11 +147,9 @@ namespace terminalDocuSign.Actions
                         var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 
                         //build a controls crate to render the pane
-                        var configurationControlsCrate = await CreateConfigurationControlsCrate(curActivityDO);
-                        var templatesFieldCrate = _docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
-
-                        crateStorage.Add(configurationControlsCrate);
-                        crateStorage.Add(templatesFieldCrate);
+                        var configurationCrate = await CreateConfigurationControlsCrate(curActivityDO);
+                        _docuSignManager.FillDocuSignTemplateSource(configurationCrate, "DocuSignTemplate", docuSignAuthDTO);
+                        crateStorage.Add(configurationCrate);
                     }
                 }
             }
@@ -234,7 +233,11 @@ namespace terminalDocuSign.Actions
             // "Follow up" phase is when Continue button is clicked 
             Button button = GetStdConfigurationControl<Button>(storage, "Continue");
             if (button == null) return ConfigurationRequestType.Initial;
-            if (button.Clicked == false) return ConfigurationRequestType.Initial;
+            if (button.Clicked == false &&
+                (curActivityDO.ChildNodes == null || curActivityDO.ChildNodes.Count == 0))
+            {
+                return ConfigurationRequestType.Initial;
+            }
 
             // If no values selected in textboxes, remain on initial phase
             DropDownList dataSource = GetStdConfigurationControl<DropDownList>(storage, "DataSource");
@@ -257,36 +260,158 @@ namespace terminalDocuSign.Actions
             return activityTemplate.Tags != null && activityTemplate.Tags.Split(',').Any(t => t.ToLowerInvariant().Contains("table"));
         }
 
-        //if the user provides a file name, this action attempts to load the excel file and extracts the column headers from the first sheet in the file.
-        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> FollowupConfigurationResponse(
+            ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
-
-            if (curActivityDO.ChildNodes.Any())
+            using (var updater = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                await HubCommunicator.DeleteExistingChildNodesFromActivity(curActivityDO.Id, CurrentFr8UserId);
-
-                curActivityDO.ChildNodes = new List<RouteNodeDO>();
+                // extract fields in docusign form
+                _docuSignManager.UpdateUserDefinedFields(
+                    curActivityDO,
+                    authTokenDO,
+                    updater,
+                    _docuSignTemplate.Value
+                );
             }
 
-            //extract fields in docusign form
-            _docuSignManager.UpdateUserDefinedFields(curActivityDO, authTokenDO, CrateManager.GetUpdatableStorage(curActivityDO), _docuSignTemplate.Value);
+            var reconfigList = new List<ConfigurationRequest>()
+            {
+                new ConfigurationRequest()
+                {
+                    HasActivityMethod = HasFirstChildActivity,
+                    CreateActivityMethod = CreateFirstChildActivity,
+                    ConfigureActivityMethod = ConfigureFirstChildActivity,
+                    ChildActivityIndex = 1
+                },
+                new ConfigurationRequest()
+                {
+                    HasActivityMethod = HasSecondChildActivity,
+                    CreateActivityMethod = CreateSecondChildActivity,
+                    ConfigureActivityMethod = ConfigureSecondChildActivity,
+                    ChildActivityIndex = 2
+                }
+            };
+
+            var behavior = new ReconfigurationListBehavior(this);
+            await behavior.ReconfigureActivities(curActivityDO, authTokenDO, reconfigList);
+
+            return await Task.FromResult(curActivityDO);
+        }
+
+        private Task<bool> HasFirstChildActivity(ReconfigurationContext context)
+        {
+            if (context.SolutionActivity.ChildNodes == null)
+            {
+                return Task.FromResult(false);
+            }
+
+            var activityExists = context.SolutionActivity
+                .ChildNodes
+                .OfType<ActivityDO>()
+                .Any(x => x.ActivityTemplate.Name == _dataSourceValue
+                    && x.Ordering == 1
+                );
+
+            return Task.FromResult(activityExists);
+        }
+
+        private async Task<ActivityDO> CreateFirstChildActivity(ReconfigurationContext context)
+        {
+            var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null))
+                .Select(x => Mapper.Map<ActivityTemplateDO>(x))
+                .ToList();
+            
+            // Let's check if activity template generates table data
+            var selectedReceiver = curActivityTemplates.Single(x => x.Name == _dataSourceValue);
+            var dataSourceActivity = await AddAndConfigureChildActivity(
+                context.SolutionActivity,
+                selectedReceiver.Id.ToString(),
+                order: 1
+            );
+
+            context.SolutionActivity.ChildNodes.Remove(dataSourceActivity);
+            context.SolutionActivity.ChildNodes.Insert(0, dataSourceActivity);
+
+            return dataSourceActivity;
+        }
+
+        private async Task<ActivityDO> ConfigureFirstChildActivity(ReconfigurationContext context)
+        {
+            var activity = context.SolutionActivity.ChildNodes
+                .OfType<ActivityDO>()
+                .Single(x => x.Ordering == 1);
+
+            activity.CrateStorage = string.Empty;
+
+            activity = await HubCommunicator.ConfigureActivity(activity, CurrentFr8UserId);
+
+            return activity;
+        }
+
+        private async Task<bool> HasSecondChildActivity(ReconfigurationContext context)
+        {
+            if (context.SolutionActivity.ChildNodes == null)
+            {
+                return false;
+            }
 
             var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null))
                 .Select(x => Mapper.Map<ActivityTemplateDO>(x))
                 .ToList();
 
-            //let's check if activity template generates table data
             var selectedReceiver = curActivityTemplates.Single(x => x.Name == _dataSourceValue);
-            var dataSourceActivity = await AddAndConfigureChildActivity(curActivityDO, selectedReceiver.Id.ToString(), order: 1);
-
-            ActivityDO parentOfSendDocusignEnvelope = null;
-            int orderOfSendDocusignEnvelope = 0;
+            ActivityDO parentActivity;
+            int activityIndex;
 
             if (DoesActivityTemplateGenerateTableData(selectedReceiver))
             {
-                //let's get first table related CrateDescription in upstream activities and apply it to Loop
-                var loopActivity = await AddAndConfigureChildActivity(curActivityDO, "Loop", "Loop", "Loop", 2);
+                var loopActivity = context.SolutionActivity.ChildNodes
+                    .OfType<ActivityDO>()
+                    .SingleOrDefault(x => x.ActivityTemplate.Name == "Loop" && x.Ordering == 2);
+
+                if (loopActivity == null)
+                {
+                    return false;
+                }
+
+                parentActivity = loopActivity;
+                activityIndex = 1;
+            }
+            else
+            {
+                parentActivity = context.SolutionActivity;
+                activityIndex = 2;
+            }
+
+            if (parentActivity.ChildNodes.Count != 1)
+            {
+                return false;
+            }
+
+            var sendDocuSignEnvelope = parentActivity.ChildNodes
+                .OfType<ActivityDO>()
+                .SingleOrDefault(x => x.ActivityTemplate.Name == "Send_DocuSign_Envelope"
+                    && x.Ordering == activityIndex
+                );
+
+            return (sendDocuSignEnvelope != null);
+        }
+
+        private async Task<ActivityDO> CreateSecondChildActivity(ReconfigurationContext context)
+        {
+            var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null))
+                .Select(x => Mapper.Map<ActivityTemplateDO>(x))
+                .ToList();
+
+            var selectedReceiver = curActivityTemplates.Single(x => x.Name == _dataSourceValue);
+            ActivityDO parentActivity;
+            int activityIndex;
+
+            if (DoesActivityTemplateGenerateTableData(selectedReceiver))
+            {
+                var loopActivity = await AddAndConfigureChildActivity(
+                    context.SolutionActivity, "Loop", "Loop", "Loop", 2);
+
                 using (var crateStorage = CrateManager.GetUpdatableStorage(loopActivity))
                 {
                     var loopConfigControls = GetConfigurationControls(crateStorage);
@@ -298,23 +423,93 @@ namespace terminalDocuSign.Actions
                     }
                 }
 
-                parentOfSendDocusignEnvelope = loopActivity;
-                orderOfSendDocusignEnvelope = 1;
+                parentActivity = loopActivity;
+                activityIndex = 1;
             }
             else
             {
-                parentOfSendDocusignEnvelope = curActivityDO;
-                orderOfSendDocusignEnvelope = 2;
+                parentActivity = context.SolutionActivity;
+                activityIndex = 2;
             }
 
-            var sendDocuSignEnvActivity = await AddAndConfigureChildActivity(parentOfSendDocusignEnvelope, "Send_DocuSign_Envelope", order: orderOfSendDocusignEnvelope);
-            //set docusign template
-            SetControlValue(sendDocuSignEnvActivity, "target_docusign_template", _docuSignTemplate.ListItems.FirstOrDefault(a => a.Key == _docuSignTemplate.selectedKey));
+            var sendDocuSignActivity = await AddAndConfigureChildActivity(parentActivity, "Send_DocuSign_Envelope", order: activityIndex);
+            // Set docusign template
+            SetControlValue(
+                sendDocuSignActivity,
+                "target_docusign_template",
+                _docuSignTemplate.ListItems
+                    .FirstOrDefault(a => a.Key == _docuSignTemplate.selectedKey)
+            );
+            
+            await ConfigureChildActivity(parentActivity, sendDocuSignActivity);
 
-
-            await ConfigureChildActivity(parentOfSendDocusignEnvelope, sendDocuSignEnvActivity);
-            return await Task.FromResult(curActivityDO);
+            return activityIndex == 1 ? sendDocuSignActivity : parentActivity;
         }
+
+        private async Task<ActivityDO> ConfigureSecondChildActivity(ReconfigurationContext context)
+        {
+            var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null))
+                .Select(x => Mapper.Map<ActivityTemplateDO>(x))
+                .ToList();
+
+            var selectedReceiver = curActivityTemplates.Single(x => x.Name == _dataSourceValue);
+            ActivityDO parentActivity;
+            int activityIndex;
+
+            if (DoesActivityTemplateGenerateTableData(selectedReceiver))
+            {
+                var loopActivity = context.SolutionActivity.ChildNodes
+                    .OfType<ActivityDO>()
+                    .SingleOrDefault(x => x.ActivityTemplate.Name == "Loop" && x.Ordering == 2);
+
+                if (loopActivity == null)
+                {
+                    throw new ApplicationException("Invalid solution structure, no Loop activity found.");
+                }
+
+                loopActivity = await ConfigureChildActivity(context.SolutionActivity, loopActivity);
+
+                using (var crateStorage = CrateManager.GetUpdatableStorage(loopActivity))
+                {
+                    var loopConfigControls = GetConfigurationControls(crateStorage);
+                    var crateChooser = GetControl<CrateChooser>(loopConfigControls, "Available_Crates");
+                    var tableDescription = crateChooser.CrateDescriptions.FirstOrDefault(c => c.ManifestId == (int)MT.StandardTableData);
+                    if (tableDescription != null)
+                    {
+                        tableDescription.Selected = true;
+                    }
+                }
+
+                parentActivity = loopActivity;
+                activityIndex = 1;
+            }
+            else
+            {
+                parentActivity = context.SolutionActivity;
+                activityIndex = 2;
+            }
+
+            var sendDocuSignEnvelope = parentActivity.ChildNodes
+                .OfType<ActivityDO>()
+                .Single(x => x.ActivityTemplate.Name == "Send_DocuSign_Envelope"
+                    && x.Ordering == activityIndex
+                );
+
+            sendDocuSignEnvelope.CrateStorage = string.Empty;
+            sendDocuSignEnvelope = await ConfigureChildActivity(parentActivity, sendDocuSignEnvelope);
+
+            SetControlValue(
+                sendDocuSignEnvelope,
+                "target_docusign_template",
+                _docuSignTemplate.ListItems
+                    .FirstOrDefault(a => a.Key == _docuSignTemplate.selectedKey)
+            );
+
+            sendDocuSignEnvelope = await ConfigureChildActivity(parentActivity, sendDocuSignEnvelope);
+
+            return sendDocuSignEnvelope;
+        }
+
         /// <summary>
         /// This method provides documentation in two forms:
         /// SolutionPageDTO for general information and 

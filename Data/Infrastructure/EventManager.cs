@@ -38,6 +38,8 @@ namespace Data.Infrastructure
         public delegate void TerminalActionActivatedHandler(ActivityDO activity);
         public static event TerminalActionActivatedHandler TerminalActionActivated;
 
+        public delegate void PlanActivationFailedHandler(PlanDO plan, string reason);
+        public static event PlanActivationFailedHandler PlanActivationFailedEvent;
 
         public delegate void ExplicitCustomerCreatedHandler(string curUserId);
         public static event ExplicitCustomerCreatedHandler AlertExplicitCustomerCreated;
@@ -242,6 +244,12 @@ namespace Data.Infrastructure
         {
             IncidentTerminalActionActivationPOSTFailureHandler handler = IncidentTerminalActionActivationFailed;
             if (handler != null) handler(terminalUrl, activityDTO, objectId);
+        }
+
+        public static void PlanActivationFailed(PlanDO plan, string reason)
+        {
+            var handler = PlanActivationFailedEvent;
+            if (handler != null) handler(plan, reason);
         }
 
         public static void UserNotification(string userid, string message, TimeSpan expiresIn = default(TimeSpan))

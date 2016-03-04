@@ -2,6 +2,7 @@
     export class AuthService {
         private _pendingActionIds: any;
         private _authDialogDisplayed: boolean;
+        private _currentPlan: interfaces.IRouteVM;
 
         constructor(
             private $rootScope: ng.IScope,
@@ -37,6 +38,10 @@
             }
         }
 
+        public setCurrentPlan(plan: interfaces.IRouteVM) {
+            this._currentPlan = plan;
+        }
+
         public clear() {
             this._pendingActionIds = {};
         }
@@ -45,6 +50,31 @@
             if (!(actionId in this._pendingActionIds)) {
                 this._pendingActionIds[actionId] = actionId;
             }
+        }
+
+        public isSolutionBasedPlan() {
+            if (!this._currentPlan.subroutes) {
+                return false;
+            }
+
+            var subroute = this._currentPlan.subroutes[0];
+            if (!subroute || !subroute.activities) {
+                return false;
+            }
+
+            var activity = subroute.activities[0];
+            if (!activity || !activity.activityTemplate) {
+                return false;
+            }
+
+            if (activity.activityTemplate.category === 'Solution'
+                // Second clause to force new algorithm work only for specific activities.
+                && activity.activityTemplate.tags === 'UsesReconfigureList') {
+
+                return true;
+            }
+
+            return false;
         }
 
         public startAuthentication(actionIds: Array<string>) {
@@ -63,12 +93,26 @@
             })
             .result
             .then(() => {
-                angular.forEach(actionIds, it => {
+                if (!this.isSolutionBasedPlan()) {
+                    angular.forEach(actionIds, it => {
+                        self.$rootScope.$broadcast(
+                            dockyard.directives.paneConfigureAction.MessageType[dockyard.directives.paneConfigureAction.MessageType.PaneConfigureAction_AuthCompleted],
+                            new dockyard.directives.paneConfigureAction.AuthenticationCompletedEventArgs(<interfaces.IActivityDTO>({ id: it }))
+                        );
+                    });
+                }
+                else {
                     self.$rootScope.$broadcast(
                         dockyard.directives.paneConfigureAction.MessageType[dockyard.directives.paneConfigureAction.MessageType.PaneConfigureAction_AuthCompleted],
-                        new dockyard.directives.paneConfigureAction.AuthenticationCompletedEventArgs(<interfaces.IActivityDTO>({ id: it }))
+                        new dockyard.directives.paneConfigureAction.AuthenticationCompletedEventArgs(this._currentPlan.subroutes[0].activities[0])
                     );
-                });
+
+                    console.log(
+                        'AuthService.ts',
+                        'Configuring root solution activity with ID = '
+                            + this._currentPlan.subroutes[0].activities[0].id
+                    );
+                }
             })
             .catch((result) => {
                 angular.forEach(actionIds, it => {
