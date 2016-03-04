@@ -146,11 +146,9 @@ namespace terminalDocuSign.Actions
                         var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 
                         //build a controls crate to render the pane
-                        var configurationControlsCrate = await CreateConfigurationControlsCrate(curActivityDO);
-                        var templatesFieldCrate = _docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
-
-                        crateStorage.Add(configurationControlsCrate);
-                        crateStorage.Add(templatesFieldCrate);
+                        var configurationCrate = await CreateConfigurationControlsCrate(curActivityDO);
+                        _docuSignManager.FillDocuSignTemplateSource(configurationCrate, "DocuSignTemplate", docuSignAuthDTO);
+                        crateStorage.Add(configurationCrate);
                     }
                 }
             }
