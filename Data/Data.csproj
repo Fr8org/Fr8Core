@@ -642,9 +642,9 @@
     <Compile Include="Migrations\201602290745114_AddedCateogryColumn_PlanDO.Designer.cs">
       <DependentUpon>201602290745114_AddedCateogryColumn_PlanDO.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201603032212202_Add_Organizations_Table.cs" />
-    <Compile Include="Migrations\201603032212202_Add_Organizations_Table.Designer.cs">
-      <DependentUpon>201603032212202_Add_Organizations_Table.cs</DependentUpon>
+    <Compile Include="Migrations\201603041946225_Organizations_structure.cs" />
+    <Compile Include="Migrations\201603041946225_Organizations_structure.Designer.cs">
+      <DependentUpon>201603041946225_Organizations_structure.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -1088,8 +1088,8 @@
     <EmbeddedResource Include="Migrations\201602290745114_AddedCateogryColumn_PlanDO.resx">
       <DependentUpon>201602290745114_AddedCateogryColumn_PlanDO.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201603032212202_Add_Organizations_Table.resx">
-      <DependentUpon>201603032212202_Add_Organizations_Table.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201603041946225_Organizations_structure.resx">
+      <DependentUpon>201603041946225_Organizations_structure.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

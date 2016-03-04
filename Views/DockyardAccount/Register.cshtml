@@ -43,7 +43,7 @@
                         @Html.CheckBoxFor(x=>x.HasOrganization)
                     </div>
                 </div>
-                <div class="form-group hidden">
+                <div id="register-organization-name" class="form-group" style="display: none;">
                     @Html.LabelFor(m => m.OrganizationName, new { @class = "col-md-3 control-label" })
                     <div class="col-md-4">
                         @Html.TextBoxFor(m => m.OrganizationName, new { @class = "form-control" })
