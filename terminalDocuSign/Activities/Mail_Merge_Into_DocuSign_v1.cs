@@ -276,16 +276,16 @@ namespace terminalDocuSign.Actions
                 );
             }
 
-            var reconfigList = new List<ReconfigurationItem>()
+            var reconfigList = new List<ConfigurationRequest>()
             {
-                new ReconfigurationItem()
+                new ConfigurationRequest()
                 {
                     HasActivityMethod = HasFirstChildActivity,
                     CreateActivityMethod = CreateFirstChildActivity,
                     ConfigureActivityMethod = ConfigureFirstChildActivity,
                     ChildActivityIndex = 1
                 },
-                new ReconfigurationItem()
+                new ConfigurationRequest()
                 {
                     HasActivityMethod = HasSecondChildActivity,
                     CreateActivityMethod = CreateSecondChildActivity,
