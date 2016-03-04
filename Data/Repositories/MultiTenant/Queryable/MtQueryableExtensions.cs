@@ -2,7 +2,7 @@ using System;
 using System.Linq.Expressions;
 using Data.Interfaces.Manifests;
 
-namespace Data.Repositories
+namespace Data.Repositories.MultiTenant.Queryable
 {
     public static class MtQueryableExtensions
     {

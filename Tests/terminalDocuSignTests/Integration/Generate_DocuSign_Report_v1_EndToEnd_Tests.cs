@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Data;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -39,7 +41,6 @@ namespace terminalDocuSignTests.Integration
                 var planConfigure = await GetPlanByActivity(solution.Id);
                 ValidatePlanCategory(planConfigure);
                 await SaveActivity(solution);
-
 
                 // FollowUp configuration.
                 MockSolutionFollowUpConfigurationData(solution);

@@ -5,6 +5,7 @@
         id: string;
         dtOptionsBuilder: any;
         dtColumnDefs: any;
+        displayTable: boolean;
         columns: any;
         data: any;
         title: string;
@@ -18,7 +19,8 @@
             '$stateParams',
             'DTOptionsBuilder',
             'DTColumnDefBuilder',
-            'CrateHelper'
+            'CrateHelper',
+            '$timeout'
         ];
 
         constructor(
@@ -28,7 +30,8 @@
             private $stateParams: any,
             private DTOptionsBuilder: any,
             private DTColumnDefBuilder: any,
-            private CrateHelper: services.CrateHelper) {
+            private CrateHelper: services.CrateHelper,
+            private $timeout: ng.ITimeoutService) {
 
             var self = this;
 
@@ -44,14 +47,27 @@
                 .withPaginationType('full_numbers')
                 .withDisplayLength(10);
 
-            $scope.dtColumnDefs = [];
+            $scope.dtColumnDefs = [
+                this.DTColumnDefBuilder.newColumnDef(0)
+            ];
+
+            $scope.displayTable = false;
 
             $scope.payload.$promise
                 .then(function () {
-                    var crate = self.CrateHelper.findByLabel(<model.CrateStorage>($scope.payload.crateStorage), 'Sql Query Result');
+                    var crate = self.CrateHelper.findByLabel(<model.CrateStorage>($scope.payload.container), 'Sql Query Result');
                     var contents = <any>crate.contents;
 
                     $scope.title = contents.Name || 'Find Objects Results';
+
+                    $scope.dtOptionsBuilder = DTOptionsBuilder
+                        .newOptions()
+                        .withOption('order', [[0, 'asc']])
+                        .withPaginationType('full_numbers')
+                        .withDisplayLength(10);
+
+                    $scope.dtColumnDefs = [
+                    ];
 
                     if (contents.PayloadObjects && contents.PayloadObjects.length) {
                         // Create columns.
@@ -74,6 +90,10 @@
                             $scope.data.push(row);
                         });
                     }
+
+                    $timeout(function () {
+                        $scope.displayTable = true;
+                    }, 100);
                 });
         }
     }
