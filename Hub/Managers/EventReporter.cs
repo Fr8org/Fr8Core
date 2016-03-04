@@ -504,6 +504,7 @@ namespace Hub.Managers
         {
             var fact = new IncidentDO
             {
+                CustomerId = _security.GetCurrentUser(),
                 PrimaryCategory = "Notification",
                 Activity = "Received",
                 Data = message
@@ -525,6 +526,7 @@ namespace Hub.Managers
         {
             var incidentDO = new IncidentDO
             {
+                CustomerId = _security.GetCurrentUser(),
                 PrimaryCategory = "Error",
                 SecondaryCategory = "ApplicationException",
                 Activity = "Received",

@@ -20,11 +20,11 @@ namespace Hub.Managers
         private readonly ITerminal _terminal;
         private readonly ISecurityServices _sercurity;
 
-        public IncidentReporter(EventReporter eventReporter, ITerminal terminal)
+        public IncidentReporter(EventReporter eventReporter, ITerminal terminal, ISecurityServices securityService)
         {
             _eventReporter = eventReporter;
             _terminal = terminal;
-            _sercurity = ObjectFactory.GetInstance<ISecurityServices>();
+            _sercurity = securityService;
         }
 
         public void SubscribeToAlerts()
@@ -109,7 +109,7 @@ namespace Hub.Managers
         {
             var incident = new IncidentDO
             {
-                CustomerId = "unknown",
+                CustomerId = _sercurity.GetCurrentUser(),
                 Data = string.Join(
                     Environment.NewLine,
                     "AuthToken method: Silent Revoke",
@@ -151,7 +151,7 @@ namespace Hub.Managers
         {
             var incident = new IncidentDO
             {
-                CustomerId = "unknown",
+                CustomerId = _sercurity.GetCurrentUser(),
                 Data = terminalUrl + "      " + curActionDTO,
                 ObjectId = objectId,
                 PrimaryCategory = "Action",
@@ -189,7 +189,7 @@ namespace Hub.Managers
         {
             var incident = new IncidentDO
             {
-                CustomerId = "unknown",
+                CustomerId = _sercurity.GetCurrentUser(),
                 Data = curTerminalUrl + "      " + curAction + " " + errorMessage,
                 ObjectId = objectId,
                 PrimaryCategory = "Terminal",
@@ -204,11 +204,11 @@ namespace Hub.Managers
         {
             var incident = new IncidentDO
             {
-                CustomerId = "unknown",
+                CustomerId = _sercurity.GetCurrentUser(),
                 Data = curTerminalUrl + "      " + curAction + " " + e.Message + " \r\nStack trace: \r\n" + e.StackTrace,
                 ObjectId = objectId,
                 PrimaryCategory = "Terminal",
-                SecondaryCategory = "Configure",
+                SecondaryCategory = "Internal",
                 Component = "Terminal",
                 Activity = "Configuration Failed"
             };
@@ -222,11 +222,11 @@ namespace Hub.Managers
         {
             var incident = new IncidentDO
             {
-                CustomerId = "unknown",
+                CustomerId = _sercurity.GetCurrentUser(),
                 Data = curTerminalUrl + "      " + curAction + " " + errorMessage,
                 ObjectId = objectId,
                 PrimaryCategory = "Terminal",
-                SecondaryCategory = "Configure",
+                SecondaryCategory = "Run",
                 Component = "Hub",
                 Activity = "Configuration Failed"
             };
@@ -239,7 +239,7 @@ namespace Hub.Managers
             {
                 CustomerId = _sercurity.GetCurrentUser(),
                 Data = "Query string: " + curRequestQueryString + "      \r\n" + errorMessage,
-                ObjectId = "unknown",
+                ObjectId = _sercurity.GetCurrentUser(),
                 PrimaryCategory = "Terminal",
                 SecondaryCategory = "Authentication",
                 Activity = "OAuth Authentication Failed"
@@ -251,8 +251,8 @@ namespace Hub.Managers
         {
             var currentIncident = new IncidentDO
             {
-                ObjectId = incidentItem.ObjectId,
                 CustomerId = _sercurity.GetCurrentUser(),
+                ObjectId = incidentItem.ObjectId,
                 Data = incidentItem.Data,
                 PrimaryCategory = incidentItem.PrimaryCategory,
                 SecondaryCategory = incidentItem.SecondaryCategory,
