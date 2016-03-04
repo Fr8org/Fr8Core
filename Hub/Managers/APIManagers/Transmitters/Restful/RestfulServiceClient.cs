@@ -13,6 +13,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Globalization;
 using System.IO;
+using Data.Interfaces.DataTransferObjects;
 
 namespace Hub.Managers.APIManagers.Transmitters.Restful
 {
@@ -220,11 +221,13 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
         private async Task<T> DeserializeResponseAsync<T>(HttpResponseMessage response)
         {
             var responseStream = await response.Content.ReadAsStreamAsync();
+           
             var responseObject = await _formatter.ReadFromStreamAsync(
                 typeof(T),
                 responseStream,
                 response.Content,
                 _formatterLogger);
+
             return (T)responseObject;
         }
 

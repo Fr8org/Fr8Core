@@ -343,6 +343,7 @@ module dockyard.controllers {
         }
 
         private onRouteLoad(mode: string, curRoute: interfaces.IRouteVM) {
+            this.AuthService.setCurrentPlan(curRoute);
             this.AuthService.clear();
 
             this.$scope.mode = mode;

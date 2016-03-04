@@ -20,13 +20,13 @@ using terminalDocuSign.Infrastructure;
 
 namespace terminalDocuSign.Actions
 {
-    public class Query_DocuSign_v1  : BaseDocuSignActivity
+    public class Query_DocuSign_v1 : BaseDocuSignActivity
     {
         public class ActivityUi : StandardConfigurationControlsCM
         {
             [JsonIgnore]
             public TextBox SearchText { get; set; }
-            
+
             [JsonIgnore]
             public DropDownList Folder { get; set; }
 
@@ -54,24 +54,22 @@ namespace terminalDocuSign.Actions
                 {
                     Label = "Envelope is in folder:",
                     Name = "Folder",
-                    Source = new FieldSourceDTO(CrateManifestTypes.StandardDesignTimeFields, "Folders")
+                    Source = null
                 }));
 
                 Controls.Add((Status = new DropDownList
                 {
                     Label = "Envelope has status:",
                     Name = "Status",
-                    Source = new FieldSourceDTO(CrateManifestTypes.StandardDesignTimeFields, "Statuses")
+                    Source = null
                 }));
             }
         }
 
-        private readonly IDocuSignFolder _docuSignFolder;
         private readonly DocuSignManager _docuSignManager;
 
         public Query_DocuSign_v1()
-        {
-            _docuSignFolder = ObjectFactory.GetInstance<IDocuSignFolder>();
+        {           
             _docuSignManager = ObjectFactory.GetInstance<DocuSignManager>();
         }
 
@@ -93,7 +91,7 @@ namespace terminalDocuSign.Actions
 
 
             var settings = GetDocusignQuery(configurationControls);
-            
+
             var docuSignAuthDto = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
             var payloadCm = new StandardPayloadDataCM();
             var envelopes = _docuSignManager.SearchDocusign(docuSignAuthDto, settings);
@@ -115,7 +113,7 @@ namespace terminalDocuSign.Actions
 
                 payloadCm.PayloadObjects.Add(row);
             }
-            
+
             using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
                 crateStorage.Add(Data.Crates.Crate.FromContent("Sql Query Result", payloadCm));
@@ -131,22 +129,22 @@ namespace terminalDocuSign.Actions
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            var docuSignAuthDto = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
-
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
+            var configurationCrate = PackControls(new ActivityUi());
+            _docuSignManager.FillFolderSource(configurationCrate, "Folder", docuSignAuthDTO);
+            _docuSignManager.FillStatusSource(configurationCrate, "Status");
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                crateStorage.Add(PackControls(new ActivityUi()));
-                crateStorage.AddRange(PackDesignTimeData(docuSignAuthDto));
+                crateStorage.Add(configurationCrate);
             }
-            
+
             return Task.FromResult(curActivityDO);
         }
 
-
         private static DocusignQuery GetDocusignQuery(StandardConfigurationControlsCM configurationControls)
-                {
+        {
             var actionUi = new ActivityUi();
-               
+
             actionUi.ClonePropertiesFrom(configurationControls);
 
             var settings = new DocusignQuery();
@@ -157,29 +155,15 @@ namespace terminalDocuSign.Actions
 
             return settings;
         }
-                
+
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.RemoveByLabel("Queryable Criteria");
-                
+
                 return curActivityDO;
             }
-        }
-
-        private IEnumerable<Crate> PackDesignTimeData(DocuSignAuthTokenDTO authToken)
-        {
-            var folders = _docuSignFolder.GetSearchFolders(authToken.Email, authToken.ApiPassword);
-            var fields = new List<FieldDTO>();
-            
-            foreach (var folder in folders)
-            {
-                fields.Add(new FieldDTO(folder.Name, folder.FolderId));
-            }
-
-            yield return Data.Crates.Crate.FromContent("Folders", new FieldDescriptionsCM(fields));
-            yield return Data.Crates.Crate.FromContent("Statuses", new FieldDescriptionsCM(DocusignQuery.Statuses));
         }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)

@@ -49,13 +49,13 @@ namespace terminalDocuSign.Actions
             Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payloadCrates = await GetPayload(activityDO, containerId);
-            
+
             if (NeedsAuthentication(authTokenDO))
             {
                 return NeedsAuthenticationError(payloadCrates);
             }
             //Get envlopeId
-            var control = (DropDownList) FindControl(CrateManager.GetStorage(activityDO), "Available_Templates");
+            var control = (DropDownList)FindControl(CrateManager.GetStorage(activityDO), "Available_Templates");
             string selectedDocusignTemplateId = control.Value;
             if (selectedDocusignTemplateId == null)
             {
@@ -100,33 +100,25 @@ namespace terminalDocuSign.Actions
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
-            var docuSignTemplatesCrate = _docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
-            var controls = CreateControlsCrate();
+            var configurationCrate = CreateControlsCrate(docuSignAuthDTO);
+            _docuSignManager.FillDocuSignTemplateSource(configurationCrate, "Available_Templates", docuSignAuthDTO);
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Clear();
-                crateStorage.Add(controls);
-                crateStorage.Add(docuSignTemplatesCrate);
-
+                crateStorage.Add(configurationCrate);
             }
-
             return curActivityDO;
         }
 
-        private Crate CreateControlsCrate()
+        private Crate CreateControlsCrate(DocuSignAuthTokenDTO authToken)
         {
-            
             var availableTemplates = new DropDownList
             {
                 Label = "Get which template",
                 Name = "Available_Templates",
                 Value = null,
-                Source = new FieldSourceDTO
-                {
-                    Label = "Available Templates",
-                    ManifestType = MT.FieldDescription.GetEnumDisplayName()
-                }
+                Source = null
             };
             return PackControlsCrate(availableTemplates);
         }
