@@ -250,5 +250,10 @@ namespace TerminalBase.Infrastructure
         {
             throw new NotImplementedException();
         }
+
+        public Task DeleteActivity(Guid curActivityId, string userId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

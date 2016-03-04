@@ -16,6 +16,7 @@ using terminalDocuSign.Interfaces;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using terminalDocuSign.Infrastructure;
+using terminalDocuSign.Services;
 
 namespace terminalDocuSign.Actions
 {
@@ -55,7 +56,7 @@ namespace terminalDocuSign.Actions
                     Label = "Envelope is in folder:",
                     Name = "Folder",
                     Events = new List<ControlEvent> {ControlEvent.RequestConfig},
-                    Source = new FieldSourceDTO(CrateManifestTypes.StandardDesignTimeFields, "Folders")
+                    Source = null
                 }));
 
                 Controls.Add((Status = new DropDownList
@@ -63,18 +64,18 @@ namespace terminalDocuSign.Actions
                     Label = "Envelope has status:",
                     Name = "Status",
                     Events = new List<ControlEvent> {ControlEvent.RequestConfig},
-                    Source = new FieldSourceDTO(CrateManifestTypes.StandardDesignTimeFields, "Statuses")
+                    Source = null
                 }));
 
                 Controls.Add(new RunPlanButton());
             }
         }
-        
-        private readonly IDocuSignFolder _docuSignFolder;
-      
+
+        private readonly DocuSignManager _docuSignManager;
+
         public Search_DocuSign_History_v1()
         {
-            _docuSignFolder = ObjectFactory.GetInstance<IDocuSignFolder>();
+            _docuSignManager = ObjectFactory.GetInstance<DocuSignManager>();
         }
         
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
@@ -89,14 +90,15 @@ namespace terminalDocuSign.Actions
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            var docuSignAuthDto = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
             var actionUi = new ActivityUi();
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);           
+            var configurationCrate = PackControls(actionUi);
+            _docuSignManager.FillFolderSource(configurationCrate, "Folder", docuSignAuthDTO);
+            _docuSignManager.FillStatusSource(configurationCrate, "Status");
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-
-                crateStorage.Add(PackControls(actionUi));
-                crateStorage.AddRange(PackDesignTimeData(docuSignAuthDto));
+                crateStorage.Add(configurationCrate);
             }
 
             await ConfigureNestedActivities(curActivityDO, actionUi);
@@ -181,43 +183,6 @@ namespace terminalDocuSign.Actions
             return templates.Select(x => Mapper.Map<ActivityTemplateDO>(x)).Where(x => query(x));
         }
 
-        private IEnumerable<Crate> PackDesignTimeData(DocuSignAuthTokenDTO authToken)
-        {
-            var folders = _docuSignFolder.GetSearchFolders(authToken.Email, authToken.ApiPassword);
-            var fields = new List<FieldDTO>();
-            
-            foreach (var folder in folders)
-            {
-                fields.Add(new FieldDTO(folder.Name, folder.FolderId));
-            }
-
-            yield return Data.Crates.Crate.FromContent("Folders", new FieldDescriptionsCM(fields));
-
-
-            yield return Data.Crates.Crate.FromContent("Statuses", new FieldDescriptionsCM(new[]
-            {
-                new FieldDTO("Any status", "<any>"),
-                new FieldDTO("Sent", "sent"),
-                new FieldDTO("Delivered", "delivered"),
-                new FieldDTO("Signed", "signed"),
-                new FieldDTO("Completed", "completed"),
-                new FieldDTO("Declined", "declined"),
-                new FieldDTO("Voided", "voided"),
-                new FieldDTO("Timed Out", "timedout"),
-                new FieldDTO("Authoritative Copy", "authoritativecopy"),
-                new FieldDTO("Transfer Completed", "transfercompleted"),
-                new FieldDTO("Template", "template"),
-                new FieldDTO("Correct", "correct"),
-                new FieldDTO("Created", "created"),
-                new FieldDTO("Delivered", "delivered"),
-                new FieldDTO("Signed", "signed"),
-                new FieldDTO("Declined", "declined"),
-                new FieldDTO("Completed", "completed"),
-                new FieldDTO("Fax Pending", "faxpending"),
-                new FieldDTO("Auto Responded", "autoresponded"),
-            }));
-        }
-
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
             if (CrateManager.IsStorageEmpty(curActivityDO))
@@ -227,5 +192,7 @@ namespace terminalDocuSign.Actions
 
             return ConfigurationRequestType.Followup;
         }
+
+     
     }
 }

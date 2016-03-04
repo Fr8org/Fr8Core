@@ -129,6 +129,14 @@ namespace HubWeb.Controllers
             return Ok();
         }
 
+        [HttpDelete]
+        [Fr8HubWebHMACAuthenticate]
+        public async Task<IHttpActionResult> DeleteActivity(Guid id)
+        {
+            await _subPlan.DeleteActivity(User.Identity.GetUserId(), id, true);
+            return Ok();
+        }
+
         /// <summary>
         /// DELETE: Remove all child Nodes and clear activity values
         /// </summary>

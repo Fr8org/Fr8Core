@@ -28,15 +28,19 @@ namespace HubWeb.Controllers.Helpers
 
             var result = new PlanDTO()
             {
-                Description = curPlanDO.Description,
-                Id = curPlanDO.Id,
-                Name = curPlanDO.Name,
-                RouteState = curPlanDO.RouteState,
-                StartingSubrouteId = curPlanDO.StartingSubrouteId,
-                Subroutes = subrouteDTOList,
-                Fr8UserId = curPlanDO.Fr8AccountId,
-                Tag = curPlanDO.Tag,
-                Category = curPlanDO.Category
+                Plan = new PlanFullDTO()
+                {
+                    Description = curPlanDO.Description,
+                    Id = curPlanDO.Id,
+                    Name = curPlanDO.Name,
+                    PlanState = curPlanDO.PlanState,
+                    StartingSubPlanId = curPlanDO.StartingSubPlanId,
+                    SubPlans = subPlanDTOList,
+                    Fr8UserId = curPlanDO.Fr8AccountId,
+                    Tag = curPlanDO.Tag,
+                    Category = curPlanDO.Category
+                }
+
             };
 
             return result;

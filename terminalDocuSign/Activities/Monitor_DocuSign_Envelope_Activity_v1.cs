@@ -50,20 +50,20 @@ namespace terminalDocuSign.Actions
 
 
         private void GetTemplateRecipientPickerValue(ActivityDO curActivityDO, out string selectedOption,
-                                                     out string selectedValue)
+                                                     out string selectedValue, out string selectedTemplate)
         {
-            GetTemplateRecipientPickerValue(CrateManager.GetStorage(curActivityDO), out selectedOption, out selectedValue);
+            GetTemplateRecipientPickerValue(CrateManager.GetStorage(curActivityDO), out selectedOption, out selectedValue, out selectedTemplate);
         }
 
-        private void GetTemplateRecipientPickerValue(ICrateStorage storage, out string selectedOption, out string selectedValue)
+        private void GetTemplateRecipientPickerValue(ICrateStorage storage, out string selectedOption, out string selectedValue, out string selectedTemplate)
         {
             var controls = storage.FirstCrate<StandardConfigurationControlsCM>(x => x.Label == "Configuration_Controls");
-
+            selectedTemplate = string.Empty;
             var group = controls.Content.Controls.OfType<RadioButtonGroup>().FirstOrDefault();
             if (group == null)
             {
                 selectedOption = "template";
-                selectedValue = controls.Content.Controls.OfType<DropDownList>().First().Value;
+                selectedValue = controls.Content.Controls.OfType<DropDownList>().First().Value;               
             }
             else
             {
@@ -71,15 +71,20 @@ namespace terminalDocuSign.Actions
                 {
                     //get the option which is selected from the Template/Recipient picker
                     var pickedControl = group.Radios.Single(r => r.Selected);
-
+                    if (pickedControl.Controls[0].Type == ControlTypes.DropDownList)
+                    {
+                        var templateControl = pickedControl.Controls[0] as DropDownList;
+                        selectedTemplate = templateControl.ListItems.Single(x => x.Value == templateControl.Value).Key;
+                    }                   
                     //set the output values
                     selectedOption = pickedControl.Name;
-                    selectedValue = pickedControl.Controls[0].Value;
+                    selectedValue = pickedControl.Controls[0].Value;                   
                 }
                 else
                 {
                     selectedOption = string.Empty;
                     selectedValue = string.Empty;
+                    selectedTemplate = string.Empty;
                 }
             }
         }
@@ -226,12 +231,12 @@ namespace terminalDocuSign.Actions
             }
 
             //get currently selected option and its value
-            string curSelectedOption, curSelectedValue;
-            GetTemplateRecipientPickerValue(curActivityDO, out curSelectedOption, out curSelectedValue);
+            string curSelectedOption, curSelectedValue, curSelectedTemplate;
+            GetTemplateRecipientPickerValue(curActivityDO, out curSelectedOption, out curSelectedValue, out curSelectedTemplate);
 
             string envelopeId = string.Empty;
 
-            
+
 
             //retrieve envelope ID based on the selected option and its value
             if (!string.IsNullOrEmpty(curSelectedOption))
@@ -239,13 +244,11 @@ namespace terminalDocuSign.Actions
                 switch (curSelectedOption)
                 {
                     case "template":
-                        //filter the incoming envelope by template value selected by the user
-                        var curAvailableTemplates = CrateManager.GetStorage(curActivityDO).CratesOfType<FieldDescriptionsCM>(x => x.Label == "Available Templates").Single().Content;
-                        var selectedTemplateName = curAvailableTemplates.Fields.Single(a => a.Value == curSelectedValue).Key;
+                        //filter the incoming envelope by template value selected by the user                       
                         var incommingTemplate = GetValueForKey(payloadCrates, "TemplateName");
                         if (incommingTemplate != null)
                         {
-                            if (selectedTemplateName == incommingTemplate)
+                            if (curSelectedTemplate == incommingTemplate)
                             {
                                 envelopeId = GetValueForKey(payloadCrates, "EnvelopeId");
                             }
@@ -303,7 +306,7 @@ namespace terminalDocuSign.Actions
                 }
             };
 
-            
+
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
             {
@@ -323,19 +326,18 @@ namespace terminalDocuSign.Actions
         {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 
-            var crateControls = PackCrate_ConfigurationControls();
-            var crateDesignTimeFields = _docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
+            var configurationCrate = PackCrate_ConfigurationControls();
+            _docuSignManager.FillDocuSignTemplateSource(configurationCrate, "UpstreamCrate", docuSignAuthDTO);
             var eventFields = CrateManager.CreateDesignTimeFieldsCrate("DocuSign Event Fields", AvailabilityType.RunTime, CreateDocuSignEventFields().ToArray());
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                crateStorage.Add(crateControls);
-                crateStorage.Add(crateDesignTimeFields);
+                crateStorage.Add(configurationCrate);
                 crateStorage.Add(eventFields);
 
                 // Remove previously added crate of "Standard Event Subscriptions" schema
                 crateStorage.Remove<EventSubscriptionCM>();
-                crateStorage.Add(PackCrate_EventSubscriptions(crateControls.Get<StandardConfigurationControlsCM>()));
+                crateStorage.Add(PackCrate_EventSubscriptions(configurationCrate.Get<StandardConfigurationControlsCM>()));
             }
             return await Task.FromResult<ActivityDO>(curActivityDO);
         }
@@ -348,8 +350,8 @@ namespace terminalDocuSign.Actions
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 UpdateSelectedEvents(crateStorage);
-                string selectedOption, selectedValue;
-                GetTemplateRecipientPickerValue(curActivityDO, out selectedOption, out selectedValue);
+                string selectedOption, selectedValue, selectedTemplate;
+                GetTemplateRecipientPickerValue(curActivityDO, out selectedOption, out selectedValue, out selectedTemplate);
                 _docuSignManager.UpdateUserDefinedFields(curActivityDO, authTokenDO, crateStorage, selectedValue);
             }
 
@@ -511,11 +513,6 @@ namespace terminalDocuSign.Actions
                             {
                                 Label = "",
                                 Name = "UpstreamCrate",
-                                Source = new FieldSourceDTO
-                                {
-                                    Label = "Available Templates",
-                                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                                },
                                 Events = new List<ControlEvent> {new ControlEvent("onChange", "requestConfig")},
                                 ShowDocumentation = ActivityResponseDTO.CreateDocumentationResponse("Minicon", "ExplainMonitoring")
                             }
@@ -526,5 +523,6 @@ namespace terminalDocuSign.Actions
 
             return templateRecipientPicker;
         }
+
     }
 }

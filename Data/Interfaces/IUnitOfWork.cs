@@ -54,16 +54,9 @@ namespace Data.Interfaces
         ICriteriaRepository CriteriaRepository { get; }
 
         IFileRepository FileRepository { get; }
-
-        IMTFieldRepository MTFieldRepository { get; }
-
-        IMTObjectRepository MTObjectRepository { get; }
-
-        IMTFieldTypeRepository MTFieldTypeRepository { get; }
-
-        IMTDataRepository MTDataRepository { get; }
+        
         IPlanRepository PlanRepository { get; }
-        MultiTenantObjectRepository MultiTenantObjectRepository { get; }
+        IMultiTenantObjectRepository MultiTenantObjectRepository { get; }
 
         ITerminalRepository TerminalRepository { get; }
         ITerminalSubscriptionRepository TerminalSubscriptionRepository { get; }

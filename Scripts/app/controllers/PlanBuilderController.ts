@@ -343,6 +343,7 @@ module dockyard.controllers {
         }
 
         private onPlanLoad(mode: string, curPlan: interfaces.IPlanFullDTO) {
+            this.AuthService.setCurrentPlan(<interfaces.IPlanVM>curPlan.plan);
             this.AuthService.clear();
 
             this.$scope.mode = mode;

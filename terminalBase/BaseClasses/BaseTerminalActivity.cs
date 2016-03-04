@@ -40,7 +40,7 @@ namespace TerminalBase.BaseClasses
         protected ICrateManager CrateManager { get; private set; }
         private readonly ITerminal _terminal;
         protected static readonly string ConfigurationControlsLabel = "Configuration_Controls";
-        protected string CurrentFr8UserId { get; set; }
+        public string CurrentFr8UserId { get; set; }
         protected string _activityName { get; set; }
 
         private List<ActivityTemplateDTO> _activityTemplateCache = null;

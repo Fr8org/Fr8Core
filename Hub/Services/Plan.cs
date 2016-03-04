@@ -153,6 +153,12 @@ namespace Hub.Services
             {
                 var plan = uow.PlanRepository.GetById<PlanDO>(curPlanId);
 
+                if (plan.PlanState == PlanState.Deleted)
+                {
+                    EventManager.PlanActivationFailed(plan, "Cannot activate deleted plan");
+                    throw new ApplicationException("Cannot activate deleted plan");
+                }
+
                 foreach (var curActionDO in plan.GetDescendants().OfType<ActivityDO>())
                 {
                     try

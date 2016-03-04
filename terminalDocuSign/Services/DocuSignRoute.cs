@@ -48,16 +48,19 @@ namespace terminalDocuSign.Services
             var existingPlans = (await _hubCommunicator.GetPlansByName("MonitorAllDocuSignEvents", curFr8UserId)).ToList();
 
             existingPlans = existingPlans.Where(r => r.Plan.Tag == ("docusign-auto-monitor-plan-" + curFr8UserId)).ToList();
-            if (existingPlans.Any())
+
+            if (existingPlans.Any(x => x.Plan.PlanState != PlanState.Deleted))
             {
                 //hmmmm which one belongs to us?
                 //lets assume there will be only single plan
-                var existingPlan = existingPlans.Single();
-                if (existingPlan.Plan.PlanState != PlanState.Active)
+                var existingPlan = existingPlans.First(x => x.Plan.PlanState != PlanState.Deleted);
+
+                if (existingPlan.Plan.PlanState == PlanState.Inactive)
                 {
-                    var existingPlanDO = Mapper.Map<PlanDO>(existingPlan);
+                    var existingPlanDO = Mapper.Map<PlanDO>(existingPlan.Plan);
                     await _hubCommunicator.ActivatePlan(existingPlanDO, curFr8UserId);
                 }
+
                 return;
             }
             //first check if this exists
@@ -80,7 +83,7 @@ namespace terminalDocuSign.Services
             SetSelectedCrates(storeMTDataActivity);
             //save this
             await _hubCommunicator.ConfigureActivity(storeMTDataActivity, curFr8UserId);
-            var planDO = Mapper.Map<PlanDO>(monitorDocusignPlan);
+            var planDO = Mapper.Map<PlanDO>(monitorDocusignPlan.Plan);
             await _hubCommunicator.ActivatePlan(planDO, curFr8UserId);
         }
 
