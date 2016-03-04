@@ -55,8 +55,9 @@ namespace terminalDocuSign.Services
                     throw new ArgumentException("Fr8 User ID is not in the correct format.");
                 }
 
-                //create MonitorAllDocuSignEvents plan
+                // create MonitorAllDocuSignEvents plan
                 await _docuSignRoute.CreateRoute_MonitorAllDocuSignEvents(curFr8UserId, authToken);
+
                 return null;
             }
 

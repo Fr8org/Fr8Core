@@ -57,6 +57,7 @@
     "angular": "1.4.9"
   },
   "devDependencies": {
-    "angular-ivh-treeview": "~1.0.3"
+    "angular-ivh-treeview": "~1.0.3",
+    "jquery-ui": "^1.11.4"
   }
 }
