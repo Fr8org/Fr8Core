@@ -119,7 +119,7 @@ namespace HealthMonitor
             }
             catch (Exception)
             {
-
+                throw;
             }
             finally
             {

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Xml.Linq;
 using AutoMapper;
+using Data;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Data.Entities;
@@ -25,9 +26,30 @@ namespace terminalDocuSign.Controllers
         [HttpPost]
         [fr8TerminalHMACAuthenticate(curTerminal)]
         [Authorize]
-        public Task<object> Execute([FromUri] String actionType, [FromBody] Fr8DataDTO curDataDTO)
+        public async Task<object> Execute([FromUri] String actionType, [FromBody] Fr8DataDTO curDataDTO)
         {
-             return HandleFr8Request(curTerminal, actionType, curDataDTO);
+
+
+            try
+            {
+               var result = HandleFr8Request(curTerminal, actionType, curDataDTO);
+               return await result.ContinueWith(x =>
+                {
+                    var res = result.Result;
+
+                    if (res == null)
+                    {
+                        return string.Format("Yes, we've just called '{0}' of type {1} and get null as the result", actionType, JsonConvert.ToString(curDataDTO));
+                    }
+
+                    return res;
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("terminalDocuSign failed. {0}", ex.ToString());
+                throw;
+            }
         }
     }
 }

@@ -137,12 +137,12 @@ namespace terminalDocuSign.Tests.Actions
             {
                 foreach (var envelope in TerminalFixtureData.GetFolderItems("folder_1", 40, 10, "Sent").Select(FolderItemToDocuSignEnvelopeCm))
                 {
-                    uow.MultiTenantObjectRepository.Add(uow, envelope, "account");
+                    uow.MultiTenantObjectRepository.Add(envelope, "account");
                 }
 
                 foreach (var envelope in TerminalFixtureData.GetFolderItems("folder_1", 50, 10, "Created").Select(FolderItemToDocuSignEnvelopeCm))
                 {
-                    uow.MultiTenantObjectRepository.Add(uow, envelope, "account");
+                    uow.MultiTenantObjectRepository.Add(envelope, "account");
                 }
             }
 
@@ -187,7 +187,7 @@ namespace terminalDocuSign.Tests.Actions
             {
                 foreach (var envelope in TerminalFixtureData.GetFolderItems("folder_1", 0, 30, "Sent").Select(FolderItemToDocuSignEnvelopeCm))
                 {
-                    uow.MultiTenantObjectRepository.Add(uow, envelope, "account");
+                    uow.MultiTenantObjectRepository.Add(envelope, "account");
                 }
             }
 

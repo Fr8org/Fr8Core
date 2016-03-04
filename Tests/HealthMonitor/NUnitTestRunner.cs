@@ -124,10 +124,11 @@ namespace HealthMonitor
                     testSuite.Tests.Add(specificTest);
                 }
             }
-
+            
             using (NUnitTraceListener listener = new NUnitTraceListener(_appInsightsInstrumentationKey))
             {
                 var testResult = testSuite.Run(listener, new NUnitTestRunnerFilter());
+               
                 var testReport = GenerateTestReport(testResult);
                 return testReport;
             }

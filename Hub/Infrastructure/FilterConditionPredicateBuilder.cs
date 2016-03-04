@@ -49,9 +49,11 @@ namespace Hub.Infrastructure
                         expr = expr == null ? conditionExpr : Expression.AndAlso(expr, conditionExpr);
                     }
                 }
+
+                return Expression.Lambda<Func<T, bool>>(expr ?? Expression.Constant(false), paramExpr);
             }
 
-            return Expression.Lambda<Func<T, bool>>(expr ?? Expression.Constant(true), paramExpr);
+            return Expression.Lambda<Func<T, bool>>(Expression.Constant(true), paramExpr);
         }
 
         private static bool TryGetNullableType(Type orignalType, out Type underlyingType)
