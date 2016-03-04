@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class DropCategoryAndAddToPlan : IMigrationMetadata
+    public sealed partial class ChangeRouteToPlan : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(DropCategoryAndAddToPlan));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(ChangeRouteToPlan));
         
         string IMigrationMetadata.Id
         {
-            get { return "201603040643405_DropCategoryAndAddToPlan"; }
+            get { return "201603041113154_ChangeRouteToPlan"; }
         }
         
         string IMigrationMetadata.Source

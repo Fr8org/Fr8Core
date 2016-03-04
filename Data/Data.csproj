@@ -373,7 +373,7 @@
     <Compile Include="Interfaces\Manifests\FieldDescriptionsCM.cs" />
     <Compile Include="Interfaces\Manifests\EventReportCM.cs" />
     <Compile Include="Interfaces\Manifests\EventSubscriptionCM.cs" />
-    <Compile Include="Interfaces\PlanDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\PlanDTO.cs" />
     <Compile Include="Migrations\201510120408332_InitialMigration.cs" />
     <Compile Include="Migrations\201510120408332_InitialMigration.Designer.cs">
       <DependentUpon>201510120408332_InitialMigration.cs</DependentUpon>
@@ -631,17 +631,9 @@
     <Compile Include="Migrations\201603021529530_MoveToSqlMt.Designer.cs">
       <DependentUpon>201603021529530_MoveToSqlMt.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201603032006159_EmptyMigration1.cs" />
-    <Compile Include="Migrations\201603032006159_EmptyMigration1.Designer.cs">
-      <DependentUpon>201603032006159_EmptyMigration1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201603031354309_ChangeRouteToPlan.cs" />
-    <Compile Include="Migrations\201603031354309_ChangeRouteToPlan.Designer.cs">
-      <DependentUpon>201603031354309_ChangeRouteToPlan.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201603040643405_DropCategoryAndAddToPlan.cs" />
-    <Compile Include="Migrations\201603040643405_DropCategoryAndAddToPlan.Designer.cs">
-      <DependentUpon>201603040643405_DropCategoryAndAddToPlan.cs</DependentUpon>
+    <Compile Include="Migrations\201603041113154_ChangeRouteToPlan.cs" />
+    <Compile Include="Migrations\201603041113154_ChangeRouteToPlan.Designer.cs">
+      <DependentUpon>201603041113154_ChangeRouteToPlan.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -1115,14 +1107,8 @@
     <EmbeddedResource Include="Migrations\201603021529530_MoveToSqlMt.resx">
       <DependentUpon>201603021529530_MoveToSqlMt.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201603032006159_EmptyMigration1.resx">
-      <DependentUpon>201603032006159_EmptyMigration1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201603031354309_ChangeRouteToPlan.resx">
-      <DependentUpon>201603031354309_ChangeRouteToPlan.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201603040643405_DropCategoryAndAddToPlan.resx">
-      <DependentUpon>201603040643405_DropCategoryAndAddToPlan.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201603041113154_ChangeRouteToPlan.resx">
+      <DependentUpon>201603041113154_ChangeRouteToPlan.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
