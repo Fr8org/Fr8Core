@@ -23,7 +23,7 @@ namespace HubWeb.Controllers.Api
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 
-                var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(uow, systemUserAccountId);
+                var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(systemUserAccountId);
                 var list = manifestDescriptions.Select(m => new { m.Id, m.Name, m.Version, m.SampleJSON, m.Description, m.RegisteredBy }).ToList();
 
                 return Ok(list);
@@ -38,7 +38,7 @@ namespace HubWeb.Controllers.Api
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.MultiTenantObjectRepository.Add(uow, manifestDescription, systemUserAccountId);
+                uow.MultiTenantObjectRepository.Add(manifestDescription, systemUserAccountId);
 
                 uow.SaveChanges();
             }
@@ -54,7 +54,7 @@ namespace HubWeb.Controllers.Api
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(uow, systemUserAccountId);
+                var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(systemUserAccountId);
                 var isInDB = manifestDescriptions.Any(md => md.Name == name && md.Version == version);
                 BoolValue result = new BoolValue  { Value = !isInDB };
 
@@ -68,7 +68,7 @@ namespace HubWeb.Controllers.Api
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(uow, systemUserAccountId);
+                var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(systemUserAccountId);
                 var descriptions = manifestDescriptions.Where(md => md.Name == name).ToArray();
 
                 var result = descriptions.First();
@@ -92,7 +92,7 @@ namespace HubWeb.Controllers.Api
             int result = 1;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(uow, systemUserAccountId);
+                var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(systemUserAccountId);
                 if (!manifestDescriptions.Any())
                 {
                     return result.ToString();

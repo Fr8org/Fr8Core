@@ -2,30 +2,36 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using Data.Interfaces.Manifests;
-using Data.Repositories;
+using Data.Repositories.MultiTenant;
+using Data.Repositories.MultiTenant.Queryable;
 
 namespace Data.Interfaces
 {
     public interface IMultiTenantObjectRepository
     {
-        void Add(IUnitOfWork uow, Manifest curManifest, string curFr8AccountId);
+        MtTypeReference FindTypeReference(Type clrType);
+        MtTypeReference FindTypeReference(Guid typeId);
+        MtTypeReference[] ListTypeReferences();
+        MtTypePropertyReference[] ListTypePropertyReferences(Guid typeId);
 
-        void AddOrUpdate<T>(IUnitOfWork uow, string curFr8AccountId, T curManifest, Expression<Func<T, object>> keyProperty)
+        void Add(Manifest manifest, string curFr8AccountId);
+        void AddOrUpdate(string curFr8AccountId, Manifest curManifest);
+
+        void AddOrUpdate<T>(string curFr8AccountId, T manifest, Expression<Func<T, bool>> @where)
             where T : Manifest;
 
-        void Update<T>(IUnitOfWork uow, string curFr8AccountId, T curManifest, Expression<Func<T, object>> keyProperty) 
+        void Update(string fr8AccountId, Manifest manifest);
+
+        void Update<T>(string fr8AccountId, T manifest, Expression<Func<T, bool>> @where) 
             where T : Manifest;
 
-        void Remove<T>(IUnitOfWork uow, string curFr8AccountId, Expression<Func<T, object>> conditionOnKeyProperty, int manifestId = -1) 
+        void Delete<T>(string fr8AccountId, Expression<Func<T, bool>> @where) 
             where T : Manifest;
         
-        T Get<T>(IUnitOfWork uow, string curFr8AccountId, Expression<Func<T, object>> conditionOnKeyProperty, int manifestId = -1) 
+        IMtQueryable<T> AsQueryable<T>(string fr8AccountId)
             where T : Manifest;
 
-        IMtQueryable<T> AsQueryable<T>(IUnitOfWork uow, string curFr8AccountId)
-            where T : Manifest;
-
-        List<T> Query<T>(IUnitOfWork uow, string curFr8AccountId, Expression<Func<T, bool>> query)
+        List<T> Query<T>(string fr8AccountId, Expression<Func<T, bool>> @where)
             where T : Manifest;
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Data.Interfaces.Manifests;
 
-namespace Data.Repositories
+namespace Data.Repositories.MultiTenant.Queryable
 {
     public abstract class MtQueryable<T> : IMtQueryable<T>
         where T: Manifest
