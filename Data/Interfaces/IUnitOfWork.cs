@@ -76,6 +76,7 @@ namespace Data.Interfaces
         ITagRepository TagRepository { get; }
         IFileTagsRepository FileTagsRepository { get; }
         
+        IOrganizationRepository OrganizationRepository { get; }
 
 	    /// <summary>
         /// Call this to commit the unit of work

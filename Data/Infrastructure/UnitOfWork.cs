@@ -595,6 +595,16 @@ namespace Data.Infrastructure
             }
         }
 
+        private OrganizationRepository _organizationRepository;
+
+        public IOrganizationRepository OrganizationRepository
+        {
+            get
+            {
+                return _organizationRepository ?? (_organizationRepository = new OrganizationRepository(this));
+            }
+        }
+
         public void Save()
         {
             _context.SaveChanges();

@@ -212,57 +212,57 @@ namespace Hub.Services
         /// </summary>
         /// <param name="email"></param>
         /// <param name="password"></param>
+        /// <param name="organizationDO">organization where the user belongs</param>
         /// <returns></returns>
-        public RegistrationStatus ProcessRegistrationRequest(String email, String password)
+        public RegistrationStatus ProcessRegistrationRequest(IUnitOfWork uow, string email, string password, OrganizationDO organizationDO)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                RegistrationStatus curRegStatus;
-                Fr8AccountDO newDockyardAccountDO = null;
-                //check if we know this email address
+            RegistrationStatus curRegStatus;
+            Fr8AccountDO newDockyardAccountDO = null;
+            //check if we know this email address
 
-                EmailAddressDO existingEmailAddressDO =
-                    uow.EmailAddressRepository.GetQuery().FirstOrDefault(ea => ea.Address == email);
-                if (existingEmailAddressDO != null)
+            EmailAddressDO existingEmailAddressDO =
+                uow.EmailAddressRepository.GetQuery().FirstOrDefault(ea => ea.Address == email);
+            if (existingEmailAddressDO != null)
+            {
+                var existingUserDO =
+                    uow.UserRepository.GetQuery().FirstOrDefault(u => u.EmailAddressID == existingEmailAddressDO.Id);
+                if (existingUserDO != null)
                 {
-                    var existingUserDO =
-                        uow.UserRepository.GetQuery().FirstOrDefault(u => u.EmailAddressID == existingEmailAddressDO.Id);
-                    if (existingUserDO != null)
+                    if (existingUserDO.PasswordHash == null)
                     {
-                        if (existingUserDO.PasswordHash == null)
-                        {
-                            //this is an existing implicit user, who sent in a request in the past, had a DockyardAccountDO created, and now is registering. Add the password
-                            new Fr8Account().UpdatePassword(uow, existingUserDO, password);
-                            curRegStatus = RegistrationStatus.Successful;
-                        }
-                        else
-                        {
-                            //tell 'em to login
-                            curRegStatus = RegistrationStatus.UserMustLogIn;
-                        }
+                        //this is an existing implicit user, who sent in a request in the past, had a DockyardAccountDO created, and now is registering. Add the password
+                        new Fr8Account().UpdatePassword(uow, existingUserDO, password);
+                        existingUserDO.Organization = organizationDO;
+
+                        curRegStatus = RegistrationStatus.Successful;
                     }
                     else
                     {
-                        newDockyardAccountDO = Register(uow, email, email, email, password, Roles.Customer);
-                        curRegStatus = RegistrationStatus.Successful;
+                        //tell 'em to login
+                        curRegStatus = RegistrationStatus.UserMustLogIn;
                     }
                 }
                 else
                 {
-                    newDockyardAccountDO = Register(uow, email, email, email, password, Roles.Customer);
+                    newDockyardAccountDO = Register(uow, email, email, email, password, Roles.Customer, organizationDO);
                     curRegStatus = RegistrationStatus.Successful;
                 }
-
-                uow.SaveChanges();
-
-                if (newDockyardAccountDO != null)
-                {
-                    //AlertManager.CustomerCreated(newDockyardAccountDO);
-                    EventManager.UserRegistration(newDockyardAccountDO);
-                }
-
-                return curRegStatus;
             }
+            else
+            {
+                newDockyardAccountDO = Register(uow, email, email, email, password, Roles.Customer, organizationDO);
+                curRegStatus = RegistrationStatus.Successful;
+            }
+
+            uow.SaveChanges();
+
+            if (newDockyardAccountDO != null)
+            {
+                //AlertManager.CustomerCreated(newDockyardAccountDO);
+                EventManager.UserRegistration(newDockyardAccountDO);
+            }
+
+            return curRegStatus;
         }
 
         public Task<LoginStatus> ProcessLoginRequest(string username, string password, bool isPersistent, HttpRequestMessage request = null)
@@ -293,11 +293,12 @@ namespace Hub.Services
         }
 
         public Fr8AccountDO Register(IUnitOfWork uow, string userName, string firstName, string lastName,
-            string password, string roleID)
+            string password, string roleID, OrganizationDO organizationDO = null)
         {
-            var userDO = uow.UserRepository.GetOrCreateUser(userName, roleID);
+            var userDO = uow.UserRepository.GetOrCreateUser(userName, roleID, organizationDO);
             uow.UserRepository.UpdateUserCredentials(userDO, userName, password);
             uow.AspNetUserRolesRepository.AssignRoleToUser(roleID, userDO.Id);
+
             return userDO;
         }
 
@@ -432,45 +433,48 @@ namespace Hub.Services
         /// <param name="email"></param>
         /// <param name="password"></param>
         /// <param name="tempEmail"></param>
+        /// <param name="organizationDO">Name of organization where the user belongs to</param>
         /// <returns></returns>
-        public Task<RegistrationStatus> UpdateGuestUserRegistration(String email, String password, String tempEmail)
+        public Task<RegistrationStatus> UpdateGuestUserRegistration(IUnitOfWork uow, string email, string password, string tempEmail, OrganizationDO organizationDO = null)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            RegistrationStatus curRegStatus = RegistrationStatus.Successful;
+            Fr8AccountDO newDockyardAccountDO = null;
+
+            EmailAddressDO existingEmailAddressDO =
+                uow.EmailAddressRepository.GetQuery().FirstOrDefault(ea => ea.Address == email);
+            if (existingEmailAddressDO != null)
             {
-                RegistrationStatus curRegStatus = RegistrationStatus.Successful;
-                Fr8AccountDO newDockyardAccountDO = null;
-
-
-                EmailAddressDO existingEmailAddressDO =
-                   uow.EmailAddressRepository.GetQuery().FirstOrDefault(ea => ea.Address == email);
-                if (existingEmailAddressDO != null)
-                {
-                    curRegStatus = RegistrationStatus.UserMustLogIn;
-                    return Task.FromResult(curRegStatus);
-                }
-                
-
-                //check if we know this email address
-
-                EmailAddressDO guestUserexistingEmailAddressDO =
-                    uow.EmailAddressRepository.GetQuery().FirstOrDefault(ea => ea.Address == tempEmail);
-                if (guestUserexistingEmailAddressDO != null)
-                {
-                    var existingUserDO =
-                        uow.UserRepository.GetQuery().FirstOrDefault(u => u.EmailAddressID == guestUserexistingEmailAddressDO.Id);
-                    
-                    // Update Email
-                    uow.UserRepository.UpdateUserCredentials(existingUserDO, email, password);
-                    guestUserexistingEmailAddressDO.Address = email;
-
-                    uow.AspNetUserRolesRepository.RevokeRoleFromUser(Roles.Guest, existingUserDO.Id);
-                    // Add new role
-                    uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, existingUserDO.Id);
-                }
-
-                uow.SaveChanges();
+                curRegStatus = RegistrationStatus.UserMustLogIn;
                 return Task.FromResult(curRegStatus);
             }
+
+            //check if we know this email address
+
+            EmailAddressDO guestUserexistingEmailAddressDO =
+                uow.EmailAddressRepository.GetQuery().FirstOrDefault(ea => ea.Address == tempEmail);
+            if (guestUserexistingEmailAddressDO != null)
+            {
+                var existingUserDO =
+                    uow.UserRepository.GetQuery().FirstOrDefault(u => u.EmailAddressID == guestUserexistingEmailAddressDO.Id);
+                    
+                // Update Email
+                uow.UserRepository.UpdateUserCredentials(existingUserDO, email, password);
+                    
+                // update organization
+                if (organizationDO != null)
+                {
+                    existingUserDO.Organization = organizationDO;
+                }
+                    
+                guestUserexistingEmailAddressDO.Address = email;
+
+                uow.AspNetUserRolesRepository.RevokeRoleFromUser(Roles.Guest, existingUserDO.Id);
+                // Add new role
+                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, existingUserDO.Id);
+            }
+
+            uow.SaveChanges();
+            return Task.FromResult(curRegStatus);
         }
     }
 }
