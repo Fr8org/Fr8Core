@@ -60,7 +60,7 @@ module dockyard.directives {
 
                         getPlan($q, $http, $scope.currentAction.id)
                             .then(function (plan) {
-                                copyPlan($q, $http, plan.id, $scope.savePlanName)
+                                copyPlan($q, $http, plan.plan.id, $scope.savePlanName)
                                     .then(function (id) {
                                         $scope.copySuccess = {
                                             id: id,

@@ -60,7 +60,7 @@ module dockyard.directives {
 
                         getPlan($q, $http, $scope.currentAction.id)
                             .then(function (plan) {
-                                runContainer($q, $http, plan.id)
+                                runContainer($q, $http, plan.plan.id)
                                     .then(function (container) {
                                         var path = '/findObjects/' + container.id + '/results';
                                         $location.path(path);
