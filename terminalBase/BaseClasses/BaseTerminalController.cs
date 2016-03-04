@@ -24,7 +24,6 @@ using Data;
 
 namespace TerminalBase.BaseClasses
 {
-
     //this is a quasi base class. We can't use inheritance directly because it's across project boundaries, but
     //we can generate instances of this.
     public class BaseTerminalController : ApiController
