@@ -44,11 +44,11 @@ namespace terminalDocuSign.Services.New_Api
         }
 
 
-        public static List<FieldDTO> GetRolesAndTabs(DocuSignApiConfiguration login, string templateId)
+        public static List<FieldDTO> GetRolesAndTabs(DocuSignApiConfiguration apiConfiguration, string templateId)
         {
             var result = new List<FieldDTO>();
-            var templatesApi = new TemplatesApi((Configuration)login.Configuration);
-            var recepients = templatesApi.ListRecipients(login.AccountId, templateId);
+            var templatesApi = new TemplatesApi((Configuration)apiConfiguration.Configuration);
+            var recepients = templatesApi.ListRecipients(apiConfiguration.AccountId, templateId);
 
             foreach (var signer in recepients.Signers)
             {
@@ -59,7 +59,7 @@ namespace terminalDocuSign.Services.New_Api
                     new FieldDTO(string.Format("{0} role email", signer.RoleName), signer.RecipientId));
 
                 //handling tabs
-                var tabs = templatesApi.ListTabs(login.AccountId, templateId, signer.RecipientId, new Tabs());
+                var tabs = templatesApi.ListTabs(apiConfiguration.AccountId, templateId, signer.RecipientId, new Tabs());
                 JObject jobj = JObject.Parse(tabs.ToJson());
                 foreach (var item in jobj.Properties())
                 {
