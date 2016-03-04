@@ -285,12 +285,12 @@ namespace HubWeb.Controllers
             catch (ApplicationException ex)
             {
                 _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, ex.Message);
-                return BadRequest();
+                throw;
             }
             catch (Exception)
             {
                 _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, "There is a problem with activating this plan. Please try again later.");
-                return BadRequest();
+                throw;
             }
         }
 

@@ -23,33 +23,13 @@ namespace terminalDocuSign.Controllers
     public class ActivityController : BaseTerminalController
     {
         private const string curTerminal = "terminalDocuSign";
+
         [HttpPost]
         [fr8TerminalHMACAuthenticate(curTerminal)]
         [Authorize]
-        public async Task<object> Execute([FromUri] String actionType, [FromBody] Fr8DataDTO curDataDTO)
+        public Task<object> Execute([FromUri] String actionType, [FromBody] Fr8DataDTO curDataDTO)
         {
-
-
-            try
-            {
-               var result = HandleFr8Request(curTerminal, actionType, curDataDTO);
-               return await result.ContinueWith(x =>
-                {
-                    var res = result.Result;
-
-                    if (res == null)
-                    {
-                        return string.Format("Yes, we've just called '{0}' of type {1} and get null as the result", actionType, JsonConvert.ToString(curDataDTO));
-                    }
-
-                    return res;
-                });
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("terminalDocuSign failed. {0}", ex.ToString());
-                throw;
-            }
+            return HandleFr8Request(curTerminal, actionType, curDataDTO);
         }
     }
 }
