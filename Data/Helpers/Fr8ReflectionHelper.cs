@@ -61,7 +61,7 @@ namespace Data.Helpers
 
         public static object[] FindFirstArrayRecursive(Object obj, int maxSearchDepth, int depth)
         {
-            if (maxSearchDepth != 0 && depth > maxSearchDepth)
+            if (maxSearchDepth != 0 && depth > maxSearchDepth || obj == null)
             {
                 return null;
             }
@@ -70,6 +70,7 @@ namespace Data.Helpers
             {
                 return ((IEnumerable)obj).OfType<Object>().ToArray();
             }
+            
             var objType = obj.GetType();
             bool isPrimitiveType = objType.IsPrimitive || objType.IsValueType || (objType == typeof(string));
 
