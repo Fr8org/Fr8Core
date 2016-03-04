@@ -27,9 +27,8 @@ namespace terminalDocuSign.Controllers
         [HttpPost]
         [fr8TerminalHMACAuthenticate(curTerminal)]
         [Authorize]
-        public async Task<object> Execute([FromUri] String actionType, [FromBody] Fr8DataDTO curDataDTO)
+        public Task<object> Execute([FromUri] String actionType, [FromBody] Fr8DataDTO curDataDTO)
         {
-
             return HandleFr8Request(curTerminal, actionType, curDataDTO);
         }
     }
