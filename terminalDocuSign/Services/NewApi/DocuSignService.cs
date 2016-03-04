@@ -22,18 +22,19 @@ namespace terminalDocuSign.Services.New_Api
 
     public class DocuSignService
     {
-        public static DocuSignApiConfiguration SetUp(DocuSignAuthTokenDTO authToken)
+        public static DocuSignApiConfiguration SetUp(AuthorizationTokenDTO authTokenDO)
         {
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
             //create configuration for future api calls
             string baseUrl = CloudConfigurationManager.GetSetting("environment") + "restapi/";
             string integratorKey = CloudConfigurationManager.GetSetting("DocuSignIntegratorKey");
             ApiClient apiClient = new ApiClient(baseUrl);
-            string authHeader = "bearer " + authToken.ApiPassword;
+            string authHeader = "bearer " + docuSignAuthDTO.ApiPassword;
             Configuration conf = new Configuration(apiClient);
             conf.AddDefaultHeader("Authorization", authHeader);
-            DocuSignApiConfiguration result = new DocuSignApiConfiguration() { AccountId = authToken.AccountId, Configuration = conf };
+            DocuSignApiConfiguration result = new DocuSignApiConfiguration() { AccountId = docuSignAuthDTO.AccountId, Configuration = conf };
 
-            if (string.IsNullOrEmpty(authToken.AccountId)) //we deal with and old token, that don't have accountId yet
+            if (string.IsNullOrEmpty(docuSignAuthDTO.AccountId)) //we deal with and old token, that don't have accountId yet
             {
                 AuthenticationApi authApi = new AuthenticationApi(conf);
                 LoginInformation loginInfo = authApi.Login();
@@ -85,6 +86,7 @@ namespace terminalDocuSign.Services.New_Api
 
         public static void SendAnEnvelopeFromTemplate(DocuSignApiConfiguration loginInfo, List<FieldDTO> rolesList, List<FieldDTO> fieldList, string curTemplateId)
         {
+            
             //creatig an envelope
             EnvelopeDefinition envDef = new EnvelopeDefinition();
             envDef.EmailSubject = "Test message from Fr8";
