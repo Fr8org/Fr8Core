@@ -111,7 +111,6 @@ module dockyard.directives.paneConfigureAction {
         setSolutionMode: () => void;
         currentActiveElement: model.ControlDefinitionDTO;
         collapsed: boolean;
-        resize: () => void;
     }
     
     export class CancelledEventArgs extends CancelledEventArgsBase { }
@@ -188,10 +187,6 @@ module dockyard.directives.paneConfigureAction {
                 $scope.onConfigurationChanged = onConfigurationChanged;
                 $scope.processConfiguration = processConfiguration;
                 $scope.setSolutionMode = setSolutionMode;
-
-                $scope.resize = () => {
-                    $scope.collapsed = !$scope.collapsed;
-                };
 
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Reconfigure], (event: ng.IAngularEvent, reConfigureActionEventArgs: ActionReconfigureEventArgs) => {
                     //this might be a general reconfigure command
