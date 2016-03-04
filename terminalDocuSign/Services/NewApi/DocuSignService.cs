@@ -1,4 +1,5 @@
-﻿using Data.Interfaces.DataTransferObjects;
+﻿using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
 using DocuSign.eSign.Api;
 using DocuSign.eSign.Client;
 using DocuSign.eSign.Model;
@@ -22,7 +23,7 @@ namespace terminalDocuSign.Services.New_Api
 
     public class DocuSignService
     {
-        public static DocuSignApiConfiguration SetUp(AuthorizationTokenDTO authTokenDO)
+        public static DocuSignApiConfiguration SetUp(AuthorizationTokenDO authTokenDO)
         {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
             //create configuration for future api calls
@@ -86,7 +87,7 @@ namespace terminalDocuSign.Services.New_Api
 
         public static void SendAnEnvelopeFromTemplate(DocuSignApiConfiguration loginInfo, List<FieldDTO> rolesList, List<FieldDTO> fieldList, string curTemplateId)
         {
-            
+
             //creatig an envelope
             EnvelopeDefinition envDef = new EnvelopeDefinition();
             envDef.EmailSubject = "Test message from Fr8";

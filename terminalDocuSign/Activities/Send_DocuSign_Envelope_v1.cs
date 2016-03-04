@@ -51,9 +51,8 @@ namespace terminalDocuSign.Actions
             {
                 return NeedsAuthenticationError(payloadCrates);
             }
-
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
-            var loginInfo = DocuSignService.SetUp(docuSignAuthDTO);
+            
+            var loginInfo = DocuSignService.SetUp(authTokenDO);
 
             return HandleTemplateData(curActivityDO, loginInfo, payloadCrates);
         }
