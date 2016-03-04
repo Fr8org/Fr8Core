@@ -53,7 +53,7 @@ namespace terminalDocuSign.Actions
             }
 
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
-            var loginInfo = DocuSignService.Login(docuSignAuthDTO);
+            var loginInfo = DocuSignService.SetUp(docuSignAuthDTO);
 
             return HandleTemplateData(curActivityDO, loginInfo, payloadCrates);
         }

@@ -22,7 +22,7 @@ namespace terminalDocuSign.Services.New_Api
 
     public class DocuSignService
     {
-        public static DocuSignApiConfiguration Login(DocuSignAuthTokenDTO authToken)
+        public static DocuSignApiConfiguration SetUp(DocuSignAuthTokenDTO authToken)
         {
             //create configuration for future api calls
             string baseUrl = CloudConfigurationManager.GetSetting("environment") + "restapi/";
