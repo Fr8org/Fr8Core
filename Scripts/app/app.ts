@@ -268,6 +268,12 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             url: '/changePassword',
             templateUrl: '/AngularTemplate/ChangePassword',
             data: { pageTitle: 'Change Password', pageSubTitle: '' }
+        })
+
+        .state('reports', {
+            url: "/reports",
+            templateUrl: "/AngularTemplate/RouteReportList",
+            data: { pageTitle: 'Reports', pageSubTitle: 'This page displays all Reports' }
         });
 }]);
 

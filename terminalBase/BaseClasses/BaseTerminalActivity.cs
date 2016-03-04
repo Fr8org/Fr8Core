@@ -23,6 +23,7 @@ using AutoMapper;
 using Data.Helpers;
 using Data.Interfaces.DataTransferObjects.Helpers;
 using Hub.Helper;
+using Data.Interfaces;
 
 namespace TerminalBase.BaseClasses
 {
@@ -296,6 +297,17 @@ namespace TerminalBase.BaseClasses
         {
             return await HubCommunicator.GetCurrentUser(activityDO, containerId, CurrentFr8UserId);
         }
+
+        protected async Task<PlanDTO> GetPlansByActivity(string activityId)
+        {
+            return await HubCommunicator.GetPlansByActivity(activityId, CurrentFr8UserId);
+        }
+
+        protected async Task<PlanDTO> UpdatePlan(PlanEmptyDTO plan)
+        {
+            return await HubCommunicator.UpdatePlan(plan, CurrentFr8UserId);
+        }
+
         protected async Task<Crate> ValidateFields(List<FieldValidationDTO> requiredFieldList)
         {
             var result = await HubCommunicator.ValidateFields(requiredFieldList, CurrentFr8UserId);
@@ -1228,6 +1240,89 @@ namespace TerminalBase.BaseClasses
             };
 
             return curSolutionPage;
+        }
+
+        public string ParseConditionToText(List<FilterConditionDTO> filterData)
+        {
+            var parsedConditions = new List<string>();
+
+            filterData.ForEach(condition =>
+            {
+                string parsedCondition = condition.Field;
+
+                switch (condition.Operator)
+                {
+                    case "eq":
+                        parsedCondition += " = ";
+                        break;
+                    case "neq":
+                        parsedCondition += " != ";
+                        break;
+                    case "gt":
+                        parsedCondition += " > ";
+                        break;
+                    case "gte":
+                        parsedCondition += " >= ";
+                        break;
+                    case "lt":
+                        parsedCondition += " < ";
+                        break;
+                    case "lte":
+                        parsedCondition += " <= ";
+                        break;
+                    default:
+                        throw new NotSupportedException(string.Format("Not supported operator: {0}", condition.Operator));
+                }
+
+                parsedCondition += string.Format("'{0}'", condition.Value);
+                parsedConditions.Add(parsedCondition);
+            });
+
+            var finalCondition = string.Join(" AND ", parsedConditions);
+
+            return finalCondition;
+        }
+
+        /// <summary>
+        /// Update Plan name if the current Plan name is the same as the passed parameter OriginalPlanName to avoid overwriting the changes made by the user
+        /// </summary>
+        /// <param name="activityDO"></param>
+        /// <param name="OriginalPlanName"></param>
+        /// <returns></returns>
+        public async Task<PlanFullDTO> UpdatePlanName(Guid activityId, string OriginalPlanName, string NewPlanName)
+        {
+            try
+            {
+                PlanDTO plan = await GetPlansByActivity(activityId.ToString());
+                if (plan != null && plan.Plan.Name.Equals(OriginalPlanName, StringComparison.OrdinalIgnoreCase))
+                {
+                    plan.Plan.Name = NewPlanName;
+
+                    var emptyPlanDTO = Mapper.Map<PlanEmptyDTO>(plan.Plan);
+                    plan = await UpdatePlan(emptyPlanDTO);
+                }
+
+                return plan.Plan;
+
+            }
+            catch (Exception ex)
+            {
+            }
+            return null;
+        }
+
+        public async Task<PlanFullDTO> UpdatePlanCategory(Guid activityId, string category)
+        {
+            PlanDTO plan = await GetPlansByActivity(activityId.ToString());
+            if (plan != null && plan.Plan!=null)
+            {
+                plan.Plan.Category = category;
+
+                var emptyPlanDTO = Mapper.Map<PlanEmptyDTO>(plan.Plan);
+                plan = await UpdatePlan(emptyPlanDTO);
+            }
+
+            return plan.Plan;
         }
     }
 }

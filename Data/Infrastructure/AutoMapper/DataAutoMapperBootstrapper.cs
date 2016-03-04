@@ -97,10 +97,13 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<PlanDO, PlanEmptyDTO>();
             Mapper.CreateMap<SubPlanDTO, SubPlanDO>()
                 .ForMember(x => x.ParentPlanNodeId, opts => opts.ResolveUsing(x => x.PlanId))
-                .ForMember(x => x.RootPlanNodeId, opts => opts.ResolveUsing(x => x.PlanId));
+                .ForMember(x => x.RootPlanNodeId, opts => opts.ResolveUsing(x => x.PlanId))
+                .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.SubPlanId));
+
             Mapper.CreateMap<SubPlanDO, SubPlanDTO>()
                 .ForMember(x => x.PlanId, opts => opts.ResolveUsing(x => x.ParentPlanNodeId))
-                .ForMember(x => x.PlanId, opts => opts.ResolveUsing(x => x.RootPlanNodeId));
+                .ForMember(x => x.PlanId, opts => opts.ResolveUsing(x => x.RootPlanNodeId))
+                .ForMember(x => x.SubPlanId, opts => opts.ResolveUsing(x => x.Id));
 
             Mapper.CreateMap<CriteriaDO, CriteriaDTO>()
                 .ForMember(x => x.Conditions, opts => opts.ResolveUsing(y => y.ConditionsJSON));
@@ -111,8 +114,15 @@ namespace Data.Infrastructure.AutoMapper
                 .ConvertUsing<PlanDOFullConverter>();
 
             Mapper.CreateMap<PlanEmptyDTO, PlanFullDTO>();
+
+
             //  Mapper.CreateMap<ActionListDO, FullActionListDTO>();
-            Mapper.CreateMap<SubPlanDO, FullSubPlanDTO>();
+            Mapper.CreateMap<SubPlanDO, FullSubPlanDTO>()
+                .ForMember(x => x.SubPlanId, opts => opts.ResolveUsing(x => x.Id));
+
+            Mapper.CreateMap<FullSubPlanDTO, SubPlanDO>()
+                .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.SubPlanId));
+
 
             //Mapper.CreateMap<Account, DocuSignAccount>();
             Mapper.CreateMap<FileDO, FileDescriptionDTO>();

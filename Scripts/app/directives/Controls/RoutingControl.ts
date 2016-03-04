@@ -12,7 +12,7 @@ module dockyard.directives.paneConfigureAction {
         plan: model.Plan;
         uniqueDirectiveId: number;
         //ChangeSelection: (scope: IRoutingControlScope) => void;
-        //ChangeSelection: (route: model.Plan) => void;
+        //ChangeSelection: (plan: model.Plan) => void;
     }
 
     //More detail on creating directives in TypeScript: 
@@ -22,7 +22,7 @@ module dockyard.directives.paneConfigureAction {
         var controller = ['$scope', '$element','$attrs', ($scope: IRoutingControlScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => {
             $scope.uniqueDirectiveId = ++uniqueDirectiveId;
             //var ChangeSelection = function (route: model.Route) {
-            //    $scope.plan.selection = route.selection;
+            //    $scope.plan.selection = plan.selection;
             //    //plan.selection
             //};
         }];

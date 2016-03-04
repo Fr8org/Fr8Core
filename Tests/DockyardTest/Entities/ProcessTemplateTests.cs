@@ -17,7 +17,7 @@ namespace DockyardTest.Entities
     public class PlanTests : BaseTest
     {
         [Test]
-        public void Plan_ShouldBeAssignedStartingSubroute()
+        public void Plan_ShouldBeAssignedStartingSubPlan()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -30,7 +30,7 @@ namespace DockyardTest.Entities
 
                 uow.SaveChanges();
 
-                var result = uow.PlanRepository.GetById<PlanDO>(plan.Id);//.SingleOrDefault(pt => pt.StartingSubrouteId == subroute.Id);
+                var result = uow.PlanRepository.GetById<PlanDO>(plan.Id);//.SingleOrDefault(pt => pt.StartingSubPlanId == subPlan.Id);
 
                 Assert.AreEqual(subPlan.Id, result.StartingSubPlan.Id);
                 Assert.AreEqual(subPlan.Name, result.StartingSubPlan.Name);

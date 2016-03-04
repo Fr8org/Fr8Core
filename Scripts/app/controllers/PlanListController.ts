@@ -17,6 +17,8 @@ module dockyard.controllers {
         dtColumnDefs: any;
         activePlans: Array<interfaces.IPlanVM>;
         inActivePlans: Array<interfaces.IPlanVM>;
+        activePlansCategory: Array<interfaces.IPlanVM>;
+        inActivePlansCategory: Array<interfaces.IPlanVM>;
         reArrangePlans: (plan: interfaces.IPlanVM) => void;
     }
 
@@ -58,8 +60,10 @@ module dockyard.controllers {
             //Load Process Templates view model
             $scope.dtOptionsBuilder = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withDisplayLength(10);
             $scope.dtColumnDefs = this.getColumnDefs();
-            $scope.activePlans = PlanService.getbystatus({ id: null, status: 2 });
-            $scope.inActivePlans = PlanService.getbystatus({ id: null, status: 1 });
+            $scope.activePlans = PlanService.getbystatus({ id: null, status: 2, category: '' });
+            $scope.inActivePlans = PlanService.getbystatus({ id: null, status: 1, category: '' });
+            $scope.activePlansCategory = PlanService.getbystatus({ id: null, status: 2, category: 'report' });
+            $scope.inActivePlansCategory = PlanService.getbystatus({ id: null, status: 1, category: 'report' });
             $scope.executePlan = <(plan: interfaces.IPlanVM) => void>angular.bind(this, this.executePlan);
             $scope.goToPlanPage = <(plan: interfaces.IPlanVM) => void>angular.bind(this, this.goToPlanPage);
             $scope.goToPlanDetailsPage = <(plan: interfaces.IPlanVM) => void>angular.bind(this, this.goToPlanDetailsPage);

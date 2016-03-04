@@ -20,8 +20,9 @@ namespace Data.Entities
             typeof(PlanDO).GetProperty("Tag"),
             typeof(PlanDO).GetProperty("Description"),
             typeof(PlanDO).GetProperty("PlanState"),
+            typeof(PlanDO).GetProperty("Category")
         };
-
+     
         public PlanDO()
         {
             Visibility = PlanVisibility.Standard;
@@ -72,8 +73,8 @@ namespace Data.Entities
                 else
                 {
                     SubPlans.ToList().ForEach(pnt => pnt.StartingSubPlan = false);
-                    if (value != null)
-                    {
+                    if (value != null) 
+                    { 
                         value.StartingSubPlan = true;
                         ChildNodes.Add(value);
                     }
@@ -90,8 +91,10 @@ namespace Data.Entities
         public virtual _PlanStateTemplate PlanStateTemplate { get; set; }
 
         public string Tag { get; set; }
-
+        
         public PlanVisibility Visibility { get; set; }
+
+        public string Category { get; set; }
 
         [NotMapped]
         public IEnumerable<SubPlanDO> SubPlans
@@ -131,6 +134,7 @@ namespace Data.Entities
             PlanState = plan.PlanState;
             Description = plan.Description;
             Visibility = plan.Visibility;
+            Category = plan.Category;
         }
 
         public bool IsOngoingPlan()

@@ -308,6 +308,29 @@ namespace TerminalBase.Infrastructure
             return await _restfulServiceClient.GetAsync<IEnumerable<PlanDTO>>(uri, null, await GetHMACHeader(uri, userId));
         }
 
+        public async Task<PlanDTO> GetPlansByActivity(string activityId, string userId)
+        {
+            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/plans/getByActivity?id=" + activityId;
+            var uri = new Uri(url);
+
+            return await _restfulServiceClient.GetAsync<PlanDTO>(uri, null, await GetHMACHeader(uri, userId));
+        }
+
+        public async Task<PlanDTO> UpdatePlan(PlanEmptyDTO plan, string userId)
+        {
+            var jsonObject = JsonConvert.SerializeObject(plan).ToString();
+            HttpContent jsonContent = new StringContent(jsonObject,
+                             Encoding.UTF8, "application/json");
+
+            var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+               + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/plans/";
+
+            var uri = new Uri(hubUrl);
+
+            return await _restfulServiceClient.PostAsync<PlanDTO>(uri, jsonContent, null, await GetHMACHeader(uri, userId, jsonContent));
+        }
+
         public async Task DeleteExistingChildNodesFromActivity(Guid curActivityId, string userId)
         {
             var hubAlarmsUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")

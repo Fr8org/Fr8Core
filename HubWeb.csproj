@@ -567,17 +567,17 @@
     <Content Include="Content\img\MicrosoftExchangelogo.png" />
     <Content Include="Content\img\minus.png" />
     <Content Include="Content\img\plus.png" />
-    <Content Include="Content\img\RouteBuilder\action-add-small.png" />
-    <Content Include="Content\img\RouteBuilder\actions-node-bg.png" />
-    <Content Include="Content\img\RouteBuilder\actions-node-bottom.png" />
-    <Content Include="Content\img\RouteBuilder\actions-node-top.png" />
-    <Content Include="Content\img\RouteBuilder\add-criteria-node-bg.png" />
-    <Content Include="Content\img\RouteBuilder\circle-selected.png" />
-    <Content Include="Content\img\RouteBuilder\circle.png" />
-    <Content Include="Content\img\RouteBuilder\criteria-node-bg.png" />
-    <Content Include="Content\img\RouteBuilder\delete-icon.png" />
-    <Content Include="Content\img\RouteBuilder\right-arrow.png" />
-    <Content Include="Content\img\RouteBuilder\start-node-bg.png" />
+    <Content Include="Content\img\PlanBuilder\action-add-small.png" />
+    <Content Include="Content\img\PlanBuilder\actions-node-bg.png" />
+    <Content Include="Content\img\PlanBuilder\actions-node-bottom.png" />
+    <Content Include="Content\img\PlanBuilder\actions-node-top.png" />
+    <Content Include="Content\img\PlanBuilder\add-criteria-node-bg.png" />
+    <Content Include="Content\img\PlanBuilder\circle-selected.png" />
+    <Content Include="Content\img\PlanBuilder\circle.png" />
+    <Content Include="Content\img\PlanBuilder\criteria-node-bg.png" />
+    <Content Include="Content\img\PlanBuilder\delete-icon.png" />
+    <Content Include="Content\img\PlanBuilder\right-arrow.png" />
+    <Content Include="Content\img\PlanBuilder\start-node-bg.png" />
     <Content Include="Content\img\select-info.png" />
     <Content Include="Content\img\site\alex-photo.png" />
     <Content Include="Content\img\site\arrow_blue_ic_arrow_forward_48px-512.png" />
@@ -819,7 +819,7 @@
     <Content Include="_PowerShellScripts\RunIntegrationTests-MASTER.ps1" />
     <Content Include="_PowerShellScripts\MASTER-job-run.cmd" />
     <Content Include="_PowerShellScripts\MASTER-settings.job" />
-    <Content Include="_PowerShellScripts\DeployAzureWebJob-HealthMonitor-MASTER.ps1" />
+    <Content Include="_PowerShellScripts\DeployAzureWebJob-HealthMonitor-MASTER-Staging.ps1" />
     <Content Include="_PowerShellScripts\KillProcess.ps1" />
     <Content Include="_PowerShellScripts\SetCloudServiceSize.ps1" />
     <Content Include="_PowerShellScripts\SetTerminalFr8CoreCS.ps1" />
@@ -952,6 +952,8 @@
     <Content Include="Views\AngularTemplate\QueryBuilderCondition.cshtml" />
     <Content Include="Views\AngularTemplate\SourceableCriteria.cshtml" />
     <Content Include="Views\AngularTemplate\CrateChooser.cshtml" />
+    <Content Include="Views\AngularTemplate\_PlanReportList.cshtml" />
+    <Content Include="Views\AngularTemplate\PlanReportList.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

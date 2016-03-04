@@ -11,6 +11,7 @@
         startingSubPlanId: number;
         subPlans: Array<SubPlanDTO>;
         visibility: PlanVisibility;
+        category: string;
     }
 
     export enum PlanState {

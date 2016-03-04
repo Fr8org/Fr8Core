@@ -1,6 +1,6 @@
 ﻿module dockyard.model {
     export class SubPlanDTO {
-        public id: string;
+        public subPlanId: string;
         public isTempId: boolean;
         public planId: string;
         public name: string;
@@ -13,7 +13,7 @@
             planId: string,
             name: string
         ) {
-            this.id = id;
+            this.subPlanId = id;
             this.isTempId = isTempId;
             this.planId = planId;
             this.name = name;
@@ -23,7 +23,7 @@
         }
 
         clone(): SubPlanDTO {
-            var result = new SubPlanDTO(this.id, this.isTempId, this.planId, this.name);
+            var result = new SubPlanDTO(this.subPlanId, this.isTempId, this.planId, this.name);
             result.criteria = this.criteria !== null ? this.criteria.clone() : null;
             angular.forEach(this.activities, function (it) { result.activities.push(it.clone()); });
 
@@ -49,7 +49,7 @@
             var criteria = new model.CriteriaDTO(
                 criteriaId,
                 true,
-                subPlan.id,
+                subPlan.subPlanId,
                 model.CriteriaExecutionType.WithConditions
             );
 

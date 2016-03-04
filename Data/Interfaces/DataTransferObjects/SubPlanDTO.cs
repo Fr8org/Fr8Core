@@ -9,12 +9,12 @@ namespace Data.Interfaces.DataTransferObjects
     /// </summary>
     public class SubPlanDTO
     {
-        public Guid Id { get; set; }
+        public Guid SubPlanId { get; set; }
 
         public Guid? PlanId { get; set; }
 
         public string Name { get; set; }
 
-        public string TransitionKey { get; set; }
+        //public string TransitionKey { get; set; }
     }
 }

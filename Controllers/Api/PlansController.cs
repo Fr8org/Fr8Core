@@ -84,7 +84,7 @@ namespace HubWeb.Controllers
         }
         */
         [Fr8HubWebHMACAuthenticate]
-        [ResponseType(typeof(PlanFullDTO))]
+        [ResponseType(typeof(PlanDTO))]
         public IHttpActionResult Post(PlanEmptyDTO planDto, bool updateRegistrations = false)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -111,7 +111,7 @@ namespace HubWeb.Controllers
         [Fr8ApiAuthorize]
         //[Route("full/{id:guid}")]
         [ActionName("full")]
-        [ResponseType(typeof(PlanFullDTO))]
+        [ResponseType(typeof(PlanDTO))]
         [HttpGet]
         public IHttpActionResult GetFullPlan(Guid id)
         {
@@ -125,9 +125,9 @@ namespace HubWeb.Controllers
         }
 
         //[Route("getByAction/{id:guid}")]
-        [ResponseType(typeof(PlanFullDTO))]
+        [Fr8HubWebHMACAuthenticate]
+        [ResponseType(typeof(PlanDTO))]
         [HttpGet]
-
         public IHttpActionResult GetByActivity(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -142,7 +142,7 @@ namespace HubWeb.Controllers
         [Fr8ApiAuthorize]
         [ActionName("status")]
         [HttpGet]
-        public IHttpActionResult GetByStatus(Guid? id = null, int? status = null)
+        public IHttpActionResult GetByStatus(Guid? id = null, int? status = null, string category = "")
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -151,7 +151,8 @@ namespace HubWeb.Controllers
                     _security.GetCurrentAccount(uow),
                     _security.IsCurrentUserHasRole(Roles.Admin),
                     id,
-                    status
+                    status,
+                    category
                 );
 
                 if (curPlans.Any())

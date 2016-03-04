@@ -95,9 +95,10 @@ namespace Hub.Services
                 else
                 {
                     //find the corresponding DockyardAccount
-                    var authTokenList = uow.AuthorizationTokenRepository.GetPublicDataQuery().Include(x => x.UserDO).Where(x => x.ExternalAccountId == eventReportMS.ExternalAccountId);
+                    var authTokenList = uow.AuthorizationTokenRepository.GetPublicDataQuery()
+                        .Include(x => x.UserDO).Where(x => x.ExternalAccountId == eventReportMS.ExternalAccountId).ToArray();
                     var tasks = new List<Task>();
-                    foreach (var authToken in authTokenList.ToArray())
+                    foreach (var authToken in authTokenList)
                     {
                         var curDockyardAccount = authToken.UserDO;
                         var accountTask = FindAndExecuteAccountPlans(uow, eventReportMS, curCrateStandardEventReport, curDockyardAccount);
@@ -126,8 +127,9 @@ namespace Hub.Services
                Crate curCrateStandardEventReport, Fr8AccountDO curDockyardAccount = null)
         {
             //find this Account's Plans
-            var initialPlansList = uow.PlanRepository.GetPlanQueryUncached().Where(pt => pt.Fr8AccountId == curDockyardAccount.Id && pt.PlanState == PlanState.Active);
-            var subscribingPlans = _plan.MatchEvents(initialPlansList.ToList(), eventReportMS);
+            var initialPlansList = uow.PlanRepository.GetPlanQueryUncached()
+                .Where(pt => pt.Fr8AccountId == curDockyardAccount.Id && pt.PlanState == PlanState.Active).ToList();
+            var subscribingPlans = _plan.MatchEvents(initialPlansList, eventReportMS);
 
             await LaunchProcesses(subscribingPlans, curCrateStandardEventReport);
         }

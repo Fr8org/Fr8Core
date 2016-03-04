@@ -30,7 +30,7 @@
         startNodeTextWeight: 'normal',
         startNodeTextOffsetY: 2,
         startNodeCornerRadius: 5,
-        startNodeBgImage: '/Content/img/RouteBuilder/start-node-bg.png',
+        startNodeBgImage: '/Content/img/PlanBuilder/start-node-bg.png',
 
         // AddCriteriaNode (predefined diamond, which is used to create new criteria) parameters.
         addCriteriaNodeWidth: 150,
@@ -42,7 +42,7 @@
         addCriteriaNodeTextFont: 'Tahoma',
         addCriteriaNodeTextOffsetX: 6,
         addCriteriaNodeTextOffsetY: 1,
-        addCriteriaNodeBgImage: '/Content/img/RouteBuilder/add-criteria-node-bg.png',
+        addCriteriaNodeBgImage: '/Content/img/PlanBuilder/add-criteria-node-bg.png',
 
         // CriteriaNode (criteria diamon that was added by user) parameters.
         criteriaNodeWidth: 146,
@@ -54,7 +54,7 @@
         criteriaNodeTextFont: 'Tahoma',
         criteriaNodeTextOffsetX: 0,
         criteriaNodeTextOffsetY: 2,
-        criteriaNodeBgImage: '/Content/img/RouteBuilder/criteria-node-bg.png',
+        criteriaNodeBgImage: '/Content/img/PlanBuilder/criteria-node-bg.png',
 
         // ActionsNode (actions panel on the right from criteria diamond) parameters.
         actionsNodeFill: 'white',
@@ -63,9 +63,9 @@
         actionsNodeWidth: 227,
         actionsNodeTopHeight: 35,
         actionsNodeBottomHeight: 8,
-        actionsNodeTopImage: '/Content/img/RouteBuilder/actions-node-top.png',
-        actionsNodeBottomImage: '/Content/img/RouteBuilder/actions-node-bottom.png',
-        actionsNodeBgImage: '/Content/img/RouteBuilder/actions-node-bg.png',
+        actionsNodeTopImage: '/Content/img/PlanBuilder/actions-node-top.png',
+        actionsNodeBottomImage: '/Content/img/PlanBuilder/actions-node-bottom.png',
+        actionsNodeBgImage: '/Content/img/PlanBuilder/actions-node-bg.png',
 
         // AddActionNode (add new action button) parameters.
         addActionNodePadding: 8,
@@ -73,7 +73,7 @@
         addActionNodeTextSize: 15,
         addActionNodeTextFill: '#566B7F',
         addActionNodeTextFont: 'Tahoma',
-        addActionNodeAddImage: '/Content/img/RouteBuilder/action-add-small.png',
+        addActionNodeAddImage: '/Content/img/PlanBuilder/action-add-small.png',
 
         // ActionNode (single action that was added by user) parameters.
         actionNodePadding: 5,

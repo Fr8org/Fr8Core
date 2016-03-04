@@ -15,6 +15,7 @@ using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using terminalSalesforce.Infrastructure;
 using Data.Interfaces.DataTransferObjects;
+using Hub.Infrastructure;
 
 namespace terminalSalesforce.Actions
 {
@@ -150,7 +151,7 @@ namespace terminalSalesforce.Actions
                 EventManager.CriteriaEvaluationStarted(containerId);
 
 
-                string parsedCondition = ParsedCondition(filterDataDTO);
+                string parsedCondition = ParseConditionToText(filterDataDTO);
 
                 resultObjects = await _salesforce.GetObjectByQuery(curSelectedSalesForceObject, parsedCondition, _salesforce.CreateForceClient(authTokenDO));
             }
@@ -207,45 +208,6 @@ namespace terminalSalesforce.Actions
             return PackControlsCrate(whatKindOfData, textArea, queryBuilderPane);
         }
 
-        private string ParsedCondition(List<FilterConditionDTO> filterData)
-        {
-            var parsedConditions = new List<string>();
-
-            filterData.ForEach(condition =>
-            {
-                string parsedCondition = condition.Field;
-
-                switch (condition.Operator)
-                {
-                    case "eq":
-                        parsedCondition += " = ";
-                        break;
-                    case "neq":
-                        parsedCondition += " != ";
-                        break;
-                    case "gt":
-                        parsedCondition += " > ";
-                        break;
-                    case "gte":
-                        parsedCondition += " >= ";
-                        break;
-                    case "lt":
-                        parsedCondition += " < ";
-                        break;
-                    case "lte":
-                        parsedCondition += " <= ";
-                        break;
-                    default:
-                        throw new NotSupportedException(string.Format("Not supported operator: {0}", condition.Operator));
-                }
-
-                parsedCondition += string.Format("'{0}'", condition.Value);
-                parsedConditions.Add(parsedCondition);
-            });
-
-            var finalCondition = string.Join(" AND ", parsedConditions);
-
-            return finalCondition;
-        }
+        
     }
 }

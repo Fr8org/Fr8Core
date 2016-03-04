@@ -275,7 +275,7 @@ module dockyard.controllers {
 
         private findSubPlanById(id: string): model.SubPlanDTO {
             for (var i = 0; i < this.$scope.current.plan.subPlans.length; i++) {
-                if (this.$scope.current.plan.subPlans[i].id === id) {
+                if (this.$scope.current.plan.subPlans[i].subPlanId === id) {
                     return this.$scope.current.plan.subPlans[i];
                 }
             }
@@ -499,7 +499,7 @@ module dockyard.controllers {
             var activityTemplate = eventArgs.activityTemplate;
             // Generate next Id.
             var id = this.LocalIdentityGenerator.getNextId();
-            var parentId = this.$scope.currentSubPlan.id;
+            var parentId = this.$scope.currentSubPlan.subPlanId;
             if (eventArgs.group !== null && eventArgs.group.parentAction !== null) {
                 parentId = eventArgs.group.parentAction.id;
             }

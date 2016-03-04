@@ -18,7 +18,7 @@ namespace Data.Entities
         public Guid? SubPlanId { get; set; }
 
         /// <summary>
-        /// Reference to parent RouteNode.
+        /// Reference to parent PlanNode.
         /// Every Criteria must belong to a single PlanNode.
         /// </summary>
         public virtual SubPlanDO SubPlan { get; set; }

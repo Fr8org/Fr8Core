@@ -5,7 +5,7 @@
 */
 module dockyard.services {
     export interface IPlanService extends ng.resource.IResourceClass<interfaces.IPlanFullDTO> {
-        getbystatus: (id: { id: number; status: number; }) => Array<interfaces.IPlanVM>;
+        getbystatus: (id: { id: number; status: number; category?: string }) => Array<interfaces.IPlanVM>;
         getFull: (id: Object) => interfaces.IPlanFullDTO;
         getByActivity: (id: { id: string }) => interfaces.IPlanVM;
         execute: (id: { id: number }, payload: { payload: string }, success: any, error: any) => void;
@@ -96,9 +96,10 @@ module dockyard.services {
                     'getbystatus': {
                         method: 'GET',
                         isArray: true,
-                        url: '/api/plans/status?status=:status',
+                        url: '/api/plans/status?status=:status&category=:category',
                         params: {
-                            status: '@status'
+                            status: '@status',
+                            category: '@category'
                         }
                     },
                     'getByActivity': {
@@ -447,9 +448,9 @@ module dockyard.services {
             addDeferred.$promise
                 .then((addResult: interfaces.ISubPlanVM) => {
                     curProcessNodeTemplate.isTempId = false;
-                    curProcessNodeTemplate.id = addResult.id;    
+                    curProcessNodeTemplate.subPlanId = addResult.subPlanId;    
                     // Fetch criteria object from server by ProcessNodeTemplate global ID.
-                    return this.CriteriaService.byProcessNodeTemplate({ id: addResult.id }).$promise;
+                    return this.CriteriaService.byProcessNodeTemplate({ id: addResult.subPlanId }).$promise;
                 })
                 .then((getResult: interfaces.ICriteriaVM) => {
                     curProcessNodeTemplate.criteria.id = getResult.id;
@@ -502,7 +503,7 @@ module dockyard.services {
                     var criteria = new model.CriteriaDTO(
                         getCriteriaDeferred.id,
                         false,
-                        getPntDeferred.id,
+                        getPntDeferred.subPlanId,
                         getCriteriaDeferred.executionType
                     );
 

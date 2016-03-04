@@ -226,6 +226,16 @@ namespace TerminalBase.Infrastructure
             throw new NotImplementedException();
         }
 
+        public Task<PlanDTO> GetPlansByActivity(string activityId, string userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<PlanDTO> UpdatePlan(PlanEmptyDTO plan, string userId)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<IEnumerable<FileDTO>> GetFiles(string userId)
         {
             throw new NotImplementedException();

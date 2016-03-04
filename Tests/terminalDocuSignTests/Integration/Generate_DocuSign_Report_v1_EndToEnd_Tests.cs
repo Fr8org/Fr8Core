@@ -37,6 +37,8 @@ namespace terminalDocuSignTests.Integration
                 var crateStorage = _crateManager.FromDto(solution.CrateStorage);
                 ValidateCrateStructure(crateStorage);
                 ValidateConfigurationControls(crateStorage);
+                var planConfigure = await GetPlanByActivity(solution.Id);
+                ValidatePlanCategory(planConfigure);
                 await SaveActivity(solution);
 
 
@@ -49,6 +51,8 @@ namespace terminalDocuSignTests.Integration
                 ValidateConfigurationControls(crateStorage);
                 ValidateChildrenActivities(solution);
                 ValidateSolutionOperationalState(crateStorage);
+                var planFollowup = await GetPlanByActivity(solution.Id);
+                ValidatePlanName(planFollowup, crateStorage);
                 await SaveActivity(solution);
 
 
@@ -230,6 +234,83 @@ namespace terminalDocuSignTests.Integration
         {
             var crateStorage = _crateManager.FromDto(payload.CrateStorage);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardPayloadDataCM>().Count(x => x.Label == "Sql Query Result"));
+        }
+
+        private async Task<PlanFullDTO> GetPlanByActivity(Guid id)
+        {
+            var solutionCreateUrl = _baseUrl + "/plans/getByActivity?id=" + id.ToString();
+            var plan = await HttpGetAsync<PlanFullDTO>(solutionCreateUrl);
+
+            return plan;
+        }
+
+        private void ValidatePlanCategory(PlanFullDTO plan)
+        {
+            Assert.AreEqual(plan.Category.Trim().ToLower(), "report");
+        }
+
+        private void ValidatePlanName(PlanFullDTO plan, ICrateStorage crateStorage)
+        {
+            var configurationControls = crateStorage
+            .CrateContentsOfType<StandardConfigurationControlsCM>()
+            .SingleOrDefault();
+            
+            var actionUi = new ActivityUi();
+            actionUi.ClonePropertiesFrom(configurationControls);
+
+            var criteria = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(
+                actionUi.QueryBuilder.Value
+            );
+
+            Assert.AreEqual(plan.Name.Trim().ToLower(), ParseConditionToText(criteria).Trim().ToLower());
+        }
+    }
+
+    public class ActivityUi : StandardConfigurationControlsCM
+    {
+        [JsonIgnore]
+        public QueryBuilder QueryBuilder { get; set; }
+
+        public ActivityUi()
+        {
+            Controls = new List<ControlDefinitionDTO>();
+
+            Controls.Add(new TextArea
+            {
+                IsReadOnly = true,
+                Label = "",
+                Value = "<p>Search for DocuSign Envelopes where:</p>"
+            });
+
+            var filterConditions = new[]
+            {
+                    new FilterConditionDTO { Field = "Envelope Text", Operator = "eq" },
+                    new FilterConditionDTO { Field = "Folder", Operator = "eq" },
+                    new FilterConditionDTO { Field = "Status", Operator = "eq" }
+                };
+
+            string initialQuery = JsonConvert.SerializeObject(filterConditions);
+
+            Controls.Add((QueryBuilder = new QueryBuilder
+            {
+                Name = "QueryBuilder",
+                Value = initialQuery,
+                Source = new FieldSourceDTO
+                {
+                    Label = "Queryable Criteria",
+                    ManifestType = CrateManifestTypes.StandardQueryFields
+                }
+            }));
+
+            Controls.Add(new Button()
+            {
+                Label = "Generate Report",
+                Name = "Continue",
+                Events = new List<ControlEvent>()
+                    {
+                        new ControlEvent("onClick", "requestConfig")
+                    }
+            });
         }
     }
 }
