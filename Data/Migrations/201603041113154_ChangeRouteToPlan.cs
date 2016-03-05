@@ -11,7 +11,6 @@ namespace Data.Migrations
             RenameTable(name: "dbo._RouteStateTemplate", newName: "_PlanStateTemplate");
             RenameTable(name: "dbo.RouteNodes", newName: "PlanNodes");
             DropForeignKey("dbo.ProcessNodes", "SubrouteId", "dbo.Subroutes");
-            Sql("ALTER TABLE[dbo].[ProcessNodes] DROP CONSTRAINT [FK_dbo.ProcessNodes_dbo.SubPlans_SubPlanId]");
             DropForeignKey("dbo.Criteria", "SubrouteId", "dbo.Subroutes");
             DropForeignKey("dbo.Subroutes", "Id", "dbo.RouteNodes");
             DropIndex("dbo.ProcessNodes", new[] { "SubrouteId" });
@@ -42,7 +41,8 @@ namespace Data.Migrations
             AddColumn("dbo.Criteria", "SubPlanId", c => c.Guid());
             CreateIndex("dbo.ProcessNodes", "SubPlanId");
             CreateIndex("dbo.Criteria", "SubPlanId");
-            AddForeignKey("dbo.ProcessNodes", "SubPlanId", "dbo.SubPlans", "Id");
+            Sql("ALTER TABLE[dbo].[ProcessNodes] WITH NOCHECK ADD CONSTRAINT[FK_dbo.ProcessNodes_dbo.SubPlans_SubPlanId] FOREIGN KEY([SubPlanId]) REFERENCES[dbo].[SubPlans] ([Id])");
+            //AddForeignKey("dbo.ProcessNodes", "SubPlanId", "dbo.SubPlans", "Id");
             AddForeignKey("dbo.Criteria", "SubPlanId", "dbo.SubPlans", "Id");
             DropColumn("dbo.ProcessNodes", "SubrouteId");
             DropColumn("dbo.Criteria", "SubrouteId");
