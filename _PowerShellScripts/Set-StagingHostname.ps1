@@ -12,10 +12,10 @@ param(
 )
 	
 $ErrorActionPreference = 'Stop'
-  
+$rootDir = Split-Path -parent $PSCommandPath
 $deployment = Get-AzureDeployment -ServiceName $serviceName -Slot Staging
 $hostName = $deployment.Url.Host
-Invoke-Expression ".\UpdateTerminalHostnameInDb.ps1 `
+Invoke-Expression "$rootDir\UpdateTerminalHostnameInDb.ps1 `
 	-connectionString '$connectionString' `
 	-newHostname $hostName `
 	-overrideDbName $overrideDbName"
