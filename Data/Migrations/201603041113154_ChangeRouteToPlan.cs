@@ -7,15 +7,16 @@ namespace Data.Migrations
     {
         public override void Up()
         {
+            RenameTable(name: "dbo.Routes", newName: "Plans");
+            RenameTable(name: "dbo._RouteStateTemplate", newName: "_PlanStateTemplate");
+            RenameTable(name: "dbo.RouteNodes", newName: "PlanNodes");
             DropForeignKey("dbo.ProcessNodes", "SubrouteId", "dbo.Subroutes");
+            Sql("ALTER TABLE[dbo].[ProcessNodes] DROP CONSTRAINT [FK_dbo.ProcessNodes_dbo.SubPlans_SubPlanId]");
             DropForeignKey("dbo.Criteria", "SubrouteId", "dbo.Subroutes");
             DropForeignKey("dbo.Subroutes", "Id", "dbo.RouteNodes");
             DropIndex("dbo.ProcessNodes", new[] { "SubrouteId" });
             DropIndex("dbo.Criteria", new[] { "SubrouteId" });
             DropIndex("dbo.Subroutes", new[] { "Id" });
-            RenameTable(name: "dbo.Routes", newName: "Plans");
-            RenameTable(name: "dbo._RouteStateTemplate", newName: "_PlanStateTemplate");
-            RenameTable(name: "dbo.RouteNodes", newName: "PlanNodes");
             RenameColumn(table: "dbo.PlanNodes", name: "ParentRouteNodeId", newName: "ParentPlanNodeId");
             RenameColumn(table: "dbo.PlanNodes", name: "RootRouteNodeId", newName: "RootPlanNodeId");
             RenameColumn(table: "dbo.Containers", name: "CurrentRouteNodeId", newName: "CurrentPlanNodeId");
@@ -80,16 +81,15 @@ namespace Data.Migrations
             RenameColumn(table: "dbo.Containers", name: "CurrentPlanNodeId", newName: "CurrentRouteNodeId");
             RenameColumn(table: "dbo.PlanNodes", name: "RootPlanNodeId", newName: "RootRouteNodeId");
             RenameColumn(table: "dbo.PlanNodes", name: "ParentPlanNodeId", newName: "ParentRouteNodeId");
-            RenameTable(name: "dbo.PlanNodes", newName: "RouteNodes");
-            RenameTable(name: "dbo._PlanStateTemplate", newName: "_RouteStateTemplate");
-            RenameTable(name: "dbo.Plans", newName: "Routes");
             CreateIndex("dbo.Subroutes", "Id");
             CreateIndex("dbo.Criteria", "SubrouteId");
             CreateIndex("dbo.ProcessNodes", "SubrouteId");
             AddForeignKey("dbo.Subroutes", "Id", "dbo.RouteNodes", "Id");
             AddForeignKey("dbo.Criteria", "SubrouteId", "dbo.Subroutes", "Id");
             AddForeignKey("dbo.ProcessNodes", "SubrouteId", "dbo.Subroutes", "Id");
-            
+            RenameTable(name: "dbo.PlanNodes", newName: "RouteNodes");
+            RenameTable(name: "dbo._PlanStateTemplate", newName: "_RouteStateTemplate");
+            RenameTable(name: "dbo.Plans", newName: "Routes");
         }
     }
 }
