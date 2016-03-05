@@ -51,9 +51,8 @@ namespace terminalDocuSign.Actions
             {
                 return NeedsAuthenticationError(payloadCrates);
             }
-
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
-            var loginInfo = DocuSignService.Login(docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
+            
+            var loginInfo = DocuSignService.SetUp(authTokenDO);
 
             return HandleTemplateData(curActivityDO, loginInfo, payloadCrates);
         }
@@ -73,7 +72,7 @@ namespace terminalDocuSign.Actions
             return result;
         }
 
-        private PayloadDTO HandleTemplateData(ActivityDO curActivityDO, DocuSignLoginInformation loginInfo, PayloadDTO payloadCrates)
+        private PayloadDTO HandleTemplateData(ActivityDO curActivityDO, DocuSignApiConfiguration loginInfo, PayloadDTO payloadCrates)
         {
             var curTemplateId = ExtractTemplateId(curActivityDO);
             var payloadCrateStorage = CrateManager.GetStorage(payloadCrates);
