@@ -83,10 +83,10 @@ namespace terminalDocuSignTests.Integration
             //
             // Create solution
             //
-            var plan = await HttpPostAsync<string, PlanFullDTO>(solutionCreateUrl, null);
-            var solution = plan.SubPlans.FirstOrDefault().Activities.FirstOrDefault();
+            var plan = await HttpPostAsync<string, PlanDTO>(solutionCreateUrl, null);
+            var solution = plan.Plan.SubPlans.FirstOrDefault().Activities.FirstOrDefault();
 
-            var planReloadUrl = string.Format(baseUrl + "plans/full/{0}", plan.Id);
+            var planReloadUrl = string.Format(baseUrl + "plans/full/{0}", plan.Plan.Id);
 
             //
             // Send configuration request without authentication token
@@ -220,10 +220,10 @@ namespace terminalDocuSignTests.Integration
             Assert.True(this._solution.ChildrenActivities.Any(a => a.Label == "Query Fr8 Warehouse" && a.Ordering == 3));
             Assert.True(this._solution.ChildrenActivities.Any(a => a.Label == "Test Incoming Data" && a.Ordering == 4));
 
-            plan = await HttpGetAsync<PlanFullDTO>(planReloadUrl);
-            Assert.AreEqual(3, plan.SubPlans.First().Activities.Count);
-            Assert.True(plan.SubPlans.First().Activities.Any(a => a.Label == "Build a Message" && a.Ordering == 2));
-            var emailActivity = plan.SubPlans.First().Activities.Last();
+            plan = await HttpGetAsync<PlanDTO>(planReloadUrl);
+            Assert.AreEqual(3, plan.Plan.SubPlans.First().Activities.Count);
+            Assert.True(plan.Plan.SubPlans.First().Activities.Any(a => a.Label == "Build a Message" && a.Ordering == 2));
+            var emailActivity = plan.Plan.SubPlans.First().Activities.Last();
             Assert.True(emailActivity.Label == notificationHandler.selectedKey);
 
             //let's configure email settings
@@ -261,11 +261,11 @@ namespace terminalDocuSignTests.Integration
             //
             //Rename plan
             //
-            var newName = plan.Name + " | " + DateTime.UtcNow.ToShortDateString() + " " + DateTime.UtcNow.ToShortTimeString();
-            await HttpPostAsync<object, PlanFullDTO>(baseUrl + "plans?id=" + plan.Id, new { id = plan.Id, name = newName });
+            var newName = plan.Plan.Name + " | " + DateTime.UtcNow.ToShortDateString() + " " + DateTime.UtcNow.ToShortTimeString();
+            await HttpPostAsync<object, PlanFullDTO>(baseUrl + "plans?id=" + plan.Plan.Id, new { id = plan.Plan.Id, name = newName });
 
             //let's activate our plan
-            await HttpPostAsync<string, string>(baseUrl + "plans/activate?planId=" + plan.Id, null);
+            await HttpPostAsync<string, string>(baseUrl + "plans/activate?planId=" + plan.Plan.Id, null);
             
             
             //everything seems perfect -> let's fake a docusign event
@@ -284,7 +284,7 @@ namespace terminalDocuSignTests.Integration
             //
             // Delete plan
             //
-            await HttpDeleteAsync(baseUrl + "plans?id=" + plan.Id);
+            await HttpDeleteAsync(baseUrl + "plans?id=" + plan.Plan.Id);
 
             // Verify that test email has been received
             //EmailAssert.EmailReceived("fr8ops@fr8.company", "Fr8-TrackDocuSignRecipientsTest");
