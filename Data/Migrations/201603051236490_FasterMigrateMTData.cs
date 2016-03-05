@@ -1,12 +1,11 @@
 namespace Data.Migrations
 {
     using System.Data.Entity.Migrations;
-
-    public partial class MigrateMTData : DbMigration
-    {
-        const string MigrateDataToNewStructure = @"
     
-IF OBJECT_ID('tempdb.dbo.#MtTypes', 'U') IS NOT NULL
+    public partial class FasterMigrateMTData : DbMigration
+    {
+        const string SqlScript = @"
+        IF OBJECT_ID('tempdb.dbo.#MtTypes', 'U') IS NOT NULL
 	drop table #MtTypes
 
 IF OBJECT_ID('tempdb.dbo.#PropMapping', 'U') IS NOT NULL
@@ -26,6 +25,9 @@ IF OBJECT_ID('tempdb.dbo.#tfields', 'U') IS NOT NULL
 
 IF OBJECT_ID('tempdb.dbo.#tempData2', 'U') IS NOT NULL
 	drop table #tempData2
+
+	IF OBJECT_ID('tempdb.dbo.#mapStr', 'U') IS NOT NULL
+	drop table #mapStr
 
 CREATE TABLE #MtTypes (Id uniqueidentifier, Alias nvarchar(300), Name Char( 255 ), IsPrimitive bit, IsComplex bit, ManifestId int );
 CREATE TABLE #MtProperties (Name nvarchar (100), DeclaringType uniqueidentifier, PropType uniqueidentifier, offset int);
@@ -241,79 +243,48 @@ insert into MtTypes (Id, Alias, ClrName, IsPrimitive, IsComplex, ManifestId)
 select Id,Alias, ClrName, case when IsPrimitive is null then 0 else IsPrimitive end, case when IsComplex is null then 0 else IsComplex end, ManifestId from #TypeMapping
 where #TypeMapping.LegacyId  in (select max(LegacyId) from #TypeMapping  group by Id)
 
-
 insert into MtProperties (Name, Offset, DeclaringType, Type)
 select Name, Offset, DeclaringType, PropertyType from #PropMapping where #PropMapping.Id  in (select max(id) from #PropMapping group by DeclaringType, Name)
 
+Select distinct pm.DeclaringType,
+	(
+		SELECT STUFF((SELECT case when #PropMapping.PropertyType = '390f04b2-07e4-4bbd-8a7f-738f346750b5' or #PropMapping.PropertyType = '9de39ffc-8f5d-4b8f-8708-cc5a252f7b27' then
+									', Convert(nvarchar, Convert(datetimeoffset, Value' + Convert(nvarchar, (#PropMapping.Offset+1)) + '), 127)'
+								else
+									', Value' + Convert(nvarchar, (#PropMapping.Offset+1)) 
+								end
+		FROM #PropMapping where pm.DeclaringType = #PropMapping.DeclaringType and #PropMapping.Id  in (select max(id) from #PropMapping group by DeclaringType, Name) order by Id
+		FOR XML PATH('')) ,1,1,'') AS Txt
+	) as new, 
+			
+	(
+			SELECT STUFF((SELECT ', Value' + Convert(nvarchar, (#PropMapping.LegacyOffset)) 
+						  
+        FROM #PropMapping where pm.DeclaringType = #PropMapping.DeclaringType and #PropMapping.Id  in (select max(id) from #PropMapping group by DeclaringType, Name) order by Id
+        FOR XML PATH('')) ,1,1,'') AS Txt
+	)  as legacy
+    into #mapStr			
+	from #PropMapping as pm
 
-select [GUID], #PropMapping.PropertyType as PropType, 'Value' + Convert(nvarchar, (#PropMapping.Offset+1)) as ColumnName,  Value into #tempData from MT_Data 
-unpivot (Value for ColumnName in (Value1, Value2, Value3, Value4, Value5, Value6, Value7, Value8, Value9, Value10, Value11, Value12, Value13, Value14)) as t
-inner join #PropMapping on #PropMapping.LegacyOffset = Convert(int, REPLACE(ColumnName, 'Value', '')) and t.Mt_ObjectId = #PropMapping.MT_ObjectId
+declare @script nvarchar(max)
 
-update #tempData set Value = Convert(nvarchar, Convert(datetimeoffset, Value), 127) 
-where #tempData.PropType = '390f04b2-07e4-4bbd-8a7f-738f346750b5' or #tempData.PropType = '9de39ffc-8f5d-4b8f-8708-cc5a252f7b27' 
+declare cur CURSOR LOCAL for
+   select 'insert into MtData (Type, CreatedAt, UpdatedAt, fr8AccountId, IsDeleted, ' + legacy + ') select ''' + Convert(nvarchar(max), #TypeMapping.Id)  +''', CreatedAt, UpdatedAt, fr8AccountId, IsDeleted, ' + new + ' from Mt_data where MT_ObjectId = ' + Convert(nvarchar(max), MT_Objects.Id) as script from #mapStr
+	inner join #TypeMapping on DeclaringType = #TypeMapping.Id
+	inner join MT_Objects on #TypeMapping.LegacyId  = MT_Objects.MT_FieldType_Id
 
-select GUID, ColumnName, Value into #tempData2 from #tempData
+open cur
 
-insert into [MtData] 
-(	   [Type]
-	   ,[CreatedAt]
-      ,[UpdatedAt]
-       ,[fr8AccountId]
-      ,[IsDeleted]
-      ,[Value1]
-      ,[Value2]
-      ,[Value3]
-      ,[Value4]
-      ,[Value5]
-      ,[Value6]
-      ,[Value7]
-      ,[Value8]
-      ,[Value9]
-      ,[Value10]
-      ,[Value11]
-      ,[Value12]
-      ,[Value13])
-select  
-	   #TypeMapping.Id as Type
-	  ,[CreatedAt]
-      ,[UpdatedAt]
-      ,[fr8AccountId]
-      ,[IsDeleted]
-      ,piv.[Value1]
-      ,piv.[Value2]
-      ,piv.[Value3]
-      ,piv.[Value4]
-      ,piv.[Value5]
-      ,piv.[Value6]
-      ,piv.[Value7]
-      ,piv.[Value8]
-      ,piv.[Value9]
-      ,piv.[Value10]
-      ,piv.[Value11]
-      ,piv.[Value12]
-      ,piv.[Value13]
-	  
-        from   #tempData2
-pivot (max(Value) for ColumnName
- in   ([Value1]
-      ,[Value2]
-      ,[Value3]
-      ,[Value4]
-      ,[Value5]
-      ,[Value6]
-      ,[Value7]
-      ,[Value8]
-      ,[Value9]
-      ,[Value10]
-      ,[Value11]
-      ,[Value12]
-      ,[Value13]
-      )) as piv 
-inner join MT_Data on MT_Data.[GUID] = piv.[Guid]
-inner join #TypeMapping on #TypeMapping.LegacyId = MT_Data.Mt_objectId
+fetch next from cur into @script
 
--- delete records that violates PK constrains
+while @@FETCH_STATUS = 0 BEGIN
+	exec (@script)
+    fetch next from cur into @script
+END
+
+close cur
+deallocate cur
+
 ;WITH cte AS (
  SELECT ROW_NUMBER() OVER 
           (PARTITION BY Value6, Fr8AccountId ORDER BY Id DESC) AS sequence
@@ -349,22 +320,13 @@ WHERE sequence > 1
 DELETE
 FROM cte
 WHERE sequence > 1
-
-
-drop table #tempData
-drop table #tempData2
-drop table #PropMapping 
-drop table #MtProperties
-drop table #TypeMapping
-drop table #MtTypes
-    ";
+";
 
         public override void Up()
         {
-            // this migration is slow. Next migration works significatly faster
-            //Sql(MigrateDataToNewStructure);
+            Sql(SqlScript);
         }
-
+        
         public override void Down()
         {
         }
