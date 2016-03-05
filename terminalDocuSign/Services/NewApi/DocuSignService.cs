@@ -1,4 +1,5 @@
-﻿using Data.Entities;
+﻿using Data.Control;
+using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using DocuSign.eSign.Api;
 using DocuSign.eSign.Client;
@@ -10,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using terminalDocuSign.DataTransferObjects;
+using terminalDocuSign.Services.NewApi;
 using Utilities.Configuration.Azure;
 
 namespace terminalDocuSign.Services.New_Api
@@ -18,7 +20,7 @@ namespace terminalDocuSign.Services.New_Api
     public class DocuSignApiConfiguration
     {
         public string AccountId;
-        public object Configuration;
+        public dynamic Configuration;
     }
 
     public class DocuSignService
@@ -45,45 +47,39 @@ namespace terminalDocuSign.Services.New_Api
             return result;
         }
 
-
-        public static List<FieldDTO> GetRolesAndTabs(DocuSignApiConfiguration apiConfiguration, string templateId)
+        public static IEnumerable<FieldDTO> GetEnvelopeRecipientsAndTabs(DocuSignApiConfiguration conf, string envelopeId)
         {
-            var result = new List<FieldDTO>();
-            var templatesApi = new TemplatesApi((Configuration)apiConfiguration.Configuration);
-            var recepients = templatesApi.ListRecipients(apiConfiguration.AccountId, templateId);
+            var envApi = new EnvelopesApi(conf.Configuration);
+            return GetRecipientsAndTabs(conf, envApi, envelopeId);
+        }
 
-            foreach (var signer in recepients.Signers)
+        public static IEnumerable<FieldDTO> GetTemplateRecipientsAndTabs(DocuSignApiConfiguration conf, string templateId)
+        {
+            var tmpApi = new TemplatesApi(conf.Configuration);
+            return GetRecipientsAndTabs(conf, tmpApi, templateId);
+        }
+
+        //this is purely for Send_DocuSign_Envelope activity
+        public static Tuple<IEnumerable<FieldDTO>, IEnumerable<DocuSignTabDTO>> GetTemplateRecipientsTabsAndDocuSignTabs(DocuSignApiConfiguration conf, string templateId)
+        {
+            var tmpApi = new TemplatesApi(conf.Configuration);
+            var recipientsAndTabs = new List<FieldDTO>();
+            var docuTabs = new List<DocuSignTabDTO>();
+
+            var recipients = GetRecipients(conf, tmpApi, templateId);
+            recipientsAndTabs.AddRange(MapRecipientsToFieldDTO(recipients));
+
+            foreach (var signer in recipients.Signers)
             {
-                result.Add(
-                    new FieldDTO(string.Format("{0} role name", signer.RoleName), signer.RecipientId));
-
-                result.Add(
-                    new FieldDTO(string.Format("{0} role email", signer.RoleName), signer.RecipientId));
-
-                //handling tabs
-                var tabs = templatesApi.ListTabs(apiConfiguration.AccountId, templateId, signer.RecipientId, new Tabs());
-                JObject jobj = JObject.Parse(tabs.ToJson());
-                foreach (var item in jobj.Properties())
-                {
-                    string tab_type = item.Name;
-                    foreach (JObject tab in item.Value)
-                    {
-                        string value = tab.Value<string>("value");
-                        string label = tab.Value<string>("tabLabel");
-
-                        if (!string.IsNullOrEmpty(label) && value != null)
-                        {
-                            result.Add(new FieldDTO(
-                                string.Format("{0} ({1})", label, signer.RoleName),
-                                tab_type
-                            ));
-                        }
-                    }
-                }
+                var tabs = tmpApi.ListTabs(conf.AccountId, templateId, signer.RecipientId, new Tabs());
+                var signersdocutabs = DocuSignTab.ExtractTabs(JObject.Parse(tabs.ToJson()), signer.RoleName).ToList();
+                docuTabs.AddRange(signersdocutabs);
+                recipientsAndTabs.AddRange(DocuSignTab.MapTabsToFieldDTO(signersdocutabs));
             }
 
-            return result;
+            return new Tuple<IEnumerable<FieldDTO>, IEnumerable<DocuSignTabDTO>>(recipientsAndTabs, docuTabs);
         }
+
 
         public static void SendAnEnvelopeFromTemplate(DocuSignApiConfiguration loginInfo, List<FieldDTO> rolesList, List<FieldDTO> fieldList, string curTemplateId)
         {
@@ -95,11 +91,11 @@ namespace terminalDocuSign.Services.New_Api
             envDef.Status = "created";
 
             //requesting it back to update status at the end
-            EnvelopesApi envelopesApi = new EnvelopesApi((Configuration)loginInfo.Configuration);
+            EnvelopesApi envelopesApi = new EnvelopesApi(loginInfo.Configuration);
             EnvelopeSummary envelopeSummary = envelopesApi.CreateEnvelope(loginInfo.AccountId, envDef);
 
 
-            var templatesApi = new TemplatesApi((Configuration)loginInfo.Configuration);
+            var templatesApi = new TemplatesApi(loginInfo.Configuration);
             var templateRecepients = templatesApi.ListRecipients(loginInfo.AccountId, curTemplateId);
 
             var recepients = envelopesApi.ListRecipients(loginInfo.AccountId, envelopeSummary.EnvelopeId);
@@ -173,5 +169,50 @@ namespace terminalDocuSign.Services.New_Api
 
             envelopesApi.Update(loginInfo.AccountId, envelopeSummary.EnvelopeId, new Envelope() { Status = "sent" });
         }
+
+        #region private methods
+
+        private static IEnumerable<FieldDTO> GetRecipientsAndTabs(DocuSignApiConfiguration conf, dynamic api, string id)
+        {
+            var result = new List<FieldDTO>();
+            var recipients = GetRecipients(conf, api, id);
+            result.AddRange(MapRecipientsToFieldDTO(recipients));
+            foreach (var recipient in recipients.Signers)
+            {
+                result.AddRange(GetTabs(conf, api, id, recipient));
+            }
+
+            return result;
+        }
+
+        private static Recipients GetRecipients(DocuSignApiConfiguration conf, dynamic api, string id)
+        {
+            return api.ListRecipients(conf.AccountId, id) as Recipients;
+        }
+
+        private static IEnumerable<FieldDTO> GetTabs(DocuSignApiConfiguration conf, dynamic api, string id, Signer recipient)
+        {
+            var docutabs = (api is EnvelopesApi) ?
+                       api.ListTabs(conf.AccountId, id, recipient.RecipientId)
+                       : api.ListTabs(conf.AccountId, id, recipient.RecipientId, new Tabs());
+
+            return (DocuSignTab.GetEnvelopeTabsPerSigner(JObject.Parse(docutabs.ToJson()), recipient.RoleName));
+        }
+
+        private static IEnumerable<FieldDTO> MapRecipientsToFieldDTO(Recipients recipients)
+        {
+            var result = new List<FieldDTO>();
+            if (recipients.Signers != null)
+                recipients.Signers.ForEach(
+                    a =>
+                    {
+                        result.Add(new FieldDTO(a.RoleName + " role name", a.Name) { Tags = "DocuSigner, recipientId:" + a.RecipientId });
+                        result.Add(new FieldDTO(a.RoleName + " role email", a.Email) { Tags = "DocuSigner, recipientId:" + a.RecipientId });
+                    });
+            return result;
+        }
+
+        #endregion
+
     }
 }

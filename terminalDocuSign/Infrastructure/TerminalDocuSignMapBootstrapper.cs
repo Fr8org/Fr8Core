@@ -32,7 +32,8 @@ namespace terminalDocuSign.Infrastructure.StructureMap
 				For<IDocuSignEnvelope>().Use<DocuSignEnvelope>();
 				For<IDocuSignTemplate>().Use<DocuSignTemplate>();
 			    For<IDocuSignRoute>().Use<DocuSignRoute>();
-			}
+                For<IDocuSignFolder>().Use<DocuSignFolder>();
+            }
 		}
 
 		public class TestMode : Registry
@@ -43,6 +44,7 @@ namespace terminalDocuSign.Infrastructure.StructureMap
 				For<IDocuSignEnvelope>().Use<DocuSignEnvelope>();
 				For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 For<IDocuSignRoute>().Use(new Mock<DocuSignRoute>(MockBehavior.Default).Object);
+                For<IDocuSignFolder>().Use<DocuSignFolder>();
 			}
 		}
 

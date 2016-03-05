@@ -190,109 +190,37 @@ namespace terminalDocuSign.Services
 
         public IEnumerable<DocuSignTabDTO> GetTemplateEnvelopeData(JObject templateDetails)
         {
-            var envelopeData = new List<DocuSignTabDTO>();
-            envelopeData = ExtractTabs(envelopeData, templateDetails).ToList();
+            //var envelopeData = new List<DocuSignTabDTO>();
+            //envelopeData = ExtractTabs(envelopeData, templateDetails).ToList();
 
-            return envelopeData;
+            //return envelopeData;
+            return null;
         }
 
         public IEnumerable<DocuSignTabDTO> GetEnvelopeDataByTemplate(string templateId)
         {
-            var envelopeData = new List<DocuSignTabDTO>();
+            //var envelopeData = new List<DocuSignTabDTO>();
 
-            var curDocuSignTemplate = new DocuSignTemplate();
+            //var curDocuSignTemplate = new DocuSignTemplate();
 
-            if (string.IsNullOrEmpty(_email) || string.IsNullOrEmpty(_apiPassword))
-            {
-                curDocuSignTemplate.Login = new DocuSignPackager().Login();
-            }
-            else
-            {
-                curDocuSignTemplate.Login = new DocuSignPackager().Login(_email, _apiPassword);
-            }
+            //if (string.IsNullOrEmpty(_email) || string.IsNullOrEmpty(_apiPassword))
+            //{
+            //    curDocuSignTemplate.Login = new DocuSignPackager().Login();
+            //}
+            //else
+            //{
+            //    curDocuSignTemplate.Login = new DocuSignPackager().Login(_email, _apiPassword);
+            //}
 
-            var templateDetails = curDocuSignTemplate.GetTemplate(templateId);
+            //var templateDetails = curDocuSignTemplate.GetTemplate(templateId);
 
-            return ExtractTabs(envelopeData, templateDetails);
+            //return ExtractTabs(envelopeData, templateDetails);
+            return null;
         }
 
-        private IEnumerable<DocuSignTabDTO> ExtractTabs(List<DocuSignTabDTO> envelopeData, JObject templateDetails)
-        {
-            var recipients = templateDetails["recipients"];
+  
 
-            if (recipients != null && recipients["signers"] != null)
-            {
-                foreach (var signer in recipients["signers"])
-                {
-                    var roleName = signer["roleName"] != null ? signer["roleName"].ToString() : string.Empty;
 
-                    var tabs = signer["tabs"];
-                    if (tabs == null)
-                    {
-                        continue;
-                    }
-                    envelopeData = AddEnvelopeData(envelopeData, tabs, "textTabs", "value", roleName);
-                    envelopeData = AddEnvelopeData(envelopeData, tabs, "companyTabs", "value", roleName);
-                    envelopeData = AddEnvelopeData(envelopeData, tabs, "titleTabs", "value", roleName);
-                    envelopeData = AddEnvelopeData(envelopeData, tabs, "noteTabs", "value", roleName);
-                    envelopeData = AddEnvelopeData(envelopeData, tabs, "numberTabs", "value", roleName);
-                    envelopeData = AddEnvelopeData(envelopeData, tabs, "formulaTabs", "value", roleName);
-                    if (tabs["checkboxTabs"] != null)
-                    {
-                        envelopeData = AddEnvelopeData(envelopeData, tabs, "checkboxTabs", "selected", roleName);
-                    }
-
-                    //extract Date data and add it to envelope 
-                    if (tabs["dateTabs"] != null)
-                    {
-                        //TODO: implement date source control first and revisit this part 
-                    }
-
-                    //create radio button groups
-                    if (tabs["radioGroupTabs"] != null)
-                    {
-                        envelopeData = AddRadioButtonGroupEnvelopeData(envelopeData, tabs, "radioGroupTabs", "radios", roleName);
-                    }
-
-                    //create dropdown control as envelope data from tabs
-                    if (tabs["listTabs"] != null)
-                    {
-                        envelopeData = AdDropdownListEnvelopeData(envelopeData, tabs, "listTabs", "listItems", roleName);
-                    }
-                }
-            }
-
-            return envelopeData;
-        }
-
-        private DocuSignTabDTO CreateEnvelopeData(dynamic tab, string value, string roleName, string tabName)
-        {
-            return new DocuSignTabDTO
-            {
-                DocumentId = tab["documentId"],
-                RecipientId = tab["recipientId"],
-                Name = string.Format("{0}({1})", tab["tabLabel"], roleName),
-                TabId = tab["tabId"],
-                Value = value,
-                Type = GetFieldType(tabName),
-                RoleName = roleName,
-                TabName = tabName
-            };
-        }
-
-        public string GetFieldType(string name)
-        {
-            switch (name)
-            {
-                case "checkboxTabs":
-                    return ControlTypes.CheckBox;
-                case "dateTabs":
-                    return ControlTypes.DatePicker;
-                default:
-                    return ControlTypes.TextBox;
-            }
-
-        }
 
         public void SendUsingTemplate(string templateId, string recipientAddress)
         {
@@ -302,92 +230,6 @@ namespace terminalDocuSign.Services
             curEnv.Create();
         }
 
-        private List<DocuSignTabDTO> AddEnvelopeData(List<DocuSignTabDTO> envelopes, JToken tabs, string tabName, string tabField, string roleName)
-        {
-            if (tabs[tabName] != null)
-            {
-                foreach (var textTab in tabs[tabName])
-                {
-                    envelopes.Add(CreateEnvelopeData(textTab, textTab[tabField].ToString(), roleName, tabName));
-                }
-            }
-            return envelopes;
-        }
-
-        private List<DocuSignTabDTO> AddRadioButtonGroupEnvelopeData(List<DocuSignTabDTO> envelopes, JToken tabs, string tabName, string radiosName, string roleName)
-        {
-            if (tabs[tabName] != null)
-            {
-                foreach (var groupTab in tabs[tabName])
-                {
-                    dynamic grpTab = groupTab;
-                    var groupWrapperEnvelopeData = new DocuSignMultipleOptionsTabDTO()
-                    {
-                        DocumentId = grpTab["documentId"],
-                        RecipientId = grpTab["recipientId"],
-                        Name = string.Format("{0}({1})", grpTab["groupName"], roleName),
-                        TabId = grpTab["tabId"],
-                        Type = ControlTypes.RadioButtonGroup,
-                        RoleName = roleName,
-                        TabName = tabName
-                    };
-
-                    if (groupTab[radiosName] != null)
-                    {
-                        foreach (var listItem in groupTab[radiosName])
-                        {
-                            dynamic lstItem = listItem;
-                            groupWrapperEnvelopeData.Items.Add(new DocuSignOptionItemTabDTO()
-                            {
-                                Value = lstItem["value"],
-                                Selected = lstItem["selected"]
-                            });
-                        }
-                    }
-
-                    envelopes.Add(groupWrapperEnvelopeData);
-                }
-            }
-            return envelopes;
-        }
-
-        private List<DocuSignTabDTO> AdDropdownListEnvelopeData(List<DocuSignTabDTO> envelopes, JToken tabs, string tabName, string listItemsName, string roleName)
-        {
-            if (tabs[tabName] != null)
-            {
-                foreach (var groupTab in tabs[tabName])
-                {
-                    dynamic grpTab = groupTab;
-                    var groupWrapperEnvelopeData = new DocuSignMultipleOptionsTabDTO
-                    {
-                        DocumentId = grpTab["documentId"],
-                        RecipientId = grpTab["recipientId"],
-                        Name = string.Format("{0}({1})", grpTab["tabLabel"], roleName),
-                        TabId = grpTab["tabId"],
-                        Type = ControlTypes.DropDownList,
-                        Value = grpTab["value"],
-                        RoleName = roleName,
-                        TabName = tabName
-                    };
-
-                    if (groupTab[listItemsName] != null)
-                    {
-                        foreach (var listItem in groupTab[listItemsName])
-                        {
-                            dynamic lstItem = listItem;
-                            groupWrapperEnvelopeData.Items.Add(new DocuSignOptionItemTabDTO
-                            {
-                                Text = lstItem["text"],
-                                Value = lstItem["value"],
-                                Selected = lstItem["selected"]
-                            });
-                        }
-                    }
-
-                    envelopes.Add(groupWrapperEnvelopeData);
-                }
-            }
-            return envelopes;
-        }
+   
     }
 }
