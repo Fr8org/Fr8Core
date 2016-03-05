@@ -125,14 +125,15 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
                     stopWatch.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture),
                     CorrelationId, statusCode, prettyStatusCode);
 
-                if (isSuccess)
+                // This code tends to eat a lot of processor time on my macine and blocks.
+                /*if (isSuccess)
                 {
                     Log.Info(logDetails);
                 }
                 else
                 {
                     Log.Error(logDetails, raisedException);
-                }
+                }*/
             }
             return response;
         }
