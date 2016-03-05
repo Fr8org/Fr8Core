@@ -8,12 +8,14 @@
 param(
 	[string]$serviceName,
     [string]$connectionString,
-	[string]$overrideDbName)
+	[string]$overrideDbName
+)
 	
 $ErrorActionPreference = 'Stop'
   
 $deployment = Get-AzureDeployment -ServiceName $serviceName -Slot Staging
 $hostName = $deployment.Url.Host
-Invoke-Expression .\UpdateTerminalHostnameInDb.ps1 -connectionString '$connectionString' `
+Invoke-Expression ".\UpdateTerminalHostnameInDb.ps1 `
+	-connectionString '$connectionString' `
 	-newHostname $hostName `
-	-overrideDbName $overrideDbName
+	-overrideDbName $overrideDbName"
