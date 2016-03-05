@@ -205,12 +205,11 @@ namespace terminalDocuSign.Actions
             //validate DocuSignTemplate for present selected template 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                var docuSignTemplate = crateStorage.CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "Available Templates").FirstOrDefault();
-                if (docuSignTemplate != null && docuSignTemplate.Fields != null && docuSignTemplate.Fields.Count != 0) return;//await Task.FromResult<CrateDTO>(null);
-
                 var configControl = GetStdConfigurationControl<DropDownList>(crateStorage, "DocuSignTemplate");
+
                 if (configControl != null)
                 {
+                    if (configControl.ListItems.Count > 0) return;//await Task.FromResult<CrateDTO>(null);
                     configControl.ErrorMessage = "Please link some templates to your DocuSign account.";
                 }
             }
@@ -321,7 +320,7 @@ namespace terminalDocuSign.Actions
             var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null))
                 .Select(x => Mapper.Map<ActivityTemplateDO>(x))
                 .ToList();
-            
+
             // Let's check if activity template generates table data
             var selectedReceiver = curActivityTemplates.Single(x => x.Name == _dataSourceValue);
             var dataSourceActivity = await AddAndConfigureChildActivity(
@@ -417,7 +416,7 @@ namespace terminalDocuSign.Actions
                 {
                     var loopConfigControls = GetConfigurationControls(crateStorage);
                     var crateChooser = GetControl<CrateChooser>(loopConfigControls, "Available_Crates");
-                    var tableDescription = crateChooser.CrateDescriptions.FirstOrDefault(c => c.ManifestId == (int) MT.StandardTableData);
+                    var tableDescription = crateChooser.CrateDescriptions.FirstOrDefault(c => c.ManifestId == (int)MT.StandardTableData);
                     if (tableDescription != null)
                     {
                         tableDescription.Selected = true;
@@ -441,7 +440,7 @@ namespace terminalDocuSign.Actions
                 _docuSignTemplate.ListItems
                     .FirstOrDefault(a => a.Key == _docuSignTemplate.selectedKey)
             );
-            
+
             await ConfigureChildActivity(parentActivity, sendDocuSignActivity);
 
             return activityIndex == 1 ? sendDocuSignActivity : parentActivity;
@@ -525,7 +524,7 @@ namespace terminalDocuSign.Actions
             {
                 var curSolutionPage = GetDefaultDocumentation(SolutionName, SolutionVersion, TerminalName, SolutionBody);
                 return Task.FromResult(curSolutionPage);
-              
+
             }
             if (curDocumentation.Contains("HelpMenu"))
             {

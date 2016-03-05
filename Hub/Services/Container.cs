@@ -279,6 +279,11 @@ namespace Hub.Services
                 actionState = MoveToNextPlan(uow, curContainerDO, shouldSkipChildren);
             }
 
+            if(curContainerDO.ContainerState == ContainerState.Executing)
+            {
+                curContainerDO.ContainerState = ContainerState.Completed;
+                uow.SaveChanges();
+            }
         }
 
         // Return the Containers of current Account

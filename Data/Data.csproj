@@ -635,6 +635,10 @@
     <Compile Include="Migrations\201603041113154_ChangeRouteToPlan.Designer.cs">
       <DependentUpon>201603041113154_ChangeRouteToPlan.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201603041104310_MigrateMTData.cs" />
+    <Compile Include="Migrations\201603041104310_MigrateMTData.Designer.cs">
+      <DependentUpon>201603041104310_MigrateMTData.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryBase.cs" />
@@ -1109,6 +1113,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201603041113154_ChangeRouteToPlan.resx">
       <DependentUpon>201603041113154_ChangeRouteToPlan.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201603041104310_MigrateMTData.resx">
+      <DependentUpon>201603041104310_MigrateMTData.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
