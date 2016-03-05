@@ -34,6 +34,7 @@ namespace terminalDocuSignTests.Integration
             get { return "terminalDocuSign"; }
         }
 
+
         ActivityDTO solution;
         ICrateStorage crateStorage;
 
