@@ -268,10 +268,9 @@ namespace Hub.Managers
 
         private void LogTerminalIncident(LoggingDataCm incidentItem)
         {
-            var isAuthenticated = _sercurity.IsAuthenticated();
             var currentIncident = new IncidentDO
             {
-                CustomerId = _sercurity.GetCurrentUser(),
+                CustomerId = incidentItem.CustomerId,
                 ObjectId = incidentItem.ObjectId,
                 Data = incidentItem.Data,
                 PrimaryCategory = incidentItem.PrimaryCategory,
