@@ -23,7 +23,7 @@ namespace terminalGoogle.Actions
     public class Get_Google_Sheet_Data_v1 : BaseTerminalActivity
     {
         private readonly IGoogleSheet _google;
-        private const string TableCrateLabel = "Spreadsheet Rows";
+        private const string TableCrateLabelPrefix = "Data from ";
         public Get_Google_Sheet_Data_v1()
         {
             _google = new GoogleSheet();
@@ -62,7 +62,7 @@ namespace terminalGoogle.Actions
 
             ///// ********** This code is what have to be done by FR-2246 **************
             var dropDownListControl =
-                (DropDownList) Activity.GetControlsManifest(curActivityDO).FindByName("select_spreadsheet");
+                (DropDownList)Activity.GetControlsManifest(curActivityDO).FindByName("select_spreadsheet");
             //get the spreadsheet name
             var spreadsheetName = dropDownListControl.selectedKey;
             //get the link to spreadsheet
@@ -70,7 +70,7 @@ namespace terminalGoogle.Actions
             var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
             //get the data
             var data = _google.EnumerateDataRows(spreadsheetsFromUserSelection, authDTO);
-            var crate = CrateManager.CreateStandardTableDataCrate("Data from " + spreadsheetName, true, data.ToArray());
+            var crate = CrateManager.CreateStandardTableDataCrate(TableCrateLabelPrefix + spreadsheetName, true, data.ToArray());
             using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
             {
                 crateStorage.Add(crate);
@@ -202,17 +202,7 @@ namespace terminalGoogle.Actions
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                crateStorage.Replace( AssembleCrateStorage(configurationControlsCrate));
-                var availableRunTimeCrates = Crate.FromContent("Available Run Time Crates", new CrateDescriptionCM(
-                    new CrateDescriptionDTO
-                    {
-                        ManifestType = MT.StandardTableData.GetEnumDisplayName(),
-                        Label = TableCrateLabel,
-                        ManifestId = (int)MT.StandardTableData,
-                        ProducedBy = "Get_Google_Sheet_Data_v1"
-                    }), AvailabilityType.RunTime);
-
-                crateStorage.Add(availableRunTimeCrates);
+                crateStorage.Replace(AssembleCrateStorage(configurationControlsCrate));
             }
 
             return Task.FromResult(curActivityDO);
@@ -241,17 +231,29 @@ namespace terminalGoogle.Actions
         {
             var spreadsheetsFromUserSelection =
                 Activity.GetControlsManifest(curActivityDO).FindByName("select_spreadsheet").Value;
-
+            //Create label based on the selected by user spreadsheet name
+            var selectedSpreadsheetName = GetSelectSpreadsheetName(curActivityDO);
             // Creating configuration control crate with a file picker and textblock
             var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
             var spreadsheets = _google.EnumerateSpreadsheetsUris(authDTO);
             var configControlsCrate = CreateConfigurationControlsCrate(spreadsheets, spreadsheetsFromUserSelection);
+
             // Remove previously created configuration control crate
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Remove<StandardConfigurationControlsCM>();
-
                 crateStorage.Add(configControlsCrate);
+                //Inform donwstream Activities about the availability of the Run Time crates
+                crateStorage.RemoveByLabelPrefix("Available Run Time Crates");
+                var availableRunTimeCrates = Crate.FromContent("Available Run Time Crates", new CrateDescriptionCM(
+                    new CrateDescriptionDTO
+                    {
+                        ManifestType = MT.StandardTableData.GetEnumDisplayName(),
+                        Label = TableCrateLabelPrefix + selectedSpreadsheetName,
+                        ManifestId = (int)MT.StandardTableData,
+                        ProducedBy = "Get_Google_Sheet_Data_v1"
+                    }), AvailabilityType.RunTime);
+                crateStorage.Add(availableRunTimeCrates);
             }
 
             if (!string.IsNullOrEmpty(spreadsheetsFromUserSelection))
@@ -295,11 +297,11 @@ namespace terminalGoogle.Actions
             var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
             var extractedData = _google.EnumerateDataRows(spreadsheetUri, authDTO);
             if (extractedData == null) return curActivityDO;
-
+            var selectedSpreadsheetName = GetSelectSpreadsheetName(curActivityDO);
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                crateStorage.RemoveByLabel(TableCrateLabel);
-                crateStorage.Add(CrateManager.CreateStandardTableDataCrate(TableCrateLabel, false, extractedData.ToArray()));
+                crateStorage.RemoveByLabelPrefix(TableCrateLabelPrefix);
+                crateStorage.Add(CrateManager.CreateStandardTableDataCrate(TableCrateLabelPrefix + selectedSpreadsheetName, false, extractedData.ToArray()));
             }
 
             return curActivityDO;
@@ -323,11 +325,21 @@ namespace terminalGoogle.Actions
 
             rows.Add(headerTableRowDTO);
 
+            var selectedSpreadsheetName = GetSelectSpreadsheetName(curActivityDO);
+
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                crateStorage.RemoveByLabel(TableCrateLabel);
-                crateStorage.Add(CrateManager.CreateStandardTableDataCrate(TableCrateLabel, false, rows.ToArray()));
+                crateStorage.RemoveByLabelPrefix(TableCrateLabelPrefix);
+                crateStorage.Add(CrateManager.CreateStandardTableDataCrate(TableCrateLabelPrefix + selectedSpreadsheetName, false, rows.ToArray()));
             }
+        }
+
+        private string GetSelectSpreadsheetName(ActivityDO curActivityDO)
+        {
+            var dropDownListControl = (DropDownList)Activity.GetControlsManifest(curActivityDO).FindByName("select_spreadsheet");
+            //get the spreadsheet name
+            var spreadsheetName = dropDownListControl.selectedKey;
+            return spreadsheetName;
         }
     }
 }
