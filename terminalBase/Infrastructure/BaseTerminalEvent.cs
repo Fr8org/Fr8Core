@@ -51,11 +51,8 @@ namespace TerminalBase.Infrastructure
         public Task<string> SendEventOrIncidentReport(string terminalName, string eventType)
         {
             if (eventsDisabled) return Task.FromResult(string.Empty);
-
             //SF DEBUG -- Skip this event call for local testing
             //return;
-
-
             //make Post call
             var restClient = PrepareRestClient();
             var loggingDataCrate = _loggingDataCrateFactory.Create(new LoggingDataCm
@@ -70,16 +67,13 @@ namespace TerminalBase.Infrastructure
             //I am not sure what to supply for parameters eventName and palletId, so i passed terminalName and eventType
             return restClient.PostAsync(new Uri(eventWebServerUrl, UriKind.Absolute),
                 _crateManager.ToDto(_eventReportCrateFactory.Create(eventType, terminalName, loggingDataCrate)));
-
         }
 
         public Task<string> SendEventReport(string terminalName, string message)
         {
             //SF DEBUG -- Skip this event call for local testing
             //return;
-
             if (eventsDisabled) return Task.FromResult(string.Empty);
-
             //make Post call
             var restClient = PrepareRestClient();
             var loggingDataCrate = _loggingDataCrateFactory.Create(new LoggingDataCm
@@ -94,7 +88,6 @@ namespace TerminalBase.Infrastructure
             //I am not sure what to supply for parameters eventName and palletId, so i passed terminalName and eventType
             return restClient.PostAsync(new Uri(eventWebServerUrl, UriKind.Absolute),
                 _crateManager.ToDto(_eventReportCrateFactory.Create("Terminal Event", terminalName, loggingDataCrate)));
-
         }
 
         /// <summary>
@@ -103,8 +96,9 @@ namespace TerminalBase.Infrastructure
         /// <param name="terminalName">Name of the terminal where the exception occured</param>
         /// <param name="exceptionMessage">Exception Message</param>
         /// <param name="exceptionName">Name of the occured exception</param>
+        /// <param name="fr8UserId">Id of the current user. It should be obtained from AuthorizationToken</param>
         /// <returns>Response from the fr8 Event Controller</returns>
-        public Task<string> SendTerminalErrorIncident(string terminalName, string exceptionMessage, string exceptionName)
+        public Task<string> SendTerminalErrorIncident(string terminalName, string exceptionMessage, string exceptionName, string fr8UserId=null)
         {
             if (eventsDisabled) return Task.FromResult(string.Empty);
 

@@ -777,7 +777,8 @@ namespace TerminalBase.BaseClasses
 
             var baseEvent = new BaseTerminalEvent();
             var exceptionMessage = string.Format("No field found with specified key: {0}.", fieldKey);
-            baseEvent.SendTerminalErrorIncident(_activityName, exceptionMessage, _activityName);
+            var fr8UserId = curActivity.AuthorizationToken.UserID;
+            baseEvent.SendTerminalErrorIncident(_activityName, exceptionMessage, _activityName, fr8UserId);
 
             throw new ApplicationException(exceptionMessage);
         }

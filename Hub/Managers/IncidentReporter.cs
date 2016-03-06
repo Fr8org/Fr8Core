@@ -142,7 +142,6 @@ namespace Hub.Managers
                 Component = "Hub",
                 Activity = "AuthToken Silent Revoke"
             };
-
             SaveAndLogIncident(incident);
         }
 
@@ -269,6 +268,7 @@ namespace Hub.Managers
 
         private void LogTerminalIncident(LoggingDataCm incidentItem)
         {
+            var isAuthenticated = _sercurity.IsAuthenticated();
             var currentIncident = new IncidentDO
             {
                 CustomerId = _sercurity.GetCurrentUser(),
@@ -279,7 +279,6 @@ namespace Hub.Managers
                 Component = "Terminal",
                 Activity = incidentItem.Activity
             };
-
             SaveAndLogIncident(currentIncident);
         }
 
@@ -359,12 +358,14 @@ namespace Hub.Managers
         {
             using (var _uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                IncidentDO incidentDO = new IncidentDO();
-                incidentDO.PrimaryCategory = "BookingRequest";
-                incidentDO.SecondaryCategory = "Response Received";
-                incidentDO.CustomerId = customerID;
-                incidentDO.ObjectId = bookingRequestId.ToString();
-                incidentDO.Activity = "Response Recieved";
+                IncidentDO incidentDO = new IncidentDO
+                {
+                    PrimaryCategory = "BookingRequest",
+                    SecondaryCategory = "Response Received",
+                    CustomerId = customerID,
+                    ObjectId = bookingRequestId.ToString(),
+                    Activity = "Response Recieved"
+                };
                 _uow.IncidentRepository.Add(incidentDO);
                 _uow.SaveChanges();
             }
@@ -613,13 +614,17 @@ namespace Hub.Managers
 
         public void IncidentMissingFieldInPayload(string fieldKey, ActivityDO activity, string curUserId)
         {
-            IncidentDO incidentDO = new IncidentDO();
-            incidentDO.PrimaryCategory = "Process Execution";
-            incidentDO.SecondaryCategory = "Action";
-            incidentDO.ObjectId = activity.Id.ToString();
-            incidentDO.Activity = "Occured";
-            incidentDO.CustomerId = curUserId;
-            incidentDO.Data = String.Format("MissingFieldInPayload: ActionName: {0}, Field name: {1}, ActionId {2}", activity.ActivityTemplate.Name, fieldKey, activity.Id);
+            IncidentDO incidentDO = new IncidentDO
+            {
+                PrimaryCategory = "Process Execution",
+                SecondaryCategory = "Action",
+                ObjectId = activity.Id.ToString(),
+                Activity = "Occured",
+                CustomerId = curUserId,
+                Data =
+                    String.Format("MissingFieldInPayload: ActionName: {0}, Field name: {1}, ActionId {2}",
+                        activity.ActivityTemplate.Name, fieldKey, activity.Id)
+            };
             LogIncident(incidentDO);
         }
     }
