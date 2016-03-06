@@ -71,7 +71,7 @@ namespace terminalSalesforceTests.Actions
 
             //Assert
             var stroage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(result);
-            Assert.AreEqual(2, stroage.Count, "Number of configuration crates not populated correctly");
+            Assert.AreEqual(1, stroage.Count, "Number of configuration crates not populated correctly");
 
             var configControlCM = stroage.CratesOfType<StandardConfigurationControlsCM>().Single();
             Assert.IsNotNull(configControlCM, "Configuration controls is not present");
