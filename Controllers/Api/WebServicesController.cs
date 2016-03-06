@@ -9,6 +9,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Hub.Interfaces;
 using StructureMap;
+using Hub.Services;
 
 namespace HubWeb.Controllers
 {
@@ -65,12 +66,17 @@ namespace HubWeb.Controllers
 				// resulting set is grouped into batches 1 x web service - n x actions
 
                 var unknwonService = uow.WebServiceRepository.GetQuery().FirstOrDefault(x => x.Name == UknownWebServiceName);
+                Fr8Account fr8Account = new Fr8Account();
 
-                webServiceList = _activityTemplate.GetQuery()
+                var activityTemplate = _activityTemplate.GetQuery()
                     .Where(x => x.ActivityTemplateState == ActivityTemplateState.Active)
                     .Where(x => categories == null || categories.Contains(x.Category))
-                    .Where(x => x.ClientVisibility != false)
-                    .Where(x => x.Tags == null || !x.Tags.Contains("internal"))
+                    .Where(x => x.Tags == null || !x.Tags.Contains("internal"));
+
+                if (!fr8Account.IsCurrentUserInAdminRole())
+                    activityTemplate = activityTemplate.Where(x => x.ClientVisibility != false);
+
+                    webServiceList = activityTemplate
                     .GroupBy(x => x.WebService, x => x, (key, group) => new
                     {
                         WebService = key,
