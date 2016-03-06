@@ -25,7 +25,7 @@ namespace terminalDocuSignTests.Integration
             get { return "terminalDocuSign"; }
         }
 
-        [Test, Ignore]
+        [Test]
         public async Task Generate_DocuSign_Report_EndToEnd()
         {
             try
