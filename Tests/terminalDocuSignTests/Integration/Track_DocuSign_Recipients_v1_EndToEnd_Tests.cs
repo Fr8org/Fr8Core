@@ -286,8 +286,6 @@ namespace terminalDocuSignTests.Integration
             //
             await HttpDeleteAsync(baseUrl + "plans?id=" + plan.Id);
 
-            EmailAssert.RecentMsgThreshold = TimeSpan.FromSeconds(45);
-            EmailAssert._timeout = TimeSpan.FromSeconds(45);
             // Verify that test email has been received
             //EmailAssert.EmailReceived("fr8ops@fr8.company", "Fr8-TrackDocuSignRecipientsTest");
             

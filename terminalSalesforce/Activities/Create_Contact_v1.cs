@@ -2,7 +2,6 @@
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data.Control;
 using Data.Crates;
@@ -96,8 +95,8 @@ namespace terminalSalesforce.Actions
             }
 
             var contact = _salesforce.CreateSalesforceDTO<ContactDTO>(curActivityDO, payloadCrates, ExtractSpecificOrUpstreamValue);
-            bool result = await _salesforce.CreateObject(contact, "Contact", _salesforce.CreateForceClient(authTokenDO));
-
+            var result = await _salesforce.CreateObject(contact, "Contact", authTokenDO);
+            
             if (result)
             {
                 return Success(payloadCrates);
