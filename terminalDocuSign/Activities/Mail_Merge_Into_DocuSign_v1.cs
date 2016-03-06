@@ -207,9 +207,9 @@ namespace terminalDocuSign.Actions
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 var configControl = GetStdConfigurationControl<DropDownList>(crateStorage, "DocuSignTemplate");
-                if(configControl == null)
+                if (configControl != null)
                 {
-                    if (configControl.ListItems.Count > 0) return;//await Task.FromResult<CrateDTO>(null);
+                    if (configControl.ListItems.Count > 0) return true;//await Task.FromResult<CrateDTO>(null);
                     configControl.ErrorMessage = "Please link some templates to your DocuSign account.";
                     noError = false;
                 }
