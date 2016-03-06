@@ -440,6 +440,11 @@ namespace Hub.Services
 
         private async Task<ContainerDO> Run(IUnitOfWork uow, ContainerDO curContainerDO)
         {
+            if (curContainerDO.Plan.RouteState == RouteState.Deleted)
+            {
+                throw new ApplicationException("Cannot run plan that is in deleted state.");
+            }
+
             if (curContainerDO.ContainerState == ContainerState.Failed
                 || curContainerDO.ContainerState == ContainerState.Completed)
             {
