@@ -55,7 +55,6 @@ namespace terminalDocuSignTests.Integration
                 ValidatePlanName(planFollowup, crateStorage);
                 await SaveActivity(solution);
 
-
                 // Execute plan.
                 var container = await ExecutePlan(plan);
                 ValidateContainer(container);
