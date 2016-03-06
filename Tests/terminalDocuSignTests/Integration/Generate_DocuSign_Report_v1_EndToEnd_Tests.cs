@@ -25,7 +25,7 @@ namespace terminalDocuSignTests.Integration
             get { return "terminalDocuSign"; }
         }
 
-        [Test]
+        [Test, Ignore]
         public async Task Generate_DocuSign_Report_EndToEnd()
         {
             try
@@ -254,7 +254,7 @@ namespace terminalDocuSignTests.Integration
             var configurationControls = crateStorage
             .CrateContentsOfType<StandardConfigurationControlsCM>()
             .SingleOrDefault();
-            
+
             var actionUi = new ActivityUi();
             actionUi.ClonePropertiesFrom(configurationControls);
 
