@@ -153,6 +153,12 @@ namespace Hub.Services
             {
                 var plan = uow.PlanRepository.GetById<PlanDO>(curPlanId);
 
+                if (plan.RouteState == RouteState.Deleted)
+                {
+                    EventManager.PlanActivationFailed(plan, "Cannot activate deleted plan");
+                    throw new ApplicationException("Cannot activate deleted plan");
+                }
+
                 foreach (var curActionDO in plan.GetDescendants().OfType<ActivityDO>())
                 {
                     try
@@ -434,6 +440,13 @@ namespace Hub.Services
 
         private async Task<ContainerDO> Run(IUnitOfWork uow, ContainerDO curContainerDO)
         {
+            var plan = uow.PlanRepository.GetById<PlanDO>(curContainerDO.PlanId);
+
+            if (plan.RouteState == RouteState.Deleted)
+            {
+                throw new ApplicationException("Cannot run plan that is in deleted state.");
+            }
+
             if (curContainerDO.ContainerState == ContainerState.Failed
                 || curContainerDO.ContainerState == ContainerState.Completed)
             {

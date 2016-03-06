@@ -194,7 +194,7 @@ namespace terminalDocuSignTests.Integration
         [Test]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}",
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""No AuthToken provided.""}",
             MatchType = MessageMatch.Contains
         )]
         public async Task Monitor_DocuSign_Initial_Configuration_NoAuth()
@@ -306,7 +306,7 @@ namespace terminalDocuSignTests.Integration
         [Test]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}",
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""No AuthToken provided.""}",
             MatchType = MessageMatch.Contains
         )]
         public async Task Monitor_DocuSign_FollowUp_Configuration_NoAuth()

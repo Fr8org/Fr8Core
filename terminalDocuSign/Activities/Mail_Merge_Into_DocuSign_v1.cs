@@ -206,11 +206,10 @@ namespace terminalDocuSign.Actions
             //validate DocuSignTemplate for present selected template 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                var docuSignTemplate = crateStorage.CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "Available Templates").FirstOrDefault();
-
                 var configControl = GetStdConfigurationControl<DropDownList>(crateStorage, "DocuSignTemplate");
                 if(configControl == null)
                 {
+                    if (configControl.ListItems.Count > 0) return;//await Task.FromResult<CrateDTO>(null);
                     configControl.ErrorMessage = "Please link some templates to your DocuSign account.";
                     noError = false;
                 }
@@ -280,37 +279,37 @@ namespace terminalDocuSign.Actions
         {
             if (ValidateDocuSignAtLeastOneTemplate(curActivityDO))
             {
-                using (var updater = CrateManager.GetUpdatableStorage(curActivityDO))
+            using (var updater = CrateManager.GetUpdatableStorage(curActivityDO))
+            {
+                // extract fields in docusign form
+                _docuSignManager.UpdateUserDefinedFields(
+                    curActivityDO,
+                    authTokenDO,
+                    updater,
+                    _docuSignTemplate.Value
+                );
+            }
+
+            var reconfigList = new List<ConfigurationRequest>()
+            {
+                new ConfigurationRequest()
                 {
-                    // extract fields in docusign form
-                    _docuSignManager.UpdateUserDefinedFields(
-                        curActivityDO,
-                        authTokenDO,
-                        updater,
-                        _docuSignTemplate.Value
-                    );
+                    HasActivityMethod = HasFirstChildActivity,
+                    CreateActivityMethod = CreateFirstChildActivity,
+                    ConfigureActivityMethod = ConfigureFirstChildActivity,
+                    ChildActivityIndex = 1
+                },
+                new ConfigurationRequest()
+                {
+                    HasActivityMethod = HasSecondChildActivity,
+                    CreateActivityMethod = CreateSecondChildActivity,
+                    ConfigureActivityMethod = ConfigureSecondChildActivity,
+                    ChildActivityIndex = 2
                 }
+            };
 
-                var reconfigList = new List<ConfigurationRequest>()
-                {
-                    new ConfigurationRequest()
-                    {
-                        HasActivityMethod = HasFirstChildActivity,
-                        CreateActivityMethod = CreateFirstChildActivity,
-                        ConfigureActivityMethod = ConfigureFirstChildActivity,
-                        ChildActivityIndex = 1
-                    },
-                    new ConfigurationRequest()
-                    {
-                        HasActivityMethod = HasSecondChildActivity,
-                        CreateActivityMethod = CreateSecondChildActivity,
-                        ConfigureActivityMethod = ConfigureSecondChildActivity,
-                        ChildActivityIndex = 2
-                    }
-                };
-
-                var behavior = new ReconfigurationListBehavior(this);
-                await behavior.ReconfigureActivities(curActivityDO, authTokenDO, reconfigList);
+            var behavior = new ReconfigurationListBehavior(this);
+            await behavior.ReconfigureActivities(curActivityDO, authTokenDO, reconfigList);
 
             }
             return await Task.FromResult(curActivityDO);
@@ -338,7 +337,7 @@ namespace terminalDocuSign.Actions
             var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null))
                 .Select(x => Mapper.Map<ActivityTemplateDO>(x))
                 .ToList();
-
+            
             // Let's check if activity template generates table data
             var selectedReceiver = curActivityTemplates.Single(x => x.Name == _dataSourceValue);
             var dataSourceActivity = await AddAndConfigureChildActivity(
@@ -434,7 +433,7 @@ namespace terminalDocuSign.Actions
                 {
                     var loopConfigControls = GetConfigurationControls(crateStorage);
                     var crateChooser = GetControl<CrateChooser>(loopConfigControls, "Available_Crates");
-                        var tableDescription = crateChooser.CrateDescriptions.FirstOrDefault(c => c.ManifestId == (int)MT.StandardTableData);
+                    var tableDescription = crateChooser.CrateDescriptions.FirstOrDefault(c => c.ManifestId == (int)MT.StandardTableData);
                     if (tableDescription != null)
                     {
                         tableDescription.Selected = true;

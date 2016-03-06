@@ -111,7 +111,6 @@ module dockyard.directives.paneConfigureAction {
         setSolutionMode: () => void;
         currentActiveElement: model.ControlDefinitionDTO;
         collapsed: boolean;
-        resize: () => void;
         populateAllActivities: () => void;
         allActivities: Array<interfaces.IActivityDTO>;
     }
@@ -192,10 +191,6 @@ module dockyard.directives.paneConfigureAction {
                 $scope.setSolutionMode = setSolutionMode;
                 $scope.populateAllActivities = populateAllActivities;
                 $scope.allActivities = Array<model.ActivityDTO>();
-
-                $scope.resize = () => {
-                    $scope.collapsed = !$scope.collapsed;
-                };
 
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Reconfigure], (event: ng.IAngularEvent, reConfigureActionEventArgs: ActionReconfigureEventArgs) => {
                     //this might be a general reconfigure command

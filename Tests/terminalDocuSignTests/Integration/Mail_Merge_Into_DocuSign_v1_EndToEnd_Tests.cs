@@ -52,7 +52,8 @@ namespace terminalDocuSignTests.Integration
         [Test]
         public async Task Mail_Merge_Into_DocuSign_EndToEnd()
         {
-            try {
+            try
+            {
                 var solutionCreateUrl = _baseUrl + "activities/create?solutionName=Mail_Merge_Into_DocuSign";
 
                 //
@@ -67,9 +68,9 @@ namespace terminalDocuSignTests.Integration
                 this.solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure?id=" + solution.Id, solution);
                 crateStorage = _crateManager.FromDto(this.solution.CrateStorage);
                 var stAuthCrate = crateStorage.CratesOfType<StandardAuthenticationCM>().FirstOrDefault();
-                bool defaultDocuSignAuthTokenExists = stAuthCrate == null;
+                bool defaultDocuSignAuthTokenExists = stAuthCrate != null;
 
-                if (!defaultDocuSignAuthTokenExists)
+                if (!defaultDocuSignAuthTokenExists)    
                 {
                     //
                     // Authenticate with DocuSign
@@ -111,9 +112,9 @@ namespace terminalDocuSignTests.Integration
                 dataSource.Value = "Get_Google_Sheet_Data";
                 dataSource.selectedKey = "Get Google Sheet Data";
                 var template = controls.OfType<DropDownList>().FirstOrDefault(c => c.Name == "DocuSignTemplate");
-                template.Value = "58521204-58af-4e65-8a77-4f4b51fef626";
+                template.Value = "9a4d2154-5b18-4316-9824-09432e62f458";
                 template.selectedKey = "Medical_Form_v1";
-                template.ListItems.Add(new ListItem() { Value = "58521204-58af-4e65-8a77-4f4b51fef626", Key = "Medical_Form_v1" });
+                template.ListItems.Add(new ListItem() { Value = "9a4d2154-5b18-4316-9824-09432e62f458", Key = "Medical_Form_v1" });
                 var button = controls.OfType<Button>().FirstOrDefault();
                 button.Clicked = true;
 
@@ -301,15 +302,15 @@ namespace terminalDocuSignTests.Integration
                 //
                 // Deactivate plan
                 //
-                await HttpPostAsync<string, string>(_baseUrl + "plans/deactivate?planId=" + plan.Id, null);
+                //await HttpPostAsync<string, string>(_baseUrl + "plans/deactivate?planId=" + plan.Id, null);
     
+                // Verify that test email has been received
+                EmailAssert.EmailReceived("dse_demo@docusign.net", "Test Message from Fr8");
+
                 //
                 // Delete plan
                 //
-                await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Id);
-
-                // Verify that test email has been received
-                //EmailAssert.EmailReceived("dse_demo@docusign.net", "Test Message from Fr8");
+                //await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Id);
             }
             catch (Exception ex)
                 {
