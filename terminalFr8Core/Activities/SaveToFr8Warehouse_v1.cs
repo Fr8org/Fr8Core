@@ -50,6 +50,7 @@ namespace terminalFr8Core.Actions
                     uow.MultiTenantObjectRepository.AddOrUpdate(authTokenDO.UserID, curManifest);
                 }
 
+                uow.SaveChanges();
                 return Success(curProcessPayload);
             }
         }
