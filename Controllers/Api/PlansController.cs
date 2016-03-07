@@ -352,7 +352,7 @@ namespace HubWeb.Controllers
                     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
                         var routeDO = uow.PlanRepository.GetById<PlanDO>(planId);
-                        activateDTO.Container.CurrentPlanType = routeDO.IsOngoingPlan() ? PlanType.OnGoing : PlanType.RunOnce;
+                        activateDTO.Container.CurrentPlanType = routeDO.IsOngoingPlan() ? PlanType.Ongoing : PlanType.RunOnce;
                     }
 
                     return Ok(activateDTO.Container);
@@ -381,7 +381,7 @@ namespace HubWeb.Controllers
                     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
                         var planDO = uow.PlanRepository.GetById<PlanDO>(planId);
-                        currentPlanType = planDO.IsOngoingPlan() ? PlanType.OnGoing.ToString() : PlanType.RunOnce.ToString();
+                        currentPlanType = planDO.IsOngoingPlan() ? PlanType.Ongoing.ToString() : PlanType.RunOnce.ToString();
                     }
                     return BadRequest(currentPlanType);
                 }
@@ -422,7 +422,7 @@ namespace HubWeb.Controllers
                         _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, message);
 
                         var containerDTO = Mapper.Map<ContainerDTO>(containerDO);
-                        containerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? PlanType.OnGoing : PlanType.RunOnce;
+                        containerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? PlanType.Ongoing : PlanType.RunOnce;
 
                         var containerLaunched = Task.Run(() => eventManager.Publish("ContainerLaunched"
                              , planDO.Fr8AccountId
@@ -437,13 +437,13 @@ namespace HubWeb.Controllers
                         return Ok(containerDTO);
                     }
 
-                    currentPlanType = planDO.IsOngoingPlan() ? PlanType.OnGoing.ToString() : PlanType.RunOnce.ToString();
+                    currentPlanType = planDO.IsOngoingPlan() ? PlanType.Ongoing.ToString() : PlanType.RunOnce.ToString();
                     return BadRequest(currentPlanType);
                 }
                 catch (ErrorResponseException exception)
                 {
                     //this response contains details about the error that happened on some terminal and need to be shown to client
-                    exception.ContainerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? PlanType.OnGoing : PlanType.RunOnce;
+                    exception.ContainerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? PlanType.Ongoing : PlanType.RunOnce;
                     return Ok(exception.ContainerDTO);
                 }
                 catch (Exception e)
@@ -460,7 +460,7 @@ namespace HubWeb.Controllers
                     }
                 }
                 var containerDefaultDTO = new ContainerDTO();
-                containerDefaultDTO.CurrentPlanType = planDO.IsOngoingPlan() ? PlanType.OnGoing : PlanType.RunOnce;
+                containerDefaultDTO.CurrentPlanType = planDO.IsOngoingPlan() ? PlanType.Ongoing : PlanType.RunOnce;
                 return Ok(containerDefaultDTO);
             }
         }
