@@ -85,8 +85,7 @@ namespace Hub.Services
             uow.SaveChanges();
         }
 
-
-        private async Task ProcessCurrentActivityResponse(IUnitOfWork uow, ContainerDO curContainerDo, ActivityResponseDTO response)
+        internal async Task ProcessCurrentActivityResponse(IUnitOfWork uow, ContainerDO curContainerDo, ActivityResponseDTO response)
         {
             //extract the type value from the activity response
             ActivityResponse activityResponse = ActivityResponse.Null;
@@ -109,7 +108,8 @@ namespace Hub.Services
                 case ActivityResponse.Error:
                     //TODO retry activity execution until 3 errors??
                     //so we are able to show the specific error that is embedded inside the container we are sending back that container to client
-                    throw new ErrorResponseException(Mapper.Map<ContainerDO, ContainerDTO>(curContainerDo));
+                    ErrorDTO error = response.TryParseErrorDTO(out error) ? error : null;
+                    throw new ErrorResponseException(Mapper.Map<ContainerDO, ContainerDTO>(curContainerDo), error?.Message);
                 case ActivityResponse.RequestTerminate:
                     //FR-2163 - If action response requests for termination, we make the container as Completed to avoid unwanted errors.
                     curContainerDo.ContainerState = ContainerState.Completed;
