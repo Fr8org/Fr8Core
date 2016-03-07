@@ -649,6 +649,10 @@
     <Compile Include="Migrations\201603062121076_Organizations_Table.Designer.cs">
       <DependentUpon>201603062121076_Organizations_Table.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201603071308012_UserClaims_BaseColumns.cs" />
+    <Compile Include="Migrations\201603071308012_UserClaims_BaseColumns.Designer.cs">
+      <DependentUpon>201603071308012_UserClaims_BaseColumns.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -1135,6 +1139,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201603062121076_Organizations_Table.resx">
       <DependentUpon>201603062121076_Organizations_Table.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201603071308012_UserClaims_BaseColumns.resx">
+      <DependentUpon>201603071308012_UserClaims_BaseColumns.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
