@@ -59,7 +59,7 @@ namespace terminalDocuSignTests.Integration
                 Name = "terminalDocuSign",
                 TerminalStatus = TerminalStatus.Active,
                 Version = "1",
-                Endpoint = GetTerminalUrl(),
+                Endpoint = TerminalUrl,
                 AuthenticationType = AuthenticationType.Internal
             };
             var terminalCoreDO = FixtureData.TestTerminal_Core_DTO();
