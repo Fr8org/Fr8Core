@@ -21,7 +21,7 @@ namespace Data.Constants
 
     public enum PlanType
     {
-        OnGoing,
+        Ongoing,
         RunOnce
     }
 }
