@@ -135,20 +135,39 @@ module dockyard.controllers {
                 //TODO show some kind of error message
             });
         }
-        private executePlan(planId, $event) {
+        private executePlan(plan, $event) {
+            // If Plan is inactive, activate it in-order to move under Running section
+            var isInactive = plan.planState === 1;
+            if (isInactive) {
+                plan.planState = 2;
+                this.reArrangePlans(plan);
+            }
             if ($event.ctrlKey) {
                 this.$modal.open({
                     animation: true,
                     templateUrl: '/AngularTemplate/_AddPayloadModal',
-                    controller: 'PayloadFormController', resolve: { planId: () => planId }
+                    controller: 'PayloadFormController', resolve: { planId: () => plan.id }
                 });
             }
             else {
                 this.PlanService
-                    .runAndProcessClientAction(planId)
+                    .runAndProcessClientAction(plan.id)
+                    .then((data) => {
+                        if (isInactive && data && data.currentPlanType === 1) {
+                            // mark plan as Inactive as it is Run Once and then rearrange
+                            plan.planState = 1;
+                            this.reArrangePlans(plan);
+                        }
+                    })
                     .catch((failResponse) => {
                         if (failResponse.data.details === "GuestFail") {
                             location.href = "DockyardAccount/RegisterGuestUser";
+                        } else {
+                            if (isInactive && failResponse.toLowercase() === '1') {
+                                // mark plan as Inactive as it is Run Once and then rearrange
+                                plan.planState = 1;
+                                this.reArrangePlans(plan);
+                            }
                         }
                     });
             }

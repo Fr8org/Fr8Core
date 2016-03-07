@@ -27,5 +27,6 @@ namespace Data.Interfaces.DataTransferObjects
 
         public ActivityResponse? CurrentActivityResponse { get; set; }
         public string CurrentClientActivityName { get; set; }
+        public PlanType? CurrentPlanType { get; set; }
     }
 }
