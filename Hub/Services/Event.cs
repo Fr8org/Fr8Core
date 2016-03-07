@@ -34,7 +34,6 @@ namespace Hub.Services
 
         public Event()
         {
-
             _terminal = ObjectFactory.GetInstance<ITerminal>();
             _plan = ObjectFactory.GetInstance<IPlan>();
         }

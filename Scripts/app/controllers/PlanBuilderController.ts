@@ -730,6 +730,7 @@ module dockyard.controllers {
                     results.push(action);
                 });
             });
+
             return results;
         }
     }
