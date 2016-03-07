@@ -280,6 +280,16 @@ namespace Data.Infrastructure
             }
         }
 
+        private AspNetUserClaimsRepository _aspNetUserClaimsRepository;
+
+        public IAspNetUserClaimsRepository AspNetUserClaimsRepository
+        {
+            get
+            {
+                return _aspNetUserClaimsRepository ?? (_aspNetUserClaimsRepository = new AspNetUserClaimsRepository(this));
+            }
+        }
+
         private AspNetRolesRepository _aspNetRolesRepository;
 
         public AspNetRolesRepository AspNetRolesRepository
