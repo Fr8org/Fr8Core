@@ -91,7 +91,7 @@ namespace DockyardTest.Controllers
 
             // Assert
             Assert.NotNull(result.Result);                              // Get not empty result
-            Assert.IsInstanceOf<BadRequestResult>(result.Result);       // Result of correct HTTP response type
+            Assert.IsInstanceOf<BadRequestErrorMessageResult>(result.Result);       // Result of correct HTTP response type
         }
 
         [Test]
