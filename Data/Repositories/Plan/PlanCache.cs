@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Data.Entities;
 using Data.States;
+using static Data.Repositories.Plan.PlanSnapshot;
 
 namespace Data.Repositories.Plan
 {
@@ -94,6 +95,8 @@ namespace Data.Repositories.Plan
                     // update plan expiration
                     cacheItem.Plan.Expiration = _expirationStrategy.NewExpirationToken();
                 }
+
+                node = PlanTreeHelper.CloneWithStructure(node);
             }
 
             return node;
@@ -129,8 +132,10 @@ namespace Data.Repositories.Plan
 
         /**********************************************************************************/
 
-        public void Update(Guid planId, PlanSnapshot.Changes changes)
+        public PlanSnapshot.Changes Update(Guid planId, PlanSnapshot.Changes changes)
         {
+           var validChanges = new PlanSnapshot.Changes();
+
             lock (_sync)
             {
                 CachedPlan plan;
@@ -156,13 +161,25 @@ namespace Data.Repositories.Plan
                 {
                     if (!_planNodesLookup.ContainsKey(insert.Id))
                     {
-                        _planNodesLookup.Add(insert.Id, new CacheItem(insert.Clone(), plan));
+                        if (insert.ParentPlanNodeId == null || _planNodesLookup.ContainsKey(insert.ParentPlanNodeId.Value))
+                        {
+                            _planNodesLookup.Add(insert.Id, new CacheItem(insert.Clone(), plan));
+                        }
                     }
                 }
 
                 foreach (var insert in changes.Insert)
                 {
-                    var node = _planNodesLookup[insert.Id].Node;
+                    CacheItem nodeCacheItem;
+
+                    if (!_planNodesLookup.TryGetValue(insert.Id, out nodeCacheItem))
+                    {
+                        continue;
+                    }
+
+                    validChanges.Insert.Add(insert);
+
+                    var node = nodeCacheItem.Node;
 
                     if (insert.ParentPlanNodeId != null)
                     {
@@ -180,14 +197,21 @@ namespace Data.Repositories.Plan
 
                     if (_plans.TryGetValue(deleted.Id, out cachedPlan))
                     {
-                        PlanTreeHelper.Visit(cachedPlan.Root, x => _planNodesLookup.Remove(x.Id));
-                        _plans.Remove(cachedPlan.Root.Id);
-                        return;
+                        PlanTreeHelper.Visit(plan.Root, x =>
+                        {
+                            _planNodesLookup.Remove(x.Id);
+                            validChanges.Delete.Add(x);
+                        });
+
+                        _plans.Remove(plan.Root.Id);
+
+                        return validChanges;
                     }
 
                     CacheItem node;
                     if (_planNodesLookup.TryGetValue(deleted.Id, out node))
                     {
+                        validChanges.Delete.Add(deleted);
                         _planNodesLookup.Remove(deleted.Id);
                         node.Node.RemoveFromParent();
                     }
@@ -197,24 +221,43 @@ namespace Data.Repositories.Plan
                 {
                     foreach (var changedProperty in update.ChangedProperties)
                     {
-                        var original = _planNodesLookup[update.Node.Id].Node;
+                        CacheItem originalCacheItem;
+
+                        if (!_planNodesLookup.TryGetValue(update.Node.Id, out originalCacheItem))
+                        {
+                            continue;
+                        }
+
+                        var original = originalCacheItem.Node;
 
                         // structure was changed
                         if (changedProperty.Name == "ParentPlanNodeId")
                         {
-                            var parent = _planNodesLookup[update.Node.ParentPlanNodeId.Value].Node;
+                            CacheItem parentCacheItem;
+
+                            if (update.Node.ParentPlanNodeId == null || !_planNodesLookup.TryGetValue(update.Node.ParentPlanNodeId.Value, out parentCacheItem))
+                            {
+                                continue;
+                            }
+
+                            var parent = parentCacheItem.Node;
 
                             original.RemoveFromParent();
                             parent.ChildNodes.Add(original);
                             original.ParentPlanNode = parent;
+
+                            validChanges.Update.Add(update);
                         }
                         else
                         {
+                            validChanges.Update.Add(update);
                             changedProperty.SetValue(original, changedProperty.GetValue(update.Node));
                         }
                     }
                 }
             }
+
+            return validChanges;
         }
 
         /**********************************************************************************/

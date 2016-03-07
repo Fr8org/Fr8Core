@@ -361,7 +361,8 @@ drop table #MtTypes
 
         public override void Up()
         {
-            Sql(MigrateDataToNewStructure);
+            // this migration is slow. Next migration works significatly faster
+            //Sql(MigrateDataToNewStructure);
         }
 
         public override void Down()

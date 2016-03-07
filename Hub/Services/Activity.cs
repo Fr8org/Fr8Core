@@ -320,6 +320,24 @@ namespace Hub.Services
                 throw new ArgumentNullException("curActivityDO");
             }
 
+            var plan = curActivityDO.RootPlanNode as PlanDO;
+            if (plan != null)
+            {
+                if (plan.PlanState == PlanState.Deleted)
+                {
+                    var message = "Cannot configure activity when plan is deleted";
+
+                    EventManager.TerminalConfigureFailed(
+                        curActivityDO.ActivityTemplate.Terminal.Endpoint,
+                        JsonConvert.SerializeObject(Mapper.Map<ActivityDTO>(curActivityDO)),
+                        message,
+                        curActivityDO.Id.ToString()
+                    );
+
+                    throw new ApplicationException(message);
+                }
+            }
+
             var tempActionDTO = Mapper.Map<ActivityDTO>(curActivityDO);
 
             if (!_authorizationToken.ValidateAuthenticationNeeded(uow, userId, tempActionDTO))
@@ -378,7 +396,8 @@ namespace Hub.Services
             return curActivityDO;
         }
 
-        public async Task<ActivityDTO> Configure(IUnitOfWork uow, string userId, ActivityDO curActivityDO, bool saveResult = true)
+        public async Task<ActivityDTO> Configure(IUnitOfWork uow,
+            string userId, ActivityDO curActivityDO, bool saveResult = true)
         {
             curActivityDO = await CallActivityConfigure(uow, userId, curActivityDO);
 

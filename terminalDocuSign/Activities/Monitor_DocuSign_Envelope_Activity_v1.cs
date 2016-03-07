@@ -74,7 +74,14 @@ namespace terminalDocuSign.Actions
                     if (pickedControl.Controls[0].Type == ControlTypes.DropDownList)
                     {
                         var templateControl = pickedControl.Controls[0] as DropDownList;
-                        selectedTemplate = templateControl.ListItems.Single(x => x.Value == templateControl.Value).Key;
+                        var selectedListItem = templateControl
+                            .ListItems
+                            .FirstOrDefault(x => x.Value == templateControl.Value);
+
+                        if (selectedListItem != null)
+                        {
+                            selectedTemplate = selectedListItem.Key;
+                        }
                     }                   
                     //set the output values
                     selectedOption = pickedControl.Name;

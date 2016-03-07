@@ -440,6 +440,13 @@ namespace Hub.Services
 
         private async Task<ContainerDO> Run(IUnitOfWork uow, ContainerDO curContainerDO)
         {
+            var plan = uow.PlanRepository.GetById<PlanDO>(curContainerDO.PlanId);
+
+            if (plan.PlanState == PlanState.Deleted)
+            {
+                throw new ApplicationException("Cannot run plan that is in deleted state.");
+            }
+
             if (curContainerDO.ContainerState == ContainerState.Failed
                 || curContainerDO.ContainerState == ContainerState.Completed)
             {

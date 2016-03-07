@@ -285,7 +285,6 @@ namespace terminalDocuSign.Actions
                     messageField.selectedKey = "NotificationMessage";
                 }
             }
-            
 
         }
 

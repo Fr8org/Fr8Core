@@ -138,12 +138,12 @@ namespace DockyardTest.Repositories.Plan
             var cache = new PlanCache(expiration);
 
             var plan1 = cache.Get(planId, cacheMiss);
-          
-            Assert.AreEqual(plan1, plan);
 
+            Assert.IsTrue(AreEquals(plan1, plan));
+            
             foreach (var id in PlanTreeHelper.Linearize(plan).Select(x=>x.Id))
             {
-                Assert.AreEqual(plan, cache.Get(id, cacheMiss));
+                Assert.IsTrue(AreEquals(plan, cache.Get(id, cacheMiss)));
             }
 
             Assert.AreEqual(1, calledTimes);
@@ -168,11 +168,11 @@ namespace DockyardTest.Repositories.Plan
 
             var plan1 = cache.Get(new Guid(2, (short)0, (short)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0), cacheMiss);
 
-            Assert.AreEqual(plan1, plan);
+            Assert.IsTrue(AreEquals(plan1, plan));
 
             foreach (var id in PlanTreeHelper.Linearize(plan).Select(x => x.Id))
             {
-                Assert.AreEqual(plan, cache.Get(id, cacheMiss));
+                Assert.IsTrue(AreEquals(plan, cache.Get(id, cacheMiss)));
             }
 
             Assert.AreEqual(1, calledTimes);
@@ -187,6 +187,7 @@ namespace DockyardTest.Repositories.Plan
             int calledTimes = 0;
 
             var plan = LoadPlan(planId);
+            var referenceRoute = LoadPlan(planId);
 
             Func<Guid, PlanNodeDO> cacheMiss = x =>
             {
@@ -207,7 +208,7 @@ namespace DockyardTest.Repositories.Plan
             var plan2 = cache.Get(planId, cacheMiss);
 
             Assert.AreEqual(1, calledTimes);
-            Assert.IsTrue(AreEquals(plan1, plan));
+            Assert.IsTrue(AreEquals(plan1, referenceRoute));
             Assert.IsTrue(AreEquals(plan2, updated));
         }
 

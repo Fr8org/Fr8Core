@@ -62,9 +62,7 @@ namespace Data.Repositories.Plan
                     //if no, then just get this plan by id
                     return GetById<TPlanNode>(id);
                 }
-
-                planFromDb = PlanTreeHelper.CloneWithStructure(planFromDb);
-
+                
                 // get list of currently loaded items
                 var currentNodes = PlanTreeHelper.Linearize(loadedPlan.Root).ToDictionary(x => x.Id, x => x);
                 var dbNodes = PlanTreeHelper.Linearize(planFromDb).ToDictionary(x => x.Id, x => x);
@@ -146,9 +144,7 @@ namespace Data.Repositories.Plan
                     {
                         return null;
                     }
-
-                    plan = PlanTreeHelper.CloneWithStructure(plan);
-
+                    
                     loadedPlan = new LoadedPlan(plan);
                     _loadedPlans.Add(loadedPlan);
                     // add all noded to the loaded nodes list

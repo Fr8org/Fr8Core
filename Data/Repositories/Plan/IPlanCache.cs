@@ -8,6 +8,6 @@ namespace Data.Repositories.Plan
         PlanNodeDO Get(Guid id, Func<Guid, PlanNodeDO> cacheMissCallback);
         void UpdateElement(Guid id, Action<PlanNodeDO> updater);
         void UpdateElements(Action<PlanNodeDO> updater);
-        void Update(Guid id, PlanSnapshot.Changes changes);
+        PlanSnapshot.Changes Update(Guid id, PlanSnapshot.Changes changes);
     }
 }
