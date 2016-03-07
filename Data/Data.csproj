@@ -631,10 +631,6 @@
     <Compile Include="Migrations\201603021529530_MoveToSqlMt.Designer.cs">
       <DependentUpon>201603021529530_MoveToSqlMt.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201603041113154_ChangeRouteToPlan.cs" />
-    <Compile Include="Migrations\201603041113154_ChangeRouteToPlan.Designer.cs">
-      <DependentUpon>201603041113154_ChangeRouteToPlan.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201603041104310_MigrateMTData.cs" />
     <Compile Include="Migrations\201603041104310_MigrateMTData.Designer.cs">
       <DependentUpon>201603041104310_MigrateMTData.cs</DependentUpon>
@@ -642,6 +638,10 @@
     <Compile Include="Migrations\201603051236490_FasterMigrateMTData.cs" />
     <Compile Include="Migrations\201603051236490_FasterMigrateMTData.Designer.cs">
       <DependentUpon>201603051236490_FasterMigrateMTData.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201603070707165_UpdatingChangeRouteToPlanToBeLatestMigration.cs" />
+    <Compile Include="Migrations\201603070707165_UpdatingChangeRouteToPlanToBeLatestMigration.Designer.cs">
+      <DependentUpon>201603070707165_UpdatingChangeRouteToPlanToBeLatestMigration.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -1115,14 +1115,14 @@
     <EmbeddedResource Include="Migrations\201603021529530_MoveToSqlMt.resx">
       <DependentUpon>201603021529530_MoveToSqlMt.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201603041113154_ChangeRouteToPlan.resx">
-      <DependentUpon>201603041113154_ChangeRouteToPlan.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201603041104310_MigrateMTData.resx">
       <DependentUpon>201603041104310_MigrateMTData.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201603051236490_FasterMigrateMTData.resx">
       <DependentUpon>201603051236490_FasterMigrateMTData.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201603070707165_UpdatingChangeRouteToPlanToBeLatestMigration.resx">
+      <DependentUpon>201603070707165_UpdatingChangeRouteToPlanToBeLatestMigration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class ChangeRouteToPlan : IMigrationMetadata
+    public sealed partial class UpdatingChangeRouteToPlanToBeLatestMigration : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(ChangeRouteToPlan));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(UpdatingChangeRouteToPlanToBeLatestMigration));
         
         string IMigrationMetadata.Id
         {
-            get { return "201603041113154_ChangeRouteToPlan"; }
+            get { return "201603070707165_UpdatingChangeRouteToPlanToBeLatestMigration"; }
         }
         
         string IMigrationMetadata.Source
