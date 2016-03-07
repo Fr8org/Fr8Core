@@ -9,6 +9,9 @@ using terminalSalesforce.Infrastructure;
 using Data.Entities;
 using Salesforce.Common.Models;
 using Salesforce.Common;
+using Salesforce.Chatter;
+using Newtonsoft.Json.Linq;
+using Salesforce.Chatter.Models;
 
 namespace terminalSalesforce.Services
 {
@@ -108,24 +111,54 @@ namespace terminalSalesforce.Services
             };
         }
 
-        private ForceClient CreateForceClient(AuthorizationTokenDO authTokenDO, bool isRefreshTokenRequired = false)
+        /// <summary>
+        /// Gets all avaialble chatter persons and chatter objects in the form of FieldDTO
+        /// FieldDTO's Key as ObjectName and Value as ObjectId
+        /// </summary>
+        public async Task<IList<FieldDTO>> GetChatters(AuthorizationTokenDO authTokenDO)
         {
-            AuthorizationTokenDO authTokenResult = null;
-            
-            //refresh the token only when it is required for the user of this method
-            if(isRefreshTokenRequired)
+            var chatterClient = CreateChatterClient(authTokenDO);
+
+            try
             {
-                authTokenResult = Task.Run(() => _authentication.RefreshAccessToken(authTokenDO)).Result;
+                return await GetChattersInternal(chatterClient);
             }
-            else
+            catch (ForceException salesforceException)
             {
-                //else consider the supplied authtoken itself
-                authTokenResult = authTokenDO;
+                if (salesforceException.Message.Equals("Session expired or invalid"))
+                {
+                    chatterClient = CreateChatterClient(authTokenDO, true);
+
+                    return await GetChattersInternal(chatterClient);
+                }
+                else
+                {
+                    throw salesforceException;
+                }
             }
-            
-            string instanceUrl, apiVersion;
-            ParseAuthToken(authTokenResult.AdditionalAttributes, out instanceUrl, out apiVersion);
-            return new ForceClient(instanceUrl, authTokenResult.Token, apiVersion);
+        }
+
+        public async Task<bool> PostFeedTextToChatterObject(string feedText, string parentObjectId, AuthorizationTokenDO authTokenDO)
+        {
+            var chatterClient = CreateChatterClient(authTokenDO);
+
+            try
+            {
+                return await PostFeedTextToChatterObjectInternal(feedText, parentObjectId,  chatterClient);
+            }
+            catch (ForceException salesforceException)
+            {
+                if (salesforceException.Message.Equals("Session expired or invalid"))
+                {
+                    chatterClient = CreateChatterClient(authTokenDO, true);
+
+                    return await PostFeedTextToChatterObjectInternal(feedText, parentObjectId, chatterClient);
+                }
+                else
+                {
+                    throw salesforceException;
+                }
+            }
         }
 
         public T CreateSalesforceDTO<T>(ActivityDO curActivity, PayloadDTO curPayload,
@@ -162,6 +195,46 @@ namespace terminalSalesforce.Services
             return requiredObject;
         }
 
+        private ForceClient CreateForceClient(AuthorizationTokenDO authTokenDO, bool isRefreshTokenRequired = false)
+        {
+            AuthorizationTokenDO authTokenResult = null;
+
+            //refresh the token only when it is required for the user of this method
+            if (isRefreshTokenRequired)
+            {
+                authTokenResult = Task.Run(() => _authentication.RefreshAccessToken(authTokenDO)).Result;
+            }
+            else
+            {
+                //else consider the supplied authtoken itself
+                authTokenResult = authTokenDO;
+            }
+
+            string instanceUrl, apiVersion;
+            ParseAuthToken(authTokenResult.AdditionalAttributes, out instanceUrl, out apiVersion);
+            return new ForceClient(instanceUrl, authTokenResult.Token, apiVersion);
+        }
+
+        private ChatterClient CreateChatterClient(AuthorizationTokenDO authTokenDO, bool isRefreshTokenRequired = false)
+        {
+            AuthorizationTokenDO authTokenResult = null;
+
+            //refresh the token only when it is required for the user of this method
+            if (isRefreshTokenRequired)
+            {
+                authTokenResult = Task.Run(() => _authentication.RefreshAccessToken(authTokenDO)).Result;
+            }
+            else
+            {
+                //else consider the supplied authtoken itself
+                authTokenResult = authTokenDO;
+            }
+
+            string instanceUrl, apiVersion;
+            ParseAuthToken(authTokenResult.AdditionalAttributes, out instanceUrl, out apiVersion);
+            return new ChatterClient(instanceUrl, authTokenResult.Token, apiVersion);
+        }
+
         /// <summary>
         /// Gets required type of SalesforceObject from the Factory for the given Salesforce Object Name
         /// </summary>
@@ -178,6 +251,74 @@ namespace terminalSalesforce.Services
             apiVersion = authonTokenAdditionalValues.Substring(startIndexOfApiVersion, authonTokenAdditionalValues.Length - startIndexOfApiVersion);
             instanceUrl = instanceUrl.Replace("instance_url=", "");
             apiVersion = apiVersion.Replace("api_version=", "");
+        }
+
+        private async Task<IList<FieldDTO>> GetChattersInternal(ChatterClient chatterClient)
+        {
+            var chatters = new List<FieldDTO>();
+
+            //get chatter groups and persons
+            var chatterGroups = (JObject) await chatterClient.GetGroupsAsync<object>();
+            var chatterPersons = (JObject) await chatterClient.GetUsersAsync<object>();
+
+            JToken chatterObjects;
+
+            //prepare groups      
+            chatterObjects = null;       
+            if (chatterGroups.TryGetValue("groups", out chatterObjects) && chatterObjects is JArray)
+            {
+                chatters.AddRange(
+                    chatterObjects.Select(a => 
+                                    new FieldDTO(a.Value<string>("name"), a.Value<string>("id"), Data.States.AvailabilityType.Configuration
+                        ))
+                    );
+            }
+
+            //prepare users 
+            chatterObjects = null;
+            if (chatterPersons.TryGetValue("users", out chatterObjects) && chatterObjects is JArray)
+            {
+                chatters.AddRange(
+                    chatterObjects.Select(a =>
+                                    new FieldDTO(a.Value<string>("displayName"), a.Value<string>("id"), Data.States.AvailabilityType.RunTime
+                        ))
+                    );
+            }
+
+            return chatters;
+        }
+
+        private async Task<bool> PostFeedTextToChatterObjectInternal(string feedText, string parentObjectId, ChatterClient chatterClient)
+        {
+            var me = await chatterClient.MeAsync<UserDetail>();
+
+            //set the message segment with the given feed text
+            var messageSegment = new MessageSegmentInput
+            {
+                Text = feedText,
+                Type = "Text"
+            };
+
+            //prepare the body
+            var body = new MessageBodyInput { MessageSegments = new List<MessageSegmentInput> { messageSegment } };
+
+            //prepare feed item input by setting the given parent object id
+            var feedItemInput = new FeedItemInput()
+            {
+                Attachment = null,
+                Body = body,
+                SubjectId = parentObjectId,
+                FeedElementType = "FeedItem"
+            };
+
+            var feedItem = await chatterClient.PostFeedItemAsync<FeedItem>(feedItemInput, me.id);
+
+            if(feedItem != null && !string.IsNullOrEmpty(feedItem.Id))
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }
