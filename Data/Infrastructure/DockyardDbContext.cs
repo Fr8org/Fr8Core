@@ -272,9 +272,6 @@ namespace Data.Infrastructure
             modelBuilder.Entity<SubrouteDO>().ToTable("Subroutes");
             modelBuilder.Entity<EnvelopeDO>().ToTable("Envelopes");
             modelBuilder.Entity<ActivityTemplateDO>().ToTable("ActivityTemplate");
-            modelBuilder.Entity<MT_Field>().ToTable("MT_Fields");
-            modelBuilder.Entity<MT_Object>().ToTable("MT_Objects");
-            modelBuilder.Entity<MT_Data>().ToTable("MT_Data");
 	        modelBuilder.Entity<WebServiceDO>().ToTable("WebServices");
 	        modelBuilder.Entity<TerminalSubscriptionDO>().ToTable("TerminalSubscription");
             modelBuilder.Entity<EncryptedAuthorizationData>().ToTable("EncryptedAuthorizationData");

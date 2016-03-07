@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Data.Interfaces.Manifests;
 
-namespace Data.Repositories
+namespace Data.Repositories.MultiTenant.Queryable
 {
     // Provides functionality of querying MT DB
     public interface IMtQueryable<T> : IEnumerable<T>

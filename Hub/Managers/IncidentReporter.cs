@@ -6,6 +6,7 @@ using Data.Exceptions;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Data.States;
 using Hub.Interfaces;
 using Hub.Services;
 using Utilities;
@@ -49,6 +50,7 @@ namespace Hub.Managers
             EventManager.EventAuthTokenSilentRevoke += AuthTokenSilentRevoke;
             EventManager.EventContainerFailed += ContainerFailed;
             EventManager.EventUnexpectedError += UnexpectedError;
+            EventManager.PlanActivationFailedEvent += PlanActivationFailed;
         }
 
         private void UnexpectedError(Exception ex)
@@ -65,6 +67,24 @@ namespace Hub.Managers
                 SecondaryCategory = "Unexpected",
                 Component = "Hub",
                 Activity = "Unexpected Error"
+            };
+
+            SaveAndLogIncident(incident);
+        }
+
+        private void PlanActivationFailed(PlanDO plan, string reason)
+        {
+            var incident = new IncidentDO
+            {
+                CustomerId = "unknown",
+                Data = "Plan activation failed, plan.Id = " + plan.Id.ToString()
+                    + ", plan.Name = " + plan.Name
+                    + ", plan.RouteState = " + plan.RouteState.ToString()
+                    + ", reason = " + reason,
+                PrimaryCategory = "Plan",
+                SecondaryCategory = "Activation",
+                Component = "Hub",
+                Activity = "Plan Activation"
             };
 
             SaveAndLogIncident(incident);

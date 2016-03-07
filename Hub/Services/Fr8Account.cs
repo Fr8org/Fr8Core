@@ -20,7 +20,6 @@ namespace Hub.Services
 {
     public class Fr8Account
     {
-
         public void UpdatePassword(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO, string password)
         {
             if (dockyardAccountDO != null)
@@ -475,6 +474,28 @@ namespace Hub.Services
 
             uow.SaveChanges();
             return Task.FromResult(curRegStatus);
+        }
+
+        public bool IsCurrentUserInAdminRole()
+        {
+            ISecurityServices _security = ObjectFactory.GetInstance<ISecurityServices>();
+            bool isAdmin = false;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                //get the current account
+                var curAccount = _security.GetCurrentAccount(uow);
+                //get the roles to check if the account has admin role
+                var curAccountRoles = curAccount.Roles;
+                //get the role id
+                var adminRoleId = uow.AspNetRolesRepository.GetQuery().Single(r => r.Name == "Admin").Id;
+                //provide all facts if the user has admin role
+                if (curAccountRoles.Any(x => x.RoleId == adminRoleId))
+                {
+                    isAdmin = true;
+                }
+            }
+
+            return isAdmin;
         }
     }
 }
