@@ -211,7 +211,7 @@
     }
 
     .action .ap-resize {
-        min-height: 420px;
+        min-height: 380px;
         overflow: hidden;
         min-width: 380px;
         overflow: auto;
