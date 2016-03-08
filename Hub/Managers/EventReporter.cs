@@ -159,7 +159,7 @@ namespace Hub.Managers
                     CreatedByID = _security.GetCurrentUser(),
                     Data = string.Join(
                     Environment.NewLine,
-                    "Activity Name: " + activityDo.ActivityTemplate.Name)
+                    "Activity Name: " + (activityDo.ActivityTemplate != null ? activityDo.ActivityTemplate.Name : string.Empty))
                 };
 
                 uow.FactRepository.Add(factDO);
@@ -182,7 +182,7 @@ namespace Hub.Managers
                     CreatedByID = _security.GetCurrentUser(),
                     Data = string.Join(
                         Environment.NewLine,
-                        "Activity Name: " + activityDo.ActivityTemplate.Name
+                        "Activity Name: " + (activityDo.ActivityTemplate != null ? activityDo.ActivityTemplate.Name : string.Empty)
                     )
                 };
 
