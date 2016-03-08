@@ -42,7 +42,6 @@ namespace Hub.Services
         private readonly ISecurityServices _security;
         private readonly IActivityTemplate _activityTemplate;
         private readonly IRouteNode _routeNode;
-        private readonly Hub.Managers.Event _event;
 
         public Activity()
         {
@@ -52,7 +51,6 @@ namespace Hub.Services
             _crate = ObjectFactory.GetInstance<ICrateManager>();
             _telemetryClient = ObjectFactory.GetInstance<TelemetryClient>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
-            _event = ObjectFactory.GetInstance<Hub.Managers.Event>(); ;
         }
 
         public IEnumerable<TViewModel> GetAllActivities<TViewModel>()
@@ -521,18 +519,11 @@ namespace Hub.Services
             try
             {
                 var actionName = curActionState == ActivityState.InitialRun ? "Run" : "ExecuteChildActivities";
+                EventManager.OnActivityRunRequested(curActivityDO);
+
                 var payloadDTO = await CallTerminalActivityAsync<PayloadDTO>(uow, actionName, curActivityDO, curContainerDO.Id);
 
-                // this will break the infinite loop created for logFr8InternalEvents...
-
-                var plan = uow.PlanRepository.GetById<PlanDO>(curContainerDO.PlanId);
-
-                if (plan != null && plan.Name != "LogFr8InternalEvents")
-                {
-                    var actionDTO = Mapper.Map<ActivityDTO>(curActivityDO);
-                    // fire and forget.
-                    var notification = Task.Run(() => _event.Publish("ActionExecuted", curActivityDO.Fr8AccountId, curActivityDO.Id.ToString(), JsonConvert.SerializeObject(actionDTO).ToString(), "Success")).ConfigureAwait(false);
-                }
+                EventManager.OnActivityResponseReceived(curActivityDO, ActivityResponse.RequestSuspend);
 
                 return payloadDTO;
 
@@ -716,8 +707,11 @@ namespace Hub.Services
                 };
                 activityResponce = await GetDocumentation<T>(curActivityDTO);
                 //Add log to the database
-                if (!isSolution)
-                    await _event.Publish("ActionExecuted", userId, curActivityDTO.Id.ToString(), JsonConvert.SerializeObject(curActivityDTO).ToString(), "Success");
+                if (!isSolution) {
+                    var curActivityDo = Mapper.Map<ActivityDO>(activityDTO);
+                    EventManager.OnActivityResponseReceived(curActivityDo, ActivityResponse.ShowDocumentation);
+                }
+                    
             }
             return activityResponce;
         }
