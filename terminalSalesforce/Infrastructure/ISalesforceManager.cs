@@ -12,13 +12,11 @@ namespace terminalSalesforce.Infrastructure
 {
     public interface ISalesforceManager
     {
-        ForceClient CreateForceClient(AuthorizationTokenDO authTokenDO);
+        Task<bool> CreateObject<T>(T salesforceObject, string salesforceObjectType, AuthorizationTokenDO authTokenDO);
 
-        Task<bool> CreateObject<T>(T salesforceObject, string salesforceObjectType, ForceClient forceClient);
+        Task<IList<FieldDTO>> GetFields(string salesforceObjectName, AuthorizationTokenDO authTokenDO);
 
-        Task<IList<FieldDTO>> GetFields(string salesforceObjectName, ForceClient forceClient);
-
-        Task<StandardPayloadDataCM> GetObjectByQuery(string salesforceObjectName, string conditionQuery, ForceClient forceClient);
+        Task<StandardPayloadDataCM> GetObjectByQuery(string salesforceObjectName, string conditionQuery, AuthorizationTokenDO authTokenDO);
 
         T CreateSalesforceDTO<T>(ActivityDO curActivity, PayloadDTO curPayload, Func<ActivityDO, PayloadDTO, string, string> extractControlValue);
     }

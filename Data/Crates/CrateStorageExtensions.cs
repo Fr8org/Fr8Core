@@ -194,8 +194,18 @@ namespace Data.Crates
         /// <returns></returns>
         public static int RemoveByLabel(this ICrateStorage storage, string label)
         {
-
             return storage.Remove(x => x.Label == label);
+        }
+
+        /**********************************************************************************/
+        /// <summary>
+        /// Remove all crates by the label prefix
+        /// </summary>
+        /// <param name="labelPrefix">E.g. "Data from: " that is used in Get_Google_Sheet_Data</param>
+        /// <returns></returns>
+        public static int RemoveByLabelPrefix(this ICrateStorage storage, string labelPrefix)
+        {
+            return storage.Remove(x => x.Label.StartsWith(labelPrefix));
         }
 
         /**********************************************************************************/

@@ -23,8 +23,10 @@ namespace DockyardTest.Repositories
             {
                 foreach (var obj in GenerateTestData())
                 {
-                    uow.MultiTenantObjectRepository.Add(uow, obj, "account");    
+                    uow.MultiTenantObjectRepository.Add(obj, "account");    
                 }
+
+                uow.SaveChanges();
             }
         }
 
@@ -70,7 +72,7 @@ namespace DockyardTest.Repositories
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var expected = GenerateTestData().ToArray();
-                var actual = uow.MultiTenantObjectRepository.AsQueryable<DocuSignEnvelopeCM>(uow, "account").ToArray();
+                var actual = uow.MultiTenantObjectRepository.AsQueryable<DocuSignEnvelopeCM>("account").ToArray();
                 CheckResults(expected, actual);
             }
         }
@@ -81,7 +83,7 @@ namespace DockyardTest.Repositories
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var expected = GenerateTestData().Where(x => x.EnvelopeId == "id3").ToArray();
-                var actual = uow.MultiTenantObjectRepository.AsQueryable<DocuSignEnvelopeCM>(uow, "account").Where(x=>x.EnvelopeId == "id3").ToArray();
+                var actual = uow.MultiTenantObjectRepository.AsQueryable<DocuSignEnvelopeCM>("account").Where(x=>x.EnvelopeId == "id3").ToArray();
                 CheckResults(expected, actual);
             }
         }
@@ -92,7 +94,7 @@ namespace DockyardTest.Repositories
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var expected = GenerateTestData().Where(x => x.EnvelopeId == "id3" && x.EnvelopeId.Contains("id")).ToArray();
-                var actual = uow.MultiTenantObjectRepository.AsQueryable<DocuSignEnvelopeCM>(uow, "account")
+                var actual = uow.MultiTenantObjectRepository.AsQueryable<DocuSignEnvelopeCM>("account")
                     .Where(x => x.EnvelopeId == "id3")
                     .Where(x => x.EnvelopeId.Contains("id"))
                     .ToArray();
@@ -106,7 +108,7 @@ namespace DockyardTest.Repositories
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var expected = GenerateTestData().Where(x => x.EnvelopeId == "id3" && x.Status == "status0").ToArray();
-                var actual = uow.MultiTenantObjectRepository.AsQueryable<DocuSignEnvelopeCM>(uow, "account").Where(x => x.EnvelopeId == "id3" && x.Status == "status0").ToArray();
+                var actual = uow.MultiTenantObjectRepository.AsQueryable<DocuSignEnvelopeCM>("account").Where(x => x.EnvelopeId == "id3" && x.Status == "status0").ToArray();
                 CheckResults(expected, actual);
             }
         }

@@ -5,6 +5,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using System.Data.Entity.Infrastructure;
+using Data.Constants;
 
 namespace Data.Infrastructure
 {
@@ -38,6 +39,8 @@ namespace Data.Infrastructure
         public delegate void TerminalActionActivatedHandler(ActivityDO activity);
         public static event TerminalActionActivatedHandler TerminalActionActivated;
 
+        public delegate void PlanActivationFailedHandler(PlanDO plan, string reason);
+        public static event PlanActivationFailedHandler PlanActivationFailedEvent;
 
         public delegate void ExplicitCustomerCreatedHandler(string curUserId);
         public static event ExplicitCustomerCreatedHandler AlertExplicitCustomerCreated;
@@ -168,7 +171,64 @@ namespace Data.Infrastructure
         public delegate void AuthTokenRemovedHandler(AuthorizationTokenDO authToken);
         public static event AuthTokenRemovedHandler EventAuthTokenRemoved;
 
+        public delegate void PlanActivatedHandler(Guid planId);
+        public static event PlanActivatedHandler PlanActivated;
+
+        public delegate void PlanDeactivatedHandler(Guid planId);
+        public static event PlanDeactivatedHandler PlanDeactivated;
+
+        public delegate void ContainerExecutionCompleteHandler(ContainerDO containerDO);
+        public static event ContainerExecutionCompleteHandler ContainerExecutionCompleted;
+
+        public delegate void ActivityRunRequestedHandler(ActivityDO activityDo);
+        public static event ActivityRunRequestedHandler ActivityRunRequested;
+
+        public delegate void ActivityResponseReceivedHandler(ActivityDO activityDo, ActivityResponse responseType);
+        public static event ActivityResponseReceivedHandler ActivityResponseReceived;
+
+
+        public delegate void ProcessingTerminatedPerActivityResponseHandler(ContainerDO containerDO, ActivityResponse resposneType);
+        public static event ProcessingTerminatedPerActivityResponseHandler ProcessingTerminatedPerActivityResponse;
+
+        
+
         #region Method
+
+        public static void OnPlanActivated(Guid planId)
+        {
+            var handler = PlanActivated;
+            if (handler != null) handler(planId);
+        }
+
+        public static void OnPlanDeactivated(Guid planId)
+        {
+            var handler = PlanDeactivated;
+            if (handler != null) handler(planId);
+        }
+
+        public static void OnContainerExecutionCompleted(ContainerDO containerDO)
+        {
+            var handler = ContainerExecutionCompleted;
+            if (handler != null) handler(containerDO);
+        }
+
+        public static void OnActivityRunRequested(ActivityDO activityDo)
+        {
+            var handler = ActivityRunRequested;
+            if (handler != null) handler(activityDo);
+        }
+
+        public static void OnActivityResponseReceived(ActivityDO activityDo, ActivityResponse responseType)
+        {
+            var handler = ActivityResponseReceived;
+            if (handler != null) handler(activityDo, responseType);
+        }
+
+        public static void OnProcessingTerminatedPerActivityResponse(ContainerDO containerDO, ActivityResponse resposneType)
+        {
+            var handler = ProcessingTerminatedPerActivityResponse;
+            if (handler != null) handler(containerDO, resposneType);
+        }
 
         public static void UnexpectedError(Exception ex)
         {
@@ -242,6 +302,12 @@ namespace Data.Infrastructure
         {
             IncidentTerminalActionActivationPOSTFailureHandler handler = IncidentTerminalActionActivationFailed;
             if (handler != null) handler(terminalUrl, activityDTO, objectId);
+        }
+
+        public static void PlanActivationFailed(PlanDO plan, string reason)
+        {
+            var handler = PlanActivationFailedEvent;
+            if (handler != null) handler(plan, reason);
         }
 
         public static void UserNotification(string userid, string message, TimeSpan expiresIn = default(TimeSpan))

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Data;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -33,19 +35,18 @@ namespace terminalDocuSignTests.Integration
                 var solution = ExtractSolution(plan);
                 solution = await EnsureSolutionAuthenticated(solution);
 
-                var crateStorage = _crateManager.FromDto(solution.CrateStorage);
+                var crateStorage = Crate.FromDto(solution.CrateStorage);
                 ValidateCrateStructure(crateStorage);
                 ValidateConfigurationControls(crateStorage);
                 var planConfigure = await GetPlanByActivity(solution.Id);
                 ValidatePlanCategory(planConfigure);
                 await SaveActivity(solution);
 
-
                 // FollowUp configuration.
                 MockSolutionFollowUpConfigurationData(solution);
                 solution = await ConfigureActivity(solution);
 
-                crateStorage = _crateManager.FromDto(solution.CrateStorage);
+                crateStorage = Crate.FromDto(solution.CrateStorage);
                 ValidateCrateStructure(crateStorage);
                 ValidateConfigurationControls(crateStorage);
                 ValidateChildrenActivities(solution);
@@ -90,7 +91,7 @@ namespace terminalDocuSignTests.Integration
 
         private async Task<ActivityDTO> EnsureSolutionAuthenticated(ActivityDTO solution)
         {
-            var crateStorage = _crateManager.FromDto(solution.CrateStorage);
+            var crateStorage = Crate.FromDto(solution.CrateStorage);
             var stAuthCrate = crateStorage.CratesOfType<StandardAuthenticationCM>().FirstOrDefault();
             var defaultDocuSignAuthTokenExists = (stAuthCrate == null);
 
@@ -165,7 +166,7 @@ namespace terminalDocuSignTests.Integration
 
         private void MockSolutionFollowUpConfigurationData(ActivityDTO solution)
         {
-            using (var updater = _crateManager.UpdateStorage(() => solution.CrateStorage))
+            using (var updater = Crate.UpdateStorage(() => solution.CrateStorage))
             {
                 var controls = updater.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
 
@@ -231,7 +232,7 @@ namespace terminalDocuSignTests.Integration
 
         private void ValidateContainerPayload(PayloadDTO payload)
         {
-            var crateStorage = _crateManager.FromDto(payload.CrateStorage);
+            var crateStorage = Crate.FromDto(payload.CrateStorage);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardPayloadDataCM>().Count(x => x.Label == "Sql Query Result"));
         }
 
