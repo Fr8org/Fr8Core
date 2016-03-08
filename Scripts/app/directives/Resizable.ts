@@ -15,17 +15,15 @@ module dockyard.directives {
                         'display': 'inline-block',
                         'overflow': 'hidden',
                         'width': function () { return $(elem, this).width(); },
-                        'height': '380px',
-                        'paddingBottom': '20px',
-                        'min-width': '380px',
-                        'min-height': '380px'
-
+                        'height': function () { return $(elem, this).height(); },
+                        'min-width': function () { return $(elem, this).width(); },
+                        'min-height': function () { return $(elem, this).height() + 20; },
                     }).resizable()
                     .find(elem)
                     .css({
                         overflow: 'auto',
                         width: '100%',
-                        height: '100%'
+                        height: '96%'
                     });
             }
         }
