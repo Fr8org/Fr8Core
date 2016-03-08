@@ -94,6 +94,10 @@ namespace terminalDocuSign.Actions
                     selectedTemplate = string.Empty;
                 }
             }
+            if (selectedOption == "template")
+            {
+                selectedTemplate = selectedValue;
+            }
         }
 
         private void GetUserSelectedEnvelopeEvents(ActivityDO curActivityDO, out bool youSent, out bool someoneReceived, out bool recipientSigned)
@@ -120,6 +124,7 @@ namespace terminalDocuSign.Actions
 
             //create or update the DocuSign connect profile configuration
             CreateOrUpdateDocuSignConnectConfiguration(youSent, someoneReceived, recipientSigned);
+            //TODO: probably create or update template 
 
             return Task.FromResult<ActivityDO>(curActivityDO);
         }
@@ -159,7 +164,10 @@ namespace terminalDocuSign.Actions
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 var configControls = GetConfigurationControls(crateStorage);
-                if (configControls == null) return;
+                if (configControls == null)
+                {
+                    return;
+                }
                 var eventCheckBoxes = configControls.Controls.Where(c => c.Type == ControlTypes.CheckBox).ToList();
                 var anySelectedControl = eventCheckBoxes.Any(c => c.Selected);
 
@@ -172,10 +180,18 @@ namespace terminalDocuSign.Actions
                 }
 
                 var groupControl = configControls.Controls.OfType<RadioButtonGroup>().FirstOrDefault();
-                if (groupControl == null) return;
+                if (groupControl == null)
+                {
+                    return;
+                }
+                groupControl.ErrorMessage = !groupControl.Radios.Any(x => x.Selected) ? "One option from the radio buttons must be selected." : string.Empty;
 
-                groupControl.ErrorMessage = !groupControl.Radios.Any(x => x.Selected) ?
-                    "One option from the radio buttons must be selected." : string.Empty;
+                var templateSelector = groupControl.Radios.FirstOrDefault(x => x.Name == "template")?.Controls.OfType<DropDownList>().FirstOrDefault();
+                if (templateSelector == null)
+                {
+                    return;
+                }
+                templateSelector.ErrorMessage = string.IsNullOrEmpty(templateSelector.selectedKey) ? "Template is not selected" : string.Empty;
             }
         }
 
@@ -183,34 +199,24 @@ namespace terminalDocuSign.Actions
         /// <summary>
         /// Creates or Updates a Docusign connect configuration named "DocuSignConnectName" for current user
         /// </summary>
-        private void CreateOrUpdateDocuSignConnectConfiguration(bool youSent,
-                                                                bool someoneReceived, bool recipientSigned)
+        private void CreateOrUpdateDocuSignConnectConfiguration(bool youSent, bool someoneReceived, bool recipientSigned)
         {
             //prepare envelope events based on the input parameters
-            var envelopeEvents = "";
+            var envelopeEvents = new List<string>(3);
             if (youSent)
             {
-                envelopeEvents = DocuSignOnEnvelopeSentEvent;
+                envelopeEvents.Add(DocuSignOnEnvelopeSentEvent);
             }
             if (someoneReceived)
             {
-                if (envelopeEvents.Length > 0)
-                {
-                    envelopeEvents += ",";
-                }
-                envelopeEvents += DocuSignOnEnvelopeReceivedEvent;
+                envelopeEvents.Add(DocuSignOnEnvelopeReceivedEvent);
             }
             if (recipientSigned)
             {
-                if (envelopeEvents.Length > 0)
-                {
-                    envelopeEvents += ",";
-                }
-                envelopeEvents += DocuSignOnEnvelopeSignedEvent;
+                envelopeEvents.Add(DocuSignOnEnvelopeSignedEvent);
             }
-
             //get existing connect configuration
-            DocuSignAccount.CreateOrUpdateDefaultDocuSignConnectConfiguration(envelopeEvents);
+            DocuSignAccount.CreateOrUpdateDefaultDocuSignConnectConfiguration(string.Join(",", envelopeEvents));
         }
 
         public override Task<ActivityDO> Deactivate(ActivityDO curActivityDO)
@@ -240,11 +246,7 @@ namespace terminalDocuSign.Actions
             //get currently selected option and its value
             string curSelectedOption, curSelectedValue, curSelectedTemplate;
             GetTemplateRecipientPickerValue(curActivityDO, out curSelectedOption, out curSelectedValue, out curSelectedTemplate);
-
-            string envelopeId = string.Empty;
-
-
-
+            var envelopeId = string.Empty;
             //retrieve envelope ID based on the selected option and its value
             if (!string.IsNullOrEmpty(curSelectedOption))
             {
@@ -349,11 +351,9 @@ namespace terminalDocuSign.Actions
             return await Task.FromResult<ActivityDO>(curActivityDO);
         }
 
-        protected override Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO,
-                                                                        AuthorizationTokenDO authTokenDO)
+        protected override Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             //just update the user selected envelope events in the follow up configuration
-
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 UpdateSelectedEvents(crateStorage);
