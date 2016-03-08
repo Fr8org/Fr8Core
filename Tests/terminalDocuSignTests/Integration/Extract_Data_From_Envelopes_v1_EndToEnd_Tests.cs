@@ -88,7 +88,7 @@ namespace terminalDocuSignTests.Integration
             //
             var monitorDocuSignAction = _solution.ChildrenActivities.Single(a => a.Label == "Monitor DocuSign Envelope Activity");
             _crateStorage = Crate.FromDto(monitorDocuSignAction.CrateStorage);
-                        
+                 
             controlsCrate = _crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
             
             var checkbox = (CheckBox)controlsCrate.Content.Controls.Single(c => c.Type == ControlTypes.CheckBox && c.Name == "Event_Envelope_Sent");
