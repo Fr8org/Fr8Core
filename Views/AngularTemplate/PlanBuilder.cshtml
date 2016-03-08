@@ -19,7 +19,7 @@
                     <div dnd-draggable="action.id" dnd-effect-allowed="move" ng-repeat="action in group.activities track by $index" >
                         <div class="action"  ng-class="{'solution-action': action.activityTemplate.category==='Solution'  && mode !== 'solution'}" layout-action
                             >
-                            <div resizable  class="ap-resize">
+                            <div resizable class="ap-resize">
                                 <div class="action-header solution-action-header handle" dropdown transfer-click-configure-pane>
                                     <div class="action-header-icon"><img ng-src="{{action.activityTemplate.webService.iconPath}}" ng-if="action.activityTemplate.webService.iconPath" /></div>
                                     <p class="action-name">
