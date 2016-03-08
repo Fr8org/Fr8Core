@@ -18,37 +18,18 @@ using StructureMap;
 using System.Net.Http;
 using System.Net;
 using System.Linq;
+using Data.Interfaces;
 
 namespace HealthMonitor.Utility
 {
-    public abstract class BaseHubIntegrationTest
+    public abstract class BaseHubIntegrationTest : BaseIntegrationTest
     {
-        public ICrateManager _crateManager { get; set; }
-        public IRestfulServiceClient _restfulServiceClient { get; set; }
-        public IHMACService _hmacService { get; set; }
-        private string terminalSecret;
-        private string terminalId;
         HttpClient _httpClient;
-        protected string _baseUrl;
-
-        protected string TerminalSecret
-        {
-            get
-            {
-                return terminalSecret ?? (terminalSecret = ConfigurationManager.AppSettings[TerminalName + "TerminalSecret"]);
-            }
-        }
-        protected string TerminalId
-        {
-            get
-            {
-                return terminalId ?? (terminalId = ConfigurationManager.AppSettings[TerminalName + "TerminalId"]);
-            }
-        }
 
         protected string TestUserEmail = "integration_test_runner@fr8.company";
         protected string TestUserPassword = "fr8#s@lt!";
         protected string TestEmail;
+        protected string TestEmailName;
 
         public BaseHubIntegrationTest()
         {
@@ -61,16 +42,17 @@ namespace HealthMonitor.Utility
             _httpClient.BaseAddress = GetHubBaseUrl();
             _httpClient.Timeout = TimeSpan.FromMinutes(2);
 
-            _crateManager = new CrateManager();
+            Crate = new CrateManager();
             _hmacService = new Fr8HMACService();
             _baseUrl = GetHubApiBaseUrl();
-            _restfulServiceClient = new RestfulServiceClient(_httpClient);
+            RestfulServiceClient = new RestfulServiceClient(_httpClient);
 
             // Get auth cookie from the Hub and save it to HttpClient's internal cookie storage
             LoginUser(TestUserEmail, TestUserPassword).Wait();
 
             // Initailize EmailAssert utility.
-            string TestEmail = ConfigurationManager.AppSettings["TestEmail"];
+            TestEmail = ConfigurationManager.AppSettings["TestEmail"];
+            TestEmailName = ConfigurationManager.AppSettings["TestEmail_Name"];
             string hostname = ConfigurationManager.AppSettings["TestEmail_Pop3Server"];
             int port = int.Parse(ConfigurationManager.AppSettings["TestEmail_Port"]);
             bool useSsl = ConfigurationManager.AppSettings["TestEmail_UseSsl"] == "true" ? true : false;
@@ -78,82 +60,10 @@ namespace HealthMonitor.Utility
             string password = ConfigurationManager.AppSettings["TestEmail_Password"];
             EmailAssert.InitEmailAssert(TestEmail, hostname, port, useSsl, username, password);
         }
-        public abstract string TerminalName { get; }
-
-
-        public string GetTerminalDiscoverUrl()
-        {
-            return GetTerminalUrl() + "/terminals/discover";
-        }
-
-        public string GetTerminalConfigureUrl()
-        {
-            return GetTerminalUrl() + "/actions/configure";
-        }
-
-        public string GetTerminalActivateUrl()
-        {
-            return GetTerminalUrl() + "/actions/activate";
-        }
-
-        public string GetTerminalDeactivateUrl()
-        {
-            return GetTerminalUrl() + "/actions/deactivate";
-        }
-
-        public string GetTerminalRunUrl()
-        {
-            return GetTerminalUrl() + "/actions/run";
-        }
-
-        public string GetTerminalUrl()
-        {
-            return ConfigurationManager.AppSettings[TerminalName + "Url"];
-        }
 
         public string GetHubApiBaseUrl()
         {
             return ConfigurationManager.AppSettings["HubApiBaseUrl"];
-        }
-
-        public void CheckIfPayloadHasNeedsAuthenticationError(PayloadDTO payload)
-        {
-            var storage = _crateManager.GetStorage(payload);
-            var operationalStateCM = storage.CrateContentsOfType<OperationalStateCM>().Single();
-
-            //extract current error message from current activity response
-            ErrorDTO errorMessage;
-            operationalStateCM.CurrentActivityResponse.TryParseErrorDTO(out errorMessage);
-
-            Assert.AreEqual(ActivityResponse.Error.ToString(), operationalStateCM.CurrentActivityResponse.Type);
-            Assert.AreEqual(ActionErrorCode.NO_AUTH_TOKEN_PROVIDED, operationalStateCM.CurrentActivityErrorCode);
-            Assert.AreEqual("No AuthToken provided.", errorMessage.Message);
-        }
-
-        private async Task<Dictionary<string, string>> GetHMACHeader<T>(Uri requestUri, string userId, T content)
-        {
-            return await _hmacService.GenerateHMACHeader(requestUri, TerminalId, TerminalSecret, userId, content);
-        }
-        public async Task<TResponse> HttpPostAsync<TRequest, TResponse>(string url, TRequest request)
-        {
-            var uri = new Uri(url);
-            return await _restfulServiceClient.PostAsync<TRequest, TResponse>(uri, request, null, null);
-        }
-
-        public async Task<TResponse> HttpPostAsync<TResponse>(string url, HttpContent content)
-        {
-            var uri = new Uri(url);
-            return await _restfulServiceClient.PostAsync<TResponse>(uri, content, null, null);
-        }
-        public async Task HttpDeleteAsync(string url)
-        {
-            var uri = new Uri(url);
-            await _restfulServiceClient.DeleteAsync(uri, null, null);
-        }
-        public async Task<TResponse> HttpGetAsync<TResponse>(string url)
-        {
-            var uri = new Uri(url);
-            return await _restfulServiceClient.GetAsync<TResponse>(uri);
         }
 
         private async Task LoginUser(string email, string password)
@@ -167,8 +77,15 @@ namespace HealthMonitor.Utility
 
             // Login user
             //await Authenticate(email, password, antiFogeryToken, _httpClient);
-            await AuthenticateWebApi(email, password);
+            try
+            {
+                await AuthenticateWebApi(email, password);
+            }
+            catch (Exception ex)
+            {
+            }
         }
+
 
         private Uri GetHubBaseUrl()
         {
@@ -216,5 +133,82 @@ namespace HealthMonitor.Utility
             return formToken;
         }
 
+        protected async Task<ActivityDTO> ConfigureActivity(ActivityDTO activity)
+        {
+            activity = await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                _baseUrl + "activities/configure",
+                activity
+            );
+
+            return activity;
+        }
+
+        protected async Task<PayloadDTO> ExtractContainerPayload(ContainerDTO container)
+        {
+            var payload = await HttpGetAsync<PayloadDTO>(
+                _baseUrl + "containers/payload?id=" + container.Id.ToString()
+            );
+
+            return payload;
+        }
+
+        protected async Task<ContainerDTO> ExecutePlan(RouteFullDTO plan)
+        {
+            var container = await HttpPostAsync<string, ContainerDTO>(
+                _baseUrl + "plans/run?planId=" + plan.Id.ToString(),
+                null
+            );
+
+            return container;
+        }
+
+        protected async Task SaveActivity(ActivityDTO activity)
+        {
+            await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                _baseUrl + "activities/save",
+                activity
+            );
+        }
+
+        public string ParseConditionToText(List<FilterConditionDTO> filterData)
+        {
+            var parsedConditions = new List<string>();
+
+            filterData.ForEach(condition =>
+            {
+                string parsedCondition = condition.Field;
+
+                switch (condition.Operator)
+                {
+                    case "eq":
+                        parsedCondition += " = ";
+                        break;
+                    case "neq":
+                        parsedCondition += " != ";
+                        break;
+                    case "gt":
+                        parsedCondition += " > ";
+                        break;
+                    case "gte":
+                        parsedCondition += " >= ";
+                        break;
+                    case "lt":
+                        parsedCondition += " < ";
+                        break;
+                    case "lte":
+                        parsedCondition += " <= ";
+                        break;
+                    default:
+                        throw new NotSupportedException(string.Format("Not supported operator: {0}", condition.Operator));
+                }
+
+                parsedCondition += string.Format("'{0}'", condition.Value);
+                parsedConditions.Add(parsedCondition);
+            });
+
+            var finalCondition = string.Join(" AND ", parsedConditions);
+
+            return finalCondition;
+        }
     }
 }

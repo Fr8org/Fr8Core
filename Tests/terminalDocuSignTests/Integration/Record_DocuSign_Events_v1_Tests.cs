@@ -84,7 +84,7 @@ namespace terminalDocuSignTests.Integration
         [Test]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}",
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""No AuthToken provided.""}",
             MatchType = MessageMatch.Contains
         )]
         public async Task Record_DocuSign_Events_Initial_Configuration_NoAuth()
@@ -168,7 +168,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async Task Record_DocuSign_Events_Activate_Returns_ActionDTO()
+        public async Task Record_DocuSign_Events_Activate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
@@ -189,7 +189,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async Task Record_DocuSign_Events_Deactivate_Returns_ActionDTO()
+        public async Task Record_DocuSign_Events_Deactivate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();

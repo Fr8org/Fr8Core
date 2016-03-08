@@ -7,6 +7,7 @@ using HealthMonitor.Configuration;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
+using System.Data.SqlClient;
 
 namespace HealthMonitor
 {
@@ -18,9 +19,13 @@ namespace HealthMonitor
             var appName = "Unspecified App";
             var ensureTerminalsStartup = false;
             var selfHosting = false;
-            var connectionString = string.Empty;
+            var connectionStringArg = string.Empty;
             var specificTest = string.Empty;
+            var appInsightsInstrumentationKey = string.Empty;
             int errorCount = 0;
+            var overrideDbName = string.Empty;
+            var connectionString = string.Empty;
+            var csName = string.Empty;
 
             Debug.AutoFlush = true;
 
@@ -42,7 +47,7 @@ namespace HealthMonitor
                     }
                     else if (i > 0 && args[i - 1] == "--connectionString" && args[i] != null)
                     {
-                        connectionString = args[i];
+                        connectionStringArg = args[i];
                     }
                     else if (args[i] == "--self-hosting")
                     {
@@ -52,38 +57,69 @@ namespace HealthMonitor
                     {
                         specificTest = args[i];
                     }
+
+                    // Application Insights instrumentation key. When specified, 
+                    // test performance information will be posted to AI for website performance report. 
+                    else if (i > 0 && args[i - 1] == "--aiik" && args[i] != null)
+                    {
+                        appInsightsInstrumentationKey = args[i];
+                    }
+
+                    // Overrides database name in the provided connection string. 
+                    else if (i > 0 && args[i - 1] == "--overrideDbName" && args[i] != null)
+                    {
+                        overrideDbName = args[i];
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(overrideDbName) && string.IsNullOrEmpty(connectionStringArg))
+                {
+                    throw new ArgumentException("--overrideDbName can only be specified when --connectionString is specified.");
                 }
 
                 if (selfHosting)
                 {
-                    if (string.IsNullOrEmpty(connectionString))
+                    if (string.IsNullOrEmpty(connectionStringArg))
                     {
-                        throw new ArgumentException("You should specify --connectionString \"{Name}={Value}\" argument when using self host mode.");
+                        throw new ArgumentException("You should specify --connectionString \"{ConnectionStringName}={ConnectionString}\" argument when using self-hosted mode.");
                     }
 
                     var regex = new System.Text.RegularExpressions.Regex("([\\w\\d]{1,})=([\\s\\S]+)");
-                    var match = regex.Match(connectionString);
+                    var match = regex.Match(connectionStringArg);
                     if (match == null || !match.Success || match.Groups.Count != 3)
                     {
-                        throw new ArgumentException("Please specify connection string in the following format: \"{Name}={Value}\".");
+                        throw new ArgumentException("Please specify connection string in the following format: \"{ConnectionStringName}={ConnectionString}\".");
                     }
-                    UpdateConnectionString(match.Groups[1].Value, match.Groups[2].Value);
+
+                    connectionString = match.Groups[2].Value;
+                    csName = match.Groups[1].Value;
+
+                    if (!string.IsNullOrEmpty(overrideDbName))
+                    {
+                        // Override database name in the connection string
+                        var builder = new SqlConnectionStringBuilder(connectionString);
+                        builder.InitialCatalog = overrideDbName;
+                        connectionString = builder.ToString();
+                    }
+
+                    UpdateConnectionString(csName, connectionString);
                 }
+
             }
 
             var selfHostInitializer = new SelfHostInitializer();
             if (selfHosting)
             {
-                selfHostInitializer.Initialize(connectionString);
+                selfHostInitializer.Initialize(csName + "=" + connectionString);
             }
 
             try
             {
-                errorCount = new Program().Run(ensureTerminalsStartup, sendEmailReport, appName, specificTest);
+                errorCount = new Program().Run(ensureTerminalsStartup, sendEmailReport, appName, specificTest, appInsightsInstrumentationKey);
             }
             catch (Exception)
             {
-
+                throw;
             }
             finally
             {
@@ -116,7 +152,7 @@ namespace HealthMonitor
 
                 foreach (var terminalName in failedToStart)
                 {
-                    Console.WriteLine(terminalName);
+                    Console.WriteLine("{0}: {1}", terminalName, ConfigurationManager.AppSettings[terminalName]);
                 }
 
                 Environment.Exit(failedToStart.Count);
@@ -149,7 +185,8 @@ namespace HealthMonitor
             bool ensureTerminalsStartup,
             bool sendEmailReport,
             string appName,
-            string test)
+            string test,
+            string appInsightsInstrumentationKey)
         {
             CoreExtensions.Host.InitializeService();
 
@@ -158,7 +195,7 @@ namespace HealthMonitor
                 EnsureTerminalsStartUp();
             }
 
-            var testRunner = new NUnitTestRunner();
+            var testRunner = new NUnitTestRunner(appInsightsInstrumentationKey);
             var report = testRunner.Run(test);
 
             if (sendEmailReport)
@@ -173,7 +210,7 @@ namespace HealthMonitor
                 }
             }
 
-            ReportToConsole(appName, report);
+            //ReportToConsole(appName, report); We now have real-time reporting
             return report.Tests.Count(x => !x.Success);
         }
     }

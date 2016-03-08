@@ -5,9 +5,9 @@
 */
 module dockyard.services {
     export interface IRouteService extends ng.resource.IResourceClass<interfaces.IRouteVM> {
-        getbystatus: (id: { id: number; status: number; }) => Array<interfaces.IRouteVM>;
+        getbystatus: (id: { id: number; status: number; category?: string }) => Array<interfaces.IRouteVM>;
         getFull: (id: Object) => interfaces.IRouteVM;
-        getByAction: (id: { id: string }) => interfaces.IRouteVM;
+        getByActivity: (id: { id: string }) => interfaces.IRouteVM;
         execute: (id: { id: number }, payload: { payload: string }, success: any, error: any) => void;
         activate: (data :{planId: string, routeBuilderActivate : boolean}) => any;
         deactivate: (data: { planId: string }) => ng.resource.IResource<string>;
@@ -78,17 +78,17 @@ module dockyard.services {
         ): IRouteService {
 
             var resource = <IRouteService>$resource(
-                '/api/routes?id=:id',
+                '/api/plans?id=:id',
                 { id: '@id' },
                 {
                     'save': {
                         method: 'POST',
-                        url: '/api/routes/post'
+                        url: '/api/plans/post'
                     },
                     'getFull': {
                         method: 'GET',
                         isArray: false,
-                        url: '/api/routes/full/:id',
+                        url: '/api/plans/full/:id',
                         params: {
                             id: '@id'
                         }
@@ -96,15 +96,16 @@ module dockyard.services {
                     'getbystatus': {
                         method: 'GET',
                         isArray: true,
-                        url: '/api/routes/status?status=:status',
+                        url: '/api/plans/status?status=:status&category=:category',
                         params: {
-                            status: '@status'
+                            status: '@status',
+                            category: '@category'
                         }
                     },
-                    'getByAction': {
+                    'getByActivity': {
                         method: 'GET',
                         isArray: false,
-                        url: '/api/routes/getByAction/:id',
+                        url: '/api/plans/getByActivity/:id',
                         params: {
                             id: '@id'
                         }
@@ -112,7 +113,7 @@ module dockyard.services {
                     'execute': {
                         method: 'POST',
                         isArray: false,
-                        url: '/api/routes/run?planId=:id',
+                        url: '/api/plans/run?planId=:id',
                         params: {
                             id: '@id'
                         }
@@ -120,7 +121,7 @@ module dockyard.services {
                     'activate': {
                         method: 'POST',
                         isArray: false,
-                        url: '/api/routes/activate/',
+                        url: '/api/plans/activate/',
                         params: {
                             planId: '@planId',
                             routeBuilderActivate: '@routeBuilderActivate'
@@ -129,14 +130,14 @@ module dockyard.services {
                     'deactivate': {
                         method: 'POST',
                         isArray: false,
-                        url: '/api/routes/deactivate/',
+                        url: '/api/plans/deactivate/',
                         params: {
                             planId: '@planId'
                         }
                     },
                     'update': {
                         method: 'POST',
-                        url: '/api/routes/',
+                        url: '/api/plans/',
                         params: {
 
                         }
@@ -144,7 +145,7 @@ module dockyard.services {
                 });
 
             resource.run = (id: string) : ng.IPromise<model.ContainerDTO> => {
-                var url = '/api/routes/run?planId=' + id;
+                var url = '/api/plans/run?planId=' + id;
 
                 var d = $q.defer();
 
@@ -167,9 +168,9 @@ module dockyard.services {
                         .then((container: model.ContainerDTO) => {
                             if (container
                                 && container.currentActivityResponse == model.ActivityResponse.ExecuteClientAction
-                                && container.currentClientActionName) {
+                                && container.currentClientActivityName) {
 
-                                switch (container.currentClientActionName) {
+                                switch (container.currentClientActivityName) {
                                     case 'ShowTableReport':
                                         var path = '/findObjects/' + container.id + '/results';
                                         $location.path(path);
@@ -233,7 +234,7 @@ module dockyard.services {
         ActivityDTO CRUD service.
     */
     app.factory('ActionService', ['$resource', ($resource: ng.resource.IResourceService): IActionService =>
-        <IActionService>$resource('/api/actions?id=:id',
+        <IActionService>$resource('/api/activities?id=:id',
                 {
                     id: '@id'
                 },
@@ -241,7 +242,7 @@ module dockyard.services {
                 'save': {
                     method: 'POST',
                     isArray: false,
-                    url: '/api/actions/save',
+                    url: '/api/activities/save',
                     params: {
                         suppressSpinner: true // Do not show page-level spinner since we have one within the Configure Action pane
                     }
@@ -256,27 +257,27 @@ module dockyard.services {
                 'delete': { method: 'DELETE' },
                 'configure': {
                     method: 'POST',
-                    url: '/api/actions/configure',
+                    url: '/api/activities/configure',
                     params: {
                         suppressSpinner: true // Do not show page-level spinner since we have one within the Configure Action pane
                     }
                 },
                 'getByRoute': {
                     method: 'GET',
-                    url: '/api/actions/bypt',
+                    url: '/api/activities/bypt',
                     isArray: true
                 },
                 'deleteById': {
                     method: 'DELETE',
-                    url: '/api/actions?id=:id&confirmed=:confirmed'
+                    url: '/api/activities?id=:id&confirmed=:confirmed'
                 },
                 'create': {
                     method: 'POST',
-                    url: '/api/actions/create'
+                    url: '/api/activities/create'
                 },
                 'createSolution': {
                     method: 'POST',
-                    url: '/api/actions/create',
+                    url: '/api/activities/create',
                     params: {
                         solutionName: '@solutionName'
                     }
@@ -361,21 +362,21 @@ module dockyard.services {
                         newState.subroute = result;
 
                         this.crateHelper.mergeControlListCrate(
-                            currentState.action.configurationControls,
-                            currentState.action.crateStorage
+                            currentState.activities.configurationControls,
+                            currentState.activities.crateStorage
                         );
 
                         // If an Action is selected, save it
-                        if (currentState.action) {
-                            return this.ActionService.save({ id: currentState.action.id },
-                                currentState.action, null, null);
+                        if (currentState.activities) {
+                            return this.ActionService.save({ id: currentState.activities.id },
+                                currentState.activities, null, null);
                         }
                         else {
                             return deferred.resolve(newState);
                         }
                     })
                     .then((result: interfaces.IActionVM) => {
-                        newState.action = result;
+                        newState.activities = result;
                         return deferred.resolve(newState);
                     })
                     .catch((reason: any) => {
@@ -384,20 +385,20 @@ module dockyard.services {
             }
 
             //Save Action only
-            else if (currentState.action) {
+            else if (currentState.activities) {
                 this.crateHelper.mergeControlListCrate(
-                    currentState.action.configurationControls,
-                    currentState.action.crateStorage
+                    currentState.activities.configurationControls,
+                    currentState.activities.crateStorage
                 );
 
                 var promise = this.ActionService.save(
-                    { id: currentState.action.id },
-                    currentState.action,
+                    { id: currentState.activities.id },
+                    currentState.activities,
                     null,
                     null).$promise;
                 promise
                     .then((result: interfaces.IActionVM) => {
-                        newState.action = result;
+                        newState.activities = result;
                         return deferred.resolve(newState);
                     })
                     .catch((reason: any) => {

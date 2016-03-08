@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Data.Entities;
+using Data.States;
 
 namespace Data.Interfaces.DataTransferObjects
 {
@@ -21,5 +22,9 @@ namespace Data.Interfaces.DataTransferObjects
         public int RouteState { get; set; }
 
         public Guid StartingSubrouteId { get; set; }
+
+        public PlanVisibility Visibility { get; set; }
+
+        public string Category { get; set; }
     }
 }

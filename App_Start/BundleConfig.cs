@@ -126,6 +126,8 @@ namespace HubWeb.App_Start
                 .Include("~/Content/templates/metronic/assets/admin/layout3/css/layout.css", new CssRewriteUrlTransform())
                 .Include("~/Content/templates/metronic/assets/admin/layout3/css/themes/default.css", new CssRewriteUrlTransform())
                 .Include("~/Content/templates/metronic/assets/admin/layout3/css/custom.css", new CssRewriteUrlTransform())
+                .Include("~/bower_components/angular-ivh-treeview/dist/ivh-treeview.min.css", new CssRewriteUrlTransform())
+                .Include("~/bower_components/angular-ivh-treeview/dist/ivh-treeview-theme-basic.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/dockyard.css", new CssRewriteUrlTransform())
             );
 
@@ -152,7 +154,42 @@ namespace HubWeb.App_Start
                 .Include("~/Content/templates/metronic/assets/admin/layout3/scripts/demo.js")
             );
 
-            
+            // Bundles for the new Home (video-loop)
+            bundles.Add(new ScriptBundle("~/bundles/js/home")
+                .Include("~/Scripts/homejs/jquery-2.1.0.min.js")
+                .Include("~/Scripts/homejs/bootstrap.min.js")
+                .Include("~/Scripts/homejs/plugins/scrollto/jquery.scrollTo-1.4.3.1-min.js")
+                .Include("~/Scripts/homejs/plugins/scrollto/jquery.localscroll-1.2.7-min.js")
+                .Include("~/Scripts/homejs/plugins/easing/jquery.easing.min.js")
+                .Include("~/Scripts/homejs/plugins/parallax/jquery.parallax-1.1.3.js")
+                .Include("~/Scripts/homejs/plugins/twitter/twitter-fetcher.js")
+                .Include("~/Scripts/homejs/plugins/jpreloader/jpreloader.min.js")
+                .Include("~/Scripts/homejs/plugins/isotope/imagesloaded.pkgd.js")
+                .Include("~/Scripts/homejs/plugins/isotope/isotope.pkgd.min.js")
+                .Include("~/Scripts/homejs/plugins/wow/wow.js")
+                .Include("~/Scripts/homejs/plugins/flexslider/jquery.flexslider-min.js")
+                .Include("~/Scripts/homejs/plugins/magnific/jquery.magnific-popup.min.js")
+                .Include("~/Scripts/homejs/plugins/parsley/parsley.min.js")
+                .Include("~/Scripts/homejs/plugins/easypiechart/jquery.easypiechart.min.js")
+                .Include("~/Scripts/homejs/plugins/waypoints/waypoints.min.js")
+                .Include("~/Scripts/homejs/plugins/vide/jquery.vide.min.js")
+                .Include("~/Scripts/homejs/loop.js")
+            );
+
+            bundles.Add(new ScriptBundle("~/bundles/js/html5shiv")
+                .Include("~/Scripts/homejs/html5shiv.js")
+            );
+
+            bundles.Add(new StyleBundle("~/bundles/css/home")
+                .Include("~/Content/css/homecss/bootstrap.css", new CssRewriteUrlTransform())
+                .Include("~/Content/css/homecss/font-awesome.min.css", new CssRewriteUrlTransform())
+                .Include("~/Content/css/homecss/main.css", new CssRewriteUrlTransform())
+            );
+
+            bundles.Add(new StyleBundle("~/bundles/css/homeie")
+                .Include("~/Content/css/homecss/ie.css", new CssRewriteUrlTransform())
+            );
+
 
             bundles.Add(new ScriptBundle("~/bundles/js/bower-no-cdn")
 #if DEBUG
@@ -164,6 +201,7 @@ namespace HubWeb.App_Start
                 .Include("~/bower_components/mb-scrollbar/mb-scrollbar.min.js")//not found on cdn
                 .Include("~/bower_components/angular-bootstrap-switch/dist/angular-bootstrap-switch.js")//not found on cdn
                 .Include("~/bower_components/angular-applicationinsights/dist/angular-applicationinsights.min.js")//not found on cdn
+                .Include("~/bower_components/angular-ivh-treeview/dist/ivh-treeview.min.js")//not found on cdn
             );
 
 #if RELEASE || DEV

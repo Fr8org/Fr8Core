@@ -10,7 +10,8 @@ namespace UtilitiesTesting.Fixtures
             {
                 Name = "route1",
                 Description = "Description for test plan",
-                RouteState = 1
+                RouteState = 1,
+                Visibility = Data.States.PlanVisibility.Standard
                 //DockyardAccount = FixtureData.TestDockyardAccount1()
             };
         }

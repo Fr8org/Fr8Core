@@ -10,6 +10,17 @@ namespace HealthMonitor
 {
     public class NUnitTestRunner
     {
+        string _appInsightsInstrumentationKey;
+
+        public NUnitTestRunner()
+        {
+        }
+
+        public NUnitTestRunner(string appInsightsInstrumentationKey)
+        {
+            _appInsightsInstrumentationKey = appInsightsInstrumentationKey;
+        }
+        
         public class NUnitTestRunnerFilter : ITestFilter
         {
             public bool IsEmpty { get { return false; } }
@@ -113,10 +124,11 @@ namespace HealthMonitor
                     testSuite.Tests.Add(specificTest);
                 }
             }
-
-            using (NUnitTraceListener listener = new NUnitTraceListener())
+            
+            using (NUnitTraceListener listener = new NUnitTraceListener(_appInsightsInstrumentationKey))
             {
                 var testResult = testSuite.Run(listener, new NUnitTestRunnerFilter());
+               
                 var testReport = GenerateTestReport(testResult);
                 return testReport;
             }

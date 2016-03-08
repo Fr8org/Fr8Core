@@ -26,7 +26,7 @@ namespace terminalDocuSign.Infrastructure
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
 
-                    var parsingRecords = uow.MultiTenantObjectRepository.Get<StandardParsingRecordCM>(uow, curAuthToken.UserID, a => a.ExternalAccountId == curAuthToken.ExternalAccountId);
+                    var parsingRecords = uow.MultiTenantObjectRepository.Query<StandardParsingRecordCM>(curAuthToken.UserID, a => a.ExternalAccountId == curAuthToken.ExternalAccountId).FirstOrDefault();
                     if (parsingRecords != null)
                     {
                         //Get find period to Query 
@@ -79,35 +79,37 @@ namespace terminalDocuSign.Infrastructure
             {
                 foreach (var envelope in accountEnvelopes.Envelopes)
                 {
-                    var savedEnvelope = uow.MultiTenantObjectRepository.Get<DocuSignEnvelopeCM>(uow, currentAuthToken.UserID, a => a.EnvelopeId == envelope.EnvelopeId);
+                    var savedEnvelope = uow.MultiTenantObjectRepository.Query<DocuSignEnvelopeCM>(currentAuthToken.UserID, a => a.EnvelopeId == envelope.EnvelopeId).FirstOrDefault();
                     if (savedEnvelope == null)
                     {
                         DocuSignEnvelopeCM docuSignEnvelope = new DocuSignEnvelopeCM
                         {
-                            CompletedDate = envelope.CompletedDate,
-                            CreateDate = envelope.CreateDate,
+                            CompletedDate = DateTimeHelper.Parse(envelope.CompletedDate),
+                            CreateDate = DateTimeHelper.Parse(envelope.CreateDate),
                             EnvelopeId = envelope.EnvelopeId,
                             ExternalAccountId = currentAuthToken.ExternalAccountId,
                             Status = envelope.Status,
-                            StatusChangedDateTime=envelope.StatusChangedDateTime
+                            StatusChangedDateTime= DateTimeHelper.Parse(envelope.StatusChangedDateTime)
                         };
-                        uow.MultiTenantObjectRepository.AddOrUpdate<DocuSignEnvelopeCM>(uow, currentAuthToken.UserID, docuSignEnvelope, e => e.EnvelopeId);
+                        uow.MultiTenantObjectRepository.AddOrUpdate(currentAuthToken.UserID, docuSignEnvelope);
                         uow.SaveChanges();
                     }
                     else
                     {
-                        if (DateTime.Parse(envelope.StatusChangedDateTime) > DateTime.Parse(savedEnvelope.StatusChangedDateTime))
+                        var envelopeStatusChangedTime = DateTimeHelper.Parse(envelope.StatusChangedDateTime);
+
+                        if (savedEnvelope.StatusChangedDateTime == null || envelopeStatusChangedTime > savedEnvelope.StatusChangedDateTime)
                         {
                             DocuSignEnvelopeCM docuSignEnvelope = new DocuSignEnvelopeCM
                             {
-                                CompletedDate = envelope.CompletedDate,
-                                CreateDate = envelope.CreateDate,
+                                CompletedDate = DateTimeHelper.Parse(envelope.CompletedDate),
+                                CreateDate = DateTimeHelper.Parse(envelope.CreateDate),
                                 EnvelopeId = envelope.EnvelopeId,
                                 ExternalAccountId = currentAuthToken.ExternalAccountId,
                                 Status = envelope.Status,
-                                StatusChangedDateTime = envelope.StatusChangedDateTime
+                                StatusChangedDateTime = DateTimeHelper.Parse(envelope.StatusChangedDateTime)
                             };
-                            uow.MultiTenantObjectRepository.AddOrUpdate<DocuSignEnvelopeCM>(uow, currentAuthToken.UserID, docuSignEnvelope, e => e.EnvelopeId);
+                            uow.MultiTenantObjectRepository.AddOrUpdate(currentAuthToken.UserID, docuSignEnvelope);
                             uow.SaveChanges();
                         }
                     }
@@ -129,7 +131,7 @@ namespace terminalDocuSign.Infrastructure
                             Status = recipient.Status,
                             RecipientId = recipient.RecipientId
                         };
-                        uow.MultiTenantObjectRepository.AddOrUpdate<DocuSignRecipientCM>(uow, currentAuthToken.UserID, docuSignRecipient, e => e.RecipientId);                        
+                        uow.MultiTenantObjectRepository.AddOrUpdate(currentAuthToken.UserID, docuSignRecipient);                        
                         uow.SaveChanges();
                    
                 }
@@ -149,7 +151,7 @@ namespace terminalDocuSign.Infrastructure
             };
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.MultiTenantObjectRepository.AddOrUpdate<StandardParsingRecordCM>(uow, currentAuthToken.UserID, parsingRecord, a => a.ExternalAccountId);
+                uow.MultiTenantObjectRepository.AddOrUpdate(currentAuthToken.UserID, parsingRecord, a => a.ExternalAccountId == parsingRecord.ExternalAccountId);
                 uow.SaveChanges();
             }
         }

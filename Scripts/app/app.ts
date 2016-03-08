@@ -20,7 +20,8 @@ var app = angular.module("app", [
     "dndLists",
     "ngTable",
     "mb-scrollbar",
-    "ngMessages"
+    "ngMessages",
+    "ivh.treeview"
 ]);
 
 /* For compatibility with older versions of script files. Can be safely deleted later. */
@@ -80,14 +81,15 @@ app.controller('FooterController', ['$scope', function ($scope) {
 /* Set Application Insights */
 app.config(['applicationInsightsServiceProvider', function (applicationInsightsServiceProvider) {
     var options;
+    //Temporary instr key (for local instances) until the real one is loaded
+    applicationInsightsServiceProvider.configure('e08e940f-1491-440c-8d39-f38e9ff053db', options, true);
 
     $.get('/api/v1/configuration/appinsights').then((appInsightsInstrKey: string) => {
         console.log(appInsightsInstrKey);
         if (appInsightsInstrKey.indexOf('0000') == -1) { // if not local instance ('Debug' configuration)
             options = { applicationName: 'HubWeb' };
             applicationInsightsServiceProvider.configure(appInsightsInstrKey, options, true);
-        }
-        else {
+        } else {
             // don't send telemetry 
             options = {
                 applicationName: '',
@@ -98,7 +100,7 @@ app.config(['applicationInsightsServiceProvider', function (applicationInsightsS
             };
             applicationInsightsServiceProvider.configure(appInsightsInstrKey, options, false);
         }
-    })
+    });
 }]);
 
 /* Setup Rounting For All Pages */
@@ -178,7 +180,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
         })
 
         .state('routeDetails', {
-            url: "/routes/{id}/details",
+            url: "/plans/{id}/details",
             templateUrl: "/AngularTemplate/RouteDetails",
             data: { pageTitle: 'Route Details', pageSubTitle: '' }
         })
@@ -266,6 +268,12 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             url: '/changePassword',
             templateUrl: '/AngularTemplate/ChangePassword',
             data: { pageTitle: 'Change Password', pageSubTitle: '' }
+        })
+
+        .state('reports', {
+            url: "/reports",
+            templateUrl: "/AngularTemplate/RouteReportList",
+            data: { pageTitle: 'Reports', pageSubTitle: 'This page displays all Reports' }
         });
 }]);
 
@@ -287,4 +295,14 @@ app.factory('fr8VersionInterceptor', ['fr8ApiVersion', (fr8ApiVersion: string) =
             return config;
         }
     };
+}]);
+
+
+app.config(['ivhTreeviewOptionsProvider', ivhTreeviewOptionsProvider => {
+    ivhTreeviewOptionsProvider.set({
+        twistieCollapsedTpl: '<span class="glyphicon glyphicon-chevron-right"></span>',
+        twistieExpandedTpl: '<span class="glyphicon glyphicon-chevron-down"></span>',
+        twistieLeafTpl: '',
+        defaultSelectedState: false
+    });
 }]);

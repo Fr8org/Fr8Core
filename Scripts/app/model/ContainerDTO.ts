@@ -9,7 +9,8 @@
         lastUpdated: string;
         createDate: string;
         currentActivityResponse: ActivityResponse;
-        currentClientActionName: string;
+        currentPlanType: PlanType;
+        currentClientActivityName: string;
         error: any;
     }
 
@@ -30,5 +31,10 @@
         SkipChildren = 5,
         ReProcessChildren = 6,
         ExecuteClientAction = 7
+    }
+
+    export enum PlanType {
+        OnGoing = 0,
+        RunOnce = 1
     }
 }

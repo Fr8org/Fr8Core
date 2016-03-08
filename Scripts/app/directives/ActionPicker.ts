@@ -8,30 +8,46 @@ module dockyard.directives {
         return {
             restrict: 'E',
             templateUrl: '/AngularTemplate/ActionPicker',
+            link: (scope: IActionPickerScope, element, attr) => {
+                $(document).bind('click', (event) => {
+                    var isClickedElementChildOfPopup = element
+                        .find(event.target)
+                        .length > 0;
+
+                    if (isClickedElementChildOfPopup)
+                        return;
+
+                    scope.$apply(() => {
+                        scope.activeCategory = null;
+                        scope.activeTerminal = null;
+                    });
+                });
+            },
             controller: ['$scope', 'WebServiceService',
-                function (
-                    $scope: IActionPickerScope,
-                    webServiceService: services.IWebServiceService
-                    ) {
+                ($scope: IActionPickerScope,webServiceService: services.IWebServiceService) => {
 
                     $scope.actionCategories = [
                         { id: 1, name: "Monitor", description: "Learn when something happen", icon: "eye" },
                         { id: 2, name: "Get", description: "In-process Crates from a web service", icon: "download" },
                         { id: 3, name: "Process", description: "Carry out work on a Container", icon: "recycle" },
                         { id: 4, name: "Forward", description: "Send Crates to a web service", icon: "share" }];
-                    $scope.activeCategory = NaN;
-                    $scope.activeTerminal = NaN;
 
-                    $scope.setActive = <() => void> function (actionCategoryId) {
-                        $scope.activeCategory == actionCategoryId ? $scope.activeCategory = NaN : $scope.activeCategory = actionCategoryId;
-                        $scope.webServiceActionList = webServiceService.getActions([$scope.activeCategory]);
-                        $scope.activeTerminal = NaN;
-                        console.log($scope.webServiceActionList);
+                    $scope.activeCategory = null;
+                    $scope.activeTerminal = null;
+
+                    $scope.setActive = (actionCategoryId) => {
+
+                        if ($scope.activeCategory === actionCategoryId) {
+                            $scope.activeCategory = null;
+                        } else {
+                            $scope.activeCategory = actionCategoryId;
+                        }
+                        $scope.webServiceActionList = webServiceService.getActivities([$scope.activeCategory]);
+                        $scope.activeTerminal = null;
                     };
 
                     $scope.setActiveAction = <() => void> function (action, group) {
-                        $scope.activeCategory = NaN;
-                        $scope.activeCategory = NaN
+                        $scope.activeCategory = null;
 
                         if (group == undefined) {
                             group = null;
@@ -43,7 +59,7 @@ module dockyard.directives {
                     };
 
                     $scope.deactivateTerminal = <() => void> function () {
-                        $scope.activeTerminal = NaN
+                        $scope.activeTerminal = null;
                     };
 
                     $scope.setActiveTerminal = <() => void> function (index) {
@@ -59,7 +75,7 @@ module dockyard.directives {
         actionCategories: any;
         activeCategory: any;
         activeTerminal: any;
-        setActive: () => void;
+        setActive: (actionCategoryId) => void;
         setActiveTerminal: () => void;
         deactivateTerminal: () => void;
         setActiveAction: () => void;

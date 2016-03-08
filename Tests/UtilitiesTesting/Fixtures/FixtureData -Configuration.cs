@@ -5,7 +5,7 @@ namespace UtilitiesTesting.Fixtures
     {
         public static DocuSign.Integrations.Client.Configuration TestCreateConnectProfile1()
         {
-            var actionTemplate = ActionTemplate();
+            var actionTemplate = ActivityTemplate();
 
             var curConfiguration = new DocuSign.Integrations.Client.Configuration
             {

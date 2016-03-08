@@ -67,7 +67,7 @@ namespace HubWeb
         {
             return new Type[] {
                     typeof(ActionListController),
-                    typeof(ActionsController),
+                    typeof(ActivitiesController),
                     typeof(AlarmsController),
                     typeof(AuthenticationController),
                     typeof(ConfigurationController),
@@ -80,7 +80,7 @@ namespace HubWeb
                     typeof(ManifestsController),
                     typeof(ReportController),
                     typeof(RouteNodesController),
-                    typeof(RoutesController),
+                    typeof(PlansController),
                     typeof(ProcessNodeTemplateController),
                     typeof(TerminalsController),
                     typeof(UserController),

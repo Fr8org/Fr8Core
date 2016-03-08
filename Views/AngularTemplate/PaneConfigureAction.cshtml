@@ -1,4 +1,4 @@
-﻿<div class="pane-configure-action" block-if="processing === true" ng-click="reloadConfiguration()">
+﻿<div id="ap-pane" class="pane-configure-action" block-if="processing === true" ng-click="reloadConfiguration()">
     <div ng-if="!(currentAction.activityTemplate.category==='Solution' && mode !== 'solution')">
         <div ng-if="!currentAction.currentView" ng-repeat="field in currentAction.configurationControls.fields">
             <configuration-control current-action="currentAction" field="field" />
@@ -9,11 +9,11 @@
             </div>
         </div>
     </div>
-    
-    <div class="pane-configure-action-returnToSolution" ng-if="currentAction.activityTemplate.category==='Solution' && mode !== 'solution'">
-        <label>This solution has {{currentAction.childrenActions.length}} {{currentAction.childrenActions.length > 1 ? "parts" : "part"}}: </label>
+
+    <div class="pane-configure-action-returnToSolution" ng-if="currentAction.activityTemplate.category==='Solution' && mode !== 'solution'" ng-init="populateAllActivities()">
+        <label>This solution has {{allActivities.length}} {{allActivities.length > 1 ? "parts" : "part"}}: </label>
         <div class="solution-parts">
-            <label ng-repeat="childAction in currentAction.childrenActions">
+            <label ng-repeat="childAction in allActivities">
                 {{$index +1}}. {{childAction.activityTemplate.label}}
             </label>
         </div>

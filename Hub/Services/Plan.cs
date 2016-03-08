@@ -48,16 +48,23 @@ namespace Hub.Services
         }
 
         public IList<PlanDO> GetForUser(IUnitOfWork unitOfWork, Fr8AccountDO account, bool isAdmin = false,
-            Guid? id = null, int? status = null)
+            Guid? id = null, int? status = null, string category = "")
         {
-            var queryableRepo = unitOfWork.PlanRepository.GetPlanQueryUncached();
+            var planQuery = unitOfWork.PlanRepository.GetPlanQueryUncached()
+                .Where(x => x.Visibility == PlanVisibility.Standard);
 
-            queryableRepo = (id == null
-                ? queryableRepo.Where(pt => pt.Fr8Account.Id == account.Id)
-                : queryableRepo.Where(pt => pt.Id == id && pt.Fr8Account.Id == account.Id));
+            planQuery = (id == null
+                ? planQuery.Where(pt => pt.Fr8Account.Id == account.Id)
+                : planQuery.Where(pt => pt.Id == id && pt.Fr8Account.Id == account.Id));
+
+            if (!string.IsNullOrEmpty(category))
+                planQuery = planQuery.Where(c => c.Category == category);
+            else
+                planQuery = planQuery.Where(c => string.IsNullOrEmpty(c.Category));
+
             return (status == null
-                ? queryableRepo
-                : queryableRepo.Where(pt => pt.RouteState == status)).ToList();
+                ? planQuery
+                : planQuery.Where(pt => pt.RouteState == status)).ToList();
 
         }
 
@@ -95,17 +102,19 @@ namespace Hub.Services
 
                 curPlan.Name = submittedPlan.Name;
                 curPlan.Description = submittedPlan.Description;
+                curPlan.Category = submittedPlan.Category;
             }
         }
 
-        public PlanDO Create(IUnitOfWork uow, string name)
+        public PlanDO Create(IUnitOfWork uow, string name, string category = "")
         {
             var plan = new PlanDO
             {
                 Id = Guid.NewGuid(),
                 Name = name,
                 Fr8Account = _security.GetCurrentAccount(uow),
-                RouteState = RouteState.Inactive
+                RouteState = RouteState.Inactive,
+                Category = category
             };
 
             uow.PlanRepository.Add(plan);
@@ -132,17 +141,23 @@ namespace Hub.Services
         }
 
 
-        public async Task<ActivateActionsDTO> Activate(Guid curPlanId, bool routeBuilderActivate)
+        public async Task<ActivateActivitiesDTO> Activate(Guid curPlanId, bool routeBuilderActivate)
         {
-            var result = new ActivateActionsDTO
+            var result = new ActivateActivitiesDTO
             {
                 Status = "no action",
-                ActionsCollections = new List<ActivityDTO>()
+                ActivitiesCollections = new List<ActivityDTO>()
             };
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var plan = uow.PlanRepository.GetById<PlanDO>(curPlanId);
+
+                if (plan.RouteState == RouteState.Deleted)
+                {
+                    EventManager.PlanActivationFailed(plan, "Cannot activate deleted plan");
+                    throw new ApplicationException("Cannot activate deleted plan");
+                }
 
                 foreach (var curActionDO in plan.GetDescendants().OfType<ActivityDO>())
                 {
@@ -163,7 +178,7 @@ namespace Hub.Services
                         //if the activate call is comming from the Route Builder just render again the action group with the errors
                         if (routeBuilderActivate)
                         {
-                            result.ActionsCollections.Add(resultActivate);
+                            result.ActivitiesCollections.Add(resultActivate);
                         }
                         else if (validationErrorChecker)
                         {
@@ -425,6 +440,13 @@ namespace Hub.Services
 
         private async Task<ContainerDO> Run(IUnitOfWork uow, ContainerDO curContainerDO)
         {
+            var plan = uow.PlanRepository.GetById<PlanDO>(curContainerDO.PlanId);
+
+            if (plan.RouteState == RouteState.Deleted)
+            {
+                throw new ApplicationException("Cannot run plan that is in deleted state.");
+            }
+
             if (curContainerDO.ContainerState == ContainerState.Failed
                 || curContainerDO.ContainerState == ContainerState.Completed)
             {

@@ -31,9 +31,8 @@ namespace terminalDocuSignTests.Integration
 
         private void AssertCrateTypes(ICrateStorage crateStorage)
         {
-            Assert.AreEqual(2, crateStorage.Count);
+            Assert.AreEqual(1, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "Available Templates"));
         }
 
         private void AddHubActivityTemplate(Fr8DataDTO dataDTO)
@@ -87,12 +86,12 @@ namespace terminalDocuSignTests.Integration
             Assert.AreEqual(1, dataSourceDropdown.ListItems.Count());
             Assert.IsFalse(dataSourceDropdown.ListItems.Any(x => !x.Key.StartsWith("Get", StringComparison.InvariantCultureIgnoreCase)));
 
-            // Assert that Dropdownlist  with source labeled "Available Templates".
+            // Assert that Dropdownlist  source is null.
             var templateDropdown = (DropDownList)controls.Controls[1];
-            Assert.AreEqual("Available Templates", templateDropdown.Source.Label);
+            Assert.AreEqual(null, templateDropdown.Source);
         }
 
-        private async Task<ActivityDTO> GetActionDTO_WithDataStorage(string childAction)
+        private async Task<ActivityDTO> GetActivityDTO_WithDataStorage(string childAction)
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -118,7 +117,7 @@ namespace terminalDocuSignTests.Integration
                 dataSourceDropdown.Value = childAction;
 
                 var availableTemplatesCM = crateStorage
-                  .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Available Templates")
+                  .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "Available Templates")
                   .Single();
                 Assert.IsTrue(availableTemplatesCM.Fields.Count > 0);
 
@@ -157,7 +156,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public void Mail_Merge_Into_DocuSign_FollowUp_Configuration_Check_ChildAction_Load_Excel_File()
+        public void Mail_Merge_Into_DocuSign_FollowUp_Configuration_Check_ChildActivity_Load_Excel_File()
         {
             //string childAction = "Load Excel File";
             //var configureUrl = GetTerminalConfigureUrl();
@@ -180,7 +179,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public void Mail_Merge_Into_DocuSign_FollowUp_Configuration_Check_ChildAction_Extract_Spreadsheet_Data()
+        public void Mail_Merge_Into_DocuSign_FollowUp_Configuration_Check_ChildActivity_Get_Google_Sheet_Data()
         {
             //string childAction = "Extract Spreadsheet Data";
             //var configureUrl = GetTerminalConfigureUrl();
@@ -203,7 +202,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async Task Mail_Merge_Into_DocuSign_Activate_Returns_ActionDTO()
+        public async Task Mail_Merge_Into_DocuSign_Activate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
@@ -224,7 +223,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async Task Mail_Merge_Into_DocuSign_Deactivate_Returns_ActionDTO()
+        public async Task Mail_Merge_Into_DocuSign_Deactivate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();

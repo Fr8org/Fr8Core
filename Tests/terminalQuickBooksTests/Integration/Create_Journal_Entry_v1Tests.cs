@@ -16,7 +16,7 @@ namespace terminalQuickBooksTests.Integration
     /// but allows to trigger that class from HealthMonitor.
     /// </summary>
     [Explicit]
-    internal class Create_Journal_Entry_v1Tests : BaseTerminalIntegrationTest
+    internal class Create_Journal_Entry_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {
@@ -31,7 +31,7 @@ namespace terminalQuickBooksTests.Integration
                 "Right now, it doesn't detect any Upstream Actions that produce that kind of Crate. " +
                 "Please add an activity upstream (to the left) of this action that does so.";
             var configureUrl = GetTerminalConfigureUrl();
-            var requestActionDTO = HealthMonitor_FixtureData.Action_Create_Journal_Entry_v1_InitialConfiguration_Fr8DataDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Activity_Create_Journal_Entry_v1_InitialConfiguration_Fr8DataDTO();
             //Act
             var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
@@ -52,7 +52,7 @@ namespace terminalQuickBooksTests.Integration
         {
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
-            var dataDTO = HealthMonitor_FixtureData.Action_Create_Journal_Entry_v1_InitialConfiguration_Fr8DataDTO();
+            var dataDTO = HealthMonitor_FixtureData.Activity_Create_Journal_Entry_v1_InitialConfiguration_Fr8DataDTO();
             var curStandAccTransCrate = HealthMonitor_FixtureData.GetAccountingTransactionCM();
             AddUpstreamCrate(dataDTO, curStandAccTransCrate);
             //Act

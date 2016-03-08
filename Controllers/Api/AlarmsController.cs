@@ -26,20 +26,12 @@ namespace HubWeb.Controllers
             //TODO what happens to AlarmsController? does it stay in memory all this time?
             //TODO inspect this and change callback function to a static function if necessary
             Expression<Action> action = () => ExecuteTerminalWithLogging(alarmDTO);
-
-            try { 
 #if DEBUG
             BackgroundJob.Schedule(action, DateTime.Now.AddSeconds(10));
 #else
             BackgroundJob.Schedule(action, alarmDTO.StartTime);
 #endif
-            }catch(Exception e)
-            {
-                new List<Exception>().Add(e);
-                throw;
-            }
-        
-
+            
             //TODO: Commented as part of DO - 1520. Need to rethink about this.
             //var eventController = new EventController();
             //return await eventController.ProcessIncomingEvents(alarmDTO.TerminalName, alarmDTO.TerminalVersion);
@@ -68,7 +60,7 @@ namespace HubWeb.Controllers
 
                     crateManager.AddLogMessage(label, logItemList, container);
                     var terminal = ObjectFactory.GetInstance<ITerminal>();
-                    var terminalUrl = terminal.ParseTerminalUrlFor(alarmDTO.TerminalName, alarmDTO.TerminalVersion, "action/run");
+                    var terminalUrl = terminal.ParseTerminalUrlFor(alarmDTO.TerminalName, alarmDTO.TerminalVersion, "activity/run");
                     var content = new ObjectContent<ActionDTO>(alarmDTO.ActionDTO, new JsonMediaTypeFormatter());
 
                     

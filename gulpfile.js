@@ -88,6 +88,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/Controls/DropDownListBox.js',
         'Scripts/app/directives/Controls/TextBlock.js',
         'Scripts/app/directives/Controls/TextArea.js',
+        'Scripts/app/directives/Controls/TextArea.js',
         'Scripts/app/directives/Controls/FilterPane.js',
         'Scripts/app/directives/QueryBuilderWidget.js',
         'Scripts/app/directives/Controls/MappingPane.js',
@@ -96,15 +97,19 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/Controls/FieldList.js',
         'Scripts/app/directives/Controls/QueryBuilder.js',
         'Scripts/app/directives/Controls/TextSource.js',
+        'Scripts/app/directives/Controls/SourceableCriteria.js',
         'Scripts/app/directives/Controls/InputFocus.js',
         'Scripts/app/directives/Controls/Counter.js',
         'Scripts/app/directives/Controls/Duration.js',
+        'Scripts/app/directives/Controls/DatePicker.js',
         'Scripts/app/directives/Controls/UpstreamDataChooser.js',
         'Scripts/app/directives/Controls/UpstreamFieldChooser.js',
         'Scripts/app/directives/Controls/UpstreamCrateChooser.js',
+        'Scripts/app/directives/Controls/CrateChooser.js',
         'Scripts/app/directives/LongAjaxCursor.js',
         'Scripts/app/directives/Validators/ManifestDescriptionValidators.js',
         'Scripts/app/directives/ActionPicker.js',
+        'Scripts/app/directives/Resizable.js',
         'Scripts/app/filters/ActionNameFormatter.js',
         'Scripts/app/filters/DateTimeFormatter.js',
         'Scripts/app/controllers/RouteBuilderController.js',
@@ -194,6 +199,11 @@ gulp.task('cdnizer-css', ['bower'], function () {
                 file: '~/bower_components/angular-ui-select/dist/select.min.css',
                 package: 'angular-ui-select',
                 cdn: '//cdnjs.cloudflare.com/ajax/libs/angular-ui-select/${ version }/select.min.css'
+            },
+            {
+                file: '~/bower_components/jquery-ui/themes/smoothness/jquery-ui.min.css',
+                package: 'jquery-ui',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/jqueryui/${ version }/jquery-ui.min.css'
             }
         ]))
         .pipe(gulp.dest('./Views/Shared/CDN'));
@@ -207,6 +217,11 @@ gulp.task('cdnizer-js', ['bower'], function () {
                 file: '~/bower_components/jquery/dist/jquery.js',
                 package: 'jquery',
                 cdn: '//ajax.googleapis.com/ajax/libs/jquery/${ version }/jquery.min.js'
+            },
+            {
+                file: '~/bower_components/jquery-ui/jquery-ui.min.js',
+                package: 'jquery-ui',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/jqueryui/${ version }/jquery-ui.min.js'
             },
             {
                 file: '~/bower_components/jquery-migrate/jquery-migrate.js',

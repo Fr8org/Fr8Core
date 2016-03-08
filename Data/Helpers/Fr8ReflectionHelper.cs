@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Data.Interfaces.DataTransferObjects;
 
 namespace Data.Helpers
@@ -11,6 +12,10 @@ namespace Data.Helpers
         public static IEnumerable<FieldDTO> FindFieldsRecursive(Object obj)
         {
             var fields = new List<FieldDTO>();
+            if (obj == null)
+            {
+                return fields;
+            }
             if (obj is IEnumerable)
             {
 
@@ -33,8 +38,8 @@ namespace Data.Helpers
                     return new List<FieldDTO> { field };
                 }
 
-                var objProperties = objType.GetProperties();
-                var objFields = objType.GetFields();
+                var objProperties = objType.GetProperties(BindingFlags.NonPublic | BindingFlags.Public| BindingFlags.Instance | BindingFlags.Static);
+                var objFields = objType.GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
                 foreach (var prop in objProperties)
                 {
                     fields.AddRange(FindFieldsRecursive(prop.GetValue(obj)));
@@ -56,7 +61,7 @@ namespace Data.Helpers
 
         public static object[] FindFirstArrayRecursive(Object obj, int maxSearchDepth, int depth)
         {
-            if (maxSearchDepth != 0 && depth > maxSearchDepth)
+            if (maxSearchDepth != 0 && depth > maxSearchDepth || obj == null)
             {
                 return null;
             }
@@ -65,6 +70,7 @@ namespace Data.Helpers
             {
                 return ((IEnumerable)obj).OfType<Object>().ToArray();
             }
+            
             var objType = obj.GetType();
             bool isPrimitiveType = objType.IsPrimitive || objType.IsValueType || (objType == typeof(string));
 

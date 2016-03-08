@@ -64,9 +64,9 @@ namespace HubTests.Managers
             };
         }
 
-        private static StandardDesignTimeFieldsCM TestManifest(string value = "value")
+        private static FieldDescriptionsCM TestManifest(string value = "value")
         {
-            return new StandardDesignTimeFieldsCM
+            return new FieldDescriptionsCM
             {
                 Fields = new List<FieldDTO>
                 {
@@ -87,7 +87,7 @@ namespace HubTests.Managers
                     'key': 'SerbianWord',
                     'value': 'Pouzdan',
                     'tags': null,
-                    'availability': 0
+                    'availability': null
                   }
                 },
                 {
@@ -95,7 +95,7 @@ namespace HubTests.Managers
                     'key': 'EnglishWord',
                     'value': 'Reliable',
                     'tags': null,
-                    'availability': 0
+                    'availability': null
                   }
                 }
               ]
@@ -107,7 +107,7 @@ namespace HubTests.Managers
                     'key': 'SerbianWord',
                     'value': 'Zabolela mi je glava',
                     'tags': null,
-                    'availability': 0
+                    'availability': null
                   }
                 },
                 {
@@ -115,7 +115,7 @@ namespace HubTests.Managers
                     'key': 'EnglishWord',
                     'value': 'I ve got headache',
                     'tags': null,
-                    'availability': 0
+                    'availability': null
                   }
                 }
               ]
@@ -137,7 +137,7 @@ namespace HubTests.Managers
                     'key': 'SerbianWord',
                     'value': 'SerbianWord',
                     'tags': null,
-                    'availability': 0
+                    'availability': null
                   }
                 },
                 {
@@ -145,7 +145,7 @@ namespace HubTests.Managers
                     'key': 'EnglishWord',
                     'value': 'EnglishWord',
                     'tags': null,
-                    'availability': 0
+                    'availability': null
                   }
                 }
               ]
@@ -157,7 +157,7 @@ namespace HubTests.Managers
                     'key': 'Pouzdan',
                     'value': 'Pouzdan',
                     'tags': null,
-                    'availability': 0
+                    'availability': null
                   }
                 },
                 {
@@ -165,7 +165,7 @@ namespace HubTests.Managers
                     'key': 'Reliable',
                     'value': 'Reliable',
                     'tags': null,
-                    'availability': 0
+                    'availability': null
                   }
                 }
               ]
@@ -177,7 +177,7 @@ namespace HubTests.Managers
                     'key': 'Zabolela mi je glava',
                     'value': 'Zabolela mi je glava',
                     'tags': null,
-                    'availability': 0
+                    'availability': null
                   }
                 },
                 {
@@ -185,7 +185,7 @@ namespace HubTests.Managers
                     'key': 'I ve got headache',
                     'value': 'I ve got headache',
                     'tags': null,
-                    'availability': 0
+                    'availability': null
                   }
                 }
               ]

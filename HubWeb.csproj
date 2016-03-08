@@ -25,7 +25,8 @@
     <UseGlobalApplicationHostFile />
     <TypeScriptToolsVersion>1.5</TypeScriptToolsVersion>
     <RestorePackages>true</RestorePackages>
-    <ApplicationInsightsResourceId>/subscriptions/1cbd9b53-df0a-4b58-a54c-567d986b5e4f/resourcegroups/Default-Web-WestUS/providers/microsoft.insights/components/HubWeb</ApplicationInsightsResourceId>
+    <ApplicationInsightsResourceId>
+    </ApplicationInsightsResourceId>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
@@ -86,6 +87,10 @@
       <HintPath>packages\FluentValidation.WebApi.5.6.2.0\lib\Net45\FluentValidation.WebApi.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Fr8.AI.DependencyCollector, Version=2.0.0.0, Culture=neutral, PublicKeyToken=f23a46de0be5d6f3, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Utilities\Fr8.AI.DependencyCollector.dll</HintPath>
+    </Reference>
     <Reference Include="Google.Apis, Version=1.8.2.23762, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Google.Apis.1.8.2\lib\net40\Google.Apis.dll</HintPath>
       <Private>True</Private>
@@ -130,32 +135,28 @@
       <HintPath>packages\logentries.log4net.2.4.2\lib\net40\LogentriesLog4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.AI.Agent.Intercept, Version=1.2.0.1011, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.ApplicationInsights.Agent.Intercept.1.2.0\lib\net45\Microsoft.AI.Agent.Intercept.dll</HintPath>
+    <Reference Include="Microsoft.AI.Agent.Intercept, Version=1.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.ApplicationInsights.Agent.Intercept.1.2.1\lib\net45\Microsoft.AI.Agent.Intercept.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.AI.DependencyCollector, Version=1.2.3.246, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.ApplicationInsights.DependencyCollector.1.2.3\lib\net45\Microsoft.AI.DependencyCollector.dll</HintPath>
+    <Reference Include="Microsoft.AI.PerfCounterCollector, Version=2.0.0.454, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.ApplicationInsights.PerfCounterCollector.2.0.0-rc1\lib\net45\Microsoft.AI.PerfCounterCollector.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.AI.PerfCounterCollector, Version=1.2.3.246, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.ApplicationInsights.PerfCounterCollector.1.2.3\lib\net45\Microsoft.AI.PerfCounterCollector.dll</HintPath>
+    <Reference Include="Microsoft.AI.ServerTelemetryChannel, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel.2.0.0-rc1\lib\net45\Microsoft.AI.ServerTelemetryChannel.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.AI.ServerTelemetryChannel, Version=1.2.3.246, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel.1.2.3\lib\net45\Microsoft.AI.ServerTelemetryChannel.dll</HintPath>
+    <Reference Include="Microsoft.AI.Web, Version=2.0.0.454, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.ApplicationInsights.Web.2.0.0-rc1\lib\net45\Microsoft.AI.Web.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.AI.Web, Version=1.2.3.246, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.ApplicationInsights.Web.1.2.3\lib\net45\Microsoft.AI.Web.dll</HintPath>
+    <Reference Include="Microsoft.AI.WindowsServer, Version=2.0.0.454, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.ApplicationInsights.WindowsServer.2.0.0-rc1\lib\net45\Microsoft.AI.WindowsServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.AI.WindowsServer, Version=1.2.3.246, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.ApplicationInsights.WindowsServer.1.2.3\lib\net45\Microsoft.AI.WindowsServer.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.ApplicationInsights, Version=1.2.3.490, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.ApplicationInsights.1.2.3\lib\net45\Microsoft.ApplicationInsights.dll</HintPath>
+    <Reference Include="Microsoft.ApplicationInsights, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.ApplicationInsights.2.0.0-rc1\lib\net45\Microsoft.ApplicationInsights.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.ApplicationInsights.Log4NetAppender, Version=1.2.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -365,14 +366,14 @@
   <ItemGroup>
     <Compile Include="App_Start\StartupMigration.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Controllers\Api\ActionsController.cs" />
+    <Compile Include="Controllers\Api\ActivitiesController.cs" />
     <Compile Include="Controllers\Api\AlarmsController.cs" />
     <Compile Include="Controllers\Api\AuthenticationController.cs" />
     <Compile Include="Controllers\Api\ManageAuthTokenController.cs" />
     <Compile Include="Controllers\Api\ConfigurationController.cs" />
     <Compile Include="Controllers\Api\ManifestRegistryController.cs" />
     <Compile Include="Controllers\Api\ManifestsController.cs" />
-    <Compile Include="Controllers\Api\RoutesController.cs" />
+    <Compile Include="Controllers\Api\PlansController.cs" />
     <Compile Include="Controllers\Api\TerminalsController.cs" />
     <Compile Include="Controllers\CompanyController.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
@@ -380,7 +381,7 @@
     <Compile Include="Controllers\SupportController.cs" />
     <Compile Include="Controllers\WelcomeController.cs" />
     <Compile Include="Controllers\Api\FieldController.cs" />
-    <Compile Include="Controllers\Api\ActionListController.cs" />
+    <Compile Include="Controllers\Api\ActivityListController.cs" />
     <Compile Include="Controllers\Api\CriteriaController.cs" />
     <Compile Include="Controllers\DocuSignTemplateController.cs" />
     <Compile Include="Controllers\Helpers\RouteMappingHelper.cs" />
@@ -476,6 +477,26 @@
   <ItemGroup>
     <Content Include="Api\EventResponse.aspx" />
     <Content Include="Api\GetEmailHTML.aspx" />
+    <Content Include="Content\css\fonts\brankic.svg" />
+    <Content Include="Content\css\fonts\fontawesome-webfont.svg" />
+    <Content Include="Content\css\homecss\bootstrap.css" />
+    <Content Include="Content\css\homecss\font-awesome.min.css" />
+    <Content Include="Content\css\homecss\ie.css" />
+    <Content Include="Content\css\homecss\main.css" />
+    <Content Include="Content\img\background-7.png" />
+    <Content Include="Content\img\background-cta-3.png" />
+    <Content Include="Content\img\docusign.png" />
+    <Content Include="Content\img\fr8-service.png" />
+    <Content Include="Content\img\freight-connect.png" />
+    <Content Include="Content\img\freight-design.png" />
+    <Content Include="Content\img\freight-train.png" />
+    <Content Include="Content\img\google.png" />
+    <Content Include="Content\img\gray-crate.png" />
+    <Content Include="Content\img\green-crate.png" />
+    <Content Include="Content\img\backgrounds\solution-bg.png" />
+    <Content Include="Content\img\logo-fr8.svg" />
+    <Content Include="Content\img\Management\Alex_Edelstein_Round.png" />
+    <Content Include="Content\img\Management\Benjamin_Black.png" />
     <Content Include="Content\css\additionalcss\bootstrap23\css\bootstrap2.3.css" />
     <Content Include="Content\css\additionalcss\bootstrap23\img\glyphicons-halflings-white.png" />
     <Content Include="Content\css\additionalcss\bootstrap23\img\glyphicons-halflings.png" />
@@ -557,7 +578,7 @@
     <Content Include="Content\img\icons\twitter.png" />
     <Content Include="Content\img\icons\vimeo.png" />
     <Content Include="Content\img\icons\youtube.png" />
-    <Content Include="Content\img\Management\alexhead.png" />
+    <Content Include="Content\img\Management\Alex_Edelstein.png" />
     <Content Include="Content\img\MicrosoftExchangelogo.png" />
     <Content Include="Content\img\minus.png" />
     <Content Include="Content\img\plus.png" />
@@ -572,6 +593,7 @@
     <Content Include="Content\img\RouteBuilder\delete-icon.png" />
     <Content Include="Content\img\RouteBuilder\right-arrow.png" />
     <Content Include="Content\img\RouteBuilder\start-node-bg.png" />
+    <Content Include="Content\img\salesforce.png" />
     <Content Include="Content\img\select-info.png" />
     <Content Include="Content\img\site\alex-photo.png" />
     <Content Include="Content\img\site\arrow_blue_ic_arrow_forward_48px-512.png" />
@@ -597,7 +619,10 @@
     <Content Include="Content\img\welcome\DocuSign_Logo_Purple_Yellow.png" />
     <Content Include="Content\img\welcome\header_green.png" />
     <Content Include="Content\img\welcome\welcome_header.png" />
+    <Content Include="Content\videos\motion.mp4" />
+    <Content Include="Content\videos\motion.png" />
     <Content Include="Documentation\DocuSignRESTAPI.html" />
+    <Content Include="Documentation\UpstreamCrates.html" />
     <Content Include="fr8terminals.txt" />
     <Content Include="Documentation\AccountCustomFields.html" />
     <Content Include="Documentation\AddaNewGroup.html" />
@@ -774,8 +799,51 @@
     <Content Include="Documentation\UploadBrandProfiles.html" />
     <Content Include="Documentation\UsingBulkSendintheRESTAPI.html" />
     <Content Include="Documentation\VoidEnvelope.html" />
+    <Content Include="Content\img\Management\Rob_Bailey.png" />
     <Content Include="Scripts\ai.0.15.0-build58334.js" />
     <Content Include="Scripts\ai.0.15.0-build58334.min.js" />
+    <Content Include="Scripts\homejs\bootstrap.min.js" />
+    <Content Include="Scripts\homejs\html5shiv.js" />
+    <Content Include="Scripts\homejs\jquery-2.1.0.min.js" />
+    <Content Include="Scripts\homejs\loop.js" />
+    <Content Include="Scripts\homejs\plugins\easing\jquery.easing.min.js" />
+    <Content Include="Scripts\homejs\plugins\easypiechart\jquery.easypiechart.min.js" />
+    <Content Include="Scripts\homejs\plugins\flexslider\jquery.flexslider-min.js" />
+    <Content Include="Scripts\homejs\plugins\isotope\imagesloaded.pkgd.js" />
+    <Content Include="Scripts\homejs\plugins\isotope\isotope.pkgd.min.js" />
+    <Content Include="Scripts\homejs\plugins\jpreloader\jpreloader.min.js" />
+    <Content Include="Scripts\homejs\plugins\magnific\jquery.magnific-popup.min.js" />
+    <Content Include="Scripts\homejs\plugins\parallax\jquery.parallax-1.1.3.js" />
+    <Content Include="Scripts\homejs\plugins\parsley\parsley.min.js" />
+    <Content Include="Scripts\homejs\plugins\scrollto\jquery.localscroll-1.2.7-min.js" />
+    <Content Include="Scripts\homejs\plugins\scrollto\jquery.scrollTo-1.4.3.1-min.js" />
+    <Content Include="Scripts\homejs\plugins\twitter\twitter-fetcher.js" />
+    <Content Include="Scripts\homejs\plugins\vide\jquery.vide.min.js" />
+    <Content Include="Scripts\homejs\plugins\waypoints\waypoints.min.js" />
+    <Content Include="Scripts\homejs\plugins\wow\wow.js" />
+    <Content Include="Views\AngularTemplate\DatePicker.cshtml" />
+    <Content Include="ApplicationInsights.config">
+      <TransformOnBuild>true</TransformOnBuild>
+    </Content>
+    <None Include="ApplicationInsights.Debug.config">
+      <DependentUpon>ApplicationInsights.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
+    </None>
+    <None Include="ApplicationInsights.Dev.config">
+      <DependentUpon>ApplicationInsights.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
+    </None>
+    <None Include="ApplicationInsights.Release.config">
+      <DependentUpon>ApplicationInsights.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
+    </None>
+    <Content Include="Content\css\fonts\brankic.eot" />
+    <Content Include="Content\css\fonts\brankic.ttf" />
+    <Content Include="Content\css\fonts\brankic.woff" />
+    <Content Include="Content\css\fonts\fontawesome-webfont.eot" />
+    <Content Include="Content\css\fonts\fontawesome-webfont.ttf" />
+    <Content Include="Content\css\fonts\fontawesome-webfont.woff" />
+    <Content Include="Content\css\fonts\fontawesome-webfont.woff2" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
     <Content Include="Scripts\templateCache.js" />
@@ -788,20 +856,25 @@
     <Content Include="_PowerShellScripts\RunIntegrationTests-MASTER.ps1" />
     <Content Include="_PowerShellScripts\MASTER-job-run.cmd" />
     <Content Include="_PowerShellScripts\MASTER-settings.job" />
-    <Content Include="_PowerShellScripts\DeployAzureWebJob-HealthMonitor-MASTER.ps1" />
+    <Content Include="_PowerShellScripts\DeployAzureWebJob-HealthMonitor-MASTER-Staging.ps1" />
     <Content Include="_PowerShellScripts\KillProcess.ps1" />
     <Content Include="_PowerShellScripts\SetCloudServiceSize.ps1" />
-    <Content Include="_PowerShellScripts\SetTerminalFr8CoreCS.ps1" />
-    <Content Include="_PowerShellScripts\SetTerminalDocuSignCS.ps1" />
     <Content Include="_PowerShellScripts\CloneDatabase.ps1" />
     <Content Include="_PowerShellScripts\UpdateTerminalHostnameInDb.ps1" />
+    <Content Include="_PowerShellScripts\DeleteDatabase.ps1" />
+    <Content Include="_PowerShellScripts\Set-StagingHostname.ps1" />
+    <Content Include="_PowerShellScripts\CopyAppInsightsConfigs.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionDocumentationController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\ActionPicker.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\DatePicker.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\SourceableCriteria.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\CrateChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamCrateChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamFieldChooser.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Resizable.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Validators\ManifestDescriptionValidators.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\DateTimeFormatter.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\FilterByTag.ts" />
@@ -809,6 +882,7 @@
     <TypeScriptCompile Include="Scripts\app\controllers\ManageAuthTokenController.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IManifestRegistry.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ManifestDescriptionDTO.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\CrateDescriptionDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\services\AuthService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ConfigureTrackerService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\FileDetailsService.ts" />
@@ -873,26 +947,6 @@
     <Content Include="Views\AuthenticationCallback\ProcessSuccessfulOAuthResponse.cshtml" />
     <Content Include="_PowerShellScripts\RunFrontEndTests-VSO.ps1" />
     <Content Include="Views\DockyardAccount\_HeaderPartial.cshtml" />
-    <Content Include="ApplicationInsights.config">
-      <TransformOnBuild>true</TransformOnBuild>
-      <SubType>Designer</SubType>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Include="ApplicationInsights.Debug.config">
-      <DependentUpon>ApplicationInsights.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="ApplicationInsights.Dev.config">
-      <DependentUpon>ApplicationInsights.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="ApplicationInsights.Release.config">
-      <DependentUpon>ApplicationInsights.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <Content Include="Content\fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.woff" />
@@ -929,10 +983,15 @@
     <Content Include="Views\Services\GoogleApps.cshtml" />
     <Content Include="Views\Support\Index.cshtml" />
     <Content Include="Views\AngularTemplate\ChangePassword.cshtml" />
-    <Content Include="Views\Company\Jobs.cshtml" />
+    <Content Include="Views\Company\Index.cshtml" />
     <Content Include="Views\Shared\CDN\_AngularAppScripts.cshtml" />
     <Content Include="Views\Shared\_AngularAppStyles.cshtml" />
     <Content Include="Views\Shared\CDN\_AngularAppStyles.cshtml" />
+    <Content Include="Views\AngularTemplate\QueryBuilderCondition.cshtml" />
+    <Content Include="Views\AngularTemplate\SourceableCriteria.cshtml" />
+    <Content Include="Views\AngularTemplate\CrateChooser.cshtml" />
+    <Content Include="Views\AngularTemplate\_RouteReportList.cshtml" />
+    <Content Include="Views\AngularTemplate\RouteReportList.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -4182,7 +4241,6 @@
     <Compile Include="ViewModels\EventWindowVM.cs" />
     <Content Include="tsd.json" />
     <Content Include="Scripts\tests\Chutzpah.json" />
-    <Content Include="_PowerShellScripts\RunFrontEndTests.ps1" />
     <None Include="Properties\PublishProfiles\test.pubxml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

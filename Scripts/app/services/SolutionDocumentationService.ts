@@ -6,17 +6,17 @@ module dockyard.services {
     }
 
     app.factory("SolutionDocumentationService", ["$resource", ($resource: ng.resource.IResourceService): ISolutionDocumentationService =>
-        <ISolutionDocumentationService>$resource("/api/actions", { terminalName: '@terminalName' },
+        <ISolutionDocumentationService>$resource("/api/activities", { terminalName: '@terminalName' },
             {
                 'getSolutionDocumentationList': {
                     method: "GET",
                     isArray: true,
-                    url: "/api/actions/getDocusignsolutionlist"
+                    url: "/api/activities/getDocusignsolutionlist"
                 },
                 'getSolutionDTO': {
                     method: "POST",
                     isArray: false,
-                    url: "/api/actions/documentation",
+                    url: "/api/activities/documentation",
                 }
             })
     ]);

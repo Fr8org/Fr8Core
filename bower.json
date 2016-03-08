@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "angular": "~1.4.3",
+    "angular": "~1.4.9",
     "angular-applicationinsights": "~0.2.6",
     "angular-bootstrap": "~0.13.0",
     "angular-bootstrap-switch": "~0.4.1",
@@ -54,6 +54,10 @@
     "waypoints": "2.0.5"
   },
   "resolutions": {
-    "angular": "~1.4.3"
+    "angular": "1.4.9"
+  },
+  "devDependencies": {
+    "angular-ivh-treeview": "~1.0.3",
+    "jquery-ui": "^1.11.4"
   }
 }

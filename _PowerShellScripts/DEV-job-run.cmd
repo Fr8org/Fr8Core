@@ -1,1 +1,1 @@
-HealthMonitor.exe --email-report --app-name JOB-DEV
+HealthMonitor.exe --email-report --app-name JOB-DEV --aiik 9179f687-0573-4349-9de8-a3ec21bc9477

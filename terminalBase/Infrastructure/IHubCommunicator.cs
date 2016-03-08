@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Data.Crates;
 using Data.Entities;
@@ -15,18 +16,18 @@ namespace TerminalBase.Infrastructure
     {
         Task<PayloadDTO> GetPayload(ActivityDO activityDO, Guid containerId, string userId);
         Task<UserDTO> GetCurrentUser(ActivityDO activityDO, Guid containerId, string userId);
-        Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability, string userId);
-        Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability, string userId);
+        Task<FieldDescriptionsCM> GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability, string userId);
+        Task<FieldDescriptionsCM> GetDesignTimeFieldsByDirection(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability, string userId);
         Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActivityDO activityDO, CrateDirection direction, string userId);
         Task<List<Crate>> GetCratesByDirection(ActivityDO activityDO, CrateDirection direction, string userId);
 
         Task CreateAlarm(AlarmDTO alarmDTO, string userId);
 
-        Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityDO activityDO, string userId);
+        Task<List<ActivityTemplateDTO>> GetActivityTemplates(string userId);
 
-        Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityDO activityDO, ActivityCategory category, string userId);
+        Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityCategory category, string userId);
 
-        Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityDO activityDO, string tag, string userId);
+        Task<List<ActivityTemplateDTO>> GetActivityTemplates(string tag, string userId);
         Task<List<FieldValidationResult>> ValidateFields(List<FieldValidationDTO> fields, string userId);
         Task<ActivityDTO> ConfigureActivity(ActivityDTO activityDTO, string userId);
         Task<ActivityDO> ConfigureActivity(ActivityDO activityDO, string userId);
@@ -39,5 +40,10 @@ namespace TerminalBase.Infrastructure
         Task<IEnumerable<FileDTO>> GetFiles(string userId);
         Task Configure(string terminalName);
         bool IsConfigured { get; set; }
+
+        Task DeleteActivity(Guid curActivityId, string userId);
+        Task DeleteExistingChildNodesFromActivity(Guid curActivityId, string userId);
+        Task<RouteFullDTO> GetPlansByActivity(string activityId, string userId);
+        Task<RouteFullDTO> UpdatePlan(RouteEmptyDTO plan, string userId);
     }
 }

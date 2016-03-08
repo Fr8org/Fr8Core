@@ -9,6 +9,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Hub.Interfaces;
 using StructureMap;
+using Hub.Services;
 
 namespace HubWeb.Controllers
 {
@@ -53,10 +54,10 @@ namespace HubWeb.Controllers
 		}
 
         [HttpPost]
-		[ActionName("actions")]
-		public IHttpActionResult GetActions(ActivityCategory[] categories)
+		[ActionName("activities")]
+		public IHttpActionResult GetActivities(ActivityCategory[] categories)
 		{
-			List<WebServiceActionSetDTO> webServiceList;
+			List<WebServiceActivitySetDTO> webServiceList;
 
 			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			{
@@ -65,22 +66,28 @@ namespace HubWeb.Controllers
 				// resulting set is grouped into batches 1 x web service - n x actions
 
                 var unknwonService = uow.WebServiceRepository.GetQuery().FirstOrDefault(x => x.Name == UknownWebServiceName);
+                Fr8Account fr8Account = new Fr8Account();
 
-                webServiceList = _activityTemplate.GetQuery()
+                var activityTemplate = _activityTemplate.GetQuery()
                     .Where(x => x.ActivityTemplateState == ActivityTemplateState.Active)
                     .Where(x => categories == null || categories.Contains(x.Category))
-                    .Where(x => x.ClientVisibility != false)
+                    .Where(x => x.Tags == null || !x.Tags.Contains("internal"));
+
+                if (!fr8Account.IsCurrentUserInAdminRole())
+                    activityTemplate = activityTemplate.Where(x => x.ClientVisibility != false);
+
+                    webServiceList = activityTemplate
                     .GroupBy(x => x.WebService, x => x, (key, group) => new
                     {
                         WebService = key,
                         SortOrder = key == null ? 1 : 0,
                         Actions = group
                     }).OrderBy(x => x.SortOrder)
-                    .Select(x => new WebServiceActionSetDTO
+                    .Select(x => new WebServiceActivitySetDTO
                     {
                         WebServiceIconPath = x.WebService != null ? x.WebService.IconPath : (unknwonService != null ? unknwonService.IconPath : null),
                         WebServiceName = x.WebService != null ? x.WebService.Name : string.Empty,
-                        Actions = x.Actions.Select(p => new ActivityTemplateDTO
+                        Activities = x.Actions.Select(p => new ActivityTemplateDTO
                         {
                             Id = p.Id,
                             Name = p.Name,
@@ -91,6 +98,8 @@ namespace HubWeb.Controllers
                             TerminalId = p.Terminal.Id,
                             Version = p.Version,
                             Type = p.Type,
+                            Tags = p.Tags,
+                            Description = p.Description,
                             WebService = Mapper.Map<WebServiceDTO>(p.WebService)
 			            }).ToList()
 			        }).ToList();

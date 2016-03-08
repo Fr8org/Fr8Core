@@ -138,19 +138,19 @@ namespace DockyardTest.Repositories.Plan
             var cache = new PlanCache(expiration);
 
             var route1 = cache.Get(routeId, cacheMiss);
-          
-            Assert.AreEqual(route1, route);
 
+            Assert.IsTrue(AreEquals(route1, route));
+            
             foreach (var id in RouteTreeHelper.Linearize(route).Select(x=>x.Id))
             {
-                Assert.AreEqual(route, cache.Get(id, cacheMiss));
+                Assert.IsTrue(AreEquals(route, cache.Get(id, cacheMiss)));
             }
 
             Assert.AreEqual(1, calledTimes);
         }
 
         [Test]
-        public void CanLoadFromCacheUsingChildActionsId()
+        public void CanLoadFromCacheUsingChildActivitiesId()
         {
             var expiration = new ExpirationStrategyMock();
             var routeId = new Guid(1, (short)0, (short)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0);
@@ -168,11 +168,11 @@ namespace DockyardTest.Repositories.Plan
 
             var route1 = cache.Get(new Guid(2, (short)0, (short)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0), cacheMiss);
 
-            Assert.AreEqual(route1, route);
+            Assert.IsTrue(AreEquals(route1, route));
 
             foreach (var id in RouteTreeHelper.Linearize(route).Select(x => x.Id))
             {
-                Assert.AreEqual(route, cache.Get(id, cacheMiss));
+                Assert.IsTrue(AreEquals(route, cache.Get(id, cacheMiss)));
             }
 
             Assert.AreEqual(1, calledTimes);
@@ -187,6 +187,7 @@ namespace DockyardTest.Repositories.Plan
             int calledTimes = 0;
 
             var route = LoadRoute(routeId);
+            var referenceRoute = LoadRoute(routeId);
 
             Func<Guid, RouteNodeDO> cacheMiss = x =>
             {
@@ -207,7 +208,7 @@ namespace DockyardTest.Repositories.Plan
             var route2 = cache.Get(routeId, cacheMiss);
 
             Assert.AreEqual(1, calledTimes);
-            Assert.IsTrue(AreEquals(route1, route));
+            Assert.IsTrue(AreEquals(route1, referenceRoute));
             Assert.IsTrue(AreEquals(route2, updated));
         }
 

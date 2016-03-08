@@ -134,7 +134,7 @@ namespace TerminalBase.Infrastructure
             return Task.FromResult(fileDO);
         }
 
-        public Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityDO activityDO, string userId)
+        public Task<List<ActivityTemplateDTO>> GetActivityTemplates(string userId)
         {
             var searchLabel = LabelPrefix + "_ActivityTemplate";
 
@@ -142,7 +142,7 @@ namespace TerminalBase.Infrastructure
             var activityTemplates = crateStorage
                 .Where(x => x.Label == searchLabel)
                 .Select(x => JsonConvert.DeserializeObject<ActivityTemplateDTO>(
-                    x.Get<StandardDesignTimeFieldsCM>().Fields[0].Value
+                    x.Get<FieldDescriptionsCM>().Fields[0].Value
                     )
                 )
                 .ToList();
@@ -150,9 +150,9 @@ namespace TerminalBase.Infrastructure
             return Task.FromResult(activityTemplates);
         }
 
-        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityDO activityDO, ActivityCategory category, string userId)
+        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityCategory category, string userId)
         {
-            var allTemplates = await GetActivityTemplates(activityDO, userId);
+            var allTemplates = await GetActivityTemplates(userId);
             var activityTemplates = allTemplates
                 .Where(x => x.Category == category)
                 .ToList();
@@ -160,9 +160,9 @@ namespace TerminalBase.Infrastructure
             return activityTemplates;
         }
 
-        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityDO activityDO, string tag, string userId)
+        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(string tag, string userId)
         {
-            var allTemplates = await GetActivityTemplates(activityDO, userId);
+            var allTemplates = await GetActivityTemplates(userId);
             if (string.IsNullOrEmpty(tag))
             {
                 return allTemplates;
@@ -180,17 +180,17 @@ namespace TerminalBase.Infrastructure
             return Task.FromResult(new List<FieldValidationResult>());
         }
 
-        public async Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability, string userId)
+        public async Task<FieldDescriptionsCM> GetDesignTimeFieldsByDirection(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability, string userId)
         {
             //This code only supports integration testing scenarios
 
-            var mergedFields = new StandardDesignTimeFieldsCM();
-            var curCrates = await GetCratesByDirection<StandardDesignTimeFieldsCM>(activityDO, direction, userId);
+            var mergedFields = new FieldDescriptionsCM();
+            var curCrates = await GetCratesByDirection<FieldDescriptionsCM>(activityDO, direction, userId);
             mergedFields.Fields.AddRange(Crate.MergeContentFields(curCrates).Fields);
             return mergedFields;
         }
 
-        public Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(Guid actionId, CrateDirection direction, AvailabilityType availability, string userId)
+        public Task<FieldDescriptionsCM> GetDesignTimeFieldsByDirection(Guid actionId, CrateDirection direction, AvailabilityType availability, string userId)
         {
             throw new NotImplementedException();
         }
@@ -225,12 +225,32 @@ namespace TerminalBase.Infrastructure
             throw new NotImplementedException();
         }
 
+        public Task<RouteFullDTO> GetPlansByActivity(string activityId, string userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<RouteFullDTO> UpdatePlan(RouteEmptyDTO plan, string userId)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<IEnumerable<FileDTO>> GetFiles(string userId)
         {
             throw new NotImplementedException();
         }
 
         public Task<Stream> DownloadFile(int fileId, string userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteExistingChildNodesFromActivity(Guid curActivityId, string userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteActivity(Guid curActivityId, string userId)
         {
             throw new NotImplementedException();
         }

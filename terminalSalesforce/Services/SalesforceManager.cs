@@ -7,6 +7,8 @@ using Data.Interfaces.Manifests;
 using Salesforce.Force;
 using terminalSalesforce.Infrastructure;
 using Data.Entities;
+using Salesforce.Common.Models;
+using Salesforce.Common;
 
 namespace terminalSalesforce.Services
 {
@@ -19,12 +21,27 @@ namespace terminalSalesforce.Services
         /// <summary>
         /// Creates Salesforce object
         /// </summary>
-        public async Task<bool> CreateObject<T>(T newObject, string salesforceObjectName, ForceClient forceClient)
+        public async Task<bool> CreateObject<T>(T newObject, string salesforceObjectName, AuthorizationTokenDO authTokenDO)
         {
             bool createFlag = true;
 
             _salesforceObject = GetSalesforceObject(salesforceObjectName);
-            var createCallResponse = await _salesforceObject.Create(newObject, salesforceObjectName, forceClient);
+            SuccessResponse createCallResponse = null;
+            try
+            {
+                createCallResponse = await _salesforceObject.Create(newObject, salesforceObjectName, CreateForceClient(authTokenDO));
+            }
+            catch (ForceException salesforceException)
+            {
+                if (salesforceException.Message.Equals("Session expired or invalid"))
+                {
+                    createCallResponse = await _salesforceObject.Create(newObject, salesforceObjectName, CreateForceClient(authTokenDO, true));
+                }
+                else
+                {
+                    throw salesforceException;
+                }
+            }
 
             if (string.IsNullOrEmpty(createCallResponse.Id))
             {
@@ -37,20 +54,52 @@ namespace terminalSalesforce.Services
         /// <summary>
         /// Gets Fields of the given Salesforce Object Name
         /// </summary>
-        public async Task<IList<FieldDTO>> GetFields(string salesforceObjectName, ForceClient forceClient)
+        public async Task<IList<FieldDTO>> GetFields(string salesforceObjectName, AuthorizationTokenDO authTokenDO)
         {
             _salesforceObject = GetSalesforceObject(salesforceObjectName);
-            return await _salesforceObject.GetFields(salesforceObjectName, forceClient);
+            
+            IList<FieldDTO> objectFields = null;
+            try
+            {
+                objectFields = await _salesforceObject.GetFields(salesforceObjectName, CreateForceClient(authTokenDO));
+            }
+            catch (ForceException salesforceException)
+            {
+                if (salesforceException.Message.Equals("Session expired or invalid"))
+                {
+                    objectFields = await _salesforceObject.GetFields(salesforceObjectName, CreateForceClient(authTokenDO, true));
+                }
+                else
+                {
+                    throw salesforceException;
+                }
+            }
+
+            return objectFields;
         }
 
         /// <summary>
         /// Gets Salesforce objects by given query. The query will be executed agains the given Salesforce Object Name
         /// </summary>
-        public async Task<StandardPayloadDataCM> GetObjectByQuery(string salesforceObjectName, string conditionQuery,
-                                                                  ForceClient forceClient)
+        public async Task<StandardPayloadDataCM> GetObjectByQuery(string salesforceObjectName, string conditionQuery, AuthorizationTokenDO authTokenDO)
         {
             _salesforceObject = GetSalesforceObject(salesforceObjectName);
-            var resultObjects = await _salesforceObject.GetByQuery(conditionQuery, forceClient);
+            IList<PayloadObjectDTO> resultObjects = null;
+            try
+            {
+                resultObjects = await _salesforceObject.GetByQuery(conditionQuery, CreateForceClient(authTokenDO));
+            }
+            catch (ForceException salesforceException)
+            {
+                if (salesforceException.Message.Equals("Session expired or invalid"))
+                {
+                    resultObjects = await _salesforceObject.GetByQuery(conditionQuery, CreateForceClient(authTokenDO, true));
+                }
+                else
+                {
+                    throw salesforceException;
+                }
+            }
 
             return new StandardPayloadDataCM
             {
@@ -59,10 +108,21 @@ namespace terminalSalesforce.Services
             };
         }
 
-        public ForceClient CreateForceClient(AuthorizationTokenDO authTokenDO)
+        private ForceClient CreateForceClient(AuthorizationTokenDO authTokenDO, bool isRefreshTokenRequired = false)
         {
-            //TODO: Vas, Created task FR-2037
-            var authTokenResult = Task.Run(() => _authentication.RefreshAccessToken(authTokenDO)).Result;
+            AuthorizationTokenDO authTokenResult = null;
+            
+            //refresh the token only when it is required for the user of this method
+            if(isRefreshTokenRequired)
+            {
+                authTokenResult = Task.Run(() => _authentication.RefreshAccessToken(authTokenDO)).Result;
+            }
+            else
+            {
+                //else consider the supplied authtoken itself
+                authTokenResult = authTokenDO;
+            }
+            
             string instanceUrl, apiVersion;
             ParseAuthToken(authTokenResult.AdditionalAttributes, out instanceUrl, out apiVersion);
             return new ForceClient(instanceUrl, authTokenResult.Token, apiVersion);
@@ -89,6 +149,12 @@ namespace terminalSalesforce.Services
                     if (applicationException.Message.Equals("Could not extract recipient, unknown recipient mode."))
                     {
                         prop.SetValue(requiredObject, string.Empty);
+                    }
+                    else if(applicationException.Message.StartsWith("No field found with specified key:"))
+                    {
+                        //FR-2502 - This else case handles, the user asked to pick up the value from the current payload.
+                        //But the payload does not contain the value of this property. In that case, set it as "Not Available"
+                        prop.SetValue(requiredObject, "Not Available");
                     }
                 }
             });
