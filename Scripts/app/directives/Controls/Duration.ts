@@ -23,7 +23,6 @@ module dockyard.directives.duration {
                 scope: IDurationScope,
                 element: ng.IAugmentedJQuery,
                 attrs: ng.IAttributes) => {
-
             }
 
             Duration.prototype.controller = (
@@ -32,6 +31,7 @@ module dockyard.directives.duration {
                 $attrs: ng.IAttributes) => {
 
                 $scope.$watch(() => {
+                    if (!$scope.field.days || !$scope.field.hours || !$scope.field.minutes) return;
                     if ($scope.field.minutes < 0) {
                         if ($scope.field.hours > 0 || $scope.field.days > 0) {
                             $scope.field.hours--;
