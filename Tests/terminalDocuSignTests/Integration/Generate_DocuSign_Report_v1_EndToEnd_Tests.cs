@@ -75,7 +75,12 @@ namespace terminalDocuSignTests.Integration
         private async Task<PlanDTO> CreateSolution()
         {
             var solutionCreateUrl = _baseUrl + "activities/create?solutionName=Generate_DocuSign_Report";
+
+            Assert.AreEqual(true, true, solutionCreateUrl);
+
             var plan = await HttpPostAsync<string, PlanDTO>(solutionCreateUrl, null);
+
+            Assert.AreEqual(true, JsonConvert.SerializeObject(plan), solutionCreateUrl);
 
             return plan;
         }
