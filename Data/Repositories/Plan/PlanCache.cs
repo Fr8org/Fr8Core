@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Data.Entities;
 using Data.States;
+using static Data.Repositories.Plan.RouteSnapshot;
 
 namespace Data.Repositories.Plan
 {
@@ -94,6 +95,8 @@ namespace Data.Repositories.Plan
                     // update route expiration
                     cacheItem.Route.Expiration = _expirationStrategy.NewExpirationToken();
                 }
+
+                node = RouteTreeHelper.CloneWithStructure(node);
             }
 
             return node;
@@ -129,8 +132,10 @@ namespace Data.Repositories.Plan
 
         /**********************************************************************************/
 
-        public void Update(Guid planId, RouteSnapshot.Changes changes)
+        public Changes Update(Guid planId, Changes changes)
         {
+           var validChanges = new Changes();
+
             lock (_sync)
             {
                 CachedRoute route;
@@ -156,13 +161,25 @@ namespace Data.Repositories.Plan
                 {
                     if (!_routeNodesLookup.ContainsKey(insert.Id))
                     {
-                        _routeNodesLookup.Add(insert.Id, new CacheItem(insert.Clone(), route));
+                        if (insert.ParentRouteNodeId == null || _routeNodesLookup.ContainsKey(insert.ParentRouteNodeId.Value))
+                        {
+                            _routeNodesLookup.Add(insert.Id, new CacheItem(insert.Clone(), route));
+                        }
                     }
                 }
 
                 foreach (var insert in changes.Insert)
                 {
-                    var node = _routeNodesLookup[insert.Id].Node;
+                    CacheItem nodeCacheItem;
+
+                    if (!_routeNodesLookup.TryGetValue(insert.Id, out nodeCacheItem))
+                    {
+                        continue;
+                    }
+
+                    validChanges.Insert.Add(insert);
+
+                    var node = nodeCacheItem.Node;
 
                     if (insert.ParentRouteNodeId != null)
                     {
@@ -180,14 +197,21 @@ namespace Data.Repositories.Plan
 
                     if (_routes.TryGetValue(deleted.Id, out plan))
                     {
-                        RouteTreeHelper.Visit(plan.Root, x => _routeNodesLookup.Remove(x.Id));
+                        RouteTreeHelper.Visit(plan.Root, x =>
+                        {
+                            _routeNodesLookup.Remove(x.Id);
+                            validChanges.Delete.Add(x);
+                        });
+
                         _routes.Remove(plan.Root.Id);
-                        return;
+
+                        return validChanges;
                     }
 
                     CacheItem node;
                     if (_routeNodesLookup.TryGetValue(deleted.Id, out node))
                     {
+                        validChanges.Delete.Add(deleted);
                         _routeNodesLookup.Remove(deleted.Id);
                         node.Node.RemoveFromParent();
                     }
@@ -197,24 +221,43 @@ namespace Data.Repositories.Plan
                 {
                     foreach (var changedProperty in update.ChangedProperties)
                     {
-                        var original = _routeNodesLookup[update.Node.Id].Node;
+                        CacheItem originalCacheItem;
+
+                        if (!_routeNodesLookup.TryGetValue(update.Node.Id, out originalCacheItem))
+                        {
+                            continue;
+                        }
+
+                        var original = originalCacheItem.Node;
 
                         // structure was changed
                         if (changedProperty.Name == "ParentRouteNodeId")
                         {
-                            var parent = _routeNodesLookup[update.Node.ParentRouteNodeId.Value].Node;
+                            CacheItem parentCacheItem;
+
+                            if (update.Node.ParentRouteNodeId == null || !_routeNodesLookup.TryGetValue(update.Node.ParentRouteNodeId.Value, out parentCacheItem))
+                            {
+                                continue;
+                            }
+
+                            var parent = parentCacheItem.Node;
 
                             original.RemoveFromParent();
                             parent.ChildNodes.Add(original);
                             original.ParentRouteNode = parent;
+
+                            validChanges.Update.Add(update);
                         }
                         else
                         {
+                            validChanges.Update.Add(update);
                             changedProperty.SetValue(original, changedProperty.GetValue(update.Node));
                         }
                     }
                 }
             }
+
+            return validChanges;
         }
 
         /**********************************************************************************/

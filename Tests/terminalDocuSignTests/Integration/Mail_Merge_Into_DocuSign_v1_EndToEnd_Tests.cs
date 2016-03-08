@@ -66,7 +66,7 @@ namespace terminalDocuSignTests.Integration
                 // Send configuration request without authentication token
                 //
                 this.solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure?id=" + solution.Id, solution);
-                crateStorage = _crateManager.FromDto(this.solution.CrateStorage);
+                crateStorage = Crate.FromDto(this.solution.CrateStorage);
                 var stAuthCrate = crateStorage.CratesOfType<StandardAuthenticationCM>().FirstOrDefault();
                 bool defaultDocuSignAuthTokenExists = stAuthCrate != null;
 
@@ -103,7 +103,7 @@ namespace terminalDocuSignTests.Integration
                 // Send configuration request with authentication token
                 //
                 this.solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure?id=" + solution.Id, solution);
-                crateStorage = _crateManager.FromDto(this.solution.CrateStorage);
+                crateStorage = Crate.FromDto(this.solution.CrateStorage);
                 Assert.True(crateStorage.CratesOfType<StandardConfigurationControlsCM>().Any(), "Crate StandardConfigurationControlsCM is missing in API response.");
 
                 var controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
@@ -129,14 +129,14 @@ namespace terminalDocuSignTests.Integration
                 //
                 // Configure solution
                 //
-                using (var crateStorage = _crateManager.GetUpdatableStorage(this.solution))
+                using (var crateStorage = Crate.GetUpdatableStorage(this.solution))
                 {
 
                     crateStorage.Remove<StandardConfigurationControlsCM>();
                     crateStorage.Add(controlsCrate);
                 }
                 this.solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure?id=" + this.solution.Id, this.solution);
-                crateStorage = _crateManager.FromDto(this.solution.CrateStorage);
+                crateStorage = Crate.FromDto(this.solution.CrateStorage);
                 Assert.AreEqual(2, this.solution.ChildrenActivities.Count(), "Solution child actions failed to create.");
 
                 // Delete Google action 
@@ -164,12 +164,12 @@ namespace terminalDocuSignTests.Integration
 
                 //Add rows to Add Payload Manually action
                 apmAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure", apmAction);
-                crateStorage = _crateManager.FromDto(apmAction.CrateStorage);
+                crateStorage = Crate.FromDto(apmAction.CrateStorage);
                 controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
                 var fieldList = controlsCrate.Content.Controls.OfType<FieldList>().First();
                 fieldList.Value = @"[{""Key"":""Doctor"",""Value"":""Doctor1""},{""Key"":""Condition"",""Value"":""Condition1""}]";
 
-                using (var updatableStorage = _crateManager.GetUpdatableStorage(apmAction))
+                using (var updatableStorage = Crate.GetUpdatableStorage(apmAction))
                 {
                     updatableStorage.Remove<StandardConfigurationControlsCM>();
                     updatableStorage.Add(controlsCrate);
@@ -185,13 +185,13 @@ namespace terminalDocuSignTests.Integration
 
                 fr8CoreLoop = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure", fr8CoreLoop);
                 //we should update fr8Core loop to loop through manually added payload
-                var fr8CoreLoopCrateStorage = _crateManager.FromDto(fr8CoreLoop.CrateStorage);
+                var fr8CoreLoopCrateStorage = Crate.FromDto(fr8CoreLoop.CrateStorage);
                 var loopConfigCrate = fr8CoreLoopCrateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
                 var loopConfigControls = loopConfigCrate.Content.Controls;
                 var crateChooser = (CrateChooser)loopConfigControls.Single(c => c.Name == "Available_Crates");
                 var payloadDataCrate = crateChooser.CrateDescriptions.Single(c => c.ManifestId == (int) MT.StandardPayloadData);
                 payloadDataCrate.Selected = true;
-                using (var updatableStorage = _crateManager.GetUpdatableStorage(fr8CoreLoop))
+                using (var updatableStorage = Crate.GetUpdatableStorage(fr8CoreLoop))
                 {
                     updatableStorage.Remove<StandardConfigurationControlsCM>();
                     updatableStorage.Add(loopConfigCrate);
@@ -206,7 +206,7 @@ namespace terminalDocuSignTests.Integration
                 // Initial Configuration
                 var sendEnvelopeAction = fr8CoreLoop.ChildrenActivities.Single(a => a.Label == "Send DocuSign Envelope");
 
-                crateStorage = _crateManager.FromDto(sendEnvelopeAction.CrateStorage);
+                crateStorage = Crate.FromDto(sendEnvelopeAction.CrateStorage);
                 controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
 
                 var docuSignTemplate = controlsCrate.Content.Controls.OfType<DropDownList>().First();
@@ -214,7 +214,7 @@ namespace terminalDocuSignTests.Integration
                 docuSignTemplate.selectedKey = "Medical_Form_v1";
                 docuSignTemplate.ListItems.Add(new ListItem() { Value = "9a4d2154-5b18-4316-9824-09432e62f458", Key = "Medical_Form_v1" });
 
-                using (var updatableStorage = _crateManager.GetUpdatableStorage(sendEnvelopeAction))
+                using (var updatableStorage = Crate.GetUpdatableStorage(sendEnvelopeAction))
                 {
                     updatableStorage.Remove<StandardConfigurationControlsCM>();
                     updatableStorage.Add(controlsCrate);
@@ -225,7 +225,7 @@ namespace terminalDocuSignTests.Integration
 
                 
                 // Follow-up Configuration
-                crateStorage = _crateManager.FromDto(sendEnvelopeAction.CrateStorage);
+                crateStorage = Crate.FromDto(sendEnvelopeAction.CrateStorage);
                 controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
                 var emailField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name== "RolesMappingfreight testing role email");
                 emailField.ValueSource = "specific";
@@ -237,7 +237,7 @@ namespace terminalDocuSignTests.Integration
                 emailNameField.Value = TestEmailName;
                 emailNameField.TextValue = TestEmailName;
 
-                using (var updatableStorage = _crateManager.GetUpdatableStorage(sendEnvelopeAction))
+                using (var updatableStorage = Crate.GetUpdatableStorage(sendEnvelopeAction))
                 {
                     updatableStorage.Remove<StandardConfigurationControlsCM>();
                     updatableStorage.Add(controlsCrate);
@@ -245,7 +245,7 @@ namespace terminalDocuSignTests.Integration
 
                 sendEnvelopeAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", sendEnvelopeAction);
 
-                crateStorage = _crateManager.FromDto(sendEnvelopeAction.CrateStorage);
+                crateStorage = Crate.FromDto(sendEnvelopeAction.CrateStorage);
                 controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
 
                 docuSignTemplate = controlsCrate.Content.Controls.OfType<DropDownList>().First();

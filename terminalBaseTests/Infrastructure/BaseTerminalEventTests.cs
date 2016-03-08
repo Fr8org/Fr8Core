@@ -27,7 +27,7 @@ namespace terminalBaseTests.Infrastructure
         public void SendTerminalErrorIncident_ShouldPostLoggingData_ToFr8EventController()
         {
             //Act
-            _baseTerminalEvent.SendTerminalErrorIncident("something", "ex", "exception");
+            _baseTerminalEvent.SendTerminalErrorIncident("something", "ex", "exception","test-id");
 
             //Assert
             Mock<IRestfulServiceClient> restClientMock = Mock.Get(_baseTerminalEvent.RestfulServiceClient);

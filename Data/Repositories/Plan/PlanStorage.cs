@@ -52,15 +52,15 @@ namespace Data.Repositories.Plan
         {
             lock (_cache)
             {
-               // var reference = _cache.Get(node.Id, _storageProvider.LoadPlan);
-               // var currentSnapshot = new RouteSnapshot(node, false);
-               // var referenceSnapshot = new RouteSnapshot(reference, false);
-               // var changes = currentSnapshot.Compare(referenceSnapshot);
-
                 if (changes.HasChanges)
                 {
-                    _storageProvider.Update(changes);
-                    _cache.Update(planId, changes);
+                    var applicableChanges = _cache.Update(planId, changes);
+
+                    if (applicableChanges.HasChanges)
+                    {
+                        _storageProvider.Update(applicableChanges);
+                    }
+
                 }
             }
         }
