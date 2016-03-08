@@ -27,7 +27,7 @@ namespace terminalDocuSign.Interfaces
         /// List of Envelope Data.
         /// It returns empty list of envelope data if tab and signers not found.
         /// </returns>
-        IList<DocuSignTabDTO> GetEnvelopeData(string envelopeId);
+        //IList<DocuSignTabDTO> GetEnvelopeData(string envelopeId);
 
         /// <summary>
         /// Get Envelope Data from a docusign envelope. 
@@ -38,7 +38,7 @@ namespace terminalDocuSign.Interfaces
         /// List of Envelope Data.
         /// It returns empty list of envelope data if tab and signers not found.
         /// </returns>
-        IList<DocuSignTabDTO> GetEnvelopeData(Envelope envelope);
+        //IList<DocuSignTabDTO> GetEnvelopeData(Envelope envelope);
 
         /// <summary>
         /// Creates Envelope payload, based on default template fields and added custom values
@@ -47,8 +47,8 @@ namespace terminalDocuSign.Interfaces
         /// <param name="curEnvelopeId"></param>
         /// <param name="curEnvelopeData"></param>
         /// <returns></returns>
-        IList<FieldDTO> FormEnvelopePayload(List<FieldDTO> curTemplateFields, string curEnvelopeId,
-            IList<DocuSignTabDTO> curEnvelopeData);
+        //IList<FieldDTO> FormEnvelopePayload(List<FieldDTO> curTemplateFields, string curEnvelopeId,
+        //    IList<DocuSignTabDTO> curEnvelopeData);
 
         /// <summary>
         /// Get Envelope Data from a docusign envelope. 
@@ -59,8 +59,8 @@ namespace terminalDocuSign.Interfaces
         /// List of Envelope Data.
         /// It returns empty list of envelope data if tab and signers not found.
         /// </returns>
-        IEnumerable<DocuSignTabDTO> GetEnvelopeDataByTemplate(string templateId);
+        //IEnumerable<DocuSignTabDTO> GetEnvelopeDataByTemplate(string templateId);
 
-        void SendUsingTemplate(string templateId, string recipientAddress);
+        //void SendUsingTemplate(string templateId, string recipientAddress);
     }
 }

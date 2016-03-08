@@ -11,11 +11,23 @@ using TerminalBase.BaseClasses;
 using terminalDocuSign.Infrastructure;
 using Hub.Managers;
 using Data.States;
+using Newtonsoft.Json;
+using terminalDocuSign.Services.New_Api;
+using StructureMap;
+using Data.Control;
 
 namespace terminalDocuSign.Actions
 {
     public class BaseDocuSignActivity : BaseTerminalActivity
     {
+
+        protected ICrateManager Crate;
+
+        public BaseDocuSignActivity()
+        {
+            Crate = ObjectFactory.GetInstance<ICrateManager>();
+        }
+
         protected List<FieldDTO> CreateDocuSignEventFields()
         {
             return new List<FieldDTO>(){
@@ -34,7 +46,7 @@ namespace terminalDocuSign.Actions
             };
         }
 
-        protected string GetValueForKey(PayloadDTO curPayloadDTO, string curKey)
+        protected string GetValueForEventKey(PayloadDTO curPayloadDTO, string curKey)
         {
             var eventReportMS = CrateManager.GetStorage(curPayloadDTO).CrateContentsOfType<EventReportCM>().FirstOrDefault();
 
@@ -57,6 +69,36 @@ namespace terminalDocuSign.Actions
             if (envelopeIdField == null) return null;
 
             return envelopeIdField.Value;
+        }
+
+        public void AddOrUpdateUserDefinedFields(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO, IUpdatableCrateStorage updater, string templateId, string envelopeId = null)
+        {
+            updater.RemoveByLabel("DocuSignTemplateUserDefinedFields");
+            if (!String.IsNullOrEmpty(templateId))
+            {
+                var conf = DocuSignService.SetUp(authTokenDO);
+                var userDefinedFields = DocuSignService.GetTemplateRecipientsAndTabs(conf, templateId);
+                updater.Add(Crate.CreateDesignTimeFieldsCrate("DocuSignTemplateUserDefinedFields", AvailabilityType.RunTime, userDefinedFields.ToArray()));
+            }
+        }
+
+        public StandardPayloadDataCM CreateActivityPayload(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO, string curEnvelopeId)
+        {
+            var conf = DocuSignService.SetUp(authTokenDO);
+            var payload = DocuSignService.GetEnvelopeRecipientsAndTabs(conf, curEnvelopeId);
+            return new StandardPayloadDataCM(payload.ToArray());
+        }
+
+        public void FillDocuSignTemplateSource(Crate configurationCrate, string controlName, AuthorizationTokenDO authToken)
+        {
+            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
+            var control = configurationControl.FindByNameNested<DropDownList>(controlName);
+            if (control != null)
+            {
+                var conf = DocuSignService.SetUp(authToken);
+                var templates = DocuSignService.GetTemplatesList(conf);
+                control.ListItems = templates.Select(x => new ListItem() { Key = x.Key, Value = x.Value }).ToList();
+            }
         }
 
         public virtual async System.Threading.Tasks.Task<Data.Entities.ActivityDO> Activate(Data.Entities.ActivityDO curActivityDO, Data.Entities.AuthorizationTokenDO authTokenDO)

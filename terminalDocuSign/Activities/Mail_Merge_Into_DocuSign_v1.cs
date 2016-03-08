@@ -145,11 +145,9 @@ namespace terminalDocuSign.Actions
                     }
                     else
                     {
-                        var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
-
                         //build a controls crate to render the pane
                         var configurationCrate = await CreateConfigurationControlsCrate(curActivityDO);
-                        _docuSignManager.FillDocuSignTemplateSource(configurationCrate, "DocuSignTemplate", docuSignAuthDTO);
+                        FillDocuSignTemplateSource(configurationCrate, "DocuSignTemplate", authTokenDO);
                         crateStorage.Add(configurationCrate);
                     }
                 }
@@ -217,15 +215,17 @@ namespace terminalDocuSign.Actions
                 {
                     configControl.ErrorMessage = "Please select a value";
                     noError = false;
-                }else
-                     configControl.ErrorMessage = null;
+                }
+                else
+                    configControl.ErrorMessage = null;
 
                 var sourceConfigControl = GetStdConfigurationControl<DropDownList>(crateStorage, "DataSource");
                 if (string.IsNullOrEmpty(sourceConfigControl.Value))
                 {
                     sourceConfigControl.ErrorMessage = "Please select a value";
                     noError = false;
-                }else
+                }
+                else
                     sourceConfigControl.ErrorMessage = null;
             }
 
@@ -257,7 +257,7 @@ namespace terminalDocuSign.Actions
             // If no values selected in textboxes, remain on initial phase
             DropDownList dataSource = GetStdConfigurationControl<DropDownList>(storage, "DataSource");
             if (dataSource.Value != null)
-            _dataSourceValue = dataSource.Value;
+                _dataSourceValue = dataSource.Value;
 
             _docuSignTemplate = GetStdConfigurationControl<DropDownList>(storage, "DocuSignTemplate");
 
@@ -279,18 +279,18 @@ namespace terminalDocuSign.Actions
         {
             if (ValidateDocuSignAtLeastOneTemplate(curActivityDO))
             {
-            using (var updater = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                // extract fields in docusign form
-                _docuSignManager.UpdateUserDefinedFields(
-                    curActivityDO,
-                    authTokenDO,
-                    updater,
-                    _docuSignTemplate.Value
-                );
-            }
+                using (var updater = CrateManager.GetUpdatableStorage(curActivityDO))
+                {
+                    // extract fields in docusign form
+                    AddOrUpdateUserDefinedFields(
+                        curActivityDO,
+                        authTokenDO,
+                        updater,
+                        _docuSignTemplate.Value
+                    );
+                }
 
-            var reconfigList = new List<ConfigurationRequest>()
+                var reconfigList = new List<ConfigurationRequest>()
             {
                 new ConfigurationRequest()
                 {
@@ -308,8 +308,8 @@ namespace terminalDocuSign.Actions
                 }
             };
 
-            var behavior = new ReconfigurationListBehavior(this);
-            await behavior.ReconfigureActivities(curActivityDO, authTokenDO, reconfigList);
+                var behavior = new ReconfigurationListBehavior(this);
+                await behavior.ReconfigureActivities(curActivityDO, authTokenDO, reconfigList);
 
             }
             return await Task.FromResult(curActivityDO);
@@ -337,7 +337,7 @@ namespace terminalDocuSign.Actions
             var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null))
                 .Select(x => Mapper.Map<ActivityTemplateDO>(x))
                 .ToList();
-            
+
             // Let's check if activity template generates table data
             var selectedReceiver = curActivityTemplates.Single(x => x.Name == _dataSourceValue);
             var dataSourceActivity = await AddAndConfigureChildActivity(
@@ -457,7 +457,7 @@ namespace terminalDocuSign.Actions
                 _docuSignTemplate.ListItems
                     .FirstOrDefault(a => a.Key == _docuSignTemplate.selectedKey)
             );
-            
+
             await ConfigureChildActivity(parentActivity, sendDocuSignActivity);
 
             return activityIndex == 1 ? sendDocuSignActivity : parentActivity;
@@ -541,7 +541,7 @@ namespace terminalDocuSign.Actions
             {
                 var curSolutionPage = GetDefaultDocumentation(SolutionName, SolutionVersion, TerminalName, SolutionBody);
                 return Task.FromResult(curSolutionPage);
-              
+
             }
             if (curDocumentation.Contains("HelpMenu"))
             {

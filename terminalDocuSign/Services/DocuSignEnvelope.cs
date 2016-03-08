@@ -75,16 +75,16 @@ namespace terminalDocuSign.Services
         /// List of Envelope Data.
         /// It returns empty list of envelope data if tab and signers not found.
         /// </summary>
-        public IList<DocuSignTabDTO> GetEnvelopeData(string curEnvelopeId)
-        {
-            if (string.IsNullOrEmpty(curEnvelopeId))
-            {
-                throw new ArgumentNullException("envelopeId");
-            }
-            EnvelopeId = curEnvelopeId;
-            GetRecipients(true, true);
-            return GetEnvelopeData(this);
-        }
+        //public IList<DocuSignTabDTO> GetEnvelopeData(string curEnvelopeId)
+        //{
+        //    if (string.IsNullOrEmpty(curEnvelopeId))
+        //    {
+        //        throw new ArgumentNullException("envelopeId");
+        //    }
+        //    EnvelopeId = curEnvelopeId;
+        //    GetRecipients(true, true);
+        //    return GetEnvelopeData(this);
+        //}
 
         // TODO: This implementation of the interface method is no different than what is already implemented in the other overload. Hence commenting out here and in the interface definition.
         // If not deleted, this will cause grief as DocuSingEnvelope (object in parameter) is defined in both the plugin project and the Data project  and interface expects it to be in Data.Wrappers 
@@ -113,18 +113,18 @@ namespace terminalDocuSign.Services
         /// List of Envelope Data.
         /// It returns empty list of envelope data if tab and signers not found.
         /// </returns>
-        public IList<DocuSignTabDTO> GetEnvelopeData(DocuSign.Integrations.Client.Envelope envelope)
-        {
-            Signer[] curSignersSet = _signer.GetFromRecipients(envelope);
-            if (curSignersSet != null)
-            {
-                foreach (var curSigner in curSignersSet)
-                {
-                    return _tab.ExtractEnvelopeData(envelope, curSigner);
-                }
-            }
-            return new List<DocuSignTabDTO>();
-        }
+        //public IList<DocuSignTabDTO> GetEnvelopeData(DocuSign.Integrations.Client.Envelope envelope)
+        //{
+        //    Signer[] curSignersSet = _signer.GetFromRecipients(envelope);
+        //    if (curSignersSet != null)
+        //    {
+        //        foreach (var curSigner in curSignersSet)
+        //        {
+        //            return _tab.ExtractEnvelopeData(envelope, curSigner);
+        //        }
+        //    }
+        //    return new List<DocuSignTabDTO>();
+        //}
 
         /// <summary>
         /// Creates Envelope payload, based on envelope data and default template fields
@@ -133,102 +133,102 @@ namespace terminalDocuSign.Services
         /// <param name="curEnvelopeId"></param>
         /// <param name="curEnvelopeData"></param>
         /// <returns></returns>
-        public IList<FieldDTO> FormEnvelopePayload(List<FieldDTO> curTemplateFields, string curEnvelopeId,
-            IList<DocuSignTabDTO> curEnvelopeData)
-        {
-            var payload = new List<FieldDTO>();
+        //public IList<FieldDTO> FormEnvelopePayload(List<FieldDTO> curTemplateFields, string curEnvelopeId,
+        //    IList<DocuSignTabDTO> curEnvelopeData)
+        //{
+        //    var payload = new List<FieldDTO>();
 
-            foreach (var envelopeData in curEnvelopeData)
-            {
-                payload.Add(new FieldDTO() { Key = envelopeData.Name, Value = envelopeData.Value });
-            }
+        //    foreach (var envelopeData in curEnvelopeData)
+        //    {
+        //        payload.Add(new FieldDTO() { Key = envelopeData.Name, Value = envelopeData.Value });
+        //    }
 
-            //add missing values from template
-            var missing_fields =
-             curTemplateFields.Where(a => !payload.Any(b => b.Key == a.Key));
+        //    //add missing values from template
+        //    var missing_fields =
+        //     curTemplateFields.Where(a => !payload.Any(b => b.Key == a.Key));
 
-            payload.AddRange(missing_fields.ToList());
+        //    payload.AddRange(missing_fields.ToList());
 
-            return payload;
-        }
+        //    return payload;
+        //}
 
-        public JObject GetTemplateDetails(string templateId)
-        {
-            var envelopeData = new List<DocuSignTabDTO>();
-            var curDocuSignTemplate = new DocuSignTemplate();
+        //public JObject GetTemplateDetails(string templateId)
+        //{
+        //    var envelopeData = new List<DocuSignTabDTO>();
+        //    var curDocuSignTemplate = new DocuSignTemplate();
 
-            if (string.IsNullOrEmpty(_email) || string.IsNullOrEmpty(_apiPassword))
-            {
-                curDocuSignTemplate.Login = new DocuSignPackager().Login();
-            }
-            else
-            {
-                curDocuSignTemplate.Login = new DocuSignPackager().Login(_email, _apiPassword);
-            }
+        //    if (string.IsNullOrEmpty(_email) || string.IsNullOrEmpty(_apiPassword))
+        //    {
+        //        curDocuSignTemplate.Login = new DocuSignPackager().Login();
+        //    }
+        //    else
+        //    {
+        //        curDocuSignTemplate.Login = new DocuSignPackager().Login(_email, _apiPassword);
+        //    }
 
-            return curDocuSignTemplate.GetTemplate(templateId);
-        }
+        //    return curDocuSignTemplate.GetTemplate(templateId);
+        //}
 
-        public List<FieldDTO> GetTemplateRoles(JObject templateDetails)
-        {
-            var result = new List<FieldDTO>();
-            var recipients = templateDetails["recipients"];
-            if (recipients != null && recipients["signers"] != null)
-            {
-                foreach (var signer in recipients["signers"])
-                {
-                    string rolename = signer["roleName"] == null 
-                        ? (signer["name"] == null 
-                            ? signer["email"].ToString() : signer["name"].ToString()) 
-                        : signer["roleName"].ToString();
-                    result.Add(new FieldDTO(string.Format("{0} role name", rolename)) { Tags = "recipientId:" + signer["recipientId"].ToString() });
-                    result.Add(new FieldDTO(string.Format("{0} role email", rolename)) { Tags = "recipientId:" + signer["recipientId"].ToString() });
-                }
-            }
-            return result;
-        }
+        //public List<FieldDTO> GetTemplateRoles(JObject templateDetails)
+        //{
+        //    var result = new List<FieldDTO>();
+        //    var recipients = templateDetails["recipients"];
+        //    if (recipients != null && recipients["signers"] != null)
+        //    {
+        //        foreach (var signer in recipients["signers"])
+        //        {
+        //            string rolename = signer["roleName"] == null 
+        //                ? (signer["name"] == null 
+        //                    ? signer["email"].ToString() : signer["name"].ToString()) 
+        //                : signer["roleName"].ToString();
+        //            result.Add(new FieldDTO(string.Format("{0} role name", rolename)) { Tags = "recipientId:" + signer["recipientId"].ToString() });
+        //            result.Add(new FieldDTO(string.Format("{0} role email", rolename)) { Tags = "recipientId:" + signer["recipientId"].ToString() });
+        //        }
+        //    }
+        //    return result;
+        //}
 
-        public IEnumerable<DocuSignTabDTO> GetTemplateEnvelopeData(JObject templateDetails)
-        {
-            //var envelopeData = new List<DocuSignTabDTO>();
-            //envelopeData = ExtractTabs(envelopeData, templateDetails).ToList();
+        //public IEnumerable<DocuSignTabDTO> GetTemplateEnvelopeData(JObject templateDetails)
+        //{
+        //    //var envelopeData = new List<DocuSignTabDTO>();
+        //    //envelopeData = ExtractTabs(envelopeData, templateDetails).ToList();
 
-            //return envelopeData;
-            return null;
-        }
+        //    //return envelopeData;
+        //    return null;
+        //}
 
-        public IEnumerable<DocuSignTabDTO> GetEnvelopeDataByTemplate(string templateId)
-        {
-            //var envelopeData = new List<DocuSignTabDTO>();
+        //public IEnumerable<DocuSignTabDTO> GetEnvelopeDataByTemplate(string templateId)
+        //{
+        //    //var envelopeData = new List<DocuSignTabDTO>();
 
-            //var curDocuSignTemplate = new DocuSignTemplate();
+        //    //var curDocuSignTemplate = new DocuSignTemplate();
 
-            //if (string.IsNullOrEmpty(_email) || string.IsNullOrEmpty(_apiPassword))
-            //{
-            //    curDocuSignTemplate.Login = new DocuSignPackager().Login();
-            //}
-            //else
-            //{
-            //    curDocuSignTemplate.Login = new DocuSignPackager().Login(_email, _apiPassword);
-            //}
+        //    //if (string.IsNullOrEmpty(_email) || string.IsNullOrEmpty(_apiPassword))
+        //    //{
+        //    //    curDocuSignTemplate.Login = new DocuSignPackager().Login();
+        //    //}
+        //    //else
+        //    //{
+        //    //    curDocuSignTemplate.Login = new DocuSignPackager().Login(_email, _apiPassword);
+        //    //}
 
-            //var templateDetails = curDocuSignTemplate.GetTemplate(templateId);
+        //    //var templateDetails = curDocuSignTemplate.GetTemplate(templateId);
 
-            //return ExtractTabs(envelopeData, templateDetails);
-            return null;
-        }
+        //    //return ExtractTabs(envelopeData, templateDetails);
+        //    return null;
+        //}
 
   
 
 
 
-        public void SendUsingTemplate(string templateId, string recipientAddress)
-        {
-            var curEnv = new Envelope();
-            var templateList = new List<string> { templateId };
-            curEnv.AddTemplates(templateList);
-            curEnv.Create();
-        }
+        //public void SendUsingTemplate(string templateId, string recipientAddress)
+        //{
+        //    var curEnv = new Envelope();
+        //    var templateList = new List<string> { templateId };
+        //    curEnv.AddTemplates(templateList);
+        //    curEnv.Create();
+        //}
 
    
     }

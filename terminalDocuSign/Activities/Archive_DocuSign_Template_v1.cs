@@ -69,9 +69,8 @@ namespace terminalDocuSign.Actions
 
         protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
             var configurationCrate = PackControls(new ActivityUi());
-            _docuSignManager.FillDocuSignTemplateSource(configurationCrate, "Available_Templates", docuSignAuthDTO);
+            FillDocuSignTemplateSource(configurationCrate, "Available_Templates", authTokenDO);
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {

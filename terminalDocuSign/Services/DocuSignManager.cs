@@ -105,34 +105,26 @@ namespace terminalDocuSign.Services
             return templateDTO;
         }
 
-        public Crate PackCrate_DocuSignTemplateNames(DocuSignAuthTokenDTO authToken)
-        {
-            var template = new DocuSignTemplate();
-            var templates = template.GetTemplateNames(authToken.Email, authToken.ApiPassword);
-            var fields = templates.Select(x => new FieldDTO() { Key = x.Name, Value = x.Id, Availability = AvailabilityType.Configuration }).ToArray();
-            var createDesignTimeFields = Crate.CreateDesignTimeFieldsCrate(
-                "Available Templates",
-                AvailabilityType.Configuration,
-                fields);
-            return createDesignTimeFields;
-        }
+        //public Crate PackCrate_DocuSignTemplateNames(DocuSignAuthTokenDTO authToken)
+        //{
+        //    var template = new DocuSignTemplate();
+        //    var templates = template.GetTemplateNames(authToken.Email, authToken.ApiPassword);
+        //    var fields = templates.Select(x => new FieldDTO() { Key = x.Name, Value = x.Id, Availability = AvailabilityType.Configuration }).ToArray();
+        //    var createDesignTimeFields = Crate.CreateDesignTimeFieldsCrate(
+        //        "Available Templates",
+        //        AvailabilityType.Configuration,
+        //        fields);
+        //    return createDesignTimeFields;
+        //}
 
-        public void FillDocuSignTemplateSource(Crate configurationCrate, string controlName,  DocuSignAuthTokenDTO authToken)
-        {
-            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
-            var control= configurationControl.FindByNameNested<DropDownList>(controlName);
-            if (control != null)
-            {
-                control.ListItems = GetDocuSignTemplates(authToken);
-            }
-        }
 
-        private List<ListItem> GetDocuSignTemplates(DocuSignAuthTokenDTO authToken)
-        {
-            var template = new DocuSignTemplate();
-            var templates = template.GetTemplateNames(authToken.Email, authToken.ApiPassword);
-            return templates.Select(x => new ListItem() { Key = x.Name, Value = x.Id }).ToList();
-        }
+
+        //private List<ListItem> GetDocuSignTemplates(DocuSignAuthTokenDTO authToken)
+        //{
+        //    var template = new DocuSignTemplate();
+        //    var templates = template.GetTemplateNames(authToken.Email, authToken.ApiPassword);
+        //    return templates.Select(x => new ListItem() { Key = x.Name, Value = x.Id }).ToList();
+        //}
 
         #region Fill Folder Source
 
@@ -167,51 +159,51 @@ namespace terminalDocuSign.Services
         }
         #endregion
 
-        public StandardPayloadDataCM CreateActivityPayload(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO, string curEnvelopeId, string templateId)
-        {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
+        //public StandardPayloadDataCM CreateActivityPayload(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO, string curEnvelopeId, string templateId)
+        //{
+        //    var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 
-            var docusignEnvelope = new DocuSignEnvelope(
-                docuSignAuthDTO.Email,
-                docuSignAuthDTO.ApiPassword);
+        //    var docusignEnvelope = new DocuSignEnvelope(
+        //        docuSignAuthDTO.Email,
+        //        docuSignAuthDTO.ApiPassword);
 
-            var templateFields = ExtractTemplateFieldsAndAddToCrate(templateId, docuSignAuthDTO, curActivityDO);
+        //    var templateFields = ExtractTemplateFieldsAndAddToCrate(templateId, docuSignAuthDTO, curActivityDO);
 
-            var curEnvelopeData = docusignEnvelope.GetEnvelopeData(curEnvelopeId);
-            var payload = docusignEnvelope.FormEnvelopePayload(templateFields.ToList(), curEnvelopeId, curEnvelopeData);
+        //    var curEnvelopeData = docusignEnvelope.GetEnvelopeData(curEnvelopeId);
+        //    var payload = docusignEnvelope.FormEnvelopePayload(templateFields.ToList(), curEnvelopeId, curEnvelopeData);
 
-            return new StandardPayloadDataCM(payload.ToArray());
-        }
+        //    return new StandardPayloadDataCM(payload.ToArray());
+        //}
 
 
-        //Has to be retrofit after https://maginot.atlassian.net/browse/FR-1280 is done
-        public string GetEnvelopeIdFromPayload(PayloadDTO curPayloadDTO)
-        {
-            var standardPayload = Crate.FromDto(curPayloadDTO.CrateStorage).CrateContentsOfType<StandardPayloadDataCM>().FirstOrDefault();
+        ////Has to be retrofit after https://maginot.atlassian.net/browse/FR-1280 is done
+        //public string GetEnvelopeIdFromPayload(PayloadDTO curPayloadDTO)
+        //{
+        //    var standardPayload = Crate.FromDto(curPayloadDTO.CrateStorage).CrateContentsOfType<StandardPayloadDataCM>().FirstOrDefault();
 
-            if (standardPayload == null)
-            {
-                return null;
-            }
+        //    if (standardPayload == null)
+        //    {
+        //        return null;
+        //    }
 
-            var envelopeId = standardPayload.GetValues("EnvelopeId").FirstOrDefault();
+        //    var envelopeId = standardPayload.GetValues("EnvelopeId").FirstOrDefault();
 
-            return envelopeId;
-        }
+        //    return envelopeId;
+        //}
 
-        public int UpdateUserDefinedFields(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO, IUpdatableCrateStorage updater, string templateId, string envelopeId = null)
-        {
-            int fieldCount = 0;
-            updater.RemoveByLabel("DocuSignTemplateUserDefinedFields");
-            if (!String.IsNullOrEmpty(templateId))
-            {
-                var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
-                var userDefinedFields = ExtractTemplateFieldsAndAddToCrate(templateId, docuSignAuthDTO, curActivityDO);
-                updater.Add(Crate.CreateDesignTimeFieldsCrate("DocuSignTemplateUserDefinedFields", AvailabilityType.RunTime, userDefinedFields.ToArray()));
-                fieldCount = userDefinedFields.Count();
-            }
-            return fieldCount;
-        }
+        //public int UpdateUserDefinedFields(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO, IUpdatableCrateStorage updater, string templateId, string envelopeId = null)
+        //{
+        //    int fieldCount = 0;
+        //    updater.RemoveByLabel("DocuSignTemplateUserDefinedFields");
+        //    if (!String.IsNullOrEmpty(templateId))
+        //    {
+        //        var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
+        //        var userDefinedFields = ExtractTemplateFieldsAndAddToCrate(templateId, docuSignAuthDTO, curActivityDO);
+        //        updater.Add(Crate.CreateDesignTimeFieldsCrate("DocuSignTemplateUserDefinedFields", AvailabilityType.RunTime, userDefinedFields.ToArray()));
+        //        fieldCount = userDefinedFields.Count();
+        //    }
+        //    return fieldCount;
+        //}
 
         /// <summary>
         /// Extracts fields from a DocuSign envelope.
@@ -220,50 +212,50 @@ namespace terminalDocuSign.Services
         /// <param name="docuSignAuthToken">DocuSign authentication token.</param>
         /// <param name="curActivityDO">ActionDO object representing the current action. The crate with extracted 
         /// fields will be added to this Action replacing any older instances of that crate.</param>
-        public IEnumerable<FieldDTO> ExtractTemplateFieldsAndAddToCrate(string templateId, DocuSignAuthTokenDTO docuSignAuthToken, ActivityDO curActivityDO)
-        {
-            if (!string.IsNullOrEmpty(templateId))
-            {
-                var docusignEnvelope = new DocuSignEnvelope(
-                    docuSignAuthToken.Email, docuSignAuthToken.ApiPassword);
+        //public IEnumerable<FieldDTO> ExtractTemplateFieldsAndAddToCrate(string templateId, DocuSignAuthTokenDTO docuSignAuthToken, ActivityDO curActivityDO)
+        //{
+        //    if (!string.IsNullOrEmpty(templateId))
+        //    {
+        //        var docusignEnvelope = new DocuSignEnvelope(
+        //            docuSignAuthToken.Email, docuSignAuthToken.ApiPassword);
 
-                var userDefinedFields = docusignEnvelope
-                    .GetEnvelopeDataByTemplate(templateId);
+        //        var userDefinedFields = docusignEnvelope
+        //            .GetEnvelopeDataByTemplate(templateId);
 
-                var fieldCollection = userDefinedFields
-                    .Select(f => new FieldDTO
-                    {
-                        Key = f.Name,
-                        Value = f.Value == string.Empty ? null : f.Value, //set value as null because is causing problems in upstream crates selection FR-2486 
-                        Availability = AvailabilityType.RunTime
-                    });
-                return fieldCollection;
-            }
+        //        var fieldCollection = userDefinedFields
+        //            .Select(f => new FieldDTO
+        //            {
+        //                Key = f.Name,
+        //                Value = f.Value == string.Empty ? null : f.Value, //set value as null because is causing problems in upstream crates selection FR-2486 
+        //                Availability = AvailabilityType.RunTime
+        //            });
+        //        return fieldCollection;
+        //    }
 
-            throw new ApplicationException("Docusign TemplateId is null or emty");
-        }
+        //    throw new ApplicationException("Docusign TemplateId is null or emty");
+        //}
 
-        public Crate CrateCrateFromFields(string docuSignTemplateId, DocuSignAuthTokenDTO docuSignAuthToken, string crateLabel)
-        {
-            if (!string.IsNullOrEmpty(docuSignTemplateId))
-            {
-                var docusignEnvelope = new DocuSignEnvelope(
-                    docuSignAuthToken.Email, docuSignAuthToken.ApiPassword);
+        //public Crate CrateCrateFromFields(string docuSignTemplateId, DocuSignAuthTokenDTO docuSignAuthToken, string crateLabel)
+        //{
+        //    if (!string.IsNullOrEmpty(docuSignTemplateId))
+        //    {
+        //        var docusignEnvelope = new DocuSignEnvelope(
+        //            docuSignAuthToken.Email, docuSignAuthToken.ApiPassword);
 
-                var userDefinedFields = docusignEnvelope
-                    .GetEnvelopeDataByTemplate(docuSignTemplateId);
+        //        var userDefinedFields = docusignEnvelope
+        //            .GetEnvelopeDataByTemplate(docuSignTemplateId);
 
-                var fieldCollection = userDefinedFields
-                    .Select(f => new FieldDTO
-                    {
-                        Key = f.Name,
-                        Value = f.Value
-                    });
+        //        var fieldCollection = userDefinedFields
+        //            .Select(f => new FieldDTO
+        //            {
+        //                Key = f.Name,
+        //                Value = f.Value
+        //            });
 
-                return Crate.CreateDesignTimeFieldsCrate(crateLabel, fieldCollection.ToArray());
-            }
-            return null;
-        }
+        //        return Crate.CreateDesignTimeFieldsCrate(crateLabel, fieldCollection.ToArray());
+        //    }
+        //    return null;
+        //}
 
         public int CountEnvelopes(DocuSignAuthTokenDTO authToken, DocusignQuery query)
         {

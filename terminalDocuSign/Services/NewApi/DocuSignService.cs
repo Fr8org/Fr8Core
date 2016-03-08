@@ -1,6 +1,7 @@
 ﻿using Data.Control;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
+using Data.States;
 using DocuSign.eSign.Api;
 using DocuSign.eSign.Client;
 using DocuSign.eSign.Model;
@@ -47,6 +48,19 @@ namespace terminalDocuSign.Services.New_Api
             return result;
         }
 
+        public static List<FieldDTO> GetTemplatesList(DocuSignApiConfiguration conf)
+        {
+            var tmpApi = new TemplatesApi(conf.Configuration);
+            var result = tmpApi.ListTemplates(conf.AccountId);
+            if (result.EnvelopeTemplates != null && result.EnvelopeTemplates.Count > 0)
+                return result.EnvelopeTemplates.Where(a => !string.IsNullOrEmpty(a.Name))
+                    .Select(a => new FieldDTO(a.Name, a.TemplateId) { Availability = AvailabilityType.Configuration }).ToList();
+            else
+                return new List<FieldDTO>();
+        }
+
+
+
         public static IEnumerable<FieldDTO> GetEnvelopeRecipientsAndTabs(DocuSignApiConfiguration conf, string envelopeId)
         {
             var envApi = new EnvelopesApi(conf.Configuration);
@@ -77,9 +91,10 @@ namespace terminalDocuSign.Services.New_Api
                 recipientsAndTabs.AddRange(DocuSignTab.MapTabsToFieldDTO(signersdocutabs));
             }
 
+            recipientsAndTabs.ForEach(a => a.Availability = AvailabilityType.RunTime);
+
             return new Tuple<IEnumerable<FieldDTO>, IEnumerable<DocuSignTabDTO>>(recipientsAndTabs, docuTabs);
         }
-
 
         public static void SendAnEnvelopeFromTemplate(DocuSignApiConfiguration loginInfo, List<FieldDTO> rolesList, List<FieldDTO> fieldList, string curTemplateId)
         {

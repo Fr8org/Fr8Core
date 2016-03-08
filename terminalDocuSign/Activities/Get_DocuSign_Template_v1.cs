@@ -99,9 +99,8 @@ namespace terminalDocuSign.Actions
 
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
-            var configurationCrate = CreateControlsCrate(docuSignAuthDTO);
-            _docuSignManager.FillDocuSignTemplateSource(configurationCrate, "Available_Templates", docuSignAuthDTO);
+            var configurationCrate = CreateControlsCrate();
+            FillDocuSignTemplateSource(configurationCrate, "Available_Templates", authTokenDO);
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
@@ -111,7 +110,7 @@ namespace terminalDocuSign.Actions
             return curActivityDO;
         }
 
-        private Crate CreateControlsCrate(DocuSignAuthTokenDTO authToken)
+        private Crate CreateControlsCrate()
         {
             var availableTemplates = new DropDownList
             {
