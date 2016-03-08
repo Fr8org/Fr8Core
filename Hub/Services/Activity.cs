@@ -31,17 +31,25 @@ using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
 using Microsoft.ApplicationInsights;
+using Utilities.Interfaces;
 
 namespace Hub.Services
 {
     public class Activity : IActivity
     {
+        #region Fields
+
         private readonly ICrateManager _crate;
         private readonly IAuthorization _authorizationToken;
         private readonly TelemetryClient _telemetryClient;
         private readonly ISecurityServices _security;
         private readonly IActivityTemplate _activityTemplate;
         private readonly IRouteNode _routeNode;
+        private readonly IPusherNotifier _pusherNotifier;
+
+        private const string PUSHER_EVENT_ACTIVITY_EXECUTION_INFO = "fr8pusher_activity_execution_info";
+
+        #endregion
 
         public Activity()
         {
@@ -51,6 +59,8 @@ namespace Hub.Services
             _crate = ObjectFactory.GetInstance<ICrateManager>();
             _telemetryClient = ObjectFactory.GetInstance<TelemetryClient>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
+            _event = ObjectFactory.GetInstance<Hub.Managers.Event>();
+            _pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
         }
 
         public IEnumerable<TViewModel> GetAllActivities<TViewModel>()
@@ -518,6 +528,21 @@ namespace Hub.Services
 
             try
             {
+                var plan = uow.PlanRepository.GetById<PlanDO>(curContainerDO.PlanId);
+
+                //create client notification that activity is starting with execution
+                if (curActivityDO.Fr8Account != null && plan != null && plan.Name != "LogFr8InternalEvents")
+                {
+                    string pusherChannel = string.Format("fr8pusher_{0}", curActivityDO.Fr8Account.UserName);
+                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_ACTIVITY_EXECUTION_INFO,
+                        new
+                        {
+                            ActivityName = curActivityDO.Label,
+                            PlanName = plan.Name,
+                            ContainerId = curContainerDO.Id.ToString(),
+                        });
+                }
+
                 var actionName = curActionState == ActivityState.InitialRun ? "Run" : "ExecuteChildActivities";
                 EventManager.OnActivityRunRequested(curActivityDO);
 

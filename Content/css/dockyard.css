@@ -942,3 +942,10 @@ div.activity-list::after {
     border-top: 1px solid #e5e5e5;
     margin-top: 10px;
 }
+
+.toast-activity-info {
+    display: block;
+    min-width: 200px;
+    text-align: left;
+    font-size: 13px;
+}
