@@ -63,7 +63,7 @@ namespace terminalDocuSign.Actions
             if (group == null)
             {
                 selectedOption = "template";
-                selectedValue = controls.Content.Controls.OfType<DropDownList>().First().Value;               
+                selectedValue = controls.Content.Controls.OfType<DropDownList>().First().Value;
             }
             else
             {
@@ -82,10 +82,10 @@ namespace terminalDocuSign.Actions
                         {
                             selectedTemplate = selectedListItem.Key;
                         }
-                    }                   
+                    }
                     //set the output values
                     selectedOption = pickedControl.Name;
-                    selectedValue = pickedControl.Controls[0].Value;                   
+                    selectedValue = pickedControl.Controls[0].Value;
                 }
                 else
                 {
@@ -252,12 +252,12 @@ namespace terminalDocuSign.Actions
                 {
                     case "template":
                         //filter the incoming envelope by template value selected by the user                       
-                        var incommingTemplate = GetValueForKey(payloadCrates, "TemplateName");
+                        var incommingTemplate = GetValueForEventKey(payloadCrates, "TemplateName");
                         if (incommingTemplate != null)
                         {
                             if (curSelectedTemplate == incommingTemplate)
                             {
-                                envelopeId = GetValueForKey(payloadCrates, "EnvelopeId");
+                                envelopeId = GetValueForEventKey(payloadCrates, "EnvelopeId");
                             }
                             else
                             {
@@ -268,13 +268,13 @@ namespace terminalDocuSign.Actions
                         break;
                     case "recipient":
                         //filter incoming envelope by recipient email address specified by the user
-                        var curRecipientEmail = GetValueForKey(payloadCrates, "RecipientEmail");
+                        var curRecipientEmail = GetValueForEventKey(payloadCrates, "RecipientEmail");
                         if (curRecipientEmail != null)
                         {
                             //if the incoming envelope's recipient is user specified one, get the envelope ID
                             if (curRecipientEmail.Equals(curSelectedValue))
                             {
-                                envelopeId = GetValueForKey(payloadCrates, "EnvelopeId");
+                                envelopeId = GetValueForEventKey(payloadCrates, "EnvelopeId");
                             }
                             else
                             {
@@ -297,7 +297,7 @@ namespace terminalDocuSign.Actions
             var fields = CreateDocuSignEventFields();
             foreach (var field in fields)
             {
-                field.Value = GetValueForKey(payloadCrates, field.Key);
+                field.Value = GetValueForEventKey(payloadCrates, field.Key);
             }
 
             //Create log message
@@ -321,7 +321,7 @@ namespace terminalDocuSign.Actions
                 crateStorage.Add(Data.Crates.Crate.FromContent("Log Messages", logMessages));
                 if (curSelectedOption == "template")
                 {
-                    var userDefinedFieldsPayload = _docuSignManager.CreateActivityPayload(curActivityDO, authTokenDO, envelopeId, curSelectedValue);
+                    var userDefinedFieldsPayload = CreateActivityPayload(curActivityDO, authTokenDO, envelopeId);
                     crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Data", userDefinedFieldsPayload));
                 }
             }
@@ -331,10 +331,9 @@ namespace terminalDocuSign.Actions
 
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 
             var configurationCrate = PackCrate_ConfigurationControls();
-            _docuSignManager.FillDocuSignTemplateSource(configurationCrate, "UpstreamCrate", docuSignAuthDTO);
+            FillDocuSignTemplateSource(configurationCrate, "UpstreamCrate", authTokenDO);
             var eventFields = CrateManager.CreateDesignTimeFieldsCrate("DocuSign Event Fields", AvailabilityType.RunTime, CreateDocuSignEventFields().ToArray());
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
@@ -359,7 +358,7 @@ namespace terminalDocuSign.Actions
                 UpdateSelectedEvents(crateStorage);
                 string selectedOption, selectedValue, selectedTemplate;
                 GetTemplateRecipientPickerValue(curActivityDO, out selectedOption, out selectedValue, out selectedTemplate);
-                _docuSignManager.UpdateUserDefinedFields(curActivityDO, authTokenDO, crateStorage, selectedValue);
+                AddOrUpdateUserDefinedFields(curActivityDO, authTokenDO, crateStorage, selectedValue);
             }
 
             return Task.FromResult<ActivityDO>(curActivityDO);
