@@ -147,6 +147,7 @@ namespace Hub.Managers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var template = _activityTemplate.GetByKey(activityDo.ActivityTemplateId);
 
                 var factDO = new FactDO()
                 {
@@ -159,7 +160,7 @@ namespace Hub.Managers
                     CreatedByID = _security.GetCurrentUser(),
                     Data = string.Join(
                     Environment.NewLine,
-                    "Activity Name: " + activityDo.ActivityTemplate.Name)
+                    "Activity Name: " + template?.Name)
                 };
 
                 uow.FactRepository.Add(factDO);
@@ -171,6 +172,8 @@ namespace Hub.Managers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var template = _activityTemplate.GetByKey(activityDo.ActivityTemplateId);
+
                 var factDO = new FactDO()
                 {
                     PrimaryCategory = "Container",
@@ -182,7 +185,7 @@ namespace Hub.Managers
                     CreatedByID = _security.GetCurrentUser(),
                     Data = string.Join(
                         Environment.NewLine,
-                        "Activity Name: " + activityDo.ActivityTemplate.Name
+                        "Activity Name: " + template?.Name
                     )
                 };
 
