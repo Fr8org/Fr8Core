@@ -19,6 +19,7 @@ using Utilities;
 using Utilities.Logging;
 using System.Data.Entity.Infrastructure;
 using System.Web.Mvc;
+using Data.Constants;
 
 //NOTES: Do NOT put Incidents here. Put them in IncidentReporter
 
@@ -81,6 +82,13 @@ namespace Hub.Managers
             EventManager.EventAuthenticationCompleted += PostToTerminalEventsEndPoint;
             EventManager.EventAuthTokenCreated += AuthTokenCreated;
             EventManager.EventAuthTokenRemoved += AuthTokenRemoved;
+
+            EventManager.PlanActivated += OnPlanActivated;
+            EventManager.PlanDeactivated += OnPlanDeactivated;
+            EventManager.ContainerExecutionCompleted += OnContainerExecutionCompleted;
+            EventManager.ActivityRunRequested += OnActivityRunRequested;
+            EventManager.ActivityResponseReceived += OnActivityResponseReceived;
+            EventManager.ProcessingTerminatedPerActivityResponse += OnProcessingTerminatedPerActivityResponse;
         }
 
         public void UnsubscribeFromAlerts()
@@ -125,8 +133,168 @@ namespace Hub.Managers
 
             EventManager.EventAuthTokenCreated -= AuthTokenCreated;
             EventManager.EventAuthTokenRemoved -= AuthTokenRemoved;
+
+            EventManager.PlanActivated -= OnPlanActivated;
+            EventManager.PlanDeactivated -= OnPlanDeactivated;
+            EventManager.ContainerExecutionCompleted -= OnContainerExecutionCompleted;
+            EventManager.ActivityRunRequested -= OnActivityRunRequested;
+            EventManager.ActivityResponseReceived -= OnActivityResponseReceived;
+            EventManager.ProcessingTerminatedPerActivityResponse -= OnProcessingTerminatedPerActivityResponse;
+
         }
 
+        private void OnActivityResponseReceived(ActivityDO activityDo, ActivityResponse responseType)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var template = _activityTemplate.GetByKey(activityDo.ActivityTemplateId);
+
+                var factDO = new FactDO()
+                {
+                    PrimaryCategory = "Container",
+                    SecondaryCategory = "Activity",
+                    Activity = "Process Execution",
+                    Status = responseType.ToString(),
+                    ObjectId = activityDo.Id.ToString(),
+                    CustomerId = _security.GetCurrentUser(),
+                    CreatedByID = _security.GetCurrentUser(),
+                    Data = string.Join(
+                    Environment.NewLine,
+                    "Activity Name: " + template?.Name)
+                };
+
+                uow.FactRepository.Add(factDO);
+                uow.SaveChanges();
+            }
+        }
+
+        private void OnActivityRunRequested(ActivityDO activityDo)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var template = _activityTemplate.GetByKey(activityDo.ActivityTemplateId);
+
+                var factDO = new FactDO()
+                {
+                    PrimaryCategory = "Container",
+                    SecondaryCategory = "Activity",
+                    Activity = "Process Execution",
+                    Status = "Activity Execution Initiating",
+                    ObjectId = activityDo.Id.ToString(),
+                    CustomerId = _security.GetCurrentUser(),
+                    CreatedByID = _security.GetCurrentUser(),
+                    Data = string.Join(
+                        Environment.NewLine,
+                        "Activity Name: " + template?.Name
+                    )
+                };
+
+                uow.FactRepository.Add(factDO);
+                uow.SaveChanges();
+            }
+        }
+
+        private void OnContainerExecutionCompleted(ContainerDO containerDO)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var factDO = new FactDO()
+                {
+                    PrimaryCategory = "Container Execution",
+                    SecondaryCategory = "Container",
+                    Activity = "Launched",
+                    ObjectId = containerDO.Id.ToString(),
+                    CustomerId = _security.GetCurrentUser(),
+                    CreatedByID = _security.GetCurrentUser(),
+                    Data = string.Join(
+                        Environment.NewLine,
+                        "Container Id: " + containerDO.Id,
+                        "Plan Id: " + containerDO.PlanId
+                    ),
+                };
+
+                uow.FactRepository.Add(factDO);
+                uow.SaveChanges();
+            }
+        }
+
+        private FactDO CreatedPlanFact(Guid planId, string state)
+        {
+            var factDO = new FactDO()
+            {
+                PrimaryCategory = "Plan",
+                SecondaryCategory = "PlanState",
+                Activity = "StateChanged",
+                ObjectId = planId.ToString(),
+                CustomerId = _security.GetCurrentUser(),
+                CreatedByID = _security.GetCurrentUser(),
+                Data = string.Join(
+                Environment.NewLine,
+                    "Plan State: " + state
+                )
+            };
+
+            return factDO;
+        }
+
+        private void OnPlanDeactivated(Guid planId)
+        {
+            using (var uowFact = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                PlanDO planDO = null;
+                using (var uowPlan = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    planDO = uowPlan.PlanRepository.GetById<PlanDO>(planId);
+                }
+                if (planDO != null)
+                {
+                    var factDO = CreatedPlanFact(planId, "Deactivated");
+                    uowFact.FactRepository.Add(factDO);
+                    uowFact.SaveChanges();
+                }
+            }
+        }
+
+        private void OnPlanActivated(Guid planId)
+        {
+            using (var uowFact = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                PlanDO planDO = null;
+                using (var uowPlan = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    planDO = uowPlan.PlanRepository.GetById<PlanDO>(planId);
+                }
+                if (planDO != null)
+                {
+                    var factDO = CreatedPlanFact(planId, "Activated");
+                    uowFact.FactRepository.Add(factDO);
+                    uowFact.SaveChanges();
+                }
+            }
+        }
+
+        private void OnProcessingTerminatedPerActivityResponse(ContainerDO containerDO, ActivityResponse resposneType)
+        {
+            using (var uowFact = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var factDO = new FactDO()
+                {
+                    PrimaryCategory = "Container Execution",
+                    SecondaryCategory = "Container",
+                    Activity = "Terminated",
+                    Status = resposneType.ToString(),
+                    ObjectId = containerDO.Id.ToString(),
+                    CreatedByID = _security.GetCurrentUser(),
+                    CustomerId = _security.GetCurrentUser(),
+                    Data = string.Join(
+                    Environment.NewLine,
+                   "Container Id: " + containerDO.Name)
+                };
+
+                uowFact.FactRepository.Add(factDO);
+                uowFact.SaveChanges();
+            }
+        }
         //private void StaleBookingRequestsDetected(BookingRequestDO[] oldBookingRequests)
         //{
         //    string toNumber = ObjectFactory.GetInstance<IConfigRepository>().Get<string>("TwilioToNumber");
@@ -186,6 +354,7 @@ namespace Hub.Managers
 
         //    Logger.GetLogger().Info(string.Format("Reservation Timed out. BookingRequest ID : {0}, Booker ID: {1}", bookingRequestId, bookerId));
         //}
+
 
         private string FormatTerminalName(AuthorizationTokenDO authorizationToken)
         {
@@ -928,7 +1097,7 @@ namespace Hub.Managers
             var uow = ObjectFactory.GetInstance<IUnitOfWork>();
             //In the GetByKey I make use of dictionary datatype: https://msdn.microsoft.com/en-us/data/jj592677.aspx
             var curContainerDO = uow.ContainerRepository.GetByKey(currentValues[currentValues.PropertyNames.First()]);
-            CreateContainerFact(curContainerDO, "State Change");
+            CreateContainerFact(curContainerDO, "StateChanged");
 
 
         }

@@ -148,10 +148,6 @@ namespace DockyardTest.Services
         {
             string crateStorage = GetCrateStorageAsString();
 
-            Mock<Hub.Managers.Event> eventMock = new Mock<Hub.Managers.Event>(MockBehavior.Default);
-            eventMock.Setup(ev => ev.Publish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
-                It.IsAny<string>(), It.IsAny<string>())).Returns(Task.Delay(1));
-            ObjectFactory.Container.Inject(typeof(Hub.Managers.Event), eventMock.Object);
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -196,10 +192,6 @@ namespace DockyardTest.Services
         public async Task Execute_ManyActivities_ShouldBeOk()
         {
             string crateStorage = GetCrateStorageAsString();
-            Mock<Hub.Managers.Event> eventMock = new Mock<Hub.Managers.Event>(MockBehavior.Default);
-            eventMock.Setup(ev => ev.Publish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
-                It.IsAny<string>(), It.IsAny<string>())).Returns(Task.Delay(1));
-            ObjectFactory.Container.Inject(typeof(Hub.Managers.Event), eventMock.Object);
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
