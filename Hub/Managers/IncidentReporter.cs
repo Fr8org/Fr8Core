@@ -615,7 +615,7 @@ namespace Hub.Managers
 
         public void IncidentMissingFieldInPayload(string fieldKey, ActivityDO activity, string curUserId)
         {
-            
+            var template = _activityTemplate.GetByKey(activity.ActivityTemplateId);
 
             IncidentDO incidentDO = new IncidentDO
             {
@@ -626,7 +626,7 @@ namespace Hub.Managers
                 CustomerId = curUserId,
                 Data =
                     String.Format("MissingFieldInPayload: ActionName: {0}, Field name: {1}, ActionId {2}",
-                        activity.ActivityTemplate.Name, fieldKey, activity.Id)
+                        template?.Name, fieldKey, activity.Id)
             };
             LogIncident(incidentDO);
         }

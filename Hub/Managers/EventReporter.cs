@@ -160,7 +160,7 @@ namespace Hub.Managers
                     CreatedByID = _security.GetCurrentUser(),
                     Data = string.Join(
                     Environment.NewLine,
-                    "Activity Name: " + template.Name)
+                    "Activity Name: " + template?.Name)
                 };
 
                 uow.FactRepository.Add(factDO);
@@ -185,7 +185,7 @@ namespace Hub.Managers
                     CreatedByID = _security.GetCurrentUser(),
                     Data = string.Join(
                         Environment.NewLine,
-                        "Activity Name: " + template.Name
+                        "Activity Name: " + template?.Name
                     )
                 };
 
