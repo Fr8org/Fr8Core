@@ -872,6 +872,7 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\DatePicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\SourceableCriteria.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\CrateChooser.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\TimePicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamCrateChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamFieldChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Resizable.ts" />
@@ -992,6 +993,7 @@
     <Content Include="Views\AngularTemplate\CrateChooser.cshtml" />
     <Content Include="Views\AngularTemplate\_RouteReportList.cshtml" />
     <Content Include="Views\AngularTemplate\RouteReportList.cshtml" />
+    <Content Include="Views\AngularTemplate\TimePicker.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -4344,6 +4346,7 @@
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\bootstrap-switch\bootstrap-switch.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jasmine\jasmine.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\jquery\bootstrap.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\Metronic.d.ts" />
     <TypeScriptCompile Include="Scripts\app\_all.ts" />

@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 using Data.Interfaces.DataTransferObjects;
 
 namespace Hub.Exceptions
@@ -16,8 +12,8 @@ namespace Hub.Exceptions
         {
         }
 
-        public ErrorResponseException(ContainerDTO containerDTO)
-            : base("")
+        public ErrorResponseException(ContainerDTO containerDTO, string errorMessage = "")
+            : base(errorMessage ?? string.Empty)
         {
             ContainerDTO = containerDTO;
         }

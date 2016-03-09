@@ -2,7 +2,6 @@
 using StructureMap;
 using TerminalBase.Infrastructure;
 using System.Threading.Tasks;
-using terminalFr8Core.Services;
 using terminalFr8Core.Interfaces;
 
 namespace terminalFr8Core.Controllers
@@ -16,7 +15,6 @@ namespace terminalFr8Core.Controllers
 
         public EventController()
         {
-            _event = new Event();
             _baseTerminalEvent = new BaseTerminalEvent();
         }
 
@@ -25,8 +23,8 @@ namespace terminalFr8Core.Controllers
         public async Task<IHttpActionResult> ProcessIncomingNotification()
         {
             //Implement the processing logic of dockyard core terminal
-            string eventPayLoadContent = await Request.Content.ReadAsStringAsync();
-            await _baseTerminalEvent.Process(eventPayLoadContent, _event.Process);
+            //string eventPayLoadContent = await Request.Content.ReadAsStringAsync();
+            //await _baseTerminalEvent.Process(eventPayLoadContent, _event.Process);
             return Ok("Processed Fr8 events notification successfully.");
         }
     }

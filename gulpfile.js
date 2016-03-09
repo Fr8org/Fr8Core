@@ -100,6 +100,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/Controls/SourceableCriteria.js',
         'Scripts/app/directives/Controls/InputFocus.js',
         'Scripts/app/directives/Controls/Counter.js',
+        'Scripts/app/directives/Controls/TimePicker.js',
         'Scripts/app/directives/Controls/Duration.js',
         'Scripts/app/directives/Controls/DatePicker.js',
         'Scripts/app/directives/Controls/UpstreamDataChooser.js',
