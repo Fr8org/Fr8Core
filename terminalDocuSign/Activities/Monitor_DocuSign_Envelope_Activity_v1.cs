@@ -1,4 +1,3 @@
-using System.Web.UI;
 using Data.Constants;
 using Data.Entities;
 using TerminalBase.Infrastructure;
@@ -12,15 +11,11 @@ using Hub.Managers;
 using Newtonsoft.Json;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using TerminalBase;
 using DocuSign.Integrations.Client;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Services;
-using TerminalBase.BaseClasses;
-using Utilities.Configuration.Azure;
 using Data.States;
-using Data.Interfaces.DataTransferObjects.Helpers;
 
 namespace terminalDocuSign.Actions
 {
@@ -37,7 +32,6 @@ namespace terminalDocuSign.Actions
         public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             CheckAuthentication(authTokenDO);
-
             return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
         }
 
@@ -48,29 +42,22 @@ namespace terminalDocuSign.Actions
                 : ConfigurationRequestType.Followup;
         }
 
-
-        private void GetTemplateRecipientPickerValue(ActivityDO curActivityDO, out string selectedOption,
-                                                     out string selectedValue, out string selectedTemplate)
+        private void GetTemplateRecipientPickerValue(ActivityDO curActivityDO, out string selectedOption, out string selectedValue, out string selectedTemplate)
         {
-            GetTemplateRecipientPickerValue(CrateManager.GetStorage(curActivityDO), out selectedOption, out selectedValue, out selectedTemplate);
-        }
-
-        private void GetTemplateRecipientPickerValue(ICrateStorage storage, out string selectedOption, out string selectedValue, out string selectedTemplate)
-        {
-            var controls = storage.FirstCrate<StandardConfigurationControlsCM>(x => x.Label == "Configuration_Controls");
+            var controls = CrateManager.GetStorage(curActivityDO).FirstCrate<StandardConfigurationControlsCM>(x => x.Label == "Configuration_Controls");
             selectedTemplate = string.Empty;
-            var group = controls.Content.Controls.OfType<RadioButtonGroup>().FirstOrDefault();
-            if (group == null)
+            var @group = controls.Content.Controls.OfType<RadioButtonGroup>().FirstOrDefault();
+            if (@group == null)
             {
                 selectedOption = "template";
-                selectedValue = controls.Content.Controls.OfType<DropDownList>().First().Value;               
+                selectedValue = controls.Content.Controls.OfType<DropDownList>().First().Value;
             }
             else
             {
-                if (group.Radios.Any(x => x.Selected))
+                if (@group.Radios.Any(x => x.Selected))
                 {
                     //get the option which is selected from the Template/Recipient picker
-                    var pickedControl = group.Radios.Single(r => r.Selected);
+                    var pickedControl = @group.Radios.Single(r => r.Selected);
                     if (pickedControl.Controls[0].Type == ControlTypes.DropDownList)
                     {
                         var templateControl = pickedControl.Controls[0] as DropDownList;
@@ -82,10 +69,10 @@ namespace terminalDocuSign.Actions
                         {
                             selectedTemplate = selectedListItem.Key;
                         }
-                    }                   
+                    }
                     //set the output values
                     selectedOption = pickedControl.Name;
-                    selectedValue = pickedControl.Controls[0].Value;                   
+                    selectedValue = pickedControl.Controls[0].Value;
                 }
                 else
                 {
@@ -94,10 +81,7 @@ namespace terminalDocuSign.Actions
                     selectedTemplate = string.Empty;
                 }
             }
-            if (selectedOption == "template")
-            {
-                selectedTemplate = selectedValue;
-            }
+            //selectedTemplate = selectedOption == "template" ? selectedValue : string.Empty;
         }
 
         private void GetUserSelectedEnvelopeEvents(ActivityDO curActivityDO, out bool youSent, out bool someoneReceived, out bool recipientSigned)
@@ -109,30 +93,27 @@ namespace terminalDocuSign.Actions
             recipientSigned = eventCheckBoxes.Any(c => c.Name == "Event_Recipient_Signed" && c.Selected);
         }
 
-        private string GetDocusignPublishUrl()
-        {
-            var endPoint = CloudConfigurationManager.GetSetting("TerminalEndpoint");
-            return "http://" + endPoint + "/terminals/terminalDocuSign/events";
-        }
-
         public override Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            ValidateEnvelopeSelectableEvents(curActivityDO);
+            string errorMessage;
+            ValidateActivity(curActivityDO, out errorMessage);
             //create DocuSign account, publish URL and other user selected options
             bool youSent, someoneReceived, recipientSigned;
             GetUserSelectedEnvelopeEvents(curActivityDO, out youSent, out someoneReceived, out recipientSigned);
-
             //create or update the DocuSign connect profile configuration
             CreateOrUpdateDocuSignConnectConfiguration(youSent, someoneReceived, recipientSigned);
-            //TODO: probably create or update template 
-
-            return Task.FromResult<ActivityDO>(curActivityDO);
+            return Task.FromResult(curActivityDO);
         }
 
         protected override async Task<ICrateStorage> ValidateActivity(ActivityDO curActivityDO)
         {
-            ValidateEnvelopeSelectableEvents(curActivityDO);
-            return await Task.FromResult<ICrateStorage>(null);
+            string errorMessage;
+            if (ValidateActivity(curActivityDO, out errorMessage))
+            {
+                return await Task.FromResult<ICrateStorage>(null);
+            }
+            return await Task.FromResult(new CrateStorage(Crate<FieldDescriptionsCM>.FromContent("Validation Errors",
+                                                                                                 new FieldDescriptionsCM(new FieldDTO("Error Message", errorMessage)))));
         }
 
         /// <summary>
@@ -153,49 +134,139 @@ namespace terminalDocuSign.Actions
             return null;
         }
 
-        /// <summary>
-        /// Validate that at least one checkbox has been selected for envelope events
-        /// Validate that at least one radiobutton has been selected for 
-        /// </summary>
-        /// <param name="curActivityDO"></param>
-        /// <returns>True when validation is on/false on problem</returns>
-        private void ValidateEnvelopeSelectableEvents(ActivityDO curActivityDO)
+        private bool ValidateActivity(ActivityDO curActivityDO, out string errorMessage)
         {
+            var errorMessages = new List<string>();
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 var configControls = GetConfigurationControls(crateStorage);
+
                 if (configControls == null)
                 {
-                    return;
+                    errorMessage = "Monitor DocuSign Activity doesn't contain crate with configuration controls";
+                    return false;
                 }
-                var eventCheckBoxes = configControls.Controls.Where(c => c.Type == ControlTypes.CheckBox).ToList();
-                var anySelectedControl = eventCheckBoxes.Any(c => c.Selected);
-
-                var checkBoxControl = eventCheckBoxes.FirstOrDefault(x => x.Name == "Event_Recipient_Signed");
-                if (checkBoxControl != null) checkBoxControl.ErrorMessage = string.Empty;
-                if (!anySelectedControl && checkBoxControl != null)
+                if (!AtLeastOneNotificationIsSelected(configControls, out errorMessage))
                 {
-                    //show the error under the third checkbox because checkboxes are rendered like separate controls
-                    checkBoxControl.ErrorMessage = "At least one notification checkbox must be checked.";
+                    errorMessages.Add(errorMessage);
                 }
-
-                var groupControl = configControls.Controls.OfType<RadioButtonGroup>().FirstOrDefault();
-                if (groupControl == null)
+                if (EnvelopeConditionIsSelected(configControls, out errorMessage))
                 {
-                    return;
+                    if (RecipientIsRequired(configControls) && !RecipientIsSet(configControls, out errorMessage))
+                    {
+                        errorMessages.Add(errorMessage);
+                    }
+                    if (TemplateIsRequired(configControls))
+                    {
+                        if (AtLeastOneTemplateExists(configControls, out errorMessage))
+                        {
+                            if (!TemplateIsSelected(configControls, out errorMessage))
+                            {
+                                errorMessages.Add(errorMessage);
+                            }
+                        }
+                        else
+                        {
+                            errorMessages.Add(errorMessage);
+                        }
+                    }
                 }
-                groupControl.ErrorMessage = !groupControl.Radios.Any(x => x.Selected) ? "One option from the radio buttons must be selected." : string.Empty;
-
-                var templateSelector = groupControl.Radios.FirstOrDefault(x => x.Name == "template")?.Controls.OfType<DropDownList>().FirstOrDefault();
-                if (templateSelector == null)
+                else
                 {
-                    return;
+                    errorMessages.Add(errorMessage);
                 }
-                templateSelector.ErrorMessage = string.IsNullOrEmpty(templateSelector.selectedKey) ? "Template is not selected" : string.Empty;
+                if (errorMessages.Count > 0)
+                {
+                    errorMessage = string.Join(Environment.NewLine, errorMessages);
+                }
             }
+            return errorMessages.Count == 0;
+        }
+        private bool TemplateIsSelected(StandardConfigurationControlsCM configControls, out string errorMessage)
+        {
+            var templateList = GetTemplateRadioOption(configControls)
+                .Controls
+                .OfType<DropDownList>()
+                .First();
+            var result = !string.IsNullOrEmpty(templateList.selectedKey);
+            templateList.ErrorMessage = errorMessage = result ? string.Empty : "Template is not selected";
+            return result;
+        }
+        private bool AtLeastOneTemplateExists(StandardConfigurationControlsCM configControls, out string errorMessage)
+        {
+            var templateList = GetTemplateRadioOption(configControls)
+                .Controls
+                .OfType<DropDownList>()
+                .First();
+            var result = templateList.ListItems.Count > 0;
+            templateList.ErrorMessage = errorMessage = result ? string.Empty : "Please link at least one template to your DocuSign account";
+            return result;
+        }
+        private bool TemplateIsRequired(StandardConfigurationControlsCM configControls)
+        {
+            return GetTemplateRadioOption(configControls).Selected;
+        }
+        private bool RecipientIsSet(StandardConfigurationControlsCM configControls, out string errorMessage)
+        {
+            //TODO: set TextBox.ErrorMessage when it will be fixed on front-end side
+            var recipientTextBox = GetRecipientRadioOption(configControls)
+                .Controls
+                .First();
+            var result = !string.IsNullOrEmpty(recipientTextBox.Value);
+            GetEnvelopeRadioGroup(configControls).ErrorMessage = errorMessage = result ? string.Empty : "Recipient is not set";
+            return result;
+        }
+        private bool RecipientIsRequired(StandardConfigurationControlsCM configControls)
+        {
+            return GetRecipientRadioOption(configControls).Selected;
+        }
+        private bool AtLeastOneNotificationIsSelected(StandardConfigurationControlsCM configControls, out string errorMessage)
+        {
+            var eventCheckBoxes = configControls.Controls.Where(c => c.Type == ControlTypes.CheckBox).ToArray();
+            var anySelectedControl = eventCheckBoxes.Any(c => c.Selected);
+            var checkBoxControl = eventCheckBoxes.FirstOrDefault(x => x.Name == "Event_Recipient_Signed");
+            errorMessage = anySelectedControl ? string.Empty : "At least one notification checkbox must be checked.";
+            if (checkBoxControl != null)
+            {
+                checkBoxControl.ErrorMessage = errorMessage;
+            }
+            return string.IsNullOrEmpty(errorMessage);
+        }
+        private bool EnvelopeConditionIsSelected(StandardConfigurationControlsCM configControls, out string errorMessage)
+        {
+            var groupControl = configControls.Controls.OfType<RadioButtonGroup>().FirstOrDefault();
+            errorMessage = groupControl == null
+                               ? "Configuration controls doesn't contain envelope condition selector."
+                               : groupControl.Radios.Any(x => x.Selected)
+                                    ? string.Empty
+                                    : "One option from the radio buttons must be selected.";
+            if (groupControl != null)
+            {
+                groupControl.ErrorMessage = errorMessage;
+            }
+            return string.IsNullOrEmpty(errorMessage);
+        }
+        private static RadioButtonGroup GetEnvelopeRadioGroup(StandardConfigurationControlsCM configControls)
+        {
+            return configControls
+                .Controls
+                .OfType<RadioButtonGroup>()
+                .First();
         }
 
+        private RadioButtonOption GetRecipientRadioOption(StandardConfigurationControlsCM configControls)
+        {
+            return GetEnvelopeRadioGroup(configControls)
+                .Radios
+                .First(x => x.Name == "recipient");
+        }
 
+        private RadioButtonOption GetTemplateRadioOption(StandardConfigurationControlsCM configControls)
+        {
+            return GetEnvelopeRadioGroup(configControls)
+                .Radios
+                .First(x => x.Name == "template");
+        }
         /// <summary>
         /// Creates or Updates a Docusign connect configuration named "DocuSignConnectName" for current user
         /// </summary>
@@ -231,18 +302,21 @@ namespace terminalDocuSign.Actions
                 docuSignAccount.DeleteDocuSignConnectProfile(existingConfig.connectId);
             }
 
-            return Task.FromResult<ActivityDO>(curActivityDO);
+            return Task.FromResult(curActivityDO);
         }
 
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payloadCrates = await GetPayload(curActivityDO, containerId);
-
             if (NeedsAuthentication(authTokenDO))
             {
                 return NeedsAuthenticationError(payloadCrates);
             }
-
+            string errorMessage;
+            if (!ValidateActivity(curActivityDO, out errorMessage))
+            {
+                return Error(payloadCrates, $"Could not run Monitor DocuSign Envelope Activity because of the below issues{Environment.NewLine}{errorMessage}", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+            }
             //get currently selected option and its value
             string curSelectedOption, curSelectedValue, curSelectedTemplate;
             GetTemplateRecipientPickerValue(curActivityDO, out curSelectedOption, out curSelectedValue, out curSelectedTemplate);
@@ -348,7 +422,7 @@ namespace terminalDocuSign.Actions
                 crateStorage.Remove<EventSubscriptionCM>();
                 crateStorage.Add(PackCrate_EventSubscriptions(configurationCrate.Get<StandardConfigurationControlsCM>()));
             }
-            return await Task.FromResult<ActivityDO>(curActivityDO);
+            return await Task.FromResult(curActivityDO);
         }
 
         protected override Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
@@ -362,7 +436,7 @@ namespace terminalDocuSign.Actions
                 _docuSignManager.UpdateUserDefinedFields(curActivityDO, authTokenDO, crateStorage, selectedValue);
             }
 
-            return Task.FromResult<ActivityDO>(curActivityDO);
+            return Task.FromResult(curActivityDO);
         }
 
         /// <summary>
@@ -463,17 +537,6 @@ namespace terminalDocuSign.Actions
                     new ControlEvent("onChange", "requestConfig")
                 }
             };
-
-            // remove by FR-1766
-            //var fieldEventRecipientSent = new CheckBox()
-            //{
-            //    Label = "Recipient Sent",
-            //    Name = "Event_Recipient_Sent",
-            //    Events = new List<ControlEvent>()
-            //    {
-            //        new ControlEvent("onChange", "requestConfig")
-            //    }
-            //};
 
             return PackControlsCrate(
                 textArea,
