@@ -61,5 +61,22 @@ namespace HubWeb.Controllers
             }
             return Ok(incidentList);
         }
-	}
+        //[Route("api/report/getincidents?page={page}&pageSize={pageSize}")]
+        public IHttpActionResult GetIncidents(int page, int pageSize)
+        {
+            List<IncidentDO> incidentList = null;
+            try
+            {
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    incidentList = _report.GetIncidents(uow, page, pageSize);
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.GetLogger().Error("Error checking for activity template ", e);
+            }
+            return Ok(incidentList);
+        }
+    }
 }

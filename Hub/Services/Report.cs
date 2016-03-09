@@ -63,11 +63,28 @@ namespace Hub.Services
             //get the role id
             if (curAccountRoles.Any(x => x.RoleId == adminRoleId))
             curIncidents = uow.IncidentRepository.GetQuery()
-                .Take(20)
                 .OrderByDescending(i => i.CreateDate)
                 .Take(200).ToList();
             return curIncidents;
         }
 
+        public List<IncidentDO> GetIncidents(IUnitOfWork uow, int page, int pageSize)
+        {
+            //get the current account
+            var curAccount = _security.GetCurrentAccount(uow);
+            //get the roles to check if the account has admin role
+            var curAccountRoles = curAccount.Roles;
+            //prepare variable for incidents
+            var curIncidents = new List<IncidentDO>();
+            var adminRoleId = uow.AspNetRolesRepository.GetQuery().Single(r => r.Name == "Admin").Id;
+            //get the role id
+            if (curAccountRoles.Any(x => x.RoleId == adminRoleId))
+                curIncidents = uow.IncidentRepository.GetQuery()
+                    .OrderByDescending(i => i.CreateDate)
+                    .Take(1000)
+                    .Page(page, pageSize)
+                    .ToList();
+            return curIncidents;
+        }
     }
 }

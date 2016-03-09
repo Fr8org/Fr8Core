@@ -12,5 +12,6 @@ namespace Hub.Interfaces
     {
         List<FactDO> GetAllFacts(IUnitOfWork uow);
         List<IncidentDO> GetAllIncidents(IUnitOfWork uow);
+        List<IncidentDO> GetIncidents(IUnitOfWork uow, int page, int pageSize);
     }
 }
