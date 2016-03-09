@@ -179,7 +179,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public void Mail_Merge_Into_DocuSign_FollowUp_Configuration_Check_ChildActivity_Extract_Spreadsheet_Data()
+        public void Mail_Merge_Into_DocuSign_FollowUp_Configuration_Check_ChildActivity_Get_Google_Sheet_Data()
         {
             //string childAction = "Extract Spreadsheet Data";
             //var configureUrl = GetTerminalConfigureUrl();

@@ -180,7 +180,8 @@ namespace terminalFr8Core.Controllers
                 Terminal = terminal,
                 WebService = webService,
                 Version = "1",
-                Type = ActivityType.Loop
+                Type = ActivityType.Loop,
+                Tags = "AggressiveReload"
             });
 
             result.Add(new ActivityTemplateDTO()
