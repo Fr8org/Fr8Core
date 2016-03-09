@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Helpers;
 using AutoMapper;
 using Data.Constants;
 using Data.Crates;
@@ -12,15 +11,14 @@ using NUnit.Framework;
 using StructureMap;
 using Data.Entities;
 using Data.Infrastructure;
+using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using Hub.Services;
-using Newtonsoft.Json.Linq;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using UtilitiesTesting;
@@ -127,7 +125,7 @@ namespace DockyardTest.Services
         [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
         public async Task Activity_Configure_WithNullActionTemplate_ThrowsArgumentNullException()
         {
-            var _service = new Action();
+            var _service = new Activity(ObjectFactory.GetInstance<ICrateManager>(), ObjectFactory.GetInstance<IAuthorization>(), ObjectFactory.GetInstance<ISecurityServices>(), ObjectFactory.GetInstance<IActivityTemplate>(), ObjectFactory.GetInstance<IRouteNode>());
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -156,7 +154,7 @@ namespace DockyardTest.Services
                 uow.SaveChanges();
             }
 
-            IActivity activity = new Activity();
+            IActivity activity = new Activity(ObjectFactory.GetInstance<ICrateManager>(), ObjectFactory.GetInstance<IAuthorization>(), ObjectFactory.GetInstance<ISecurityServices>(), ObjectFactory.GetInstance<IActivityTemplate>(), ObjectFactory.GetInstance<IRouteNode>());
 
             //Add
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -714,22 +712,4 @@ namespace DockyardTest.Services
 //        }
     }
 
-    internal class TestActivityService : Action
-    {
-        private ITerminalTransmitter _restfulServiceClient;
-
-        internal ITerminalTransmitter RestfulServiceClient
-        {
-            get
-            {
-                if (_restfulServiceClient == null)
-                {
-                    _restfulServiceClient = new Mock<ITerminalTransmitter>(MockBehavior.Default).Object;
-                }
-
-                return _restfulServiceClient;
-            }
-            private set { _restfulServiceClient = value; }
-        }
-    }
 }

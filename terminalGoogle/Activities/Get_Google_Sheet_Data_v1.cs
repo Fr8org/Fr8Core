@@ -62,7 +62,7 @@ namespace terminalGoogle.Actions
 
             ///// ********** This code is what have to be done by FR-2246 **************
             var dropDownListControl =
-                (DropDownList)Activity.GetControlsManifest(curActivityDO).FindByName("select_spreadsheet");
+                (DropDownList)GetControlsManifest(curActivityDO).FindByName("select_spreadsheet");
             //get the spreadsheet name
             var spreadsheetName = dropDownListControl.selectedKey;
             //get the link to spreadsheet
@@ -230,7 +230,7 @@ namespace terminalGoogle.Actions
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             var spreadsheetsFromUserSelection =
-                Activity.GetControlsManifest(curActivityDO).FindByName("select_spreadsheet").Value;
+                GetControlsManifest(curActivityDO).FindByName("select_spreadsheet").Value;
             //Create label based on the selected by user spreadsheet name
             var selectedSpreadsheetName = GetSelectSpreadsheetName(curActivityDO);
             // Creating configuration control crate with a file picker and textblock
@@ -336,7 +336,7 @@ namespace terminalGoogle.Actions
 
         private string GetSelectSpreadsheetName(ActivityDO curActivityDO)
         {
-            var dropDownListControl = (DropDownList)Activity.GetControlsManifest(curActivityDO).FindByName("select_spreadsheet");
+            var dropDownListControl = (DropDownList)GetControlsManifest(curActivityDO).FindByName("select_spreadsheet");
             //get the spreadsheet name
             var spreadsheetName = dropDownListControl.selectedKey;
             return spreadsheetName;
