@@ -34,10 +34,7 @@ namespace TerminalBase.BaseClasses
     {
         #region Fields
 
-        protected IActivity Activity;
-
         protected ICrateManager CrateManager { get; private set; }
-        private readonly ITerminal _terminal;
         protected static readonly string ConfigurationControlsLabel = "Configuration_Controls";
         public string CurrentFr8UserId { get; set; }
         protected string _activityName { get; set; }
@@ -61,8 +58,6 @@ namespace TerminalBase.BaseClasses
         public BaseTerminalActivity(string actionName)
         {
             CrateManager = ObjectFactory.GetInstance<ICrateManager>();
-            Activity = ObjectFactory.GetInstance<IActivity>();
-            _terminal = ObjectFactory.GetInstance<ITerminal>();
             HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
             _activityName = actionName;
         }
@@ -121,6 +116,19 @@ namespace TerminalBase.BaseClasses
             }
 
             return payload;
+        }
+
+        //looks for the Configuration Controls Crate and Extracts the ManifestSchema
+        protected StandardConfigurationControlsCM GetControlsManifest(ActivityDO curActivity)
+        {
+            var control = CrateManager.GetStorage(curActivity.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+
+            if (control == null)
+            {
+                throw new ApplicationException(string.Format("No crate found with Label == \"Configuration_Controls\" and ManifestType == \"{0}\"", CrateManifestTypes.StandardConfigurationControls));
+            }
+
+            return control;
         }
 
         protected PayloadDTO ExecuteClientActivity(PayloadDTO payload, string clientActionName)

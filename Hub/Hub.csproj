@@ -238,6 +238,7 @@
     <Compile Include="Exceptions\ErrorResponseException.cs" />
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Helper\LZString.cs" />
+    <Compile Include="Infrastructure\AsyncMultiLock.cs" />
     <Compile Include="Infrastructure\FilterConditionPredicateBuilder.cs" />
     <Compile Include="Infrastructure\fr8HMACAuthenticateAttribute.cs" />
     <Compile Include="Managers\RouteManager.cs" />
@@ -367,6 +368,7 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <Compile Include="Infrastructure\AsyncMultiLock.LockScope.cs" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

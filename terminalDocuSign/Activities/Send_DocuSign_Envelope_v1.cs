@@ -130,14 +130,11 @@ namespace terminalDocuSign.Actions
                     {
                         //get index of selected value 
                         var selectedItem = item.Radios.FirstOrDefault(x => x.Selected);
-                        var selectedIndex = -1;
                         if (selectedItem != null)
                         {
-                            selectedIndex = item.Radios.IndexOf(selectedItem);
+                            field.Value = selectedItem.Value.ToString();
+                            resultCollection.Add(field);
                         }
-
-                        field.Value = selectedIndex.ToString();
-                        resultCollection.Add(field);
                     }
                 }
 
