@@ -159,7 +159,7 @@ namespace terminalSalesforce.Services
 
             try
             {
-                return await PostFeedTextToChatterObjectInternal(feedText, parentObjectId,  chatterClient);
+                return await PostFeedText(feedText, parentObjectId,  chatterClient);
             }
             catch (ForceException salesforceException)
             {
@@ -167,7 +167,7 @@ namespace terminalSalesforce.Services
                 {
                     chatterClient = (ChatterClient)CreateSalesforceClient(typeof(ChatterClient), authTokenDO, true);
 
-                    return await PostFeedTextToChatterObjectInternal(feedText, parentObjectId, chatterClient);
+                    return await PostFeedText(feedText, parentObjectId, chatterClient);
                 }
                 else
                 {
@@ -282,7 +282,7 @@ namespace terminalSalesforce.Services
             return chatterNamesList;
         }
 
-        private async Task<bool> PostFeedTextToChatterObjectInternal(string feedText, string parentObjectId, ChatterClient chatterClient)
+        private async Task<bool> PostFeedText(string feedText, string parentObjectId, ChatterClient chatterClient)
         {
             var currentChatterUser = await chatterClient.MeAsync<UserDetail>();
 
