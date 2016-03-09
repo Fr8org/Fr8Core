@@ -20,9 +20,11 @@ namespace Hub.Managers
         private readonly EventReporter _eventReporter;
         private readonly ITerminal _terminal;
         private readonly ISecurityServices _sercurity;
+        private readonly IActivityTemplate _activityTemplate;
 
-        public IncidentReporter(EventReporter eventReporter, ITerminal terminal, ISecurityServices securityService)
+        public IncidentReporter(EventReporter eventReporter, ITerminal terminal, ISecurityServices securityService, IActivityTemplate activityTemplate)
         {
+            _activityTemplate = activityTemplate;
             _eventReporter = eventReporter;
             _terminal = terminal;
             _sercurity = securityService;
@@ -613,6 +615,8 @@ namespace Hub.Managers
 
         public void IncidentMissingFieldInPayload(string fieldKey, ActivityDO activity, string curUserId)
         {
+            
+
             IncidentDO incidentDO = new IncidentDO
             {
                 PrimaryCategory = "Process Execution",
