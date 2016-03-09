@@ -116,16 +116,28 @@
                         </ul>
                     </li>
                     <li><a href="#contact">Contact</a></li>
-                    <li>
-                        <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect"><a class="try-now-btn" href="/Welcome">TRY IT NOW</a></button>
-                    </li>
+@if (!Request.IsAuthenticated)
+{
+    <li>
+        <button onclick="document.location = '#contact';" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect"><a class="try-now-btn" href="/Welcome">TRY IT NOW</a></button>
+    </li>
+    <li>
+        <button onclick="document.location = '/DockyardAccount';" class="mdl-button mdl-js-button mdl-button--login mdl-js-ripple-effect"><span class="try-now-btn">Login</span></button>
+    </li>
+}
+else
+{
+    <li>
+        <button onclick="document.location = '/dashboard#/myaccount';" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect"><span class="try-now-btn">My Account</span></button>
+    </li>
+}
                 </ul>
             </nav>
         </div>
     </div>
     <!-- END NAVBAR -->
     <!-- HERO UNIT -->
-    <div id="hero-unit" class="hero-unit hero-light hero-video" data-vide-bg="/Content/videos/motion" data-vide-options="loop: true, posterType: png">
+    <div id="hero-unit" class="hero-unit hero-light hero-video" data-vide-bg="mp4: Content/videos/motion.mp4, webm: Content/videos/motion.webm, ogv: Content/videos/motion.ogv, poster: Content/videos/motion.png" data-vide-options="loop: true, posterType: png">
         <div class="hero-content text-center">
             <div id="slidecaption" class="slide-caption">
                 <div class="hero-text">
@@ -340,8 +352,26 @@
     <div class="back-to-top">
         <a href="#top"><i class="fa fa-angle-up"></i></a>
     </div>
+
     @Scripts.Render("~/bundles/js/home")
     
+    <script>
+      /*  $(document).ready(function () {
+            // Get instance of the plugin
+            var instance = $('#hero-unit').data('vide');
+
+            // Get video element of the background. Do what you want.
+            var video = instance.getVideoObject();
+
+            //this plugin doesn't set poster for video - which causes white flashes on video end
+            video.setAttribute('poster', '/Content/videos/motion.png');
+            video.onended = function (e) {
+                video.load();
+                video.play();
+            };
+        });*/
+        
+    </script>
 
 </body>
 </html>
