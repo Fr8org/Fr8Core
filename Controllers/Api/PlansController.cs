@@ -433,6 +433,8 @@ namespace HubWeb.Controllers
                 catch (ErrorResponseException exception)
                 {
                     //this response contains details about the error that happened on some terminal and need to be shown to client
+                    EventManager.UnexpectedError(exception);
+                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, exception.Message);
                     exception.ContainerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? PlanType.Ongoing : PlanType.RunOnce;
                     return Ok(exception.ContainerDTO);
                 }
