@@ -41,19 +41,19 @@ namespace terminalDocuSignTests.Integration
                     .GetQuery()
                     .SingleOrDefault(x => x.UserName == UserAccountName);
 
+                var mtDataCountBefore = unitOfWork.MultiTenantObjectRepository
+                    .AsQueryable<DocuSignEnvelopeCM>(testAccount.Id.ToString())
+                    .Count();
+
                 await SendDocuSignTestEnvelope();
 
                 await Task.Delay(AwaitPeriod);
 
-                var createDateMinValue = DateTime.Now.AddMilliseconds(-AwaitPeriod);
+                var mtDataCountAfter = unitOfWork.MultiTenantObjectRepository
+                    .AsQueryable<DocuSignEnvelopeCM>(testAccount.Id.ToString())
+                    .Count();
 
-                var mtData = unitOfWork.MultiTenantObjectRepository
-                    .Query<DocuSignEnvelopeCM>(
-                        testAccount.Id.ToString(),
-                        x => x.CreateDate >= createDateMinValue
-                    );
-
-                Assert.IsTrue(mtData.Any());
+                Assert.IsTrue(mtDataCountBefore < mtDataCountAfter);
             }
         }
 
