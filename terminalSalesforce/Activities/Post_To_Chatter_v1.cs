@@ -101,7 +101,7 @@ namespace terminalSalesforce.Actions
             {
                 Name = "WhatKindOfChatterObject",
                 Required = true,
-                Label = "Post Feed to which Chatter Person/Group?",
+                Label = "Post to which Chatter Person or Group?",
                 Source = new FieldSourceDTO
                 {
                     Label = "AvailableChatters",
