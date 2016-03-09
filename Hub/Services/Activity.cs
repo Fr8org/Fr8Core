@@ -519,11 +519,11 @@ namespace Hub.Services
             try
             {
                 var actionName = curActionState == ActivityState.InitialRun ? "Run" : "ExecuteChildActivities";
-                EventManager.OnActivityRunRequested(curActivityDO);
+                EventManager.ActivityRunRequested(curActivityDO);
 
                 var payloadDTO = await CallTerminalActivityAsync<PayloadDTO>(uow, actionName, curActivityDO, curContainerDO.Id);
 
-                EventManager.OnActivityResponseReceived(curActivityDO, ActivityResponse.RequestSuspend);
+                EventManager.ActivityResponseReceived(curActivityDO, ActivityResponse.RequestSuspend);
 
                 return payloadDTO;
 
@@ -709,7 +709,7 @@ namespace Hub.Services
                 //Add log to the database
                 if (!isSolution) {
                     var curActivityDo = Mapper.Map<ActivityDO>(activityDTO);
-                    EventManager.OnActivityResponseReceived(curActivityDo, ActivityResponse.ShowDocumentation);
+                    EventManager.ActivityResponseReceived(curActivityDo, ActivityResponse.ShowDocumentation);
                 }
                     
             }
