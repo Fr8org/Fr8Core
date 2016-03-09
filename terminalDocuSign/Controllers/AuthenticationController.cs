@@ -41,7 +41,7 @@ namespace terminalDocuSign.Controllers
                         Error = "Unable to authenticate in DocuSign service, invalid login name or password."
                     };
                 }
-                
+
                 var authorizationTokenDTO = new AuthorizationTokenDTO()
                 {
                     Token = JsonConvert.SerializeObject(authToken),
@@ -87,11 +87,11 @@ namespace terminalDocuSign.Controllers
             string endpoint = string.Empty;
             if (curCredentials.IsDemoAccount)
             {
-                endpoint = CloudConfigurationManager.GetSetting("endpoint");
+                endpoint = CloudConfigurationManager.GetSetting("environment") + "/restapi";
             }
             else
             {
-                endpoint = CloudConfigurationManager.GetSetting("endpoint");
+                endpoint = CloudConfigurationManager.GetSetting("environment") + "/restapi";
             }
 
             //Here we make a call to API with X-DocuSign-Authentication to retrieve both oAuth token and AccountID
