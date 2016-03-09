@@ -112,7 +112,7 @@ namespace Hub.StructureMap
                 For<IPlan>().Use<Hub.Services.Plan>();
                 For<InternalInterfaces.IContainer>().Use<InternalClass.Container>();
                 For<ICriteria>().Use<Criteria>();
-                For<IActivity>().Use<InternalClass.Activity>();
+                For<IActivity>().Use<Activity>().Singleton();
 				For<IRouteNode>().Use<RouteNode>();
                 For<ISubscription>().Use<Subscription>();
                 For<IProcessNode>().Use<ProcessNode>();
@@ -170,8 +170,8 @@ namespace Hub.StructureMap
                 For<InternalInterfaces.IContainer>().Use<InternalClass.Container>();
                 For<ICriteria>().Use<Criteria>();
                 For<ISubscription>().Use<Subscription>();
-                For<IActivity>().Use<InternalClass.Activity>();
-					 For<IRouteNode>().Use<RouteNode>();
+                For<IActivity>().Use<Activity>().Singleton();
+				For<IRouteNode>().Use<RouteNode>();
 
                 For<IProcessNode>().Use<ProcessNode>();
                 For<IPlan>().Use<Hub.Services.Plan>();
