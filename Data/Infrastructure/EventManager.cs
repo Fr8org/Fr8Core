@@ -180,7 +180,7 @@ namespace Data.Infrastructure
         public delegate void ContainerExecutionCompleteHandler(ContainerDO containerDO);
         public static event ContainerExecutionCompleteHandler ContainerExecutionCompleted;
 
-        public delegate void ActivityRunRequestedHandler(ActivityDO activityDo);
+        public delegate void ActivityRunRequestedHandler(ActivityDO activityDo, ContainerDO containerDO);
         public static event ActivityRunRequestedHandler ActivityRunRequested;
 
         public delegate void ActivityResponseReceivedHandler(ActivityDO activityDo, ActivityResponse responseType);
@@ -212,10 +212,10 @@ namespace Data.Infrastructure
             if (handler != null) handler(containerDO);
         }
 
-        public static void OnActivityRunRequested(ActivityDO activityDo)
+        public static void OnActivityRunRequested(ActivityDO activityDo, ContainerDO containerDO)
         {
             var handler = ActivityRunRequested;
-            if (handler != null) handler(activityDo);
+            if (handler != null) handler(activityDo, containerDO);
         }
 
         public static void OnActivityResponseReceived(ActivityDO activityDo, ActivityResponse responseType)

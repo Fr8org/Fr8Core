@@ -20,6 +20,7 @@ using Utilities.Logging;
 using System.Data.Entity.Infrastructure;
 using System.Web.Mvc;
 using Data.Constants;
+using Utilities.Interfaces;
 
 //NOTES: Do NOT put Incidents here. Put them in IncidentReporter
 
@@ -167,7 +168,7 @@ namespace Hub.Managers
             }
         }
 
-        private void OnActivityRunRequested(ActivityDO activityDo)
+        private void OnActivityRunRequested(ActivityDO activityDo, ContainerDO containerDO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -189,6 +190,18 @@ namespace Hub.Managers
                 uow.FactRepository.Add(factDO);
                 uow.SaveChanges();
             }
+
+            //create user notifications
+            var pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
+
+            string pusherChannel = string.Format("fr8pusher_{0}", activityDo.Fr8Account.UserName);
+            pusherNotifier.Notify(pusherChannel, "fr8pusher_activity_execution_info",
+                new
+                {
+                    ActivityName = activityDo.Label,
+                    PlanName = containerDO.Name,
+                    ContainerId = containerDO.Id.ToString(),
+                });
         }
 
         private void OnContainerExecutionCompleted(ContainerDO containerDO)

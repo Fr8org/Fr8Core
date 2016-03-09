@@ -59,8 +59,6 @@ namespace Hub.Services
             _crate = ObjectFactory.GetInstance<ICrateManager>();
             _telemetryClient = ObjectFactory.GetInstance<TelemetryClient>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
-            _event = ObjectFactory.GetInstance<Hub.Managers.Event>();
-            _pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
         }
 
         public IEnumerable<TViewModel> GetAllActivities<TViewModel>()
@@ -528,23 +526,8 @@ namespace Hub.Services
 
             try
             {
-                var plan = uow.PlanRepository.GetById<PlanDO>(curContainerDO.PlanId);
-
-                //create client notification that activity is starting with execution
-                if (curActivityDO.Fr8Account != null && plan != null && plan.Name != "LogFr8InternalEvents")
-                {
-                    string pusherChannel = string.Format("fr8pusher_{0}", curActivityDO.Fr8Account.UserName);
-                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_ACTIVITY_EXECUTION_INFO,
-                        new
-                        {
-                            ActivityName = curActivityDO.Label,
-                            PlanName = plan.Name,
-                            ContainerId = curContainerDO.Id.ToString(),
-                        });
-                }
-
                 var actionName = curActionState == ActivityState.InitialRun ? "Run" : "ExecuteChildActivities";
-                EventManager.OnActivityRunRequested(curActivityDO);
+                EventManager.OnActivityRunRequested(curActivityDO, curContainerDO);
 
                 var payloadDTO = await CallTerminalActivityAsync<PayloadDTO>(uow, actionName, curActivityDO, curContainerDO.Id);
 
