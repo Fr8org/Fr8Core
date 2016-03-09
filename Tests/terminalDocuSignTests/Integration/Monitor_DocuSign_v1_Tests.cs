@@ -28,13 +28,12 @@ namespace terminalDocuSignTests.Integration
             get { return "terminalDocuSign"; }
         }
 
-        private void AssertCrateTypes(CrateStorage crateStorage)
+        private void AssertCrateTypes(ICrateStorage crateStorage)
         {
-            Assert.AreEqual(4, crateStorage.Count);
+            Assert.AreEqual(3, crateStorage.Count);
 
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "Available Templates"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "DocuSign Event Fields"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "DocuSign Event Fields"));
             Assert.AreEqual(1, crateStorage.CratesOfType<EventSubscriptionCM>().Count(x => x.Label == "Standard Event Subscriptions"));
         }
 
@@ -91,13 +90,13 @@ namespace terminalDocuSignTests.Integration
             Assert.AreEqual(1, radioButtonGroup.Radios[1].Controls.Count);
             Assert.IsTrue(radioButtonGroup.Radios[1].Controls[0] is DropDownList);
             Assert.AreEqual("UpstreamCrate", radioButtonGroup.Radios[1].Controls[0].Name);
-            Assert.AreEqual("Available Templates", radioButtonGroup.Radios[1].Controls[0].Source.Label);
+            Assert.AreEqual(null, radioButtonGroup.Radios[1].Controls[0].Source);
             Assert.AreEqual(1, radioButtonGroup.Radios[1].Controls[0].Events.Count);
             Assert.AreEqual("onChange", radioButtonGroup.Radios[1].Controls[0].Events[0].Name);
             Assert.AreEqual("requestConfig", radioButtonGroup.Radios[1].Controls[0].Events[0].Handler);
         }
 
-        private async Task<ActivityDTO> GetActionDTO_WithRecipientValue()
+        private async Task<ActivityDTO> GetActivityDTO_WithRecipientValue()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -111,9 +110,9 @@ namespace terminalDocuSignTests.Integration
 
             responseActionDTO.AuthToken = HealthMonitor_FixtureData.DocuSign_AuthToken();
 
-            using (var updater = Crate.UpdateStorage(responseActionDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(responseActionDTO))
             {
-                var controls = updater.CrateStorage
+                var controls = crateStorage
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
                     .Single();
 
@@ -128,7 +127,7 @@ namespace terminalDocuSignTests.Integration
             return responseActionDTO;
         }
 
-        private async Task<Tuple<ActivityDTO, string>> GetActionDTO_WithTemplateValue()
+        private async Task<Tuple<ActivityDTO, string>> GetActivityDTO_WithTemplateValue()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -143,9 +142,9 @@ namespace terminalDocuSignTests.Integration
             responseActionDTO.AuthToken = HealthMonitor_FixtureData.DocuSign_AuthToken();
 
             string selectedTemplate = null;
-            using (var updater = Crate.UpdateStorage(responseActionDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(responseActionDTO))
             {
-                var controls = updater.CrateStorage
+                var controls = crateStorage
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
                     .Single();
 
@@ -155,13 +154,10 @@ namespace terminalDocuSignTests.Integration
 
                 var templateDdl = (DropDownList)radioGroup.Radios[1].Controls[0];
 
-                var availableTemplatesCM = updater.CrateStorage
-                    .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Available Templates")
-                    .Single();
-                Assert.IsTrue(availableTemplatesCM.Fields.Count > 0);
+                Assert.IsTrue(templateDdl.ListItems.Count > 0);
 
-                templateDdl.Value = availableTemplatesCM.Fields[0].Value;
-                selectedTemplate = availableTemplatesCM.Fields[0].Key;
+                templateDdl.Value = templateDdl.ListItems[0].Value;
+                selectedTemplate = templateDdl.ListItems[0].Key;
             }
 
             return new Tuple<ActivityDTO, string>(responseActionDTO, selectedTemplate);
@@ -171,7 +167,7 @@ namespace terminalDocuSignTests.Integration
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
         [Test]
-        public async void Monitor_DocuSign_Initial_Configuration_Check_Crate_Structure()
+        public async Task Monitor_DocuSign_Initial_Configuration_Check_Crate_Structure()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -198,10 +194,10 @@ namespace terminalDocuSignTests.Integration
         [Test]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}",
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""No AuthToken provided.""}",
             MatchType = MessageMatch.Contains
         )]
-        public async void Monitor_DocuSign_Initial_Configuration_NoAuth()
+        public async Task Monitor_DocuSign_Initial_Configuration_NoAuth()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -218,7 +214,7 @@ namespace terminalDocuSignTests.Integration
         /// Validate correct crate-storage structure in follow-up configuration response.
         /// </summary>
         [Test]
-        public async void Monitor_DocuSign_FollowUp_Configuration_Check_Crate_Structure()
+        public async Task Monitor_DocuSign_FollowUp_Configuration_Check_Crate_Structure()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -255,11 +251,11 @@ namespace terminalDocuSignTests.Integration
         /// that contains single field with key = "TemplateId" and empty value.
         /// </summary>
         [Test]
-        public async void Monitor_DocuSign_FollowUp_Configuration_RecipientValue()
+        public async Task Monitor_DocuSign_FollowUp_Configuration_RecipientValue()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var activityDTO = await GetActionDTO_WithRecipientValue();
+            var activityDTO = await GetActivityDTO_WithRecipientValue();
             var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
             var responseActionDTO =
                 await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
@@ -269,10 +265,10 @@ namespace terminalDocuSignTests.Integration
 
             var crateStorage = Crate.GetStorage(responseActionDTO);
             var docuSignEventFields = crateStorage
-                .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "DocuSign Event Fields")
+                .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "DocuSign Event Fields")
                 .Single();
 
-            Assert.AreEqual(11, docuSignEventFields.Fields.Count);
+            Assert.AreEqual(12, docuSignEventFields.Fields.Count);
         }
 
         /// <summary>
@@ -284,11 +280,11 @@ namespace terminalDocuSignTests.Integration
         /// the value of that field should be equal to what was set to "UpstreamCrate" drop-down-list.
         /// </summary>
         [Test]
-        public async void Monitor_DocuSign_FollowUp_Configuration_TemplateValue()
+        public async Task Monitor_DocuSign_FollowUp_Configuration_TemplateValue()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var activityDTO = await GetActionDTO_WithTemplateValue();
+            var activityDTO = await GetActivityDTO_WithTemplateValue();
             var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO.Item1 };
             var responseActionDTO =
                 await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
@@ -298,10 +294,10 @@ namespace terminalDocuSignTests.Integration
 
             var crateStorage = Crate.GetStorage(responseActionDTO);
             var docuSignEventFields = crateStorage
-                .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "DocuSign Event Fields")
+                .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "DocuSign Event Fields")
                 .Single();
 
-            Assert.AreEqual(11, docuSignEventFields.Fields.Count());
+            Assert.AreEqual(12, docuSignEventFields.Fields.Count());
         }
 
         /// <summary>
@@ -310,16 +306,16 @@ namespace terminalDocuSignTests.Integration
         [Test]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}",
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""No AuthToken provided.""}",
             MatchType = MessageMatch.Contains
         )]
-        public async void Monitor_DocuSign_FollowUp_Configuration_NoAuth()
+        public async Task Monitor_DocuSign_FollowUp_Configuration_NoAuth()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
             var requestDataDTO = HealthMonitor_FixtureData.Monitor_DocuSign_v1_InitialConfiguration_Fr8DataDTO();
 
-            var responseActionDTO = 
+            var responseActionDTO =
                 await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestDataDTO
@@ -335,16 +331,18 @@ namespace terminalDocuSignTests.Integration
         /// Test run-time for action from Monitor_DocuSign_FollowUp_Configuration_RecipientValue.
         /// </summary>
         [Test]
-        public async void Monitor_DocuSign_Run_RecipientValue()
+        public async Task Monitor_DocuSign_Run_RecipientValue()
         {
             var envelopeId = Guid.NewGuid().ToString();
 
             var runUrl = GetTerminalRunUrl();
 
-            var activityDTO = await GetActionDTO_WithRecipientValue();
-            
+            var activityDTO = await GetActivityDTO_WithRecipientValue();
+
+            var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
+
             AddPayloadCrate(
-                activityDTO,
+                dataDTO,
                 new EventReportCM()
                 {
                     EventPayload = new CrateStorage()
@@ -360,9 +358,7 @@ namespace terminalDocuSignTests.Integration
                 }
             );
 
-            AddOperationalStateCrate(activityDTO, new OperationalStateCM());
-
-            var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
 
             var responsePayloadDTO =
                 await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
@@ -379,22 +375,22 @@ namespace terminalDocuSignTests.Integration
         /// Test run-time for action from Monitor_DocuSign_FollowUp_Configuration_TemplateValue.
         /// </summary>
         [Test]
-        public async void Monitor_DocuSign_Run_TemplateValue()
+        public async Task Monitor_DocuSign_Run_TemplateValue()
         {
             var envelopeId = Guid.NewGuid().ToString();
 
             var configureUrl = GetTerminalConfigureUrl();
             var runUrl = GetTerminalRunUrl();
 
-            var activityDTO = await GetActionDTO_WithTemplateValue();
+            var activityDTO = await GetActivityDTO_WithTemplateValue();
             activityDTO.Item1.AuthToken = HealthMonitor_FixtureData.DocuSign_AuthToken();
             var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO.Item1 };
             var preparedActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
-
-            AddOperationalStateCrate(preparedActionDTO, new OperationalStateCM());
+            dataDTO.ActivityDTO = preparedActionDTO;
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
 
             AddPayloadCrate(
-                preparedActionDTO,
+                dataDTO,
                 new EventReportCM()
                 {
                     EventPayload = new CrateStorage()
@@ -411,7 +407,7 @@ namespace terminalDocuSignTests.Integration
             );
 
             preparedActionDTO.AuthToken = HealthMonitor_FixtureData.DocuSign_AuthToken();
-            dataDTO.ActivityDTO = preparedActionDTO;
+
             var responsePayloadDTO =
                 await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
 
@@ -425,30 +421,30 @@ namespace terminalDocuSignTests.Integration
         /// Test run-time without Auth-Token.
         /// </summary>
         [Test]
-        public async void Monitor_DocuSign_Run_NoAuth()
+        public async Task Monitor_DocuSign_Run_NoAuth()
         {
             var runUrl = GetTerminalRunUrl();
 
             var requestDataDTO = HealthMonitor_FixtureData.Monitor_DocuSign_v1_InitialConfiguration_Fr8DataDTO();
             requestDataDTO.ActivityDTO.AuthToken = null;
-            AddOperationalStateCrate(requestDataDTO.ActivityDTO, new OperationalStateCM());
+            AddOperationalStateCrate(requestDataDTO, new OperationalStateCM());
             var payload = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, requestDataDTO);
             CheckIfPayloadHasNeedsAuthenticationError(payload);
         }
 
         [Test]
-        public async void Monitor_DocuSign_Activate_Returns_ActionDTO()
+        public async Task Monitor_DocuSign_Activate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
             var requestDataDTO = HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_Fr8DataDTO();
-            using (var updater = Crate.UpdateStorage(requestDataDTO.ActivityDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(requestDataDTO.ActivityDTO))
             {
-                updater.CrateStorage.Add(Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", new ControlDefinitionDTO[] { }));
+                crateStorage.Add(Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", new ControlDefinitionDTO[] { }));
             }
-            
+
 
             //Act
             var responseActionDTO =
@@ -463,16 +459,16 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public async void Monitor_DocuSign_Deactivate_Returns_ActionDTO()
+        public async Task Monitor_DocuSign_Deactivate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
             var requestDataDTO = HealthMonitor_FixtureData.Monitor_DocuSign_v1_InitialConfiguration_Fr8DataDTO();
-            using (var updater = Crate.UpdateStorage(requestDataDTO.ActivityDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(requestDataDTO.ActivityDTO))
             {
-                updater.CrateStorage.Add(Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", new ControlDefinitionDTO[] { }));
+                crateStorage.Add(Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", new ControlDefinitionDTO[] { }));
             }
             //Act
             var responseActionDTO =

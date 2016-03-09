@@ -16,8 +16,8 @@
             $scope.authErrorText = null;
             $scope.mode = $scope.mode;
 
-            // 3 - AuthenticationMode.InternalModeWithDomain
-            $scope.showDomain = $scope.mode == 3 ? 1 : 0;
+            // 4 - AuthenticationMode.InternalModeWithDomain
+            $scope.showDomain = $scope.mode == 4 ? 1 : 0;
 
             $scope.formData = {
                 username: 'docusign_developer@dockyard.company',

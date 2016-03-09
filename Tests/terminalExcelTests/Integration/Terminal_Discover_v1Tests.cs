@@ -12,7 +12,7 @@ namespace terminalExcelTests.Integration
     [Explicit]
     public class Terminal_Discover_v1Tests : BaseTerminalIntegrationTest
     {
-        private const int ActionCount = 1;
+        private const int ActivityCount = 1;
         private const string Load_Excel_File_Name = "Load_Excel_File";
        
         public override string TerminalName
@@ -21,15 +21,15 @@ namespace terminalExcelTests.Integration
         }
 
         [Test]
-        public async void Discover_Check_Returned_Actions()
+        public async Task Discover_Check_Returned_Activities()
         {
             var discoverUrl = GetTerminalDiscoverUrl();
 
             var terminalDiscoverResponse = await HttpGetAsync<StandardFr8TerminalCM>(discoverUrl);
 
             Assert.NotNull(terminalDiscoverResponse);
-            Assert.AreEqual(ActionCount, terminalDiscoverResponse.Actions.Count);
-            Assert.AreEqual(terminalDiscoverResponse.Actions.Any(a => a.Name == Load_Excel_File_Name), true);
+            Assert.AreEqual(ActivityCount, terminalDiscoverResponse.Activities.Count);
+            Assert.AreEqual(terminalDiscoverResponse.Activities.Any(a => a.Name == Load_Excel_File_Name), true);
         }
     }
 }

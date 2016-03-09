@@ -14,6 +14,7 @@
         errorMessage : string;
         events: Array<ControlEvent>;
         value: string;
+        isFocused: boolean;
     }
 
     export class ControlEvent {
@@ -108,6 +109,11 @@
         multiSelection: boolean;
     }
 
+    export class CrateChooser extends ControlDefinitionDTO {
+        crateDescriptions: Array<CrateDescriptionDTO>;
+        singleManifestOnly: boolean;
+    }
+
     export class TextSource extends DropDownList {
         initialLabel: string;
         valueSource: string;
@@ -159,5 +165,12 @@
         selectedManifest: string;
         selectedLabel: string;
         selectedFieldType: string;
+    }
+    
+    export class SourceableCriteria extends DropDownList{
+        fieldList: Array<DropDownListItem>;
+        comparatorList: Array<DropDownListItem>;
+        valueSource: string;
+        textValue: string;
     }
 }

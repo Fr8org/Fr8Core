@@ -17,11 +17,11 @@ namespace terminalSalesforceTests.Integration
     [Explicit]
     public class Terminal_Discover_v1Tests : BaseTerminalIntegrationTest
     {
-        private const int ActionCount = 4;
-        private const string Create_Account_Action_Name = "Create_Account";
-        private const string Create_Contact_Action_Name = "Create_Contact";
-        private const string Create_Lead_Action_Name = "Create_Lead";
-        private const string Get_Data_Action_Name = "Get_Data";
+        private const int ActivityCount = 4;
+        private const string Create_Account_Activity_Name = "Create_Account";
+        private const string Create_Contact_Activity_Name = "Create_Contact";
+        private const string Create_Lead_Activity_Name = "Create_Lead";
+        private const string Get_Data_Activity_Name = "Get_Data";
 
 
         public override string TerminalName
@@ -33,24 +33,24 @@ namespace terminalSalesforceTests.Integration
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
         [Test, CategoryAttribute("Integration.terminalSalesforce")]
-        public async void Terminal_Salesforce_Discover()
+        public async Task Terminal_Salesforce_Discover()
         {
             var discoverUrl = GetTerminalDiscoverUrl();
 
             var terminalDiscoverResponse = await HttpGetAsync<StandardFr8TerminalCM>(discoverUrl);
 
             Assert.IsNotNull(terminalDiscoverResponse, "Terminal Salesforce discovery did not happen.");
-            Assert.IsNotNull(terminalDiscoverResponse.Actions, "Salesforce terminal actions were not loaded");
-            Assert.AreEqual(ActionCount, terminalDiscoverResponse.Actions.Count,
+            Assert.IsNotNull(terminalDiscoverResponse.Activities, "Salesforce terminal actions were not loaded");
+            Assert.AreEqual(ActivityCount, terminalDiscoverResponse.Activities.Count,
                 "Not all terminal Salesforce actions were loaded");
-            Assert.AreEqual(terminalDiscoverResponse.Actions.Any(a => a.Name == Create_Account_Action_Name), true,
-                "Action " + Create_Account_Action_Name + " was not loaded");
-            Assert.AreEqual(terminalDiscoverResponse.Actions.Any(a => a.Name == Create_Contact_Action_Name), true,
-                "Action " + Create_Contact_Action_Name + " was not loaded");
-            Assert.AreEqual(terminalDiscoverResponse.Actions.Any(a => a.Name == Create_Lead_Action_Name), true,
-                "Action " + Create_Lead_Action_Name + " was not loaded");
-            Assert.AreEqual(terminalDiscoverResponse.Actions.Any(a => a.Name == Get_Data_Action_Name), true,
-                "Action " + Get_Data_Action_Name + " was not loaded");
+            Assert.AreEqual(terminalDiscoverResponse.Activities.Any(a => a.Name == Create_Account_Activity_Name), true,
+                "Action " + Create_Account_Activity_Name + " was not loaded");
+            Assert.AreEqual(terminalDiscoverResponse.Activities.Any(a => a.Name == Create_Contact_Activity_Name), true,
+                "Action " + Create_Contact_Activity_Name + " was not loaded");
+            Assert.AreEqual(terminalDiscoverResponse.Activities.Any(a => a.Name == Create_Lead_Activity_Name), true,
+                "Action " + Create_Lead_Activity_Name + " was not loaded");
+            Assert.AreEqual(terminalDiscoverResponse.Activities.Any(a => a.Name == Get_Data_Activity_Name), true,
+                "Action " + Get_Data_Activity_Name + " was not loaded");
         }
     }
 }

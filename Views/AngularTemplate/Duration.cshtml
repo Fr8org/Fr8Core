@@ -1,7 +1,4 @@
-﻿@*Duration control main container*@
-<div>
+﻿<div> <!--Duration control main container-->
     <label class="duration-control-label">{{::field.innerLabel}} </label>
-    <counter counter-value="field.days" counter-tooltip="'Days'" min-value="0"></counter> :
-    <counter counter-value="field.hours" counter-tooltip="'Hours'"></counter> :
-    <counter counter-value="field.minutes" counter-tooltip="'Minutes'"></counter>
+    <time-picker duration="field" />
 </div>

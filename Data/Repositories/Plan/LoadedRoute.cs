@@ -8,11 +8,30 @@ namespace Data.Repositories.Plan
         public readonly RouteNodeDO Root;
         public bool IsDeleted;
         public bool IsNew;
+        public RouteSnapshot Snapshot;
 
         public LoadedRoute(RouteNodeDO root, bool isNew = false)
         {
             IsNew = isNew;
             Root = root;
+
+            if (isNew)
+            {
+                Snapshot = new RouteSnapshot();
+            }
+            else
+            {
+                RebuildSnapshot();
+            }
+        }
+
+        public RouteSnapshot RebuildSnapshot()
+        {
+            var prev = Snapshot;
+            
+            Snapshot = new RouteSnapshot(Root, true);
+
+            return prev;
         }
 
         public RouteNodeDO Find(Guid nodeId)

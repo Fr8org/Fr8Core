@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Data.Entities;
 using Data.States;
+using static Data.Repositories.Plan.RouteSnapshot;
 
 namespace Data.Repositories.Plan
 {
@@ -94,6 +95,8 @@ namespace Data.Repositories.Plan
                     // update route expiration
                     cacheItem.Route.Expiration = _expirationStrategy.NewExpirationToken();
                 }
+
+                node = RouteTreeHelper.CloneWithStructure(node);
             }
 
             return node;
@@ -129,19 +132,132 @@ namespace Data.Repositories.Plan
 
         /**********************************************************************************/
 
-        public void Update(RouteNodeDO node)
+        public Changes Update(Guid planId, Changes changes)
         {
-            // Get the root of RouteNode tree. 
-            while (node.ParentRouteNode != null)
-            {
-                node = node.ParentRouteNode;
-            }
+           var validChanges = new Changes();
 
             lock (_sync)
             {
-                DropCachedRoute(node);
-                AddToCache(node);
+                CachedRoute route;
+
+                if (!_routes.TryGetValue(planId, out route))
+                {
+                    foreach (var insert in changes.Insert)
+                    {
+                        var clone = insert.Clone();
+
+                        if (insert is PlanDO)
+                        {
+                            route = new CachedRoute((PlanDO) clone, _expirationStrategy.NewExpirationToken());
+                            _routes.Add(planId, route);
+                            _routeNodesLookup.Add(planId, new CacheItem(clone, route));
+                            clone.RootRouteNode = clone;
+                            break;
+                        }
+                    }
+                }
+
+                foreach (var insert in changes.Insert)
+                {
+                    if (!_routeNodesLookup.ContainsKey(insert.Id))
+                    {
+                        if (insert.ParentRouteNodeId == null || _routeNodesLookup.ContainsKey(insert.ParentRouteNodeId.Value))
+                        {
+                            _routeNodesLookup.Add(insert.Id, new CacheItem(insert.Clone(), route));
+                        }
+                    }
+                }
+
+                foreach (var insert in changes.Insert)
+                {
+                    CacheItem nodeCacheItem;
+
+                    if (!_routeNodesLookup.TryGetValue(insert.Id, out nodeCacheItem))
+                    {
+                        continue;
+                    }
+
+                    validChanges.Insert.Add(insert);
+
+                    var node = nodeCacheItem.Node;
+
+                    if (insert.ParentRouteNodeId != null)
+                    {
+                        var parent = _routeNodesLookup[insert.ParentRouteNodeId.Value].Node;
+
+                        parent.ChildNodes.Add(node);
+                        node.ParentRouteNode = parent;
+                        node.RootRouteNode = route.Root;
+                    }
+                }
+
+                foreach (var deleted in changes.Delete)
+                {
+                    CachedRoute plan;
+
+                    if (_routes.TryGetValue(deleted.Id, out plan))
+                    {
+                        RouteTreeHelper.Visit(plan.Root, x =>
+                        {
+                            _routeNodesLookup.Remove(x.Id);
+                            validChanges.Delete.Add(x);
+                        });
+
+                        _routes.Remove(plan.Root.Id);
+
+                        return validChanges;
+                    }
+
+                    CacheItem node;
+                    if (_routeNodesLookup.TryGetValue(deleted.Id, out node))
+                    {
+                        validChanges.Delete.Add(deleted);
+                        _routeNodesLookup.Remove(deleted.Id);
+                        node.Node.RemoveFromParent();
+                    }
+                }
+
+                foreach (var update in changes.Update)
+                {
+                    foreach (var changedProperty in update.ChangedProperties)
+                    {
+                        CacheItem originalCacheItem;
+
+                        if (!_routeNodesLookup.TryGetValue(update.Node.Id, out originalCacheItem))
+                        {
+                            continue;
+                        }
+
+                        var original = originalCacheItem.Node;
+
+                        // structure was changed
+                        if (changedProperty.Name == "ParentRouteNodeId")
+                        {
+                            CacheItem parentCacheItem;
+
+                            if (update.Node.ParentRouteNodeId == null || !_routeNodesLookup.TryGetValue(update.Node.ParentRouteNodeId.Value, out parentCacheItem))
+                            {
+                                continue;
+                            }
+
+                            var parent = parentCacheItem.Node;
+
+                            original.RemoveFromParent();
+                            parent.ChildNodes.Add(original);
+                            original.ParentRouteNode = parent;
+
+                            validChanges.Update.Add(update);
+                        }
+                        else
+                        {
+                            validChanges.Update.Add(update);
+                            changedProperty.SetValue(original, changedProperty.GetValue(update.Node));
+                        }
+                    }
+                }
             }
+
+            return validChanges;
         }
 
         /**********************************************************************************/

@@ -50,12 +50,16 @@ module dockyard.controllers {
                         $scope.ptvm.routeState = dockyard.model.RouteState.Inactive;
                     }
 
+                    if (!$scope.ptvm.visibility) {
+                        $scope.ptvm.visibility = dockyard.model.PlanVisibility.Standard;
+                    }
+
                     var result = RouteService.save($scope.ptvm);
 
                     result.$promise
                         .then(() => {
                             $rootScope.lastResult = "success";
-                            window.location.href = '#routes/' + result.id + '/builder';
+                            window.location.href = '#plans/' + result.id + '/builder';
                         })
                         .catch(function (e) {
                             switch (e.status) {

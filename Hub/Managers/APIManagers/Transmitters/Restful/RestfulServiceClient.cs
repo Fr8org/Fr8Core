@@ -13,6 +13,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Globalization;
 using System.IO;
+using Data.Interfaces.DataTransferObjects;
 
 namespace Hub.Managers.APIManagers.Transmitters.Restful
 {
@@ -58,7 +59,12 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             if (client == null)
             {
                 client = new HttpClient();
-                client.Timeout = new TimeSpan(0, 2, 0); //2 minute
+
+#if DEBUG 
+                client.Timeout = new TimeSpan(0, 10, 0); //5 minutes
+#else
+                client.Timeout = new TimeSpan(0, 2, 0); //2 minutes
+#endif
             }
 
             _innerClient = client; 
@@ -119,14 +125,15 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
                     stopWatch.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture),
                     CorrelationId, statusCode, prettyStatusCode);
 
-                if (isSuccess)
+                // This code tends to eat a lot of processor time on my macine and blocks.
+                /*if (isSuccess)
                 {
                     Log.Info(logDetails);
                 }
                 else
                 {
                     Log.Error(logDetails, raisedException);
-                }
+                }*/
             }
             return response;
         }
@@ -154,7 +161,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             return responseContent;
         }
 
-        #region InternalRequestMethods
+#region InternalRequestMethods
         private async Task<HttpResponseMessage> GetInternalAsync(Uri requestUri, string CorrelationId, Dictionary<string, string> headers)
         {
             using (var request = new HttpRequestMessage(HttpMethod.Get, requestUri))
@@ -199,7 +206,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             }
         }
 
-        #endregion
+#endregion
 
         private void AddHeaders(HttpRequestMessage request, Dictionary<string, string> headers)
         {
@@ -215,11 +222,13 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
         private async Task<T> DeserializeResponseAsync<T>(HttpResponseMessage response)
         {
             var responseStream = await response.Content.ReadAsStreamAsync();
+           
             var responseObject = await _formatter.ReadFromStreamAsync(
                 typeof(T),
                 responseStream,
                 response.Content,
                 _formatterLogger);
+
             return (T)responseObject;
         }
 
@@ -229,7 +238,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             set { _innerClient.BaseAddress = value; }
         }
 
-        #region GenericRequestMethods
+#region GenericRequestMethods
         /// <summary>
         /// Downloads file as a MemoryStream from given URL
         /// </summary>
@@ -301,9 +310,9 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             return await PutAsync(requestUri, (HttpContent)new ObjectContent(typeof(TContent), content, _formatter), CorrelationId, headers);
         }
 
-        #endregion
+#endregion
 
-        #region HttpContentRequestMethods
+#region HttpContentRequestMethods
         public async Task<string> PostAsync(Uri requestUri, HttpContent content, string CorrelationId = null, Dictionary<string, string> headers = null)
         {
             using (var response = await PostInternalAsync(requestUri, content, CorrelationId, headers))
@@ -337,7 +346,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             }
         }
 
-        #endregion
+#endregion
 
     }
 }

@@ -8,15 +8,16 @@ using OpenPop.Pop3;
 using System.Configuration;
 using OpenPop.Mime;
 using OpenPop.Mime.Header;
+using System.Diagnostics;
 
 namespace HealthMonitor.Utility
 {
     public static class EmailAssert
     {
-        // If a matching message has been received at most 5 seconds before calling the method, 
+        // If a matching message has been received at most 60 seconds before calling the method, 
         // the test is considered passed.
-        public static TimeSpan RecentMsgThreshold = new TimeSpan(0, 0, 5); // 5 seconds
-        static TimeSpan _timeout = new TimeSpan(0, 0, 30); // 30 seconds
+        public static TimeSpan RecentMsgThreshold = new TimeSpan(0, 0, 60); // 60 seconds
+        public static TimeSpan _timeout = new TimeSpan(0, 0, 30); // 30 seconds
         static bool _initialized = false;
 
         static string _testEmail;
@@ -28,6 +29,8 @@ namespace HealthMonitor.Utility
 
         public static void InitEmailAssert(string testEmail, string hostname, int port, bool useSsl, string username, string password)
         {
+            Debug.AutoFlush = true;
+
             _testEmail = testEmail;
             _hostname = hostname;
             _port = port;
@@ -43,21 +46,24 @@ namespace HealthMonitor.Utility
             {
                 throw new InvalidOperationException("Call Assert.InitEmailAssert(...) first.");
             }
+            Debug.WriteLine("Expected Address: " + expectedFromAddr + ", Suject: " + expectedSubject);
 
-            DateTime timeCalled = DateTime.UtcNow;
+            DateTime methodCalledTime = DateTime.UtcNow;
 
             using (Pop3Client client = new Pop3Client())
             {
                 client.Connect(_hostname, _port, _useSsl);
                 client.Authenticate(_username, _password);
 
-                while (DateTime.UtcNow < timeCalled + _timeout)
+                DateTime timeToCompare = methodCalledTime; // First time use method call time to compare time
+                while (DateTime.UtcNow < methodCalledTime + _timeout)
                 {
-                    if (CheckEmail(client, expectedFromAddr, expectedSubject, timeCalled))
+                    if (CheckEmail(client, expectedFromAddr, expectedSubject, timeToCompare))
                     {
                         return;
                     }
-                    System.Threading.Thread.Sleep(2000);
+                    System.Threading.Thread.Sleep(5000);
+                    timeToCompare = DateTime.UtcNow; // Next time use current iteration call time 
                 }
                 throw new AssertionException(String.Format(
                         "Email to {0} was not received within the timeout period {1}.", 
@@ -66,15 +72,17 @@ namespace HealthMonitor.Utility
             }
         }
 
-        private static bool CheckEmail(Pop3Client client, string expectedFromAddr, string expectedSubject, DateTime timeCalled)
+        private static bool CheckEmail(Pop3Client client, string expectedFromAddr, string expectedSubject, DateTime startTime)
         {
             MessageHeader msg = null;
-
+            Debug.WriteLine("=== Checking email ===");
+            Debug.WriteLine("Start time: " + startTime.ToLongTimeString());
             int messageCount = client.GetMessageCount();
             for (int i = messageCount; i > 0; i--)
             {
                 msg = client.GetMessageHeaders(i);
-                if (ValidateTime(RecentMsgThreshold, timeCalled, msg.DateSent))
+                Debug.WriteLine(msg.DateSent.ToLongTimeString() + "  " + msg.From.Address + "  " + msg.Subject);
+                if (ValidateTime(RecentMsgThreshold, startTime, msg.DateSent))
                 {
                     if (ValidateConditions(expectedFromAddr, expectedSubject, msg))
                     {
@@ -91,12 +99,13 @@ namespace HealthMonitor.Utility
 
         private static bool ValidateConditions(string expectedFromAddr, string expectedSubject, MessageHeader msg)
         {
-            return expectedFromAddr == msg.From.Address && expectedSubject == msg.Subject;
+            return string.Equals(expectedFromAddr, msg.From.Address, StringComparison.InvariantCultureIgnoreCase) 
+                && string.Equals(expectedSubject, msg.Subject, StringComparison.InvariantCultureIgnoreCase);
         }
 
-        private static bool ValidateTime(TimeSpan recentMsgThreshold, DateTime timeCalled, DateTime dateSent)
+        private static bool ValidateTime(TimeSpan recentMsgThreshold, DateTime startTime, DateTime dateSent)
         {
-            return dateSent >= timeCalled - recentMsgThreshold;
+            return dateSent >= startTime - recentMsgThreshold;
         }
     }
 }

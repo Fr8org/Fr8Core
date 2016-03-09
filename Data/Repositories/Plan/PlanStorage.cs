@@ -48,19 +48,19 @@ namespace Data.Repositories.Plan
             _cache.UpdateElements(updater);
         }
 
-        public void Update(RouteNodeDO node)
+        public void Update(Guid planId, RouteSnapshot.Changes changes)
         {
             lock (_cache)
             {
-                var reference = _cache.Get(node.Id, _storageProvider.LoadPlan);
-                var currentSnapshot = new RouteSnapshot(node, false);
-                var referenceSnapshot = new RouteSnapshot(reference, false);
-                var changes = currentSnapshot.Compare(referenceSnapshot);
-
                 if (changes.HasChanges)
                 {
-                    _storageProvider.Update(changes);
-                    _cache.Update(node);
+                    var applicableChanges = _cache.Update(planId, changes);
+
+                    if (applicableChanges.HasChanges)
+                    {
+                        _storageProvider.Update(applicableChanges);
+                    }
+
                 }
             }
         }

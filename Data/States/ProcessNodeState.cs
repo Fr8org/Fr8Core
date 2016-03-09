@@ -4,7 +4,7 @@
 	{
 		public const int Unstarted = 1;
 		public const int EvaluatingCriteria = 2;
-		public const int ProcessingActions = 3;
+		public const int ProcessingActivities = 3;
 		public const int Complete = 4;
 		public const int Error = 5;
 	}

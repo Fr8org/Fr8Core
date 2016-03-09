@@ -62,9 +62,7 @@ namespace Data.Repositories.Plan
                     //if no, then just get this route by id
                     return GetById<TRouteNode>(id);
                 }
-
-                routeFromDb = RouteTreeHelper.CloneWithStructure(routeFromDb);
-
+                
                 // get list of currently loaded items
                 var currentNodes = RouteTreeHelper.Linearize(loadedRoute.Root).ToDictionary(x => x.Id, x => x);
                 var dbNodes = RouteTreeHelper.Linearize(routeFromDb).ToDictionary(x => x.Id, x => x);
@@ -108,6 +106,7 @@ namespace Data.Repositories.Plan
                     }
                 }
 
+                loadedRoute.RebuildSnapshot();
                 return (TRouteNode)loadedRoute.Find(id);
             }
         }
@@ -145,9 +144,7 @@ namespace Data.Repositories.Plan
                     {
                         return null;
                     }
-
-                    route = RouteTreeHelper.CloneWithStructure(route);
-
+                    
                     loadedRoute = new LoadedRoute(route);
                     _loadedRoutes.Add(loadedRoute);
                     // add all noded to the loaded nodes list
@@ -318,8 +315,10 @@ namespace Data.Repositories.Plan
                         _loadedNodes[x.Id] = route;
                     });
 
-                    var clonedRoute = RouteTreeHelper.CloneWithStructure(loadedRoute.Root);
-                    _planStorage.Update(clonedRoute);
+                    var previous = loadedRoute.RebuildSnapshot();
+                    var changes = loadedRoute.Snapshot.Compare(previous);
+
+                    _planStorage.Update(loadedRoute.Root.Id, changes);
                 }
             }
         }

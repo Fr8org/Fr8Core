@@ -28,8 +28,11 @@ namespace UtilitiesTesting
             ConfigureAutoMapper();
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
 
+            
+            
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>()) //Get the seeding done first
                 uow.SaveChanges();
+                
         }
 
 
@@ -80,7 +83,7 @@ namespace UtilitiesTesting
                 .ForMember(mu => mu.HasGoogleToken, opts => opts.Ignore())
                 .ForMember(mu => mu.GoogleSpreadsheets, opts => opts.Ignore());
 
-            Mapper.CreateMap<ActionNameDTO, ActivityTemplateDO>()
+            Mapper.CreateMap<ActivityNameDTO, ActivityTemplateDO>()
                   .ForMember(activityTemplateDO => activityTemplateDO.Name, opts => opts.ResolveUsing(e => e.Name))
                   .ForMember(activityTemplateDO => activityTemplateDO.Version, opts => opts.ResolveUsing(e => e.Version));
 

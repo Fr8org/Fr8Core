@@ -28,7 +28,7 @@ namespace terminalSlackTests.Integration
         }
 
         [Test]
-        public async void Publish_To_Slack_v1_ProcessConfigurationRequest()
+        public async Task Publish_To_Slack_v1_ProcessConfigurationRequest()
         {
             // Act
             var responseFollowUpActionDTO = await ConfigurationRequest();
@@ -47,9 +47,9 @@ namespace terminalSlackTests.Integration
 
             var storage = Crate.GetStorage(responseActionDTO);
 
-            using (var updater = Crate.UpdateStorage(requestDataDTO.ActivityDTO))
+            using (var crateStorage = Crate.GetUpdatableStorage(requestDataDTO.ActivityDTO))
             {
-                updater.CrateStorage = storage;
+                crateStorage.Replace(storage);
             }
 
             return await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, requestDataDTO);
@@ -60,14 +60,14 @@ namespace terminalSlackTests.Integration
             ExpectedException = typeof(RestfulServiceException),
             ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}"
         )]
-        public async void Publish_To_Slack_v1_Initial_Configuration_Check_Crate_Structure_NoAuth()
+        public async Task Publish_To_Slack_v1_Initial_Configuration_Check_Crate_Structure_NoAuth()
         {
             // Act
             var responseActionDTO = await ConfigureInitial(false);
         }
 
         [Test]
-        public async void Publish_To_Slack_v1_Initial_Configuration_Check_Crate_Structure()
+        public async Task Publish_To_Slack_v1_Initial_Configuration_Check_Crate_Structure()
         {
             // Act
             var responseActionDTO = await ConfigureInitial();
@@ -91,13 +91,13 @@ namespace terminalSlackTests.Integration
             return responseActionDTO;
         }
 
-        private void AssertCrateTypes(CrateStorage crateStorage)
+        private void AssertCrateTypes(ICrateStorage crateStorage)
         {
             Assert.AreEqual(4, crateStorage.Count);
 
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(x => x.Label == "Configuration_Controls"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "Available Fields"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "Available Channels"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Available Fields"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Available Channels"));
             Assert.AreEqual(1, crateStorage.CratesOfType<EventSubscriptionCM>().Count(x => x.Label == "Standard Event Subscriptions"));
         }
     }

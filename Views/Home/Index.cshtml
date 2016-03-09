@@ -1,82 +1,377 @@
-﻿@{
-Layout = "~/Views/Shared/_HomePage.cshtml";
-}
-@{
-ViewBag.Title = "Add Note";
-}
-<!--<div id="fullpage">-->
-        <section id="welcome" class="top-banner home-welcome text-block full-height-block" data-section="welcome" >
-    <div class="inner-bg full-size-bg"></div>
-    <div class="container full-height-block">
-        <div class="inner-wrap cetered">
-            <div class="landing-welcome-area">
-                <div id="logotext" class="text">
-                    <h1>Fr8</h1>
-                    <p>Make Your Web Services Work Together </p>
-                </div>
-                <div class="next-page-bnt"><img src="~/Content/img/icons/next-page-bnt.png" alt="Next" title="Next"></div>
+﻿@using Data.Infrastructure.StructureMap
+@using StructureMap
+@using Utilities
+@model HubWeb.ViewModels.HomeVM
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en" class="no-js"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en" class="no-js"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en" class="no-js"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html lang="en" class="no-js">
+ <!--<![endif]-->
+<!--Google Analytics code block. should probably be moved to a common js file -->
+<script>
+    (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+            (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date(); a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', 'UA-52048536-1', 'kwasant.com');
+    ga('send', 'pageview');
+
+</script>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>fr8</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- google material design -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.1.1/material.indigo-pink.min.css">
+    <script defer src="https://code.getmdl.io/1.1.1/material.min.js"></script>
+
+    <!-- Styles -->
+    @Styles.Render("~/bundles/css/home")
+
+    <!-- Google Fonts -->
+    <link href='https://fonts.googleapis.com/css?family=Dosis:300,400,500,600,700' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400italic,300,400,700' rel='stylesheet' type='text/css'>
+
+    <link href='https://fonts.googleapis.com/css?family=Francois+One' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Didact+Gothic' rel='stylesheet' type='text/css'>
+
+
+    <link href='https://fonts.googleapis.com/css?family=Droid+Sans' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Cabin' rel='stylesheet' type='text/css'>
+
+    <link href='https://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Cantarell' rel='stylesheet' type='text/css'>
+
+
+    <link href='https://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Hind' rel='stylesheet' type='text/css'>
+
+
+    <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Nunito' rel='stylesheet' type='text/css'>
+
+    <!-- IE 9 Fallback-->
+    <!--[if IE 9]>
+    @Styles.Render("~/bundles/css/homeie")
+    <![endif]-->
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements and IE Fallback-->
+    <!--[if lt IE 9]>
+    @Scripts.Render("~/bundles/js/html5shiv")
+    <![endif]-->
+    <!-- Fav and touch icons -->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="assets/ico/apple-touch-icon-57-precomposed.png">
+    <link rel='shortcut icon' type='image/x-icon' href='/Content/img/favicon.ico' />
+
+</head>
+<body id="top">
+
+    <!-- NAVBAR -->
+    <div class="navbar navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-nav">
+                    <span class="sr-only">Menu</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a href="index.html" class="navbar-brand">
+                    <img src="/Content/img/logo-fr8.svg" alt="FR8" />
+                    <h1 class="hide">FR8 Company</h1>
+                </a>
             </div>
+            <nav class="navbar-collapse collapse" id="main-nav" role="navigation">
+                <ul class="nav navbar-nav navbar-right nav-text-light">
+                    <li><a href="#about">How it Works</a></li>
+                    <li data-scroll="scrolling" class="dropdown">
+                        <a data-target="#" href="#services" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Services">Services <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/Services/DocuSign">DocuSign</a></li>
+                            <li><a href="/Services/Salesforce">Salesforce.com</a></li>
+                            <li><a href="/Services/GoogleApps">Google Apps</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="http://fr8-documentation.azurewebsites.net">Developers</a></li>
+                    <li data-scroll="scrolling" class="dropdown">
+                        <a href="/Company/#team" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Company">Company <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li data-scroll="scrolling"><a href="/Company/#vision">Vision</a></li>
+                            <li data-scroll="scrolling"><a href="/Company/#team">Team</a></li>
+                            <li data-scroll="scrolling"><a href="/Company/#location">Location</a></li>
+                            <li data-scroll="scrolling"><a href="/Company/#company">Jobs</a></li>
+                            <li data-scroll="scrolling"><a href="/Company/#team">About Us</a></li>
+                            <li data-scroll="scrolling"><a href="/Support">Support</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#contact">Contact</a></li>
+@if (!Request.IsAuthenticated)
+{
+    <li>
+        <button onclick="document.location = '#contact';" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect"><a class="try-now-btn" href="/Welcome">TRY IT NOW</a></button>
+    </li>
+    <li>
+        <button onclick="document.location = '/DockyardAccount';" class="mdl-button mdl-js-button mdl-button--login mdl-js-ripple-effect"><span class="try-now-btn">Login</span></button>
+    </li>
+}
+else
+{
+    <li>
+        <button onclick="document.location = '/dashboard#/myaccount';" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect"><span class="try-now-btn">My Account</span></button>
+    </li>
+}
+                </ul>
+            </nav>
         </div>
     </div>
-</section>
-
-
-        <section id="services" class="text-block full-height-block" data-section="services">
-            <div class="inner-bg full-size-bg"></div>
-            <div class="container full-height-block">
-                <div class="inner-wrap cetered">
-                    <div class="base-block-white title-block">
-                        <p><span class="text green">Fr8</span> ties your existing cloud applications together, letting you move information easily and enabling you to create <br />
-                        powerful web applications, processes and workflows with a few clicks of your mouse<br />
-                            <br />Some of the things you can do with Fr8: </p>
+    <!-- END NAVBAR -->
+    <!-- HERO UNIT -->
+    <div id="hero-unit" class="hero-unit hero-light hero-video" data-vide-bg="mp4: Content/videos/motion.mp4, webm: Content/videos/motion.webm, ogv: Content/videos/motion.ogv, poster: Content/videos/motion.png" data-vide-options="loop: true, posterType: png">
+        <div class="hero-content text-center">
+            <div id="slidecaption" class="slide-caption">
+                <div class="hero-text">
+                    <h2 class="hero-heading">Connect Your Cloud Services</h2>
+                    <p>Automate your work by building workflows from one cloud services to another</p>
+                </div>
+            </div>
+            <div class="hero-buttons">
+                <a href="#about" id="btn-about" class="btn btn-outline btn-lg"><i class="fa fa-arrow-circle-o-down"></i> READ MORE</a>
+                <a href="#contact" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-arrow-circle-o-right"></i> TRY IT NOW</a>
+            </div>
+        </div>
+        <div class="hero-bg-pattern"></div>
+        <span id="#inner" class="fa fa-arrow-down"></span>
+    </div>
+    <!-- END HERO UNIT -->
+    <!-- MAIN CONTENT -->
+    <div id="main-content" class="main-content">
+        <!-- ABOUT -->
+        <div id="about" class="section about">
+            <div class="container">
+                <div class="section-heading">
+                    <h2>HOW IT WORKS</h2>
+                    <p>Automate Your Work with Cloud Service Workflows </p>
+                    <hr />
+                </div>
+                <div class="row">
+                    <div class="col-sm-8 col-sm-offset-2">
+                        <div class="section-content">
+                            <p>Fr8 ties your existing cloud applications together, letting you move information easily and enabling you to create powerful web applications, processes and workflows with a few clicks of your mouse.</p>
+                        </div>
                     </div>
-                    <div class="base-block-white content-block">
-                        <p><a href="/Home/MultiPartWorkflows">Move data out of one service and into another</a></p>
-                        <p><a href="/Home/ConditionalLogicBranching">Create customized dashboards and notifications</a></p>
-                        <p><a href="/Home/InterOrganizationWorkflow">Generate powerful workflows that can be shared securely between enterprises</a></p>
+                </div>
 
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="one-connect demo-card-square demo-card-square-connect mdl-card mdl-shadow--2dp">
+                            <div class="mdl-card__title mdl-card--expand">
+                                <h2 class="mdl-card__title-text">CONNECT</h2>
+                            </div>
+                            <div class="mdl-card__supporting-text">
+                                Connect your web services to move data out of one service and into another cloud service
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="demo-card-square demo-card-square-workflows mdl-card mdl-shadow--2dp">
+                            <div class="mdl-card__title mdl-card--expand">
+                                <h2 class="mdl-card__title-text">DESIGN</h2>
+                            </div>
+                            <div class="mdl-card__supporting-text">
+                                Generate powerful workflows between enterprises cloud services to automate your daily workflows
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="demo-card-square demo-card-square-run mdl-card mdl-shadow--2dp">
+                            <div class="mdl-card__title mdl-card--expand">
+                                <h2 class="mdl-card__title-text">RUN</h2>
+                            </div>
+                            <div class="mdl-card__supporting-text">
+                                Run your workflows whenever you want and get notifications at different stages of the work
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </section>
-
-        <section id="aboutus" class="text-block full-height-block" data-section="aboutus">
-            <div class="inner-bg full-size-bg"></div>
-            <div class="container full-height-block">
-                <div class="inner-wrap cetered base-block-white">
-                    <p>
-                        <span class="bordered-top-green"><span class="text green">fr8 is supported commercially by The fr8 Company,</span>a San Francisco-based startup.</span><br />
-                    </p>
-                    <p>
-                        Our executive team has worked at<br />
-                        <span class="bordered-bottom-grey">Microsoft, Netscape, Inktomi, and other internet startups.</span>
-                    </p>
+        </div>
+        <!-- END ABOUT -->
+        <!-- FULL-WIDTH PARALLAX -->
+        <div id="social-network" class="section full-width-parallax parallax">
+            <div class="container">
+                <h2 class="section-heading">Automate Your Work. Connect Your Cloud Services.</h2>
+                <a href="#contact" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-arrow-circle-o-right"></i> TRY IT FREE</a>
+                <p style="color:#F2F4F5;padding-top:10px;">Try Fr8 free for 30 days no cc required</p>
+            </div>
+        </div>
+        <!-- END FULL-WIDTH PARALLAX -->
+        <!-- SERVICES -->
+        <div id="services" class="section darker services">
+            <div class="container">
+                <div class="section-heading">
+                    <h2>Fr8 SERVICES</h2>
+                    <p>Use Fr8's pre-built services to automate the most common tasks.</p>
+                    <hr />
+                </div>
+                <div class="section-content">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="service-item">
+                                <span class="docusign"></span>
+                                <!-- <img src="assets/img/logo-fr8.svg" alt="Loop Logo" class="service-icon "/> -->
+                                <div class="service-text">
+                                    <h3>Docusign</h3>
+                                    <p>Quickly actualize proactive niches rather than user friendly catalysts for change.</p>
+                                    <a href="#" class="read-more"><span>Read more ...</span> <i class="i fa fa-arrow-circle-right"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="service-item">
+                                <span class="salesforce"></span>
+                                <div class="service-text">
+                                    <h3>Salesforce</h3>
+                                    <p>Quickly actualize proactive niches rather than user friendly catalysts for change.</p>
+                                    <a href="#" class="read-more"><span>Read more ...</span> <i class="i fa fa-arrow-circle-right"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="service-item">
+                                <span class="google"></span>
+                                <div class="service-text">
+                                    <h3>Google Apps</h3>
+                                    <p>Quickly actualize proactive niches rather than user friendly catalysts for change.</p>
+                                    <a href="#" class="read-more"><span>Read more ...</span> <i class="i fa fa-arrow-circle-right"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="service-item">
+                                <span class="fr8-service"></span>
+                                <div class="service-text">
+                                    <h3>Custom</h3>
+                                    <p>Quickly actualize proactive niches rather than user friendly catalysts for change.</p>
+                                    <a href="#" class="read-more"><span>Read more ...</span> <i class="i fa fa-arrow-circle-right"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </section>
-
-        <section id="contacts" class="text-block full-height-block" data-section="contacts">
-            <div class="inner-bg full-size-bg"></div>
-            <div class="container full-height-block">
-                <div class="inner-wrap cetered ">
-                    <h2>Get in touch</h2>
-                    <div class="row-fluid section">
+        </div>
+        <!-- END SERVICES -->
+        <!-- CONTACT -->
+        <div id="contact" class="section contact">
+            <div class="section-heading">
+                <h2>GET IN TOUCH</h2>
+                <p></p>
+                <hr />
+            </div>
+            <div class="section-content">
+                <div class="container">
+                    <div class="row">
                         <div class="col-md-8 col-md-offset-2">
-                            <div class="span12 cform">
-                                <h3>Want to ask something?</h3>
-                                <form class="form clearfix contact-form" action="#">
-                                    <p><span id="spMessage" class="contact-hint"></span></p>
-                                    <input type="text" class="span12" placeholder="Name" name="name" id="name">
-                                    <input type="email" class="span12" placeholder="Email" name="emailAddress" id="emailId">
-                                    <textarea class="span12" placeholder="Message" name="message" rows="6" id="message"></textarea>
-                                    <button class="btn btn-large submit-btn" type="button" onclick="SendMail();">Submit</button>
-
+                            <div class="contact-form">
+                                <div class="alert"></div>
+                                <form id="contact-form" method="post" role="form" novalidate>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="sr-only" for="name">Name:</label>
+                                                <input type="text" id="name" class="form-control" name="name" placeholder="Name*" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="sr-only" for="email">Email:</label>
+                                                <input type="email" id="email" class="form-control" name="email" placeholder="Email*" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="sr-only" for="subject">Subject:</label>
+                                        <input type="text" id="subject" class="form-control" name="subject" placeholder="Subject">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="sr-only" for="message">Message:</label>
+                                        <textarea id="message" name="message" class="form-control" placeholder="Message*" required></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-lg" id="submit-button">
+                                        <i class="fa loading-icon"></i> <span>Send Message</span>
+                                    </button>
+                                    <input type="hidden" name="msg-submitted" id="msg-submitted" value="true">
                                 </form>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
+        <!-- END CONTACT -->
+        <!-- TWITTER STREAM -->
+        <div id="twitter-stream" class="section twitter-stream">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <h4>Contact</h4>
+                    </div>
+                    <div class="col-sm-4">
+                        <h4>About</h4>
+                        <p>fr8 is the open standard for cloud workflow.</p>
+                    </div>
+                    <div class="col-sm-4">
+                        <h4>Company Updates</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- TWITTER STREAM -->
 
-<!--</div>-->
+    </div>
+    <!-- END MAIN CONTENT -->
+    <!-- FOOTER -->
+    <footer id="footer" class="section">
+        <div class="container">
+            <p class="copyright">@DateTime.Now.Year © Maginot Technologies, LLC. All Rights Reserved.</p>
+        </div>
+    </footer>
+    <!-- END FOOTER -->
+
+    <div class="back-to-top">
+        <a href="#top"><i class="fa fa-angle-up"></i></a>
+    </div>
+
+    @Scripts.Render("~/bundles/js/home")
+    
+    <script>
+      /*  $(document).ready(function () {
+            // Get instance of the plugin
+            var instance = $('#hero-unit').data('vide');
+
+            // Get video element of the background. Do what you want.
+            var video = instance.getVideoObject();
+
+            //this plugin doesn't set poster for video - which causes white flashes on video end
+            video.setAttribute('poster', '/Content/videos/motion.png');
+            video.onended = function (e) {
+                video.load();
+                video.play();
+            };
+        });*/
+        
+    </script>
+
+</body>
+</html>

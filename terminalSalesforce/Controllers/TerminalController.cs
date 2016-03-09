@@ -55,6 +55,7 @@ namespace terminalSalesforce.Controllers
                 Label = "Create Contact",
                 Terminal = terminal,
                 NeedsAuthentication = true,
+                Tags = "AggressiveReload",
                 Category = ActivityCategory.Forwarders,
                 MinPaneWidth = 330,
                 WebService = webService
@@ -76,10 +77,10 @@ namespace terminalSalesforce.Controllers
             {
                 Version = "1",
                 Name = "Get_Data",
-                Label = "Get Data",
+                Label = "Get Data from Salesforce",
                 Terminal = terminal,
                 NeedsAuthentication = true,
-                Category = ActivityCategory.Processors,
+                Category = ActivityCategory.Receivers,
                 MinPaneWidth = 330,
                 WebService = webService
             };
@@ -92,7 +93,7 @@ namespace terminalSalesforce.Controllers
             StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
                 Definition = terminal,
-                Actions = actionList
+                Activities = actionList
             };
 
             return Json(curStandardFr8TerminalCM);

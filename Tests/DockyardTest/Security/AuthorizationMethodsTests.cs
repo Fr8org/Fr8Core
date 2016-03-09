@@ -17,6 +17,7 @@ using Moq;
 using Hub.Managers;
 using Data.Interfaces.Manifests;
 using Data.Crates;
+using AutoMapper;
 
 namespace DockyardTest.Security
 {
@@ -161,8 +162,6 @@ namespace DockyardTest.Security
                 {
                     ParentRouteNode = planDO,
                     ParentRouteNodeId = planDO.Id,
-                    Name = "testaction",
-
                     Id = FixtureData.GetTestGuidById(1),
                     ActivityTemplateId = activityTemplateDO.Id,
                     ActivityTemplate = activityTemplateDO,
@@ -177,7 +176,7 @@ namespace DockyardTest.Security
                 uow.SaveChanges();
 
                 activityDTO.Id = activityDO.Id;
-                activityDTO.ActivityTemplateId = activityTemplateDO.Id;
+                activityDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(activityTemplateDO);
             }
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -344,7 +343,6 @@ namespace DockyardTest.Security
                 activityTemplateDO.NeedsAuthentication = true;
 
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
-                activityDTO.ActivityTemplateId = activityTemplateDO.Id;
 
                 activityDO.ActivityTemplate = activityTemplateDO;
                    uow.PlanRepository.Add(new PlanDO()
@@ -356,8 +354,8 @@ namespace DockyardTest.Security
 
                 uow.SaveChanges();
 
-                activityDTO.ActivityTemplateId = activityTemplateDO.Id;
                 activityDTO.Id = activityDO.Id;
+                activityDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(activityTemplateDO);
             }
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -380,9 +378,9 @@ namespace DockyardTest.Security
             {
                 var activityTemplateDO = new ActivityTemplateDO("test_name", "test_label", "1", "test_description", tokenDO.TerminalID);
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
-                activityDTO.ActivityTemplateId = activityTemplateDO.Id;
 
                 activityDO.ActivityTemplate = activityTemplateDO;
+                
                 activityDO.AuthorizationToken = tokenDO;
                 uow.PlanRepository.Add(new PlanDO()
                 {
@@ -394,7 +392,7 @@ namespace DockyardTest.Security
                 uow.SaveChanges();
 
                 activityDTO.Id = activityDO.Id;
-                activityDTO.ActivityTemplateId = activityTemplateDO.Id;
+                activityDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(activityTemplateDO);
             }
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -418,10 +416,8 @@ namespace DockyardTest.Security
             {
                 var activityTemplateDO = new ActivityTemplateDO("test_name", "test_label", "1", "test_description", terminalDO.Id);
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
-                activityDTO.ActivityTemplateId = activityTemplateDO.Id;
                 uow.SaveChanges();
 
-                activityDTO.ActivityTemplateId = activityTemplateDO.Id;
             }
 
             

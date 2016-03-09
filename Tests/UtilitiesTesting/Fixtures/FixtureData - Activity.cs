@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using Newtonsoft.Json;
 using StructureMap;
 using Data.Entities;
+using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Hub.Interfaces;
@@ -12,6 +13,8 @@ namespace UtilitiesTesting.Fixtures
 {
     partial class FixtureData
     {
+        
+
         public class GuidIdStore
         {
             private readonly static GuidIdStore _instance = new GuidIdStore();

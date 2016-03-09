@@ -19,7 +19,8 @@ module dockyard.tests.utils.fixtures {
                     "value": "",
                     "errorMessage": null,
                     "fieldLabel": "SQL Connection String",
-                    "events": []
+                    "events": [],
+                    "isFocused": false
                 },
                 {
                     "type": "textField",
@@ -28,7 +29,8 @@ module dockyard.tests.utils.fixtures {
                     "value": "",
                     "errorMessage": null,
                     "fieldLabel": "Custom SQL Query",
-                    "events": []
+                    "events": [],
+                    "isFocused": false
                 },
                 {
                     "type": "checkboxField",
@@ -38,6 +40,7 @@ module dockyard.tests.utils.fixtures {
                     "fieldLabel": "Log All Transactions?",
                     "events": [],
                     "errorMessage": null,
+                    "isFocused": false
                 },
                 {
                     "type": "checkboxField",
@@ -46,7 +49,8 @@ module dockyard.tests.utils.fixtures {
                     "value": "",
                     "fieldLabel": "Log Some Transactions?",
                     "events": [],
-                    "errorMessage": null
+                    "errorMessage": null,
+                    "isFocused": false
                 },
                 {
                     "type": "checkboxField",
@@ -55,7 +59,8 @@ module dockyard.tests.utils.fixtures {
                     "value": "",
                     "fieldLabel": "Log No Transactions?",
                     "events": [],
-                    "errorMessage": null
+                    "errorMessage": null,
+                    "isFocused": false
                 },
                 {
                     "type": "checkboxField",
@@ -64,7 +69,8 @@ module dockyard.tests.utils.fixtures {
                     "value": "",
                     "fieldLabel": "Log Failed Transactions?",
                     "events": [],
-                    "errorMessage": null
+                    "errorMessage": null,
+                    "isFocused": false
                 }
             ]
         };
@@ -103,10 +109,8 @@ module dockyard.tests.utils.fixtures {
             activityTemplate: {
                 id: 2
             },
-            isTempId: false,
             currentView: null,
-            id: 'E55315F9-A30B-4196-A43D-6F511B91CCF8',
-            name: "Write_To_Sql_Server"
+            id: 'E55315F9-A30B-4196-A43D-6F511B91CCF8'
         };
 
         public static internalAuthActionVM = <interfaces.IActionVM> {
@@ -137,10 +141,8 @@ module dockyard.tests.utils.fixtures {
             activityTemplate: {
                 id: 2
             },
-            isTempId: false,
             currentView: null,
-            id: 'E55315F9-A30B-4196-A43D-6F511B91CCF8',
-            name: "Write_To_Sql_Server"
+            id: 'E55315F9-A30B-4196-A43D-6F511B91CCF8'
         };
 
         public static externalAuthActionVM = <interfaces.IActionVM> {
@@ -171,10 +173,8 @@ module dockyard.tests.utils.fixtures {
             activityTemplate: {
                 id: 2
             },
-            isTempId: false,
             currentView: null,
-            id: 'E55315F9-A30B-4196-A43D-6F511B91CCF8',
-            name: "Write_To_Sql_Server"
+            id: 'E55315F9-A30B-4196-A43D-6F511B91CCF8'
         };
 
         /*

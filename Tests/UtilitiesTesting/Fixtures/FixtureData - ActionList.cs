@@ -81,7 +81,7 @@ namespace UtilitiesTesting.Fixtures
     partial class FixtureData
     {
 
-        public static ActionListDO TestActionListHealth1()
+        public static ActionListDO TestActivityListHealth1()
         {
             //string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";
             var containerDO = new ContainerDO
@@ -92,9 +92,9 @@ namespace UtilitiesTesting.Fixtures
                 PlanId = TestRouteHealthDemo().Id
             };
 
-            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => containerDO.CrateStorage))
+            using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => containerDO.CrateStorage))
             {
-                updater.CrateStorage.Add(GetEnvelopeIdCrate());
+                crateStorage.Add(GetEnvelopeIdCrate());
             }
 
             return new ActionListDO
@@ -108,7 +108,7 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 //
-        public static ActionListDO TestActionList()
+        public static ActionListDO TestActivityList()
         {
             var curActionListDO = new ActionListDO
             {
@@ -123,7 +123,7 @@ namespace UtilitiesTesting.Fixtures
             return curActionListDO;
         }
 //
-        public static ActionListDO TestActionList2()
+        public static ActionListDO TestActivityList2()
         {
             var curActionListDO = new ActionListDO
             {
@@ -137,7 +137,7 @@ namespace UtilitiesTesting.Fixtures
             return curActionListDO;
         }
 //
-        public static ActionListDO TestEmptyActionList()
+        public static ActionListDO TestEmptyActivityList()
         {
             var curActionListDO = new ActionListDO
             {
@@ -149,7 +149,7 @@ namespace UtilitiesTesting.Fixtures
             return curActionListDO;
         }
 //
-        public static ActionListDO TestActionListMedical()
+        public static ActionListDO TestActivityListMedical()
         {
             var curActionListDO = new ActionListDO
             {
@@ -161,7 +161,7 @@ namespace UtilitiesTesting.Fixtures
             return curActionListDO;
         }
 //
-        public static ActionListDO TestActionList3()
+        public static ActionListDO TestActivityList3()
         {
             return new ActionListDO
             {
@@ -171,7 +171,7 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 //
-        public static ActionListDO TestActionList4()
+        public static ActionListDO TestActivityList4()
         {
             return new ActionListDO
             {
@@ -181,7 +181,7 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 //
-        public static ActionListDO TestActionList5()
+        public static ActionListDO TestActivityList5()
         {
             return new ActionListDO
             {
@@ -198,7 +198,7 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 //
-        public static ActionListDO TestActionList6()
+        public static ActionListDO TestActivityList6()
         {
             ContainerDO containerDO = FixtureData.TestContainer1();
             containerDO.CrateStorage = "";
@@ -211,7 +211,7 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 //
-        public static ActionListDO TestActionList7()
+        public static ActionListDO TestActivityList7()
         {
             return new ActionListDO
             {
@@ -329,7 +329,7 @@ namespace UtilitiesTesting.Fixtures
 //			  return actionLists;
 //		  }
 //
-        public static List<RouteNodeDO> TestActionList1(int offset)
+        public static List<RouteNodeDO> TestActivityList1(int offset)
         {
             List<ActionListDO> actionLists = new List<ActionListDO>();
 //
@@ -349,7 +349,6 @@ namespace UtilitiesTesting.Fixtures
                 Id = GetTestGuidById(23+offset), 
                 ActivityTemplate = activityTempate, 
                 ActivityTemplateId = activityTempate.Id,
-                Name = "a_23", 
                 CrateStorage = ""
             };
             al_1.Activities.Add(a_23);
@@ -358,7 +357,7 @@ namespace UtilitiesTesting.Fixtures
             return new List<RouteNodeDO>() { a_23 };
         }
 //
-         public static List<RouteNodeDO> TestActionListParentActivityID12()
+         public static List<RouteNodeDO> TestActivityListParentActivityID12()
           {
               List<ActionListDO> actionLists = new List<ActionListDO>();
 //
@@ -375,7 +374,6 @@ namespace UtilitiesTesting.Fixtures
                  Id = GetTestGuidById(23), 
                  ActivityTemplate = activityTempate,
                  ActivityTemplateId = activityTempate.Id,
-                 Name = "a_23",
                  CrateStorage = ""
              };
               al_1.Activities.Add(a_23);

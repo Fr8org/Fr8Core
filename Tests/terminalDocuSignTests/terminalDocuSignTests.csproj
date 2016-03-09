@@ -31,6 +31,15 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dev|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Dev\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -59,12 +68,14 @@
   <ItemGroup>
     <Compile Include="Fixtures\HealthMonitor_FixtureData.cs" />
     <Compile Include="Integration\Extract_Data_From_Envelopes_v1_Tests.cs" />
+    <Compile Include="Integration\Generate_DocuSign_Report_v1_EndToEnd_Tests.cs" />
+    <Compile Include="Integration\Track_DocuSign_Recipients_v1_EndToEnd_Tests.cs" />
     <Compile Include="Integration\Mail_Merge_Into_DocuSign_v1_EndToEnd_Tests.cs" />
     <Compile Include="Integration\Mail_Merge_Into_DocuSign_v1_Tests.cs" />
     <Compile Include="Integration\Monitor_DocuSign_v1_Tests.cs" />
     <Compile Include="Integration\Query_DocuSign_v1_Tests.cs" />
     <Compile Include="Integration\Receive_DocuSign_Envelope_v1_Tests.cs" />
-    <Compile Include="Integration\Rich_Document_Notifications_v1_Tests.cs" />
+    <Compile Include="Integration\Track_DocuSign_Recipients_v1_Tests.cs" />
     <Compile Include="Integration\Terminal_Authentication_v1_Tests.cs" />
     <Compile Include="Integration\Terminal_Discover_v1Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

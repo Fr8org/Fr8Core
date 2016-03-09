@@ -1,4 +1,6 @@
-﻿<div>
+﻿<!-- TODO: FR-2347 remove this. -->
+<!--
+<div>
     <div ng-class="{'noclick-background': isDisabled}">
         <table class="table query-builder-table" stop-click-propagation>
             <thead>
@@ -10,7 +12,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="row in rows track by $index">
+                <tr ng-repeat-start="row in rows track by $index">
                     <td width="125">
                         <select class="form-control" ng-options="f.key as f.name for f in fields" ng-model="row.field">
                             <option value="">Select a Field</option>
@@ -21,13 +23,19 @@
                     </td>
                     <td>
                         <div>
-                            <input type="text"
-                                   class="form-control"
-                                   ng-required="true"
-                                   ng-model="row.value"
-                                   ng-model-options="{ updateOn: 'default blur', debounce: { 'default': 500, 'blur': 0 } }"
-                                   ng-change="valueChanged(row)"
-                                   ng-disabled="!row.field" />
+                            <input
+                                type="text"
+                                class="form-control"
+                                ng-required="true"
+                                ng-model="row.value"
+                                ng-model-options="{ updateOn: 'default blur', debounce: { 'default': 500, 'blur': 0 } }"
+                                ng-change="valueChanged(row)"
+                                ng-disabled="!row.field"
+                                ng-class="{ invalid: !!row.valueError }"
+                            />
+                            !--
+                            <configuration-control current-action="currentAction" field="row.control" />
+                            --
                         </div>
                     </td>
                     <td>
@@ -37,6 +45,11 @@
                              class="query-builder-delete-button" />
                     </td>
                 </tr>
+                <tr ng-repeat-end ng-if="row.valueError" class="no-border">
+                    <td colspan="3">
+                        <div class="invalid-hint">{{row.valueError}}</div>
+                    </td>
+                </tr>
             </tbody>
         </table>
         <div>
@@ -44,3 +57,4 @@
         </div>
     </div>
 </div>
+-->

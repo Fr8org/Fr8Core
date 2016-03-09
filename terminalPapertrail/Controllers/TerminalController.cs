@@ -46,7 +46,7 @@ namespace terminalPapertrail.Controllers
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
                 Definition = terminal,
-                Actions = new List<ActivityTemplateDTO> {writeToLogActionTemplate}
+                Activities = new List<ActivityTemplateDTO> {writeToLogActionTemplate}
             };
 
             return Json(curStandardFr8TerminalCM);

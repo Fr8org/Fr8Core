@@ -90,7 +90,11 @@ namespace Data.Repositories.Plan
             foreach (var routeNodeDo in changes.Delete)
             {
                 var entryStub = routeNodeDo.Clone();
-                var key = objectContext.CreateEntityKey("RouteNodeDOes", routeNodeDo);
+
+                ClearNavigationProperties(entryStub);
+
+                var key = objectContext.CreateEntityKey("RouteNodeDOes", entryStub);
+
                 if (!objectContext.ObjectStateManager.TryGetObjectStateEntry(key, out entry))
                 {
                     RouteNodes.Attach(entryStub);

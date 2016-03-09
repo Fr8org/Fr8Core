@@ -26,13 +26,11 @@ namespace terminalDocuSign.Services
     public class Event : terminalDocuSign.Interfaces.IEvent
     {
         private readonly EventReporter _alertReporter;
-        private readonly ICrateManager _crate;
         private readonly IDocuSignRoute _docuSignRoute;
 
         public Event()
         {
             _alertReporter = ObjectFactory.GetInstance<EventReporter>();
-            _crate = ObjectFactory.GetInstance<ICrateManager>();
             _docuSignRoute = ObjectFactory.GetInstance<IDocuSignRoute>();
         }
 
@@ -57,8 +55,9 @@ namespace terminalDocuSign.Services
                     throw new ArgumentException("Fr8 User ID is not in the correct format.");
                 }
 
-                //create MonitorAllDocuSignEvents plan
+                // create MonitorAllDocuSignEvents plan
                 await _docuSignRoute.CreateRoute_MonitorAllDocuSignEvents(curFr8UserId, authToken);
+
                 return null;
             }
 
@@ -118,6 +117,7 @@ namespace terminalDocuSign.Services
                     TemplateName = docuSignEnvelopeInformation.EnvelopeStatus.DocumentStatuses.Statuses[0].TemplateName,
                     RecipientId = docuSignEnvelopeInformation.EnvelopeStatus.RecipientStatuses.Statuses[0].Id,
                     RecipientEmail = docuSignEnvelopeInformation.EnvelopeStatus.RecipientStatuses.Statuses[0].Email,
+                    RecipientUserName = docuSignEnvelopeInformation.EnvelopeStatus.RecipientStatuses.Statuses[0].UserName,
                     Status = docuSignEnvelopeInformation.EnvelopeStatus.Status,
                     CreateDate = docuSignEnvelopeInformation.EnvelopeStatus.CreatedDate,
                     SentDate = docuSignEnvelopeInformation.EnvelopeStatus.SentDate,
@@ -136,7 +136,7 @@ namespace terminalDocuSign.Services
             }
         }
 
-        private CrateStorage ExtractEventPayload(IEnumerable<DocuSignEventDTO> curEvents)
+        private ICrateStorage ExtractEventPayload(IEnumerable<DocuSignEventDTO> curEvents)
         {
             var stroage = new CrateStorage();
 
@@ -156,6 +156,7 @@ namespace terminalDocuSign.Services
             returnList.Add(new FieldDTO("ExternalEventType", curEvent.ExternalEventType.ToString()));
             returnList.Add(new FieldDTO("RecipientId", curEvent.RecipientId));
             returnList.Add(new FieldDTO("RecipientEmail", curEvent.RecipientEmail));
+            returnList.Add(new FieldDTO("RecipientUserName", curEvent.RecipientUserName));
 
             returnList.Add(new FieldDTO("DocumentName", curEvent.DocumentName));
             returnList.Add(new FieldDTO("TemplateName", curEvent.TemplateName));

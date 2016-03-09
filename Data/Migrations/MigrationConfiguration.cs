@@ -17,7 +17,6 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
 using StructureMap;
-using MT_Field = Data.Entities.MT_Field;
 //using MT_FieldService = Data.Infrastructure.MultiTenant.MT_Field;
 
 namespace Data.Migrations
@@ -28,6 +27,8 @@ namespace Data.Migrations
         {
             //Do not ever turn this on! It will break database upgrades
             AutomaticMigrationsEnabled = false;
+
+            this.CommandTimeout = 60 * 15;
 
             //Do not modify this, otherwise migrations will run twice!
             ContextKey = "Data.Infrastructure.DockyardDbContext";
@@ -47,39 +48,56 @@ namespace Data.Migrations
 
 
             // Uncomment four following lines to debug Seed method (in case running from NuGet Package Manager Console).
-            //if (System.Diagnostics.Debugger.IsAttached == false)
-            //{
-            //    System.Diagnostics.Debugger.Launch();
-            //}
+            // if (System.Diagnostics.Debugger.IsAttached == false)
+            // {
+            //     System.Diagnostics.Debugger.Launch();
+            // }
 
-            // If not running inside web application (i.e. running "Update-Database" in NuGet Package Manager Console),
-            // then register IDBContext and IUnitOfWork in StructureMap DI.
-            if (HttpContext.Current == null)
+            using (var migrationContainer = new Container())
             {
-                ObjectFactory.Initialize(x => x.AddRegistry<MigrationConsoleSeedRegistry>());
+                migrationContainer.Configure(x => x.AddRegistry<MigrationConsoleSeedRegistry>());
+
+                var uow = new UnitOfWork(context, migrationContainer);
+
+                UpdateRootRouteNodeId(uow);
+
+                SeedIntoMockDb(uow);
+
+                AddRoles(uow);
+                AddAdmins(uow);
+                AddDockyardAccounts(uow);
+                AddProfiles(uow);
+                AddTestAccounts(uow);
+                //Addterminals(uow);
+
+                //AddAuthorizationTokens(uow);
+                uow.SaveChanges();
+                Fr8AccountDO fr8AccountDO = GetFr8Account(uow, "alex@edelstein.org");
+
+                // TODO: to be fixed, crashes when resolving IUnitOfWork out of global ObjectFactory container.
+                // Commented out by yakov.gnusin.
+                // AddContainerDOForTestingApi(uow, fr8AccountDO);
+
+                AddWebServices(uow);
+
+                AddTestUser(uow);
+
+                UpdateTerminalClientVisibility(uow);
+
             }
+        }
 
-            var uow = new UnitOfWork(context, ObjectFactory.Container);
-
-            UpdateRootRouteNodeId(uow);
-
-            SeedIntoMockDb(uow);
-
-            AddRoles(uow);
-            AddAdmins(uow);
-            AddDockyardAccounts(uow);
-            AddProfiles(uow);
-            AddTestAccounts(uow);
-            //Addterminals(uow);
-
-
-            //AddAuthorizationTokens(uow);
+        private void UpdateTerminalClientVisibility(UnitOfWork uow)
+        {
+            var activities = uow.ActivityTemplateRepository.GetAll();
+            foreach (var activity in activities)
+            {
+                if (activity.Name == "Monitor_DocuSign_Envelope_Activity")
+                    activity.ClientVisibility = false;
+                else
+                    activity.ClientVisibility = true;
+            }
             uow.SaveChanges();
-            Fr8AccountDO fr8AccountDO = GetFr8Account(uow, "alex@edelstein.org");
-            AddContainerDOForTestingApi(uow, fr8AccountDO);
-
-            AddWebServices(uow);
-
         }
 
         //Method to let us seed into memory as well
@@ -395,7 +413,6 @@ namespace Data.Migrations
             uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, user.Id);
 
             user.TestAccount = false;
-
             return user;
         }
 
@@ -573,6 +590,41 @@ namespace Data.Migrations
             }
 
             uow.SaveChanges();
+        }
+
+        private void AddTestUser(IUnitOfWork uow)
+        {
+            const string email = "integration_test_runner@fr8.company";
+            const string password = "fr8#s@lt!";
+
+            Fr8AccountDO newDockyardAccountDO = null;
+            //check if we know this email address
+
+            var existingEmailAddressDO =
+                uow.EmailAddressRepository.GetQuery().FirstOrDefault(ea => ea.Address == email);
+            if (existingEmailAddressDO != null)
+            {
+                var existingUserDO = uow.UserRepository
+                    .GetQuery()
+                    .FirstOrDefault(u => u.EmailAddressID == existingEmailAddressDO.Id);
+
+                newDockyardAccountDO = RegisterTestUser(uow, email, email, email, password, Roles.Customer);
+            }
+            else
+            {
+                newDockyardAccountDO = RegisterTestUser(uow, email, email, email, password, Roles.Customer);
+            }
+
+            uow.SaveChanges();
+        }
+
+        private Fr8AccountDO RegisterTestUser(IUnitOfWork uow, string userName,
+            string firstName, string lastName, string password, string roleID)
+        {
+            var userDO = uow.UserRepository.GetOrCreateUser(userName, roleID);
+            uow.UserRepository.UpdateUserCredentials(userDO, userName, password);
+            uow.AspNetUserRolesRepository.AssignRoleToUser(roleID, userDO.Id);
+            return userDO;
         }
 
         private void AddWebService(IUnitOfWork uow, string name, string iconPath)

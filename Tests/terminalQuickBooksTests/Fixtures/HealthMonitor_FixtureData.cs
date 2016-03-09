@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using System.Globalization;
 
 namespace terminalQuickBooksTests.Fixtures
 {
@@ -26,7 +27,7 @@ namespace terminalQuickBooksTests.Fixtures
             };
         }
 
-        public static ActivityTemplateDTO Action_Create_Journal_Entry_ActivityTemplate()
+        public static ActivityTemplateDTO Activity_Create_Journal_Entry_ActivityTemplate()
         {
             return new ActivityTemplateDTO()
             {
@@ -35,18 +36,16 @@ namespace terminalQuickBooksTests.Fixtures
                 Version = "1"
             };
         }
-        public static Fr8DataDTO Action_Create_Journal_Entry_v1_InitialConfiguration_Fr8DataDTO()
+        public static Fr8DataDTO Activity_Create_Journal_Entry_v1_InitialConfiguration_Fr8DataDTO()
         {
-            var activityTemplate = Action_Create_Journal_Entry_ActivityTemplate();
+            var activityTemplate = Activity_Create_Journal_Entry_ActivityTemplate();
 
             var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Create_Journal_Entry",
                 Label = "Create Journal Entry",
                 AuthToken = QuickBooks_AuthTokenDTO(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
 
             return new Fr8DataDTO { ActivityDTO = activityDTO };
@@ -67,11 +66,9 @@ namespace terminalQuickBooksTests.Fixtures
             var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Convert_TableData_To_AccountingTransactions",
                 Label = "Convert TableData To AccountingTransactions",
                 AuthToken = QuickBooks_AuthTokenDTO(),
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
+                ActivityTemplate = activityTemplate
             };
 
             return new Fr8DataDTO { ActivityDTO = activityDTO };
@@ -104,7 +101,7 @@ namespace terminalQuickBooksTests.Fixtures
                 Memo = "That is the test crate",
                 FinancialLines = curFinLineDTOList,
                 Name = "Code1",
-                TransactionDate = DateTime.Parse("2015-12-15")
+                TransactionDate = DateTime.Parse("15-Dec-2015", new CultureInfo("en-US"))
             };
             var curCrate = new StandardAccountingTransactionCM()
             {
@@ -146,7 +143,7 @@ namespace terminalQuickBooksTests.Fixtures
                 {
                     new TableCellDTO()
                     {
-                        Cell = new FieldDTO("5", "30/12/2015")
+                        Cell = new FieldDTO("5", "30-Dec-2015")
                     },
                     new TableCellDTO()
                     {

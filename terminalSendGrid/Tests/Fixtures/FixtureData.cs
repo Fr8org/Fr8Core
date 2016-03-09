@@ -15,13 +15,12 @@ namespace terminalSendGrid.Tests.Fixtures
             return new Guid("A0287C2A-28D3-48C5-8CAC-26FE27E8EA9B");
         }
 
-        public static ActivityDO ConfigureSendEmailViaSendGridAction()
+        public static ActivityDO ConfigureSendEmailViaSendGridActivity()
         {
-            var actionTemplate = SendEmailViaSendGridActionTemplateDTO();
+            var actionTemplate = SendEmailViaSendGridActivityTemplateDTO();
 
             var activityDO = new ActivityDO()
             {
-                Name = "testaction",
                 Id = TestGuid_Id_333(),
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate,
@@ -44,7 +43,7 @@ namespace terminalSendGrid.Tests.Fixtures
             return containerDO;
         }
 
-        public static ActivityTemplateDO SendEmailViaSendGridActionTemplateDTO()
+        public static ActivityTemplateDO SendEmailViaSendGridActivityTemplateDTO()
         {
             return new ActivityTemplateDO
             {
@@ -79,11 +78,11 @@ namespace terminalSendGrid.Tests.Fixtures
             get
             {
                 var payloadDTO = new PayloadDTO(PayloadDTO_ContainerId());
-                using (var updater = new CrateManager().UpdateStorage(payloadDTO))
+                using (var crateStorage = new CrateManager().GetUpdatableStorage(payloadDTO))
                 {
                     var operationalStatus = new OperationalStateCM();
                     var operationsCrate = Crate.FromContent("Operational Status", operationalStatus);
-                    updater.CrateStorage.Add(operationsCrate);
+                    crateStorage.Add(operationsCrate);
                 }
                 return payloadDTO;
             }

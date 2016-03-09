@@ -6,6 +6,8 @@ using System.Text;
 using System.Web;
 using DocuSign.Integrations.Client;
 using Newtonsoft.Json;
+using Data.Interfaces.DataTransferObjects;
+using Hub.Infrastructure;
 using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Interfaces;
 
@@ -24,7 +26,8 @@ namespace terminalDocuSign.Services
         {
             var accout = _packager.Login(login, password);
 
-            return MakeRequest<FolderListResponse>("/folders", accout).Folders;
+            var response = MakeRequest<FolderListResponse>("/folders", accout);
+            return response.Folders;
         }
 
 
@@ -33,16 +36,21 @@ namespace terminalDocuSign.Services
             return GetFolders(login, password).Where(x => x.Type != "report").ToList();
         }
 
-        public List<FolderItem> Search(string login, string password, string searchText, string folderId, string status = null, DateTime? fromDate = null, DateTime? toDate = null)
+        public string BuildSearchRequestUrl(
+            string searchText,
+            string folderId,
+            string status = null,
+            DateTime? fromDate = null,
+            DateTime? toDate = null)
         {
             if (string.IsNullOrWhiteSpace(folderId)) throw new ArgumentNullException("folderId");
-            
-            StringBuilder queryBuilder = new StringBuilder("/folders/");
-            
+
+            var queryBuilder = new StringBuilder("/folders/");
+
             queryBuilder.Append(folderId);
 
             queryBuilder.Append("?searchText=");
-            if (String.IsNullOrWhiteSpace(searchText))
+            if (string.IsNullOrWhiteSpace(searchText))
             {
                 queryBuilder.Append(HttpUtility.UrlEncode(searchText));
             }
@@ -56,19 +64,44 @@ namespace terminalDocuSign.Services
             if (fromDate != null)
             {
                 queryBuilder.Append("&from_date=");
-                queryBuilder.Append(HttpUtility.UrlEncode(fromDate.Value.ToString("dd-MM-yyyy | HH:mm")));
+                // queryBuilder.Append(HttpUtility.UrlEncode(fromDate.Value.ToString("dd-MM-yyyy | HH:mm")));
+                queryBuilder.Append(fromDate.Value.ToString("MM-dd-yyyy"));
             }
 
             if (toDate != null)
             {
                 queryBuilder.Append("&to_date=");
-                queryBuilder.Append(HttpUtility.UrlEncode(toDate.Value.ToString("dd-MM-yyyy | HH:mm")));
+                // queryBuilder.Append(HttpUtility.UrlEncode(toDate.Value.ToString("dd-MM-yyyy | HH:mm")));
+                queryBuilder.Append(toDate.Value.ToString("MM-dd-yyyy"));
             }
 
             queryBuilder.Append("&start_position=");
-            
+
+            return queryBuilder.ToString();
+        }
+
+        public int Count(string login, string password, string searchText, string folderId, string status = null, DateTime? fromDate = null, DateTime? toDate = null)
+        {
+            var account = _packager.Login(login, password);
+            var urlTemplate = BuildSearchRequestUrl(searchText, folderId, status, fromDate, toDate);
+            int startPosition = 0;
+
+            var result = 0;
+
+            var url = urlTemplate + startPosition;
+            var searchResult = MakeRequest<FolderSearchResults>(url, account);
+            if (searchResult != null)
+            {
+                result = searchResult.TotalSetSize;
+            }
+
+            return result;
+        }
+
+        public List<FolderItem> Search(string login, string password, string searchText, string folderId, string status = null, DateTime? fromDate = null, DateTime? toDate = null, IEnumerable<FilterConditionDTO> conditions = null) 
+        {
             var accout = _packager.Login(login, password);
-            var urlTemplate = queryBuilder.ToString();
+            var urlTemplate = BuildSearchRequestUrl(searchText, folderId, status, fromDate, toDate);
             int startPosition = 0;
             
             var items = new List<FolderItem>();
@@ -93,7 +126,20 @@ namespace terminalDocuSign.Services
                 }
             }
 
-            return items.ToList();
+            var itemsToReturn = items.ToList();
+
+            if (conditions != null)
+            {
+                var filterConditionExecutor =
+                    new FilterConditionPredicateBuilder<FolderItem>(conditions);
+
+                itemsToReturn = itemsToReturn
+                    .AsQueryable()
+                    .Where(filterConditionExecutor.ToPredicate())
+                    .ToList();
+            }
+
+            return itemsToReturn;
         }
 
         private static T MakeRequest<T>(string queryString, DocuSignAccount account, string payload = null)

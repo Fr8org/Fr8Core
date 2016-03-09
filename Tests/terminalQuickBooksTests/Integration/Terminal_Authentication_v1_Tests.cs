@@ -8,7 +8,7 @@ using HealthMonitor.Utility;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using NUnit.Framework;
 
-namespace terminalDocuSignTests.Integration
+namespace terminalQuickBooksTests.Integration
 {
     [Explicit]
     public class Terminal_Authentication_v1_Tests : BaseTerminalIntegrationTest
@@ -27,7 +27,7 @@ namespace terminalDocuSignTests.Integration
             ExpectedMessage = @"Authorization has been denied for this request.",
             MatchType = MessageMatch.Contains
         )]
-        public async void Should_Fail_WithAuthorizationError()
+        public async Task Should_Fail_WithAuthorizationError()
         {
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();

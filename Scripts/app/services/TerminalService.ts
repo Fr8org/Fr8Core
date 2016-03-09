@@ -1,15 +1,15 @@
 ﻿
 module dockyard.services {
     export interface ITerminalService extends ng.resource.IResourceClass<interfaces.ITerminalVM> {
-        getActions: (params: Array<number>) => Array<model.TerminalActionSetDTO>;
+        getActivities: (params: Array<number>) => Array<model.TerminalActionSetDTO>;
     }
 
     app.factory("TerminalService", ["$resource", ($resource: ng.resource.IResourceService): ITerminalService =>
         <ITerminalService>$resource("/api/terminals?id=:id", { id: "@id" }, {
-            getActions: {
+            getActivities: {
                 method: "POST",
                 isArray: true,
-                url: "/api/terminals/actions"
+                url: "/api/terminals/activities"
             }
         })
     ]);

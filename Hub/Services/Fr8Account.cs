@@ -14,18 +14,30 @@ using Data.States;
 using Hub.Security;
 using Utilities;
 using System.Web;
+using System.Net.Http;
 
 namespace Hub.Services
 {
     public class Fr8Account
     {
-
         public void UpdatePassword(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO, string password)
         {
             if (dockyardAccountDO != null)
             {
                 uow.UserRepository.UpdateUserCredentials(dockyardAccountDO, password: password);
             }
+        }
+
+        public bool IsValidHashedPassword(Fr8AccountDO dockyardAccountDO, string password)
+        {
+            if (dockyardAccountDO != null)
+            {
+                var passwordHasher = new PasswordHasher();
+                return (passwordHasher.VerifyHashedPassword(dockyardAccountDO.PasswordHash, password) ==
+                    PasswordVerificationResult.Success);
+            }
+            else
+                return false;
         }
 
         /// <summary>
@@ -252,7 +264,7 @@ namespace Hub.Services
             }
         }
 
-        public Task<LoginStatus> ProcessLoginRequest(string username, string password, bool isPersistent)
+        public Task<LoginStatus> ProcessLoginRequest(string username, string password, bool isPersistent, HttpRequestMessage request = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -458,6 +470,28 @@ namespace Hub.Services
                 uow.SaveChanges();
                 return Task.FromResult(curRegStatus);
             }
+        }
+
+        public bool IsCurrentUserInAdminRole()
+        {
+            ISecurityServices _security = ObjectFactory.GetInstance<ISecurityServices>();
+            bool isAdmin = false;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                //get the current account
+                var curAccount = _security.GetCurrentAccount(uow);
+                //get the roles to check if the account has admin role
+                var curAccountRoles = curAccount.Roles;
+                //get the role id
+                var adminRoleId = uow.AspNetRolesRepository.GetQuery().Single(r => r.Name == "Admin").Id;
+                //provide all facts if the user has admin role
+                if (curAccountRoles.Any(x => x.RoleId == adminRoleId))
+                {
+                    isAdmin = true;
+                }
+            }
+
+            return isAdmin;
         }
     }
 }

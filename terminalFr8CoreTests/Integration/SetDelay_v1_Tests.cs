@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Data.Constants;
 using Data.Control;
+using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
@@ -30,9 +31,9 @@ namespace terminalFr8CoreTests.Integration
 		{
 			var configureUrl = GetTerminalConfigureUrl();
 
-			var requestActionDTO = CreateRequestActionFixture();
-
-			var responseActionDTO = HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, requestActionDTO).Result;
+			var requestActionDTO = CreateRequestActivityFixture();
+            var dataDTO = new Fr8DataDTO { ActivityDTO = requestActionDTO };
+			var responseActionDTO = HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO).Result;
 
 			Assert.NotNull(responseActionDTO);
 			Assert.NotNull(responseActionDTO.CrateStorage);
@@ -59,13 +60,13 @@ namespace terminalFr8CoreTests.Integration
 		{
 			var configureUrl = GetTerminalConfigureUrl();
 
-			var requestActionDTO = CreateRequestActionFixture();
-
-			var responseActionDTO = HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, requestActionDTO).Result;
-
+			var requestActionDTO = CreateRequestActivityFixture();
+            var dataDTO = new Fr8DataDTO { ActivityDTO = requestActionDTO };
+            var responseActionDTO = HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO).Result;
+            dataDTO.ActivityDTO = responseActionDTO;
             SetDuration(responseActionDTO);
 
-			responseActionDTO = HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, responseActionDTO).Result;
+			responseActionDTO = HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO).Result;
 
 			Assert.NotNull(responseActionDTO);
 			Assert.NotNull(responseActionDTO.CrateStorage);
@@ -94,12 +95,16 @@ namespace terminalFr8CoreTests.Integration
 		public void Run_With_Route_Payload_Initial_Run()
 		{
 			var configureUrl = GetTerminalConfigureUrl();
-			var requestActionDTO = CreateRequestActionFixture();
-			var responseActionDTO = HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, requestActionDTO).Result;
+			var requestActionDTO = CreateRequestActivityFixture();
+
+            var dataDTO = new Fr8DataDTO { ActivityDTO = requestActionDTO };
+
+            var responseActionDTO = HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO).Result;
 			SetDuration(responseActionDTO);
 			var runUrl = GetTerminalRunUrl();
-		    AddOperationalStateCrate(responseActionDTO, new OperationalStateCM());
-            var runResponse = HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, responseActionDTO).Result;
+		    dataDTO.ActivityDTO = responseActionDTO;
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
+            var runResponse = HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO).Result;
 			Assert.NotNull(runResponse);
 		    var crateStorage = Crate.GetStorage(runResponse);
             var operationalStateCrate = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
@@ -110,17 +115,19 @@ namespace terminalFr8CoreTests.Integration
         public void Run_With_Route_Payload_Second_Run()
         {
             var configureUrl = GetTerminalConfigureUrl();
-            var requestActionDTO = CreateRequestActionFixture();
-            var responseActionDTO = HttpPostAsync<ActivityDTO, ActivityDTO>(configureUrl, requestActionDTO).Result;
-            SetDuration(responseActionDTO);
+            var requestActionDTO = CreateRequestActivityFixture();
+            var dataDTO = new Fr8DataDTO { ActivityDTO = requestActionDTO };
+
+            dataDTO.ActivityDTO = HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO).Result;
+            SetDuration(dataDTO.ActivityDTO);
             var runUrl = GetTerminalRunUrl();
             var operationalState = new OperationalStateCM
             {
                 CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.RequestSuspend)
             };
-            AddOperationalStateCrate(responseActionDTO, operationalState);
+            AddOperationalStateCrate(dataDTO, operationalState);
 
-            var runResponse = HttpPostAsync<ActivityDTO, PayloadDTO>(runUrl, responseActionDTO).Result;
+            var runResponse = HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO).Result;
             Assert.NotNull(runResponse);
             var crateStorage = Crate.GetStorage(runResponse);
             var operationalStateCrate = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
@@ -139,17 +146,15 @@ namespace terminalFr8CoreTests.Integration
 			return activityTemplate;
 		}
 
-		private ActivityDTO CreateRequestActionFixture()
+		private ActivityDTO CreateRequestActivityFixture()
 		{
 			var activityTemplate = CreateActivityTemplateFixture();
 
 			var requestActionDTO = new ActivityDTO
 			{
 				Id = Guid.NewGuid(),
-				Name = "SetDelay",
 				Label = "Set Delay",
 				ActivityTemplate = activityTemplate,
-				ActivityTemplateId = activityTemplate.Id,
 				AuthToken = null
 			};
 
@@ -158,10 +163,10 @@ namespace terminalFr8CoreTests.Integration
 
 		private void SetDuration(ActivityDTO responseActionDTO)
 		{
-			using (var updater = Crate.UpdateStorage(responseActionDTO))
+			using (var crateStorage = Crate.GetUpdatableStorage(responseActionDTO))
 			{
-				var controls = updater.CrateStorage
-					.CrateContentsOfType<StandardConfigurationControlsCM>()
+				var controls = crateStorage
+                    .CrateContentsOfType<StandardConfigurationControlsCM>()
 					.Single();
 
 				var duration = (Duration)controls.Controls[0];
@@ -186,7 +191,7 @@ namespace terminalFr8CoreTests.Integration
 
 			var configurationControlEvents = configurationControl.Events;
 
-			Assert.IsNull(configurationControlEvents);
+			Assert.IsEmpty(configurationControlEvents);
             Assert.IsNull(configurationControl.Source);
 		}
 	}

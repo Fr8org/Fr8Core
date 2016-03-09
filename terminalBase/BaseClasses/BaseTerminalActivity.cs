@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -18,7 +20,9 @@ using Hub.Managers;
 using Utilities.Configuration.Azure;
 using TerminalBase.Infrastructure;
 using AutoMapper;
+using Data.Helpers;
 using Data.Interfaces.DataTransferObjects.Helpers;
+using Hub.Helper;
 
 namespace TerminalBase.BaseClasses
 {
@@ -31,11 +35,12 @@ namespace TerminalBase.BaseClasses
         #region Fields
 
         protected IActivity Activity;
-        protected ICrateManager Crate;
+
+        protected ICrateManager CrateManager { get; private set; }
         private readonly ITerminal _terminal;
         protected static readonly string ConfigurationControlsLabel = "Configuration_Controls";
-        protected string CurrentFr8UserId { get; set; }
-        protected string _actionName { get; set; }
+        public string CurrentFr8UserId { get; set; }
+        protected string _activityName { get; set; }
 
         private List<ActivityTemplateDTO> _activityTemplateCache = null;
 
@@ -55,11 +60,11 @@ namespace TerminalBase.BaseClasses
 
         public BaseTerminalActivity(string actionName)
         {
-            Crate = new CrateManager();
+            CrateManager = ObjectFactory.GetInstance<ICrateManager>();
             Activity = ObjectFactory.GetInstance<IActivity>();
             _terminal = ObjectFactory.GetInstance<ITerminal>();
             HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
-            _actionName = actionName;
+            _activityName = actionName;
         }
 
         public void SetCurrentUser(string userId)
@@ -74,9 +79,9 @@ namespace TerminalBase.BaseClasses
         /// <returns></returns>
         protected PayloadDTO SuspendHubExecution(PayloadDTO payload)
         {
-            using (var updater = Crate.UpdateStorage(payload))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
-                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
                 operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.RequestSuspend);
             }
 
@@ -92,9 +97,9 @@ namespace TerminalBase.BaseClasses
         /// <returns></returns>
         protected PayloadDTO TerminateHubExecution(PayloadDTO payload)
         {
-            using (var updater = Crate.UpdateStorage(payload))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
-                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
                 operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.RequestTerminate);
             }
 
@@ -108,9 +113,9 @@ namespace TerminalBase.BaseClasses
         /// <returns></returns>
         protected PayloadDTO Success(PayloadDTO payload, string message = "")
         {
-            using (var updater = Crate.UpdateStorage(payload))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
-                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
                 operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Success); 
                 operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Message = message });
             }
@@ -118,13 +123,13 @@ namespace TerminalBase.BaseClasses
             return payload;
         }
 
-        protected PayloadDTO ExecuteClientAction(PayloadDTO payload, string clientActionName)
+        protected PayloadDTO ExecuteClientActivity(PayloadDTO payload, string clientActionName)
         {
-            using (var updater = Crate.UpdateStorage(payload))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
-                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.ExecuteClientAction);
-                operationalState.CurrentClientActionName = clientActionName;
+                var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.ExecuteClientActivity);
+                operationalState.CurrentClientActivityName = clientActionName;
             }
 
             return payload;
@@ -137,9 +142,9 @@ namespace TerminalBase.BaseClasses
         /// <returns></returns>
         protected PayloadDTO SkipChildren(PayloadDTO payload)
         {
-            using (var updater = Crate.UpdateStorage(payload))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
-                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
                 operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.SkipChildren);
             }
 
@@ -152,15 +157,17 @@ namespace TerminalBase.BaseClasses
         /// <param name="payload"></param>
         /// <param name="errorMessage"></param>
         /// <param name="errorCode"></param>
+        /// <param name="currentActivity">Activity where the error occured</param>
+        /// <param name="currentTerminal">Terminal where the error occured</param>
         /// <returns></returns>
-        protected PayloadDTO Error(PayloadDTO payload, string errorMessage = null, ActionErrorCode? errorCode = null)
+        protected PayloadDTO Error(PayloadDTO payload, string errorMessage = null, ActivityErrorCode? errorCode = null, string currentActivity = null, string currentTerminal = null)
         {
-            using (var updater = Crate.UpdateStorage(payload))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
-                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
                 operationalState.CurrentActivityErrorCode = errorCode;
                 operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Error);
-                operationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(errorMessage,ErrorType.Generic, errorCode.ToString(),null)); 
+                operationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(errorMessage, ErrorType.Generic, errorCode.ToString(), null, currentActivity, currentTerminal));
             }
 
             return payload;
@@ -173,7 +180,7 @@ namespace TerminalBase.BaseClasses
         /// <returns></returns>
         protected PayloadDTO NeedsAuthenticationError(PayloadDTO payload)
         {
-            return Error(payload, "No AuthToken provided.", ActionErrorCode.NO_AUTH_TOKEN_PROVIDED);
+            return Error(payload, "No AuthToken provided.", ActivityErrorCode.NO_AUTH_TOKEN_PROVIDED);
         }
 
         /// <summary>
@@ -181,15 +188,51 @@ namespace TerminalBase.BaseClasses
         /// </summary>
         /// <param name="payload"></param>
         /// <returns></returns>
-        protected PayloadDTO ReProcessChildActions(PayloadDTO payload)
+        protected PayloadDTO ReProcessChildActivities(PayloadDTO payload)
         {
-            using (var updater = Crate.UpdateStorage(payload))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
-                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
                 operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.ReProcessChildren);
             }
 
             return payload;
+        }
+
+        protected FieldDTO GetPayloadValue(CrateStorage payloadStorage, string fieldName, MT manifestType = MT.StandardPayloadData, string label = null)
+        {
+            Func<Crate, bool> crateSearchArguments = (c) => c.ManifestType.Type == CrateManifestType.FromEnum(manifestType).Type;
+            if (label != null)
+            {
+                crateSearchArguments = (c) => c.ManifestType.Type == CrateManifestType.FromEnum(manifestType).Type && c.Label == label;
+            }
+            //find user requested crate
+            var foundCrate = payloadStorage.FirstOrDefault(crateSearchArguments);
+            if (foundCrate == null)
+            {
+                return null;
+            }
+            object searchArea = null;
+            //check if this crate is loop related
+            var operationalState = payloadStorage.CrateContentsOfType<OperationalStateCM>().Single();
+            //let's check if we are in a loop
+            //and this is a loop data?
+            var deepestLoop = operationalState.Loops.OrderByDescending(l => l.Level).FirstOrDefault(l => !l.BreakSignalReceived && l.Label == foundCrate.Label && l.CrateManifest == foundCrate.ManifestType.Type);
+            if (deepestLoop != null)
+            {
+                //this is a loop related data request
+                var dataList = Fr8ReflectionHelper.FindFirstArray(foundCrate);
+                searchArea = dataList[deepestLoop.Index];
+            }
+            else
+            {
+                //hmmm this is a regular data request
+                searchArea = foundCrate;
+            }
+
+            //we should find first related field and return
+            var fields = Fr8ReflectionHelper.FindFieldsRecursive(searchArea);
+            return fields.FirstOrDefault(f => f.Key == fieldName);
         }
 
         protected ControlDefinitionDTO GetControl(StandardConfigurationControlsCM controls, string name, string controlType = null)
@@ -203,6 +246,11 @@ namespace TerminalBase.BaseClasses
             return controls.Controls.FirstOrDefault(predicate);
         }
 
+        protected T GetControl<T>(StandardConfigurationControlsCM controls, string name, string controlType = null) where T : ControlDefinitionDTO
+        {
+            return (T) GetControl(controls, name, controlType);
+        }
+
         protected ControlDefinitionDTO GetControl(ActivityDO curActivityDO, string name, string controlType = null)
         {
             var controls = GetConfigurationControls(curActivityDO);
@@ -211,18 +259,18 @@ namespace TerminalBase.BaseClasses
 
         protected StandardConfigurationControlsCM GetConfigurationControls(ActivityDO curActivityDO)
         {
-            var storage = Crate.GetStorage(curActivityDO);
+            var storage = CrateManager.GetStorage(curActivityDO);
             return GetConfigurationControls(storage);
         }
 
-        protected StandardConfigurationControlsCM GetConfigurationControls(CrateStorage storage)
+        protected StandardConfigurationControlsCM GetConfigurationControls(ICrateStorage storage)
         {
             var controlsCrate = storage.CrateContentsOfType<StandardConfigurationControlsCM>(c => c.Label == ConfigurationControlsLabel).FirstOrDefault();
             return controlsCrate;
         }
 
 
-        public virtual async Task<PayloadDTO> ChildrenExecuted(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public virtual async Task<PayloadDTO> ExecuteChildActivities(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             return Success(await GetPayload(curActivityDO, containerId));
         }
@@ -244,6 +292,20 @@ namespace TerminalBase.BaseClasses
         {
             return await HubCommunicator.GetPayload(activityDO, containerId, CurrentFr8UserId);
         }
+        protected async Task<UserDTO> GetCurrentUserData(ActivityDO activityDO, Guid containerId)
+        {
+            return await HubCommunicator.GetCurrentUser(activityDO, containerId, CurrentFr8UserId);
+        }
+
+        protected async Task<RouteFullDTO> GetPlansByActivity(string activityId)
+        {
+            return await HubCommunicator.GetPlansByActivity(activityId, CurrentFr8UserId);
+        }
+
+        protected async Task<RouteFullDTO> UpdatePlan(RouteEmptyDTO plan)
+        {
+            return await HubCommunicator.UpdatePlan(plan, CurrentFr8UserId);
+        }
 
         protected async Task<Crate> ValidateFields(List<FieldValidationDTO> requiredFieldList)
         {
@@ -262,23 +324,23 @@ namespace TerminalBase.BaseClasses
 
             if (validationErrorList.Any())
             {
-                return Crate.CreateDesignTimeFieldsCrate("Validation Errors", validationErrorList.ToArray());
+                return CrateManager.CreateDesignTimeFieldsCrate("Validation Errors", validationErrorList.ToArray());
             }
 
             return null;
         }
 
-        protected async Task<CrateDTO> ValidateByStandartDesignTimeFields(ActivityDO curActivityDO, StandardDesignTimeFieldsCM designTimeFields)
+        protected async Task<CrateDTO> ValidateByStandartDesignTimeFields(ActivityDO curActivityDO, FieldDescriptionsCM designTimeFields)
         {
             var fields = designTimeFields.Fields;
             var validationList = fields.Select(f => new FieldValidationDTO(curActivityDO.Id, f.Key)).ToList();
-            return Crate.ToDto(await ValidateFields(validationList));
+            return CrateManager.ToDto(await ValidateFields(validationList));
         }
 
         //if the Action doesn't provide a specific method to override this, we just return null = no validation errors
-        protected virtual async Task<CrateStorage> ValidateActivity(ActivityDO curActivityDO)
+        protected virtual async Task<ICrateStorage> ValidateActivity(ActivityDO curActivityDO)
         {
-            return await Task.FromResult<CrateStorage>(null);
+            return await Task.FromResult<ICrateStorage>(null);
         }
 
         protected async Task<ActivityDO> ProcessConfigurationRequest(ActivityDO curActivityDO, ConfigurationEvaluator configurationEvaluationResult, AuthorizationTokenDO authToken)
@@ -293,7 +355,10 @@ namespace TerminalBase.BaseClasses
                 var validationErrors = await ValidateActivity(curActivityDO);
                 if (validationErrors != null)
                 {
-                    Crate.UpdateStorage(curActivityDO).CrateStorage.AddRange(validationErrors);
+                    using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+                    {
+                        crateStorage.AddRange(validationErrors);
+                    }
                     return curActivityDO;
                 }
                 return await FollowupConfigurationResponse(curActivityDO, authToken);
@@ -334,7 +399,10 @@ namespace TerminalBase.BaseClasses
             var validationErrors = await ValidateActivity(curActivityDO);
             if (validationErrors != null)
             {
-                Crate.UpdateStorage(curActivityDO).CrateStorage.AddRange(validationErrors);
+                using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+                {
+                    crateStorage.AddRange(validationErrors);
+                }
                 return curActivityDO;
             }
             return await Task.FromResult<ActivityDO>(curActivityDO);
@@ -354,59 +422,59 @@ namespace TerminalBase.BaseClasses
         }
 
         //wrapper for support test method
-        public async virtual Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActivityDO activityDO, CrateDirection direction)
+        public virtual async Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActivityDO activityDO, CrateDirection direction)
         {
             return await HubCommunicator.GetCratesByDirection<TManifest>(activityDO, direction, CurrentFr8UserId);
             // return await Activity.GetCratesByDirection<TManifest>(activityId, direction);
         }
 
         //wrapper for support test method
-        public async virtual Task<List<Crate>> GetCratesByDirection(ActivityDO activityDO, CrateDirection direction)
+        public virtual async Task<List<Crate>> GetCratesByDirection(ActivityDO activityDO, CrateDirection direction)
         {
             return await HubCommunicator.GetCratesByDirection(activityDO, direction, CurrentFr8UserId);
         }
 
-        public async virtual Task<StandardDesignTimeFieldsCM> GetDesignTimeFields(Guid activityId, CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet)
+        public virtual async Task<FieldDescriptionsCM> GetDesignTimeFields(Guid activityId, CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet)
         {
             var mergedFields = await HubCommunicator.GetDesignTimeFieldsByDirection(activityId, direction, availability, CurrentFr8UserId);
             return mergedFields;
         }
 
-        public async virtual Task<StandardDesignTimeFieldsCM> GetDesignTimeFields(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet)
+        public virtual async Task<FieldDescriptionsCM> GetDesignTimeFields(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet)
         {
             var mergedFields = await HubCommunicator.GetDesignTimeFieldsByDirection(activityDO, direction, availability, CurrentFr8UserId);
             return mergedFields;
         }
 
-        public async virtual Task<List<CrateManifestType>> BuildUpstreamManifestList(ActivityDO activityDO)
+        public virtual async Task<List<CrateManifestType>> BuildUpstreamManifestList(ActivityDO activityDO)
         {
             var upstreamCrates = await this.GetCratesByDirection<Data.Interfaces.Manifests.Manifest>(activityDO, CrateDirection.Upstream);
             return upstreamCrates.Where(x => !ExcludedManifestTypes.Contains(x.ManifestType)).Select(f => f.ManifestType).Distinct().ToList();
         }
 
-        public async virtual Task<List<String>> BuildUpstreamCrateLabelList(ActivityDO activityDO)
+        public virtual async Task<List<String>> BuildUpstreamCrateLabelList(ActivityDO activityDO)
         {
             var curCrates = await this.GetCratesByDirection<Data.Interfaces.Manifests.Manifest>(activityDO, CrateDirection.Upstream);
             return curCrates.Where(x => !ExcludedManifestTypes.Contains(x.ManifestType)).Select(f => f.Label).Distinct().ToList();
         }
 
-        public async virtual Task<Crate<StandardDesignTimeFieldsCM>> GetUpstreamManifestListCrate(ActivityDO activityDO)
+        public virtual async Task<Crate<FieldDescriptionsCM>> GetUpstreamManifestListCrate(ActivityDO activityDO)
         {
             var manifestList = (await BuildUpstreamManifestList(activityDO));
             var fields = manifestList.Select(f => new FieldDTO(f.Type, f.Id.ToString())).ToArray();
 
-            return Crate.CreateDesignTimeFieldsCrate("AvailableUpstreamManifests", fields);
+            return CrateManager.CreateDesignTimeFieldsCrate("AvailableUpstreamManifests", fields);
         }
 
-        public async virtual Task<Crate<StandardDesignTimeFieldsCM>> GetUpstreamCrateLabelListCrate(ActivityDO activityDO)
+        public virtual async Task<Crate<FieldDescriptionsCM>> GetUpstreamCrateLabelListCrate(ActivityDO activityDO)
         {
             var labelList = (await BuildUpstreamCrateLabelList(activityDO));
             var fields = labelList.Select(f => new FieldDTO(f, f)).ToArray();
 
-            return Crate.CreateDesignTimeFieldsCrate("AvailableUpstreamLabels", fields);
+            return CrateManager.CreateDesignTimeFieldsCrate("AvailableUpstreamLabels", fields);
         }
 
-        protected CrateStorage AssembleCrateStorage(params Crate[] curCrates)
+        protected ICrateStorage AssembleCrateStorage(params Crate[] curCrates)
         {
             return new CrateStorage(curCrates);
         }
@@ -423,7 +491,7 @@ namespace TerminalBase.BaseClasses
 
         protected string ExtractControlFieldValue(ActivityDO curActivityDO, string fieldName)
         {
-            var storage = Crate.GetStorage(curActivityDO);
+            var storage = CrateManager.GetStorage(curActivityDO);
 
             var controlsCrateMS = storage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
@@ -453,15 +521,15 @@ namespace TerminalBase.BaseClasses
             return field.Value;
         }
 
-        protected async virtual Task<List<Crate<StandardFileDescriptionCM>>> GetUpstreamFileHandleCrates(ActivityDO activityDO)
+        protected virtual async Task<List<Crate<StandardFileDescriptionCM>>> GetUpstreamFileHandleCrates(ActivityDO activityDO)
         {
             return await HubCommunicator.GetCratesByDirection<StandardFileDescriptionCM>(activityDO, CrateDirection.Upstream, CurrentFr8UserId);
         }
 
-        protected async Task<Crate<StandardDesignTimeFieldsCM>> MergeUpstreamFields(ActivityDO activityDO, string label)
+        protected async Task<Crate<FieldDescriptionsCM>> MergeUpstreamFields(ActivityDO activityDO, string label)
         {
             var curUpstreamFields = (await GetDesignTimeFields(activityDO.Id, CrateDirection.Upstream)).Fields.ToArray();
-            var upstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate(label, curUpstreamFields);
+            var upstreamFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(label, curUpstreamFields);
 
             return upstreamFieldsCrate;
         }
@@ -503,19 +571,22 @@ namespace TerminalBase.BaseClasses
         /// </summary>
         /// <param name="activityDO">ActionDO.</param>
         /// <returns></returns>
-        protected async Task<Crate> CreateAvailableFieldsCrate(ActivityDO activityDO, string crateLabel = "Upstream Terminal-Provided Fields")
+        protected async Task<Crate> CreateAvailableFieldsCrate(ActivityDO activityDO, 
+            string crateLabel = "Upstream Terminal-Provided Fields", 
+            AvailabilityType availabilityTypeUpstream = AvailabilityType.RunTime,
+            AvailabilityType availabilityTypeFieldsCrate = AvailabilityType.Configuration)
         {
-            var curUpstreamFields = await HubCommunicator.GetDesignTimeFieldsByDirection(activityDO, CrateDirection.Upstream, AvailabilityType.RunTime, CurrentFr8UserId);
+            var curUpstreamFields = await HubCommunicator.GetDesignTimeFieldsByDirection(activityDO, CrateDirection.Upstream, availabilityTypeUpstream, CurrentFr8UserId);
 
             if (curUpstreamFields == null)
             {
-                curUpstreamFields = new StandardDesignTimeFieldsCM();
+                curUpstreamFields = new FieldDescriptionsCM();
             }
 
-            var availableFieldsCrate = Crate.CreateDesignTimeFieldsCrate(
+            var availableFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(
                     crateLabel,
                     curUpstreamFields.Fields,
-                    AvailabilityType.Configuration
+                    availabilityTypeFieldsCrate
                 );
 
             return availableFieldsCrate;
@@ -528,7 +599,7 @@ namespace TerminalBase.BaseClasses
                 GenerateTextBlock(fieldLabel,errorMessage,"well well-lg")
             };
 
-            var crateControls = Crate.CreateStandardConfigurationControlsCrate(
+            var crateControls = CrateManager.CreateStandardConfigurationControlsCrate(
                         ConfigurationControlsLabel, controls
                     );
 
@@ -545,9 +616,9 @@ namespace TerminalBase.BaseClasses
         /// <param name="filterByTag">Filter for upstream source, Empty by default</param>
         /// <param name="addRequestConfigEvent">True if onChange event needs to be configured, False otherwise. True by default</param>
         /// <param name="required">True if the control is required, False otherwise. False by default</param>
-        protected void AddTextSourceControl(CrateStorage storage, string label, string controlName,
+        protected void AddTextSourceControl(ICrateStorage storage, string label, string controlName,
                                             string upstreamSourceLabel, string filterByTag = "",
-                                            bool addRequestConfigEvent = true, bool required = false)
+                                            bool addRequestConfigEvent = false, bool required = false)
         {
             var textSourceControl = CreateSpecificOrUpstreamValueChooser(label, controlName, upstreamSourceLabel,
                 filterByTag, addRequestConfigEvent);
@@ -560,9 +631,9 @@ namespace TerminalBase.BaseClasses
         /// Adds Text Source for the DTO type. 
         /// </summary>
         /// <remarks>The (T), DTO's Proerty Names will be used to name and label the new Text Source Controls</remarks>
-        protected void AddTextSourceControlForDTO<T>(CrateStorage storage, string upstreamSourceLabel,
+        protected void AddTextSourceControlForDTO<T>(ICrateStorage storage, string upstreamSourceLabel,
                                                      string filterByTag = "",
-                                                     bool addRequestConfigEvent = true, bool required = false)
+                                                     bool addRequestConfigEvent = false, bool required = false)
         {
             typeof(T).GetProperties()
                 .Where(property => !property.Name.Equals("Id")).ToList().ForEach(property =>
@@ -576,7 +647,7 @@ namespace TerminalBase.BaseClasses
         /// Creates RadioButtonGroup to enter specific value or choose value from upstream crate.
         /// </summary>
         protected ControlDefinitionDTO CreateSpecificOrUpstreamValueChooser(
-            string label, string controlName, string upstreamSourceLabel, string filterByTag = "", bool addRequestConfigEvent = true)
+            string label, string controlName, string upstreamSourceLabel, string filterByTag = "", bool addRequestConfigEvent = false)
         {
             var control = new TextSource(label, upstreamSourceLabel, controlName)
             {
@@ -619,8 +690,8 @@ namespace TerminalBase.BaseClasses
         /// </summary>
         protected string ExtractSpecificOrUpstreamValue(ActivityDO activityDO, PayloadDTO payloadCrates, string controlName)
         {
-            var designTimeCrateStorage = Crate.GetStorage(activityDO.CrateStorage);
-            var runTimeCrateStorage = Crate.FromDto(payloadCrates.CrateStorage);
+            var designTimeCrateStorage = CrateManager.GetStorage(activityDO.CrateStorage);
+            var runTimeCrateStorage = CrateManager.FromDto(payloadCrates.CrateStorage);
 
             var controls = designTimeCrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             var control = controls.Controls.SingleOrDefault(c => c.Name == controlName);
@@ -652,7 +723,7 @@ namespace TerminalBase.BaseClasses
             }
         }
 
-        private string ExtractSpecificOrUpstreamValueLegacy(RadioButtonGroup radioButtonGroupControl, CrateStorage runTimeCrateStorage, ActivityDO curActivity)
+        private string ExtractSpecificOrUpstreamValueLegacy(RadioButtonGroup radioButtonGroupControl, ICrateStorage runTimeCrateStorage, ActivityDO curActivity)
         {
             var radioButton = radioButtonGroupControl
                 .Radios
@@ -695,7 +766,7 @@ namespace TerminalBase.BaseClasses
         /// Extracts crate with specified label and ManifestType = Standard Design Time,
         /// then extracts field with specified fieldKey.
         /// </summary>
-        protected string ExtractPayloadFieldValue(CrateStorage crateStorage, string fieldKey, ActivityDO curActivity)
+        protected string ExtractPayloadFieldValue(ICrateStorage crateStorage, string fieldKey, ActivityDO curActivity)
         {
             var fieldValues = crateStorage.CratesOfType<StandardPayloadDataCM>().SelectMany(x => x.Content.GetValues(fieldKey))
                 .Where(s => !string.IsNullOrEmpty(s))
@@ -706,12 +777,14 @@ namespace TerminalBase.BaseClasses
 
             var baseEvent = new BaseTerminalEvent();
             var exceptionMessage = string.Format("No field found with specified key: {0}.", fieldKey);
-            baseEvent.SendTerminalErrorIncident(_actionName, exceptionMessage, _actionName);
+            //This is required for proper logging of the Incidents
+            var fr8UserId = curActivity.AuthorizationToken.UserID;
+            baseEvent.SendTerminalErrorIncident(_activityName, exceptionMessage, _activityName, fr8UserId);
 
-            throw new ApplicationException(exceptionMessage + " Detailed information has been written to log.");
+            throw new ApplicationException(exceptionMessage);
         }
 
-        protected void AddLabelControl(CrateStorage storage, string name, string label, string text)
+        protected void AddLabelControl(ICrateStorage storage, string name, string label, string text)
         {
             AddControl(
                 storage,
@@ -719,7 +792,7 @@ namespace TerminalBase.BaseClasses
             );
         }
 
-        protected void AddControl(CrateStorage storage, ControlDefinitionDTO control)
+        protected void AddControl(ICrateStorage storage, ControlDefinitionDTO control)
         {
             var controlsCrate = EnsureControlsCrate(storage);
 
@@ -728,7 +801,31 @@ namespace TerminalBase.BaseClasses
             controlsCrate.Content.Controls.Add(control);
         }
 
-        protected ControlDefinitionDTO FindControl(CrateStorage storage, string name)
+        protected void InsertControlAfter(ICrateStorage storage, ControlDefinitionDTO control, string afterControlName)
+        {
+            var controlsCrate = EnsureControlsCrate(storage);
+
+            if (controlsCrate.Content == null) { return; }
+
+            for (var i = 0; i < controlsCrate.Content.Controls.Count; ++i)
+            {
+                if (controlsCrate.Content.Controls[i].Name == afterControlName)
+                {
+                    if (i == controlsCrate.Content.Controls.Count - 1)
+                    {
+                        controlsCrate.Content.Controls.Add(control);
+                    }
+                    else
+                    {
+                        controlsCrate.Content.Controls.Insert(i + 1, control);
+                    }
+
+                    break;
+                }
+            }
+        }
+
+        protected ControlDefinitionDTO FindControl(ICrateStorage storage, string name)
         {
             var controlsCrate = storage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
@@ -747,66 +844,90 @@ namespace TerminalBase.BaseClasses
         /// </summary>
         protected void SetControlValue(ActivityDO activity, string controlFullName, object value)
         {
-            using (var updater = Crate.UpdateStorage(activity))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(activity))
             {
-                var controls = updater.CrateStorage
+                var controls = crateStorage
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
-                    .First().Controls;
+                    .FirstOrDefault();
 
-                var control = TraverseNestedControls(controls, controlFullName);
-
-                if (control == null) return;
-
-                switch (control.Type)
+                if (controls != null)
                 {
-                    case "TextBlock":
-                    case "TextBox":
-                        control.Value = (string)value;
-                        break;
-                    case "CheckBox":
-                        control.Selected = true;
-                        break;
-                    case "DropDownList":
-                        var ddlb = control as DropDownList;
-                        var val = value as ListItem;
-                        ddlb.selectedKey = val.Key;
-                        ddlb.Value = val.Value;
-                        //ddlb.ListItems are not loaded yet
-                        break;
-                    case "Duration":
-                        var duration = control as Duration;
-                        var timespan = (TimeSpan)value;
-                        duration.Days = timespan.Days;
-                        duration.Hours = timespan.Hours;
-                        duration.Minutes = timespan.Minutes;
-                        break;
-                    default:
-                        throw new NotImplementedException();
+                    var control = TraverseNestedControls(controls.Controls, controlFullName);
+
+                    if (control != null)
+                    {
+                        switch (control.Type)
+                        {
+                            case "TextBlock":
+                            case "TextBox":
+                            case ControlTypes.TextArea:
+                                control.Value = (string)value;
+                                break;
+                            case "CheckBox":
+                                control.Selected = true;
+                                break;
+                            case "DropDownList":
+                                var ddlb = control as DropDownList;
+                                var val = value as ListItem;
+                                ddlb.selectedKey = val.Key;
+                                ddlb.Value = val.Value;
+                                //ddlb.ListItems are not loaded yet
+                                break;
+                            case "Duration":
+                                var duration = control as Duration;
+                                var timespan = (TimeSpan)value;
+                                duration.Days = timespan.Days;
+                                duration.Hours = timespan.Hours;
+                                duration.Minutes = timespan.Minutes;
+                                break;
+                            default:
+                                throw new NotImplementedException();
+                        }
+                    }
                 }
             }
         }
 
         private ControlDefinitionDTO TraverseNestedControls(List<ControlDefinitionDTO> controls, string childControl)
         {
+            ControlDefinitionDTO controlDefinitionDTO = null;
             var controlNames = childControl.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
-            var control = controls.Where(a => a.Name == controlNames[0]).FirstOrDefault();
-            if (controlNames.Count() == 1) return control;
-
-            List<ControlDefinitionDTO> nestedControls = null;
-
-            if (control.Type == "RadioButtonGroup")
+            if (controlNames.Length > 0 && controls.Count > 0)
             {
-                var radio = (control as RadioButtonGroup).Radios.Where(a => a.Name == controlNames[1]).FirstOrDefault();
-                radio.Selected = true;
-                nestedControls = radio.Controls.ToList();
-                return TraverseNestedControls(nestedControls, string.Join(".", controlNames.Skip(2)));
+                var control = controls.FirstOrDefault(a => a.Name == controlNames[0]);
+
+                if (control != null)
+                {
+                    if (controlNames.Count() == 1)
+                    {
+                        controlDefinitionDTO = control;
+                    }
+                    else
+                    {
+                        List<ControlDefinitionDTO> nestedControls = null;
+
+                        if (control.Type == "RadioButtonGroup")
+                        {
+                            var radio = (control as RadioButtonGroup).Radios.FirstOrDefault(a => a.Name == controlNames[1]);
+                            if (radio != null)
+                            {
+                                radio.Selected = true;
+                                nestedControls = radio.Controls.ToList();
+
+                                controlDefinitionDTO = TraverseNestedControls(nestedControls, string.Join(".", controlNames.Skip(2)));
+                            }
+                        }
+                        //TODO: Add support for future controls with nested child controls
+                        else
+                            throw new NotImplementedException("Can't search for controls inside of " + control.Type);
+                    }
+                }
             }
-            //TODO: Add support for future controls with nested child controls
-            else
-                throw new NotImplementedException("Can't search for controls inside of " + control.Type);
+
+            return controlDefinitionDTO;
         }
 
-        protected void RemoveControl(CrateStorage storage, string name)
+        protected void RemoveControl(ICrateStorage storage, string name)
         {
             var controlsCrate = storage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
@@ -821,26 +942,26 @@ namespace TerminalBase.BaseClasses
             }
         }
 
-        protected Crate<StandardConfigurationControlsCM> EnsureControlsCrate(CrateStorage storage)
+        protected Crate<StandardConfigurationControlsCM> EnsureControlsCrate(ICrateStorage storage)
         {
             var controlsCrate = storage.CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (controlsCrate == null)
             {
-                controlsCrate = Crate.CreateStandardConfigurationControlsCrate(ConfigurationControlsLabel);
+                controlsCrate = CrateManager.CreateStandardConfigurationControlsCrate(ConfigurationControlsLabel);
                 storage.Add(controlsCrate);
             }
 
             return controlsCrate;
         }
 
-        protected void UpdateDesignTimeCrateValue(CrateStorage storage, string label, params FieldDTO[] fields)
+        protected void UpdateDesignTimeCrateValue(ICrateStorage storage, string label, params FieldDTO[] fields)
         {
-            var crate = storage.CratesOfType<StandardDesignTimeFieldsCM>().FirstOrDefault(x => x.Label == label);
+            var crate = storage.CratesOfType<FieldDescriptionsCM>().FirstOrDefault(x => x.Label == label);
 
             if (crate == null)
             {
-                crate = Crate.CreateDesignTimeFieldsCrate(label, fields);
+                crate = CrateManager.CreateDesignTimeFieldsCrate(label, fields);
 
                 storage.Add(crate);
             }
@@ -866,12 +987,12 @@ namespace TerminalBase.BaseClasses
             {
                 FieldDTO[] upstreamFields;
                 Crate availableFieldsCrate = null;
-                if (crates is List<Data.Crates.Crate<StandardDesignTimeFieldsCM>>)
+                if (crates is List<Data.Crates.Crate<FieldDescriptionsCM>>)
                 {
-                    upstreamFields = (crates as List<Data.Crates.Crate<StandardDesignTimeFieldsCM>>).Where(w => w.Content.Fields.Where(x => x.Availability != AvailabilityType.Configuration).Count() == 1).SelectMany(x => x.Content.Fields).ToArray();
+                    upstreamFields = (crates as List<Data.Crates.Crate<FieldDescriptionsCM>>).SelectMany(x => x.Content.Fields).Where(a => a.Availability != AvailabilityType.Configuration).ToArray();
 
                     availableFieldsCrate =
-                        Crate.CreateDesignTimeFieldsCrate(
+                        CrateManager.CreateDesignTimeFieldsCrate(
                             label,
                             upstreamFields
                         );
@@ -897,9 +1018,9 @@ namespace TerminalBase.BaseClasses
             if (crates != null)
             {
                 FieldDTO[] upstreamFields = null;
-                if (crates is List<Data.Crates.Crate<StandardDesignTimeFieldsCM>>)
+                if (crates is List<Data.Crates.Crate<FieldDescriptionsCM>>)
                 {
-                    upstreamFields = (crates as List<Data.Crates.Crate<StandardDesignTimeFieldsCM>>).Where(w => w.Content.Fields.Where(x => x.Availability != AvailabilityType.Configuration).Count() == 1).SelectMany(x => x.Content.Fields).ToArray();
+                    upstreamFields = (crates as List<Data.Crates.Crate<FieldDescriptionsCM>>).SelectMany(x => x.Content.Fields).Where(a => a.Availability != AvailabilityType.Configuration).ToArray();
                 }
 
                 return await Task.FromResult(upstreamFields);
@@ -908,11 +1029,10 @@ namespace TerminalBase.BaseClasses
             return await Task.FromResult<FieldDTO[]>(null);
         }
 
-        protected async Task<ActivityDO> AddAndConfigureChildActivity(ActivityDO parent, string templateName_Or_templateID, string name = null, string label = null, int? order = null)
+        protected async Task<ActivityDO> AddAndConfigureChildActivity(Guid parentActivityId, string templateName_Or_templateID, string name = null, string label = null, int? order = null)
         {
-
             //search activity template by name or id
-            var allActivityTemplates = _activityTemplateCache != null ? _activityTemplateCache : _activityTemplateCache = await HubCommunicator.GetActivityTemplates(parent, CurrentFr8UserId);
+            var allActivityTemplates = _activityTemplateCache ?? (_activityTemplateCache = await HubCommunicator.GetActivityTemplates(CurrentFr8UserId));
             int templateId;
             var activityTemplate = Int32.TryParse(templateName_Or_templateID, out templateId) ?
                 allActivityTemplates.FirstOrDefault(a => a.Id == templateId)
@@ -928,8 +1048,15 @@ namespace TerminalBase.BaseClasses
             //If Route is specified as a parent, then a new subroute will be created
             //Guid parentId = (parent.ChildNodes.Count > 0) ? parent.ChildNodes[0].ParentRouteNodeId.Value : parent.RootRouteNodeId.Value;
 
-            var result = await HubCommunicator.CreateAndConfigureActivity(activityTemplate.Id, name, CurrentFr8UserId, label, order, parent.Id);
+            var result = await HubCommunicator.CreateAndConfigureActivity(activityTemplate.Id, CurrentFr8UserId, label, order, parentActivityId);
             var resultDO = Mapper.Map<ActivityDO>(result);
+            return resultDO;
+        }
+
+        protected async Task<ActivityDO> AddAndConfigureChildActivity(ActivityDO parent, string templateName_Or_templateID, string name = null, string label = null, int? order = null)
+        {
+
+            var resultDO = await AddAndConfigureChildActivity(parent.Id, templateName_Or_templateID, name, label, order);
 
             if (resultDO != null)
             {
@@ -954,7 +1081,7 @@ namespace TerminalBase.BaseClasses
             if (upstreamFields != null)
             {
                 var availableFieldsCrate =
-                        Crate.CreateDesignTimeFieldsCrate(
+                        CrateManager.CreateDesignTimeFieldsCrate(
                             label,
                             upstreamFields
                         );
@@ -983,6 +1110,28 @@ namespace TerminalBase.BaseClasses
                 CssClass = curCssClass
             };
         }
+
+        /// <summary>
+        /// This is a generic function for creating a CrateChooser which is suitable for most use-cases
+        /// </summary>
+        /// <param name="curActivityDO"></param>
+        /// <param name="label"></param>
+        /// <param name="name"></param>
+        /// <param name="singleManifest"></param>
+        /// <returns></returns>
+        protected async Task<CrateChooser> GenerateCrateChooser(ActivityDO curActivityDO, string name, string label, bool singleManifest)
+        {
+            var crateDescriptions = await GetCratesByDirection<CrateDescriptionCM>(curActivityDO, CrateDirection.Upstream);
+            var runTimeCrateDescriptions = crateDescriptions.Where(c => c.Availability == AvailabilityType.RunTime).SelectMany(c => c.Content.CrateDescriptions);
+            return new CrateChooser
+            {
+                Label = label,
+                Name = name,
+                CrateDescriptions = runTimeCrateDescriptions.ToList(),
+                SingleManifestOnly = singleManifest
+            };
+        }
+
         /// <summary>
         /// Method to be used with Loop Action
         /// Is a helper method to decouple some of the GetCurrentElement Functionality
@@ -1034,11 +1183,11 @@ namespace TerminalBase.BaseClasses
 
             //filter by manifest or label based on selected crate chooser control
             Func<Crate, bool> whereClause = null;
-            if (manifestType.Count() > 0 && labelControl.Count() > 0)
+            if (manifestType.Any() && labelControl.Any())
                 whereClause = (crate => manifestType.Contains(crate.ManifestType.Id.ToString()) && labelControl.Contains(crate.Label));
-            else if (manifestType.Count() > 0)
+            else if (manifestType.Any())
                 whereClause = (crate => manifestType.Contains(crate.ManifestType.Id.ToString()));
-            else if (labelControl.Count() > 0)
+            else if (labelControl.Any())
                 whereClause = (crate => labelControl.Contains(crate.Label));
 
 
@@ -1064,6 +1213,117 @@ namespace TerminalBase.BaseClasses
 
             return resultTable;
         }
+        public ActivityResponseDTO GenerateDocumentationRepsonce(string documentation)
+        {
+            return new ActivityResponseDTO
+            {
+                Body = documentation,
+                Type = ActivityResponse.ShowDocumentation.ToString()
+            };
+        }
+        public ActivityResponseDTO GenerateErrorRepsonce(string errorMessage)
+        {
+            return new ActivityResponseDTO
+            {
+                Body = errorMessage,
+                Type = ActivityResponse.ShowDocumentation.ToString()
+            };
+        }
 
+        public SolutionPageDTO GetDefaultDocumentation(string solutionName, double solutionVersion, string terminalName, string body)
+        {
+            var curSolutionPage = new SolutionPageDTO
+            {
+                Name = solutionName,
+                Version = solutionVersion,
+                Terminal = terminalName,
+                Body = body
+            };
+
+            return curSolutionPage;
+        }
+
+        public string ParseConditionToText(List<FilterConditionDTO> filterData)
+        {
+            var parsedConditions = new List<string>();
+
+            filterData.ForEach(condition =>
+            {
+                string parsedCondition = condition.Field;
+
+                switch (condition.Operator)
+                {
+                    case "eq":
+                        parsedCondition += " = ";
+                        break;
+                    case "neq":
+                        parsedCondition += " != ";
+                        break;
+                    case "gt":
+                        parsedCondition += " > ";
+                        break;
+                    case "gte":
+                        parsedCondition += " >= ";
+                        break;
+                    case "lt":
+                        parsedCondition += " < ";
+                        break;
+                    case "lte":
+                        parsedCondition += " <= ";
+                        break;
+                    default:
+                        throw new NotSupportedException(string.Format("Not supported operator: {0}", condition.Operator));
+                }
+
+                parsedCondition += string.Format("'{0}'", condition.Value);
+                parsedConditions.Add(parsedCondition);
+            });
+
+            var finalCondition = string.Join(" AND ", parsedConditions);
+
+            return finalCondition;
+        }
+
+        /// <summary>
+        /// Update Plan name if the current Plan name is the same as the passed parameter OriginalPlanName to avoid overwriting the changes made by the user
+        /// </summary>
+        /// <param name="activityDO"></param>
+        /// <param name="OriginalPlanName"></param>
+        /// <returns></returns>
+        public async Task<RouteFullDTO> UpdatePlanName(Guid activityId, string OriginalPlanName, string NewPlanName)
+        {
+            try
+            {
+                RouteFullDTO plan = await GetPlansByActivity(activityId.ToString());
+                if (plan != null && plan.Name.Equals(OriginalPlanName, StringComparison.OrdinalIgnoreCase))
+                {
+                    plan.Name = NewPlanName;
+
+                    var emptyPlanDTO = Mapper.Map<RouteEmptyDTO>(plan);
+                    plan = await UpdatePlan(emptyPlanDTO);
+                }
+
+                return plan;
+
+            }
+            catch (Exception ex)
+            {
+            }
+            return null;
+        }
+
+        public async Task<RouteFullDTO> UpdatePlanCategory(Guid activityId, string category)
+        {
+            RouteFullDTO plan = await GetPlansByActivity(activityId.ToString());
+            if (plan != null)
+            {
+                plan.Category = category;
+
+                var emptyPlanDTO = Mapper.Map<RouteEmptyDTO>(plan);
+                plan = await UpdatePlan(emptyPlanDTO);
+            }
+
+            return plan;
+        }
     }
 }

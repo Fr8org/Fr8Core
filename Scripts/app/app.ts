@@ -2,6 +2,7 @@
 /// <reference path="../typings/metronic.d.ts" />
 
 var app = angular.module("app", [
+    "templates",
     "ui.router",
     "ui.bootstrap",
     "oc.lazyLoad",
@@ -18,7 +19,9 @@ var app = angular.module("app", [
     "ApplicationInsightsModule",
     "dndLists",
     "ngTable",
-    "mb-scrollbar"
+    "mb-scrollbar",
+    "ngMessages",
+    "ivh.treeview"
 ]);
 
 /* For compatibility with older versions of script files. Can be safely deleted later. */
@@ -78,14 +81,15 @@ app.controller('FooterController', ['$scope', function ($scope) {
 /* Set Application Insights */
 app.config(['applicationInsightsServiceProvider', function (applicationInsightsServiceProvider) {
     var options;
+    //Temporary instr key (for local instances) until the real one is loaded
+    applicationInsightsServiceProvider.configure('e08e940f-1491-440c-8d39-f38e9ff053db', options, true);
 
     $.get('/api/v1/configuration/appinsights').then((appInsightsInstrKey: string) => {
         console.log(appInsightsInstrKey);
         if (appInsightsInstrKey.indexOf('0000') == -1) { // if not local instance ('Debug' configuration)
             options = { applicationName: 'HubWeb' };
             applicationInsightsServiceProvider.configure(appInsightsInstrKey, options, true);
-        }
-        else {
+        } else {
             // don't send telemetry 
             options = {
                 applicationName: '',
@@ -96,7 +100,7 @@ app.config(['applicationInsightsServiceProvider', function (applicationInsightsS
             };
             applicationInsightsServiceProvider.configure(appInsightsInstrKey, options, false);
         }
-    })
+    });
 }]);
 
 /* Setup Rounting For All Pages */
@@ -144,21 +148,21 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
         })
     // Route list
         .state('routeList', {
-            url: "/routes",
+            url: "/plans",
             templateUrl: "/AngularTemplate/RouteList",
             data: { pageTitle: 'Routes', pageSubTitle: 'This page displays all Routes' }
         })
 
     // Route form
         .state('routeForm', {
-            url: "/routes/{id}",
+            url: "/plans/{id}",
             templateUrl: "/AngularTemplate/RouteForm",
             data: { pageTitle: 'Route', pageSubTitle: 'Add a new Route' },
         })
 
     // Process Builder framework
         .state('routeBuilder', {
-            url: "/routes/{id}/builder",
+            url: "/plans/{id}/builder",
             templateUrl: "/AngularTemplate/RouteBuilder",
             data: { pageTitle: '' },
         })
@@ -176,7 +180,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
         })
 
         .state('routeDetails', {
-            url: "/routes/{id}/details",
+            url: "/plans/{id}/details",
             templateUrl: "/AngularTemplate/RouteDetails",
             data: { pageTitle: 'Route Details', pageSubTitle: '' }
         })
@@ -248,10 +252,28 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             data: { pageTitle: 'Terminals', pageSubTitle: '' }
         })
 
+        .state('manifestregistry', {
+            url: "/manifestregistry",
+            templateUrl: "/AngularTemplate/ManifestRegistryList",
+            data: { pageTitle: 'Manifest Registry', pageSubTitle: '' }
+        })
+
         .state('manageAuthTokens', {
             url: '/manageAuthTokens',
             templateUrl: '/AngularTemplate/ManageAuthTokens',
             data: { pageTitle: 'Manage Auth Tokens', pageSubTitle: '' }
+        })
+
+        .state('changePassword', {
+            url: '/changePassword',
+            templateUrl: '/AngularTemplate/ChangePassword',
+            data: { pageTitle: 'Change Password', pageSubTitle: '' }
+        })
+
+        .state('reports', {
+            url: "/reports",
+            templateUrl: "/AngularTemplate/RouteReportList",
+            data: { pageTitle: 'Reports', pageSubTitle: 'This page displays all Reports' }
         });
 }]);
 
@@ -273,4 +295,14 @@ app.factory('fr8VersionInterceptor', ['fr8ApiVersion', (fr8ApiVersion: string) =
             return config;
         }
     };
+}]);
+
+
+app.config(['ivhTreeviewOptionsProvider', ivhTreeviewOptionsProvider => {
+    ivhTreeviewOptionsProvider.set({
+        twistieCollapsedTpl: '<span class="glyphicon glyphicon-chevron-right"></span>',
+        twistieExpandedTpl: '<span class="glyphicon glyphicon-chevron-down"></span>',
+        twistieLeafTpl: '',
+        defaultSelectedState: false
+    });
 }]);

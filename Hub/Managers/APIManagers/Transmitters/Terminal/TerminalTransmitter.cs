@@ -31,13 +31,13 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
         }
 
         /// <summary>
-        /// Posts ActionDTO to "/actions/&lt;actionType&gt;"
+        /// Posts ActionDTO to "/activities/&lt;actionType&gt;"
         /// </summary>
         /// <param name="curActionType">Action Type</param>
         /// <param name="activityDTO">DTO</param>
         /// <remarks>Uses <paramref name="curActionType"/> argument for constructing request uri replacing all space characters with "_"</remarks>
         /// <returns></returns>
-        public async Task<TResponse> CallActionAsync<TResponse>(string curActionType, Fr8DataDTO dataDTO, string correlationId)
+        public async Task<TResponse> CallActivityAsync<TResponse>(string curActionType, Fr8DataDTO dataDTO, string correlationId)
         {
             if (dataDTO == null)
             {
@@ -49,32 +49,20 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
                 throw new ArgumentNullException(nameof(dataDTO.ActivityDTO));
             }
 
-            if ((dataDTO.ActivityDTO.ActivityTemplateId == null || dataDTO.ActivityDTO.ActivityTemplateId == 0) && dataDTO.ActivityDTO.ActivityTemplate == null)
-            {
-                throw new ArgumentOutOfRangeException(nameof(dataDTO.ActivityDTO), dataDTO.ActivityDTO.ActivityTemplateId, "ActivityTemplate must be specified either explicitly or by using ActivityTemplateId");
-            }
-
-            int terminalId;
-
             if (dataDTO.ActivityDTO.ActivityTemplate == null)
             {
-                var activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>().GetByKey(dataDTO.ActivityDTO.ActivityTemplateId.Value);
-                dataDTO.ActivityDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDO, ActivityTemplateDTO>(activityTemplate);
-                terminalId = activityTemplate.TerminalId;
-            }
-            else
-            {
-                terminalId = dataDTO.ActivityDTO.ActivityTemplate.TerminalId;
+                throw new ArgumentOutOfRangeException(nameof(dataDTO.ActivityDTO), "ActivityTemplate must be specified explicitly");
             }
 
+            int terminalId = dataDTO.ActivityDTO.ActivityTemplate.TerminalId;
             var terminal = ObjectFactory.GetInstance<ITerminal>().GetAll().FirstOrDefault(x => x.Id == terminalId);
 
 
             var actionName = Regex.Replace(curActionType, @"[^-_\w\d]", "_");
-            var requestUri = new Uri(string.Format("actions/{0}", actionName), UriKind.Relative);
+            var requestUri = new Uri(string.Format("activities/{0}", actionName), UriKind.Relative);
             if (terminal == null || string.IsNullOrEmpty(terminal.Endpoint))
             {
-                _logger.ErrorFormat("Terminal record not found for activityTemplateId: {0}. Throwing exception.", dataDTO.ActivityDTO.ActivityTemplateId);
+                _logger.ErrorFormat("Terminal record not found for activityTemplate: {0}. Throwing exception.", dataDTO.ActivityDTO.ActivityTemplate.Name);
                 throw new Exception("Unknown terminal or terminal endpoint");
             }
             //let's calculate absolute url, since our hmac mechanism needs it

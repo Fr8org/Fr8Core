@@ -137,9 +137,9 @@ namespace Hub.Services
             uow.SaveChanges();
         }
 
-        protected Crate<StandardDesignTimeFieldsCM> GetValidationErrors(CrateStorageDTO crateStorage)
+        protected Crate<FieldDescriptionsCM> GetValidationErrors(CrateStorageDTO crateStorage)
         {
-            return _crate.FromDto(crateStorage).FirstCrateOrDefault<StandardDesignTimeFieldsCM>(x => x.Label == "Validation Errors");
+            return _crate.FromDto(crateStorage).FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == "Validation Errors");
         }
 
         /// <summary>
@@ -150,14 +150,14 @@ namespace Hub.Services
         /// <param name="userId">current user id</param>
         /// <param name="actionId">action to delete</param>
         /// <returns>isActionDeleted</returns>
-        protected async Task<bool> ValidateDownstreamActionsAndDelete(string userId, Guid actionId)
+        protected async Task<bool> ValidateDownstreamActivitiesAndDelete(string userId, Guid actionId)
         {
             var validationErrors = new List<Crate>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curAction = uow.PlanRepository.GetById<ActivityDO>(actionId);
                 var downstreamActions = _routeNode.GetDownstreamActivities(uow, curAction).OfType<ActivityDO>();
-
+                var directChildren = curAction.GetDescendants().OfType<ActivityDO>();
                 //set ActivityTemplate and parentRouteNode of current action to null -> to simulate a delete
                 //int? templateIdBackup = curAction.ActivityTemplateId;
                 RouteNodeDO parentRouteNodeIdBackup = curAction.ParentRouteNode;
@@ -168,7 +168,8 @@ namespace Hub.Services
 
                 //lets start multithreaded calls
                 var configureTaskList = new List<Task<ActivityDTO>>();
-                foreach (var downstreamAction in downstreamActions)
+                // no sense of checking children of the action being deleted. We'll delete them in any case.
+                foreach (var downstreamAction in downstreamActions.Except(directChildren))
                 {
                     configureTaskList.Add(_activity.Configure(uow, userId, downstreamAction, false));
                 }
@@ -219,16 +220,89 @@ namespace Hub.Services
                 //we can assume that there has been some validation errors on previous call
                 //but user still wants to delete this action
                 //lets use kludge solution
-                DeleteActionKludge(actionId);
+                DeleteActivityKludge(actionId);
             }
             else
             {
-                return await ValidateDownstreamActionsAndDelete(userId, actionId);
+                return await ValidateDownstreamActivitiesAndDelete(userId, actionId);
             }
             return true;
         }
 
-        protected void DeleteActionKludge(Guid id)
+        public async Task<bool> DeleteAllChildNodes(Guid activityId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curAction = uow.PlanRepository.GetById<RouteNodeDO>(activityId);
+                RouteNodeDO currentAction = curAction;
+                var downStreamActivities = _routeNode.GetDownstreamActivities(uow, curAction).OfType<ActivityDO>();
+
+                   bool hasChanges = false;
+                 
+                do
+                {
+                    currentAction = _routeNode.GetNextActivity(currentAction, curAction);
+                    if (currentAction != null)
+                    {
+                        hasChanges = true;
+                        currentAction.RemoveFromParent();
+                    }
+
+                } while (currentAction != null);
+
+
+                if (hasChanges)
+                {
+                    uow.SaveChanges();
+                }
+                //we should clear values of configuration controls
+
+                foreach (var downStreamActivity in downStreamActivities)
+                {
+                    var currentActivity = downStreamActivity;
+                    bool somethingToReset = false;
+
+                    using (var crateStorage = _crate.UpdateStorage(() => currentActivity.CrateStorage))
+                    {
+                        foreach (var configurationControls in crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>())
+                        {
+                            foreach (IResettable resettable in configurationControls.Controls)
+                            {
+                                resettable.Reset();
+                                somethingToReset = true;
+                            }
+                        }
+
+                        if (!somethingToReset)
+                        {
+                            crateStorage.DiscardChanges();
+                        }
+                    }
+
+                    // Detach containers from action, where CurrentRouteNodeId == id.
+                    var containersWithCurrentRouteNode = uow.ContainerRepository
+                        .GetQuery()
+                        .Where(x => x.CurrentRouteNodeId == downStreamActivity.Id)
+                        .ToList();
+
+                    containersWithCurrentRouteNode.ForEach(x => x.CurrentRouteNodeId = null);
+
+                    // Detach containers from action, where NextRouteNodeId == id.
+                    var containersWithNextRouteNode = uow.ContainerRepository
+                        .GetQuery()
+                        .Where(x => x.NextRouteNodeId == downStreamActivity.Id)
+                        .ToList();
+
+                    containersWithNextRouteNode.ForEach(x => x.NextRouteNodeId = null);
+                }
+
+                uow.SaveChanges();
+            }
+
+            return await Task.FromResult(true);
+        }
+
+        protected void DeleteActivityKludge(Guid id)
         {
             //Kludge solution
             //https://maginot.atlassian.net/wiki/display/SH/Action+Deletion+and+Reordering
@@ -268,9 +342,9 @@ namespace Hub.Services
                     var currentActivity = downStreamActivity;
                     bool somethingToReset = false;
 
-                    using (var updater = _crate.UpdateStorage(() => currentActivity.CrateStorage))
+                    using (var crateStorage = _crate.UpdateStorage(() => currentActivity.CrateStorage))
                     {
-                        foreach (var configurationControls in updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>())
+                        foreach (var configurationControls in crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>())
                     {
                             foreach (IResettable resettable in configurationControls.Controls)
                         {
@@ -281,7 +355,7 @@ namespace Hub.Services
 
                         if (!somethingToReset)
                     {
-                            updater.DiscardChanges();
+                            crateStorage.DiscardChanges();
                         }
                     }
                 }

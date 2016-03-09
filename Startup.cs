@@ -1,4 +1,4 @@
-﻿using System;
+﻿    using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -27,7 +27,7 @@ namespace HubWeb
 {
     public partial class Startup
     {
-        public async void Configuration(IAppBuilder app)
+        public void Configuration(IAppBuilder app)
         {
             Configuration(app, false);
         }
@@ -36,11 +36,11 @@ namespace HubWeb
         {
             //ConfigureDaemons();
             ConfigureAuth(app);
-#if DEV || RELEASE
-            ConfigureHangfire(app, "DockyardDB");
-#endif 
 
-            if (!selfHostMode)
+
+            ConfigureHangfire(app, "DockyardDB");
+
+                if (!selfHostMode)
             {
                 await RegisterTerminalActions();
             }
@@ -50,7 +50,6 @@ namespace HubWeb
         {
             GlobalConfiguration.Configuration
                 .UseSqlServerStorage(connectionString);
-
             app.UseHangfireDashboard();
             app.UseHangfireServer();
         }
@@ -133,7 +132,7 @@ namespace HubWeb
             {
                 try
                 {
-                    var activityTemplateList = await terminalService.GetAvailableActions(url);
+                    var activityTemplateList = await terminalService.GetAvailableActivities(url);
 
                     foreach (var curItem in activityTemplateList)
                     {
@@ -161,7 +160,12 @@ namespace HubWeb
 
             alertReporter.ActivityTemplatesSuccessfullyRegistered(count);
 
-                    }
+            // At Startup Check If the Log Monitor Fr8 Event plan exist in the database then active it. otherwise create the new plan.
+
+            RouteManager manager = new RouteManager();
+            string sytemUserEmail = ObjectFactory.GetInstance<IConfigRepository>().Get<string>("SystemUserEmail");
+            await manager.CreateRoute_LogFr8InternalEvents(sytemUserEmail).ConfigureAwait(true);
+        }
 
         public static IDisposable CreateServer(string url)
         {

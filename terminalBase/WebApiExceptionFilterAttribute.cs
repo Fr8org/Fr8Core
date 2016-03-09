@@ -5,16 +5,11 @@ using System.Text;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
 using Newtonsoft.Json;
-using StructureMap;
-using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Errors;
 using Utilities;
-using System.Threading.Tasks;
 using Microsoft.ApplicationInsights;
 using System.Collections.Generic;
-using Data.Interfaces.DataTransferObjects;
-using System.Linq;
 
 namespace TerminalBase
 {
@@ -58,16 +53,17 @@ namespace TerminalBase
                 }
             }
 
-            //Post exception information to AppInsights
-            Dictionary<string, string> properties = new Dictionary<string, string>();
-            foreach (KeyValuePair<string, object>arg in actionExecutedContext.ActionContext.ActionArguments)
-            {
-                properties.Add(arg.Key, JsonConvert.SerializeObject(arg.Value));
-            }
-            new TelemetryClient().TrackException(curTerminalError, properties);
-
             if (!integrationTestMode)
             {
+                //Post exception information to AppInsights
+                Dictionary<string, string> properties = new Dictionary<string, string>();
+                foreach (KeyValuePair<string, object> arg in actionExecutedContext.ActionContext.ActionArguments)
+                {
+                    properties.Add(arg.Key, JsonConvert.SerializeObject(arg.Value));
+                }
+                properties.Add("Terminal", terminalName);
+                new TelemetryClient().TrackException(curTerminalError, properties);
+
                 //POST event to fr8 about this terminal error
                 new BaseTerminalController().ReportTerminalError(terminalName, curTerminalError);
             }

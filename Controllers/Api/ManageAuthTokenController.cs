@@ -73,7 +73,7 @@ namespace HubWeb.Controllers.Api
         }
 
         [HttpPost]
-        public IHttpActionResult TerminalsByActions(IEnumerable<Guid> actionIds)
+        public IHttpActionResult TerminalsByActivities(IEnumerable<Guid> actionIds)
         {
             var result = new List<ManageAuthToken_Terminal_Activity>();
 
@@ -91,7 +91,7 @@ namespace HubWeb.Controllers.Api
                         continue;
                     }
 
-                    var template = _activityTemplate.GetByKey(activity.ActivityTemplateId.Value);
+                    var template = _activityTemplate.GetByKey(activity.ActivityTemplateId);
                     result.Add(
                         new ManageAuthToken_Terminal_Activity()
                         {

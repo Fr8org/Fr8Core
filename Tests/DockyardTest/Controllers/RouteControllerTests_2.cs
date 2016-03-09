@@ -29,7 +29,8 @@ namespace DockyardTest.Controllers
 			Mock<IPlanRepository> rrMock = new Mock<IPlanRepository>();
             rrMock.Setup(x => x.GetById<PlanDO>(It.IsAny<Guid>())).Returns(new PlanDO()
             {
-                Fr8Account = FixtureData.TestDockyardAccount1()
+                Fr8Account = FixtureData.TestDockyardAccount1(),
+                StartingSubroute = new SubrouteDO()
             });
 
 			Mock<IUnitOfWork> uowMock = new Mock<IUnitOfWork>();
@@ -41,16 +42,11 @@ namespace DockyardTest.Controllers
 			Mock<IPusherNotifier> pusherMock = new Mock<IPusherNotifier>();
 			pusherMock.Setup(x => x.Notify(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>()));
 
-            Mock<Hub.Managers.Event> eventMock = new Mock<Hub.Managers.Event>(MockBehavior.Default);
-            eventMock.Setup(ev => ev.Publish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
-                It.IsAny<string>(), It.IsAny<string>())).Returns(Task.Delay(1));
-
 			ObjectFactory.Container.Inject(typeof(IUnitOfWork), uowMock.Object);
 			ObjectFactory.Container.Inject(typeof(IPlan), routeMock.Object);
 			ObjectFactory.Container.Inject(typeof(IPusherNotifier), pusherMock.Object);
-            ObjectFactory.Container.Inject(typeof(Hub.Managers.Event), eventMock.Object);
 
-			var controller = new RoutesController();
+			var controller = new PlansController();
 
 			// Act
 			var result = controller.Run(Guid.NewGuid(), null);
@@ -65,39 +61,9 @@ namespace DockyardTest.Controllers
 		{
 			// Arrange
 			Mock<IPlanRepository> rrMock = new Mock<IPlanRepository>();
-			rrMock.Setup(x => x.GetById<PlanDO>(It.IsAny<Guid>())).Returns(new PlanDO());
-
-			Mock<IUnitOfWork> uowMock = new Mock<IUnitOfWork>();
-            uowMock.Setup(x => x.PlanRepository).Returns(rrMock.Object);
-
-			Mock<IPlan> routeMock = new Mock<IPlan>();
-			routeMock.Setup(x => x.Run(It.IsAny<PlanDO>(), It.IsAny<Crate>())).ReturnsAsync(new ContainerDO());
-
-			Mock<IPusherNotifier> pusherMock = new Mock<IPusherNotifier>();
-			pusherMock.Setup(x => x.Notify(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>()));
-
-			ObjectFactory.Container.Inject(typeof(IUnitOfWork), uowMock.Object);
-			ObjectFactory.Container.Inject(typeof(IPlan), routeMock.Object);
-			ObjectFactory.Container.Inject(typeof(IPusherNotifier), pusherMock.Object);
-
-			var controller = new RoutesController();
-
-			// Act
-			var result = controller.Run(Guid.NewGuid(), new PayloadVM { Payload = "Some crap data" });
-
-			// Assert
-			Assert.NotNull(result.Result);								// Get not empty result
-			Assert.IsInstanceOf<BadRequestResult>(result.Result);		// Result of correct HTTP response type
-		}
-
-		[Test]
-		public void RouteController_RunWouldBeExecutedWithAValidPayload()
-		{
-			// Arrange
-			Mock<IPlanRepository> rrMock = new Mock<IPlanRepository>();
-            rrMock.Setup(x => x.GetById<PlanDO>(It.IsAny<Guid>())).Returns(new PlanDO()
+			rrMock.Setup(x => x.GetById<PlanDO>(It.IsAny<Guid>())).Returns(new PlanDO()
             {
-                Fr8Account = FixtureData.TestDockyardAccount1()
+                StartingSubroute = new SubrouteDO()
             });
 
 			Mock<IUnitOfWork> uowMock = new Mock<IUnitOfWork>();
@@ -109,17 +75,47 @@ namespace DockyardTest.Controllers
 			Mock<IPusherNotifier> pusherMock = new Mock<IPusherNotifier>();
 			pusherMock.Setup(x => x.Notify(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>()));
 
-            Mock<Hub.Managers.Event> eventMock = new Mock<Hub.Managers.Event>(MockBehavior.Default);
-            eventMock.Setup(ev => ev.Publish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
-                It.IsAny<string>(), It.IsAny<string>())).Returns(Task.Delay(1));
+			ObjectFactory.Container.Inject(typeof(IUnitOfWork), uowMock.Object);
+			ObjectFactory.Container.Inject(typeof(IPlan), routeMock.Object);
+			ObjectFactory.Container.Inject(typeof(IPusherNotifier), pusherMock.Object);
+
+			var controller = new PlansController();
+
+			// Act
+			var result = controller.Run(Guid.NewGuid(), new PayloadVM { Payload = "Some crap data" });
+
+			// Assert
+			Assert.NotNull(result.Result);								// Get not empty result
+			Assert.IsInstanceOf<BadRequestErrorMessageResult>(result.Result);		// Result of correct HTTP response type
+		}
+
+		[Test]
+		public void RouteController_RunWouldBeExecutedWithAValidPayload()
+		{
+			// Arrange
+			Mock<IPlanRepository> rrMock = new Mock<IPlanRepository>();
+            rrMock.Setup(x => x.GetById<PlanDO>(It.IsAny<Guid>())).Returns(new PlanDO()
+            {
+                Fr8Account = FixtureData.TestDockyardAccount1(),
+                StartingSubroute = new SubrouteDO()
+            });
+
+			Mock<IUnitOfWork> uowMock = new Mock<IUnitOfWork>();
+            uowMock.Setup(x => x.PlanRepository).Returns(rrMock.Object);
+
+			Mock<IPlan> routeMock = new Mock<IPlan>();
+			routeMock.Setup(x => x.Run(It.IsAny<PlanDO>(), It.IsAny<Crate>())).ReturnsAsync(new ContainerDO());
+
+			Mock<IPusherNotifier> pusherMock = new Mock<IPusherNotifier>();
+			pusherMock.Setup(x => x.Notify(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>()));
+
 
 			ObjectFactory.Container.Inject(typeof(IUnitOfWork), uowMock.Object);
 			ObjectFactory.Container.Inject(typeof(IPlan), routeMock.Object);
 			ObjectFactory.Container.Inject(typeof(IPusherNotifier), pusherMock.Object);
 
-            ObjectFactory.Container.Inject(typeof(Hub.Managers.Event), eventMock.Object);
 
-			var controller = new RoutesController();
+			var controller = new PlansController();
 
 			// Act
 			var payload = new PayloadVM

@@ -31,7 +31,7 @@ namespace HubWeb.Controllers
 #else
             BackgroundJob.Schedule(action, alarmDTO.StartTime);
 #endif
-
+            
             //TODO: Commented as part of DO - 1520. Need to rethink about this.
             //var eventController = new EventController();
             //return await eventController.ProcessIncomingEvents(alarmDTO.TerminalName, alarmDTO.TerminalVersion);
@@ -40,12 +40,13 @@ namespace HubWeb.Controllers
 
         //TODO is this method called from somewhere else?
         [HttpPost]
-        public async void ExecuteTerminalWithLogging(AlarmDTO alarmDTO)
+        public void ExecuteTerminalWithLogging(AlarmDTO alarmDTO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var _plan = ObjectFactory.GetInstance<IPlan>();
-                await _plan.Continue(alarmDTO.ContainerId);
+                var continueTask = _plan.Continue(alarmDTO.ContainerId);
+                Task.WaitAll(continueTask);
                 //TODO report output to somewhere to pusher service maybe
 
                 /*
@@ -59,7 +60,7 @@ namespace HubWeb.Controllers
 
                     crateManager.AddLogMessage(label, logItemList, container);
                     var terminal = ObjectFactory.GetInstance<ITerminal>();
-                    var terminalUrl = terminal.ParseTerminalUrlFor(alarmDTO.TerminalName, alarmDTO.TerminalVersion, "action/run");
+                    var terminalUrl = terminal.ParseTerminalUrlFor(alarmDTO.TerminalName, alarmDTO.TerminalVersion, "activity/run");
                     var content = new ObjectContent<ActionDTO>(alarmDTO.ActionDTO, new JsonMediaTypeFormatter());
 
                     

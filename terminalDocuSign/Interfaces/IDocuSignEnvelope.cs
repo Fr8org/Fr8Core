@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using DocuSign.Integrations.Client;
 using Data.Interfaces.DataTransferObjects;
+using terminalDocuSign.DataTransferObjects;
 
 namespace terminalDocuSign.Interfaces
 {
@@ -26,7 +27,7 @@ namespace terminalDocuSign.Interfaces
         /// List of Envelope Data.
         /// It returns empty list of envelope data if tab and signers not found.
         /// </returns>
-        IList<EnvelopeDataDTO> GetEnvelopeData(string envelopeId);
+        IList<DocuSignTabDTO> GetEnvelopeData(string envelopeId);
 
         /// <summary>
         /// Get Envelope Data from a docusign envelope. 
@@ -37,16 +38,17 @@ namespace terminalDocuSign.Interfaces
         /// List of Envelope Data.
         /// It returns empty list of envelope data if tab and signers not found.
         /// </returns>
-        IList<EnvelopeDataDTO> GetEnvelopeData(Envelope envelope);
+        IList<DocuSignTabDTO> GetEnvelopeData(Envelope envelope);
 
         /// <summary>
-        /// Creates payload based on field mappings created by user 
-        /// and field values retrieved from a DocuSign envelope.
+        /// Creates Envelope payload, based on default template fields and added custom values
         /// </summary>
-        /// <param name="curFields">Field mappings created by user for an action.</param>
-        /// <param name="envelopeId">Envelope id which is being processed.</param>
-        /// <param name="curEnvelopeData">A collection of form fields extracted from the DocuSign envelope.</param>
-        IList<FieldDTO> ExtractPayload(List<FieldDTO> curFields, string envelopeId, IList<EnvelopeDataDTO> curEnvelopeData);
+        /// <param name="curTemplateFields"></param>
+        /// <param name="curEnvelopeId"></param>
+        /// <param name="curEnvelopeData"></param>
+        /// <returns></returns>
+        IList<FieldDTO> FormEnvelopePayload(List<FieldDTO> curTemplateFields, string curEnvelopeId,
+            IList<DocuSignTabDTO> curEnvelopeData);
 
         /// <summary>
         /// Get Envelope Data from a docusign envelope. 
@@ -57,7 +59,7 @@ namespace terminalDocuSign.Interfaces
         /// List of Envelope Data.
         /// It returns empty list of envelope data if tab and signers not found.
         /// </returns>
-        IEnumerable<EnvelopeDataDTO> GetEnvelopeDataByTemplate(string templateId);
+        IEnumerable<DocuSignTabDTO> GetEnvelopeDataByTemplate(string templateId);
 
         void SendUsingTemplate(string templateId, string recipientAddress);
     }

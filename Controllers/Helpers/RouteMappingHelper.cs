@@ -34,7 +34,8 @@ namespace HubWeb.Controllers.Helpers
                 StartingSubrouteId = curPlanDO.StartingSubrouteId,
                 Subroutes = subrouteDTOList,
                 Fr8UserId = curPlanDO.Fr8AccountId,
-                Tag = curPlanDO.Tag
+                Tag = curPlanDO.Tag,
+                Category = curPlanDO.Category
             };
 
             return result;

@@ -14,7 +14,7 @@ namespace terminalTests.Fixtures
             return new ActivityTemplateDTO()
             {
                 Id = 1,
-                Name = "terminalActionMock_TEST",
+                Name = "terminalActivityMock_TEST",
                 Version = "1"
             };
         }
@@ -24,24 +24,22 @@ namespace terminalTests.Fixtures
             return new ActivityTemplateDTO()
             {
                 Id = 1,
-                Name = "terminalActionMock",
+                Name = "terminalActivityMock",
                 Version = "1"
             };
         }
 
-        public static ActivityDTO terminalMockActionDTOTest()
+        public static ActivityDTO terminalMockActivityDTOTest()
         {
             var activityTemplate = ActivityTemplateTest();
 
             var activity = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "terminalActionMock",
                 Label = "Activity Mock",
                 AuthToken = new AuthorizationTokenDTO(),
                 ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id,
-                ParentRouteNodeId = Guid.NewGuid(),
+                ParentRouteNodeId = Guid.NewGuid()
             };
 
             return activity;
@@ -51,23 +49,21 @@ namespace terminalTests.Fixtures
         {
             return new Fr8DataDTO
             {
-                ActivityDTO = terminalMockActionDTO()
+                ActivityDTO = terminalMockActivityDTO()
             };
         }
 
-        public static ActivityDTO terminalMockActionDTO()
+        public static ActivityDTO terminalMockActivityDTO()
         {
             var activityTemplate = ActivityTemplate();
 
             var activity = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "terminalActionMock",
                 Label = "Activity Mock",
                 AuthToken = new AuthorizationTokenDTO(),
                 ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id,
-                ParentRouteNodeId = Guid.NewGuid(),
+                ParentRouteNodeId = Guid.NewGuid()
             };
 
             return activity;

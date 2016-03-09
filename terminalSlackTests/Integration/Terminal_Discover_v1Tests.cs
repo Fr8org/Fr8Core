@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
 using NUnit.Framework;
@@ -13,9 +14,9 @@ namespace terminalSlackTests.Integration
     [Explicit]
     public class Terminal_Discover_v1Tests : BaseTerminalIntegrationTest
     {
-        private const int ActionCount = 2;
-        private const string Monitor_Channel_Action_Name = "Monitor_Channel";
-        private const string Publish_To_Slack_Action_Name = "Publish_To_Slack";
+        private const int ActivityCount = 2;
+        private const string Monitor_Channel_Activity_Name = "Monitor_Channel";
+        private const string Publish_To_Slack_Activity_Name = "Publish_To_Slack";
         public override string TerminalName
         {
             get { return "terminalSlack"; }
@@ -25,17 +26,17 @@ namespace terminalSlackTests.Integration
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
         [Test, CategoryAttribute("Integration.terminalSlack")]
-        public async void Terminal_Slack_Discover()
+        public async Task Terminal_Slack_Discover()
         {
             var discoverUrl = GetTerminalDiscoverUrl();
 
             var terminalDiscoverResponse = await HttpGetAsync<StandardFr8TerminalCM>(discoverUrl);
 
             Assert.IsNotNull(terminalDiscoverResponse, "Terminal Slack discovery did not happen.");
-            Assert.IsNotNull(terminalDiscoverResponse.Actions, "Slack terminal actions were not loaded");
-            Assert.AreEqual(ActionCount, terminalDiscoverResponse.Actions.Count, "Not all terminal slack actions were loaded");
-            Assert.AreEqual(terminalDiscoverResponse.Actions.Any(a => a.Name == Monitor_Channel_Action_Name), true, "Action "+Monitor_Channel_Action_Name+" was not loaded");
-            Assert.AreEqual(terminalDiscoverResponse.Actions.Any(a => a.Name == Publish_To_Slack_Action_Name), true, "Action " + Publish_To_Slack_Action_Name + " was not loaded");
+            Assert.IsNotNull(terminalDiscoverResponse.Activities, "Slack terminal actions were not loaded");
+            Assert.AreEqual(ActivityCount, terminalDiscoverResponse.Activities.Count, "Not all terminal slack actions were loaded");
+            Assert.AreEqual(terminalDiscoverResponse.Activities.Any(a => a.Name == Monitor_Channel_Activity_Name), true, "Action "+Monitor_Channel_Activity_Name+" was not loaded");
+            Assert.AreEqual(terminalDiscoverResponse.Activities.Any(a => a.Name == Publish_To_Slack_Activity_Name), true, "Action " + Publish_To_Slack_Activity_Name + " was not loaded");
         }
     }
 }

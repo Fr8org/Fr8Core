@@ -136,7 +136,7 @@ namespace Hub.StructureMap
                 For<IHMACService>().Use<Fr8HMACService>();
 
                 For<TelemetryClient>().Use<TelemetryClient>();
-                For<Hub.Managers.Event>().Use<Hub.Managers.Event>().Singleton();
+               // For<Hub.Managers.Event>().Use<Hub.Managers.Event>().Singleton();
             }
         }
 
@@ -213,7 +213,7 @@ namespace Hub.StructureMap
                 For<IHMACService>().Use(fr8HMACService.Object);
                 For<TelemetryClient>().Use<TelemetryClient>();
                 For<ITerminal>().Use(new TerminalServiceForTests()).Singleton();
-                For<Hub.Managers.Event>().Use<Hub.Managers.Event>().Singleton();
+               // For<Hub.Managers.Event>().Use<Hub.Managers.Event>().Singleton();
             }
         }
 
@@ -236,9 +236,9 @@ namespace Hub.StructureMap
                 return _terminal.GetAll();
             }
 
-            public Task<IList<ActivityTemplateDO>> GetAvailableActions(string uri)
+            public Task<IList<ActivityTemplateDO>> GetAvailableActivities(string uri)
             {
-                return _terminal.GetAvailableActions(uri);
+                return _terminal.GetAvailableActivities(uri);
             }
 
             public TerminalDO RegisterOrUpdate(TerminalDO terminalDo)

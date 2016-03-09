@@ -23,7 +23,7 @@ module dockyard.tests.controller {
         var deleteInvoker = function (data, done) {
             $.ajax({
                 type: "Delete",
-                url: "/actions/" + data.id,
+                url: "/activities/" + data.id,
                 contentType: "application/json; charset=utf-8",
                 dataType: "json"
             }).done(function (data, status) {
@@ -37,7 +37,7 @@ module dockyard.tests.controller {
         var getInvoker = function (data, done) {
             $.ajax({
                 type: "GET",
-                url: "/actions/" + data[0].id,
+                url: "/activities/" + data[0].id,
                 contentType: "application/json; charset=utf-8",
                 dataType: "json"
             }).done(function (data, status) {
@@ -54,7 +54,7 @@ module dockyard.tests.controller {
         var postInvoker = function (done, dataToSave) {
             $.ajax({
                 type: "POST",
-                url: "/actions/save",
+                url: "/activities/save",
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(dataToSave),
                 dataType: "json"
@@ -73,15 +73,12 @@ module dockyard.tests.controller {
 
             var actions: interfaces.IActivityDTO =
             {
-                    name: "test action type",
                     configurationControls: fx.ActivityDTO.configurationControls,
                     crateStorage: null,
                     parentRouteNodeId: '89EBF277-0CC4-4D6D-856B-52457F10C686',
                     activityTemplate: null,
-                    activityTemplateId: 1,
-                    isTempId: false,
                     id: '00000000-0000-0000-0000-000000000000',
-                    childrenActions: null,
+                    childrenActivities: null,
                     ordering: 0
                 };
 
@@ -95,23 +92,20 @@ module dockyard.tests.controller {
     });
 
         describe("Action#GetConfigurationSettings", function () {
-            var endpoint = "/actions";
+            var endpoint = "/activities";
 
             var currentActionDesignDTO: interfaces.IActivityDTO =
                     {
-                        name: "test action type",
                         configurationControls: fx.ActivityDTO.configurationControls,
                         crateStorage: null,
                         parentRouteNodeId: '89EBF277-0CC4-4D6D-856B-52457F10C686',
                         activityTemplate: null,
-                        activityTemplateId: 1,
-                        isTempId: false,
                         id: '89EBF277-0CC4-4D6D-856B-52457F10C686',
-                        childrenActions: null,
+                        childrenActivities: null,
                         ordering: 0
                 };
 
-            beforeAll(function () {
+            beforeAll(() => {
                 $(document).ajaxError(errorHandler);
                 $.ajaxSetup({ async: false, url: endpoint, dataType: "json", contentType: "text/json" });
             });
@@ -120,7 +114,7 @@ module dockyard.tests.controller {
                 var expectedSettings = JSON.stringify({ "fields": [{ "name": "connection_string", "required": true, "value": "", "fieldLabel": "SQL Connection String", "type": "textField", "selected": false }], "data-fields": [] });
                 $.ajax({
                     type: "POST",
-                    url: "/actions/actions/configuration",
+                    url: "/activities/activities/configuration",
                     contentType: "application/json; charset=utf-8",
                     data: JSON.stringify(currentActionDesignDTO),
                     dataType: "json"

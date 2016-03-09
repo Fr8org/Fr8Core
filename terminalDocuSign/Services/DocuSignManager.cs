@@ -48,11 +48,19 @@ namespace terminalDocuSign.Services
             new FieldDTO("Auto Responded", "autoresponded"),
         };
 
-        public string SearchText;
+        public DocusignQuery()
+        {
+            Conditions = new List<FilterConditionDTO>();
+        }
+
         public DateTime? FromDate;
         public DateTime? ToDate;
+
+        public string SearchText;
         public string Status;
         public string Folder;
+
+        public List<FilterConditionDTO> Conditions { get; set; }
     }
 
     public class DocuSignManager
@@ -76,11 +84,7 @@ namespace terminalDocuSign.Services
                 Label = label,
                 Name = name,
                 Required = true,
-                Source = new FieldSourceDTO
-                {
-                    Label = "Available Templates",
-                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                }
+                Source = null
             };
 
             if (addOnChangeEvent)
@@ -113,8 +117,57 @@ namespace terminalDocuSign.Services
             return createDesignTimeFields;
         }
 
+        public void FillDocuSignTemplateSource(Crate configurationCrate, string controlName,  DocuSignAuthTokenDTO authToken)
+        {
+            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
+            var control= configurationControl.FindByNameNested<DropDownList>(controlName);
+            if (control != null)
+            {
+                control.ListItems = GetDocuSignTemplates(authToken);
+            }
+        }
 
-        public StandardPayloadDataCM CreateActionPayload(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO, string curEnvelopeId)
+        private List<ListItem> GetDocuSignTemplates(DocuSignAuthTokenDTO authToken)
+        {
+            var template = new DocuSignTemplate();
+            var templates = template.GetTemplateNames(authToken.Email, authToken.ApiPassword);
+            return templates.Select(x => new ListItem() { Key = x.Name, Value = x.Id }).ToList();
+        }
+
+        #region Fill Folder Source
+
+        public void FillFolderSource(Crate configurationCrate, string controlName, DocuSignAuthTokenDTO authToken)
+        {
+            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
+            var control = configurationControl.FindByNameNested<DropDownList>(controlName);
+            if (control != null)
+            {
+                control.ListItems = GetFolderItems(authToken);
+            }
+        }
+
+        private List<ListItem> GetFolderItems(DocuSignAuthTokenDTO authToken)
+        {
+            var folders = _docuSignFolder.GetSearchFolders(authToken.Email, authToken.ApiPassword);
+            return folders.Select(x => new ListItem() { Key = x.Name, Value = x.FolderId }).ToList();
+        }
+
+        #endregion
+
+        #region Fill Status Source
+
+        public void FillStatusSource(Crate configurationCrate, string controlName)
+        {
+            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
+            var control = configurationControl.FindByNameNested<DropDownList>(controlName);
+            if (control != null)
+            {
+                control.ListItems = DocusignQuery.Statuses.Select(x => new ListItem() { Key = x.Key, Value = x.Value }).ToList();
+            }
+        }
+        #endregion
+
+        public StandardPayloadDataCM CreateActivityPayload(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO, string curEnvelopeId, string templateId)
         {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 
@@ -122,9 +175,10 @@ namespace terminalDocuSign.Services
                 docuSignAuthDTO.Email,
                 docuSignAuthDTO.ApiPassword);
 
+            var templateFields = ExtractTemplateFieldsAndAddToCrate(templateId, docuSignAuthDTO, curActivityDO);
+
             var curEnvelopeData = docusignEnvelope.GetEnvelopeData(curEnvelopeId);
-            var templateFields = ExtractFieldsAndAddToCrate(curEnvelopeId, docuSignAuthDTO, curActivityDO);
-            var payload = docusignEnvelope.ExtractPayload(templateFields.ToList(), curEnvelopeId, curEnvelopeData);
+            var payload = docusignEnvelope.FormEnvelopePayload(templateFields.ToList(), curEnvelopeId, curEnvelopeData);
 
             return new StandardPayloadDataCM(payload.ToArray());
         }
@@ -145,15 +199,15 @@ namespace terminalDocuSign.Services
             return envelopeId;
         }
 
-        public int UpdateUserDefinedFields(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO, ICrateStorageUpdater updater, string envelopeId)
+        public int UpdateUserDefinedFields(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO, IUpdatableCrateStorage updater, string templateId, string envelopeId = null)
         {
             int fieldCount = 0;
-            updater.CrateStorage.RemoveByLabel("DocuSignTemplateUserDefinedFields");
-            if (!String.IsNullOrEmpty(envelopeId))
+            updater.RemoveByLabel("DocuSignTemplateUserDefinedFields");
+            if (!String.IsNullOrEmpty(templateId))
             {
                 var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
-                var userDefinedFields = ExtractFieldsAndAddToCrate(envelopeId, docuSignAuthDTO, curActivityDO);
-                updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("DocuSignTemplateUserDefinedFields", AvailabilityType.RunTime, userDefinedFields.ToArray()));
+                var userDefinedFields = ExtractTemplateFieldsAndAddToCrate(templateId, docuSignAuthDTO, curActivityDO);
+                updater.Add(Crate.CreateDesignTimeFieldsCrate("DocuSignTemplateUserDefinedFields", AvailabilityType.RunTime, userDefinedFields.ToArray()));
                 fieldCount = userDefinedFields.Count();
             }
             return fieldCount;
@@ -166,21 +220,21 @@ namespace terminalDocuSign.Services
         /// <param name="docuSignAuthToken">DocuSign authentication token.</param>
         /// <param name="curActivityDO">ActionDO object representing the current action. The crate with extracted 
         /// fields will be added to this Action replacing any older instances of that crate.</param>
-        public IEnumerable<FieldDTO> ExtractFieldsAndAddToCrate(string docuSignTemplateId, DocuSignAuthTokenDTO docuSignAuthToken, ActivityDO curActivityDO)
+        public IEnumerable<FieldDTO> ExtractTemplateFieldsAndAddToCrate(string templateId, DocuSignAuthTokenDTO docuSignAuthToken, ActivityDO curActivityDO)
         {
-            if (!string.IsNullOrEmpty(docuSignTemplateId))
+            if (!string.IsNullOrEmpty(templateId))
             {
                 var docusignEnvelope = new DocuSignEnvelope(
                     docuSignAuthToken.Email, docuSignAuthToken.ApiPassword);
 
                 var userDefinedFields = docusignEnvelope
-                    .GetEnvelopeDataByTemplate(docuSignTemplateId);
+                    .GetEnvelopeDataByTemplate(templateId);
 
                 var fieldCollection = userDefinedFields
                     .Select(f => new FieldDTO
                     {
                         Key = f.Name,
-                        Value = f.Value,
+                        Value = f.Value == string.Empty ? null : f.Value, //set value as null because is causing problems in upstream crates selection FR-2486 
                         Availability = AvailabilityType.RunTime
                     });
                 return fieldCollection;
@@ -209,6 +263,34 @@ namespace terminalDocuSign.Services
                 return Crate.CreateDesignTimeFieldsCrate(crateLabel, fieldCollection.ToArray());
             }
             return null;
+        }
+
+        public int CountEnvelopes(DocuSignAuthTokenDTO authToken, DocusignQuery query)
+        {
+            int result = 0;
+
+            if (string.IsNullOrWhiteSpace(query.Folder) || query.Folder == "<any>")
+            {
+                var searchFolders = _docuSignFolder
+                    .GetSearchFolders(authToken.Email, authToken.ApiPassword);
+
+                foreach (var folder in searchFolders)
+                {
+                    try
+                    {
+                        result += CountFolder(authToken, query, folder.FolderId);
+                    }
+                    catch (Exception ex)
+                    {
+                    }
+                }
+            }
+            else
+            {
+                result = CountFolder(authToken, query, query.Folder);
+            }
+
+            return result;
         }
 
         public List<FolderItem> SearchDocusign(DocuSignAuthTokenDTO authToken, DocusignQuery query)
@@ -240,7 +322,12 @@ namespace terminalDocuSign.Services
 
         private void SearchFolder(DocuSignAuthTokenDTO authToken, DocusignQuery query, string folder, List<FolderItem> envelopes)
         {
-            envelopes.AddRange(_docuSignFolder.Search(authToken.Email, authToken.ApiPassword, query.SearchText, folder, query.Status == "<any>" ? null : query.Status, query.FromDate, query.ToDate));
+            envelopes.AddRange(_docuSignFolder.Search(authToken.Email, authToken.ApiPassword, query.SearchText, folder, query.Status == "<any>" ? null : query.Status, query.FromDate, query.ToDate, query.Conditions));
+        }
+
+        private int CountFolder(DocuSignAuthTokenDTO authToken, DocusignQuery query, string folder)
+        {
+            return _docuSignFolder.Count(authToken.Email, authToken.ApiPassword, query.SearchText, folder, query.Status == "<any>" ? null : query.Status, query.FromDate, query.ToDate);
         }
     }
 }
