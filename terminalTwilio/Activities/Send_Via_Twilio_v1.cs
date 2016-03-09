@@ -175,7 +175,6 @@ namespace terminalTwilio.Actions
                             hasError = true;
                         }
                     }
-
                     if (bodyControl != null)
                     {
                         var smsBody = bodyControl.TextValue;
