@@ -69,8 +69,7 @@ namespace terminalDocuSignTests.Integration
             }
 
             _solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "activities/configure?id=" + _solution.Id, _solution);
-            _crateStorage = Crate.FromDto(_solution.CrateStorage);
-            
+            _crateStorage = Crate.FromDto(_solution.CrateStorage);            
             Assert.AreEqual(2, _solution.ChildrenActivities.Count(), "Solution child activities failed to create.");
             Assert.True(_solution.ChildrenActivities.Any(a => a.Label == "Monitor DocuSign Envelope Activity" && a.Ordering == 1));
             Assert.True(_solution.ChildrenActivities.Any(a => a.Label == "Send DocuSign Envelope" && a.Ordering == 2));
