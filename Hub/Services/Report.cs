@@ -7,6 +7,7 @@ using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.States;
+using Data.Utility;
 using Hub.Interfaces;
 using StructureMap;
 using Utilities;
@@ -62,6 +63,7 @@ namespace Hub.Services
             //get the role id
             if (curAccountRoles.Any(x => x.RoleId == adminRoleId))
             curIncidents = uow.IncidentRepository.GetQuery()
+                .Take(20)
                 .OrderByDescending(i => i.CreateDate)
                 .Take(200).ToList();
             return curIncidents;
