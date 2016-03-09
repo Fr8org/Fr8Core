@@ -6207,6 +6207,10 @@ img.mfp-img {
 }
 
 
+.mdl-button--login {
+    color: #fff;
+    background-color: #EA3C53;
+}
 
 .mdl-button--raised {
   color: #fff;
