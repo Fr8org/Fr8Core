@@ -120,7 +120,7 @@ a.HomeRightSide.docusign-route-builder-header:active {
     margin-left: 140px;
     margin-right: 140px;
     font-family: Arial;
-    color: white;
+    color: #697882;
     margin-top: 50px;
 }
 
@@ -144,6 +144,7 @@ a.HomeRightSide.docusign-route-builder-header:active {
         font-size: 55px;
         font-weight: bold;
         margin-top: 10px;
+        color: #697882;
     }
 
 .docusing-pane p {
@@ -180,7 +181,7 @@ a.HomeRightSide.docusign-route-builder-header:active {
     }
 
 .HomePage .HomeRightSide {
-    background: url(../img/welcome/right-pane-bg.png)left top repeat;
+    background: #EFF3F8;
     float: right;
     width: 50%;
     padding: 40px 0;
