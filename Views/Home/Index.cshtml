@@ -116,9 +116,21 @@
                         </ul>
                     </li>
                     <li><a href="#contact">Contact</a></li>
-                    <li>
-                        <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect"><a class="try-now-btn" href="/Welcome">TRY IT NOW</a></button>
-                    </li>
+@if (!Request.IsAuthenticated)
+{
+    <li>
+        <button onclick="document.location = '#contact';" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect"><a class="try-now-btn" href="/Welcome">TRY IT NOW</a></button>
+    </li>
+    <li>
+        <button onclick="document.location = '/DockyardAccount';" class="mdl-button mdl-js-button mdl-button--login mdl-js-ripple-effect"><span class="try-now-btn">Login</span></button>
+    </li>
+}
+else
+{
+    <li>
+        <button onclick="document.location = '/dashboard#/myaccount';" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect"><span class="try-now-btn">My Account</span></button>
+    </li>
+}
                 </ul>
             </nav>
         </div>
