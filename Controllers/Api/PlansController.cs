@@ -282,7 +282,7 @@ namespace HubWeb.Controllers
                 if (activateDTO != null && activateDTO.ErrorMessage != string.Empty)
                     _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, activateDTO.ErrorMessage);
 
-                EventManager.OnPlanActivated(planId);
+                EventManager.PlanActivated(planId);
 
                 return Ok(activateDTO);
             }
@@ -303,7 +303,7 @@ namespace HubWeb.Controllers
         public async Task<IHttpActionResult> Deactivate(Guid planId)
         {
             string activityDTO = await _plan.Deactivate(planId);
-            EventManager.OnPlanDeactivated(planId);
+            EventManager.PlanDeactivated(planId);
             
             return Ok(activityDTO);
         }
@@ -422,7 +422,7 @@ namespace HubWeb.Controllers
                         var containerDTO = Mapper.Map<ContainerDTO>(containerDO);
                         containerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? PlanType.Ongoing : PlanType.RunOnce;
 
-                        EventManager.OnContainerExecutionCompleted(containerDO);
+                        EventManager.ContainerExecutionCompleted(containerDO);
 
                         return Ok(containerDTO);
                     }

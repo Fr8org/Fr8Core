@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace Data.Crates
@@ -26,6 +27,7 @@ namespace Data.Crates
             Type = type;
             Id = id;
         }
+
 
         /**********************************************************************************/
 

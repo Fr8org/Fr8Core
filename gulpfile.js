@@ -70,6 +70,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/services/ManageAuthTokenService.js',
         'Scripts/app/services/ManifestRegistryService.js',
         'Scripts/app/services/SolutionDocumentationService.js',
+        'Scripts/app/services/UpstreamExtractor.js',
         'Scripts/app/filters/RouteState.js',
         'Scripts/app/filters/ContainerState.js',
         'Scripts/app/filters/FilterByTag.js',

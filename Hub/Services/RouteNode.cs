@@ -83,6 +83,47 @@ namespace Hub.Services
             }
         }
 
+        public List<T> GetCrateManifestsByDirection<T>(
+            Guid activityId,
+            CrateDirection direction,
+            AvailabilityType availability) where T : Data.Interfaces.Manifests.Manifest
+        {
+            Func<FieldDTO, bool> fieldPredicate;
+            if (availability == AvailabilityType.NotSet)
+            {
+                fieldPredicate = (FieldDTO f) => true;
+            }
+            else
+            {
+                fieldPredicate = (FieldDTO f) => f.Availability == availability;
+            }
+
+            Func<Crate<T>, bool> cratePredicate;
+            if (availability == AvailabilityType.NotSet)
+            {
+                cratePredicate = (Crate<T> f) => true;
+            }
+            else
+            {
+                cratePredicate = (Crate<T> f) =>
+                {
+                    return f.Availability == availability;
+                };
+            }
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var activityDO = uow.PlanRepository.GetById<ActivityDO>(activityId);
+                var result = GetActivitiesByDirection(uow, direction, activityDO)
+                    .OfType<ActivityDO>()
+                    .SelectMany(x => _crate.GetStorage(x).CratesOfType<T>().Where(cratePredicate))
+                    .Select(x => x.Content)
+                    .ToList();
+
+                return result;
+            }
+        }
+
         public FieldDescriptionsCM GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability)
         {
             FieldDescriptionsCM mergedFields = new FieldDescriptionsCM();

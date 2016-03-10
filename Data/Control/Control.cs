@@ -412,6 +412,9 @@ namespace Data.Control
         [JsonProperty("filterByTag")]
         public string FilterByTag { get; set; }
 
+        [JsonProperty("requestUpstream")]
+        public bool RequestUpstream { get; set; }
+
         public FieldSourceDTO()
         {
         }
@@ -551,7 +554,9 @@ namespace Data.Control
 
         [JsonProperty("singleManifestOnly")]
         public bool SingleManifestOnly { get; set; }
-        
+
+        [JsonProperty("requestUpstream")]
+        public bool RequestUpstream { get; set; }
     }
 
     public class UpstreamFieldChooser : ControlDefinitionDTO
