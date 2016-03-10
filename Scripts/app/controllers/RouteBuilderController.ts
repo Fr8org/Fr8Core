@@ -36,6 +36,7 @@ module dockyard.controllers {
         mode: string;
         solutionName: string;
         curAggReloadingActions: Array<string>;
+        addSubPlan: () => void;
     }
 
 
@@ -66,7 +67,8 @@ module dockyard.controllers {
             'LayoutService',
             '$modal',
             'AuthService',
-            'ConfigureTrackerService'
+            'ConfigureTrackerService',
+            'SubPlanService'
         ];
 
         private _longRunningActionsCounter: number;
@@ -87,7 +89,8 @@ module dockyard.controllers {
             private LayoutService: services.ILayoutService,
             private $modal: any,
             private AuthService: services.AuthService,
-            private ConfigureTrackerService: services.ConfigureTrackerService
+            private ConfigureTrackerService: services.ConfigureTrackerService,
+            private SubPlanService: services.ISubPlanService
             ) {
 
             this.$scope.current = new model.RouteBuilderState();
@@ -108,6 +111,7 @@ module dockyard.controllers {
             this._longRunningActionsCounter = 0;
 
             $scope.deleteAction = <() => void>angular.bind(this, this.deleteAction);
+            $scope.addSubPlan = <() => void> angular.bind(this, this.addSubPlan);
             $scope.reConfigureAction = (action: model.ActivityDTO) => {
                 var actionsArray = new Array<model.ActivityDTO>();
                 actionsArray.push(action);
@@ -204,6 +208,19 @@ module dockyard.controllers {
 
         private stopLoader() {
             this._loading = false;
+        }
+
+        private addSubPlan() {
+            var currentRoute = this.$scope.current.route;
+            
+            var newSubPlan = new model.SubrouteDTO(null, true, currentRoute.id, "SubPlan-" + currentRoute.subroutes.length);
+            
+            this.SubPlanService.create(newSubPlan).$promise.then((createdSubPlan: model.SubrouteDTO) => {
+                createdSubPlan.activities = [];
+                createdSubPlan.criteria = null;
+                currentRoute.subroutes.push(createdSubPlan);
+                this.renderRoute(<interfaces.IRouteVM>currentRoute);
+            });
         }
 
         //re-orders actions according to their position on array
