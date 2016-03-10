@@ -6,16 +6,15 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Newtonsoft.Json;
 using Data.Control;
-using Data.Crates;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Hub.Managers;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services;
-using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using Data.Constants;
+using Data.Crates;
 using Utilities;
 
 namespace terminalDocuSign.Actions
@@ -119,6 +118,33 @@ namespace terminalDocuSign.Actions
             return curActivityDO;
         }
 
+        protected override bool ActivityIsValid(ActivityDO curActivityDO, out string errorMessage)
+        {
+            errorMessage = string.Empty;
+            var errorMessages = new List<string>();
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            {
+                var configControls = GetConfigurationControls(crateStorage);
+                if (configControls == null)
+                {
+                    errorMessage = "Controls are not configured properly";
+                    return false;
+                }
+                var templateList = configControls.Controls.OfType<DropDownList>().FirstOrDefault();
+                if (string.IsNullOrEmpty(templateList?.selectedKey))
+                {
+                    errorMessages.Add("Template is not selected");
+                }
+                var fileNameTextBox = configControls.Controls.OfType<TextBox>().FirstOrDefault();
+                if (string.IsNullOrWhiteSpace(fileNameTextBox?.Value))
+                {
+                    errorMessages.Add("File name is not specified");
+                }
+                errorMessage = string.Join(Environment.NewLine, errorMessages);
+                return errorMessages.Count == 0;
+            }
+        }
+
         private async Task<ActivityDO> CreateGetDocuSignTemplateActivity(ActivityTemplateDTO template, AuthorizationTokenDO authTokenDO, ActivityDO parentAction)
         {
             var activity = await HubCommunicator.CreateAndConfigureActivity(template.Id, CurrentFr8UserId, "Get Docusign Template", 1, parentAction.Id, false, authTokenDO.Id);
@@ -195,7 +221,9 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        protected override string ActivityUserFriendlyName => SolutionName;
+
+        protected override async Task<PayloadDTO> RunInternal(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             return Success(await GetPayload(curActivityDO, containerId));
         }

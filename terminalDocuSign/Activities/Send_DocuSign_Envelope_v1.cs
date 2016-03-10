@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DocuSign.Integrations.Client;
 using Newtonsoft.Json;
-using Data.Interfaces;
 using Data.Constants;
 using Data.Control;
 using Data.Crates;
@@ -13,18 +11,10 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Managers;
-using Utilities;
 using terminalDocuSign.DataTransferObjects;
-using terminalDocuSign.Infrastructure;
-using terminalDocuSign.Interfaces;
 using terminalDocuSign.Services;
-using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using TerminalBase.Infrastructure.Behaviors;
-using Newtonsoft.Json.Linq;
-using NUnit.Framework.Constraints;
-using Envelope = DocuSign.Integrations.Client.Envelope;
-using TemplateRole = DocuSign.Integrations.Client.TemplateRole;
 using terminalDocuSign.Services.New_Api;
 
 namespace terminalDocuSign.Actions
@@ -32,9 +22,6 @@ namespace terminalDocuSign.Actions
     public class Send_DocuSign_Envelope_v1 : BaseDocuSignActivity
     {
         private DocuSignManager _docuSignManager = new DocuSignManager();
-        public Send_DocuSign_Envelope_v1()
-        {
-        }
 
         public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
@@ -43,15 +30,11 @@ namespace terminalDocuSign.Actions
             return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
         }
 
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        protected override string ActivityUserFriendlyName => "Send DocuSign Envelope";
+
+        protected override async Task<PayloadDTO> RunInternal(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payloadCrates = await GetPayload(curActivityDO, containerId);
-
-            if (NeedsAuthentication(authTokenDO))
-            {
-                return NeedsAuthenticationError(payloadCrates);
-            }
-
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
             var loginInfo = DocuSignService.Login(docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
 
@@ -88,6 +71,7 @@ namespace terminalDocuSign.Actions
                 {
                     DocuSignService.SendAnEnvelopeFromTemplate(loginInfo, rolesList, fieldList, curTemplateId);
                 }
+                //TODO: log this exception
                 catch
                 {
                     return Error(payloadCrates, "Couldn't send an envelope");
@@ -370,6 +354,32 @@ namespace terminalDocuSign.Actions
             return await Task.FromResult(curActivityDO);
         }
 
+        protected override bool ActivityIsValid(ActivityDO curActivityDO, out string errorMessage)
+        {
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            {
+                var configControls = GetConfigurationControls(crateStorage);
+                if (configControls == null)
+                {
+                    errorMessage = "Controls are not configured properly";
+                    return false;
+                }
+                var templateList = configControls.Controls.OfType<DropDownList>().FirstOrDefault();
+                if (templateList?.ListItems.Count == 0)
+                {
+                    errorMessage = "Please link at least one template to your DocuSign account";
+                    return false;
+                }
+                if (string.IsNullOrEmpty(templateList?.selectedKey))
+                {
+                    errorMessage = "Template is not selected";
+                    return false;
+                }
+                errorMessage = string.Empty;
+                return true;
+            }
+        }
+
         private Crate CreateDocusignTemplateConfigurationControls(ActivityDO curActivityDO)
         {
             var fieldSelectDocusignTemplateDTO = new DropDownList()
@@ -379,7 +389,7 @@ namespace terminalDocuSign.Actions
                 Required = true,
                 Events = new List<ControlEvent>()
                 {
-                     new ControlEvent("onChange", "requestConfig")
+                     ControlEvent.RequestConfig
                 },
                 Source = null
             };

@@ -124,6 +124,10 @@ namespace terminalDocuSign.Services
             if (control != null)
             {
                 control.ListItems = GetDocuSignTemplates(authToken);
+                if (control.ListItems.Count == 0)
+                {
+                    control.ErrorMessage = "Please link at least one template to your DocuSign account";
+                }
             }
         }
 

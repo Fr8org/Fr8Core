@@ -1,4 +1,3 @@
-using Data.Constants;
 using Data.Entities;
 using TerminalBase.Infrastructure;
 using System;
@@ -96,24 +95,13 @@ namespace terminalDocuSign.Actions
         public override Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             string errorMessage;
-            ValidateActivity(curActivityDO, out errorMessage);
+            ActivityIsValid(curActivityDO, out errorMessage);
             //create DocuSign account, publish URL and other user selected options
             bool youSent, someoneReceived, recipientSigned;
             GetUserSelectedEnvelopeEvents(curActivityDO, out youSent, out someoneReceived, out recipientSigned);
             //create or update the DocuSign connect profile configuration
             CreateOrUpdateDocuSignConnectConfiguration(youSent, someoneReceived, recipientSigned);
             return Task.FromResult(curActivityDO);
-        }
-
-        protected override async Task<ICrateStorage> ValidateActivity(ActivityDO curActivityDO)
-        {
-            string errorMessage;
-            if (ValidateActivity(curActivityDO, out errorMessage))
-            {
-                return await Task.FromResult<ICrateStorage>(null);
-            }
-            return await Task.FromResult(new CrateStorage(Crate<FieldDescriptionsCM>.FromContent("Validation Errors",
-                                                                                                 new FieldDescriptionsCM(new FieldDTO("Error Message", errorMessage)))));
         }
 
         /// <summary>
@@ -134,16 +122,15 @@ namespace terminalDocuSign.Actions
             return null;
         }
 
-        private bool ValidateActivity(ActivityDO curActivityDO, out string errorMessage)
+        protected  override bool ActivityIsValid(ActivityDO curActivityDO, out string errorMessage)
         {
             var errorMessages = new List<string>();
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 var configControls = GetConfigurationControls(crateStorage);
-
                 if (configControls == null)
                 {
-                    errorMessage = "Monitor DocuSign Activity doesn't contain crate with configuration controls";
+                    errorMessage = "Controls are not configured properly";
                     return false;
                 }
                 if (!AtLeastOneNotificationIsSelected(configControls, out errorMessage))
@@ -175,13 +162,13 @@ namespace terminalDocuSign.Actions
                 {
                     errorMessages.Add(errorMessage);
                 }
-                if (errorMessages.Count > 0)
-                {
-                    errorMessage = string.Join(Environment.NewLine, errorMessages);
-                }
+                errorMessage = string.Join(Environment.NewLine, errorMessages);
             }
             return errorMessages.Count == 0;
         }
+
+        protected override string ActivityUserFriendlyName => "Monitor DocuSign Envelope Activity";
+
         private bool TemplateIsSelected(StandardConfigurationControlsCM configControls, out string errorMessage)
         {
             var templateList = GetTemplateRadioOption(configControls)
@@ -208,7 +195,7 @@ namespace terminalDocuSign.Actions
         }
         private bool RecipientIsSet(StandardConfigurationControlsCM configControls, out string errorMessage)
         {
-            //TODO: set TextBox.ErrorMessage when it will be fixed on front-end side
+            //TODO: set TextBox.ErrorMessage when it will be fixed on front-end side (FR-2586)
             var recipientTextBox = GetRecipientRadioOption(configControls)
                 .Controls
                 .First();
@@ -305,18 +292,9 @@ namespace terminalDocuSign.Actions
             return Task.FromResult(curActivityDO);
         }
 
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        protected override async Task<PayloadDTO> RunInternal(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payloadCrates = await GetPayload(curActivityDO, containerId);
-            if (NeedsAuthentication(authTokenDO))
-            {
-                return NeedsAuthenticationError(payloadCrates);
-            }
-            string errorMessage;
-            if (!ValidateActivity(curActivityDO, out errorMessage))
-            {
-                return Error(payloadCrates, $"Could not run Monitor DocuSign Envelope Activity because of the below issues{Environment.NewLine}{errorMessage}", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
-            }
             //get currently selected option and its value
             string curSelectedOption, curSelectedValue, curSelectedTemplate;
             GetTemplateRecipientPickerValue(curActivityDO, out curSelectedOption, out curSelectedValue, out curSelectedTemplate);
@@ -388,17 +366,15 @@ namespace terminalDocuSign.Actions
                     }
                 }
             };
-
-
-
+            
             using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
             {
-                crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(fields)));
-                crateStorage.Add(Data.Crates.Crate.FromContent("Log Messages", logMessages));
+                crateStorage.Add(Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(fields)));
+                crateStorage.Add(Crate.FromContent("Log Messages", logMessages));
                 if (curSelectedOption == "template")
                 {
                     var userDefinedFieldsPayload = _docuSignManager.CreateActivityPayload(curActivityDO, authTokenDO, envelopeId, curSelectedValue);
-                    crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Data", userDefinedFieldsPayload));
+                    crateStorage.Add(Crate.FromContent("DocuSign Envelope Data", userDefinedFieldsPayload));
                 }
             }
 
@@ -435,7 +411,6 @@ namespace terminalDocuSign.Actions
                 GetTemplateRecipientPickerValue(curActivityDO, out selectedOption, out selectedValue, out selectedTemplate);
                 _docuSignManager.UpdateUserDefinedFields(curActivityDO, authTokenDO, crateStorage, selectedValue);
             }
-
             return Task.FromResult(curActivityDO);
         }
 

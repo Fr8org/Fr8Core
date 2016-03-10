@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Data.Constants;
 using Data.Control;
@@ -77,31 +78,37 @@ namespace terminalDocuSign.Actions
                 crateStorage.ReplaceByLabel(upstreamFieldsCrate);
 
                 var control = FindControl(CrateManager.GetStorage(curActivityDO), "EnvelopeIdSelector");
-                string envelopeId = GetEnvelopeId(control as TextSource, authTokenDO);
-                int fieldsCount = _docuSignManager.UpdateUserDefinedFields(curActivityDO, authTokenDO, crateStorage, envelopeId);
+                var envelopeId = GetEnvelopeId(control as TextSource);
+                var fieldsCount = _docuSignManager.UpdateUserDefinedFields(curActivityDO, authTokenDO, crateStorage, envelopeId);
             }
             return await Task.FromResult(curActivityDO);
         }
 
-        public async Task<PayloadDTO> Run(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        protected override string ActivityUserFriendlyName => "Get DocuSign Envelope";
+
+        protected override bool ActivityIsValid(ActivityDO curActivityDO, out string errorMessage)
+        {
+            errorMessage = string.Empty;
+            var control = FindControl(CrateManager.GetStorage(curActivityDO), "EnvelopeIdSelector");
+            var envelopeId = GetEnvelopeId(control as TextSource);
+            errorMessage = string.IsNullOrEmpty(envelopeId) ? "Envelope Id is not set" : string.Empty;
+            return string.IsNullOrEmpty(errorMessage);
+        }
+
+        protected override async Task<PayloadDTO> RunInternal(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payloadCrates = await GetPayload(activityDO, containerId);
             var payloadCrateStorage = CrateManager.GetStorage(payloadCrates);
-            if (NeedsAuthentication(authTokenDO))
-            {
-                return NeedsAuthenticationError(payloadCrates);
-            }
-
             //Get envlopeId from configuration
             var control = (TextSource)FindControl(CrateManager.GetStorage(activityDO), "EnvelopeIdSelector");
-            string envelopeId = GetEnvelopeId(control, authTokenDO);
+            string envelopeId = GetEnvelopeId(control);
             // if it's not valid, try to search upstream runtime values
             if (!envelopeId.IsGuid())
                 envelopeId = control.GetValue(payloadCrateStorage);
 
             if (string.IsNullOrEmpty(envelopeId))
             {
-                return Error(payloadCrates, "EnvelopeId", ActivityErrorCode.PAYLOAD_DATA_MISSING);
+                return Error(payloadCrates, "EnvelopeId is not set", ActivityErrorCode.PAYLOAD_DATA_MISSING);
             }
 
             using (var crateStorage = CrateManager.UpdateStorage(() => payloadCrates.CrateStorage))
@@ -109,21 +116,20 @@ namespace terminalDocuSign.Actions
 
                 // This has to be re-thinked. TemplateId is neccessary to retrieve fields but is unknown atm
                 // Perhaps it can be received by EnvelopeId
-                crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Data", _docuSignManager.CreateActivityPayload(activityDO, authTokenDO, envelopeId, null)));
+                crateStorage.Add(Crate.FromContent("DocuSign Envelope Data", _docuSignManager.CreateActivityPayload(activityDO, authTokenDO, envelopeId, null)));
             }
 
             return Success(payloadCrates);
         }
 
-        private string GetEnvelopeId(ControlDefinitionDTO control, AuthorizationTokenDO authTokenDo)
+        private string GetEnvelopeId(ControlDefinitionDTO control)
         {
-            string envelopeId = null;
             var textSource = (TextSource)control;
             if (textSource.ValueSource == null)
+            {
                 return null;
-
-            envelopeId = textSource.ValueSource == "specific" ? textSource.TextValue : textSource.Value;
-            return envelopeId;
+            }
+            return textSource.ValueSource == "specific" ? textSource.TextValue : textSource.Value;
         }
     }
 }
