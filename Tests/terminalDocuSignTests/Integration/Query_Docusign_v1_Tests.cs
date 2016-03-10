@@ -39,7 +39,7 @@ namespace terminalDocuSignTests.Integration
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var dataDTO = HealthMonitor_FixtureData.Query_DocuSign_v1_InitialConfiguration_Fr8DataDTO();
+            var dataDTO = HealthMonitor_FixtureData.Query_DocuSign_v1_InitialConfiguration_Fr8DataDTO(this);
 
             dataDTO.ActivityDTO.AuthToken = null;
 
@@ -62,7 +62,7 @@ namespace terminalDocuSignTests.Integration
         {
             var runUrl = GetTerminalRunUrl();
 
-            var dataDTO = HealthMonitor_FixtureData.Query_DocuSign_v1_InitialConfiguration_Fr8DataDTO();
+            var dataDTO = HealthMonitor_FixtureData.Query_DocuSign_v1_InitialConfiguration_Fr8DataDTO(this);
             dataDTO.ActivityDTO.AuthToken = null;
             dataDTO.ActivityDTO.CrateStorage = Crate.ToDto(CreateConfiguredStorage());
 
@@ -82,8 +82,8 @@ namespace terminalDocuSignTests.Integration
         {
             var runUrl = GetTerminalRunUrl();
 
-            var dataDTO = HealthMonitor_FixtureData.Query_DocuSign_v1_InitialConfiguration_Fr8DataDTO();
-            dataDTO.ActivityDTO.AuthToken = HealthMonitor_FixtureData.DocuSign_AuthToken();
+            var dataDTO = HealthMonitor_FixtureData.Query_DocuSign_v1_InitialConfiguration_Fr8DataDTO(this);
+            dataDTO.ActivityDTO.AuthToken = HealthMonitor_FixtureData.DocuSign_AuthToken(this);
 
             await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
         }
@@ -95,7 +95,7 @@ namespace terminalDocuSignTests.Integration
             var configureUrl = GetTerminalActivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = HealthMonitor_FixtureData.Query_DocuSign_v1_InitialConfiguration_Fr8DataDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Query_DocuSign_v1_InitialConfiguration_Fr8DataDTO(this);
 
             //Act
             var responseActionDTO =
@@ -116,7 +116,7 @@ namespace terminalDocuSignTests.Integration
             var configureUrl = GetTerminalDeactivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = HealthMonitor_FixtureData.Query_DocuSign_v1_InitialConfiguration_Fr8DataDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Query_DocuSign_v1_InitialConfiguration_Fr8DataDTO(this);
 
             //Act
             var responseActionDTO =

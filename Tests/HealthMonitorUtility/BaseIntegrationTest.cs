@@ -51,7 +51,7 @@ namespace HealthMonitor.Utility
         {
             get
             {
-                return _terminalUrl ?? (_terminalUrl = GetTerminalUrl());
+                return _terminalUrl ?? (_terminalUrl = GetTerminalUrlInternally());
             }
         }
 
@@ -63,12 +63,12 @@ namespace HealthMonitor.Utility
             Crate = new CrateManager();
         }
 
-        private string GetTerminalUrl()
+        private string GetTerminalUrlInternally()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 return "http://" + uow.TerminalRepository.GetQuery()
-                    .FirstOrDefault(t => t.Version == currentTerminalVersion.ToString() 
+                    .FirstOrDefault(t => t.Version == currentTerminalVersion.ToString()
                         && t.Name == TerminalName).Endpoint;
             }
         }
@@ -100,6 +100,12 @@ namespace HealthMonitor.Utility
         {
             return TerminalUrl + "/activities/run";
         }
+
+        public string GetTerminalUrl()
+        {
+            return TerminalUrl;
+        }
+        
 
         public void CheckIfPayloadHasNeedsAuthenticationError(PayloadDTO payload)
         {

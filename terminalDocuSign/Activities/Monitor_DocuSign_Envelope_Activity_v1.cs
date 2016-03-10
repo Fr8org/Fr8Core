@@ -358,7 +358,8 @@ namespace terminalDocuSign.Actions
                 UpdateSelectedEvents(crateStorage);
                 string selectedOption, selectedValue, selectedTemplate;
                 GetTemplateRecipientPickerValue(curActivityDO, out selectedOption, out selectedValue, out selectedTemplate);
-                AddOrUpdateUserDefinedFields(curActivityDO, authTokenDO, crateStorage, selectedValue);
+                if (selectedOption == "template")
+                    AddOrUpdateUserDefinedFields(curActivityDO, authTokenDO, crateStorage, selectedValue);
             }
 
             return Task.FromResult<ActivityDO>(curActivityDO);
