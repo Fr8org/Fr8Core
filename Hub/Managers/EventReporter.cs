@@ -83,12 +83,12 @@ namespace Hub.Managers
             EventManager.EventAuthTokenCreated += AuthTokenCreated;
             EventManager.EventAuthTokenRemoved += AuthTokenRemoved;
 
-            EventManager.PlanActivated += OnPlanActivated;
-            EventManager.PlanDeactivated += OnPlanDeactivated;
-            EventManager.ContainerExecutionCompleted += OnContainerExecutionCompleted;
-            EventManager.ActivityRunRequested += OnActivityRunRequested;
-            EventManager.ActivityResponseReceived += OnActivityResponseReceived;
-            EventManager.ProcessingTerminatedPerActivityResponse += OnProcessingTerminatedPerActivityResponse;
+            EventManager.EventPlanActivated += PlanActivated;
+            EventManager.EventPlanDeactivated += PlanDeactivated;
+            EventManager.EventContainerExecutionCompleted += ContainerExecutionCompleted;
+            EventManager.EventActivityRunRequested += ActivityRunRequested;
+            EventManager.EventActivityResponseReceived += ActivityResponseReceived;
+            EventManager.EventProcessingTerminatedPerActivityResponse += ProcessingTerminatedPerActivityResponse;
         }
 
         public void UnsubscribeFromAlerts()
@@ -134,16 +134,16 @@ namespace Hub.Managers
             EventManager.EventAuthTokenCreated -= AuthTokenCreated;
             EventManager.EventAuthTokenRemoved -= AuthTokenRemoved;
 
-            EventManager.PlanActivated -= OnPlanActivated;
-            EventManager.PlanDeactivated -= OnPlanDeactivated;
-            EventManager.ContainerExecutionCompleted -= OnContainerExecutionCompleted;
-            EventManager.ActivityRunRequested -= OnActivityRunRequested;
-            EventManager.ActivityResponseReceived -= OnActivityResponseReceived;
-            EventManager.ProcessingTerminatedPerActivityResponse -= OnProcessingTerminatedPerActivityResponse;
+            EventManager.EventPlanActivated -= PlanActivated;
+            EventManager.EventPlanDeactivated -= PlanDeactivated;
+            EventManager.EventContainerExecutionCompleted -= ContainerExecutionCompleted;
+            EventManager.EventActivityRunRequested -= ActivityRunRequested;
+            EventManager.EventActivityResponseReceived -= ActivityResponseReceived;
+            EventManager.EventProcessingTerminatedPerActivityResponse -= ProcessingTerminatedPerActivityResponse;
 
         }
 
-        private void OnActivityResponseReceived(ActivityDO activityDo, ActivityResponse responseType)
+        private void ActivityResponseReceived(ActivityDO activityDo, ActivityResponse responseType)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -168,7 +168,7 @@ namespace Hub.Managers
             }
         }
 
-        private void OnActivityRunRequested(ActivityDO activityDo)
+        private void ActivityRunRequested(ActivityDO activityDo)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -194,7 +194,7 @@ namespace Hub.Managers
             }
         }
 
-        private void OnContainerExecutionCompleted(ContainerDO containerDO)
+        private void ContainerExecutionCompleted(ContainerDO containerDO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -237,7 +237,7 @@ namespace Hub.Managers
             return factDO;
         }
 
-        private void OnPlanDeactivated(Guid planId)
+        private void PlanDeactivated(Guid planId)
         {
             using (var uowFact = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -255,7 +255,7 @@ namespace Hub.Managers
             }
         }
 
-        private void OnPlanActivated(Guid planId)
+        private void PlanActivated(Guid planId)
         {
             using (var uowFact = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -273,7 +273,7 @@ namespace Hub.Managers
             }
         }
 
-        private void OnProcessingTerminatedPerActivityResponse(ContainerDO containerDO, ActivityResponse resposneType)
+        private void ProcessingTerminatedPerActivityResponse(ContainerDO containerDO, ActivityResponse resposneType)
         {
             using (var uowFact = ObjectFactory.GetInstance<IUnitOfWork>())
             {
