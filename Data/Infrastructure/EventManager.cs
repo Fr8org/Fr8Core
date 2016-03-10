@@ -212,7 +212,7 @@ namespace Data.Infrastructure
             if (handler != null) handler(containerDO);
         }
 
-        public static void ActivityRunRequested(ActivityDO activityDo)
+        public static void ActivityRunRequested(ActivityDO activityDo, ContainerDO containerDO)
         {
             var handler = EventActivityRunRequested;
             if (handler != null) handler(activityDo, containerDO);

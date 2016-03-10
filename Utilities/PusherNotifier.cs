@@ -1,4 +1,5 @@
-﻿using PusherServer;
+﻿using System;
+using PusherServer;
 using Utilities.Configuration.Azure;
 using Utilities.Interfaces;
 
@@ -23,6 +24,10 @@ namespace Utilities
                         Encrypted = true
                     }
                 );
+            }
+            else
+            {
+                throw new Exception("Settings for pusher notifier not provided. Failed initializing Pusher.");
             }
         }
 

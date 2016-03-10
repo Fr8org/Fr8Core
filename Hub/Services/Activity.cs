@@ -417,7 +417,7 @@ namespace Hub.Services
             try
             {
                 var actionName = curActionState == ActivityState.InitialRun ? "Run" : "ExecuteChildActivities";
-                EventManager.ActivityRunRequested(curActivityDO);
+                EventManager.ActivityRunRequested(curActivityDO, curContainerDO);
 
                 var payloadDTO = await CallTerminalActivityAsync<PayloadDTO>(uow, actionName, curActivityDO, curContainerDO.Id);
 

@@ -169,42 +169,49 @@ namespace Hub.Managers
             }
         }
 
-        private void ActivityRunRequested(ActivityDO activityDo)
+        private void ActivityRunRequested(ActivityDO activityDo, ContainerDO containerDO)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            try
             {
-                var template = _activityTemplate.GetByKey(activityDo.ActivityTemplateId);
-
-                var factDO = new FactDO()
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    PrimaryCategory = "Container",
-                    SecondaryCategory = "Activity",
-                    Activity = "Process Execution",
-                    Status = "Activity Execution Initiating",
-                    ObjectId = activityDo.Id.ToString(),
-                    CustomerId = _security.GetCurrentUser(),
-                    CreatedByID = _security.GetCurrentUser(),
-                    Data = string.Join(
-                        Environment.NewLine,
-                        "Activity Name: " + template?.Name
-                    )
-                };
+                    var template = _activityTemplate.GetByKey(activityDo.ActivityTemplateId);
 
-                uow.FactRepository.Add(factDO);
-                uow.SaveChanges();
+                    var factDO = new FactDO()
+                    {
+                        PrimaryCategory = "Container",
+                        SecondaryCategory = "Activity",
+                        Activity = "Process Execution",
+                        Status = "Activity Execution Initiating",
+                        ObjectId = activityDo.Id.ToString(),
+                        CustomerId = _security.GetCurrentUser(),
+                        CreatedByID = _security.GetCurrentUser(),
+                        Data = string.Join(
+                            Environment.NewLine,
+                            "Activity Name: " + template?.Name
+                        )
+                    };
+
+                    uow.FactRepository.Add(factDO);
+                    uow.SaveChanges();
+                }
+
+                //create user notifications
+                var pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
+
+                string pusherChannel = string.Format("fr8pusher_{0}", activityDo.Fr8Account.UserName);
+                pusherNotifier.Notify(pusherChannel, "fr8pusher_activity_execution_info",
+                    new
+                    {
+                        ActivityName = activityDo.Label,
+                        PlanName = containerDO.Name,
+                        ContainerId = containerDO.Id.ToString(),
+                    });
             }
-
-            //create user notifications
-            var pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
-
-            string pusherChannel = string.Format("fr8pusher_{0}", activityDo.Fr8Account.UserName);
-            pusherNotifier.Notify(pusherChannel, "fr8pusher_activity_execution_info",
-                new
-                {
-                    ActivityName = activityDo.Label,
-                    PlanName = containerDO.Name,
-                    ContainerId = containerDO.Id.ToString(),
-                });
+            catch (Exception exception)
+            {
+                EventManager.UnexpectedError(exception);
+            }
         }
 
         private void ContainerExecutionCompleted(ContainerDO containerDO)
