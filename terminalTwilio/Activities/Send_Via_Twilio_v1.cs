@@ -78,26 +78,6 @@ namespace terminalTwilio.Actions
             return _twilio.GetRegisteredSenderNumbers().Select(number => new FieldDTO() { Key = number, Value = number }).ToList();
         }
 
-        /*
-        private Crate GetAvailableDataFields(ActionDO curActivityDO)
-        {
-            Crate crate;
-
-            var curUpstreamFields = GetRegisteredSenderNumbersData().ToArray();
-
-            if (curUpstreamFields.Length == 0)
-            {
-                crate = PackCrate_ErrorTextBox("Error_NoUpstreamLists", "No Upstream fr8 Lists Were Found.");
-                curActivityDO.currentView = "Error_NoUpstreamLists";
-            }
-            else
-            {
-                crate = Crate.CreateDesignTimeFieldsCrate("Available Fields", curUpstreamFields);
-            }
-
-            ////return crate;
-        }*/
-
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
@@ -172,24 +152,6 @@ namespace terminalTwilio.Actions
 
             return new FieldDTO(smsNumber, smsBody);
         }
-
-        //private string GetSMSNumber(RadioButtonGroup radioButtonGroupControl)
-        //{
-        //    string smsNumber = "";
-
-        //    var radioOptionSpecific = radioButtonGroupControl.Radios.Where(r => r.Controls.Where(c => c.Name == "SMS_Number").Count() > 0).FirstOrDefault();
-
-        //    if (radioOptionSpecific.Selected) 
-        //    {
-        //        smsNumber = radioButtonGroupControl.Radios.SelectMany(s => s.Controls).Where(c => c.Name == "SMS_Number").Select(v => v.Value).FirstOrDefault();
-        //    }
-        //    else
-        //    {
-        //        smsNumber = radioButtonGroupControl.Radios.SelectMany(s => s.Controls).Where(c => c.Name == "upstream_crate").Select(v => v.Value).FirstOrDefault();
-        //    }
-
-        //    return smsNumber;
-        //}
 
         private string GetSMSNumber(TextSource control, ICrateStorage payloadCrates)
         {

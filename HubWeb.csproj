@@ -844,6 +844,8 @@
     <Content Include="Content\css\fonts\fontawesome-webfont.ttf" />
     <Content Include="Content\css\fonts\fontawesome-webfont.woff" />
     <Content Include="Content\css\fonts\fontawesome-webfont.woff2" />
+    <Content Include="Content\videos\motion.ogv" />
+    <Content Include="Content\videos\motion.webm" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
     <Content Include="Scripts\templateCache.js" />
@@ -894,6 +896,7 @@
     <TypeScriptCompile Include="Scripts\app\services\FileDetailsService.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\ISolutionDocumentationService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\SolutionDocumentationService.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\UpstreamExtractor.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\UpstreamFieldChooser.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\filters\FilterByTagTests.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\TerminalFormController.ts" />
