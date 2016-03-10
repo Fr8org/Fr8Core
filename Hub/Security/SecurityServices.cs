@@ -20,14 +20,14 @@ namespace Hub.Security
 {
     internal class SecurityServices : ISecurityServices
     {
-        public void Login(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO)
+        public void Login(IUnitOfWork uow, Fr8AccountDO fr8AccountDO)
         {
-            ClaimsIdentity identity = GetIdentity(uow, dockyardAccountDO);
+            ClaimsIdentity identity = GetIdentity(uow, fr8AccountDO);
             HttpContext.Current.GetOwinContext().Authentication.SignIn(new AuthenticationProperties
             {
                 IsPersistent = true
             }, identity);
-            ObjectFactory.GetInstance<ITracker>().Identify(dockyardAccountDO);
+            ObjectFactory.GetInstance<ITracker>().Identify(fr8AccountDO);
         }
 
         public Fr8AccountDO GetCurrentAccount(IUnitOfWork uow)
@@ -82,11 +82,11 @@ namespace Hub.Security
             HttpContext.Current.GetOwinContext().Authentication.SignOut();
         }
 
-        public ClaimsIdentity GetIdentity(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO)
+        public ClaimsIdentity GetIdentity(IUnitOfWork uow, Fr8AccountDO fr8AccountDO)
         {
             var um = new DockyardIdentityManager(uow);
-            var identity = um.CreateIdentity(dockyardAccountDO, DefaultAuthenticationTypes.ApplicationCookie);
-            foreach (var roleId in dockyardAccountDO.Roles.Select(r => r.RoleId))
+            var identity = um.CreateIdentity(fr8AccountDO, DefaultAuthenticationTypes.ApplicationCookie);
+            foreach (var roleId in fr8AccountDO.Roles.Select(r => r.RoleId))
             {
                 var role = uow.AspNetRolesRepository.GetByKey(roleId);
                 identity.AddClaim(new Claim(ClaimTypes.Role, role.Name));

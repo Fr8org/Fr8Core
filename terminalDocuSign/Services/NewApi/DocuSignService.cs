@@ -118,8 +118,11 @@ namespace terminalDocuSign.Services.New_Api
                                 corresponding_field = fields.Where(a => a.Key.Contains(tab.Property("groupName").Value.ToString())).FirstOrDefault();
                                 if (corresponding_field == null)
                                     break;
-                                int index = Convert.ToInt32(corresponding_field.Value);
-                                tab["radios"].ElementAt(index)["selected"] = "true";
+                                tab["radios"].Where(a => a["value"].ToString() == corresponding_field.Value).FirstOrDefault()["selected"] = "true";
+                                foreach (var radioItem in tab["radios"].Where(a => a["value"].ToString() != corresponding_field.Value).ToList())
+                                {
+                                    radioItem["selected"] = "false";
+                                }
                                 break;
 
                             case "listTabs":

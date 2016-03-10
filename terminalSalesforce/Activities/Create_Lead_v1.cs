@@ -1,20 +1,16 @@
 ﻿using System.Linq;
-using System.Reflection;
 using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
-using Data.States;
-using ServiceStack;
 using terminalSalesforce.Infrastructure;
 using System.Threading.Tasks;
 using Data.Interfaces.Manifests;
 using Hub.Managers;
 using terminalSalesforce.Services;
-using TerminalBase.Infrastructure;
-using System.Collections.Generic;
+using TerminalBase.Infrastructure;        
 using Data.Entities;
 using TerminalBase.BaseClasses;
 using System;
-using Data.Control;
+using Data.Control;                       
 
 namespace terminalSalesforce.Actions
 {
@@ -107,8 +103,8 @@ namespace terminalSalesforce.Actions
             }
 
             var lead = _salesforce.CreateSalesforceDTO<LeadDTO>(curActivityDO, payloadCrates, ExtractSpecificOrUpstreamValue);
-            bool result = await _salesforce.CreateObject(lead, "Lead", _salesforce.CreateForceClient(authTokenDO));
-
+            bool result = await _salesforce.CreateObject(lead, "Lead", authTokenDO);
+            
             if (result)
             {
                 return Success(payloadCrates);

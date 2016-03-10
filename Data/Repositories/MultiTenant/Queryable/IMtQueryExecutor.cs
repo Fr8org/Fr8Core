@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Data.Interfaces.Manifests;
 
-namespace Data.Repositories
+namespace Data.Repositories.MultiTenant.Queryable
 {
     // An entity that is capable of executing queries represented by the given IMtQueryable
     public interface IMtQueryExecutor<T>

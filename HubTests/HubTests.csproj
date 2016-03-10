@@ -36,6 +36,15 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dev|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Dev\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
@@ -97,6 +106,8 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Fixtures\ActivityResponseFixtureData.cs" />
+    <Compile Include="Fixtures\ContainerResponseFixtureData.cs" />
     <Compile Include="Integration\ReportControllerTest.cs" />
     <Compile Include="Managers\CrateManagerTests.cs" />
     <Compile Include="Managers\CrateManagerTests.Fixtures.cs" />
@@ -104,6 +115,7 @@
     <Compile Include="ManifestDiscoveryTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\AuthorizationTests.cs" />
+    <Compile Include="Services\ContainerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Data\Data.csproj">

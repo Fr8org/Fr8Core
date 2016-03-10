@@ -24,17 +24,11 @@ namespace terminalDocuSign.Services
     /// </summary>
     public class DocuSignRoute : IDocuSignRoute
     {
-        private readonly IActivityTemplate _activityTemplate;
-        private readonly IActivity _activity;
         private readonly IHubCommunicator _hubCommunicator;
         private readonly ICrateManager _crateManager;
 
-        
-
         public DocuSignRoute()
         {
-            _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
-            _activity = ObjectFactory.GetInstance<IActivity>();
             _hubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
             _hubCommunicator.Configure("terminalDocuSign");
@@ -47,16 +41,17 @@ namespace terminalDocuSign.Services
         {
             var existingRoutes = (await _hubCommunicator.GetPlansByName("MonitorAllDocuSignEvents", curFr8UserId)).ToList();
             existingRoutes = existingRoutes.Where(r => r.Tag == ("docusign-auto-monitor-plan-" + curFr8UserId)).ToList();
-            if (existingRoutes.Any())
+            if (existingRoutes.Any(x => x.RouteState != RouteState.Deleted))
             {
                 //hmmmm which one belongs to us?
                 //lets assume there will be only single plan
-                var existingRoute = existingRoutes.Single();
-                if (existingRoute.RouteState != RouteState.Active)
+                var existingRoute = existingRoutes.First(x => x.RouteState != RouteState.Deleted);
+                if (existingRoute.RouteState == RouteState.Inactive)
                 {
                     var existingRouteDO = Mapper.Map<PlanDO>(existingRoute);
                     await _hubCommunicator.ActivatePlan(existingRouteDO, curFr8UserId);
                 }
+
                 return;
             }
             //first check if this exists

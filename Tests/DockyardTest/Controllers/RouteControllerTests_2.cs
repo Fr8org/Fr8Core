@@ -42,14 +42,9 @@ namespace DockyardTest.Controllers
 			Mock<IPusherNotifier> pusherMock = new Mock<IPusherNotifier>();
 			pusherMock.Setup(x => x.Notify(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>()));
 
-            Mock<Hub.Managers.Event> eventMock = new Mock<Hub.Managers.Event>(MockBehavior.Default);
-            eventMock.Setup(ev => ev.Publish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
-                It.IsAny<string>(), It.IsAny<string>())).Returns(Task.Delay(1));
-
 			ObjectFactory.Container.Inject(typeof(IUnitOfWork), uowMock.Object);
 			ObjectFactory.Container.Inject(typeof(IPlan), routeMock.Object);
 			ObjectFactory.Container.Inject(typeof(IPusherNotifier), pusherMock.Object);
-            ObjectFactory.Container.Inject(typeof(Hub.Managers.Event), eventMock.Object);
 
 			var controller = new PlansController();
 
@@ -91,7 +86,7 @@ namespace DockyardTest.Controllers
 
 			// Assert
 			Assert.NotNull(result.Result);								// Get not empty result
-			Assert.IsInstanceOf<BadRequestResult>(result.Result);		// Result of correct HTTP response type
+			Assert.IsInstanceOf<BadRequestErrorMessageResult>(result.Result);		// Result of correct HTTP response type
 		}
 
 		[Test]
@@ -114,15 +109,11 @@ namespace DockyardTest.Controllers
 			Mock<IPusherNotifier> pusherMock = new Mock<IPusherNotifier>();
 			pusherMock.Setup(x => x.Notify(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>()));
 
-            Mock<Hub.Managers.Event> eventMock = new Mock<Hub.Managers.Event>(MockBehavior.Default);
-            eventMock.Setup(ev => ev.Publish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
-                It.IsAny<string>(), It.IsAny<string>())).Returns(Task.Delay(1));
 
 			ObjectFactory.Container.Inject(typeof(IUnitOfWork), uowMock.Object);
 			ObjectFactory.Container.Inject(typeof(IPlan), routeMock.Object);
 			ObjectFactory.Container.Inject(typeof(IPusherNotifier), pusherMock.Object);
 
-            ObjectFactory.Container.Inject(typeof(Hub.Managers.Event), eventMock.Object);
 
 			var controller = new PlansController();
 

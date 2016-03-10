@@ -131,14 +131,11 @@ namespace terminalDocuSign.Actions
                     {
                         //get index of selected value 
                         var selectedItem = item.Radios.FirstOrDefault(x => x.Selected);
-                        var selectedIndex = -1;
                         if (selectedItem != null)
                         {
-                            selectedIndex = item.Radios.IndexOf(selectedItem);
+                            field.Value = selectedItem.Value.ToString();
+                            resultCollection.Add(field);
                         }
-
-                        field.Value = selectedIndex.ToString();
-                        resultCollection.Add(field);
                     }
                 }
 
@@ -241,11 +238,9 @@ namespace terminalDocuSign.Actions
                 // One to hold the ui controls
                 if (crateStorage.All(c => c.ManifestType.Id != (int)MT.FieldDescription))
                 {
-                    var crateControlsDTO = CreateDocusignTemplateConfigurationControls(curActivityDO);
-                    // and one to hold the available templates, which need to be requested from docusign
-                    var crateDesignTimeFieldsDTO = _docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
-
-                    crateStorage.Replace(new CrateStorage(crateControlsDTO, crateDesignTimeFieldsDTO));
+                    var configurationCrate = CreateDocusignTemplateConfigurationControls(curActivityDO);
+                    _docuSignManager.FillDocuSignTemplateSource(configurationCrate, "target_docusign_template", docuSignAuthDTO);
+                    crateStorage.Replace(new CrateStorage(configurationCrate));
                 }
 
                 await UpdateUpstreamCrate(curActivityDO, crateStorage);
@@ -383,11 +378,7 @@ namespace terminalDocuSign.Actions
                 {
                      new ControlEvent("onChange", "requestConfig")
                 },
-                Source = new FieldSourceDTO
-                {
-                    Label = "Available Templates",
-                    ManifestType = MT.FieldDescription.GetEnumDisplayName()
-                }
+                Source = null
             };
 
             var fieldsDTO = new List<ControlDefinitionDTO>()
