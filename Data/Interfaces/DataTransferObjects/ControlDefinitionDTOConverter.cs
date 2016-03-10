@@ -23,6 +23,11 @@ namespace Data.Interfaces.DataTransferObjects
             Type controlType;
             var curjObject = JObject.ReadFrom(reader);
 
+            if (!curjObject.HasValues)
+            {
+                return null;
+            }
+
             // Create a map of all properties in the field object
             string fieldTypeName =GetControlTypeName(curjObject);
 
