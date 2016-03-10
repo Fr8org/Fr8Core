@@ -21,6 +21,7 @@ using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
+using Utilities.Interfaces;
 
 namespace Hub.Services
 {
@@ -32,7 +33,6 @@ namespace Hub.Services
         private readonly IActivityTemplate _activityTemplate;
         private readonly IRouteNode _routeNode;
         private readonly AsyncMultiLock _configureLock = new AsyncMultiLock();
-            
 
         public Activity(ICrateManager crate, IAuthorization authorizationToken, ISecurityServices security, IActivityTemplate activityTemplate, IRouteNode routeNode)
         {
@@ -414,7 +414,7 @@ namespace Hub.Services
             try
             {
                 var actionName = curActionState == ActivityState.InitialRun ? "Run" : "ExecuteChildActivities";
-                EventManager.ActivityRunRequested(curActivityDO);
+                EventManager.ActivityRunRequested(curActivityDO, curContainerDO);
 
                 var payloadDTO = await CallTerminalActivityAsync<PayloadDTO>(uow, actionName, curActivityDO, curContainerDO.Id);
 
