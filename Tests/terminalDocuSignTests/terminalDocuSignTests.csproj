@@ -74,7 +74,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Activities\Archive_DocuSign_Template_v1_Tests.cs" />
     <Compile Include="Activities\BaseDocuSignActivityTest.cs" />
+    <Compile Include="Activities\BaseTest.cs" />
+    <Compile Include="Activities\Get_DocuSign_Template_v1_Tests.cs" />
+    <Compile Include="Activities\Monitor_DocuSign_Envelope_Activity_v1_Tests.cs" />
     <Compile Include="Fixtures\DocuSignActivitiesFixtureData.cs" />
     <Compile Include="Fixtures\HealthMonitor_FixtureData.cs" />
     <Compile Include="Integration\Extract_Data_From_Envelopes_v1_Tests.cs" />

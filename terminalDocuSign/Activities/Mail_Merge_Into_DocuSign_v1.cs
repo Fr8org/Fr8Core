@@ -64,7 +64,7 @@ namespace terminalDocuSign.Actions
                 Required = true
             });
 
-            controlList.Add(DocuSignManager.CreateDocuSignTemplatePicker(true, "DocuSignTemplate", "2. Use which DocuSign Template?"));
+            controlList.Add(_docuSignManager.CreateDocuSignTemplatePicker(true, "DocuSignTemplate", "2. Use which DocuSign Template?"));
             controlList.Add(new Button()
             {
                 Label = "Prepare Mail Merge",

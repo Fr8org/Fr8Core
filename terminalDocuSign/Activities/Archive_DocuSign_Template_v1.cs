@@ -48,12 +48,12 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        private readonly DocuSignManager _docuSignManager;
-
-
-        public Archive_DocuSign_Template_v1()
+        private readonly IDocuSignManager _docuSignManager;
+        //Left for compaitbility reasons
+        public Archive_DocuSign_Template_v1() : this(null) { }
+        public Archive_DocuSign_Template_v1(IDocuSignManager docuSignManager)
         {
-            _docuSignManager = new DocuSignManager();
+            _docuSignManager = docuSignManager ?? new DocuSignManager();
         }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
@@ -131,14 +131,27 @@ namespace terminalDocuSign.Actions
                     return false;
                 }
                 var templateList = configControls.Controls.OfType<DropDownList>().FirstOrDefault();
-                if (string.IsNullOrEmpty(templateList?.selectedKey))
+                if (templateList?.ListItems.Count == 0)
                 {
-                    errorMessages.Add("Template is not selected");
+                    errorMessage = templateList.ErrorMessage = "Please link at least one template to your DocuSign account";
+                    if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        errorMessages.Add(errorMessage);
+                    }
+                }
+                else
+                {
+                    errorMessage = templateList.ErrorMessage = string.IsNullOrEmpty(templateList.selectedKey) ? "Template is not selected" : string.Empty;
+                    if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        errorMessages.Add(errorMessage);
+                    }
                 }
                 var fileNameTextBox = configControls.Controls.OfType<TextBox>().FirstOrDefault();
-                if (string.IsNullOrWhiteSpace(fileNameTextBox?.Value))
+                errorMessage = fileNameTextBox.ErrorMessage = string.IsNullOrEmpty(fileNameTextBox.Value) ? "File name is not specified" : string.Empty;
+                if (!string.IsNullOrEmpty(errorMessage))
                 {
-                    errorMessages.Add("File name is not specified");
+                    errorMessages.Add(errorMessage);
                 }
                 errorMessage = string.Join(Environment.NewLine, errorMessages);
                 return errorMessages.Count == 0;

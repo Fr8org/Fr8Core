@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Constants;
 using Data.Control;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
@@ -19,11 +18,15 @@ namespace terminalDocuSign.Actions
 {
     public class Get_DocuSign_Template_v1 : BaseDocuSignActivity
     {
-        private readonly DocuSignManager _docuSignManager;
+        private readonly IDocuSignManager _docuSignManager;
 
-        public Get_DocuSign_Template_v1()
+        public Get_DocuSign_Template_v1(IDocuSignManager docuSignManager)
         {
-            _docuSignManager = new DocuSignManager();
+            _docuSignManager = docuSignManager ?? new DocuSignManager();
+        }
+        //Left for compatibility
+        public Get_DocuSign_Template_v1() : this(null)
+        {
         }
 
         public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)

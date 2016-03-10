@@ -20,13 +20,22 @@ namespace terminalDocuSign.Actions
 {
     public class Monitor_DocuSign_Envelope_Activity_v1 : BaseDocuSignActivity
     {
-        readonly DocuSignManager _docuSignManager = new DocuSignManager();
+        private readonly IDocuSignManager _docuSignManager = new DocuSignManager();
 
         private const string DocuSignConnectName = "fr8DocuSignConnectConfiguration";
 
         private const string DocuSignOnEnvelopeSentEvent = "Sent";
         private const string DocuSignOnEnvelopeReceivedEvent = "Delivered";
         private const string DocuSignOnEnvelopeSignedEvent = "Completed";
+
+        public Monitor_DocuSign_Envelope_Activity_v1(IDocuSignManager docuSignManager)
+        {
+            _docuSignManager = docuSignManager ?? new DocuSignManager();
+        }
+        //Left for compatibility
+        public Monitor_DocuSign_Envelope_Activity_v1() : this(null)
+        {
+        }
 
         public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
