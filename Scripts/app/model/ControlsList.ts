@@ -91,6 +91,7 @@
         public manifestType: string;
         public label: string;
         public filterByTag: string;
+        public requestUpstream: boolean;
     }
 
     export class DropDownList extends ControlDefinitionDTO {

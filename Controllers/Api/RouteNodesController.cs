@@ -110,6 +110,21 @@ namespace HubWeb.Controllers
             }
         }
 
+        [HttpGet]
+        [ActionName("upstream_fields")]
+        [ResponseType(typeof(FieldDescriptionsCM))]
+        [Fr8ApiAuthorize]
+        public IHttpActionResult ExtractUpstream(Guid id)
+        {
+            var fieldDescription = _activity.GetDesignTimeFieldsByDirection(
+                id,
+                CrateDirection.Upstream,
+                AvailabilityType.NotSet
+            );
+
+            return Ok(fieldDescription);
+        }
+
         [ActionName("designtime_fields_dir")]
         [ResponseType(typeof(FieldDescriptionsCM))]
         [Fr8HubWebHMACAuthenticate]

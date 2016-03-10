@@ -412,6 +412,9 @@ namespace Data.Control
         [JsonProperty("filterByTag")]
         public string FilterByTag { get; set; }
 
+        [JsonProperty("requestUpstream")]
+        public bool RequestUpstream { get; set; }
+
         public FieldSourceDTO()
         {
         }

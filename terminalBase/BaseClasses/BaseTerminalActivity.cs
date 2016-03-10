@@ -655,7 +655,12 @@ namespace TerminalBase.BaseClasses
         /// Creates RadioButtonGroup to enter specific value or choose value from upstream crate.
         /// </summary>
         protected ControlDefinitionDTO CreateSpecificOrUpstreamValueChooser(
-            string label, string controlName, string upstreamSourceLabel, string filterByTag = "", bool addRequestConfigEvent = false)
+            string label,
+            string controlName,
+            string upstreamSourceLabel = "",
+            string filterByTag = "",
+            bool addRequestConfigEvent = false,
+            bool requestUpstream = false)
         {
             var control = new TextSource(label, upstreamSourceLabel, controlName)
             {
@@ -663,7 +668,8 @@ namespace TerminalBase.BaseClasses
                 {
                     Label = upstreamSourceLabel,
                     ManifestType = CrateManifestTypes.StandardDesignTimeFields,
-                    FilterByTag = filterByTag
+                    FilterByTag = filterByTag,
+                    RequestUpstream = requestUpstream
                 }
             };
             if (addRequestConfigEvent)
