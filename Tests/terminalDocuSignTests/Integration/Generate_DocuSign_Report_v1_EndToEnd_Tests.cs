@@ -55,7 +55,6 @@ namespace terminalDocuSignTests.Integration
                 ValidatePlanName(planFollowup, crateStorage);
                 await SaveActivity(solution);
 
-
                 // Execute plan.
                 var container = await ExecutePlan(plan);
                 ValidateContainer(container);
@@ -254,7 +253,7 @@ namespace terminalDocuSignTests.Integration
             var configurationControls = crateStorage
             .CrateContentsOfType<StandardConfigurationControlsCM>()
             .SingleOrDefault();
-            
+
             var actionUi = new ActivityUi();
             actionUi.ClonePropertiesFrom(configurationControls);
 

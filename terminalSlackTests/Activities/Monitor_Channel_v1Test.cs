@@ -71,11 +71,10 @@ namespace terminalSlackTests.Integration
 
         private void AssertCrateTypes(ICrateStorage crateStorage)
         {
-            Assert.AreEqual(4, crateStorage.Count);
+            Assert.AreEqual(3, crateStorage.Count);
 
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
             Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Available Fields"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Available Channels"));
             Assert.AreEqual(1, crateStorage.CratesOfType<EventSubscriptionCM>().Count(x => x.Label == "Standard Event Subscriptions"));
         }
 

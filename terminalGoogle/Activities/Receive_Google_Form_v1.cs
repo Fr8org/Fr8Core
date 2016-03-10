@@ -41,7 +41,7 @@ namespace terminalGoogle.Actions
 
             return base.Configure(curActivityDO, authTokenDO);
         }
-            
+
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
             if (CrateManager.IsStorageEmpty(curActivityDO))
@@ -57,14 +57,13 @@ namespace terminalGoogle.Actions
             if (curActivityDO.Id != Guid.Empty)
             {
                 var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
-                var configurationControlsCrate = PackCrate_ConfigurationControls();
-                var crateDesignTimeFields = await PackCrate_GoogleForms(authDTO);
+                var configurationCrate = PackCrate_ConfigurationControls();
+                await FillSelectedGoogleFormSource(configurationCrate, "Selected_Google_Form", authDTO);            
                 var eventCrate = CreateEventSubscriptionCrate();
 
                 using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
                 {
-                    crateStorage.Add(configurationControlsCrate);
-                    crateStorage.Add(crateDesignTimeFields);
+                    crateStorage.Add(configurationCrate);
                     crateStorage.Add(eventCrate);
                 }
             }
@@ -83,29 +82,14 @@ namespace terminalGoogle.Actions
                 Label = "Select Google Form",
                 Name = "Selected_Google_Form",
                 Required = true,
-                Source = new FieldSourceDTO
-                {
-                    Label = "Available Forms",
-                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                }
+                Source = null
             };
 
             var controls = PackControlsCrate(fieldSelectTemplate);
             return controls;
         }
 
-        private async Task<Crate> PackCrate_GoogleForms(GoogleAuthDTO authDTO)
-        {
-            if (string.IsNullOrEmpty(authDTO.RefreshToken))
-                throw new ArgumentNullException("Token is empty");
 
-            var files = await _googleDrive.GetGoogleForms(authDTO);
-
-            var curFields = files.Select(file => new FieldDTO() { Key = file.Value, Value = file.Key }).ToArray();
-            Crate crate = CrateManager.CreateDesignTimeFieldsCrate("Available Forms", curFields);
-
-            return await Task.FromResult(crate);
-        }
 
         private Crate CreateEventSubscriptionCrate()
         {
@@ -137,7 +121,7 @@ namespace terminalGoogle.Actions
 
             var result = await _googleDrive.UploadAppScript(googleAuthDTO, formId);
 
-            var fieldResult = new List<FieldDTO>(){ new FieldDTO(){ Key = result, Value = result}};
+            var fieldResult = new List<FieldDTO>() { new FieldDTO() { Key = result, Value = result } };
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActionDTO))
             {
                 crateStorage.Add(Data.Crates.Crate.FromContent("Google Form Payload Data", new StandardPayloadDataCM(fieldResult)));
@@ -160,10 +144,10 @@ namespace terminalGoogle.Actions
                 return NeedsAuthenticationError(payloadCrates);
             }
 
-            
+
             var payloadFields = ExtractPayloadFields(payloadCrates);
             var formResponseFields = CreatePayloadFormResponseFields(payloadFields);
-            
+
             using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
             {
                 crateStorage.Add(Data.Crates.Crate.FromContent("Google Form Payload Data", new StandardPayloadDataCM(formResponseFields)));
@@ -215,5 +199,27 @@ namespace terminalGoogle.Actions
 
             return eventReportMS.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().SelectMany(x => x.AllValues()).ToList();
         }
+
+        #region Fill Source
+
+        private async Task FillSelectedGoogleFormSource(Crate configurationCrate, string controlName, GoogleAuthDTO authDTO)
+        {
+            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
+            var control = configurationControl.FindByNameNested<DropDownList>(controlName);
+            if (control != null)
+            {
+                control.ListItems = await GetGoogleForms(authDTO);
+            }
+        }
+
+        private async Task<List<ListItem>> GetGoogleForms(GoogleAuthDTO authDTO)
+        {
+            if (string.IsNullOrEmpty(authDTO.RefreshToken))
+                throw new ArgumentNullException("Token is empty");
+
+            var files = await _googleDrive.GetGoogleForms(authDTO);
+            return files.Select(file => new ListItem() { Key = file.Value, Value = file.Key }).ToList();
+        }
+        #endregion
     }
 }

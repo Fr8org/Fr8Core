@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using Data.Interfaces.Manifests;
 
@@ -13,8 +14,49 @@ namespace Data.Crates
 
         private static readonly Dictionary<Type, CrateManifestType> ManifestsCache = new Dictionary<Type, CrateManifestType>();
         private static readonly object GlobalTypeCacheLock = new object();
-        
+
+        private static readonly Dictionary<string, int> _nameMap;
+
+        static ManifestTypeCache()
+        {
+            _nameMap = new Dictionary<string, int>();
+
+            var mtEnumType = typeof(Data.Constants.MT);
+
+            var names = Enum.GetNames(mtEnumType);
+            foreach (var name in names)
+            {
+                var members = mtEnumType.GetMember(name);
+                if (members == null || members.Length == 0)
+                {
+                    continue;
+                }
+
+                var attribute = members[0].GetCustomAttribute(typeof(DisplayAttribute), false);
+                if (attribute == null)
+                {
+                    continue;
+                }
+
+                var mtName = ((DisplayAttribute)attribute).Name;
+                _nameMap.Add(mtName, (int)((Data.Constants.MT)Enum.Parse(mtEnumType, name)));
+            }
+        }
+
         /**********************************************************************************/
+
+        public static bool TryResolveManifest(string manifestTypeName, out CrateManifestType manifestType)
+        {
+            int typeId;
+            if (_nameMap.TryGetValue(manifestTypeName, out typeId))
+            {
+                manifestType = new CrateManifestType(manifestTypeName, typeId);
+                return true;
+            }
+
+            manifestType = CrateManifestType.Unknown;
+            return false;
+        }
 
         public static bool TryResolveManifest(Type type, out CrateManifestType manifestType)
         {
