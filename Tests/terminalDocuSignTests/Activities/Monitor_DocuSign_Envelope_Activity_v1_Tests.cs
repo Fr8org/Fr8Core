@@ -53,20 +53,6 @@ namespace terminalDocuSignTests.Activities
         }
 
         [Test]
-        public void ActivityIsValid_WhenRecipientMustBeSetButItIsNot_ReturnsFalse()
-        {
-            var target = new Monitor_DocuSign_Envelope_Activity_v1(DocuSignActivityFixtureData.DocuSignManagerWithoutTemplates());
-            var activityDO = FixtureData.TestActivity1();
-            activityDO = target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration()).Result;
-            SetNotificationSelected(activityDO);
-            SetRecipientConditionSelected(activityDO);
-            string errorMessage;
-            var result = target.ActivityIsValid(activityDO, out errorMessage);
-            Assert.IsFalse(result);
-            Assert.AreEqual("Recipient is not set", errorMessage);
-        }
-
-        [Test]
         public void ActivityIsValid_WhenTemplateMustBeSetButThereAreNoTemplates_ReturnsFalse()
         {
             var target = new Monitor_DocuSign_Envelope_Activity_v1(DocuSignActivityFixtureData.DocuSignManagerWithoutTemplates());

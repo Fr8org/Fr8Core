@@ -204,13 +204,15 @@ namespace terminalDocuSign.Actions
         }
         private bool RecipientIsSet(StandardConfigurationControlsCM configControls, out string errorMessage)
         {
-            //TODO: set TextBox.ErrorMessage when it will be fixed on front-end side (FR-2586)
-            var recipientTextBox = GetRecipientRadioOption(configControls)
-                .Controls
-                .First();
-            var result = !string.IsNullOrEmpty(recipientTextBox.Value);
-            GetEnvelopeRadioGroup(configControls).ErrorMessage = errorMessage = result ? string.Empty : "Recipient is not set";
-            return result;
+            errorMessage = string.Empty;
+            return true;
+            ////TODO: set TextBox.ErrorMessage when it will be fixed on front-end side (FR-2586)
+            //var recipientTextBox = GetRecipientRadioOption(configControls)
+            //    .Controls
+            //    .First();
+            //var result = !string.IsNullOrEmpty(recipientTextBox.Value);
+            //GetEnvelopeRadioGroup(configControls).ErrorMessage = errorMessage = result ? string.Empty : "Recipient is not set";
+            //return result;
         }
         private bool RecipientIsRequired(StandardConfigurationControlsCM configControls)
         {
