@@ -100,6 +100,28 @@
         selectedKey: string;
     }
 
+    export class FilterConditionDTO {
+        field: string;
+        operator: string;
+        value: string;
+    }
+
+    export class ContainerTransitionField {
+        conditions: Array<FilterConditionDTO>;
+        transition: number;
+        targetNodeId: string;
+
+        constructor() {
+            this.conditions = [];
+            this.transition = 0;
+            this.targetNodeId = null;
+        }
+    }
+
+    export class ContainerTransition extends ControlDefinitionDTO {
+        transitions: Array<ContainerTransitionField>;
+    }
+
     export class CrateDetails {
         manifestType: model.DropDownList;
         label: model.DropDownList;

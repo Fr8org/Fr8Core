@@ -847,6 +847,7 @@
     <Content Include="Content\css\fonts\fontawesome-webfont.woff2" />
     <Content Include="Content\videos\motion.ogv" />
     <Content Include="Content\videos\motion.webm" />
+    <Content Include="Views\AngularTemplate\ContainerTransition.cshtml" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
     <Content Include="Scripts\templateCache.js" />
@@ -872,6 +873,7 @@
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionDocumentationController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\ActionPicker.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\ContainerTransition.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\DatePicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\SourceableCriteria.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\CrateChooser.ts" />

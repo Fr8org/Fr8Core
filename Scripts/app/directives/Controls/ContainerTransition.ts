@@ -4,7 +4,8 @@ module dockyard.directives.containerTransition {
 
     interface IContainerTransitionScope extends ng.IScope {
         route: model.Route;
-        
+        field: model.ContainerTransition;
+        addTransition: () => void;
     }
 
     //More detail on creating directives in TypeScript: 
@@ -12,8 +13,10 @@ module dockyard.directives.containerTransition {
     export function ContainerTransition(): ng.IDirective {
         
         var controller = ['$scope', '$element', '$attrs', ($scope: IContainerTransitionScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => {
-            
-            
+
+            $scope.addTransition = () => {
+                $scope.field.transitions.push(new model.ContainerTransitionField());
+            };
         }];
 
         //The factory function returns Directive object as per Angular requirements
@@ -22,7 +25,9 @@ module dockyard.directives.containerTransition {
             templateUrl: '/AngularTemplate/ContainerTransition',
             controller: controller,
             scope: {
-                route: '='
+                plan: '=',
+                field: '=',
+                currentActivity: '='
             }
         };
     }
