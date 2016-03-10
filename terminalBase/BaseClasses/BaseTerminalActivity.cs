@@ -655,7 +655,12 @@ namespace TerminalBase.BaseClasses
         /// Creates RadioButtonGroup to enter specific value or choose value from upstream crate.
         /// </summary>
         protected ControlDefinitionDTO CreateSpecificOrUpstreamValueChooser(
-            string label, string controlName, string upstreamSourceLabel, string filterByTag = "", bool addRequestConfigEvent = false)
+            string label,
+            string controlName,
+            string upstreamSourceLabel = "",
+            string filterByTag = "",
+            bool addRequestConfigEvent = false,
+            bool requestUpstream = false)
         {
             var control = new TextSource(label, upstreamSourceLabel, controlName)
             {
@@ -663,7 +668,8 @@ namespace TerminalBase.BaseClasses
                 {
                     Label = upstreamSourceLabel,
                     ManifestType = CrateManifestTypes.StandardDesignTimeFields,
-                    FilterByTag = filterByTag
+                    FilterByTag = filterByTag,
+                    RequestUpstream = requestUpstream
                 }
             };
             if (addRequestConfigEvent)
@@ -1127,17 +1133,31 @@ namespace TerminalBase.BaseClasses
         /// <param name="name"></param>
         /// <param name="singleManifest"></param>
         /// <returns></returns>
-        protected async Task<CrateChooser> GenerateCrateChooser(ActivityDO curActivityDO, string name, string label, bool singleManifest)
+        protected async Task<CrateChooser> GenerateCrateChooser(
+            ActivityDO curActivityDO,
+            string name,
+            string label,
+            bool singleManifest,
+            bool requestUpstream = false,
+            bool requestConfig = false)
         {
             var crateDescriptions = await GetCratesByDirection<CrateDescriptionCM>(curActivityDO, CrateDirection.Upstream);
             var runTimeCrateDescriptions = crateDescriptions.Where(c => c.Availability == AvailabilityType.RunTime).SelectMany(c => c.Content.CrateDescriptions);
-            return new CrateChooser
+            var control = new CrateChooser
             {
                 Label = label,
                 Name = name,
                 CrateDescriptions = runTimeCrateDescriptions.ToList(),
-                SingleManifestOnly = singleManifest
+                SingleManifestOnly = singleManifest,
+                RequestUpstream = requestUpstream
             };
+
+            if (requestConfig)
+            {
+                control.Events.Add(new ControlEvent("onChange", "requestConfig"));
+            }
+
+            return control;
         }
 
         /// <summary>
