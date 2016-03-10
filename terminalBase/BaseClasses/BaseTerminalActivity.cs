@@ -34,10 +34,7 @@ namespace TerminalBase.BaseClasses
     {
         #region Fields
 
-        protected IActivity Activity;
-
         protected ICrateManager CrateManager { get; private set; }
-        private readonly ITerminal _terminal;
         protected static readonly string ConfigurationControlsLabel = "Configuration_Controls";
         public string CurrentFr8UserId { get; set; }
         protected string _activityName { get; set; }
@@ -61,8 +58,6 @@ namespace TerminalBase.BaseClasses
         public BaseTerminalActivity(string actionName)
         {
             CrateManager = ObjectFactory.GetInstance<ICrateManager>();
-            Activity = ObjectFactory.GetInstance<IActivity>();
-            _terminal = ObjectFactory.GetInstance<ITerminal>();
             HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
             _activityName = actionName;
         }
@@ -121,6 +116,19 @@ namespace TerminalBase.BaseClasses
             }
 
             return payload;
+        }
+
+        //looks for the Configuration Controls Crate and Extracts the ManifestSchema
+        protected StandardConfigurationControlsCM GetControlsManifest(ActivityDO curActivity)
+        {
+            var control = CrateManager.GetStorage(curActivity.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+
+            if (control == null)
+            {
+                throw new ApplicationException(string.Format("No crate found with Label == \"Configuration_Controls\" and ManifestType == \"{0}\"", CrateManifestTypes.StandardConfigurationControls));
+            }
+
+            return control;
         }
 
         protected PayloadDTO ExecuteClientActivity(PayloadDTO payload, string clientActionName)
@@ -647,7 +655,12 @@ namespace TerminalBase.BaseClasses
         /// Creates RadioButtonGroup to enter specific value or choose value from upstream crate.
         /// </summary>
         protected ControlDefinitionDTO CreateSpecificOrUpstreamValueChooser(
-            string label, string controlName, string upstreamSourceLabel, string filterByTag = "", bool addRequestConfigEvent = false)
+            string label,
+            string controlName,
+            string upstreamSourceLabel = "",
+            string filterByTag = "",
+            bool addRequestConfigEvent = false,
+            bool requestUpstream = false)
         {
             var control = new TextSource(label, upstreamSourceLabel, controlName)
             {
@@ -655,7 +668,8 @@ namespace TerminalBase.BaseClasses
                 {
                     Label = upstreamSourceLabel,
                     ManifestType = CrateManifestTypes.StandardDesignTimeFields,
-                    FilterByTag = filterByTag
+                    FilterByTag = filterByTag,
+                    RequestUpstream = requestUpstream
                 }
             };
             if (addRequestConfigEvent)
@@ -1119,17 +1133,31 @@ namespace TerminalBase.BaseClasses
         /// <param name="name"></param>
         /// <param name="singleManifest"></param>
         /// <returns></returns>
-        protected async Task<CrateChooser> GenerateCrateChooser(ActivityDO curActivityDO, string name, string label, bool singleManifest)
+        protected async Task<CrateChooser> GenerateCrateChooser(
+            ActivityDO curActivityDO,
+            string name,
+            string label,
+            bool singleManifest,
+            bool requestUpstream = false,
+            bool requestConfig = false)
         {
             var crateDescriptions = await GetCratesByDirection<CrateDescriptionCM>(curActivityDO, CrateDirection.Upstream);
             var runTimeCrateDescriptions = crateDescriptions.Where(c => c.Availability == AvailabilityType.RunTime).SelectMany(c => c.Content.CrateDescriptions);
-            return new CrateChooser
+            var control = new CrateChooser
             {
                 Label = label,
                 Name = name,
                 CrateDescriptions = runTimeCrateDescriptions.ToList(),
-                SingleManifestOnly = singleManifest
+                SingleManifestOnly = singleManifest,
+                RequestUpstream = requestUpstream
             };
+
+            if (requestConfig)
+            {
+                control.Events.Add(new ControlEvent("onChange", "requestConfig"));
+            }
+
+            return control;
         }
 
         /// <summary>

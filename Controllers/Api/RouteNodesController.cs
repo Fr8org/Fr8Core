@@ -110,6 +110,35 @@ namespace HubWeb.Controllers
             }
         }
 
+        [HttpGet]
+        [ActionName("upstream_fields")]
+        [Fr8ApiAuthorize]
+        public IHttpActionResult ExtractUpstream(
+            Guid id,
+            string manifestType,
+            AvailabilityType availability = AvailabilityType.NotSet)
+        {
+            CrateManifestType cmt;
+            if (!ManifestDiscovery.Default.TryResolveManifestType(manifestType, out cmt))
+            {
+                return BadRequest();
+            }
+
+            Type type;
+            if (!ManifestDiscovery.Default.TryResolveType(cmt, out type))
+            {
+                return BadRequest();
+            }
+
+            var method = typeof(IRouteNode)
+                .GetMethod("GetCrateManifestsByDirection")
+                .MakeGenericMethod(type);
+
+            var data = method.Invoke(_activity, new object[] { id, CrateDirection.Upstream, availability });
+
+            return Ok(data);
+        }
+
         [ActionName("designtime_fields_dir")]
         [ResponseType(typeof(FieldDescriptionsCM))]
         [Fr8HubWebHMACAuthenticate]

@@ -172,61 +172,61 @@ namespace Data.Infrastructure
         public static event AuthTokenRemovedHandler EventAuthTokenRemoved;
 
         public delegate void PlanActivatedHandler(Guid planId);
-        public static event PlanActivatedHandler PlanActivated;
+        public static event PlanActivatedHandler EventPlanActivated;
 
         public delegate void PlanDeactivatedHandler(Guid planId);
-        public static event PlanDeactivatedHandler PlanDeactivated;
+        public static event PlanDeactivatedHandler EventPlanDeactivated;
 
         public delegate void ContainerExecutionCompleteHandler(ContainerDO containerDO);
-        public static event ContainerExecutionCompleteHandler ContainerExecutionCompleted;
+        public static event ContainerExecutionCompleteHandler EventContainerExecutionCompleted;
 
         public delegate void ActivityRunRequestedHandler(ActivityDO activityDo, ContainerDO containerDO);
-        public static event ActivityRunRequestedHandler ActivityRunRequested;
+        public static event ActivityRunRequestedHandler EventActivityRunRequested;
 
         public delegate void ActivityResponseReceivedHandler(ActivityDO activityDo, ActivityResponse responseType);
-        public static event ActivityResponseReceivedHandler ActivityResponseReceived;
+        public static event ActivityResponseReceivedHandler EventActivityResponseReceived;
 
 
         public delegate void ProcessingTerminatedPerActivityResponseHandler(ContainerDO containerDO, ActivityResponse resposneType);
-        public static event ProcessingTerminatedPerActivityResponseHandler ProcessingTerminatedPerActivityResponse;
+        public static event ProcessingTerminatedPerActivityResponseHandler EventProcessingTerminatedPerActivityResponse;
 
         
 
         #region Method
 
-        public static void OnPlanActivated(Guid planId)
+        public static void PlanActivated(Guid planId)
         {
-            var handler = PlanActivated;
+            var handler = EventPlanActivated;
             if (handler != null) handler(planId);
         }
 
-        public static void OnPlanDeactivated(Guid planId)
+        public static void PlanDeactivated(Guid planId)
         {
-            var handler = PlanDeactivated;
+            var handler = EventPlanDeactivated;
             if (handler != null) handler(planId);
         }
 
-        public static void OnContainerExecutionCompleted(ContainerDO containerDO)
+        public static void ContainerExecutionCompleted(ContainerDO containerDO)
         {
-            var handler = ContainerExecutionCompleted;
+            var handler = EventContainerExecutionCompleted;
             if (handler != null) handler(containerDO);
         }
 
-        public static void OnActivityRunRequested(ActivityDO activityDo, ContainerDO containerDO)
+        public static void ActivityRunRequested(ActivityDO activityDo)
         {
-            var handler = ActivityRunRequested;
+            var handler = EventActivityRunRequested;
             if (handler != null) handler(activityDo, containerDO);
         }
 
-        public static void OnActivityResponseReceived(ActivityDO activityDo, ActivityResponse responseType)
+        public static void ActivityResponseReceived(ActivityDO activityDo, ActivityResponse responseType)
         {
-            var handler = ActivityResponseReceived;
+            var handler = EventActivityResponseReceived;
             if (handler != null) handler(activityDo, responseType);
         }
 
-        public static void OnProcessingTerminatedPerActivityResponse(ContainerDO containerDO, ActivityResponse resposneType)
+        public static void ProcessingTerminatedPerActivityResponse(ContainerDO containerDO, ActivityResponse resposneType)
         {
-            var handler = ProcessingTerminatedPerActivityResponse;
+            var handler = EventProcessingTerminatedPerActivityResponse;
             if (handler != null) handler(containerDO, resposneType);
         }
 

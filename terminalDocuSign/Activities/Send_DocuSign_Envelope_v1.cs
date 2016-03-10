@@ -94,6 +94,7 @@ namespace terminalDocuSign.Actions
                 }
             }
 
+
             return Success(payloadCrates);
         }
 
@@ -110,7 +111,7 @@ namespace terminalDocuSign.Actions
                 var tempFieldCollection = usedDefinedFields.Fields;
 
                 //extract data from text source Controls
-                var mappingBehavior = new TextSourceMappingBehavior(activityCrateStorage, "Mapping");
+                var mappingBehavior = new TextSourceMappingBehavior(activityCrateStorage, "Mapping", true);
                 var textSourceValues = mappingBehavior.GetValues(payloadCrateStorage);
                 foreach (var item in textSourceValues)
                 {
@@ -131,14 +132,11 @@ namespace terminalDocuSign.Actions
                     {
                         //get index of selected value 
                         var selectedItem = item.Radios.FirstOrDefault(x => x.Selected);
-                        var selectedIndex = -1;
                         if (selectedItem != null)
                         {
-                            selectedIndex = item.Radios.IndexOf(selectedItem);
+                            field.Value = selectedItem.Value.ToString();
+                            resultCollection.Add(field);
                         }
-
-                        field.Value = selectedIndex.ToString();
-                        resultCollection.Add(field);
                     }
                 }
 
@@ -182,7 +180,7 @@ namespace terminalDocuSign.Actions
             {
                 var tempFieldCollection = usedDefinedFields.Fields;
 
-                var mappingBehavior = new TextSourceMappingBehavior(activityCrateStorage, "RolesMapping");
+                var mappingBehavior = new TextSourceMappingBehavior(activityCrateStorage, "RolesMapping", true);
                 var textSourceValues = mappingBehavior.GetValues(payloadCrateStorage);
                 foreach (var item in textSourceValues)
                 {
@@ -310,7 +308,7 @@ namespace terminalDocuSign.Actions
                 crateStorage.Add(crateUserDefinedDTO);
 
                 //Create TextSource controls for ROLES
-                var rolesMappingBehavior = new TextSourceMappingBehavior(crateStorage, "RolesMapping");
+                var rolesMappingBehavior = new TextSourceMappingBehavior(crateStorage, "RolesMapping", true);
                 rolesMappingBehavior.Clear();
                 rolesMappingBehavior.Append(roles.Select(x => x.Key).ToList(), "Upstream Terminal-Provided Fields");
 
@@ -319,7 +317,8 @@ namespace terminalDocuSign.Actions
                 textSourceFields = envelopeDataDTO.Where(x => x.Type == ControlTypes.TextBox).Select(x => x.Name).ToList();
                 var mappingBehavior = new TextSourceMappingBehavior(
                     crateStorage,
-                    "Mapping"
+                    "Mapping",
+                    true
                 );
                 mappingBehavior.Clear();
                 mappingBehavior.Append(textSourceFields, "Upstream Terminal-Provided Fields");
