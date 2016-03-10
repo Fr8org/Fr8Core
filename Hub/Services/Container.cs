@@ -113,7 +113,7 @@ namespace Hub.Services
                 case ActivityResponse.RequestTerminate:
                     //FR-2163 - If action response requests for termination, we make the container as Completed to avoid unwanted errors.
                     curContainerDo.ContainerState = ContainerState.Completed;
-                    EventManager.OnProcessingTerminatedPerActivityResponse(curContainerDo, ActivityResponse.RequestTerminate);
+                    EventManager.ProcessingTerminatedPerActivityResponse(curContainerDo, ActivityResponse.RequestTerminate);
 
                     break;
                 default:

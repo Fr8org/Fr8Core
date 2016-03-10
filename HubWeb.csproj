@@ -844,6 +844,8 @@
     <Content Include="Content\css\fonts\fontawesome-webfont.ttf" />
     <Content Include="Content\css\fonts\fontawesome-webfont.woff" />
     <Content Include="Content\css\fonts\fontawesome-webfont.woff2" />
+    <Content Include="Content\videos\motion.ogv" />
+    <Content Include="Content\videos\motion.webm" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
     <Content Include="Scripts\templateCache.js" />
