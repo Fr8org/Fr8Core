@@ -27,15 +27,12 @@ namespace Hub.Services
 {
     public class Activity : IActivity
     {
-        #region Fields
-
         private readonly ICrateManager _crate;
         private readonly IAuthorization _authorizationToken;
         private readonly ISecurityServices _security;
         private readonly IActivityTemplate _activityTemplate;
         private readonly IRouteNode _routeNode;
         private readonly AsyncMultiLock _configureLock = new AsyncMultiLock();
-            
 
         public Activity(ICrateManager crate, IAuthorization authorizationToken, ISecurityServices security, IActivityTemplate activityTemplate, IRouteNode routeNode)
         {
