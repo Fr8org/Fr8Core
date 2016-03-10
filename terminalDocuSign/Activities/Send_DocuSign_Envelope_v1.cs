@@ -32,7 +32,7 @@ namespace terminalDocuSign.Actions
 
         protected override string ActivityUserFriendlyName => "Send DocuSign Envelope";
 
-        protected override async Task<PayloadDTO> RunInternal(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        protected internal override async Task<PayloadDTO> RunInternal(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payloadCrates = await GetPayload(curActivityDO, containerId);
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
@@ -354,7 +354,7 @@ namespace terminalDocuSign.Actions
             return await Task.FromResult(curActivityDO);
         }
 
-        protected override bool ActivityIsValid(ActivityDO curActivityDO, out string errorMessage)
+        protected internal override bool ActivityIsValid(ActivityDO curActivityDO, out string errorMessage)
         {
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {

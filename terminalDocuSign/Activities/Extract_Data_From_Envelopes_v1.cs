@@ -104,7 +104,7 @@ namespace terminalDocuSign.Actions
 
         protected override string ActivityUserFriendlyName => SolutionName;
 
-        protected override async Task<PayloadDTO> RunInternal(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        protected internal override async Task<PayloadDTO> RunInternal(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             return Success(await GetPayload(activityDO, containerId));
         }

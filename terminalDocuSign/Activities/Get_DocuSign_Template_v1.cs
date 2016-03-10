@@ -38,7 +38,7 @@ namespace terminalDocuSign.Actions
 
         protected override string ActivityUserFriendlyName => "Get DocuSign Template";
 
-        protected override async Task<PayloadDTO> RunInternal(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        protected internal override async Task<PayloadDTO> RunInternal(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payloadCrates = await GetPayload(activityDO, containerId);
             //Get template Id
@@ -92,7 +92,7 @@ namespace terminalDocuSign.Actions
             return await Task.FromResult(curActivityDO);
         }
 
-        protected override bool ActivityIsValid(ActivityDO curActivityDO, out string errorMessage)
+        protected internal override bool ActivityIsValid(ActivityDO curActivityDO, out string errorMessage)
         {
             errorMessage = string.Empty;
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))

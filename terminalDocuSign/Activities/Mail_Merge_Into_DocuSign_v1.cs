@@ -44,7 +44,7 @@ namespace terminalDocuSign.Actions
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        protected override async Task<PayloadDTO> RunInternal(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        protected internal override async Task<PayloadDTO> RunInternal(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             return Success(await GetPayload(curActivityDO, containerId));
         }
@@ -139,7 +139,7 @@ namespace terminalDocuSign.Actions
             return control;
         }
 
-        protected override bool ActivityIsValid(ActivityDO curActivityDO, out string errorMessage)
+        protected internal override bool ActivityIsValid(ActivityDO curActivityDO, out string errorMessage)
         {
             var errorMessages = new List<string>();
             errorMessage = string.Empty;

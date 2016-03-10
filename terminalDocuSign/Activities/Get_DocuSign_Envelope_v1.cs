@@ -86,7 +86,7 @@ namespace terminalDocuSign.Actions
 
         protected override string ActivityUserFriendlyName => "Get DocuSign Envelope";
 
-        protected override bool ActivityIsValid(ActivityDO curActivityDO, out string errorMessage)
+        protected internal override bool ActivityIsValid(ActivityDO curActivityDO, out string errorMessage)
         {
             errorMessage = string.Empty;
             var control = FindControl(CrateManager.GetStorage(curActivityDO), "EnvelopeIdSelector");
@@ -95,7 +95,7 @@ namespace terminalDocuSign.Actions
             return string.IsNullOrEmpty(errorMessage);
         }
 
-        protected override async Task<PayloadDTO> RunInternal(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        protected internal override async Task<PayloadDTO> RunInternal(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payloadCrates = await GetPayload(activityDO, containerId);
             var payloadCrateStorage = CrateManager.GetStorage(payloadCrates);

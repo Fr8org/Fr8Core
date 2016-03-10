@@ -79,7 +79,7 @@ namespace terminalDocuSign.Actions
                                                                                                  new FieldDescriptionsCM(new FieldDTO("Error Message", errorMessage)))));
         }
 
-        protected virtual bool ActivityIsValid(ActivityDO curActivityDO, out string errorMessage)
+        protected internal virtual bool ActivityIsValid(ActivityDO curActivityDO, out string errorMessage)
         {
             errorMessage = string.Empty;
             return true;
@@ -102,6 +102,6 @@ namespace terminalDocuSign.Actions
 
         protected abstract string ActivityUserFriendlyName { get; }
 
-        protected abstract Task<PayloadDTO> RunInternal(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO);
+        protected internal abstract Task<PayloadDTO> RunInternal(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO);
     }
 }

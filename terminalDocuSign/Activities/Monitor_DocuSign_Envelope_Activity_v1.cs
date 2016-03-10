@@ -122,7 +122,7 @@ namespace terminalDocuSign.Actions
             return null;
         }
 
-        protected  override bool ActivityIsValid(ActivityDO curActivityDO, out string errorMessage)
+        protected internal override bool ActivityIsValid(ActivityDO curActivityDO, out string errorMessage)
         {
             var errorMessages = new List<string>();
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
@@ -292,7 +292,7 @@ namespace terminalDocuSign.Actions
             return Task.FromResult(curActivityDO);
         }
 
-        protected override async Task<PayloadDTO> RunInternal(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        protected internal override async Task<PayloadDTO> RunInternal(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payloadCrates = await GetPayload(curActivityDO, containerId);
             //get currently selected option and its value

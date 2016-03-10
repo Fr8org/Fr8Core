@@ -157,6 +157,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Asserts\AssertEx - Payload.cs" />
     <Compile Include="BaseTest.cs" />
     <Compile Include="ClassMethod.cs" />
     <Compile Include="Fixtures\FixtureData - AuthorizationToken.cs" />

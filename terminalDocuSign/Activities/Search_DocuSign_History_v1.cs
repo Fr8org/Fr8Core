@@ -77,7 +77,7 @@ namespace terminalDocuSign.Actions
 
         protected override string ActivityUserFriendlyName => "Search DocuSign History";
 
-        protected override async Task<PayloadDTO> RunInternal(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        protected internal override async Task<PayloadDTO> RunInternal(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             return Success(await GetPayload(curActivityDO, containerId));
         }
