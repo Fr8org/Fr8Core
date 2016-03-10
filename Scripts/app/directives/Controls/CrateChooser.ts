@@ -11,8 +11,11 @@ module dockyard.directives.crateChooser {
     }
 
     export function CrateChooser(): ng.IDirective {
-        var controller = ['$scope', '$modal', ($scope: ICrateChooserScope, $modal: any) => {
-
+        var controller = ['$scope', '$modal', 'UpstreamExtractor', (
+            $scope: ICrateChooserScope,
+            $modal: any,
+            UpstreamExtractor: services.UpstreamExtractor
+        ) => {
             var onCratesSelected = (selectedCrates: Array<model.CrateDescriptionDTO>) => {
                 $scope.onChange();
             };
@@ -24,18 +27,38 @@ module dockyard.directives.crateChooser {
             };
 
             $scope.selectCrate = () => {
-                var modalInstance = $modal.open({
-                    animation: true,
-                    templateUrl: 'TextTemplate-CrateChooserSelectionModal',
-                    controller: 'CrateChooser__CrateSelectorModalController',
-                    size: 'm',
-                    resolve: {
-                        'crateDescriptions': () => $scope.field.crateDescriptions,
-                        'singleSelection': () => $scope.field.singleManifestOnly
-                    }
-                });
+                var displayModal = () => {
+                    var modalInstance = $modal.open({
+                        animation: true,
+                        templateUrl: 'TextTemplate-CrateChooserSelectionModal',
+                        controller: 'CrateChooser__CrateSelectorModalController',
+                        size: 'm',
+                        resolve: {
+                            'crateDescriptions': () => $scope.field.crateDescriptions,
+                            'singleSelection': () => $scope.field.singleManifestOnly
+                        }
+                    });
 
-                modalInstance.result.then(onCratesSelected);
+                    modalInstance.result.then(onCratesSelected);
+                };
+
+                if ($scope.field.requestUpstream) {
+                    UpstreamExtractor.extractUpstreamData($scope.currentAction.id, 'Crate Description', 'RunTime')
+                        .then((data) => {
+                            var descriptions = <Array<model.CrateDescriptionDTO>>[];
+                            angular.forEach(data, (it) => {
+                                angular.forEach(it.crateDescriptions, (cd) => {
+                                    descriptions.push(<model.CrateDescriptionDTO>cd);
+                                });
+                            });
+
+                            $scope.field.crateDescriptions = descriptions;
+                            displayModal();
+                        });
+                }
+                else {
+                    displayModal();
+                }
             };
         }];
 

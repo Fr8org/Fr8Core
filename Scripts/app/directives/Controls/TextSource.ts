@@ -3,6 +3,7 @@ module dockyard.directives.textSource {
     'use strict';
 
     export interface ITextSourceScope extends ng.IScope {
+        currentAction: model.ActivityDTO;
         field: model.TextSource;
         change: () => (field: model.ControlDefinitionDTO) => void;
         onChange: any;
@@ -60,6 +61,7 @@ module dockyard.directives.textSource {
             controller: controller,
             link: link,
             scope: {
+                currentAction: '=',
                 field: '=',
                 change: '&',
                 isFocused : "=?"

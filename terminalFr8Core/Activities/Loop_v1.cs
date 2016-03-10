@@ -261,7 +261,7 @@ namespace terminalFr8Core.Actions
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             var controlsMS = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().Single();
-            var manifestTypeDropdown = controlsMS.Controls.Single(x => x.Type == ControlTypes.DropDownList && x.Name == "Available_Manifests");
+            var crateChooser = (CrateChooser)controlsMS.Controls.Single(x => x.Type == ControlTypes.CrateChooser && x.Name == "Available_Crates");
 
             //refresh upstream manifest types
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
@@ -270,17 +270,21 @@ namespace terminalFr8Core.Actions
                 crateStorage.Add(await GetUpstreamManifestTypes(curActivityDO));
             }
 
-            if (manifestTypeDropdown.Value != null)
+            if (crateChooser.CrateDescriptions != null)
             {
-                var labelList = await GetLabelsByManifestType(curActivityDO, manifestTypeDropdown.Value);
+                var selected = crateChooser.CrateDescriptions.FirstOrDefault(x => x.Selected);
 
-                using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+                if (selected != null)
                 {
-                    crateStorage.RemoveByLabel("Available Labels");
-                    crateStorage.Add(Data.Crates.Crate.FromContent("Available Labels", new FieldDescriptionsCM() { Fields = labelList }));
+                    var labelList = await GetLabelsByManifestType(curActivityDO, selected.ManifestType);
+
+                    using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+                    {
+                        crateStorage.RemoveByLabel("Available Labels");
+                        crateStorage.Add(Data.Crates.Crate.FromContent("Available Labels", new FieldDescriptionsCM() { Fields = labelList }));
+                    }
                 }
             }
-
 
             return curActivityDO;
         }
@@ -295,7 +299,14 @@ namespace terminalFr8Core.Actions
 
         private async Task<Crate> CreateControlsCrate(ActivityDO curActivityDO)
         {
-            var crateChooser = await GenerateCrateChooser(curActivityDO, "Available_Crates", "This Loop will process the data inside of", true);
+            var crateChooser = await GenerateCrateChooser(
+                curActivityDO,
+                "Available_Crates",
+                "This Loop will process the data inside of",
+                true,
+                requestUpstream: true,
+                requestConfig: true
+            );
             return PackControlsCrate(crateChooser);
         }
 
@@ -313,7 +324,7 @@ namespace terminalFr8Core.Actions
                 return ConfigurationRequestType.Initial;
             }
 
-            var manifestTypeDropdown = controlsMS.Controls.FirstOrDefault(x => x.Type == ControlTypes.DropDownList && x.Name == "Available_Manifests");
+            var manifestTypeDropdown = controlsMS.Controls.FirstOrDefault(x => x.Type == ControlTypes.CrateChooser && x.Name == "Available_Crates");
 
             if (manifestTypeDropdown == null)
             {
