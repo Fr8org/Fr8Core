@@ -184,7 +184,7 @@ namespace terminalDocuSign.Actions
                 .Controls
                 .OfType<DropDownList>()
                 .First();
-            var result = !string.IsNullOrEmpty(templateList.selectedKey);
+            var result = !string.IsNullOrEmpty(templateList.ListItems.Where(x => x.Value == templateList.Value).Select(x => x.Key).FirstOrDefault());
             templateList.ErrorMessage = errorMessage = result ? string.Empty : "Template is not selected";
             return result;
         }

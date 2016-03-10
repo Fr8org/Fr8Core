@@ -162,7 +162,7 @@ namespace terminalDocuSignTests.Activities
                               .Controls
                               .OfType<DropDownList>()
                               .First()
-                              .selectedKey = "1";
+                              .Value = "First";
             }
         }
     }
