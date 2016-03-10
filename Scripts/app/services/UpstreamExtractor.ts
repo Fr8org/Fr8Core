@@ -6,15 +6,15 @@
         ) {
         }
 
-        public clear() {
-        }
-
         // So far extracts only Fields Descriptions.
-        public extractUpstreamData(activityId: string) {
+        public extractUpstreamData(activityId: string, manifestType: string, availability: string) {
             var defer = this.$q.defer();
 
-            this.$http
-                .get('/api/routenodes/upstream_fields/?id=' + activityId)
+            var url = '/api/routenodes/upstream_fields/?id=' + activityId
+                + '&manifestType=' + manifestType
+                + '&availability=' + availability;
+
+            this.$http.get(url)
                 .then((res) => {
                     defer.resolve(res.data);
                 });

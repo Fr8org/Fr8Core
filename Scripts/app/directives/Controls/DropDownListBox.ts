@@ -49,14 +49,45 @@ module dockyard.directives.dropDownListBox {
                         && $scope.field.source.manifestType === 'Field Description') {
 
                         UpstreamExtractor
-                            .extractUpstreamData($scope.currentAction.id)
-                            .then((cm: any) => {
-                                var fields = <Array<model.FieldDTO>>cm.fields;
+                            .extractUpstreamData($scope.currentAction.id, 'Field Description', 'NotSet')
+                            .then((data: any) => {
+                                var listItems: Array<model.DropDownListItem> = []; 
 
-                                $scope.field.listItems = [];
-                                angular.forEach(fields, (it) => {
-                                    $scope.field.listItems.push(<model.DropDownListItem>it);
+                                angular.forEach(<Array<any>>data, cm => {
+                                    var fields = <Array<model.FieldDTO>>cm.fields;
+
+                                    angular.forEach(fields, (it) => {
+                                        var i, j;
+                                        var found = false;
+                                        for (i = 0; i < listItems.length; ++i) {
+                                            if (listItems[i].key === it.key) {
+                                                found = true;
+                                                break;
+                                            }
+                                        }
+
+                                        if (!found) {
+                                            listItems.push(<model.DropDownListItem>it);
+                                        }
+                                    });
                                 });
+
+                                listItems.sort((x, y) => {
+                                    if (x.key < y.key) {
+                                        return -1;
+                                    }
+                                    else if (x.key > y.key) {
+                                        return 1;
+                                    }
+                                    else {
+                                        return 0;
+                                    }
+                                });
+                                
+                                $scope.field.listItems = listItems;
+
+                                $select.open = !$scope.toggle;
+                                $scope.toggle = !$scope.toggle;
                             });
                     }
                     else {

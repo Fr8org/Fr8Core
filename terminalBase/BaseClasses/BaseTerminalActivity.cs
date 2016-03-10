@@ -1133,17 +1133,31 @@ namespace TerminalBase.BaseClasses
         /// <param name="name"></param>
         /// <param name="singleManifest"></param>
         /// <returns></returns>
-        protected async Task<CrateChooser> GenerateCrateChooser(ActivityDO curActivityDO, string name, string label, bool singleManifest)
+        protected async Task<CrateChooser> GenerateCrateChooser(
+            ActivityDO curActivityDO,
+            string name,
+            string label,
+            bool singleManifest,
+            bool requestUpstream = false,
+            bool requestConfig = false)
         {
             var crateDescriptions = await GetCratesByDirection<CrateDescriptionCM>(curActivityDO, CrateDirection.Upstream);
             var runTimeCrateDescriptions = crateDescriptions.Where(c => c.Availability == AvailabilityType.RunTime).SelectMany(c => c.Content.CrateDescriptions);
-            return new CrateChooser
+            var control = new CrateChooser
             {
                 Label = label,
                 Name = name,
                 CrateDescriptions = runTimeCrateDescriptions.ToList(),
-                SingleManifestOnly = singleManifest
+                SingleManifestOnly = singleManifest,
+                RequestUpstream = requestUpstream
             };
+
+            if (requestConfig)
+            {
+                control.Events.Add(new ControlEvent("onChange", "requestConfig"));
+            }
+
+            return control;
         }
 
         /// <summary>
