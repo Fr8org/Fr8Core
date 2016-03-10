@@ -55,12 +55,12 @@ namespace terminalFr8Core.Actions
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             //build a controls crate to render the pane
-            var configurationControlsCrate = CreateControlsCrate();
-            
+            var configurationCrate = CreateControlsCrate();
+            await FillFileSelectorSource(configurationCrate, "FileSelector");
+
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                crateStorage.Replace(AssembleCrateStorage(configurationControlsCrate));
-                crateStorage.Add(await GetCurrentUsersFiles());
+                crateStorage.Replace(AssembleCrateStorage(configurationCrate));
             }
 
             return curActivityDO;
@@ -73,7 +73,7 @@ namespace terminalFr8Core.Actions
 
             var configContrls = GetConfigurationControls(curActivityDO);
             var fileSelector = configContrls.FindByName<DropDownList>("FileSelector");
-            
+
             if (string.IsNullOrEmpty(fileSelector.Value))
             {
                 return Error(curPayloadDTO, "No File was selected on design time", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
@@ -106,7 +106,7 @@ namespace terminalFr8Core.Actions
             {
                 crateStorage.Add(fileCrate);
             }
-            
+
             return Success(curPayloadDTO);
         }
 
@@ -120,28 +120,35 @@ namespace terminalFr8Core.Actions
             return stream;
         }
 
-        public async Task<Crate> GetCurrentUsersFiles()
-        {
-            var curAccountFileList = await HubCommunicator.GetFiles(CurrentFr8UserId);
-            //TODO where tags == Docusign files
-            var fileFields = curAccountFileList.Select(c => new FieldDTO(c.OriginalFileName, c.Id.ToString(CultureInfo.InvariantCulture)));
-            return CrateManager.CreateDesignTimeFieldsCrate("AvailableFiles", fileFields.ToArray());
-        }
-
         private Crate CreateControlsCrate()
         {
             var fileSelectionDropdown = new DropDownList
             {
                 Label = "Please select file to get from Fr8 Store",
                 Name = "FileSelector",
-                Source = new FieldSourceDTO
-                {
-                    ManifestType = CrateManifestTypes.StandardDesignTimeFields,
-                    Label = "AvailableFiles"
-                }
+                Source = null
             };
 
             return PackControlsCrate(fileSelectionDropdown);
         }
+
+        #region Fill Source
+        private async Task FillFileSelectorSource(Crate configurationCrate, string controlName)
+        {
+            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
+            var control = configurationControl.FindByNameNested<DropDownList>(controlName);
+            if (control != null)
+            {
+                control.ListItems = await GetCurrentUsersFiles();
+            }
+        }
+
+        private async Task<List<ListItem>> GetCurrentUsersFiles()
+        {
+            var curAccountFileList = await HubCommunicator.GetFiles(CurrentFr8UserId);
+            //TODO where tags == Docusign files
+            return curAccountFileList.Select(c => new ListItem() { Key = c.OriginalFileName, Value = c.Id.ToString(CultureInfo.InvariantCulture) }).ToList();
+        }
+        #endregion
     }
 }
