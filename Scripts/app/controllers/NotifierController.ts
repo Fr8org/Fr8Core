@@ -25,6 +25,16 @@ module dockyard.controllers {
                     ngToast.create(data);
                 });
 
+                PusherNotifierService.bindEventToChannel('fr8pusher_' + data.emailAddress, 'fr8pusher_activity_execution_info', (data: any) => {
+
+                    var contentTemplate = "<label class='toast-activity-info'>Executing Activity: " + data.ActivityName + "</label><label class='toast-activity-info'>For Plan: " + data.PlanName + "</label> <label class='toast-activity-info'>Container: " + data.ContainerId +"</label>";
+
+                    ngToast.create({
+                        className : "success",
+                        content : contentTemplate
+                    });
+                });
+
                 PusherNotifierService.bindEventToChannel('fr8pusher_' + data.emailAddress, 'fr8pusher_generic_failure', (data: any) => {
                     ngToast.danger(data);
                 });

@@ -101,9 +101,10 @@ namespace terminalSalesforceTests.Intergration
         public async Task Create_Contact_Run_With_ValidParameter_Check_PayloadDto_OperationalState()
         {
             //Arrange
+            var authToken = HealthMonitor_FixtureData.Salesforce_AuthToken().Result;
             var initialConfigActionDto = await PerformInitialConfiguration();
             initialConfigActionDto = SetLastName(initialConfigActionDto);
-            initialConfigActionDto.AuthToken = HealthMonitor_FixtureData.Salesforce_AuthToken().Result;
+            initialConfigActionDto.AuthToken = authToken;
             var dataDTO = new Fr8DataDTO { ActivityDTO = initialConfigActionDto };
             AddOperationalStateCrate(dataDTO, new OperationalStateCM());
             
@@ -112,6 +113,15 @@ namespace terminalSalesforceTests.Intergration
 
             //Assert
             Assert.IsNotNull(responseOperationalState);
+            Assert.IsTrue(responseOperationalState.CrateStorage.Crates.Any(c => c.Label.Equals("Newly Created Salesforce Contact")), "Contact is not created");
+
+            var newContactIdCrate = Crate.GetStorage(responseOperationalState)
+                                         .CratesOfType<StandardPayloadDataCM>()
+                                         .Single(c => c.Label.Equals("Newly Created Salesforce Contact"));
+
+            Assert.IsTrue(
+                await SalesforceTestHelper.DeleteObject(authToken, "Contact", newContactIdCrate.Content.PayloadObjects[0].PayloadObject[0].Value),
+                "Test contact created is not deleted");
         }
 
         /// <summary>
