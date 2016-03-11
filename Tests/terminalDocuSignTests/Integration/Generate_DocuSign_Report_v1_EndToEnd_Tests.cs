@@ -73,7 +73,6 @@ namespace terminalDocuSignTests.Integration
         private async Task<RouteFullDTO> CreateSolution()
         {
             var solutionCreateUrl = _baseUrl + "activities/create?solutionName=Generate_DocuSign_Report";
-            Assert.AreEqual(true, true, solutionCreateUrl);
 
             var plan = await HttpPostAsync<string, RouteFullDTO>(solutionCreateUrl, null);
 
