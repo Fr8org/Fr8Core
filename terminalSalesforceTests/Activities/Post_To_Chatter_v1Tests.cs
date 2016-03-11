@@ -56,7 +56,7 @@ namespace terminalSalesforceTests.Actions
             salesforceIntegrationMock.Setup(si => si.GetChatters(It.IsAny<AuthorizationTokenDO>())).Returns(
                 () => Task.FromResult<IList<FieldDTO>>(new List<FieldDTO> { new FieldDTO("One", "1")}));
             salesforceIntegrationMock.Setup(si => si.PostFeedTextToChatterObject("SomeValue", "SomeValue", 
-                It.IsAny<AuthorizationTokenDO>())).Returns(() => Task.FromResult(true));
+                It.IsAny<AuthorizationTokenDO>())).Returns(() => Task.FromResult("SomeValue"));
 
             postToChatter_v1 = new Post_To_Chatter_v1();
         }
@@ -91,7 +91,7 @@ namespace terminalSalesforceTests.Actions
             //Arrange
             var authToken = await FixtureData.Salesforce_AuthToken();
             var activityDO = FixtureData.PostToChatterTestActivityDO1();
-
+            
             //perform initial configuration
             activityDO = await postToChatter_v1.Configure(activityDO, authToken);
             activityDO = SetValues(activityDO);
