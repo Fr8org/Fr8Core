@@ -92,10 +92,6 @@ namespace terminalSendGridTests.Integration
             Assert.NotNull(responseActionDTO);
             Assert.NotNull(responseActionDTO.CrateStorage);
             Assert.NotNull(responseActionDTO.CrateStorage.Crates);
-
-            var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
-
-            Assert.AreEqual(1, crateStorage.CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "Upstream Terminal-Provided Fields").Count());
         }
 
         [Test, Category("Integration.terminalSendGrid")]
