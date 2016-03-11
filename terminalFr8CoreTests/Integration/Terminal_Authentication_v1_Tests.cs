@@ -7,6 +7,7 @@ using Data.Interfaces.DataTransferObjects;
 using HealthMonitor.Utility;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using NUnit.Framework;
+using Hub.Exceptions;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -23,7 +24,7 @@ namespace terminalDocuSignTests.Integration
         /// </summary>
         [Test, Category("Integration.Authentication.terminalFr8Core")]
         [ExpectedException(
-            ExpectedException = typeof(RestfulServiceException),
+            ExpectedException = typeof(TerminalProcessingException),
             ExpectedMessage = @"Authorization has been denied for this request.",
             MatchType = MessageMatch.Contains
         )]
