@@ -88,36 +88,13 @@ namespace terminalFr8Core.Actions
 
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            var curUpstreamFields =
-                (await GetDesignTimeFields(curActivityDO, CrateDirection.Upstream))
-                .Fields
-                .ToArray();
-
-            var queryFieldsCrate = Crate.FromContent(
-                "Queryable Criteria",
-                new StandardQueryFieldsCM(
-                    curUpstreamFields.Select(
-                        x => new QueryFieldDTO(
-                            x.Key,
-                            x.Key,
-                            QueryFieldType.String,
-                            new TextBox()
-                            {
-                                Name = "QueryField_" + x.Key
-                            }
-                        )
-                    )
-                )
-            );
-
-
+        
             //build a controls crate to render the pane
             var configurationControlsCrate = CreateControlsCrate();
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Replace(AssembleCrateStorage(configurationControlsCrate));
-                crateStorage.Add(queryFieldsCrate);
             }
 
             return curActivityDO;
@@ -131,14 +108,7 @@ namespace terminalFr8Core.Actions
                 Name = "Delay_Duration"
             };
 
-            var transition = new ContainerTransition
-            {
-                Label = "Please enter transition",
-                Name = "transition"
-            };
-
-
-            return PackControlsCrate(duration, transition);
+            return PackControlsCrate(duration);
         }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
