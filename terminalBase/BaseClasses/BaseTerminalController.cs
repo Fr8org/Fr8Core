@@ -212,15 +212,13 @@ namespace TerminalBase.BaseClasses
                         }
                     case "run":
                     case "executechildactivities":
-                        {
-                            
+                        {                            
                             OnStartActivity(curTerminal, activityTemplateName, IntegrationTestMode);
                             var resultPayloadDTO = await (Task<PayloadDTO>)curMethodInfo
                                 .Invoke(curObject, new Object[] { curActivityDO, curDataDTO.ContainerId, curAuthTokenDO });
                             await OnCompletedActivity(curTerminal, IntegrationTestMode);
                             
-                            return resultPayloadDTO;                       
-                            
+                            return resultPayloadDTO;        
                         }
                     case "initialconfigurationresponse":
                         {
