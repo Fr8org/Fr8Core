@@ -138,19 +138,13 @@ namespace terminalSlack.Actions
 
             var infoLabel = GenerateTextBlock("",
                     @"Slack doesn't currently offer a way for us to automatically request events for this channel. 
-                    You can do it manually here. </br>
+                    You can do it manually, here are the steps. </br>
                     <ol>
-                        <li>Go to https://api.slack.com/applications. </li>
-                        <li>Hit 'Create New Application' button in the top right corner.</li>
-                        <li>Fill 'App Name'.</li>
-                        <li>Fill 'Short description'</li>
-                        <li>In Redirect URI(s) field, fill the following address: <strong> https://terminalslack.fr8.co/AuthenticationCallback/ProcessSuccessfulOAuthResponse?terminalName=terminalSlack&terminalVersion=1 </strong> </li>
-                        <li>Now we may click 'Create application' button on the bottom of the form.</li>
-                        <li></li>
-                        <li></li>
-                    </ol>                    
-                    Use the following values: 
-                    URL: <strong>https://terminalslack.fr8.co/terminals/terminalslack/events</strong>",
+                        <li>Go to https://{yourteamname}.slack.com/services/new/outgoing-webhook. </li>
+                        <li>Hit 'Add Outgoing WebHooks Integration'</li>
+                        <li>In the Outgoing WebHook form go to 'URL(s)' field.</li>
+                        <li>Fill the following address: <strong>https://terminalslack.fr8.co/terminals/terminalslack/events</strong></li>
+                    </ol>",
                     "", "Info_Label");
 
             return PackControlsCrate(selectedSlackChannel, infoLabel);
