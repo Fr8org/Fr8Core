@@ -55,7 +55,6 @@ namespace terminalSalesforce.Controllers
                 Label = "Create Contact",
                 Terminal = terminal,
                 NeedsAuthentication = true,
-                Tags = "AggressiveReload",
                 Category = ActivityCategory.Forwarders,
                 MinPaneWidth = 330,
                 WebService = webService
@@ -85,9 +84,21 @@ namespace terminalSalesforce.Controllers
                 WebService = webService
             };
 
+            var postToChatterAction = new ActivityTemplateDTO()
+            {
+                Version = "1",
+                Name = "Post_To_Chatter",
+                Label = "Post To Salesforce Chatter",
+                Terminal = terminal,
+                NeedsAuthentication = true,
+                Category = ActivityCategory.Forwarders,
+                MinPaneWidth = 330,
+                WebService = webService
+            }; 
+
             var actionList = new List<ActivityTemplateDTO>()
             {
-                createLeadAction,createContactAction,createAccountAction, getDataAction
+                createLeadAction,createContactAction,createAccountAction, getDataAction, postToChatterAction
             };
 
             StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
