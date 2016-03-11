@@ -190,9 +190,12 @@ namespace TerminalBase.Infrastructure
             return mergedFields;
         }
 
-        public Task<FieldDescriptionsCM> GetDesignTimeFieldsByDirection(Guid actionId, CrateDirection direction, AvailabilityType availability, string userId)
+        public async Task<FieldDescriptionsCM> GetDesignTimeFieldsByDirection(Guid actionId, CrateDirection direction, AvailabilityType availability, string userId)
         {
-            throw new NotImplementedException();
+            var mergedFields = new FieldDescriptionsCM();
+            var curCrates = await GetCratesByDirection<FieldDescriptionsCM>(null, direction, userId);
+            mergedFields.Fields.AddRange(Crate.MergeContentFields(curCrates).Fields);
+            return mergedFields;
         }
 
         public Task<ActivityDTO> ConfigureActivity(ActivityDTO activityDTO, string userId)
@@ -225,6 +228,16 @@ namespace TerminalBase.Infrastructure
             throw new NotImplementedException();
         }
 
+        public Task<RouteFullDTO> GetPlansByActivity(string activityId, string userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<RouteFullDTO> UpdatePlan(RouteEmptyDTO plan, string userId)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<IEnumerable<FileDTO>> GetFiles(string userId)
         {
             throw new NotImplementedException();
@@ -236,6 +249,11 @@ namespace TerminalBase.Infrastructure
         }
 
         public Task DeleteExistingChildNodesFromActivity(Guid curActivityId, string userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteActivity(Guid curActivityId, string userId)
         {
             throw new NotImplementedException();
         }

@@ -1,6 +1,6 @@
 ﻿using Data.Interfaces.Manifests;
 
-namespace Data.Repositories
+namespace Data.Repositories.MultiTenant.Queryable
 {
     public class MtQueryAll<T> : MtQueryable<T>
         where T : Manifest

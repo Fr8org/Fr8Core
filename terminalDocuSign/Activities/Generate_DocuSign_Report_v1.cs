@@ -27,6 +27,10 @@ using terminalDocuSign.Services;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using TerminalBase.Services;
+using Hub.Infrastructure;
+using Hub.Interfaces;
+using Hub.Managers.APIManagers.Transmitters.Restful;
+using Utilities.Configuration.Azure;
 
 namespace terminalDocuSign.Actions
 {
@@ -140,11 +144,12 @@ namespace terminalDocuSign.Actions
 
         private readonly DocuSignManager _docuSignManager;
         private readonly IDocuSignFolder _docuSignFolder;
-
+        private readonly IPlan _plan;
         public Generate_DocuSign_Report_v1()
         {
             _docuSignManager = ObjectFactory.GetInstance<DocuSignManager>();
             _docuSignFolder = ObjectFactory.GetInstance<IDocuSignFolder>();
+            _plan = ObjectFactory.GetInstance<IPlan>();
 
             InitQueryBuilderFields();
         }
@@ -414,7 +419,7 @@ namespace terminalDocuSign.Actions
             return query;
         }
 
-        protected override Task<ActivityDO> InitialConfigurationResponse(
+        protected override async Task<ActivityDO> InitialConfigurationResponse(
             ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             if (NeedsAuthentication(authTokenDO))
@@ -431,7 +436,9 @@ namespace terminalDocuSign.Actions
                 crateStorage.AddRange(PackDesignTimeData(docuSignAuthToken));
             }
 
-            return Task.FromResult(curActivityDO);
+            RouteFullDTO plan = await UpdatePlanCategory(curActivityDO.Id, "report");
+
+            return await Task.FromResult(curActivityDO);
         }
 
         private int ExtractDocuSignResultSize(
@@ -452,12 +459,15 @@ namespace terminalDocuSign.Actions
 
             try
             {
+
                 var continueClicked = false;
 
                 using (var crateStorage = CrateManager.GetUpdatableStorage(activityDO))
                 {
                     crateStorage.Remove<StandardQueryCM>();
                     RemoveControl(crateStorage, "CannotProceedMessage");
+
+                    await UpdatePlanName(activityDO);
 
                     var queryCrate = ExtractQueryCrate(crateStorage);
                     crateStorage.Add(queryCrate);
@@ -599,6 +609,8 @@ namespace terminalDocuSign.Actions
                 actionUi.QueryBuilder.Value
             );
 
+            // This is weird to use query's name as the way to address MT type. 
+            // MT type has unique ID that should be used for this reason. Query name is something that is displayed to user. It should not contain any internal data.
             var queryCM = new StandardQueryCM(
                 new QueryDTO()
                 {
@@ -608,6 +620,32 @@ namespace terminalDocuSign.Actions
             );
 
             return Crate<StandardQueryCM>.FromContent(QueryCrateLabel, queryCM);
+        }
+
+        private async Task<RouteFullDTO> UpdatePlanName(ActivityDO activityDO)
+        {
+            using (var crateStorage = CrateManager.GetUpdatableStorage(activityDO))
+            {
+                var configurationControls = crateStorage
+                .CrateContentsOfType<StandardConfigurationControlsCM>()
+                .SingleOrDefault();
+
+                if (configurationControls != null)
+                {
+                    var actionUi = new ActivityUi();
+                    actionUi.ClonePropertiesFrom(configurationControls);
+
+                    var criteria = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(
+                        actionUi.QueryBuilder.Value
+                    );
+
+                    if (criteria.Count > 0)
+                    {
+                        return await UpdatePlanName(activityDO.Id, "Generate a DocuSign Report", ParseConditionToText(criteria));
+                    }
+                }
+            }
+            return null;
         }
 
         public QueryFieldDTO[] GetFieldListForQueryBuilder(DocuSignAuthTokenDTO authToken)

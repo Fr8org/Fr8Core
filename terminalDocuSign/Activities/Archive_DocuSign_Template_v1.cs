@@ -37,11 +37,6 @@ namespace terminalDocuSign.Actions
                     Label = "Archive which template",
                     Name = "Available_Templates",
                     Value = null,
-                    Source = new FieldSourceDTO
-                    {
-                        Label = "Available Templates",
-                        ManifestType = MT.FieldDescription.GetEnumDisplayName()
-                    },
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 });
 
@@ -54,12 +49,12 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        private readonly DocuSignManager DocuSignManager;
+        private readonly DocuSignManager _docuSignManager;
 
 
         public Archive_DocuSign_Template_v1()
         {
-            DocuSignManager = new DocuSignManager();
+            _docuSignManager = new DocuSignManager();
         }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
@@ -75,14 +70,14 @@ namespace terminalDocuSign.Actions
         protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
-            var docuSignTemplatesCrate = DocuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
+            var configurationCrate = PackControls(new ActivityUi());
+            _docuSignManager.FillDocuSignTemplateSource(configurationCrate, "Available_Templates", docuSignAuthDTO);
+
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Clear();
-                crateStorage.Add(PackControls(new ActivityUi()));
-                crateStorage.Add(docuSignTemplatesCrate);
+                crateStorage.Add(configurationCrate);
             }
-
             return Task.FromResult(curActivityDO);
         }
 

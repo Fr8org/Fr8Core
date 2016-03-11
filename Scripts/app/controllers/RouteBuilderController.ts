@@ -313,6 +313,7 @@ module dockyard.controllers {
 
         private processState($state: ngState) {
             if ($state.params.solutionName) {
+                this.$scope.solutionName = $state.params.solutionName;
                 var isGuid = /\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/.test($state.params.solutionName);
                 if (isGuid) {
                     this.$scope.planId = $state.params.solutionName;
@@ -342,6 +343,7 @@ module dockyard.controllers {
         }
 
         private onRouteLoad(mode: string, curRoute: interfaces.IRouteVM) {
+            this.AuthService.setCurrentPlan(curRoute);
             this.AuthService.clear();
 
             this.$scope.mode = mode;
@@ -662,7 +664,11 @@ module dockyard.controllers {
         }
 
         private PaneConfigureAction_SetSolutionMode() {
-            this.loadRoute('solution');
+            if (this.$scope.solutionName) {
+                return this.createNewSolution(this.$scope.solutionName);
+            } else {
+                this.loadRoute("solution");
+            }
         }
 
         private PaneConfigureAction_ChildActionsDetected() {
@@ -724,6 +730,7 @@ module dockyard.controllers {
                     results.push(action);
                 });
             });
+
             return results;
         }
     }

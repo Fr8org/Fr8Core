@@ -31,9 +31,8 @@ namespace terminalDocuSignTests.Integration
 
         private void AssertCrateTypes(ICrateStorage crateStorage)
         {
-            Assert.AreEqual(2, crateStorage.Count);
+            Assert.AreEqual(1, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
-            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Available Templates"));
         }
 
         private void AddHubActivityTemplate(Fr8DataDTO dataDTO)
@@ -87,9 +86,9 @@ namespace terminalDocuSignTests.Integration
             Assert.AreEqual(1, dataSourceDropdown.ListItems.Count());
             Assert.IsFalse(dataSourceDropdown.ListItems.Any(x => !x.Key.StartsWith("Get", StringComparison.InvariantCultureIgnoreCase)));
 
-            // Assert that Dropdownlist  with source labeled "Available Templates".
+            // Assert that Dropdownlist  source is null.
             var templateDropdown = (DropDownList)controls.Controls[1];
-            Assert.AreEqual("Available Templates", templateDropdown.Source.Label);
+            Assert.AreEqual(null, templateDropdown.Source);
         }
 
         private async Task<ActivityDTO> GetActivityDTO_WithDataStorage(string childAction)
@@ -180,7 +179,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
-        public void Mail_Merge_Into_DocuSign_FollowUp_Configuration_Check_ChildActivity_Extract_Spreadsheet_Data()
+        public void Mail_Merge_Into_DocuSign_FollowUp_Configuration_Check_ChildActivity_Get_Google_Sheet_Data()
         {
             //string childAction = "Extract Spreadsheet Data";
             //var configureUrl = GetTerminalConfigureUrl();

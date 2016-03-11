@@ -79,7 +79,7 @@ namespace HubWeb.Controllers
                 }
 
                 var result = await _activity.CreateAndConfigure(uow, userId,
-                    activityTemplate.Id, activityTemplate.Label, null, null, true);
+                    activityTemplate.Id, activityTemplate.Label, null, null, true, null);
                 return Ok(RouteMappingHelper.MapRouteToDto(uow, (PlanDO)result));
             }
         }
@@ -126,6 +126,14 @@ namespace HubWeb.Controllers
             {
                 return ResponseMessage(new HttpResponseMessage(HttpStatusCode.PreconditionFailed));
             }
+            return Ok();
+        }
+
+        [HttpDelete]
+        [Fr8HubWebHMACAuthenticate]
+        public async Task<IHttpActionResult> DeleteActivity(Guid id)
+        {
+            await _subRoute.DeleteActivity(User.Identity.GetUserId(), id, true);
             return Ok();
         }
 

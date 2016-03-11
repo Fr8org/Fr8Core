@@ -17,7 +17,6 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
 using StructureMap;
-using MT_Field = Data.Entities.MT_Field;
 //using MT_FieldService = Data.Infrastructure.MultiTenant.MT_Field;
 
 namespace Data.Migrations
@@ -28,6 +27,8 @@ namespace Data.Migrations
         {
             //Do not ever turn this on! It will break database upgrades
             AutomaticMigrationsEnabled = false;
+
+            this.CommandTimeout = 60 * 15;
 
             //Do not modify this, otherwise migrations will run twice!
             ContextKey = "Data.Infrastructure.DockyardDbContext";
@@ -412,7 +413,6 @@ namespace Data.Migrations
             uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, user.Id);
 
             user.TestAccount = false;
-
             return user;
         }
 

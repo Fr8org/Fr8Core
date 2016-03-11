@@ -7,6 +7,7 @@ using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.Repositories;
+using Data.Repositories.MultiTenant.Queryable;
 
 namespace TerminalBase.Services
 {
@@ -26,7 +27,7 @@ namespace TerminalBase.Services
 
             public List<object> Query(IUnitOfWork uow, string accountId, List<FilterConditionDTO> conditions)
             {
-                var queryable = uow.MultiTenantObjectRepository.AsQueryable<T>(uow, accountId);
+                var queryable = uow.MultiTenantObjectRepository.AsQueryable<T>(accountId);
                 var result = new List<object>();
 
                  result.AddRange(CriteriaToMtQuery(conditions, queryable));

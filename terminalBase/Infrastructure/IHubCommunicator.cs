@@ -40,6 +40,10 @@ namespace TerminalBase.Infrastructure
         Task<IEnumerable<FileDTO>> GetFiles(string userId);
         Task Configure(string terminalName);
         bool IsConfigured { get; set; }
+
+        Task DeleteActivity(Guid curActivityId, string userId);
         Task DeleteExistingChildNodesFromActivity(Guid curActivityId, string userId);
+        Task<RouteFullDTO> GetPlansByActivity(string activityId, string userId);
+        Task<RouteFullDTO> UpdatePlan(RouteEmptyDTO plan, string userId);
     }
 }

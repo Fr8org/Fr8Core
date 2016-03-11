@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Xml.Linq;
 using AutoMapper;
+using Data;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Data.Entities;
@@ -22,12 +23,13 @@ namespace terminalDocuSign.Controllers
     public class ActivityController : BaseTerminalController
     {
         private const string curTerminal = "terminalDocuSign";
+
         [HttpPost]
         [fr8TerminalHMACAuthenticate(curTerminal)]
         [Authorize]
         public Task<object> Execute([FromUri] String actionType, [FromBody] Fr8DataDTO curDataDTO)
         {
-             return HandleFr8Request(curTerminal, actionType, curDataDTO);
+            return HandleFr8Request(curTerminal, actionType, curDataDTO);
         }
     }
 }

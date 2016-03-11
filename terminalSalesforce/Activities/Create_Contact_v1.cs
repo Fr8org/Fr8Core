@@ -2,7 +2,6 @@
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data.Control;
 using Data.Crates;
@@ -12,6 +11,7 @@ using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using terminalSalesforce.Infrastructure;
 using terminalSalesforce.Services;
+using System.Collections.Generic;
 
 namespace terminalSalesforce.Actions
 {
@@ -52,7 +52,11 @@ namespace terminalSalesforce.Actions
             {
                 crateStorage.Clear();
 
-                AddTextSourceControlForDTO<ContactDTO>(crateStorage, "Upstream Terminal-Provided Fields");
+                AddTextSourceControlForDTO<ContactDTO>(
+                    crateStorage,
+                    "Upstream Terminal-Provided Fields",
+                    requestUpstream: true
+                );
             }
 
             return await Task.FromResult(curActivityDO);
@@ -96,10 +100,16 @@ namespace terminalSalesforce.Actions
             }
 
             var contact = _salesforce.CreateSalesforceDTO<ContactDTO>(curActivityDO, payloadCrates, ExtractSpecificOrUpstreamValue);
-            bool result = await _salesforce.CreateObject(contact, "Contact", _salesforce.CreateForceClient(authTokenDO));
+            var result = await _salesforce.CreateObject(contact, "Contact", authTokenDO);
 
-            if (result)
+            if (!string.IsNullOrEmpty(result))
             {
+                using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
+                {
+                    var contactIdFields = new List<FieldDTO> { new FieldDTO("ContactID", result) };
+                    crateStorage.Add(Crate.FromContent("Newly Created Salesforce Contact", new StandardPayloadDataCM(contactIdFields)));
+                }
+
                 return Success(payloadCrates);
             }
 

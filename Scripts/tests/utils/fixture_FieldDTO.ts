@@ -37,7 +37,8 @@ module dockyard.tests.utils.fixtures {
             source: {
                 manifestType: 'testManifest',
                 label: 'testLabel',
-                filterByTag: null
+                filterByTag: null,
+                requestUpstream: false
             },
             type: 'DropDownList',
             fieldLabel: 'DropDownList Test',
@@ -127,7 +128,8 @@ module dockyard.tests.utils.fixtures {
             source: {
                 manifestType: 'testManifest',
                 label: 'testLabel',
-                filterByTag: null
+                filterByTag: null,
+                requestUpstream: false
             },
             valueSource: 'test',
             listItems: [{

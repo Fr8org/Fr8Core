@@ -46,13 +46,11 @@ namespace terminalFr8Core.Actions
                 //get the process payload
                 foreach (var curCrate in curCrates)
                 {
-                    var curManifest = (Manifest)curCrate.Content;
-                    // Use reflection to call the generic method
-                    MethodInfo method = typeof(MultiTenantObjectRepository).GetMethod("AddOrUpdate");
-                    MethodInfo addOrUpdate = method.MakeGenericMethod(curManifest.GetType());
-                    addOrUpdate.Invoke(uow.MultiTenantObjectRepository, new object[] { uow, authTokenDO.UserID, curManifest, null });
+                    var curManifest = curCrate.Content;
+                    uow.MultiTenantObjectRepository.AddOrUpdate(authTokenDO.UserID, curManifest);
                 }
 
+                uow.SaveChanges();
                 return Success(curProcessPayload);
             }
         }

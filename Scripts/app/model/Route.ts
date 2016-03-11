@@ -11,6 +11,7 @@
         startingSubrouteId: number;
         subroutes: Array<SubrouteDTO>;
         visibility: PlanVisibility;
+        category: string;
     }
 
     export enum RouteState {

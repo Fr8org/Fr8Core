@@ -5,20 +5,18 @@ using Data.Expressions;
 using Data.Interfaces;
 using Data.Interfaces.Manifests;
 
-namespace Data.Repositories
+namespace Data.Repositories.MultiTenant.Queryable
 {
     public class MtQueryExecutor<T> : IMtQueryExecutor<T>
         where T : Manifest
     {
         private readonly IMultiTenantObjectRepository _mtObjectRepository;
         private readonly string _currentAccountId;
-        private readonly IUnitOfWork _uow;
 
-        public MtQueryExecutor(IMultiTenantObjectRepository mtObjectRepository, IUnitOfWork uow, string currentAccountId)
+        public MtQueryExecutor(IMultiTenantObjectRepository mtObjectRepository, string currentAccountId)
         {
             _mtObjectRepository = mtObjectRepository;
             _currentAccountId = currentAccountId;
-            _uow = uow;
         }
 
         // Currently we support only string of MtWhere. All Expressions from MtWhere are combined using 'and' into one expression.
@@ -69,7 +67,7 @@ namespace Data.Repositories
                 result = Expression.Lambda<Func<T, bool>>(temp, sourceParameter);
             }
 
-            return _mtObjectRepository.Query(_uow, _currentAccountId, result).GetEnumerator();
+            return _mtObjectRepository.Query(_currentAccountId, result).GetEnumerator();
         }
 
         private static Expression ReplaceParameter(Expression<Func<T, bool>> expr, ParameterExpression sourceParameter)

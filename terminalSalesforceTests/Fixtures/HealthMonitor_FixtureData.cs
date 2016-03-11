@@ -64,7 +64,18 @@ namespace terminalSalesforceTests.Fixtures
             {
                 Version = "1",
                 Name = "Get_Data_TEST",
-                Label = "Get Data from Salesforce.com",
+                Label = "Get Data from Salesforce",
+                NeedsAuthentication = true
+            };
+        }
+
+        public static ActivityTemplateDTO Post_To_Chatter_v1_ActivityTemplate()
+        {
+            return new ActivityTemplateDTO()
+            {
+                Version = "1",
+                Name = "Post_To_Chatter_TEST",
+                Label = "Post To Chatter",
                 NeedsAuthentication = true
             };
         }
@@ -113,17 +124,33 @@ namespace terminalSalesforceTests.Fixtures
             return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
 
-        public static ActivityDTO Get_Data_v1_InitialConfiguration_ActivityDTO()
+        public static Fr8DataDTO Get_Data_v1_InitialConfiguration_ActivityDTO()
         {
             var activityTemplate = Get_Data_v1_ActivityTemplate();
 
-            return new ActivityDTO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
                 Label = "Get Data from Salesforce.com",
                 AuthToken = Salesforce_AuthToken().Result,
                 ActivityTemplate = activityTemplate
             };
+
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
+        }
+
+        public static Fr8DataDTO Post_To_Chatter_v1_InitialConfiguration_Fr8DataDTO()
+        {
+            var activityTemplate = Post_To_Chatter_v1_ActivityTemplate();
+
+            var activityDTO = new ActivityDTO()
+            {
+                Id = Guid.NewGuid(),
+                Label = "Post To Chatter",
+                AuthToken = Salesforce_AuthToken().Result,
+                ActivityTemplate = activityTemplate
+            };
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
     }
 }

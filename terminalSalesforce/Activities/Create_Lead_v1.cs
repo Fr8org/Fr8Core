@@ -1,20 +1,17 @@
 ﻿using System.Linq;
-using System.Reflection;
 using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
-using Data.States;
-using ServiceStack;
 using terminalSalesforce.Infrastructure;
 using System.Threading.Tasks;
 using Data.Interfaces.Manifests;
 using Hub.Managers;
 using terminalSalesforce.Services;
 using TerminalBase.Infrastructure;
-using System.Collections.Generic;
 using Data.Entities;
 using TerminalBase.BaseClasses;
 using System;
 using Data.Control;
+using System.Collections.Generic;
 
 namespace terminalSalesforce.Actions
 {
@@ -55,7 +52,12 @@ namespace terminalSalesforce.Actions
             {
                 crateStorage.Clear();
 
-                AddTextSourceControlForDTO<LeadDTO>(crateStorage, "Upstream Terminal-Provided Fields", addRequestConfigEvent:true);
+                AddTextSourceControlForDTO<LeadDTO>(
+                    crateStorage,
+                    "Upstream Terminal-Provided Fields",
+                    addRequestConfigEvent: true,
+                    requestUpstream: true
+                );
             }
 
             return await Task.FromResult(curActivityDO);
@@ -107,10 +109,16 @@ namespace terminalSalesforce.Actions
             }
 
             var lead = _salesforce.CreateSalesforceDTO<LeadDTO>(curActivityDO, payloadCrates, ExtractSpecificOrUpstreamValue);
-            bool result = await _salesforce.CreateObject(lead, "Lead", _salesforce.CreateForceClient(authTokenDO));
+            var result = await _salesforce.CreateObject(lead, "Lead", authTokenDO);
 
-            if (result)
+            if (!string.IsNullOrEmpty(result))
             {
+                using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
+                {
+                    var leadIdFields = new List<FieldDTO> { new FieldDTO("LeadID", result) };
+                    crateStorage.Add(Crate.FromContent("Newly Created Salesforce Lead", new StandardPayloadDataCM(leadIdFields)));
+                }
+
                 return Success(payloadCrates);
             }
 

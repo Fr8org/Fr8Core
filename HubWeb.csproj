@@ -373,7 +373,7 @@
     <Compile Include="Controllers\Api\ConfigurationController.cs" />
     <Compile Include="Controllers\Api\ManifestRegistryController.cs" />
     <Compile Include="Controllers\Api\ManifestsController.cs" />
-    <Compile Include="Controllers\Api\RoutesController.cs" />
+    <Compile Include="Controllers\Api\PlansController.cs" />
     <Compile Include="Controllers\Api\TerminalsController.cs" />
     <Compile Include="Controllers\CompanyController.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
@@ -477,9 +477,24 @@
   <ItemGroup>
     <Content Include="Api\EventResponse.aspx" />
     <Content Include="Api\GetEmailHTML.aspx" />
+    <Content Include="Content\css\fonts\brankic.svg" />
+    <Content Include="Content\css\fonts\fontawesome-webfont.svg" />
+    <Content Include="Content\css\homecss\bootstrap.css" />
+    <Content Include="Content\css\homecss\font-awesome.min.css" />
+    <Content Include="Content\css\homecss\ie.css" />
+    <Content Include="Content\css\homecss\main.css" />
+    <Content Include="Content\img\background-7.png" />
+    <Content Include="Content\img\background-cta-3.png" />
+    <Content Include="Content\img\docusign.png" />
+    <Content Include="Content\img\fr8-service.png" />
+    <Content Include="Content\img\freight-connect.png" />
+    <Content Include="Content\img\freight-design.png" />
+    <Content Include="Content\img\freight-train.png" />
+    <Content Include="Content\img\google.png" />
     <Content Include="Content\img\gray-crate.png" />
     <Content Include="Content\img\green-crate.png" />
     <Content Include="Content\img\backgrounds\solution-bg.png" />
+    <Content Include="Content\img\logo-fr8.svg" />
     <Content Include="Content\img\Management\Alex_Edelstein_Round.png" />
     <Content Include="Content\img\Management\Benjamin_Black.png" />
     <Content Include="Content\css\additionalcss\bootstrap23\css\bootstrap2.3.css" />
@@ -578,6 +593,7 @@
     <Content Include="Content\img\RouteBuilder\delete-icon.png" />
     <Content Include="Content\img\RouteBuilder\right-arrow.png" />
     <Content Include="Content\img\RouteBuilder\start-node-bg.png" />
+    <Content Include="Content\img\salesforce.png" />
     <Content Include="Content\img\select-info.png" />
     <Content Include="Content\img\site\alex-photo.png" />
     <Content Include="Content\img\site\arrow_blue_ic_arrow_forward_48px-512.png" />
@@ -603,7 +619,10 @@
     <Content Include="Content\img\welcome\DocuSign_Logo_Purple_Yellow.png" />
     <Content Include="Content\img\welcome\header_green.png" />
     <Content Include="Content\img\welcome\welcome_header.png" />
+    <Content Include="Content\videos\motion.mp4" />
+    <Content Include="Content\videos\motion.png" />
     <Content Include="Documentation\DocuSignRESTAPI.html" />
+    <Content Include="Documentation\UpstreamCrates.html" />
     <Content Include="fr8terminals.txt" />
     <Content Include="Documentation\AccountCustomFields.html" />
     <Content Include="Documentation\AddaNewGroup.html" />
@@ -783,6 +802,25 @@
     <Content Include="Content\img\Management\Rob_Bailey.png" />
     <Content Include="Scripts\ai.0.15.0-build58334.js" />
     <Content Include="Scripts\ai.0.15.0-build58334.min.js" />
+    <Content Include="Scripts\homejs\bootstrap.min.js" />
+    <Content Include="Scripts\homejs\html5shiv.js" />
+    <Content Include="Scripts\homejs\jquery-2.1.0.min.js" />
+    <Content Include="Scripts\homejs\loop.js" />
+    <Content Include="Scripts\homejs\plugins\easing\jquery.easing.min.js" />
+    <Content Include="Scripts\homejs\plugins\easypiechart\jquery.easypiechart.min.js" />
+    <Content Include="Scripts\homejs\plugins\flexslider\jquery.flexslider-min.js" />
+    <Content Include="Scripts\homejs\plugins\isotope\imagesloaded.pkgd.js" />
+    <Content Include="Scripts\homejs\plugins\isotope\isotope.pkgd.min.js" />
+    <Content Include="Scripts\homejs\plugins\jpreloader\jpreloader.min.js" />
+    <Content Include="Scripts\homejs\plugins\magnific\jquery.magnific-popup.min.js" />
+    <Content Include="Scripts\homejs\plugins\parallax\jquery.parallax-1.1.3.js" />
+    <Content Include="Scripts\homejs\plugins\parsley\parsley.min.js" />
+    <Content Include="Scripts\homejs\plugins\scrollto\jquery.localscroll-1.2.7-min.js" />
+    <Content Include="Scripts\homejs\plugins\scrollto\jquery.scrollTo-1.4.3.1-min.js" />
+    <Content Include="Scripts\homejs\plugins\twitter\twitter-fetcher.js" />
+    <Content Include="Scripts\homejs\plugins\vide\jquery.vide.min.js" />
+    <Content Include="Scripts\homejs\plugins\waypoints\waypoints.min.js" />
+    <Content Include="Scripts\homejs\plugins\wow\wow.js" />
     <Content Include="Views\AngularTemplate\DatePicker.cshtml" />
     <Content Include="ApplicationInsights.config">
       <TransformOnBuild>true</TransformOnBuild>
@@ -799,6 +837,15 @@
       <DependentUpon>ApplicationInsights.config</DependentUpon>
       <IsTransformFile>True</IsTransformFile>
     </None>
+    <Content Include="Content\css\fonts\brankic.eot" />
+    <Content Include="Content\css\fonts\brankic.ttf" />
+    <Content Include="Content\css\fonts\brankic.woff" />
+    <Content Include="Content\css\fonts\fontawesome-webfont.eot" />
+    <Content Include="Content\css\fonts\fontawesome-webfont.ttf" />
+    <Content Include="Content\css\fonts\fontawesome-webfont.woff" />
+    <Content Include="Content\css\fonts\fontawesome-webfont.woff2" />
+    <Content Include="Content\videos\motion.ogv" />
+    <Content Include="Content\videos\motion.webm" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
     <Content Include="Scripts\templateCache.js" />
@@ -811,14 +858,14 @@
     <Content Include="_PowerShellScripts\RunIntegrationTests-MASTER.ps1" />
     <Content Include="_PowerShellScripts\MASTER-job-run.cmd" />
     <Content Include="_PowerShellScripts\MASTER-settings.job" />
-    <Content Include="_PowerShellScripts\DeployAzureWebJob-HealthMonitor-MASTER.ps1" />
+    <Content Include="_PowerShellScripts\DeployAzureWebJob-HealthMonitor-MASTER-Staging.ps1" />
     <Content Include="_PowerShellScripts\KillProcess.ps1" />
     <Content Include="_PowerShellScripts\SetCloudServiceSize.ps1" />
-    <Content Include="_PowerShellScripts\SetTerminalFr8CoreCS.ps1" />
-    <Content Include="_PowerShellScripts\SetTerminalDocuSignCS.ps1" />
     <Content Include="_PowerShellScripts\CloneDatabase.ps1" />
     <Content Include="_PowerShellScripts\UpdateTerminalHostnameInDb.ps1" />
     <Content Include="_PowerShellScripts\DeleteDatabase.ps1" />
+    <Content Include="_PowerShellScripts\Set-StagingHostname.ps1" />
+    <Content Include="_PowerShellScripts\CopyAppInsightsConfigs.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryListController.ts" />
@@ -827,8 +874,10 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\DatePicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\SourceableCriteria.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\CrateChooser.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\TimePicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamCrateChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamFieldChooser.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Resizable.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Validators\ManifestDescriptionValidators.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\DateTimeFormatter.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\FilterByTag.ts" />
@@ -847,6 +896,7 @@
     <TypeScriptCompile Include="Scripts\app\services\FileDetailsService.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\ISolutionDocumentationService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\SolutionDocumentationService.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\UpstreamExtractor.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\UpstreamFieldChooser.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\filters\FilterByTagTests.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\TerminalFormController.ts" />
@@ -944,6 +994,9 @@
     <Content Include="Views\AngularTemplate\QueryBuilderCondition.cshtml" />
     <Content Include="Views\AngularTemplate\SourceableCriteria.cshtml" />
     <Content Include="Views\AngularTemplate\CrateChooser.cshtml" />
+    <Content Include="Views\AngularTemplate\_RouteReportList.cshtml" />
+    <Content Include="Views\AngularTemplate\RouteReportList.cshtml" />
+    <Content Include="Views\AngularTemplate\TimePicker.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -4193,7 +4246,6 @@
     <Compile Include="ViewModels\EventWindowVM.cs" />
     <Content Include="tsd.json" />
     <Content Include="Scripts\tests\Chutzpah.json" />
-    <Content Include="_PowerShellScripts\RunFrontEndTests.ps1" />
     <None Include="Properties\PublishProfiles\test.pubxml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -4297,6 +4349,7 @@
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\bootstrap-switch\bootstrap-switch.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jasmine\jasmine.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\jquery\bootstrap.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\Metronic.d.ts" />
     <TypeScriptCompile Include="Scripts\app\_all.ts" />

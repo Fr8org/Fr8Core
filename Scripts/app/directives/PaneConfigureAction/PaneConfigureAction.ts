@@ -111,7 +111,8 @@ module dockyard.directives.paneConfigureAction {
         setSolutionMode: () => void;
         currentActiveElement: model.ControlDefinitionDTO;
         collapsed: boolean;
-        resize: () => void;
+        populateAllActivities: () => void;
+        allActivities: Array<interfaces.IActivityDTO>;
     }
     
     export class CancelledEventArgs extends CancelledEventArgsBase { }
@@ -188,10 +189,8 @@ module dockyard.directives.paneConfigureAction {
                 $scope.onConfigurationChanged = onConfigurationChanged;
                 $scope.processConfiguration = processConfiguration;
                 $scope.setSolutionMode = setSolutionMode;
-
-                $scope.resize = () => {
-                    $scope.collapsed = !$scope.collapsed;
-                };
+                $scope.populateAllActivities = populateAllActivities;
+                $scope.allActivities = Array<model.ActivityDTO>();
 
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Reconfigure], (event: ng.IAngularEvent, reConfigureActionEventArgs: ActionReconfigureEventArgs) => {
                     //this might be a general reconfigure command
@@ -359,7 +358,7 @@ module dockyard.directives.paneConfigureAction {
                         return handler == 'requestConfig';
                     }
                     else
-                        return false; onControlChange
+                        return false; 
                 }
 
                 function onControlChange(event: ng.IAngularEvent, eventArgs: ChangeEventArgs) {
@@ -395,9 +394,25 @@ module dockyard.directives.paneConfigureAction {
                     }
                 }
 
+                var allActivities = Array<interfaces.IActivityDTO>();
+                function getAllActivities(activities: Array<interfaces.IActivityDTO>){
+                    for (var activity of activities) {
+                        allActivities.push(activity);
+                        if (activity.childrenActivities.length > 0) {
+                            getAllActivities(activity.childrenActivities);
+                        }
+                    }
+                }
+
+                function populateAllActivities() {
+                    getAllActivities($scope.currentAction.childrenActivities);
+                    $scope.allActivities = allActivities;
+                }
+
                 // Here we look for Crate with ManifestType == 'Standard UI Controls'.
                 // We parse its contents and put it into currentAction.configurationControls structure.
                 function loadConfiguration() {
+                    
                     var deferred = $q.defer();
                     // Block pane and show pane-level 'loading' spinner
                     $scope.processing = true;

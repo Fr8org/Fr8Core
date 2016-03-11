@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Data;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -33,23 +35,25 @@ namespace terminalDocuSignTests.Integration
                 var solution = ExtractSolution(plan);
                 solution = await EnsureSolutionAuthenticated(solution);
 
-                var crateStorage = _crateManager.FromDto(solution.CrateStorage);
+                var crateStorage = Crate.FromDto(solution.CrateStorage);
                 ValidateCrateStructure(crateStorage);
                 ValidateConfigurationControls(crateStorage);
+                var planConfigure = await GetPlanByActivity(solution.Id);
+                ValidatePlanCategory(planConfigure);
                 await SaveActivity(solution);
-
 
                 // FollowUp configuration.
                 MockSolutionFollowUpConfigurationData(solution);
                 solution = await ConfigureActivity(solution);
 
-                crateStorage = _crateManager.FromDto(solution.CrateStorage);
+                crateStorage = Crate.FromDto(solution.CrateStorage);
                 ValidateCrateStructure(crateStorage);
                 ValidateConfigurationControls(crateStorage);
                 ValidateChildrenActivities(solution);
                 ValidateSolutionOperationalState(crateStorage);
+                var planFollowup = await GetPlanByActivity(solution.Id);
+                ValidatePlanName(planFollowup, crateStorage);
                 await SaveActivity(solution);
-
 
                 // Execute plan.
                 var container = await ExecutePlan(plan);
@@ -86,7 +90,7 @@ namespace terminalDocuSignTests.Integration
 
         private async Task<ActivityDTO> EnsureSolutionAuthenticated(ActivityDTO solution)
         {
-            var crateStorage = _crateManager.FromDto(solution.CrateStorage);
+            var crateStorage = Crate.FromDto(solution.CrateStorage);
             var stAuthCrate = crateStorage.CratesOfType<StandardAuthenticationCM>().FirstOrDefault();
             var defaultDocuSignAuthTokenExists = (stAuthCrate == null);
 
@@ -161,7 +165,7 @@ namespace terminalDocuSignTests.Integration
 
         private void MockSolutionFollowUpConfigurationData(ActivityDTO solution)
         {
-            using (var updater = _crateManager.UpdateStorage(() => solution.CrateStorage))
+            using (var updater = Crate.UpdateStorage(() => solution.CrateStorage))
             {
                 var controls = updater.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
 
@@ -227,8 +231,85 @@ namespace terminalDocuSignTests.Integration
 
         private void ValidateContainerPayload(PayloadDTO payload)
         {
-            var crateStorage = _crateManager.FromDto(payload.CrateStorage);
+            var crateStorage = Crate.FromDto(payload.CrateStorage);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardPayloadDataCM>().Count(x => x.Label == "Sql Query Result"));
+        }
+
+        private async Task<RouteFullDTO> GetPlanByActivity(Guid id)
+        {
+            var solutionCreateUrl = _baseUrl + "/plans/getByActivity?id=" + id.ToString();
+            var plan = await HttpGetAsync<RouteFullDTO>(solutionCreateUrl);
+
+            return plan;
+        }
+
+        private void ValidatePlanCategory(RouteFullDTO plan)
+        {
+            Assert.AreEqual(plan.Category.Trim().ToLower(), "report");
+        }
+
+        private void ValidatePlanName(RouteFullDTO plan, ICrateStorage crateStorage)
+        {
+            var configurationControls = crateStorage
+            .CrateContentsOfType<StandardConfigurationControlsCM>()
+            .SingleOrDefault();
+
+            var actionUi = new ActivityUi();
+            actionUi.ClonePropertiesFrom(configurationControls);
+
+            var criteria = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(
+                actionUi.QueryBuilder.Value
+            );
+
+            Assert.AreEqual(plan.Name.Trim().ToLower(), ParseConditionToText(criteria).Trim().ToLower());
+        }
+    }
+
+    public class ActivityUi : StandardConfigurationControlsCM
+    {
+        [JsonIgnore]
+        public QueryBuilder QueryBuilder { get; set; }
+
+        public ActivityUi()
+        {
+            Controls = new List<ControlDefinitionDTO>();
+
+            Controls.Add(new TextArea
+            {
+                IsReadOnly = true,
+                Label = "",
+                Value = "<p>Search for DocuSign Envelopes where:</p>"
+            });
+
+            var filterConditions = new[]
+            {
+                    new FilterConditionDTO { Field = "Envelope Text", Operator = "eq" },
+                    new FilterConditionDTO { Field = "Folder", Operator = "eq" },
+                    new FilterConditionDTO { Field = "Status", Operator = "eq" }
+                };
+
+            string initialQuery = JsonConvert.SerializeObject(filterConditions);
+
+            Controls.Add((QueryBuilder = new QueryBuilder
+            {
+                Name = "QueryBuilder",
+                Value = initialQuery,
+                Source = new FieldSourceDTO
+                {
+                    Label = "Queryable Criteria",
+                    ManifestType = CrateManifestTypes.StandardQueryFields
+                }
+            }));
+
+            Controls.Add(new Button()
+            {
+                Label = "Generate Report",
+                Name = "Continue",
+                Events = new List<ControlEvent>()
+                    {
+                        new ControlEvent("onClick", "requestConfig")
+                    }
+            });
         }
     }
 }

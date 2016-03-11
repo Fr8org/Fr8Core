@@ -17,6 +17,8 @@ module dockyard.controllers {
         dtColumnDefs: any;
         activeRoutes: Array<interfaces.IRouteVM>;
         inActiveRoutes: Array<interfaces.IRouteVM>;
+        activeRoutesCategory: Array<interfaces.IRouteVM>;
+        inActiveRoutesCategory: Array<interfaces.IRouteVM>;
         reArrangeRoutes: (route: interfaces.IRouteVM) => void;
     }
 
@@ -58,8 +60,10 @@ module dockyard.controllers {
             //Load Process Templates view model
             $scope.dtOptionsBuilder = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withDisplayLength(10);
             $scope.dtColumnDefs = this.getColumnDefs();
-            $scope.activeRoutes = RouteService.getbystatus({ id: null, status: 2 });
-            $scope.inActiveRoutes = RouteService.getbystatus({ id: null, status: 1 });
+            $scope.activeRoutes = RouteService.getbystatus({ id: null, status: 2, category: '' });
+            $scope.inActiveRoutes = RouteService.getbystatus({ id: null, status: 1, category: '' });
+            $scope.activeRoutesCategory = RouteService.getbystatus({ id: null, status: 2, category: 'report' });
+            $scope.inActiveRoutesCategory = RouteService.getbystatus({ id: null, status: 1, category: 'report' });
             $scope.executeRoute = <(route: interfaces.IRouteVM) => void>angular.bind(this, this.executeRoute);
             $scope.goToRoutePage = <(route: interfaces.IRouteVM) => void>angular.bind(this, this.goToRoutePage);
             $scope.goToRouteDetailsPage = <(route: interfaces.IRouteVM) => void>angular.bind(this, this.goToRouteDetailsPage);
@@ -131,20 +135,39 @@ module dockyard.controllers {
                 //TODO show some kind of error message
             });
         }
-        private executeRoute(planId, $event) {
+        private executeRoute(route, $event) {
+            // If Plan is inactive, activate it in-order to move under Running section
+            var isInactive = route.routeState === 1;
+            if (isInactive) {
+                route.routeState = 2;
+                this.reArrangeRoutes(route);
+            }
             if ($event.ctrlKey) {
                 this.$modal.open({
                     animation: true,
                     templateUrl: '/AngularTemplate/_AddPayloadModal',
-                    controller: 'PayloadFormController', resolve: { planId: () => planId }
+                    controller: 'PayloadFormController', resolve: { planId: () => route.id }
                 });
             }
             else {
                 this.RouteService
-                    .runAndProcessClientAction(planId)
+                    .runAndProcessClientAction(route.id)
+                    .then((data) => {
+                        if (isInactive && data && data.currentPlanType === 1) {
+                            // mark plan as Inactive as it is Run Once and then rearrange
+                            route.routeState = 1;
+                            this.reArrangeRoutes(route);
+                        }
+                    })
                     .catch((failResponse) => {
                         if (failResponse.data.details === "GuestFail") {
                             location.href = "DockyardAccount/RegisterGuestUser";
+                        } else {
+                            if (isInactive && failResponse.toLowercase() === '1') {
+                                // mark plan as Inactive as it is Run Once and then rearrange
+                                route.routeState = 1;
+                                this.reArrangeRoutes(route);
+                            }
                         }
                     });
             }
