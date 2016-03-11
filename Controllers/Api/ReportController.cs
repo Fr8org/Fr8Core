@@ -12,18 +12,19 @@ using Utilities.Logging;
 using Data.Interfaces.DataTransferObjects;
 using System.Linq;
 using AutoMapper;
+using Microsoft.Ajax.Utilities;
 
 namespace HubWeb.Controllers
-{    
+{
     [Fr8ApiAuthorize]
     public class ReportController : ApiController
     {
-        private IReport _report;        
+        private IReport _report;
 
         public ReportController()
         {
             _report = ObjectFactory.GetInstance<IReport>();
-            
+
         }
 
         //[Route("api/report/getallfacts")]
@@ -52,7 +53,7 @@ namespace HubWeb.Controllers
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    incidentList = _report.GetAllIncidents(uow);                   
+                    incidentList = _report.GetAllIncidents(uow);
                 }
             }
             catch (Exception e)
@@ -61,16 +62,25 @@ namespace HubWeb.Controllers
             }
             return Ok(incidentList);
         }
-        //[Route("api/report/getincidents?page={page}&pageSize={pageSize}")]
-        public IHttpActionResult GetIncidents(int page, int pageSize)
+        //[Route("api/report/getincidents?page={page}&pageSize={pageSize}&user={current/all}")]
+        public IHttpActionResult GetIncidents(int page, int pageSize, string user)
         {
-            List<IncidentDO> incidentList = null;
+            //this is a flag to return either all or user-specific incidents
+            bool getCurrentUserIncidents;
+            var incidentList = new List<IncidentDO>();
+            //based on the parameter in GET request decide the value of the flag
+            if (string.Equals(user, "current"))
+                getCurrentUserIncidents = true;
+            else if (string.Equals(user, "all"))
+                getCurrentUserIncidents = false;
+            else
+            {
+                return BadRequest();
+            }
             try
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    incidentList = _report.GetIncidents(uow, page, pageSize);
-                }
+                    incidentList = _report.GetIncidents(uow, page, pageSize, getCurrentUserIncidents);
             }
             catch (Exception e)
             {
