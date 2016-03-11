@@ -50,6 +50,6 @@ foreach ($config in $configs.Split(",")) {
 	}
 	else
 	{
-		Write-Warning "web.config was not found in this location: $configPath"
+		Write-Warning "Configuration file was not found in this location: $configPath"
 	}
 }
