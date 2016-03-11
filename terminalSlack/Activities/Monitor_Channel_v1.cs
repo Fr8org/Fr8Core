@@ -142,8 +142,9 @@ namespace terminalSlack.Actions
                     <ol>
                         <li>Go to https://{yourteamname}.slack.com/services/new/outgoing-webhook. </li>
                         <li>Hit 'Add Outgoing WebHooks Integration'</li>
-                        <li>In the Outgoing WebHook form go to 'URL(s)' field.</li>
-                        <li>Fill the following address: <strong>https://terminalslack.fr8.co/terminals/terminalslack/events</strong></li>
+                        <li>In the Outgoing WebHook form go to 'URL(s)' field fill the following address: 
+                            <strong>https://terminalslack.fr8.co/terminals/terminalslack/events</strong>
+                        </li>
                     </ol>",
                     "", "Info_Label");
 
