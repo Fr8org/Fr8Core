@@ -148,7 +148,8 @@ module dockyard.directives.paneConfigureAction {
         public controller: ($scope: IPaneConfigureActionScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
         public scope = {
             currentAction: '=',
-            mode: '='
+            mode: '=',
+            route: '='
         };
         public restrict = 'E';
 

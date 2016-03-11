@@ -10,6 +10,7 @@
     export class ControlDefinitionDTO {
         type: string;
         fieldLabel: string;
+        label: string;
         name: string;
         errorMessage : string;
         events: Array<ControlEvent>;
@@ -85,6 +86,12 @@
 
     export class DropDownListItem extends FieldDTO {
         selected: boolean;
+
+        constructor(key: string, value: string) {
+            this.key = key;
+            this.value = value;
+            super();
+        }
     }
 
     export class FieldSource {
