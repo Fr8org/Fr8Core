@@ -14,6 +14,8 @@ using System.Net;
 using System.Globalization;
 using System.IO;
 using Data.Interfaces.DataTransferObjects;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Hub.Managers.APIManagers.Transmitters.Restful
 {
@@ -92,11 +94,13 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             catch (HttpRequestException ex)
             {
                 raisedException = ex;
+                dynamic d = JObject.Parse(responseContent);
+                var userErrorMessage = d.userMessage.ToString();
                 string errorMessage = String.Format("An error has ocurred while sending a {0} request to {1}. Response message: {2}",
                     request.RequestUri,
                     request.Method.Method,
                     ExtractErrorMessage(responseContent));
-                throw new RestfulServiceException(statusCode, errorMessage, ex);
+                throw new RestfulServiceException(statusCode, errorMessage, userErrorMessage, ex);
             }
             catch (TaskCanceledException ex)
             {

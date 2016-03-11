@@ -402,17 +402,7 @@ namespace HubWeb.Controllers
                         }
 
                         var response = _crate.GetContentType<OperationalStateCM>(containerDO.CrateStorage);
-
-                        string responseMsg = "";
-
-                        ResponseMessageDTO responseMessage;
-                        if (response != null && response.CurrentActivityResponse != null && response.CurrentActivityResponse.TryParseResponseMessageDTO(out responseMessage))
-                        {
-                            if (responseMessage != null && !string.IsNullOrEmpty(responseMessage.Message))
-                            {
-                                responseMsg = "\n" + responseMessage.Message;
-                            }
-                        }
+                        var responseMsg = GetResponseMessage(response);
 
                         string message = String.Format("Complete processing for Plan \"{0}\".{1}", planDO.Name, responseMsg);
 
@@ -434,13 +424,21 @@ namespace HubWeb.Controllers
                 {
                     //this response contains details about the error that happened on some terminal and need to be shown to client
                     exception.ContainerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? PlanType.Ongoing : PlanType.RunOnce;
+                    NotifyWithErrorMessage(exception, planDO, pusherChannel, exception.Message);
+
                     return Ok(exception.ContainerDTO);
+                }
+                catch (TerminalProcessingException e)
+                {
+                    NotifyWithErrorMessage(e, planDO, pusherChannel, e.UserErrorMessage);
+                }
+                catch (ApplicationException e)
+                {
+                    NotifyWithErrorMessage(e, planDO, pusherChannel, e.Message);
                 }
                 catch (Exception e)
                 {
-                    string message = String.Format("Plan \"{0}\" failed", planDO.Name);
-
-                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, message);
+                    NotifyWithErrorMessage(e, planDO, pusherChannel, string.Empty);
                 }
                 finally
                 {
@@ -453,6 +451,29 @@ namespace HubWeb.Controllers
                 containerDefaultDTO.CurrentPlanType = planDO.IsOngoingPlan() ? PlanType.Ongoing : PlanType.RunOnce;
                 return Ok(containerDefaultDTO);
             }
+        }
+
+        private string GetResponseMessage(OperationalStateCM response)
+        {
+            string responseMsg = "";
+
+            ResponseMessageDTO responseMessage;
+            if (response != null && response.CurrentActivityResponse != null && response.CurrentActivityResponse.TryParseResponseMessageDTO(out responseMessage))
+            {
+                if (responseMessage != null && !string.IsNullOrEmpty(responseMessage.Message))
+                {
+                    responseMsg = "\n" + responseMessage.Message;
+                }
+            }
+
+            return responseMsg;
+        }
+
+        private void NotifyWithErrorMessage(Exception exception, PlanDO planDO, string pusherChannel, string errorMessage)
+        {
+            var message = String.Format("Plan \"{0}\" failed. {1}", planDO.Name, errorMessage);
+            _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, message);
+            
         }
     }
 }

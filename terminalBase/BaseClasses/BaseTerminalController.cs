@@ -20,7 +20,7 @@ using System.Web.Routing;
 using System.Net;
 using System.Net.Http.Formatting;
 using System.Net.Http.Headers;
-using Data;
+using Hub.Exceptions;
 
 namespace TerminalBase.BaseClasses
 {
@@ -213,12 +213,14 @@ namespace TerminalBase.BaseClasses
                     case "run":
                     case "executechildactivities":
                         {
+                            
                             OnStartActivity(curTerminal, activityTemplateName, IntegrationTestMode);
                             var resultPayloadDTO = await (Task<PayloadDTO>)curMethodInfo
                                 .Invoke(curObject, new Object[] { curActivityDO, curDataDTO.ContainerId, curAuthTokenDO });
                             await OnCompletedActivity(curTerminal, IntegrationTestMode);
-
-                            return resultPayloadDTO;
+                            
+                            return resultPayloadDTO;                       
+                            
                         }
                     case "initialconfigurationresponse":
                         {
@@ -273,7 +275,10 @@ namespace TerminalBase.BaseClasses
 
                 var endpoint = (curActivityDO.ActivityTemplate != null && curActivityDO.ActivityTemplate.Terminal != null && curActivityDO.ActivityTemplate.Terminal.Endpoint != null) ? curActivityDO.ActivityTemplate.Terminal.Endpoint : "<no terminal url>";
                 EventManager.TerminalInternalFailureOccurred(endpoint, JsonConvert.SerializeObject(curActivityDO, settings), e, curActivityDO.Id.ToString());
-                throw;
+
+                var action = curActionPath.ToLower();
+                var userErrorMessage = String.Format("Failed to {0} activity \"{1}\". Please, make sure it is configured correctly. ", action, curActivityDO.Label);
+                throw new TerminalProcessingException(userErrorMessage, e.Message, e.InnerException);
             }
         }
         private void OnStartActivity(string terminalName, string actionName, bool isTestActivityTemplate)

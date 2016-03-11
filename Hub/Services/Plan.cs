@@ -23,6 +23,7 @@ using Data.Constants;
 using Data.Crates;
 using Data.Infrastructure;
 using Data.Interfaces.DataTransferObjects.Helpers;
+using Hub.Managers.APIManagers.Transmitters.Restful;
 
 namespace Hub.Services
 {
@@ -458,10 +459,20 @@ namespace Hub.Services
                 await _container.Run(uow, curContainerDO);
                 return curContainerDO;
             }
-            catch
+            catch (RestfulServiceException rse)
             {
                 curContainerDO.ContainerState = ContainerState.Failed;
-                throw;
+                throw new TerminalProcessingException(rse.UserErrorMessage, rse.Message, rse);
+            }
+            catch (ApplicationException e)
+            {
+                curContainerDO.ContainerState = ContainerState.Failed;
+                throw new TerminalProcessingException(e.Message, e.Message, e);
+            }
+            catch (Exception e)
+            {
+                curContainerDO.ContainerState = ContainerState.Failed;
+                throw new TerminalProcessingException(string.Empty, e.Message, e);
             }
             finally
             {

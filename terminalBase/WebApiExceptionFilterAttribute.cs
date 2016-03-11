@@ -10,6 +10,7 @@ using TerminalBase.Errors;
 using Utilities;
 using Microsoft.ApplicationInsights;
 using System.Collections.Generic;
+using Hub.Exceptions;
 
 namespace TerminalBase
 {
@@ -75,14 +76,25 @@ namespace TerminalBase
                 //if terminal error is terminal Coded Exception, place the error code description in message
                 var terminalEx = (TerminalCodedException)curTerminalError;
                 var terminalError =
-                    JsonConvert.SerializeObject(new { status = "terminal_error", message = terminalEx.ErrorCode.GetEnumDescription() });
+                    JsonConvert.SerializeObject(new { status = "terminal_error", message = terminalEx.ErrorCode.GetEnumDescription(), userMessage = terminalEx.ErrorCode.GetEnumDescription() });
                 actionExecutedContext.Response.Content = new StringContent(terminalError, Encoding.UTF8, "application/json");
             }
             else
             {
+                var detailedMessage = string.Empty;
                 //if terminal error is general exception, place exception message
-                var detailedMessage =
-                    JsonConvert.SerializeObject(new { status = "terminal_error", message = curTerminalError.Message });
+                if (curTerminalError is TerminalProcessingException)
+                {
+                    var userError = (curTerminalError as TerminalProcessingException)?.UserErrorMessage;
+                    detailedMessage =
+                        JsonConvert.SerializeObject(new { status = "terminal_error", message = curTerminalError.Message, userMessage = userError });
+                }
+                else
+                {
+                    detailedMessage =
+                    JsonConvert.SerializeObject(new { status = "terminal_error", message = curTerminalError.Message, userMessage = curTerminalError.Message });
+                }
+                
                 actionExecutedContext.Response.Content = new StringContent(detailedMessage, Encoding.UTF8, "application/json");
             }
         }
