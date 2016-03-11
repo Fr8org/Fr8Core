@@ -21,57 +21,57 @@ using Utilities;
 
 namespace terminalFr8Core.Actions
 {
-    public class TestAndBranch_v1 : BaseTerminalActivity
+    public class TestAndBranch_v1 : TestIncomingData_v1
     {
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public override async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var curPayloadDTO = await GetPayload(curActivityDO, containerId);
+            var payloadFields = GetAllPayloadFields(curPayloadDTO).AsQueryable();
+
+            var configControls = GetConfigurationControls(curActivityDO);
+            var containerTransition = (ContainerTransition)configControls.Controls.Single();
+
+            foreach (var containerTransitionField in containerTransition.Transitions)
+            {
+                if (CheckConditions(containerTransitionField.Conditions, payloadFields))
+                {
+                    //let's return whatever this one says
+                    switch (containerTransitionField.Transition)
+                    {
+                            case ContainerTransitions.JumpToActivity:
+                            //TODO check if targetNodeId is selected
+                            return JumpToActivity(curPayloadDTO, containerTransitionField.TargetNodeId.Value);
+                            case ContainerTransitions.JumpToPlan:
+                            throw new NotImplementedException();
+                            case ContainerTransitions.JumpToSubplan:
+                            return JumpToSubplan(curPayloadDTO, containerTransitionField.TargetNodeId.Value);
+                            case ContainerTransitions.ProceedToNextActivity:
+                            return Success(curPayloadDTO);
+                            case ContainerTransitions.StopProcessing:
+                            return TerminateHubExecution(curPayloadDTO);
+                            case ContainerTransitions.SuspendProcessing:
+                            throw new NotImplementedException();
+
+                        default:
+                            return Error(curPayloadDTO, "Invalid data was selected on TestAndBranch_v1#Run", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                    }
+                }
+            }
+
+            //none of them matched let's continue normal execution
             return Success(curPayloadDTO);
         }
 
-        public override async Task<ActivityDO> Configure(ActivityDO curActionDataPackageDO, AuthorizationTokenDO authTokenDO)
+        
+
+        private bool CheckConditions(List<FilterConditionDTO> conditions, IQueryable<FieldDTO> fields)
         {
-            return await ProcessConfigurationRequest(curActionDataPackageDO, ConfigurationEvaluator, authTokenDO);
+            var filterExpression = ParseCriteriaExpression(conditions, fields);
+            var results = fields.Provider.CreateQuery<FieldDTO>(filterExpression);
+            return results.Any();
         }
-
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            var curUpstreamFields =
-                (await GetDesignTimeFields(curActivityDO, CrateDirection.Upstream))
-                .Fields
-                .ToArray();
-
-            var queryFieldsCrate = Crate.FromContent(
-                "Queryable Criteria",
-                new StandardQueryFieldsCM(
-                    curUpstreamFields.Select(
-                        x => new QueryFieldDTO(
-                            x.Key,
-                            x.Key,
-                            QueryFieldType.String,
-                            new TextBox()
-                            {
-                                Name = "QueryField_" + x.Key
-                            }
-                        )
-                    )
-                )
-            );
-
-
-            //build a controls crate to render the pane
-            var configurationControlsCrate = CreateControlsCrate();
-
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.Replace(AssembleCrateStorage(configurationControlsCrate));
-                crateStorage.Add(queryFieldsCrate);
-            }
-
-            return curActivityDO;
-        }
-
-        private Crate CreateControlsCrate()
+        
+        protected override Crate CreateControlsCrate()
         {
             var transition = new ContainerTransition
             {

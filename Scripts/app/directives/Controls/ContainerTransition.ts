@@ -150,6 +150,7 @@ module dockyard.directives.containerTransition {
                 var dd = <model.DropDownList>(<any>transition)._dummySecondaryOperationDD;
                 transition.targetNodeId = dd.value;
                 triggerChange();
+                return angular.noop;
             };
 
             $scope.onOperationChange = (transition: model.ContainerTransitionField) => {
@@ -157,6 +158,7 @@ module dockyard.directives.containerTransition {
                 transition.transition = parseInt(dd.value);
                 processTransition(transition);
                 triggerChange();
+                return angular.noop;
             };
 
             $scope.getOperationField = (transition: model.ContainerTransitionField) => {

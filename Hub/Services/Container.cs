@@ -96,15 +96,15 @@ namespace Hub.Services
                 case ActivityResponse.ExecuteClientActivity:
                 case ActivityResponse.Success:
                 case ActivityResponse.ReProcessChildren:
-                    //ResetActionResponse(uow, curContainerDo);
-                    //do nothing
+                case ActivityResponse.Null://let's assume this is success for now
+                case ActivityResponse.JumpToActivity:
+                case ActivityResponse.JumpToSubplan:
+
                     break;
                 case ActivityResponse.RequestSuspend:
                     curContainerDo.ContainerState = ContainerState.Pending;
                     break;
-                case ActivityResponse.Null:
-                    //let's assume this is success for now
-                    break;
+
                 case ActivityResponse.Error:
                     //TODO retry activity execution until 3 errors??
                     //so we are able to show the specific error that is embedded inside the container we are sending back that container to client
@@ -116,6 +116,9 @@ namespace Hub.Services
                     EventManager.ProcessingTerminatedPerActivityResponse(curContainerDo, ActivityResponse.RequestTerminate);
 
                     break;
+
+                
+
                 default:
                     throw new Exception("Unknown activity state on activity with id " + curContainerDo.CurrentRouteNodeId);
             }
@@ -136,7 +139,7 @@ namespace Hub.Services
         /// <param name="uow"></param>
         /// <param name="curContainerDO"></param>
         /// <param name="skipChildren"></param>
-        private ActivityState MoveToNextRoute(IUnitOfWork uow, ContainerDO curContainerDO, bool skipChildren)
+        private ActivityState MoveToNextRoute(IUnitOfWork uow, ContainerDO curContainerDO, bool skipChildren, ActivityResponse activityResponse)
         {
             var state = ActivityState.InitialRun;
             var currentNode = uow.PlanRepository.GetById<RouteNodeDO>(curContainerDO.CurrentRouteNodeId);
@@ -151,16 +154,12 @@ namespace Hub.Services
                 if (nextSibling == null)
                 {
                     curContainerDO.CurrentRouteNodeId = currentNode.ParentRouteNode != null ? currentNode.ParentRouteNode.Id : (Guid?)null;
-
-                   
-
                     state = ActivityState.ReturnFromChildren;
                 }
                 else
                 {
                     curContainerDO.CurrentRouteNodeId = nextSibling.Id;
                 }
-                
             }
             else
             {
@@ -169,7 +168,6 @@ namespace Hub.Services
             }
 
             uow.SaveChanges();
-
             return state;
         }
 
@@ -272,7 +270,7 @@ namespace Hub.Services
                     return;
                 }
                 var shouldSkipChildren = ShouldSkipChildren(curContainerDO, actionState, activityResponse);
-                actionState = MoveToNextRoute(uow, curContainerDO, shouldSkipChildren);
+                actionState = MoveToNextRoute(uow, curContainerDO, shouldSkipChildren, activityResponse);
             }
 
             if(curContainerDO.ContainerState == ContainerState.Executing)

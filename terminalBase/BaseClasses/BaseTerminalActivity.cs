@@ -102,6 +102,40 @@ namespace TerminalBase.BaseClasses
         }
 
         /// <summary>
+        /// Jumps to an activity that resides in same subplan as current activity
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <returns></returns>
+        protected PayloadDTO JumpToActivity(PayloadDTO payload, Guid targetActivityId)
+        {
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
+            {
+                var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.JumpToActivity);
+                operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Details = targetActivityId });
+            }
+
+            return payload;
+        }
+
+        /// <summary>
+        /// Jumps to an activity that resides in same subplan as current activity
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <returns></returns>
+        protected PayloadDTO JumpToSubplan(PayloadDTO payload, Guid targetSubplanId)
+        {
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
+            {
+                var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.JumpToSubplan);
+                operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Details = targetSubplanId });
+            }
+
+            return payload;
+        }
+
+        /// <summary>
         /// returns success to hub
         /// </summary>
         /// <param name="payload"></param>
