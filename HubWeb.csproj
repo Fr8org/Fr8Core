@@ -848,6 +848,7 @@
     <Content Include="Content\videos\motion.ogv" />
     <Content Include="Content\videos\motion.webm" />
     <Content Include="Views\AngularTemplate\ContainerTransition.cshtml" />
+    <Content Include="Views\AngularTemplate\SubplanHeader.cshtml" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
     <Content Include="Scripts\templateCache.js" />
@@ -883,6 +884,7 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamCrateChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamFieldChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Resizable.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\SubplanHeader.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Validators\ManifestDescriptionValidators.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\DateTimeFormatter.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\FilterByTag.ts" />

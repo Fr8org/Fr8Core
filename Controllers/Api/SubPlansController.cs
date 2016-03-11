@@ -71,5 +71,35 @@ namespace HubWeb.Controllers
                 return Ok(Mapper.Map<SubrouteDO, SubrouteDTO>(curSubPlanDO));
             }
         }
+
+        [ResponseType(typeof(SubrouteDTO))]
+        public IHttpActionResult Put(SubrouteDTO subPlanDTO)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                if (string.IsNullOrEmpty(subPlanDTO.Name))
+                {
+                    ModelState.AddModelError("Name", "Name cannot be null");
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Validation failed for posted Subplan");
+                }
+                //TODO invalid mappings prevent this line from running
+                //fix invalid automapper configurations
+                //var curSubPlanDO = Mapper.Map<SubrouteDTO, SubrouteDO>(subPlanDTO);
+                var curSubPlanDO = new SubrouteDO(false)
+                {
+                    Id = subPlanDTO.Id.Value,
+                    ParentRouteNodeId = subPlanDTO.PlanId,
+                    RootRouteNodeId = subPlanDTO.PlanId,
+                    Name = subPlanDTO.Name
+                };
+                _subPlan.Update(uow, curSubPlanDO);
+                uow.SaveChanges();
+                return Ok(Mapper.Map<SubrouteDO, SubrouteDTO>(curSubPlanDO));
+            }
+        }
     }
 }

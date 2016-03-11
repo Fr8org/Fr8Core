@@ -10,8 +10,9 @@
 <!-- BEGIN MAIN CONTENT -->
 <div ng-controller="RouteBuilderController" class="margin-top-10" block-if="isBusy()">
     <designer-header route="current.route"></designer-header>
+    <div class="col-md-12" style="border-bottom: 1px solid; margin-bottom: 10px;"></div>
     <div ng-repeat="pSubRoute in processedSubRoutes">
-        <div>{{::pSubRoute.subroute.name}}</div>
+        <subplan-header subplan="pSubRoute.subroute"></subplan-header>
         <div class="route-builder-container" layout-container>
             <div ng-repeat="group in pSubRoute.actionGroups" layout-action-group class="action-group" ng-style="{left: group.offsetLeft, top: group.offsetTop}">
                 <div ng-if="mode !== 'solution' || $index === 0">
@@ -71,5 +72,5 @@
         </div>
     </div>
 
-    <i ng-click="addSubPlan()" style="margin-left: 15px; color: red; cursor: pointer;" class="glyphicon glyphicon-plus"></i>Add Subplan
+    <button ng-click="addSubPlan()" class="btn btn-default" style="margin-left: 25px; cursor: pointer;">Add Subplan</button>
 </div>
