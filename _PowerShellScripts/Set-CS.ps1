@@ -14,19 +14,22 @@ $rootDir = Split-Path -parent (Split-Path -parent $myInvocation.MyCommand.Path)
 
 foreach ($config in $configs.Split(",")) {
 	$configPath = "$rootDir\$config"
-	
-	if(Test-Path  "$configPath\web.config")	
+	if(![System.IO.File]::Exists($configPath))
 	{
-		$configPath = "$configPath\web.config"
-	}
-	elseif (Test-Path  "$configPath\app.config")
-	{
-		$configPath = "$configPath\app.config"
-	}
-	else
-	{
-		Write-Host "Cannot find either app.config or web.config in $configPath"  
-		continue
+		# If not a file name was given, assume it is a directory and check configs
+		if(Test-Path  "$configPath\web.config")	
+		{
+			$configPath = "$configPath\web.config"
+		}
+		elseif (Test-Path  "$configPath\app.config")
+		{
+			$configPath = "$configPath\app.config"
+		}
+		else
+		{
+			Write-Host "Cannot find either app.config or web.config: $configPath"  
+			continue
+		}
 	}
 
 	if(Test-Path $configPath)
