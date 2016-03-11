@@ -94,7 +94,7 @@ namespace terminalSlack.Actions
         {
             CheckAuthentication(authTokenDO);
 
-            return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator,authTokenDO);
+            return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
         }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
@@ -109,47 +109,38 @@ namespace terminalSlack.Actions
 
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            var oauthToken = authTokenDO.Token;
-            var channels = await _slackIntegration.GetChannelList(oauthToken);
+            var oAuthToken = authTokenDO.Token;
+            var configurationCrate = CreateControlsCrate();
+            await FillSlackChannelsSource(configurationCrate, "Selected_Slack_Channel", oAuthToken);
 
             var crateDesignTimeFields = CreateDesignTimeFieldsCrate();
-            var crateAvailableChannels = CreateAvailableChannelsCrate(channels);
             var crateEventSubscriptions = CreateEventSubscriptionCrate();
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Clear();
-                PackConfigurationControls(crateStorage);
+                crateStorage.Add(configurationCrate);
                 crateStorage.Add(crateDesignTimeFields);
-                crateStorage.Add(crateAvailableChannels);
                 crateStorage.Add(crateEventSubscriptions);
             }
-
-
             return await Task.FromResult<ActivityDO>(curActivityDO);
         }
 
-        private void PackConfigurationControls(ICrateStorage crateStorage)
+        private Crate CreateControlsCrate()
         {
-            AddControl(
-                crateStorage,
-                new DropDownList()
+            var selectedSlackChannel = new DropDownList()
                 {
                     Label = "Select Slack Channel",
                     Name = "Selected_Slack_Channel",
                     Required = true,
-                    Source = new FieldSourceDTO
-                    {
-                        Label = "Available Channels",
-                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                    }
-                });
+                Source = null
+            };
 
-            AddControl(
-                crateStorage,
-                GenerateTextBlock("",
+            var infoLabel = GenerateTextBlock("",
                     "Slack doesn't currently offer a way for us to automatically request events for this channel. You can do it manually here. use the following values: URL: <strong>http://www.fr8.company/events?dockyard_plugin=terminalSlack&version=1.0</strong>",
-                    "", "Info_Label"));
+                    "", "Info_Label");
+
+            return PackControlsCrate(selectedSlackChannel, infoLabel);
         }
 
         private Crate CreateDesignTimeFieldsCrate()
@@ -177,17 +168,6 @@ namespace terminalSlack.Actions
             return crate;
         }
 
-        private Crate CreateAvailableChannelsCrate(IEnumerable<FieldDTO> channels)
-        {
-            var crate =
-                CrateManager.CreateDesignTimeFieldsCrate(
-                    "Available Channels",
-                    channels.ToArray()
-                );
-
-            return crate;
-        }
-
         private Crate CreateEventSubscriptionCrate()
         {
             var subscriptions = new string[] {
@@ -200,5 +180,22 @@ namespace terminalSlack.Actions
                 subscriptions.ToArray()
                 );
         }
+
+        #region Fill Source
+        private async Task FillSlackChannelsSource(Crate configurationCrate, string controlName, string oAuthToken)
+        {
+            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
+            var control = configurationControl.FindByNameNested<DropDownList>(controlName);
+            if (control != null)
+            {
+                control.ListItems = await GetChannelList(oAuthToken);
+            }
+        }
+        private async Task<List<ListItem>> GetChannelList(string oAuthToken)
+        {
+            var channels = await _slackIntegration.GetChannelList(oAuthToken);
+            return channels.Select(x => new ListItem() { Key = x.Key, Value = x.Value }).ToList();
+        }
+        #endregion
     }
 }

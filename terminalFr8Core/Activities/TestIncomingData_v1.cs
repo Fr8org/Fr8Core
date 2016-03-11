@@ -35,7 +35,7 @@ namespace terminalFr8Core.Actions
         {
             var curPayloadDTO = await GetPayload(curActivityDO, containerId);
 
-            var controlsMS = Activity.GetControlsManifest(curActivityDO);
+            var controlsMS = GetControlsManifest(curActivityDO);
 
             ControlDefinitionDTO filterPaneControl = controlsMS.Controls.FirstOrDefault(x => x.Type == ControlTypes.FilterPane);
             if (filterPaneControl == null)

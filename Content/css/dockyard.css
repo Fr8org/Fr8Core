@@ -211,7 +211,7 @@
     }
 
     .action .ap-resize {
-        min-height: 420px;
+        min-height: 380px;
         overflow: hidden;
         min-width: 380px;
         overflow: auto;
@@ -941,4 +941,44 @@ div.activity-list::after {
     left: 25%;
     border-top: 1px solid #e5e5e5;
     margin-top: 10px;
+}
+
+.toast-activity-info {
+    display: block;
+    min-width: 200px;
+    text-align: left;
+    font-size: 13px;
+}
+
+.bdp-input {
+    border-radius: 2px;
+    padding: 0 3px;
+    border: 1px solid rgba(34, 36, 38, .15);
+    cursor: pointer;
+}
+
+    .bdp-input.disabled {
+        color: #AAA;
+        cursor: default;
+    }
+
+.bdp-popover {
+    min-width: 110px;
+}
+
+    .bdp-popover input {
+        display: inline;
+        margin-bottom: 3px;
+        width: 60px;
+    }
+
+.bdp-block {
+    display: inline-block;
+    line-height: 1;
+    text-align: center;
+    padding: 3% 11%;
+}
+
+.bdp-label {
+    font-size: 70%;
 }

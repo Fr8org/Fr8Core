@@ -5,6 +5,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using System.Data.Entity.Infrastructure;
+using Data.Constants;
 
 namespace Data.Infrastructure
 {
@@ -170,7 +171,64 @@ namespace Data.Infrastructure
         public delegate void AuthTokenRemovedHandler(AuthorizationTokenDO authToken);
         public static event AuthTokenRemovedHandler EventAuthTokenRemoved;
 
+        public delegate void PlanActivatedHandler(Guid planId);
+        public static event PlanActivatedHandler EventPlanActivated;
+
+        public delegate void PlanDeactivatedHandler(Guid planId);
+        public static event PlanDeactivatedHandler EventPlanDeactivated;
+
+        public delegate void ContainerExecutionCompleteHandler(ContainerDO containerDO);
+        public static event ContainerExecutionCompleteHandler EventContainerExecutionCompleted;
+
+        public delegate void ActivityRunRequestedHandler(ActivityDO activityDo, ContainerDO containerDO);
+        public static event ActivityRunRequestedHandler EventActivityRunRequested;
+
+        public delegate void ActivityResponseReceivedHandler(ActivityDO activityDo, ActivityResponse responseType);
+        public static event ActivityResponseReceivedHandler EventActivityResponseReceived;
+
+
+        public delegate void ProcessingTerminatedPerActivityResponseHandler(ContainerDO containerDO, ActivityResponse resposneType);
+        public static event ProcessingTerminatedPerActivityResponseHandler EventProcessingTerminatedPerActivityResponse;
+
+        
+
         #region Method
+
+        public static void PlanActivated(Guid planId)
+        {
+            var handler = EventPlanActivated;
+            if (handler != null) handler(planId);
+        }
+
+        public static void PlanDeactivated(Guid planId)
+        {
+            var handler = EventPlanDeactivated;
+            if (handler != null) handler(planId);
+        }
+
+        public static void ContainerExecutionCompleted(ContainerDO containerDO)
+        {
+            var handler = EventContainerExecutionCompleted;
+            if (handler != null) handler(containerDO);
+        }
+
+        public static void ActivityRunRequested(ActivityDO activityDo, ContainerDO containerDO)
+        {
+            var handler = EventActivityRunRequested;
+            if (handler != null) handler(activityDo, containerDO);
+        }
+
+        public static void ActivityResponseReceived(ActivityDO activityDo, ActivityResponse responseType)
+        {
+            var handler = EventActivityResponseReceived;
+            if (handler != null) handler(activityDo, responseType);
+        }
+
+        public static void ProcessingTerminatedPerActivityResponse(ContainerDO containerDO, ActivityResponse resposneType)
+        {
+            var handler = EventProcessingTerminatedPerActivityResponse;
+            if (handler != null) handler(containerDO, resposneType);
+        }
 
         public static void UnexpectedError(Exception ex)
         {

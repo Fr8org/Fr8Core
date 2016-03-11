@@ -24,7 +24,6 @@ using Data;
 
 namespace TerminalBase.BaseClasses
 {
-
     //this is a quasi base class. We can't use inheritance directly because it's across project boundaries, but
     //we can generate instances of this.
     public class BaseTerminalController : ApiController
@@ -208,8 +207,8 @@ namespace TerminalBase.BaseClasses
                 {
                     case "configure":
                         {
-                            Task<ActivityDO> resutlActionDO = (Task<ActivityDO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDO, curAuthTokenDO });
-                            return await resutlActionDO.ContinueWith(x => Mapper.Map<ActivityDTO>(x.Result));
+                            var resutlActionDO = await (Task<ActivityDO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDO, curAuthTokenDO });
+                            return Mapper.Map<ActivityDTO>(resutlActionDO);
                         }
                     case "run":
                     case "executechildactivities":

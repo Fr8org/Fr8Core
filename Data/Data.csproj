@@ -634,6 +634,14 @@
     <Compile Include="Migrations\201603032006159_EmptyMigration1.Designer.cs">
       <DependentUpon>201603032006159_EmptyMigration1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201603041104310_MigrateMTData.cs" />
+    <Compile Include="Migrations\201603041104310_MigrateMTData.Designer.cs">
+      <DependentUpon>201603041104310_MigrateMTData.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201603051236490_FasterMigrateMTData.cs" />
+    <Compile Include="Migrations\201603051236490_FasterMigrateMTData.Designer.cs">
+      <DependentUpon>201603051236490_FasterMigrateMTData.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryBase.cs" />
@@ -1108,6 +1116,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201603032006159_EmptyMigration1.resx">
       <DependentUpon>201603032006159_EmptyMigration1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201603041104310_MigrateMTData.resx">
+      <DependentUpon>201603041104310_MigrateMTData.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201603051236490_FasterMigrateMTData.resx">
+      <DependentUpon>201603051236490_FasterMigrateMTData.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
