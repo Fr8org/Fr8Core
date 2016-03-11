@@ -26,13 +26,11 @@ namespace Hub.Services
 
         // Declarations
 
-        private readonly IProcessNode _processNode;
         private readonly IRouteNode _activity;
         private readonly ICrateManager _crate;
 
         public Container()
         {
-            _processNode = ObjectFactory.GetInstance<IProcessNode>();
             _activity = ObjectFactory.GetInstance<IRouteNode>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
@@ -195,9 +193,9 @@ namespace Hub.Services
             return operationalState != null;
         }
 
-        private Guid? GetFirstActivityOfSubplan(ContainerDO curContainerDO, Guid subplanId)
+        private Guid? GetFirstActivityOfSubplan(IUnitOfWork uow, ContainerDO curContainerDO, Guid subplanId)
         {
-            var subplan = curContainerDO.Plan.Subroutes.FirstOrDefault(s => s.Id == subplanId);
+            var subplan = uow.PlanRepository.GetById<PlanDO>(curContainerDO.PlanId).Subroutes.FirstOrDefault(s => s.Id == subplanId);
             return subplan?.ChildNodes.OrderBy(c => c.Ordering).FirstOrDefault()?.Id;
         }
 
@@ -262,14 +260,14 @@ namespace Hub.Services
                     case ActivityResponse.JumpToActivity:
                         actionState = ActivityState.InitialRun;
                         activityResponseDTO.TryParseResponseMessageDTO(out responseMessage);
-                        curContainerDO.CurrentRouteNodeId = (Guid) responseMessage.Details;
+                        curContainerDO.CurrentRouteNodeId = Guid.Parse((string)responseMessage.Details);
                         break;
 
                     case ActivityResponse.JumpToSubplan:
                         actionState = ActivityState.InitialRun;
                         activityResponseDTO.TryParseResponseMessageDTO(out responseMessage);
-                        var subplanId = (Guid)responseMessage.Details;
-                        curContainerDO.CurrentRouteNodeId = GetFirstActivityOfSubplan(curContainerDO ,subplanId);
+                        var subplanId = Guid.Parse((string) responseMessage.Details);
+                        curContainerDO.CurrentRouteNodeId = GetFirstActivityOfSubplan(uow, curContainerDO ,subplanId);
                         break;
 
                     default:
