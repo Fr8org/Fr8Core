@@ -61,31 +61,7 @@ namespace Hub.Services
             return uow.ContainerRepository.GetQuery().Where(x => x.PlanId == plan.Id).ToList();
         }
 
-        private string GetCurrentActivityErrorMessage(ContainerDO curContainerDO)
-        {
-            var storage = _crate.GetStorage(curContainerDO.CrateStorage);
-            var operationalState = storage.CrateContentsOfType<OperationalStateCM>().Single();
-            return operationalState.CurrentActivityErrorMessage;
-        }
-
-        /// <summary>
-        /// For actions who don't bother with returning a state. 
-        /// We will assume those actions are completed without a problem
-        /// </summary>
-        /// <param name="uow"></param>
-        /// <param name="curContainerDo"></param>
-        private void ResetActivityResponse(IUnitOfWork uow, ContainerDO curContainerDo)
-        {
-            using (var crateStorage = _crate.UpdateStorage(() => curContainerDo.CrateStorage))
-            {
-                var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Null);
-            }
-
-            uow.SaveChanges();
-        }
-
-        internal async Task ProcessCurrentActivityResponse(IUnitOfWork uow, ContainerDO curContainerDo, ActivityResponseDTO response)
+        private async Task ProcessCurrentActivityResponse(IUnitOfWork uow, ContainerDO curContainerDo, ActivityResponseDTO response)
         {
             //extract the type value from the activity response
             ActivityResponse activityResponse = ActivityResponse.Null;
@@ -241,26 +217,10 @@ namespace Hub.Services
             while (curContainerDO.CurrentRouteNodeId != null)
             {
                 var activityResponseDTO = await ProcessActivity(uow, curContainerDO, actionState);
-
                 //extract ActivityResponse type from result
                 ActivityResponse activityResponse = ActivityResponse.Null;
                 if (activityResponseDTO != null)
                     Enum.TryParse(activityResponseDTO.Type, out activityResponse);
-
-                if (activityResponse == ActivityResponse.Success)
-                {
-                    //if its success and crate have responsemessagdto it is activated
-                    var response = _crate.GetContentType<OperationalStateCM>(curContainerDO.CrateStorage);
-
-                    ResponseMessageDTO responseMessage;
-                    if (response != null && activityResponseDTO.TryParseResponseMessageDTO(out responseMessage))
-                    {
-                        if (responseMessage != null && !string.IsNullOrEmpty(responseMessage.Message))
-                        {
-                            break;
-                        }
-                    }
-                }
 
                 await ProcessCurrentActivityResponse(uow, curContainerDO, activityResponseDTO);
                 if (curContainerDO.ContainerState != ContainerState.Executing)
