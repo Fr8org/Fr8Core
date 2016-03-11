@@ -11,6 +11,7 @@ module dockyard.directives.containerTransition {
         onTargetChange: (transition: model.ContainerTransitionField) => void;
         change: () => (field: model.ControlDefinitionDTO) => void;
         currentAction: model.ActivityDTO;
+        removeTransition: (index: number) => void;
     }
 
     export class ContainerTransitions {
@@ -146,7 +147,8 @@ module dockyard.directives.containerTransition {
             };
 
             $scope.onTargetChange = (transition: model.ContainerTransitionField) => {
-                
+                var dd = <model.DropDownList>(<any>transition)._dummySecondaryOperationDD;
+                transition.targetNodeId = dd.value;
                 triggerChange();
             };
 
@@ -166,6 +168,14 @@ module dockyard.directives.containerTransition {
                 
                 return (<any>transition)._dummyOperationDD;
             };
+            $scope.removeTransition = (index: number) => {
+                $scope.field.transitions.splice(index, 1);
+            };
+
+            //let's add initial transition
+            if ($scope.field.transitions.length < 1) {
+                $scope.addTransition();
+            }
         }];
 
         //The factory function returns Directive object as per Angular requirements

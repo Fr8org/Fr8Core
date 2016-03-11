@@ -5,12 +5,17 @@
                        is-disabled="false">
         </query-builder>
 
-        <label class='control-label'>Select Operation</label>
-        <drop-down-list-box current-action="currentAction" field='::(getOperationField(transition))' change='onOperationChange(transition)'></drop-down-list-box>
+        <div class="query-builder-add-button" style="margin-top: 10px;">
+            <label class='control-label'>Select Operation</label>
+            <drop-down-list-box current-action="currentAction" field='::(getOperationField(transition))' change='onOperationChange(transition)'></drop-down-list-box>
+        </div>
 
-        <label ng-if="transition._dummySecondaryOperationDD" class='control-label'>{{transition._dummySecondaryOperationDD.label}}</label>
-        <drop-down-list-box ng-if="transition._dummySecondaryOperationDD" current-action="currentAction" field='transition._dummySecondaryOperationDD' change='onTargetChange(transition)'></drop-down-list-box>
-        
+        <div ng-if="transition._dummySecondaryOperationDD" class="query-builder-add-button" style="margin-top: 10px;">
+            <label class='control-label'>{{transition._dummySecondaryOperationDD.label}}</label>
+            <drop-down-list-box current-action="currentAction" field='transition._dummySecondaryOperationDD' change='onTargetChange(transition)'></drop-down-list-box>
+        </div>
+
+        <button ng-if="field.transitions.length > 1" style="margin-top: 5px;" class="btn btn-danger query-builder-add-button" ng-click="removeTransition($index)" stop-click-propagation>Remove Transition</button>
         <hr/>
     </div>
 
