@@ -25,12 +25,6 @@ $srcFiles = "$rootDir\..\Tests\HealthMonitor\bin\Release\*"
 $exclude = @("HealthMonitor.vshost.exe", "HealthMonitor.vshost.exe.config", "HealthMonitor.vshost.exe.manifest")
 Copy-Item $srcFiles -Destination $archiveFolderName -Exclude $exclude -Force -Recurse
 
-# Copy HealthMonitor config-file to archive folder.
-#Write-Host "Copying HealthMonitor config file"
-#$srcConfigFile = "$rootDir\MASTER-HealthMonitor.exe.config"
-#$dstConfigFile = "$archiveFolderName\HealthMonitor.exe.config"
-#Copy-Item $srcConfigFile -Destination $dstConfigFile -Force
-
 # Copy settings.job to archive folder.
 Write-Host "Copying HealthMonitor settings.job file"
 $srcSettingsFile = "$rootDir\MASTER-settings.job"
