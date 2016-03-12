@@ -24,10 +24,8 @@ namespace terminalSalesforce.Services
         /// <summary>
         /// Creates Salesforce object
         /// </summary>
-        public async Task<bool> CreateObject<T>(T newObject, string salesforceObjectName, AuthorizationTokenDO authTokenDO)
+        public async Task<string> CreateObject<T>(T newObject, string salesforceObjectName, AuthorizationTokenDO authTokenDO)
         {
-            bool createFlag = true;
-
             _salesforceObject = GetSalesforceObject(salesforceObjectName);
             SuccessResponse createCallResponse = null;
 
@@ -50,12 +48,7 @@ namespace terminalSalesforce.Services
                 }
             }
 
-            if (string.IsNullOrEmpty(createCallResponse.Id))
-            {
-                createFlag = false;
-            }
-
-            return createFlag;
+            return string.IsNullOrEmpty(createCallResponse.Id) ? string.Empty : createCallResponse.Id;
         }
 
         /// <summary>
@@ -153,7 +146,7 @@ namespace terminalSalesforce.Services
             }
         }
 
-        public async Task<bool> PostFeedTextToChatterObject(string feedText, string parentObjectId, AuthorizationTokenDO authTokenDO)
+        public async Task<string> PostFeedTextToChatterObject(string feedText, string parentObjectId, AuthorizationTokenDO authTokenDO)
         {
             var chatterClient = (ChatterClient)CreateSalesforceClient(typeof(ChatterClient), authTokenDO);
 
@@ -249,7 +242,7 @@ namespace terminalSalesforce.Services
             return salesforceObjectFactory.GetSalesforceObject(salesforceObjectName);
         }
 
-        private void ParseAuthToken(string authonTokenAdditionalValues, out string instanceUrl, out string apiVersion)
+        public void ParseAuthToken(string authonTokenAdditionalValues, out string instanceUrl, out string apiVersion)
         {
             int startIndexOfInstanceUrl = authonTokenAdditionalValues.IndexOf("instance_url");
             int startIndexOfApiVersion = authonTokenAdditionalValues.IndexOf("api_version");
@@ -282,7 +275,7 @@ namespace terminalSalesforce.Services
             return chatterNamesList;
         }
 
-        private async Task<bool> PostFeedText(string feedText, string parentObjectId, ChatterClient chatterClient)
+        private async Task<string> PostFeedText(string feedText, string parentObjectId, ChatterClient chatterClient)
         {
             var currentChatterUser = await chatterClient.MeAsync<UserDetail>();
 
@@ -307,12 +300,7 @@ namespace terminalSalesforce.Services
 
             var feedItem = await chatterClient.PostFeedItemAsync<FeedItem>(feedItemInput, currentChatterUser.id);
 
-            if(feedItem != null && !string.IsNullOrEmpty(feedItem.Id))
-            {
-                return true;
-            }
-
-            return false;
+            return string.IsNullOrEmpty(feedItem.Id) ? string.Empty : feedItem.Id;
         }
     }
 }

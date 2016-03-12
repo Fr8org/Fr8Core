@@ -55,7 +55,6 @@ namespace terminalSalesforce.Controllers
                 Label = "Create Contact",
                 Terminal = terminal,
                 NeedsAuthentication = true,
-                Tags = "AggressiveReload",
                 Category = ActivityCategory.Forwarders,
                 MinPaneWidth = 330,
                 WebService = webService
