@@ -1,4 +1,5 @@
-﻿using PusherServer;
+﻿using System;
+using PusherServer;
 using Utilities.Configuration.Azure;
 using Utilities.Interfaces;
 
@@ -10,20 +11,29 @@ namespace Utilities
 
         public PusherNotifier()
         {
-			_pusher = new Pusher(
-				CloudConfigurationManager.AppSettings.GetSetting("pusherAppId"),
-				CloudConfigurationManager.AppSettings.GetSetting("pusherAppKey"),
-				CloudConfigurationManager.AppSettings.GetSetting("pusherAppSecret"),
-				new PusherOptions
-				{
-					Encrypted = true
-				}
-			);
+            var pusherAppId = CloudConfigurationManager.AppSettings.GetSetting("pusherAppId");
+            var pusherAppKey = CloudConfigurationManager.AppSettings.GetSetting("pusherAppKey");
+            var pusherAppSercret = CloudConfigurationManager.AppSettings.GetSetting("pusherAppSecret");
+
+            if (!string.IsNullOrEmpty(pusherAppId) && !string.IsNullOrEmpty(pusherAppKey) &&
+                !string.IsNullOrEmpty(pusherAppSercret))
+            {
+                _pusher = new Pusher(pusherAppId, pusherAppKey, pusherAppSercret,
+                    new PusherOptions
+                    {
+                        Encrypted = true
+                    }
+                );
+            }
+            else
+            {
+                throw new Exception("Settings for pusher notifier not provided. Failed initializing Pusher.");
+            }
         }
 
         public void Notify(string channelName, string eventName, object message)
         {
-            var result = _pusher.Trigger(channelName, eventName, message);
+            _pusher?.Trigger(channelName, eventName, message);
         }
     }
 }
