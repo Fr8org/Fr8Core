@@ -196,6 +196,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\HubTests\HubTests.csproj">
+      <Project>{1e8dd13a-846b-4c36-a9c4-5997c5fd74ff}</Project>
+      <Name>HubTests</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\terminalAtlassian\terminalAtlassian.csproj">
       <Project>{89d763ed-3ea6-4303-ab29-3239095a4b06}</Project>
       <Name>terminalAtlassian</Name>
