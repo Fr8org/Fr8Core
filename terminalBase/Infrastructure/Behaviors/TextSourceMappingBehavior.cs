@@ -11,8 +11,13 @@ namespace TerminalBase.Infrastructure.Behaviors
 {
     public class TextSourceMappingBehavior : BaseControlMappingBehavior<TextSource>
     {
-        public TextSourceMappingBehavior(ICrateStorage crateStorage,string behaviorName) : base(crateStorage, behaviorName)
+        private readonly bool _reqeustUpstream;
+
+        public TextSourceMappingBehavior(ICrateStorage crateStorage, string behaviorName, bool requestUpstream)
+            : base(crateStorage, behaviorName)
         {
+            _reqeustUpstream = requestUpstream;
+
             //BehaviorPrefix = "TextSourceMappingBehavior-";
         }
 
@@ -25,6 +30,16 @@ namespace TerminalBase.Infrastructure.Behaviors
                 var name = string.Concat(BehaviorPrefix, fieldId);
 
                 var textSource = new TextSource(fieldId, upstreamSourceLabel, name);
+
+                if (_reqeustUpstream)
+                {
+                    textSource.Source = new FieldSourceDTO()
+                    {
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields,
+                        RequestUpstream = true
+                    };
+                }
+
                 controlsCM.Controls.Add(textSource);
             }
         }

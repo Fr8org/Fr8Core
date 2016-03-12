@@ -55,7 +55,6 @@ namespace terminalSendGrid.Actions
             {
                 crateStorage.Clear();
                 crateStorage.Add(CreateControlsCrate());
-                crateStorage.Add(await CreateAvailableFieldsCrate(curActivityDO, availabilityTypeUpstream: AvailabilityType.RunTime, availabilityTypeFieldsCrate: AvailabilityType.RunTime));
             }
 
             return await Task.FromResult(curActivityDO);
@@ -63,40 +62,7 @@ namespace terminalSendGrid.Actions
 
         protected async override Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.ReplaceByLabel(await CreateAvailableFieldsCrate(curActivityDO, availabilityTypeUpstream: AvailabilityType.RunTime, availabilityTypeFieldsCrate: AvailabilityType.RunTime));
-            }
-
             return await Task.FromResult(curActivityDO);
-        }
-
-        // @alexavrutin here: Do we really need a separate crate for each field? 
-        // Refactored the action to use a single Upstream Terminal-Provided Fields crate.
-        private async Task<ActivityDO> AddDesignTimeFieldsSource(ActivityDO curActivityDO)
-        {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.RemoveByLabel("Upstream Terminal-Provided Fields Address");
-                crateStorage.RemoveByLabel("Upstream Terminal-Provided Fields Subject");
-                crateStorage.RemoveByLabel("Upstream Terminal-Provided Fields Body");
-
-                var fieldsDTO = await GetCratesFieldsDTO<FieldDescriptionsCM>(curActivityDO, CrateDirection.Upstream);
-
-                var upstreamFieldsAddress = MergeUpstreamFields<FieldDescriptionsCM>(curActivityDO, "Upstream Terminal-Provided Fields Address", fieldsDTO);
-                if (upstreamFieldsAddress != null)
-                    crateStorage.Add(upstreamFieldsAddress);
-
-                var upstreamFieldsSubject = MergeUpstreamFields<FieldDescriptionsCM>(curActivityDO, "Upstream Terminal-Provided Fields Subject", fieldsDTO);
-                if (upstreamFieldsSubject != null)
-                    crateStorage.Add(upstreamFieldsSubject);
-
-                var upstreamFieldsBody = MergeUpstreamFields<FieldDescriptionsCM>(curActivityDO, "Upstream Terminal-Provided Fields Body", fieldsDTO);
-                if (upstreamFieldsBody != null)
-                    crateStorage.Add(upstreamFieldsBody);
-            }
-
-            return curActivityDO;
         }
 
         /// <summary>
@@ -105,14 +71,12 @@ namespace terminalSendGrid.Actions
         /// <returns></returns>
         private ControlDefinitionDTO CreateEmailAddressTextSourceControl()
         {
-            var control = CreateSpecificOrUpstreamValueChooser("Email Address", "EmailAddress", "Upstream Terminal-Provided Fields", addRequestConfigEvent: true);
-                
-            //CreateSpecificOrUpstreamValueChooser(
-            //    "Email Address",
-            //    "EmailAddress",
-            //    "Upstream Terminal-Provided Fields Address",
-            //    "EmailAddress"
-            //);
+            var control = CreateSpecificOrUpstreamValueChooser(
+                "Email Address",
+                "EmailAddress",
+                addRequestConfigEvent: true,
+                requestUpstream: true
+            );
 
             return control;
         }
@@ -126,8 +90,8 @@ namespace terminalSendGrid.Actions
             var control = CreateSpecificOrUpstreamValueChooser(
                 "Email Subject",
                 "EmailSubject",
-                "Upstream Terminal-Provided Fields",
-                addRequestConfigEvent: true
+                addRequestConfigEvent: true,
+                requestUpstream: true
             );
 
             return control;
@@ -142,8 +106,8 @@ namespace terminalSendGrid.Actions
             var control = CreateSpecificOrUpstreamValueChooser(
                 "Email Body",
                 "EmailBody",
-                "Upstream Terminal-Provided Fields",
-                addRequestConfigEvent: true
+                addRequestConfigEvent: true,
+                requestUpstream: true
             );
 
             return control;

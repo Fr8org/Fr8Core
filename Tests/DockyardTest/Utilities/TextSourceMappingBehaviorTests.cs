@@ -20,7 +20,7 @@ namespace DockyardTest.Utilities
         {
             var crateStorage = new CrateStorage();
 
-            var behavior = new TextSourceMappingBehavior(crateStorage, "Test");
+            var behavior = new TextSourceMappingBehavior(crateStorage, "Test", false);
             behavior.Append(fieldIds, "Test upstream data");
 
             return behavior;

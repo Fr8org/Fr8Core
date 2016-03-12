@@ -85,8 +85,14 @@ namespace terminalSalesforce.Actions
 
             var result = await _salesforce.PostFeedTextToChatterObject(feedText, selectedChatterObjectId, authTokenDO);
 
-            if(result)
+            if (!string.IsNullOrEmpty(result))
             {
+                using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
+                {
+                    var feedIdFields = new List<FieldDTO> { new FieldDTO("FeedID", result) };
+                    crateStorage.Add(Crate.FromContent("Newly Created Salesforce Feed", new StandardPayloadDataCM(feedIdFields)));
+                }
+
                 return Success(payloadCrates, string.Format("Successfully posted {0} to {1}", feedText, selectedChatterObjectId));
             }
 
