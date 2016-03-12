@@ -19,13 +19,6 @@ namespace terminalDocuSign.Controllers
     public class TerminalController : ApiController
     {
         [HttpGet]
-        [Route("test")]
-        public string Test()
-        {
-            return CloudConfigurationManager.AppSettings.GetSetting("Fr8.ConnectionString") ?? "Null";
-        }
-
-        [HttpGet]
         [Route("discover")]
         [ResponseType(typeof(StandardFr8TerminalCM))]
         public IHttpActionResult Get()
