@@ -228,7 +228,7 @@ namespace terminalDocuSign.Services
                     docuSignAuthToken.Email, docuSignAuthToken.ApiPassword);
 
                 var userDefinedFields = docusignEnvelope
-                    .GetEnvelopeDataByTemplate(templateId);
+                    .GetTemplateTabs(templateId);
 
                 var fieldCollection = userDefinedFields
                     .Select(f => new FieldDTO
@@ -251,7 +251,7 @@ namespace terminalDocuSign.Services
                     docuSignAuthToken.Email, docuSignAuthToken.ApiPassword);
 
                 var userDefinedFields = docusignEnvelope
-                    .GetEnvelopeDataByTemplate(docuSignTemplateId);
+                    .GetTemplateTabs(docuSignTemplateId);
 
                 var fieldCollection = userDefinedFields
                     .Select(f => new FieldDTO

@@ -58,7 +58,7 @@ namespace terminalDocuSign.Tests.Services
 		{
 			RestSettings.Instance.RestTracing = true;
 
-			var envelopeDatas = (new DocuSignEnvelope()).GetEnvelopeDataByTemplate(FixtureData.TestTemplateId).ToList();
+			var envelopeDatas = (new DocuSignEnvelope()).GetTemplateTabs(FixtureData.TestTemplateId).ToList();
 
 			Assert.IsNotNull(envelopeDatas);
 		}

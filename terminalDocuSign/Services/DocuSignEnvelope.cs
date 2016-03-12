@@ -196,7 +196,7 @@ namespace terminalDocuSign.Services
             return envelopeData;
         }
 
-        public IEnumerable<DocuSignTabDTO> GetEnvelopeDataByTemplate(string templateId)
+        public IEnumerable<DocuSignTabDTO> GetTemplateTabs(string templateId)
         {
             var envelopeData = new List<DocuSignTabDTO>();
 

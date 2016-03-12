@@ -59,7 +59,7 @@ namespace terminalDocuSign.Interfaces
         /// List of Envelope Data.
         /// It returns empty list of envelope data if tab and signers not found.
         /// </returns>
-        IEnumerable<DocuSignTabDTO> GetEnvelopeDataByTemplate(string templateId);
+        IEnumerable<DocuSignTabDTO> GetTemplateTabs(string templateId);
 
         void SendUsingTemplate(string templateId, string recipientAddress);
     }
