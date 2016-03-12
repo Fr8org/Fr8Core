@@ -74,7 +74,18 @@ namespace HealthMonitor.Utility
                     throw new Exception(
                         String.Format("Terminal with name {0} and version {1} not found", TerminalName, currentTerminalVersion));
                 }
-                return "http://" + terminal.Endpoint;
+                if (terminal.Endpoint.StartsWith("http://"))
+                {
+                    return terminal.Endpoint;
+                }
+                else if (terminal.Endpoint.StartsWith("https://"))
+                {
+                    return terminal.Endpoint.Replace("https://", "http://");
+                }
+                else
+                {
+                    return "http://" + terminal.Endpoint;
+                }
             }
         }
 
