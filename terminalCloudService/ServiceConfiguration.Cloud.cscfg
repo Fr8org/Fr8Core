@@ -9,6 +9,7 @@
       <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountEncryptedPassword" value="MIIBnQYJKoZIhvcNAQcDoIIBjjCCAYoCAQAxggFOMIIBSgIBADAyMB4xHDAaBgNVBAMME1dpbmRvd3MgQXp1cmUgVG9vbHMCEHaQA3YVaruGT5F9mb9qGuIwDQYJKoZIhvcNAQEBBQAEggEAOK6dr5rjr9CljzPK0+QOptD8PfCNsrEZnXODLknPLL7aJnMG0jB54SHRJQfQTxi/H4/vuNKmU4GppjJgUqa+L1l9+Cqnrnic33yl0BiFwv7xZwQl/9oCAiRHhs6kmVK5+wouRt52Czj4JquFBL25oLKcgGZ1B5XuouZ18dx1TGBHzMcdgGixhpzxwO9/XSnQuhl6MS+JDpYPXf71CpkWkVfjRAY45TPPyJxcCu8+34ionwXIsq9gavZnd3TIX+5ZSHoARr7tb48oATYuUmnpJGUXdvEgU0bxyVW2Z9bNlfVMc7mmjK9MEKDtdVNb/6OT1jI9G4dn+tcmNn60oTokpjAzBgkqhkiG9w0BBwEwFAYIKoZIhvcNAwcECH4XY8wl41w6gBDureexeAltcuqj8tZJxJ8J" />
       <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountExpiration" value="2016-10-15T23:59:59.0000000+02:00" />
       <Setting name="Microsoft.WindowsAzure.Plugins.RemoteForwarder.Enabled" value="true" />
+      <Setting name="Fr8.ConnectionString" value="Cloud"/>
     </ConfigurationSettings>
     <Certificates>
       <Certificate name="Microsoft.WindowsAzure.Plugins.RemoteAccess.PasswordEncryption" thumbprint="4A0CFAE91F22D6D9A60358B6F1DC35223E6B6A06" thumbprintAlgorithm="sha1" />
