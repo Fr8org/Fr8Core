@@ -24,7 +24,7 @@ namespace HealthMonitor
         ManualResetEventSlim _waitHandle = new ManualResetEventSlim(false);
         Process _hubProcess;
 
-        private const string HUB_ENDPOINT = "localhost:30643";
+        private const string HUB_ENDPOINT = "http://localhost:30643";
         private const int CURRENT_TERMINAL_VERSION = 1;
 
         public void Initialize(string connectionString)
