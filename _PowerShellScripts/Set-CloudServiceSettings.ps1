@@ -6,6 +6,9 @@
 	[string]$overrideDbName,
 
 	[Parameter(Mandatory = $false)]
+	[string]$coreWebServerUrl,
+
+	[Parameter(Mandatory = $false)]
 	[string]$serviceName = "fr8company",
 
 	[Parameter(Mandatory = $false)]
@@ -26,9 +29,16 @@ if(Test-Path $ConfigFile)
 {  
    Write-Host "Updating connection string in service configuration file: $ConfigFile" 
    $xml = [xml](Get-Content $ConfigFile)
-   $node = $xml.ServiceConfiguration.Role | where {$_.name -eq 'terminalWebRole'}
-   $node = $node.ConfigurationSettings.Setting | where {$_.name -eq 'Fr8.ConnectionString'}
-   $node.value=$connectionString
+   $roleNode = $xml.ServiceConfiguration.Role | where {$_.name -eq 'terminalWebRole'}
+
+   # Update connection string
+   $csNode = $roleNode.ConfigurationSettings.Setting | where {$_.name -eq 'Fr8.ConnectionString'}
+   $csNode.value=$connectionString
+
+   # Update CoreWebServerUrl
+   $urlNode = $roleNode.ConfigurationSettings.Setting | where {$_.name -eq 'CoreWebServerUrl'}
+   $urlNode.value=$coreWebServerUrl
+
    try
    {
      $xml.Save($ConfigFile)
