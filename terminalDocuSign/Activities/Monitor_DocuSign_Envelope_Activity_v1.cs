@@ -86,15 +86,14 @@ namespace terminalDocuSign.Actions
             ActivityUi activityUi = GetConfigurationControls(curActivityDO);
             return new DocuSignEvents
             {
-                EnvelopeSent = activityUi.EnvelopeSentOption.Selected,
-                EnvelopRecieved = activityUi.EnvelopeRecievedOption.Selected,
-                EnvelopeSigned = activityUi.EnvelopeSignedOption.Selected
+                EnvelopeSent = activityUi?.EnvelopeSentOption?.Selected ?? false,
+                EnvelopRecieved = activityUi?.EnvelopeRecievedOption?.Selected ?? false,
+                EnvelopeSigned = activityUi?.EnvelopeSignedOption?.Selected ?? false
             };
         }
 
         public override Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            ValidateActivityInternal(curActivityDO);
             //create DocuSign account, publish URL and other user selected options
             var result = GetUserSelectedEnvelopeEvents(curActivityDO);
             //create or update the DocuSign connect profile configuration
@@ -491,19 +490,26 @@ namespace terminalDocuSign.Actions
                 {
                     return null;
                 }
-                var result = new ActivityUi
+                try
                 {
-                    ActivityDescription = (TextArea)controlsManifest.Controls[0],
-                    EnvelopeSentOption = (CheckBox)controlsManifest.Controls[1],
-                    EnvelopeRecievedOption = (CheckBox)controlsManifest.Controls[2],
-                    EnvelopeSignedOption = (CheckBox)controlsManifest.Controls[3],
-                    TemplateRecipientOptionSelector = (RadioButtonGroup)controlsManifest.Controls[4]
-                };
-                result.SentToRecipientOption = result.TemplateRecipientOptionSelector.Radios[0];
-                result.Recipient = (TextBox)result.SentToRecipientOption.Controls[0];
-                result.BasedOnTemplateOption = result.TemplateRecipientOptionSelector.Radios[1];
-                result.TemplateList = (DropDownList)result.BasedOnTemplateOption.Controls[0];
-                return result;
+                    var result = new ActivityUi
+                                 {
+                                     ActivityDescription = (TextArea)controlsManifest.Controls[0],
+                                     EnvelopeSentOption = (CheckBox)controlsManifest.Controls[1],
+                                     EnvelopeRecievedOption = (CheckBox)controlsManifest.Controls[2],
+                                     EnvelopeSignedOption = (CheckBox)controlsManifest.Controls[3],
+                                     TemplateRecipientOptionSelector = (RadioButtonGroup)controlsManifest.Controls[4]
+                                 };
+                    result.SentToRecipientOption = result.TemplateRecipientOptionSelector.Radios[0];
+                    result.Recipient = (TextBox)result.SentToRecipientOption.Controls[0];
+                    result.BasedOnTemplateOption = result.TemplateRecipientOptionSelector.Radios[1];
+                    result.TemplateList = (DropDownList)result.BasedOnTemplateOption.Controls[0];
+                    return result;
+                }
+                catch
+                {
+                    return null;
+                }
             }
 
             public static implicit operator StandardConfigurationControlsCM(ActivityUi activityUi)

@@ -147,6 +147,10 @@ namespace terminalDocuSign.Actions
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 var templateList = GetStdConfigurationControl<DropDownList>(crateStorage, "DocuSignTemplate");
+                if (templateList == null)
+                {
+                    return new ValidationResult(DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage);
+                }
                 errorMessages.Add(templateList.ErrorMessage =
                                   DocuSignValidationUtils.AtLeastOneItemExists(templateList)
                                       ? DocuSignValidationUtils.ItemIsSelected(templateList)
@@ -154,7 +158,11 @@ namespace terminalDocuSign.Actions
                                             : DocuSignValidationUtils.TemplateIsNotSelectedErrorMessage
                                       : DocuSignValidationUtils.NoTemplateExistsErrorMessage);
                 var sourceConfigControl = GetStdConfigurationControl<DropDownList>(crateStorage, "DataSource");
-                errorMessages.Add(sourceConfigControl.ErrorMessage = 
+                if (sourceConfigControl == null)
+                {
+                    return new ValidationResult(DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage);
+                }
+                errorMessages.Add(sourceConfigControl.ErrorMessage =
                     DocuSignValidationUtils.AtLeastOneItemExists(sourceConfigControl)
                         ? DocuSignValidationUtils.ItemIsSelected(sourceConfigControl)
                             ? string.Empty
@@ -189,7 +197,7 @@ namespace terminalDocuSign.Actions
             // If no values selected in textboxes, remain on initial phase
             DropDownList dataSource = GetStdConfigurationControl<DropDownList>(storage, "DataSource");
             if (dataSource.Value != null)
-            _dataSourceValue = dataSource.Value;
+                _dataSourceValue = dataSource.Value;
 
             _docuSignTemplate = GetStdConfigurationControl<DropDownList>(storage, "DocuSignTemplate");
 
@@ -264,7 +272,7 @@ namespace terminalDocuSign.Actions
             var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null))
                 .Select(Mapper.Map<ActivityTemplateDO>)
                 .ToList();
-            
+
             // Let's check if activity template generates table data
             var selectedReceiver = curActivityTemplates.Single(x => x.Name == _dataSourceValue);
             var dataSourceActivity = await AddAndConfigureChildActivity(
@@ -384,7 +392,7 @@ namespace terminalDocuSign.Actions
                 _docuSignTemplate.ListItems
                     .FirstOrDefault(a => a.Key == _docuSignTemplate.selectedKey)
             );
-            
+
             await ConfigureChildActivity(parentActivity, sendDocuSignActivity);
 
             return activityIndex == 1 ? sendDocuSignActivity : parentActivity;
@@ -468,7 +476,7 @@ namespace terminalDocuSign.Actions
             {
                 var curSolutionPage = GetDefaultDocumentation(SolutionName, SolutionVersion, TerminalName, SolutionBody);
                 return Task.FromResult(curSolutionPage);
-              
+
             }
             if (curDocumentation.Contains("HelpMenu"))
             {
