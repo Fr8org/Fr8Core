@@ -135,6 +135,7 @@
     <ConfigurationSettings>
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" />
       <Setting name="Fr8.ConnectionString"/>
+      <Setting name="CoreWebServerUrl"/>
     </ConfigurationSettings>
     <Endpoints>
       <InputEndpoint name="server80" protocol="http" port="80" />
