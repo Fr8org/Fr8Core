@@ -4,6 +4,7 @@ using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Control;
@@ -139,42 +140,28 @@ namespace terminalDocuSign.Actions
             return control;
         }
 
-        protected internal override bool ActivityIsValid(ActivityDO curActivityDO, out string errorMessage)
+        protected internal override ValidationResult ValidateActivityInternal(ActivityDO curActivityDO)
         {
             var errorMessages = new List<string>();
-            errorMessage = string.Empty;
             //validate DocuSignTemplate for present selected template 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                var configControl = GetStdConfigurationControl<DropDownList>(crateStorage, "DocuSignTemplate");
-                if (configControl != null)
-                {
-                    if (configControl.ListItems.Count == 0)
-                    {
-                        errorMessage = "Please link some templates to your DocuSign account.";
-                    }
-                    else if (string.IsNullOrEmpty(configControl.Value))
-                    {
-                        errorMessage = "Template is not selected";
-                    }
-                    configControl.ErrorMessage = errorMessage;
-                    if (!string.IsNullOrEmpty(errorMessage))
-                    {
-                        errorMessages.Add(errorMessage);
-                    }
-                }
+                var templateList = GetStdConfigurationControl<DropDownList>(crateStorage, "DocuSignTemplate");
+                errorMessages.Add(templateList.ErrorMessage =
+                                  DocuSignValidationUtils.AtLeastOneItemExists(templateList)
+                                      ? DocuSignValidationUtils.ItemIsSelected(templateList)
+                                            ? string.Empty
+                                            : DocuSignValidationUtils.TemplateIsNotSelectedErrorMessage
+                                      : DocuSignValidationUtils.NoTemplateExistsErrorMessage);
                 var sourceConfigControl = GetStdConfigurationControl<DropDownList>(crateStorage, "DataSource");
-                if (sourceConfigControl != null)
-                {
-                    errorMessage = sourceConfigControl.ErrorMessage = string.IsNullOrEmpty(sourceConfigControl.Value) ? "Data source is not selected" : null;
-                    if (!string.IsNullOrEmpty(errorMessage))
-                    {
-                        errorMessages.Add(errorMessage);
-                    }
-                }
+                errorMessages.Add(sourceConfigControl.ErrorMessage = 
+                    DocuSignValidationUtils.AtLeastOneItemExists(sourceConfigControl)
+                        ? DocuSignValidationUtils.ItemIsSelected(sourceConfigControl)
+                            ? string.Empty
+                            : "Data source is not selected"
+                        : "No data source exists");
             }
-            errorMessage = string.Join(Environment.NewLine, errorMessages);
-            return errorMessages.Count == 0;
+            return errorMessages.Count == 0 ? ValidationResult.Success : new ValidationResult(string.Join(Environment.NewLine, errorMessages.Where(x => !string.IsNullOrEmpty(x))));
         }
 
         /// <summary>

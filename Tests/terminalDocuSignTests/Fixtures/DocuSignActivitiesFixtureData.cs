@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Data.Control;
 using Data.Crates;
 using Data.Entities;
@@ -20,9 +21,8 @@ namespace terminalDocuSignTests.Fixtures
         public static BaseDocuSignActivity FailedBaseDocuSignActivity()
         {
             var result = new Mock<BaseDocuSignActivity>();
-            string errorMessage;
-            result.Setup(x => x.ActivityIsValid(It.IsAny<ActivityDO>(), out errorMessage))
-                  .Returns(false);
+            result.Setup(x => x.ValidateActivityInternal(It.IsAny<ActivityDO>()))
+                  .Returns(new ValidationResult("Failed"));
             return result.Object;
         }
 
@@ -36,7 +36,7 @@ namespace terminalDocuSignTests.Fixtures
                                 var control = configurationControl.FindByNameNested<DropDownList>(name);
                                 if (control != null)
                                 {
-                                    control.ListItems = new List<ListItem> { new ListItem { Key = "1", Value = "First" } };
+                                    control.ListItems = new List<ListItem> { new ListItem { Key = "First", Value = "1" } };
                                 }
                             });
             return result.Object;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Data.Entities;
 using Moq;
@@ -34,9 +35,8 @@ namespace terminalDocuSignTests.Activities
         public void Run_WhenActivityIsValid_RunsSuccessfully()
         {
             var activityMock = new Mock<BaseDocuSignActivity>();
-            string errorMessage;
-            activityMock.Setup(x => x.ActivityIsValid(It.IsAny<ActivityDO>(), out errorMessage))
-                        .Returns(true);
+            activityMock.Setup(x => x.ValidateActivityInternal(It.IsAny<ActivityDO>()))
+                        .Returns(ValidationResult.Success);
             activityMock.Setup(x => x.RunInternal(It.IsAny<ActivityDO>(), It.IsAny<Guid>(), It.IsNotNull<AuthorizationTokenDO>()))
                         .Returns(Task.FromResult(FixtureData.PayloadDTO2()))
                         .Verifiable("RunInternal was not invoked when activity has auth token and is valid");

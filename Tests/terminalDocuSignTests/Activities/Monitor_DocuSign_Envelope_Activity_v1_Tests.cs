@@ -1,10 +1,12 @@
-﻿using System.Linq;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using Data.Control;
 using Data.Crates;
 using Data.Entities;
 using Data.Interfaces.Manifests;
 using Hub.Managers;
 using NUnit.Framework;
+using terminalDocuSign;
 using terminalDocuSign.Actions;
 using terminalDocuSignTests.Fixtures;
 using UtilitiesTesting.Fixtures;
@@ -19,10 +21,9 @@ namespace terminalDocuSignTests.Activities
         public void ActivityIsValid_WhenIsNotConfigured_ReturnsFalse()
         {
             var target = new Monitor_DocuSign_Envelope_Activity_v1();
-            string errorMessage;
-            var result = target.ActivityIsValid(FixtureData.TestActivity1(), out errorMessage);
-            Assert.IsFalse(result);
-            Assert.AreEqual("Controls are not configured properly", errorMessage);
+            var result = target.ValidateActivityInternal(FixtureData.TestActivity1());
+            Assert.AreNotEqual(ValidationResult.Success, result);
+            Assert.AreEqual(DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage, result.ErrorMessage);
         }
 
         [Test]
@@ -33,10 +34,9 @@ namespace terminalDocuSignTests.Activities
             activityDO = target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration()).Result;
             SetRecipientConditionSelected(activityDO);
             SetRecipientText(activityDO);
-            string errorMessage;
-            var result = target.ActivityIsValid(activityDO, out errorMessage);
-            Assert.IsFalse(result);
-            Assert.AreEqual("At least one notification checkbox must be checked.", errorMessage);
+            var result = target.ValidateActivityInternal(activityDO);
+            Assert.AreNotEqual(ValidationResult.Success, result);
+            Assert.AreEqual("At least one notification option must be selected", result.ErrorMessage);
         }
 
         [Test]
@@ -46,10 +46,9 @@ namespace terminalDocuSignTests.Activities
             var activityDO = FixtureData.TestActivity1();
             activityDO = target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration()).Result;
             SetNotificationSelected(activityDO);
-            string errorMessage;
-            var result = target.ActivityIsValid(activityDO, out errorMessage);
-            Assert.IsFalse(result);
-            Assert.AreEqual("One option from the radio buttons must be selected.", errorMessage);
+            var result = target.ValidateActivityInternal(activityDO);
+            Assert.AreNotEqual(ValidationResult.Success, result);
+            Assert.AreEqual("At least one envelope option must be selected", result.ErrorMessage);
         }
 
         [Test]
@@ -60,10 +59,9 @@ namespace terminalDocuSignTests.Activities
             activityDO = target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration()).Result;
             SetNotificationSelected(activityDO);
             SetTemplateConditionSelected(activityDO);
-            string errorMessage;
-            var result = target.ActivityIsValid(activityDO, out errorMessage);
-            Assert.IsFalse(result);
-            Assert.AreEqual("Please link at least one template to your DocuSign account", errorMessage);
+            var result = target.ValidateActivityInternal(activityDO);
+            Assert.AreNotEqual(ValidationResult.Success, result);
+            Assert.AreEqual(DocuSignValidationUtils.NoTemplateExistsErrorMessage, result.ErrorMessage);
         }
 
         [Test]
@@ -74,10 +72,9 @@ namespace terminalDocuSignTests.Activities
             activityDO = target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration()).Result;
             SetNotificationSelected(activityDO);
             SetTemplateConditionSelected(activityDO);
-            string errorMessage;
-            var result = target.ActivityIsValid(activityDO, out errorMessage);
-            Assert.IsFalse(result);
-            Assert.AreEqual("Template is not selected", errorMessage);
+            var result = target.ValidateActivityInternal(activityDO);
+            Assert.AreNotEqual(ValidationResult.Success, result);
+            Assert.AreEqual(DocuSignValidationUtils.TemplateIsNotSelectedErrorMessage, result.ErrorMessage);
         }
         [Test]
         public void ActivityIsValid_WhenAllFieldsAreSet_ReturnsTrue()
@@ -88,9 +85,8 @@ namespace terminalDocuSignTests.Activities
             SetNotificationSelected(activityDO);
             SetTemplateConditionSelected(activityDO);
             SetTemplate(activityDO);
-            string errorMessage;
-            var result = target.ActivityIsValid(activityDO, out errorMessage);
-            Assert.IsTrue(result);
+            var result = target.ValidateActivityInternal(activityDO);
+            Assert.AreEqual(ValidationResult.Success, result);
         }
 
         private void SetNotificationSelected(ActivityDO activity)
@@ -100,7 +96,7 @@ namespace terminalDocuSignTests.Activities
                 var configControls = crateStorage.FirstCrate<StandardConfigurationControlsCM>(c => true).Content;
                 configControls.Controls
                     .Where(c => c.Type == ControlTypes.CheckBox)
-                    .First(x => x.Name == "Event_Recipient_Signed")
+                    .First(x => x.Name == "RecipientSigned")
                     .Selected = true;
             }
         }
@@ -131,7 +127,7 @@ namespace terminalDocuSignTests.Activities
                               .First(x => x.Name == "recipient")
                               .Controls
                               .First()
-                              .Value = "Some text";
+                              .Value = "foo@bar.com";
             }
         }
 
@@ -162,7 +158,7 @@ namespace terminalDocuSignTests.Activities
                               .Controls
                               .OfType<DropDownList>()
                               .First()
-                              .Value = "First";
+                              .selectedKey = "First";
             }
         }
     }

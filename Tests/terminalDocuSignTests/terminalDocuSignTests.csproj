@@ -64,6 +64,7 @@
       <HintPath>..\..\packages\structuremap.3.1.6.186\lib\net40\StructureMap.Net4.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net.Http" />
@@ -74,7 +75,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Activities\Archive_DocuSign_Template_v1_Tests.cs" />
     <Compile Include="Activities\BaseDocuSignActivityTest.cs" />
     <Compile Include="Activities\BaseTest.cs" />
     <Compile Include="Activities\Get_DocuSign_Template_v1_Tests.cs" />

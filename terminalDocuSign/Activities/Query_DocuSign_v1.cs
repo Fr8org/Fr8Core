@@ -43,23 +43,23 @@ namespace terminalDocuSign.Actions
                 });
 
                 Controls.Add(SearchText = new TextBox
-                                          {
-                                              Name = "SearchText",
-                                          });
+                {
+                    Name = "SearchText",
+                });
 
                 Controls.Add(Folder = new DropDownList
-                                      {
-                                          Label = "Envelope is in folder:",
-                                          Name = "Folder",
-                                          Source = null
-                                      });
+                {
+                    Label = "Envelope is in folder:",
+                    Name = "Folder",
+                    Source = null
+                });
 
                 Controls.Add(Status = new DropDownList
-                                      {
-                                          Label = "Envelope has status:",
-                                          Name = "Status",
-                                          Source = null
-                                      });
+                {
+                    Label = "Envelope has status:",
+                    Name = "Status",
+                    Source = null
+                });
             }
         }
 

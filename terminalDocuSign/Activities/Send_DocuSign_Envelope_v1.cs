@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -223,7 +224,7 @@ namespace terminalDocuSign.Actions
                 // One to hold the ui controls
                 if (crateStorage.All(c => c.ManifestType.Id != (int)MT.FieldDescription))
                 {
-                    var configurationCrate = CreateDocusignTemplateConfigurationControls(curActivityDO);
+                    var configurationCrate = CreateDocusignTemplateConfigurationControls();
                     _docuSignManager.FillDocuSignTemplateSource(configurationCrate, "target_docusign_template", docuSignAuthDTO);
                     crateStorage.Replace(new CrateStorage(configurationCrate));
                 }
@@ -353,35 +354,31 @@ namespace terminalDocuSign.Actions
             return await Task.FromResult(curActivityDO);
         }
 
-        protected internal override bool ActivityIsValid(ActivityDO curActivityDO, out string errorMessage)
+        protected internal override ValidationResult ValidateActivityInternal(ActivityDO curActivityDO)
         {
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 var configControls = GetConfigurationControls(crateStorage);
                 if (configControls == null)
                 {
-                    errorMessage = "Controls are not configured properly";
-                    return false;
+                    return new ValidationResult(DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage);
                 }
                 var templateList = configControls.Controls.OfType<DropDownList>().FirstOrDefault();
-                if (templateList?.ListItems.Count == 0)
+                if (!DocuSignValidationUtils.AtLeastOneItemExists(templateList))
                 {
-                    errorMessage = "Please link at least one template to your DocuSign account";
-                    return false;
+                    return new ValidationResult(DocuSignValidationUtils.NoTemplateExistsErrorMessage);
                 }
-                if (string.IsNullOrEmpty(templateList?.selectedKey))
+                if (!DocuSignValidationUtils.ItemIsSelected(templateList))
                 {
-                    errorMessage = "Template is not selected";
-                    return false;
+                    return new ValidationResult(DocuSignValidationUtils.TemplateIsNotSelectedErrorMessage);
                 }
-                errorMessage = string.Empty;
-                return true;
+                return ValidationResult.Success;
             }
         }
 
-        private Crate CreateDocusignTemplateConfigurationControls(ActivityDO curActivityDO)
+        private Crate CreateDocusignTemplateConfigurationControls()
         {
-            var fieldSelectDocusignTemplateDTO = new DropDownList()
+            var fieldSelectDocusignTemplateDTO = new DropDownList
             {
                 Label = "Use DocuSign Template",
                 Name = "target_docusign_template",
@@ -393,12 +390,12 @@ namespace terminalDocuSign.Actions
                 Source = null
             };
 
-            var fieldsDTO = new List<ControlDefinitionDTO>()
+            var fieldsDTO = new List<ControlDefinitionDTO>
             {
                 fieldSelectDocusignTemplateDTO
             };
 
-            var controls = new StandardConfigurationControlsCM()
+            var controls = new StandardConfigurationControlsCM
             {
                 Controls = fieldsDTO
             };

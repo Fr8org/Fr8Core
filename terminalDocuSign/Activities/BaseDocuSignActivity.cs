@@ -3,9 +3,11 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Constants;
+using Data.Control;
 using Data.Crates;
 using TerminalBase.BaseClasses;
 using terminalDocuSign.Infrastructure;
@@ -18,21 +20,20 @@ namespace terminalDocuSign.Actions
     {
         protected List<FieldDTO> CreateDocuSignEventFields()
         {
-            return new List<FieldDTO>()
-                   {
-                       new FieldDTO("RecipientEmail", AvailabilityType.RunTime) { Tags = "EmailAddress" },
-                       new FieldDTO("RecipientUserName", AvailabilityType.RunTime) { Tags = "UserName" },
-                       new FieldDTO("DocumentName", AvailabilityType.RunTime),
-                       new FieldDTO("TemplateName", AvailabilityType.RunTime),
-                       new FieldDTO("Status", AvailabilityType.RunTime),
-                       new FieldDTO("CreateDate") { Tags = "Date" },
-                       new FieldDTO("SentDate", AvailabilityType.RunTime) { Tags = "Date" },
-                       new FieldDTO("DeliveredDate", AvailabilityType.RunTime) { Tags = "Date" },
-                       new FieldDTO("CompletedDate", AvailabilityType.RunTime) { Tags = "Date" },
-                       new FieldDTO("HolderEmail", AvailabilityType.RunTime) { Tags = "EmailAddress" },
-                       new FieldDTO("Subject", AvailabilityType.RunTime),
-                       new FieldDTO("EnvelopeId", AvailabilityType.RunTime),
-                   };
+            return new List<FieldDTO>{
+                new FieldDTO("RecipientEmail", AvailabilityType.RunTime) { Tags = "EmailAddress" },
+                new FieldDTO("RecipientUserName", AvailabilityType.RunTime) { Tags = "UserName" },
+                new FieldDTO("DocumentName", AvailabilityType.RunTime),
+                new FieldDTO("TemplateName", AvailabilityType.RunTime),
+                new FieldDTO("Status", AvailabilityType.RunTime),
+                new FieldDTO("CreateDate") { Tags = "Date" },
+                new FieldDTO("SentDate", AvailabilityType.RunTime) { Tags = "Date" },
+                new FieldDTO("DeliveredDate", AvailabilityType.RunTime) { Tags = "Date" },
+                new FieldDTO("CompletedDate", AvailabilityType.RunTime) { Tags = "Date" },
+                new FieldDTO("HolderEmail", AvailabilityType.RunTime) { Tags = "EmailAddress" },
+                new FieldDTO("Subject", AvailabilityType.RunTime),
+                new FieldDTO("EnvelopeId", AvailabilityType.RunTime),
+            };
         }
 
         protected string GetValueForKey(PayloadDTO curPayloadDTO, string curKey)
@@ -60,29 +61,27 @@ namespace terminalDocuSign.Actions
             return envelopeIdField.Value;
         }
 
-        public virtual async Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             //create DocuSign account if there is no existing connect profile
             DocuSignAccount.CreateOrUpdateDefaultDocuSignConnectConfiguration(null);
-
-            return await Task.FromResult<ActivityDO>(curActivityDO);
+            return await base.Activate(curActivityDO, authTokenDO);
         }
 
         protected override async Task<ICrateStorage> ValidateActivity(ActivityDO curActivityDO)
         {
-            string errorMessage;
-            if (ActivityIsValid(curActivityDO, out errorMessage))
+            var result = ValidateActivityInternal(curActivityDO);
+            if (result == ValidationResult.Success)
             {
                 return await Task.FromResult<ICrateStorage>(null);
             }
             return await Task.FromResult(new CrateStorage(Crate<FieldDescriptionsCM>.FromContent("Validation Errors",
-                                                                                                 new FieldDescriptionsCM(new FieldDTO("Error Message", errorMessage)))));
+                                                                                                 new FieldDescriptionsCM(new FieldDTO("Error Message", result.ErrorMessage)))));
         }
 
-        protected internal virtual bool ActivityIsValid(ActivityDO curActivityDO, out string errorMessage)
+        protected internal virtual ValidationResult ValidateActivityInternal(ActivityDO curActivityDO)
         {
-            errorMessage = string.Empty;
-            return true;
+            return ValidationResult.Success;
         }
         
         public async Task<PayloadDTO> Run(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
@@ -92,10 +91,10 @@ namespace terminalDocuSign.Actions
             {
                 return NeedsAuthenticationError(payloadCrates);
             }
-            string errorMessage;
-            if (!ActivityIsValid(activityDO, out errorMessage))
+            var result = ValidateActivityInternal(activityDO);
+            if (result != ValidationResult.Success)
             {
-                return Error(payloadCrates, $"Could not run {ActivityUserFriendlyName} because of the below issues:{Environment.NewLine}{errorMessage}", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                return Error(payloadCrates, $"Could not run {ActivityUserFriendlyName} because of the below issues:{Environment.NewLine}{result.ErrorMessage}", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
             }
             return await RunInternal(activityDO, containerId, authTokenDO);
         }

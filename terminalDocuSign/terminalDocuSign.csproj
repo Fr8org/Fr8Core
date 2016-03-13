@@ -318,11 +318,11 @@
     <Compile Include="Tests\Fixtures\TerminalFixtureData - Recipient.cs" />
     <Compile Include="Tests\Fixtures\TerminalFixtureData - Signer.cs" />
     <Compile Include="Tests\IDocusignApiHelper.cs" />
-    <Compile Include="Tests\Infrastructure\DocusignConnectParserTests.cs" />
     <Compile Include="Tests\Infrastructure\DocuSignTemplateTests.cs" />
     <Compile Include="Tests\Infrastructure\IndexManagerTests.cs" />
     <Compile Include="Tests\Services\DocuSignRouteTests.cs" />
     <Compile Include="Tests\Services\EnvelopeServiceTests.cs" />
+    <Compile Include="DocuSignValidationUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">

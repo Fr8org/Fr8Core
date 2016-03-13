@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Control;
@@ -95,29 +96,23 @@ namespace terminalDocuSign.Actions
             return await Task.FromResult(curActivityDO);
         }
 
-        protected internal override bool ActivityIsValid(ActivityDO curActivityDO, out string errorMessage)
+        protected internal override ValidationResult ValidateActivityInternal(ActivityDO curActivityDO)
         {
-            errorMessage = string.Empty;
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 var configControls = GetConfigurationControls(crateStorage);
                 if (configControls == null)
                 {
-                    errorMessage = "Controls are not configured properly";
-                    return false;
+                    return new ValidationResult(DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage);
                 }
                 var templateList = configControls.Controls.OfType<DropDownList>().First();
-                if (templateList?.ListItems.Count == 0)
-                {
-                    errorMessage = "Please link at least one template to your DocuSign account";
-                    return false;
-                }
-                if (string.IsNullOrEmpty(templateList?.selectedKey))
-                {
-                    errorMessage = "Template is not selected";
-                    return false;
-                }
-                return true;
+                templateList.ErrorMessage =
+                    DocuSignValidationUtils.AtLeastOneItemExists(templateList)
+                        ? DocuSignValidationUtils.ItemIsSelected(templateList)
+                              ? string.Empty
+                              : DocuSignValidationUtils.TemplateIsNotSelectedErrorMessage
+                        : DocuSignValidationUtils.NoTemplateExistsErrorMessage;
+                return string.IsNullOrEmpty(templateList.ErrorMessage) ? ValidationResult.Success : new ValidationResult(templateList.ErrorMessage);
             }
         }
 

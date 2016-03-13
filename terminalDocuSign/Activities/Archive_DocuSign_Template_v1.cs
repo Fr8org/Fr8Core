@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -117,46 +118,46 @@ namespace terminalDocuSign.Actions
 
             return curActivityDO;
         }
-
-        protected internal override bool ActivityIsValid(ActivityDO curActivityDO, out string errorMessage)
-        {
-            errorMessage = string.Empty;
-            var errorMessages = new List<string>();
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                var configControls = GetConfigurationControls(crateStorage);
-                if (configControls == null)
-                {
-                    errorMessage = "Controls are not configured properly";
-                    return false;
-                }
-                var templateList = configControls.Controls.OfType<DropDownList>().FirstOrDefault();
-                if (templateList?.ListItems.Count == 0)
-                {
-                    errorMessage = templateList.ErrorMessage = "Please link at least one template to your DocuSign account";
-                    if (!string.IsNullOrEmpty(errorMessage))
-                    {
-                        errorMessages.Add(errorMessage);
-                    }
-                }
-                else
-                {
-                    errorMessage = templateList.ErrorMessage = string.IsNullOrEmpty(templateList.selectedKey) ? "Template is not selected" : string.Empty;
-                    if (!string.IsNullOrEmpty(errorMessage))
-                    {
-                        errorMessages.Add(errorMessage);
-                    }
-                }
-                var fileNameTextBox = configControls.Controls.OfType<TextBox>().FirstOrDefault();
-                errorMessage = fileNameTextBox.ErrorMessage = string.IsNullOrEmpty(fileNameTextBox.Value) ? "File name is not specified" : string.Empty;
-                if (!string.IsNullOrEmpty(errorMessage))
-                {
-                    errorMessages.Add(errorMessage);
-                }
-                errorMessage = string.Join(Environment.NewLine, errorMessages);
-                return errorMessages.Count == 0;
-            }
-        }
+        //This method is no longer applicable since this activity is deprecated
+        //protected internal override ValidationResult ValidateActivityInternal(ActivityDO curActivityDO)
+        //{
+        //    errorMessage = string.Empty;
+        //    var errorMessages = new List<string>();
+        //    using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+        //    {
+        //        var configControls = GetConfigurationControls(crateStorage);
+        //        if (configControls == null)
+        //        {
+        //            errorMessage = "Controls are not configured properly";
+        //            return false;
+        //        }
+        //        var templateList = configControls.Controls.OfType<DropDownList>().FirstOrDefault();
+        //        if (templateList?.ListItems.Count == 0)
+        //        {
+        //            errorMessage = templateList.ErrorMessage = "Please link at least one template to your DocuSign account";
+        //            if (!string.IsNullOrEmpty(errorMessage))
+        //            {
+        //                errorMessages.Add(errorMessage);
+        //            }
+        //        }
+        //        else
+        //        {
+        //            errorMessage = templateList.ErrorMessage = string.IsNullOrEmpty(templateList.selectedKey) ? "Template is not selected" : string.Empty;
+        //            if (!string.IsNullOrEmpty(errorMessage))
+        //            {
+        //                errorMessages.Add(errorMessage);
+        //            }
+        //        }
+        //        var fileNameTextBox = configControls.Controls.OfType<TextBox>().FirstOrDefault();
+        //        errorMessage = fileNameTextBox.ErrorMessage = string.IsNullOrEmpty(fileNameTextBox.Value) ? "File name is not specified" : string.Empty;
+        //        if (!string.IsNullOrEmpty(errorMessage))
+        //        {
+        //            errorMessages.Add(errorMessage);
+        //        }
+        //        errorMessage = string.Join(Environment.NewLine, errorMessages);
+        //        return errorMessages.Count == 0;
+        //    }
+        //}
 
         private async Task<ActivityDO> CreateGetDocuSignTemplateActivity(ActivityTemplateDTO template, AuthorizationTokenDO authTokenDO, ActivityDO parentAction)
         {

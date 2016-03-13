@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Data.Constants;
 using Data.Control;
@@ -10,12 +10,10 @@ using Hub.Managers;
 using Newtonsoft.Json;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services;
-using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using Data.Entities;
 using Data.States;
 using Utilities;
-using terminalDocuSign.Infrastructure;
 
 namespace terminalDocuSign.Actions
 {
@@ -86,13 +84,12 @@ namespace terminalDocuSign.Actions
 
         protected override string ActivityUserFriendlyName => "Get DocuSign Envelope";
 
-        protected internal override bool ActivityIsValid(ActivityDO curActivityDO, out string errorMessage)
+        protected internal override ValidationResult ValidateActivityInternal(ActivityDO curActivityDO)
         {
-            errorMessage = string.Empty;
-            var control = FindControl(CrateManager.GetStorage(curActivityDO), "EnvelopeIdSelector");
-            var envelopeId = GetEnvelopeId(control as TextSource);
-            errorMessage = string.IsNullOrEmpty(envelopeId) ? "Envelope Id is not set" : string.Empty;
-            return string.IsNullOrEmpty(errorMessage);
+            var control = (TextSource)FindControl(CrateManager.GetStorage(curActivityDO), "EnvelopeIdSelector");
+            var envelopeId = GetEnvelopeId(control);
+            control.ErrorMessage = string.IsNullOrEmpty(envelopeId) ? "Envelope Id is not set" : string.Empty;
+            return string.IsNullOrEmpty(control.ErrorMessage) ? ValidationResult.Success : new ValidationResult(control.ErrorMessage);
         }
 
         protected internal override async Task<PayloadDTO> RunInternal(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
