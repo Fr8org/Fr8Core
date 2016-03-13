@@ -9,7 +9,8 @@
       <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountEncryptedPassword" value="MIIBnQYJKoZIhvcNAQcDoIIBjjCCAYoCAQAxggFOMIIBSgIBADAyMB4xHDAaBgNVBAMME1dpbmRvd3MgQXp1cmUgVG9vbHMCEHN1nyXs7ouAS4GezvOfLUkwDQYJKoZIhvcNAQEBBQAEggEAKiQLLwN+4ccmggnIPdMob4duO7ay+M8tQwCQaDl9a/lIQXNLRpM7TIucHpKEa+BhPeJc7V10QyOO4BJ3gDlVsbK5PV9J9WkVkcdzDArvtNBjQbdsFZNfOTtgmUofxGNyuqb8r3xbip/Hj2xiR9Lp/R21kFdz2CgeAUgt60B7L8LYRL0/S3AlxUN3wLOIZmhFNwzaznkS52M4RDjvq9TpiJF+odLPOLeLufZf0rz5FrUBbbPR70ml6JFgK3KSD/8zkHty8y1TLekheX3hhYfMJYlWP7zlDU1A17jWo+k+d8jV/1riJEXSuAs4isNMvo10UrNzmnrv8jJ+gYgOWx0yTDAzBgkqhkiG9w0BBwEwFAYIKoZIhvcNAwcECIQVd6RucHphgBAeu0sOzHEXI8qieccsv3Ss" />
       <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountExpiration" value="2016-10-15T23:59:59.0000000+02:00" />
       <Setting name="Microsoft.WindowsAzure.Plugins.RemoteForwarder.Enabled" value="true" />
-      <Setting name="Fr8.ConnectionString" value="Data Source=tcp:s79ifqsqga.database.windows.net,1433;Initial Catalog=fr8DB2;User ID=alexeddodb@s79ifqsqga;Password=Zeus4593" />
+      <Setting name="Fr8.ConnectionString" value="" />
+      <Setting name="CoreWebServerUrl" value="" />    
     </ConfigurationSettings>
     <Certificates>
       <Certificate name="Microsoft.WindowsAzure.Plugins.RemoteAccess.PasswordEncryption" thumbprint="CF67E4C8E984409FB9E7FBF8F61A615D64D4CEC6" thumbprintAlgorithm="sha1" />
