@@ -275,7 +275,7 @@ namespace TerminalBase.BaseClasses
                 EventManager.TerminalInternalFailureOccurred(endpoint, JsonConvert.SerializeObject(curActivityDO, settings), e, curActivityDO.Id.ToString());
 
                 var action = curActionPath.ToLower();
-                var userErrorMessage = String.Format("Failed to {0} activity \"{1}\". Please, make sure it is configured correctly. ", action, curActivityDO.Label);
+                var userErrorMessage = String.Format("Failed to {0} activity \"{1}\". Please, make sure it is set up correctly. ", action, curActivityDO.Label);
                 throw new TerminalProcessingException(userErrorMessage, e.Message, e.InnerException);
             }
         }
