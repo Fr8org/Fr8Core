@@ -14,6 +14,7 @@ using Data.Interfaces;
 using Utilities;
 using Data.Utility;
 using Data.Utility.JoinClasses;
+using Utilities.Configuration.Azure;
 
 namespace Data.Infrastructure
 {
@@ -43,14 +44,13 @@ namespace Data.Infrastructure
         }
 
         //Do not change this value! If you want to change the database you connect to, edit your web.config file
+        //"Fr8.ConnectionString" is a configuration setting defined in terminalWebRole (Azure Cloud Service) 
+        //and required to enable connection string management in order to run integration tests in Production/Staging 
+        //environment (FR-2480).  
         public DockyardDbContext()
-            : base("name=DockyardDB")
+            : base(CloudConfigurationManager.AppSettings.GetSetting("Fr8.ConnectionString") ?? "name=DockyardDB")
         {
             Database.SetInitializer(new MigrateDatabaseToLatestVersion<DockyardDbContext, Data.Migrations.MigrationConfiguration>());
-    
-            //Logging to ApplicationInsights
-            //var telemetry = new Microsoft.ApplicationInsights.TelemetryClient();
-            //this.Database.Log = (trace) => telemetry.TrackEvent("Database Access", new Dictionary<string, string> { { "SQL trace", trace }});
         }
 
         public List<PropertyChangeInformation> GetEntityModifications<T>(T entity)
