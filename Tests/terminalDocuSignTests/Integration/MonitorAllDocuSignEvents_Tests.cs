@@ -16,7 +16,8 @@ namespace terminalDocuSignTests.Integration
     [Explicit]
     public class MonitorAllDocuSignEvents_Tests
     {
-        private const string UserAccountName = "y.gnusin@gmail.com";
+        // private const string UserAccountName = "y.gnusin@gmail.com";
+        private const string UserAccountName = "IntegrationTestUser1";
         private const int AwaitPeriod = 120000;
         private const string TemplateName = "Medical_Form_v2";
 
