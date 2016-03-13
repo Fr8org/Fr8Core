@@ -27,8 +27,6 @@ namespace HealthMonitor
             var connectionString = string.Empty;
             var csName = string.Empty;
 
-            Debug.AutoFlush = true;
-
             if (args != null)
             {
                 for (var i = 0; i < args.Length; ++i)

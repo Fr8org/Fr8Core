@@ -225,6 +225,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Data\Data.csproj">
+      <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
+      <Name>Data</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\terminalAtlassian\terminalAtlassian.csproj">
       <Project>{89d763ed-3ea6-4303-ab29-3239095a4b06}</Project>
       <Name>terminalAtlassian</Name>
@@ -316,6 +320,10 @@
     <ProjectReference Include="..\..\terminalYammer\terminalYammer.csproj">
       <Project>{e8bf04ac-1a7d-4cbe-80b9-e20f53699f2d}</Project>
       <Name>terminalYammer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HealthMonitorUtility\HealthMonitorUtility.csproj">
+      <Project>{459fe39a-a5cc-41d8-b06e-8fae3a1a623b}</Project>
+      <Name>HealthMonitorUtility</Name>
     </ProjectReference>
     <ProjectReference Include="..\terminalAzureTests\terminalAzureTests.csproj">
       <Project>{36ed6f21-1a8f-4f07-a08a-a55639891e9b}</Project>
