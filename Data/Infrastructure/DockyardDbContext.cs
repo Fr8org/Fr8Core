@@ -48,7 +48,9 @@ namespace Data.Infrastructure
         //and required to enable connection string management in order to run integration tests in Production/Staging 
         //environment (FR-2480).  
         public DockyardDbContext()
-            : base(CloudConfigurationManager.AppSettings.GetSetting("Fr8.ConnectionString") ?? "name=DockyardDB")
+            : base(String.IsNullOrEmpty(CloudConfigurationManager.AppSettings.GetSetting("Fr8.ConnectionString")) 
+                  ? "name=DockyardDB"
+                  : CloudConfigurationManager.AppSettings.GetSetting("Fr8.ConnectionString"))
         {
             Database.SetInitializer(new MigrateDatabaseToLatestVersion<DockyardDbContext, Data.Migrations.MigrationConfiguration>());
         }
