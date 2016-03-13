@@ -42,6 +42,13 @@ namespace terminalDocuSignTests.Integration
                     .GetQuery()
                     .SingleOrDefault(x => x.UserName == UserAccountName);
 
+                if (testAccount == null)
+                {
+                    throw new ApplicationException(
+                        string.Format("No test account found with UserName = {0}", UserAccountName)
+                    );
+                }
+
                 var mtDataCountBefore = unitOfWork.MultiTenantObjectRepository
                     .AsQueryable<DocuSignEnvelopeCM>(testAccount.Id.ToString())
                     .Count();
