@@ -95,7 +95,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             {
                 raisedException = ex;
                 dynamic d = JObject.Parse(responseContent);
-                var userErrorMessage = d.userMessage.ToString();
+                var userErrorMessage = Convert.ToString(d.userMessage);
                 string errorMessage = String.Format("An error has ocurred while sending a {0} request to {1}. Response message: {2}",
                     request.RequestUri,
                     request.Method.Method,

@@ -24,7 +24,7 @@ namespace terminalDocuSignTests.Integration
         /// </summary>
         [Test, Category("Integration.Authentication.terminalFr8Core")]
         [ExpectedException(
-            ExpectedException = typeof(TerminalProcessingException),
+            ExpectedException = typeof(RestfulServiceException),
             ExpectedMessage = @"Authorization has been denied for this request.",
             MatchType = MessageMatch.Contains
         )]
