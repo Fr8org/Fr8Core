@@ -57,9 +57,9 @@ namespace terminalDocuSignTests.Integration
             // Assert that 2nd-5th controls are a CheckBoxes
             // with corresponding labels and event: onChange => requestConfig.
             var checkBoxLabels = new[] {
-                "Event_Envelope_Sent",
-                "Event_Envelope_Received",
-                "Event_Recipient_Signed"
+                "EnvelopeSent",
+                "EnvelopeReceived",
+                "RecipientSigned"
             };
 
             for (var i = 0; i < checkBoxLabels.Length; ++i)
@@ -167,7 +167,7 @@ namespace terminalDocuSignTests.Integration
                 Assert.IsTrue(templateDdl.ListItems.Count > 0);
 
                 templateDdl.Value = templateDdl.ListItems[0].Value;
-                selectedTemplate = templateDdl.ListItems[0].Key;
+                selectedTemplate = templateDdl.selectedKey = templateDdl.ListItems[0].Key;
             }
 
             return new Tuple<ActivityDTO, string>(responseActionDTO, selectedTemplate);

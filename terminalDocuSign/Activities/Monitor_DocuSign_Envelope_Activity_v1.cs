@@ -38,7 +38,7 @@ namespace terminalDocuSign.Actions
 
         private const string EnvelopeSentEventname = "EnvelopeSent";
 
-        private const string EnvelopeRecievedEventName = "EnvelopeRecieved";
+        private const string EnvelopeRecievedEventName = "EnvelopeReceived";
 
         public Monitor_DocuSign_Envelope_Activity_v1(IDocuSignManager docuSignManager)
         {

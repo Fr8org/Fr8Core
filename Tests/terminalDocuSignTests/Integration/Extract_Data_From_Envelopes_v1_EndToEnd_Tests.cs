@@ -90,7 +90,7 @@ namespace terminalDocuSignTests.Integration
                  
             controlsCrate = _crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
             
-            var checkbox = (CheckBox)controlsCrate.Content.Controls.Single(c => c.Type == ControlTypes.CheckBox && c.Name == "Event_Envelope_Sent");
+            var checkbox = (CheckBox)controlsCrate.Content.Controls.Single(c => c.Type == ControlTypes.CheckBox && c.Name == "EnvelopeSent");
             checkbox.Selected = true;
 
             var radioButtonGroup = (RadioButtonGroup)controlsCrate.Content.Controls.Single(c => c.Type == ControlTypes.RadioButtonGroup && c.Name == "TemplateRecipientPicker");
