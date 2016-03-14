@@ -98,7 +98,6 @@ module dockyard.directives.dropDownListBox {
                                 if ($scope.field.type == "TextSource" && $scope.field.listItems.length === 0) {
                                     uiHelperService.openConfirmationModal(alertMessage);
                                 }
-
                             });
                     }
                     else {
