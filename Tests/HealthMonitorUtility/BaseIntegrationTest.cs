@@ -67,9 +67,14 @@ namespace HealthMonitor.Utility
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return "http://" + uow.TerminalRepository.GetQuery()
-                    .FirstOrDefault(t => t.Version == currentTerminalVersion.ToString() 
-                        && t.Name == TerminalName).Endpoint;
+                var terminal = uow.TerminalRepository.GetQuery()
+                    .FirstOrDefault(t => t.Version == currentTerminalVersion.ToString() && t.Name == TerminalName);
+                if (null == terminal)
+                {
+                    throw new Exception(
+                        String.Format("Terminal with name {0} and version {1} not found", TerminalName, currentTerminalVersion));
+                }
+                return Utilities.NormalizeSchema(terminal.Endpoint);
             }
         }
 
