@@ -46,7 +46,7 @@ module dockyard.controllers {
     import pca = dockyard.directives.paneConfigureAction;
     import psa = dockyard.directives.paneSelectAction;
 
-    class RouteBuilderController {
+    export class RouteBuilderController {
         // $inject annotation.
         // It provides $injector with information about dependencies to be injected into constructor
         // it is better to have it close to the constructor, because the parameters must match in count and type.
@@ -143,9 +143,9 @@ module dockyard.controllers {
 
                 //TODO check parent action change with a more solid method
                 //this action is moved to a different parent
-                if (realAction.parentRouteNodeId !== group.activities[0].parentRouteNodeId) {
+                if (realAction.parentRouteNodeId !== group.envelopes[0].activity.parentRouteNodeId) {
                     //set new parent
-                    realAction.parentRouteNodeId = group.activities[0].parentRouteNodeId;
+                    realAction.parentRouteNodeId = group.envelopes[0].activity.parentRouteNodeId;
                 } else {
                     //this action is moved to same parent
                     //our index calculation might have been wrong
@@ -468,10 +468,10 @@ module dockyard.controllers {
         private getDownstreamActions(currentAction: model.ActivityDTO) {
             var results: Array<model.ActivityDTO> = [];
             this.$scope.actionGroups.forEach(group => {
-                group.activities.filter((action: model.ActivityDTO) => {
-                    return action.parentRouteNodeId === currentAction.parentRouteNodeId && action.ordering > currentAction.ordering;
-                }).forEach(action => {
-                    results.push(action);
+                group.envelopes.filter((envelope: model.ActivityEnvelope) => {
+                    return envelope.activity.parentRouteNodeId === currentAction.parentRouteNodeId && envelope.activity.ordering > currentAction.ordering;
+                }).forEach(envelope => {
+                    results.push(envelope.activity);
                 });
             });
             return results;
@@ -506,7 +506,7 @@ module dockyard.controllers {
             }, (error) => {
                 //TODO check error status while completing DO-1335
                 this.uiHelperService
-                    .openConfirmationModal('Are you sure you want to delete this Activity? You will have to reconfigure all downstream Actions.')
+                    .openConfirmationModal('Are you sure you want to delete this Activity? You will have to reconfigure all downstream Activities.')
                     .then(() => {
                         self.startLoader();
                         self.ActionService.deleteById({ id: action.id, confirmed: true }).$promise.then(() => {
@@ -739,10 +739,10 @@ module dockyard.controllers {
         private getAgressiveReloadingActions (actionGroups: Array<model.ActionGroup>, currentAction: interfaces.IActivityDTO) {
             var results: Array<model.ActivityDTO> = [];
             actionGroups.forEach(group => {
-                group.activities.filter(action => {
-                    return action.activityTemplate.tags !== null && action.activityTemplate.tags.indexOf('AggressiveReload') !== -1;
-                }).forEach(action => {
-                    results.push(action);
+                group.envelopes.filter(envelope => {
+                    return envelope.activity.activityTemplate.tags !== null && envelope.activity.activityTemplate.tags.indexOf('AggressiveReload') !== -1;
+                }).forEach(env => {
+                    results.push(env.activity);
                 });
             });
 

@@ -165,13 +165,13 @@ module dockyard.directives.paneConfigureAction {
             private $modal,
             private $window: ng.IWindowService,
             private $http: ng.IHttpService,
-            private $q: ng.IQService
+            private $q: ng.IQService,
+            private LayoutService: services.ILayoutService
         ) {
             PaneConfigureAction.prototype.link = (
                 scope: IPaneConfigureActionScope,
                 element: ng.IAugmentedJQuery,
                 attrs: ng.IAttributes) => {
-
                 //Link function goes here
             };
             
@@ -431,6 +431,7 @@ module dockyard.directives.paneConfigureAction {
                         .then((res: interfaces.IActionVM) => {
                             var childActionsDetected = false;
 
+
                             // Detect OperationalState crate with CurrentClientActionName = 'RunImmediately'.
                             if (crateHelper.hasCrateOfManifestType(res.crateStorage, 'Operational State')) {
                                 var operationalStatus = crateHelper
@@ -515,6 +516,10 @@ module dockyard.directives.paneConfigureAction {
                     return deferred.promise;
                 };
 
+                function setJumpTargets() {
+                    
+                }
+
                 function processConfiguration() {
                     var that = this;
                     // Check if authentication is required.
@@ -526,10 +531,18 @@ module dockyard.directives.paneConfigureAction {
                         AuthService.enqueue($scope.currentAction.id);
                     }
 
-                    // if (crateHelper.hasCrateOfManifestType(
+                    
 
                     $scope.currentAction.configurationControls =
                         crateHelper.createControlListFromCrateStorage($scope.currentAction.crateStorage);
+                    var hasConditionalBranching = _.any($scope.currentAction.configurationControls.fields, (field: model.ControlDefinitionDTO) => {
+                        return field.type === 'ContainerTransition';
+                    });
+
+                    if (hasConditionalBranching) {
+                        LayoutService.setSiblingStatus($scope.currentAction, false);
+                    }
+
 
                     // Before setting up watcher on configuration change, make sure that the first invokation of the handler 
                     // is ignored: watcher always triggers after having been set up, and we don't want to handle that 
@@ -585,7 +598,8 @@ module dockyard.directives.paneConfigureAction {
                 $modal,
                 $window: ng.IWindowService,
                 $http: ng.IHttpService,
-                $q: ng.IQService
+                $q: ng.IQService,
+                LayoutService: dockyard.services.ILayoutService
 
             ) => {
 
@@ -599,7 +613,8 @@ module dockyard.directives.paneConfigureAction {
                     $modal,
                     $window,
                     $http,
-                    $q
+                    $q,
+                    LayoutService
                 );
             };
 
@@ -613,7 +628,8 @@ module dockyard.directives.paneConfigureAction {
                 '$modal',
                 '$window',
                 '$http',
-                '$q'
+                '$q',
+                'LayoutService'
             ];
             return directive;
         }

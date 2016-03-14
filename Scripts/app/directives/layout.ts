@@ -7,7 +7,7 @@ module dockyard.directives {
             restrict: 'A',
             link: (scope: any, elem: ng.IAugmentedJQuery) => {
                 scope.$watch(() => elem.height(), (newValue) => {
-                    scope.action.height = newValue;
+                    scope.envelope.activity.height = newValue;
                     if (newValue > scope.group.height)
                         scope.group.height = newValue;
                     LayoutService.recalculateTop(scope.pSubRoute.actionGroups);
