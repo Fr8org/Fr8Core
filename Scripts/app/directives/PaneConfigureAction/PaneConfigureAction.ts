@@ -142,7 +142,9 @@ module dockyard.directives.paneConfigureAction {
 
     //More detail on creating directives in TypeScript: 
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
-    class PaneConfigureAction implements ng.IDirective {
+    export function PaneConfigureAction: ng.IDirective {
+        
+    /*
         public link: (scope: IPaneConfigureActionScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
         public templateUrl = '/AngularTemplate/PaneConfigureAction';
         public controller: ($scope: IPaneConfigureActionScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
@@ -152,9 +154,9 @@ module dockyard.directives.paneConfigureAction {
             route: '='
         };
         public restrict = 'E';
-
+        */
         private ignoreConfigurationChange = false;
-         
+         /*
         constructor(
             private ActionService: services.IActionService,
             private AuthService: services.AuthService,
@@ -168,14 +170,8 @@ module dockyard.directives.paneConfigureAction {
             private $q: ng.IQService,
             private LayoutService: services.ILayoutService
         ) {
-            PaneConfigureAction.prototype.link = (
-                scope: IPaneConfigureActionScope,
-                element: ng.IAugmentedJQuery,
-                attrs: ng.IAttributes) => {
-                //Link function goes here
-            };
-            
-            PaneConfigureAction.prototype.controller = ($scope: IPaneConfigureActionScope, $element: ng.IAugmentedJQuery, $attrs: ng.IAttributes) => {
+           */ 
+                var controller = ($scope: IPaneConfigureActionScope, $element: ng.IAugmentedJQuery, $attrs: ng.IAttributes) => {
 
                 var configLoadingError: boolean = false;
                 $scope.collapsed = false;
@@ -584,7 +580,8 @@ module dockyard.directives.paneConfigureAction {
             };
 
             PaneConfigureAction.prototype.controller['$inject'] = ['$scope', '$element', '$attrs'];
-        }    
+        }
+
 
         //The factory function returns Directive object as per Angular requirements
         public static Factory() {

@@ -12,6 +12,7 @@ module dockyard.directives.containerTransition {
         change: () => (field: model.ControlDefinitionDTO) => void;
         currentAction: model.ActivityDTO;
         removeTransition: (index: number) => void;
+        PCA: directives.paneConfigureAction.PaneConfigureAction;
     }
 
     export class ContainerTransitions {
@@ -184,6 +185,11 @@ module dockyard.directives.containerTransition {
         return {
             restrict: 'E',
             templateUrl: '/AngularTemplate/ContainerTransition',
+            require: '^paneConfigureAction',
+            link: (scope: IContainerTransitionScope, element, attrs, PCA) => {
+                scope.PCA = PCA;
+                debugger;
+            },
             controller: controller,
             scope: {
                 route: '=',
