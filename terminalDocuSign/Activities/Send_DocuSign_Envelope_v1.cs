@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using DocuSign.Integrations.Client;
 using Newtonsoft.Json;
-using Data.Interfaces;
 using Data.Constants;
 using Data.Control;
 using Data.Crates;
@@ -13,18 +12,10 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Managers;
-using Utilities;
 using terminalDocuSign.DataTransferObjects;
-using terminalDocuSign.Infrastructure;
-using terminalDocuSign.Interfaces;
 using terminalDocuSign.Services;
-using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using TerminalBase.Infrastructure.Behaviors;
-using Newtonsoft.Json.Linq;
-using NUnit.Framework.Constraints;
-using Envelope = DocuSign.Integrations.Client.Envelope;
-using TemplateRole = DocuSign.Integrations.Client.TemplateRole;
 using terminalDocuSign.Services.New_Api;
 
 namespace terminalDocuSign.Actions
@@ -32,9 +23,6 @@ namespace terminalDocuSign.Actions
     public class Send_DocuSign_Envelope_v1 : BaseDocuSignActivity
     {
         private DocuSignManager _docuSignManager = new DocuSignManager();
-        public Send_DocuSign_Envelope_v1()
-        {
-        }
 
         public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
@@ -43,15 +31,11 @@ namespace terminalDocuSign.Actions
             return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
         }
 
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        protected override string ActivityUserFriendlyName => "Send DocuSign Envelope";
+
+        protected internal override async Task<PayloadDTO> RunInternal(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payloadCrates = await GetPayload(curActivityDO, containerId);
-
-            if (NeedsAuthentication(authTokenDO))
-            {
-                return NeedsAuthenticationError(payloadCrates);
-            }
-
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
             var loginInfo = DocuSignService.Login(docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
 
@@ -88,6 +72,7 @@ namespace terminalDocuSign.Actions
                 {
                     DocuSignService.SendAnEnvelopeFromTemplate(loginInfo, rolesList, fieldList, curTemplateId);
                 }
+                //TODO: log this exception
                 catch
                 {
                     return Error(payloadCrates, "Couldn't send an envelope");
@@ -239,7 +224,7 @@ namespace terminalDocuSign.Actions
                 // One to hold the ui controls
                 if (crateStorage.All(c => c.ManifestType.Id != (int)MT.FieldDescription))
                 {
-                    var configurationCrate = CreateDocusignTemplateConfigurationControls(curActivityDO);
+                    var configurationCrate = CreateDocusignTemplateConfigurationControls();
                     _docuSignManager.FillDocuSignTemplateSource(configurationCrate, "target_docusign_template", docuSignAuthDTO);
                     crateStorage.Replace(new CrateStorage(configurationCrate));
                 }
@@ -369,26 +354,48 @@ namespace terminalDocuSign.Actions
             return await Task.FromResult(curActivityDO);
         }
 
-        private Crate CreateDocusignTemplateConfigurationControls(ActivityDO curActivityDO)
+        protected internal override ValidationResult ValidateActivityInternal(ActivityDO curActivityDO)
         {
-            var fieldSelectDocusignTemplateDTO = new DropDownList()
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            {
+                var configControls = GetConfigurationControls(crateStorage);
+                if (configControls == null)
+                {
+                    return new ValidationResult(DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage);
+                }
+                var templateList = configControls.Controls.OfType<DropDownList>().FirstOrDefault();
+                if (!DocuSignValidationUtils.AtLeastOneItemExists(templateList))
+                {
+                    return new ValidationResult(DocuSignValidationUtils.NoTemplateExistsErrorMessage);
+                }
+                if (!DocuSignValidationUtils.ItemIsSelected(templateList))
+                {
+                    return new ValidationResult(DocuSignValidationUtils.TemplateIsNotSelectedErrorMessage);
+                }
+                return ValidationResult.Success;
+            }
+        }
+
+        private Crate CreateDocusignTemplateConfigurationControls()
+        {
+            var fieldSelectDocusignTemplateDTO = new DropDownList
             {
                 Label = "Use DocuSign Template",
                 Name = "target_docusign_template",
                 Required = true,
                 Events = new List<ControlEvent>()
                 {
-                     new ControlEvent("onChange", "requestConfig")
+                     ControlEvent.RequestConfig
                 },
                 Source = null
             };
 
-            var fieldsDTO = new List<ControlDefinitionDTO>()
+            var fieldsDTO = new List<ControlDefinitionDTO>
             {
                 fieldSelectDocusignTemplateDTO
             };
 
-            var controls = new StandardConfigurationControlsCM()
+            var controls = new StandardConfigurationControlsCM
             {
                 Controls = fieldsDTO
             };

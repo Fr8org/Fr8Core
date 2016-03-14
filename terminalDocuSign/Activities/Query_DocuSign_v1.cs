@@ -12,11 +12,8 @@ using Hub.Managers;
 using Newtonsoft.Json;
 using StructureMap;
 using terminalDocuSign.DataTransferObjects;
-using terminalDocuSign.Interfaces;
 using terminalDocuSign.Services;
-using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using terminalDocuSign.Infrastructure;
 
 namespace terminalDocuSign.Actions
 {
@@ -45,24 +42,24 @@ namespace terminalDocuSign.Actions
                             "<div>Envelope contains text:</div>"
                 });
 
-                Controls.Add((SearchText = new TextBox
+                Controls.Add(SearchText = new TextBox
                 {
                     Name = "SearchText",
-                }));
+                });
 
-                Controls.Add((Folder = new DropDownList
+                Controls.Add(Folder = new DropDownList
                 {
                     Label = "Envelope is in folder:",
                     Name = "Folder",
                     Source = null
-                }));
+                });
 
-                Controls.Add((Status = new DropDownList
+                Controls.Add(Status = new DropDownList
                 {
                     Label = "Envelope has status:",
                     Name = "Status",
                     Source = null
-                }));
+                });
             }
         }
 
@@ -73,15 +70,11 @@ namespace terminalDocuSign.Actions
             _docuSignManager = ObjectFactory.GetInstance<DocuSignManager>();
         }
 
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        protected override string ActivityUserFriendlyName => "Query DocuSign";
+
+        protected internal override async Task<PayloadDTO> RunInternal(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payload = await GetPayload(curActivityDO, containerId);
-
-            if (NeedsAuthentication(authTokenDO))
-            {
-                return NeedsAuthenticationError(payload);
-            }
-
             var configurationControls = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
 
             if (configurationControls == null)
@@ -161,8 +154,7 @@ namespace terminalDocuSign.Actions
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.RemoveByLabel("Queryable Criteria");
-
-                return curActivityDO;
+                return await Task.FromResult(curActivityDO);
             }
         }
 
