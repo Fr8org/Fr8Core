@@ -43,14 +43,25 @@ namespace Data.Infrastructure
             public List<PropertyChangeInformation> Changes;
         }
 
-        //Do not change this value! If you want to change the database you connect to, edit your web.config file
-        //"Fr8.ConnectionString" is a configuration setting defined in terminalWebRole (Azure Cloud Service) 
-        //and required to enable connection string management in order to run integration tests in Production/Staging 
-        //environment (FR-2480).  
         public DockyardDbContext()
-            : base(CloudConfigurationManager.AppSettings.GetSetting("Fr8.ConnectionString") ?? "name=DockyardDB")
+            : base(GetConnectionString())
         {
             Database.SetInitializer(new MigrateDatabaseToLatestVersion<DockyardDbContext, Data.Migrations.MigrationConfiguration>());
+        }
+
+        private static string GetConnectionString()
+        {
+            //"Fr8.ConnectionString" is a configuration setting defined in terminalWebRole (Azure Cloud Service) 
+            //and required to enable connection string management in order to run integration tests in Production/Staging 
+            //environment (FR-2480).  
+            string cs = CloudConfigurationManager.AppSettings.GetSetting("Fr8.ConnectionString");
+            if (String.IsNullOrEmpty(cs))
+            {
+                //Do not change this value! If you want to change the database you connect to, edit your web.config file
+                return "name=DockyardDB";
+            }
+            else
+                return cs;
         }
 
         public List<PropertyChangeInformation> GetEntityModifications<T>(T entity)
@@ -98,7 +109,7 @@ namespace Data.Infrastructure
             List<DbEntityEntry<IModifyHook>> modifyHooks = ChangeTracker.Entries<IModifyHook>().Where(e => e.State == EntityState.Modified).ToList();
             List<DbEntityEntry<IDeleteHook>> deleteHooks = ChangeTracker.Entries<IDeleteHook>().Where(e => e.State == EntityState.Deleted).ToList();
             List<DbEntityEntry<ISaveHook>> allHooks = ChangeTracker.Entries<ISaveHook>().Where(e => e.State != EntityState.Unchanged).ToList();
-            
+
             foreach (DbEntityEntry<ISaveHook> entity in allHooks)
             {
                 entity.Entity.BeforeSave();
@@ -272,8 +283,8 @@ namespace Data.Infrastructure
             modelBuilder.Entity<SubrouteDO>().ToTable("Subroutes");
             modelBuilder.Entity<EnvelopeDO>().ToTable("Envelopes");
             modelBuilder.Entity<ActivityTemplateDO>().ToTable("ActivityTemplate");
-	        modelBuilder.Entity<WebServiceDO>().ToTable("WebServices");
-	        modelBuilder.Entity<TerminalSubscriptionDO>().ToTable("TerminalSubscription");
+            modelBuilder.Entity<WebServiceDO>().ToTable("WebServices");
+            modelBuilder.Entity<TerminalSubscriptionDO>().ToTable("TerminalSubscription");
             modelBuilder.Entity<EncryptedAuthorizationData>().ToTable("EncryptedAuthorizationData");
             modelBuilder.Entity<TagDO>().ToTable("Tags");
             modelBuilder.Entity<FileTags>().ToTable("FileTags");
@@ -320,7 +331,7 @@ namespace Data.Infrastructure
                 .WithMany(x => x.ChildNodes)
                 .HasForeignKey(x => x.ParentRouteNodeId)
                 .WillCascadeOnDelete(false);
-            
+
             modelBuilder.Entity<TrackingStatusDO>()
                 .HasKey(ts => new
                 {
@@ -330,12 +341,12 @@ namespace Data.Infrastructure
 
             modelBuilder.Entity<CriteriaDO>().ToTable("Criteria");
             modelBuilder.Entity<FileDO>().ToTable("Files");
-            
-//            modelBuilder.Entity<SubrouteDO>()
-//               .HasMany<CriteriaDO>(c => c.Criteria)
-//               .WithOptional(x => x.Subroute)
-//               .WillCascadeOnDelete(true);
-            
+
+            //            modelBuilder.Entity<SubrouteDO>()
+            //               .HasMany<CriteriaDO>(c => c.Criteria)
+            //               .WithOptional(x => x.Subroute)
+            //               .WillCascadeOnDelete(true);
+
             modelBuilder.Entity<AuthorizationTokenDO>()
              .HasRequired(x => x.Terminal)
              .WithMany()
@@ -349,11 +360,11 @@ namespace Data.Infrastructure
 
                 .WillCascadeOnDelete(false);
 
-			modelBuilder.Entity<ActivityTemplateDO>()
-				.HasOptional(x => x.WebService) // was HasRequired. In reality this relationship looks like to be optional.
-				.WithMany()
-				.HasForeignKey(x => x.WebServiceId)
-				.WillCascadeOnDelete(false);
+            modelBuilder.Entity<ActivityTemplateDO>()
+                .HasOptional(x => x.WebService) // was HasRequired. In reality this relationship looks like to be optional.
+                .WithMany()
+                .HasForeignKey(x => x.WebServiceId)
+                .WillCascadeOnDelete(false);
 
 
             base.OnModelCreating(modelBuilder);

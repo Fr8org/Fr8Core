@@ -106,7 +106,7 @@ namespace terminalDocuSignTests.Integration
 
                 var token = await HttpPostAsync<CredentialsDTO, JObject>(
                     _baseUrl + "authentication/token", creds
-                );
+                );      
 
                 Assert.AreNotEqual(
                     token["error"].ToString(),
