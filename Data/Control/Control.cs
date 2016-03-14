@@ -70,6 +70,7 @@ namespace Data.Control
     public class DropDownList : ControlDefinitionDTO
     {
         [JsonProperty("listItems")]
+        [ForcePropertySync]
         public List<ListItem> ListItems { get; set; }
 
         [JsonProperty("selectedKey")]
@@ -82,7 +83,7 @@ namespace Data.Control
         }
     }
 
-    public class RadioButtonGroup : ControlDefinitionDTO
+    public class RadioButtonGroup : ControlDefinitionDTO, IContainerControl
     {
         [JsonProperty("groupName")]
         public string GroupName { get; set; }
@@ -94,6 +95,11 @@ namespace Data.Control
         {
             Radios = new List<RadioButtonOption>();
             Type = ControlTypes.RadioButtonGroup;
+        }
+
+        public IEnumerable<IControlDefinition> EnumerateChildren()
+        {
+            return Radios;
         }
     }
 
@@ -460,7 +466,7 @@ namespace Data.Control
         }
     }
 
-    public class RadioButtonOption : ISupportsNestedFields
+    public class RadioButtonOption : ISupportsNestedFields, IContainerControl, IControlDefinition
     {
         public RadioButtonOption()
         {
@@ -478,6 +484,11 @@ namespace Data.Control
 
         [JsonProperty("controls")]
         public IList<ControlDefinitionDTO> Controls { get; set; }
+
+        public IEnumerable<IControlDefinition> EnumerateChildren()
+        {
+            return Controls;
+        }
     }
 
     public class FilterPaneField
@@ -535,6 +546,7 @@ namespace Data.Control
         }
 
         [JsonProperty("selectedCrates")]
+        [ForcePropertySync]
         public List<CrateDetails> SelectedCrates { get; set; }
 
         [JsonProperty("multiSelection")]
@@ -550,6 +562,7 @@ namespace Data.Control
         }
 
         [JsonProperty("crateDescriptions")]
+        [ForcePropertySync]
         public List<CrateDescriptionDTO> CrateDescriptions { get; set; }
 
         [JsonProperty("singleManifestOnly")]

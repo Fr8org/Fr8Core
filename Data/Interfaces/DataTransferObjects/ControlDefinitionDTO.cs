@@ -5,9 +5,25 @@ using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
 {
+    [AttributeUsage(AttributeTargets.Property, Inherited = true)]
+    sealed class ForcePropertySyncAttribute : Attribute
+    {
+    }
+
+
+    public interface IControlDefinition
+    {
+        string Name { get; }
+    }
+
+    public interface IContainerControl
+    {
+        IEnumerable<IControlDefinition> EnumerateChildren();
+    }
+
     // TODO It will be good to change setter property 'Type' to protected to disallow change the type. We have all needed classes(RadioButtonGroupFieldDefinitionDTO, DropdownListFieldDefinitionDTO and etc).
     // But Wait_For_DocuSign_Event_v1.FollowupConfigurationResponse() directly write to this property !
-    public class ControlDefinitionDTO : IResettable
+    public class ControlDefinitionDTO : IResettable, IControlDefinition
     {
         public ControlDefinitionDTO()
         {
