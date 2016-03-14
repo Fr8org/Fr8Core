@@ -71,7 +71,6 @@ module dockyard.directives.dropDownListBox {
                                                 break;
                                             }
                                         }
-
                                         if (!found) {
                                             listItems.push(<model.DropDownListItem>it);
                                         }
