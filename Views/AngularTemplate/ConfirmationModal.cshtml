@@ -7,6 +7,6 @@
     </div>
 </div>
 <div class="modal-footer">
-    <button class="btn btn-primary" type="button" ng-click="confirm()">Ok</button>
-    <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+    <button ng-show="message.isOkButtonVisible" class="btn btn-primary" type="button" ng-click="confirm()">Ok</button>
+    <button ng-show="message.isOkCancelVisible" class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
 </div>

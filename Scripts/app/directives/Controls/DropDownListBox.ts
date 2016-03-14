@@ -42,10 +42,6 @@ module dockyard.directives.dropDownListBox {
 
                 $scope.toggleDropDown = $select => {
 
-                    if ($scope.field.type == "TextSource" && $scope.field.listItems.length === 0) {
-                        uiHelperService.openConfirmationModal(alertMessage);
-                    }
-
                     if (!$scope.focusOutSet) {
                         var focusElem = angular.element($select.focusInput);
                         $scope.focusOutSet = isFocusOutFunc;
@@ -98,11 +94,20 @@ module dockyard.directives.dropDownListBox {
 
                                 $select.open = !$scope.toggle;
                                 $scope.toggle = !$scope.toggle;
+
+                                if ($scope.field.type == "TextSource" && $scope.field.listItems.length === 0) {
+                                    uiHelperService.openConfirmationModal(alertMessage);
+                                }
+
                             });
                     }
                     else {
                         $select.open = !$scope.toggle;
                         $scope.toggle = !$scope.toggle;
+
+                        if ($scope.field.type == "TextSource" && $scope.field.listItems.length === 0) {
+                            uiHelperService.openConfirmationModal(alertMessage);
+                        }
                     }
                 }
 
