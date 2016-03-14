@@ -292,11 +292,6 @@ namespace terminalDocuSign.Actions
                 crateStorage.RemoveByLabel("DocuSignTemplateRolesFields");
                 crateStorage.Add(crateRolesDTO);
 
-                //Create TextSource controls for ROLES
-                var rolesMappingBehavior = new TextSourceMappingBehavior(crateStorage, "RolesMapping");
-                rolesMappingBehavior.Clear();
-                rolesMappingBehavior.Append(roles.Select(x => x.Key).ToList(), "Upstream Terminal-Provided Fields");
-
 
                 var envelopeDataDTO = tabsandfields.Item2;
 

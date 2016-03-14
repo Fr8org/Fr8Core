@@ -15,6 +15,7 @@ using terminalDocuSign.Services.New_Api;
 using DocuSign.eSign.Client;
 using DocuSign.eSign.Model;
 using DocuSign.eSign.Api;
+using terminalDocuSign.DataTransferObjects;
 
 namespace terminalDocuSign.Controllers
 {
