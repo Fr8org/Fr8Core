@@ -417,7 +417,7 @@ namespace terminalDocuSign.Actions
         private async Task<ActivityDO> CreateSecondChildActivity(ReconfigurationContext context)
         {
             var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null))
-                .Select(x => Mapper.Map<ActivityTemplateDO>(x))
+                .Select(Mapper.Map<ActivityTemplateDO>)
                 .ToList();
 
             var selectedReceiver = curActivityTemplates.Single(x => x.Name == _dataSourceValue);
@@ -426,8 +426,7 @@ namespace terminalDocuSign.Actions
 
             if (DoesActivityTemplateGenerateTableData(selectedReceiver))
             {
-                var loopActivity = await AddAndConfigureChildActivity(
-                    context.SolutionActivity, "Loop", "Loop", "Loop", 2);
+                var loopActivity = await AddAndConfigureChildActivity(context.SolutionActivity, "Loop", "Loop", "Loop", 2);
 
                 using (var crateStorage = CrateManager.GetUpdatableStorage(loopActivity))
                 {
@@ -439,7 +438,6 @@ namespace terminalDocuSign.Actions
                         tableDescription.Selected = true;
                     }
                 }
-
                 parentActivity = loopActivity;
                 activityIndex = 1;
             }
