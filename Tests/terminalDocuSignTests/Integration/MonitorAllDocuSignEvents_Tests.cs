@@ -10,14 +10,16 @@ using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
+using HealthMonitorUtility;
+using Hub.Services;
 using terminalDocuSign.Services;
 using terminalDocuSign.Services.New_Api;
 using Utilities.Configuration.Azure;
-using Hub.Services;
 
 namespace terminalDocuSignTests.Integration
 {
     [Explicit]
+    [SkipLocal]
     public class MonitorAllDocuSignEvents_Tests : BaseHubIntegrationTest
     {
         // private const string UserAccountName = "y.gnusin@gmail.com";
