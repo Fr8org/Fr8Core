@@ -49,7 +49,7 @@ namespace Data.Infrastructure
             Database.SetInitializer(new MigrateDatabaseToLatestVersion<DockyardDbContext, Data.Migrations.MigrationConfiguration>());
         }
 
-        public static string GetConnectionString()
+        private static string GetConnectionString()
         {
             //"Fr8.ConnectionString" is a configuration setting defined in terminalWebRole (Azure Cloud Service) 
             //and required to enable connection string management in order to run integration tests in Production/Staging 
