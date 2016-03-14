@@ -22,41 +22,5 @@ namespace terminalSalesforce.Infrastructure
 
             return true;
         }
-
-        protected override string GetSelectAllQuery()
-        {
-            //return the query to select all accounts
-            return "select Name, AccountId, StageName, CloseDate from Opportunity";
-        }
-
-        protected override IList<PayloadObjectDTO> ParseQueryResult(QueryResult<object> queryResult)
-        {
-            var resultOpportunity = new List<OpportunityDTO>();
-
-            if (queryResult.Records.Count > 0)
-            {
-                resultOpportunity.AddRange(
-                    queryResult.Records.Select(record => ((JObject)record).ToObject<OpportunityDTO>()));
-            }
-
-            var payloads = new List<PayloadObjectDTO>();
-
-            payloads.AddRange(
-                resultOpportunity.Select(
-                    opportunity =>
-                        new PayloadObjectDTO
-                        {
-                            PayloadObject =
-                                new List<FieldDTO>
-                                {
-                                    new FieldDTO {Key = "AccountId", Value = opportunity.AccountId},
-                                    new FieldDTO {Key = "Name", Value = opportunity.Name},
-                                    new FieldDTO {Key = "StageName", Value = opportunity.StageName},
-                                    new FieldDTO {Key = "CloseDate", Value = opportunity.CloseDate}
-                                }
-                        }));
-
-            return payloads;
-        }
     }
 }

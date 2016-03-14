@@ -22,42 +22,5 @@ namespace terminalSalesforce.Infrastructure
 
             return true;
         }
-
-        protected override string GetSelectAllQuery()
-        {
-            //return the query to select all leads
-            return "select Id, FirstName, LastName, Company, Title from Lead";
-        }
-
-        protected override IList<PayloadObjectDTO> ParseQueryResult(QueryResult<object> queryResult)
-        {
-            var resultLeads = new List<LeadDTO>();
-
-            if (queryResult.Records.Count > 0)
-            {
-                resultLeads.AddRange(
-                    queryResult.Records.Select(record => ((JObject) record).ToObject<LeadDTO>()));
-            }
-
-            var payloads = new List<PayloadObjectDTO>();
-
-            payloads.AddRange(
-                resultLeads.Select(
-                    lead =>
-                        new PayloadObjectDTO
-                        {
-                            PayloadObject =
-                                new List<FieldDTO>
-                                {
-                                    new FieldDTO {Key = "Id", Value = lead.Id},
-                                    new FieldDTO {Key = "FirstName", Value = lead.FirstName},
-                                    new FieldDTO {Key = "LastName", Value = lead.LastName},
-                                    new FieldDTO {Key = "Company", Value = lead.Company},
-                                    new FieldDTO {Key = "Title", Value = lead.Title}
-                                }
-                        }));
-
-            return payloads;
-        }
     }
 }
