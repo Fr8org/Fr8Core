@@ -93,6 +93,7 @@ namespace terminalDocuSign.Actions
                 }
             }
 
+
             return Success(payloadCrates);
         }
 
@@ -109,7 +110,7 @@ namespace terminalDocuSign.Actions
                 var tempFieldCollection = usedDefinedFields.Fields;
 
                 //extract data from text source Controls
-                var mappingBehavior = new TextSourceMappingBehavior(activityCrateStorage, "Mapping");
+                var mappingBehavior = new TextSourceMappingBehavior(activityCrateStorage, "Mapping", true);
                 var textSourceValues = mappingBehavior.GetValues(payloadCrateStorage);
                 foreach (var item in textSourceValues)
                 {
@@ -178,7 +179,7 @@ namespace terminalDocuSign.Actions
             {
                 var tempFieldCollection = usedDefinedFields.Fields;
 
-                var mappingBehavior = new TextSourceMappingBehavior(activityCrateStorage, "RolesMapping");
+                var mappingBehavior = new TextSourceMappingBehavior(activityCrateStorage, "RolesMapping", true);
                 var textSourceValues = mappingBehavior.GetValues(payloadCrateStorage);
                 foreach (var item in textSourceValues)
                 {
@@ -305,18 +306,22 @@ namespace terminalDocuSign.Actions
                     "DocuSignTemplateUserDefinedFields",
                     userDefinedFields.Concat(roles).ToArray()
                 );
-
+                
                 crateStorage.RemoveByLabel("DocuSignTemplateUserDefinedFields");
                 crateStorage.Add(crateUserDefinedDTO);
 
-
+                //Create TextSource controls for ROLES
+                var rolesMappingBehavior = new TextSourceMappingBehavior(crateStorage, "RolesMapping", true);
+                rolesMappingBehavior.Clear();
+                rolesMappingBehavior.Append(roles.Select(x => x.Key).ToList(), "Upstream Terminal-Provided Fields");
 
                 //Create Text Source controls for TABS
                 var textSourceFields = new List<string>();
                 textSourceFields = envelopeDataDTO.Where(x => x.Type == ControlTypes.TextBox).Select(x => x.Name).ToList();
                 var mappingBehavior = new TextSourceMappingBehavior(
                     crateStorage,
-                    "Mapping"
+                    "Mapping",
+                    true
                 );
                 mappingBehavior.Clear();
                 mappingBehavior.Append(textSourceFields, "Upstream Terminal-Provided Fields");
@@ -357,7 +362,7 @@ namespace terminalDocuSign.Actions
 
                     dropdownListMappingBehavior.Append(dropDownListDTO.Name, string.Format("For the <strong>{0}</strong>, use:", item.Name), dropDownListDTO.Items.Where(x => x.Text != string.Empty || x.Value != string.Empty).Select(x => new ListItem()
                     {
-                        Key = string.IsNullOrEmpty(x.Value) ? x.Text : x.Value,
+                        Key = string.IsNullOrEmpty(x.Value) ? x.Text : x.Value, 
                         Value = string.IsNullOrEmpty(x.Text) ? x.Value : x.Text,
                         Selected = x.Selected,
                     }).ToList());

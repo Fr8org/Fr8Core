@@ -2,14 +2,11 @@
 using System.IO;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
-using Moq;
 using NUnit.Framework;
 using StructureMap;
 using Data.Entities;
 using Data.Infrastructure;
-using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.Repositories;
 using Hub.Interfaces;
 using Utilities.Configuration.Azure;
 using UtilitiesTesting;
@@ -40,26 +37,6 @@ namespace DockyardTest.Services
                 _curBlobFile = null;
             }
         }
-        /*
-        [Test]
-        public void File_Store_CanStoreFile()
-        {
-            //Arrange
-            FileDO curFileDO;
-            
-            //Act
-            WriteRemoteFile();
-            curFileDO = _uow.FileRepository.GetByKey(0);
-
-            //Assert
-            Assert.IsNotNull(curFileDO, "File is not uploaded to Azure Storage. The Files table is empty.");
-            Assert.IsNotNullOrEmpty(curFileDO.CloudStorageUrl, "File is not uploaded to Azure Storage. The Cloud URL is empty.");
-            Assert.IsTrue(curFileDO.CloudStorageUrl.EndsWith("small_pdf_file.pdf"), "File is not uploaded to Azure Storage. The BLOB names are not equal");
-
-            _uow.FileRepository.Remove(curFileDO);
-            _uow.SaveChanges();
-        }
-        */
         [Test]
         [ExpectedException(typeof(StorageException))]
         public void File_Store_WithTimeOutZero_ShouldThrowTimeOutExpcetion()
@@ -76,7 +53,7 @@ namespace DockyardTest.Services
             {
                 //Assert
                 Assert.AreEqual("TimeoutException", storageException.InnerException.GetType().Name, "Not an expected exception");
-                throw storageException;
+                throw;
             }
         }
 
@@ -95,31 +72,10 @@ namespace DockyardTest.Services
             catch (StorageException storageException)
             {
                 //Assert
-                Assert.AreEqual("The remote server returned an error: (403) Forbidden.", storageException.Message, "Not an expected exception");
-                throw storageException;
+                Assert.AreEqual(403, storageException.RequestInformation.HttpStatusCode, "Not an expected exception");
+                throw;
             }
         }
-        /*
-        [Test]
-        public void File_Retrieve_CanRetrieveFile()
-        {
-            var file = ObjectFactory.GetInstance<IFile>();
-
-            //Arrange
-            WriteRemoteFile();
-            FileDO curFileDO = _uow.FileRepository.GetByKey(0);
-
-            //Act
-            var curFile = file.Retrieve(curFileDO);
-
-            //Assert
-            Assert.IsNotNull(curFile, "File is not uploaded. Read attempt is failed.");
-            Assert.IsTrue(curFile.Length>0, "File is not retireved properly. Read attempty is failed.");
-
-            _uow.FileRepository.Remove(curFileDO);
-            _uow.SaveChanges();
-        }
-        */
         [Test]
         [ExpectedException(typeof(StorageException))]
         public void File_Retrieve_WithTimeOutZero_ShouldThrowTimeOutException()
@@ -140,7 +96,7 @@ namespace DockyardTest.Services
             {
                 //Assert
                 Assert.AreEqual("TimeoutException", storageException.InnerException.GetType().Name, "Not an expected exception");
-                throw storageException;
+                throw;
             }
         }
 
@@ -164,30 +120,10 @@ namespace DockyardTest.Services
             catch (StorageException storageException)
             {
                 //Assert
-                Assert.AreEqual("The remote server returned an error: (404) Not Found.", storageException.Message, "Not an expected exception");
-                throw storageException;
+                Assert.AreEqual(404, storageException.RequestInformation.HttpStatusCode, "Not an expected exception");
+                throw;
             }
         }
-        /*
-        [Test]
-
-        public void File_Delete_CanDeleteFile()
-        {
-            var file = ObjectFactory.GetInstance<IFile>();
-
-            //Arrange
-            WriteRemoteFile();
-            FileDO curFileDO = _uow.FileRepository.GetByKey(0);
-
-            //Act
-            bool isFileDeleted = file.Delete(curFileDO);
-
-            //Assert
-            Assert.IsTrue(isFileDeleted, "File is not deleted successfully");
-            curFileDO = _uow.FileRepository.GetByKey(curFileDO.Id);
-            Assert.IsNull(curFileDO, "Updating database about file delete is failed.");
-        }
-        */
         private void WriteRemoteFile()
         {
             var file = ObjectFactory.GetInstance<IFile>();

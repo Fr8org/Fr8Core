@@ -10,7 +10,6 @@ using StructureMap;
 using TerminalBase.BaseClasses;
 using terminalDocuSign.Interfaces;
 using Utilities.Configuration.Azure;
-using terminalDocuSign.DataTransferObjects;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using terminalDocuSign.Services.New_Api;
 using DocuSign.eSign.Client;
@@ -31,7 +30,7 @@ namespace terminalDocuSign.Controllers
         {
             try
             {
-
+                
                 var authToken = await ObtainAuthToken(curCredentials);
 
                 if (authToken == null)
@@ -43,11 +42,11 @@ namespace terminalDocuSign.Controllers
                 }
 
                 var authorizationTokenDTO = new AuthorizationTokenDTO()
-                {
+                    {
                     Token = JsonConvert.SerializeObject(authToken),
-                    ExternalAccountId = curCredentials.Username,
-                    AuthCompletedNotificationRequired = true
-                };
+                        ExternalAccountId = curCredentials.Username,
+                        AuthCompletedNotificationRequired = true
+                    };
 
                 string demoAccountStr = string.Empty;
                 if (curCredentials.IsDemoAccount)

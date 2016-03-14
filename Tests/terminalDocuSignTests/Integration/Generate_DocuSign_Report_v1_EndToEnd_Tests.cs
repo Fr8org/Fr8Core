@@ -55,7 +55,6 @@ namespace terminalDocuSignTests.Integration
                 ValidatePlanName(planFollowup, crateStorage);
                 await SaveActivity(solution);
 
-
                 // Execute plan.
                 var container = await ExecutePlan(plan);
                 ValidateContainer(container);
@@ -74,6 +73,7 @@ namespace terminalDocuSignTests.Integration
         private async Task<RouteFullDTO> CreateSolution()
         {
             var solutionCreateUrl = _baseUrl + "activities/create?solutionName=Generate_DocuSign_Report";
+
             var plan = await HttpPostAsync<string, RouteFullDTO>(solutionCreateUrl, null);
 
             return plan;
@@ -107,7 +107,7 @@ namespace terminalDocuSignTests.Integration
 
                 var token = await HttpPostAsync<CredentialsDTO, JObject>(
                     _baseUrl + "authentication/token", creds
-                );
+                );      
 
                 Assert.AreNotEqual(
                     token["error"].ToString(),
@@ -254,7 +254,7 @@ namespace terminalDocuSignTests.Integration
             var configurationControls = crateStorage
             .CrateContentsOfType<StandardConfigurationControlsCM>()
             .SingleOrDefault();
-            
+
             var actionUi = new ActivityUi();
             actionUi.ClonePropertiesFrom(configurationControls);
 

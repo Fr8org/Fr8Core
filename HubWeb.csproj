@@ -866,6 +866,8 @@
     <Content Include="_PowerShellScripts\DeleteDatabase.ps1" />
     <Content Include="_PowerShellScripts\Set-StagingHostname.ps1" />
     <Content Include="_PowerShellScripts\CopyAppInsightsConfigs.ps1" />
+    <Content Include="_PowerShellScripts\Set-CS.ps1" />
+    <Content Include="_PowerShellScripts\Set-CloudServiceSettings.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryListController.ts" />
@@ -896,6 +898,7 @@
     <TypeScriptCompile Include="Scripts\app\services\FileDetailsService.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\ISolutionDocumentationService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\SolutionDocumentationService.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\UpstreamExtractor.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\UpstreamFieldChooser.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\filters\FilterByTagTests.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\TerminalFormController.ts" />

@@ -120,12 +120,13 @@ namespace terminalSalesforceTests.Intergration
         }
 
         [Test, Category("intergration.terminalSalesforce")]
-        public async Task Create_Contact_Run_With_ValidParameter_Check_PayloadDto_OperationalState()
+        public async Task Create_Lead_Run_With_ValidParameter_Check_PayloadDto_OperationalState()
         {
             //Arrange
+            var authToken = HealthMonitor_FixtureData.Salesforce_AuthToken().Result;
             var initialConfigActionDto = await PerformInitialConfiguration();
             initialConfigActionDto = SetSpecificValues(initialConfigActionDto);
-            initialConfigActionDto.AuthToken = HealthMonitor_FixtureData.Salesforce_AuthToken().Result;
+            initialConfigActionDto.AuthToken = authToken;
             var dataDTO = new Fr8DataDTO { ActivityDTO = initialConfigActionDto };
             AddOperationalStateCrate(dataDTO, new OperationalStateCM());
             
@@ -134,6 +135,15 @@ namespace terminalSalesforceTests.Intergration
 
             //Assert
             Assert.IsNotNull(responseOperationalState);
+            Assert.IsTrue(responseOperationalState.CrateStorage.Crates.Any(c => c.Label.Equals("Newly Created Salesforce Lead")), "Lead is not created");
+
+            var newLeadIdCrate = Crate.GetStorage(responseOperationalState)
+                                         .CratesOfType<StandardPayloadDataCM>()
+                                         .Single(c => c.Label.Equals("Newly Created Salesforce Lead"));
+
+            Assert.IsTrue(
+                await SalesforceTestHelper.DeleteObject(authToken, "Lead", newLeadIdCrate.Content.PayloadObjects[0].PayloadObject[0].Value),
+                "Test lead created is not deleted");
         }
 
         /// <summary>
