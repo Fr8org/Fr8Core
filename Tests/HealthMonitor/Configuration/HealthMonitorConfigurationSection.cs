@@ -14,12 +14,12 @@ namespace HealthMonitor.Configuration
             }
         }
 
-        [ConfigurationProperty("selfHostedTerminals", IsDefaultCollection = false)]
-        public SelfHostedTerminalsCollection SelfHostedTerminals
+        [ConfigurationProperty("selfHostedApps", IsDefaultCollection = false)]
+        public SelfHostedTerminalsCollection SelfHostedApps
         {
             get
             {
-                var collection = (SelfHostedTerminalsCollection)base["selfHostedTerminals"];
+                var collection = (SelfHostedTerminalsCollection)base["selfHostedApps"];
                 return collection;
             }
         }
