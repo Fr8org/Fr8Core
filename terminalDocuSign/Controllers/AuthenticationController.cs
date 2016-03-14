@@ -10,8 +10,9 @@ using StructureMap;
 using TerminalBase.BaseClasses;
 using terminalDocuSign.Interfaces;
 using Utilities.Configuration.Azure;
-using terminalDocuSign.DataTransferObjects;
 using Hub.Managers.APIManagers.Transmitters.Restful;
+using terminalDocuSign.DataTransferObjects;
+using terminalDocuSign.Services;
 
 namespace terminalDocuSign.Controllers
 {
@@ -93,23 +94,15 @@ namespace terminalDocuSign.Controllers
 
         private async Task<string> ObtainOAuthToken(CredentialsDTO curCredentials, string baseUrl)
         {
-            var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
+            var docuSignAuth = new DocuSignAuthentication();
             try
             {
-                var response = await client
-                .PostAsync(new Uri(new Uri(baseUrl), "oauth2/token"),
-                    (HttpContent)new FormUrlEncodedContent(new[]
-                    {
-                        new KeyValuePair<string, string>("grant_type", "password"),
-                        new KeyValuePair<string, string>("client_id", CloudConfigurationManager.GetSetting("DocuSignIntegratorKey")),
-                        new KeyValuePair<string, string>("username", curCredentials.Username),
-                        new KeyValuePair<string, string>("password", curCredentials.Password),
-                        new KeyValuePair<string, string>("scope", "api"),
-                    }));
-
-                var responseObject = JsonConvert.DeserializeAnonymousType(response, new { access_token = "" });
-
-                return responseObject.access_token;
+                var authToken = await docuSignAuth.ObtainOAuthToken(
+                    curCredentials.Username,
+                    curCredentials.Password,
+                    baseUrl
+                );
+                return authToken;
             }
             catch (Exception ex)
             {

@@ -140,5 +140,14 @@ namespace HubWeb.Controllers.Api
 
             return Ok();
         }
+
+        [HttpPost]
+        public IHttpActionResult SetDefault(Guid id)
+        {
+            var userId = User.Identity.GetUserId();
+            Authorization.SetMainToken(userId, id);
+
+            return Ok();
+        }
     }
 }
