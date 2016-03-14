@@ -73,6 +73,7 @@ namespace terminalDocuSignTests.Integration
         private async Task<RouteFullDTO> CreateSolution()
         {
             var solutionCreateUrl = _baseUrl + "activities/create?solutionName=Generate_DocuSign_Report";
+
             var plan = await HttpPostAsync<string, RouteFullDTO>(solutionCreateUrl, null);
 
             return plan;
@@ -106,7 +107,7 @@ namespace terminalDocuSignTests.Integration
 
                 var token = await HttpPostAsync<CredentialsDTO, JObject>(
                     _baseUrl + "authentication/token", creds
-                );
+                );      
 
                 Assert.AreNotEqual(
                     token["error"].ToString(),
