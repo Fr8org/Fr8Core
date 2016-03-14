@@ -115,7 +115,7 @@ namespace Utilities.Configuration.Azure
             string value = null;
 
             value = GetValue("ServiceRuntime", name, GetServiceRuntimeSetting);
-            if (value == null)
+            if (String.IsNullOrEmpty(value))
             {
                 value = GetValue("ConfigurationManager", name, n => ConfigurationManager.AppSettings[n]);
             }
