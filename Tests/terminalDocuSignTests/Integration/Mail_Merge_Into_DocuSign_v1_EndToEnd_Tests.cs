@@ -66,7 +66,7 @@ namespace terminalDocuSignTests.Integration
             this.solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure?id=" + solution.Id, solution);
             crateStorage = Crate.FromDto(this.solution.CrateStorage);
             var stAuthCrate = crateStorage.CratesOfType<StandardAuthenticationCM>().FirstOrDefault();
-            bool defaultDocuSignAuthTokenExists = stAuthCrate != null;
+            bool defaultDocuSignAuthTokenExists = stAuthCrate == null;
 
             if (!defaultDocuSignAuthTokenExists)
             {
