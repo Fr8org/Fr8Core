@@ -20,6 +20,11 @@ namespace Data.Infrastructure
 {
     public class DockyardDbContext : IdentityDbContext<IdentityUser>, IDBContext
     {
+        public static string DefaultConnectionStringName
+        {
+            get { return "DockyardDB"; }
+        }
+
         //This is to ensure compile will break if the reference to sql server is removed
         private static Type m_SqlProvider = typeof(SqlProviderServices);
 
@@ -58,7 +63,7 @@ namespace Data.Infrastructure
             if (String.IsNullOrEmpty(cs))
             {
                 //Do not change this value! If you want to change the database you connect to, edit your web.config file
-                return "name=DockyardDB";
+                return "name=" + DefaultConnectionStringName;
             }
             else
                 return cs;

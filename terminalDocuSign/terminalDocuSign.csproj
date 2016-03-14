@@ -263,6 +263,7 @@
     <Compile Include="Infrastructure\DateTimeHelper.cs" />
     <Compile Include="Infrastructure\Exceptions\DocusginRestException.cs" />
     <Compile Include="Infrastructure\DocuSignConnectParser.cs" />
+    <Compile Include="Services\DocuSignAuthentication.cs" />
     <Compile Include="Services\DocusignFolder.cs" />
     <Compile Include="Infrastructure\DataContracts\DocusignFolderInfo.cs" />
     <Compile Include="Infrastructure\DocuSignParserModels\DocumentStatus.cs" />
