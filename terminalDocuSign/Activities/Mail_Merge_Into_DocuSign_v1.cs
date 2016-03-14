@@ -144,7 +144,7 @@ namespace terminalDocuSign.Actions
             var control = (T)controls.FindByName(name);
             return control;
         }
-
+        /*
         protected internal override ValidationResult ValidateActivityInternal(ActivityDO curActivityDO)
         {
             var errorMessages = new List<string>();
@@ -176,7 +176,7 @@ namespace terminalDocuSign.Actions
             }
             return errorMessages.Count == 0 ? ValidationResult.Success : new ValidationResult(string.Join(Environment.NewLine, errorMessages.Where(x => !string.IsNullOrEmpty(x))));
         }
-
+        */
         /// <summary>
         /// If there's a value in select_file field of the crate, then it is a followup call.
         /// </summary>
