@@ -244,7 +244,7 @@ namespace terminalDocuSignTests.Integration
         private async Task ResolveAuth(ActivityDTO solution, ICrateStorage crateStorage)
         {
             var stAuthCrate = crateStorage.CratesOfType<StandardAuthenticationCM>().FirstOrDefault();
-            var defaultDocuSignAuthTokenExists = stAuthCrate == null;
+            var defaultDocuSignAuthTokenExists = stAuthCrate != null;
             if (!defaultDocuSignAuthTokenExists)
             {
                 //
