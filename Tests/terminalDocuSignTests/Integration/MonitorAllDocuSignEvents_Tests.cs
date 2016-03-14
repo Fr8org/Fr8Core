@@ -28,7 +28,8 @@ namespace terminalDocuSignTests.Integration
         // private const string UserAccountName = "y.gnusin@gmail.com";
         private const string UserAccountName = "IntegrationTestUser1";
         private const int AwaitPeriod = 120000;
-        private const string TemplateName = "Medical_Form_v2";
+
+        private const string templateId = "392f63c3-cabb-4b21-b331-52dabf1c2993"; // "SendEnvelopeIntegrationTest" template
 
         private const string ToEmail = "freight.testing@gmail.com";
         private const string DocuSignEmail = "freight.testing@gmail.com";
@@ -179,45 +180,62 @@ namespace terminalDocuSignTests.Integration
             var password = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token).ApiPassword;
 
 
-            var templateManager = new DocuSignTemplate();
-            var template = templateManager
-                .GetTemplateNames(
-                    DocuSignEmail,
-                    password
-                )
-                .FirstOrDefault(x => x.Name == TemplateName);
-
-            if (template == null)
-            {
-                throw new ApplicationException(string.Format("Unable to extract {0} template from DocuSign", TemplateName));
-            }
-
-
-
 
             var rolesList = new List<FieldDTO>()
             {
                 new FieldDTO()
                 {
-                    Tags = "recipientId:72179268",
+                    Tags = "recipientId:1",
                     Key = "role name",
                     Value = ToEmail
                 },
                 new FieldDTO()
                 {
-                    Tags = "recipientId:72179268",
+                    Tags = "recipientId:1",
                     Key = "role email",
                     Value = ToEmail
                 }
             };
 
-            var fieldsList = new List<FieldDTO>();
+            var fieldsList = new List<FieldDTO>()
+            {
+                new FieldDTO()
+                {
+                    Tags = "recipientId:1",
+                    Key="companyTabs",
+                    Value="test"
+                },
+                new FieldDTO()
+                {
+                    Tags = "recipientId:1",
+                    Key="textTabs",
+                    Value="test"
+                },
+                new FieldDTO()
+                {
+                    Tags = "recipientId:1",
+                    Key="noteTabs",
+                    Value="test"
+                },
+                new FieldDTO()
+                {
+                    Tags = "recipientId:1",
+                    Key="checkboxTabs",
+                    Value="Radio 1"
+                },
+                new FieldDTO()
+                {
+                    Tags = "recipientId:1",
+                    Key="listTabs",
+                    Value="1"
+                }
+            };
 
             DocuSignService.SendAnEnvelopeFromTemplate(
                 loginInfo,
                 rolesList,
                 fieldsList,
-                template.Id
+                templateId
             );
         }
     }

@@ -20,12 +20,6 @@ namespace terminalDocuSign.Actions
 {
     public class Get_DocuSign_Envelope_v1 : BaseDocuSignActivity
     {
-        private readonly DocuSignManager _docuSignManager;
-
-        public Get_DocuSign_Envelope_v1()
-        {
-            _docuSignManager = new DocuSignManager();
-        }
 
         public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {

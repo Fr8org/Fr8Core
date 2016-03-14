@@ -49,13 +49,7 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        private readonly DocuSignManager _docuSignManager;
-
-
-        public Archive_DocuSign_Template_v1()
-        {
-            _docuSignManager = new DocuSignManager();
-        }
+        
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {

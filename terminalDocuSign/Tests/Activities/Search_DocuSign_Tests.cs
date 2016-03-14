@@ -35,37 +35,39 @@ namespace terminalDocuSign.Tests.Actions
         {
             base.SetUp();
 
-            var docusignFolder = new Mock<IDocuSignFolder>();
+            //TODO: rework
+            //Commented out by Serget, FR-2400
+            //var docusignFolder = new Mock<IDocuSignFolder>();
 
-            docusignFolder.Setup(r => r.GetSearchFolders(It.IsAny<string>(), It.IsAny<string>())).Returns(TerminalFixtureData.GetFolders());
-            docusignFolder.Setup(r => r.Search(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>(), It.IsAny<IEnumerable<FilterConditionDTO>>()))
-                .Returns<string, string, string, string, string, DateTime?, DateTime?>(Search);
-            
-            TerminalBootstrapper.ConfigureTest();
-            TerminalDocuSignMapBootstrapper.ConfigureDependencies(Hub.StructureMap.StructureMapBootStrapper.DependencyType.TEST);
-            TerminalDataAutoMapperBootStrapper.ConfigureAutoMapper();
-            CloudConfigurationManager.RegisterApplicationSettings(new AppSettingsFixture());
+            //docusignFolder.Setup(r => r.GetSearchFolders(It.IsAny<string>(), It.IsAny<string>())).Returns(TerminalFixtureData.GetFolders());
+            //docusignFolder.Setup(r => r.Search(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>(), It.IsAny<IEnumerable<FilterConditionDTO>>()))
+            //    .Returns<string, string, string, string, string, DateTime?, DateTime?>(Search);
 
-            ObjectFactory.Configure(cfg => cfg.For<IDocuSignFolder>().Use(docusignFolder.Object));
+            //TerminalBootstrapper.ConfigureTest();
+            //TerminalDocuSignMapBootstrapper.ConfigureDependencies(Hub.StructureMap.StructureMapBootStrapper.DependencyType.TEST);
+            //TerminalDataAutoMapperBootStrapper.ConfigureAutoMapper();
+            //CloudConfigurationManager.RegisterApplicationSettings(new AppSettingsFixture());
+
+            //ObjectFactory.Configure(cfg => cfg.For<IDocuSignFolder>().Use(docusignFolder.Object));
 
 
-            var hubCommunicator = new Mock<IHubCommunicator>();
-            hubCommunicator.Setup(r => r.GetPayload(It.IsAny<ActivityDO>(), It.IsAny<Guid>(), It.IsAny<string>())).Returns(Task.FromResult(new PayloadDTO(Guid.Empty) { CrateStorage = new CrateStorageDTO() }));
-            hubCommunicator.Setup(r => r.GetActivityTemplates(It.IsAny<string>())).Returns(Task.FromResult(new List<ActivityTemplateDTO>()
-            {
-                new ActivityTemplateDTO()
-                {
-                    Name = "Query_DocuSign"
-                }
-            }));
+            //var hubCommunicator = new Mock<IHubCommunicator>();
+            //hubCommunicator.Setup(r => r.GetPayload(It.IsAny<ActivityDO>(), It.IsAny<Guid>(), It.IsAny<string>())).Returns(Task.FromResult(new PayloadDTO(Guid.Empty) { CrateStorage = new CrateStorageDTO() }));
+            //hubCommunicator.Setup(r => r.GetActivityTemplates(It.IsAny<string>())).Returns(Task.FromResult(new List<ActivityTemplateDTO>()
+            //{
+            //    new ActivityTemplateDTO()
+            //    {
+            //        Name = "Query_DocuSign"
+            //    }
+            //}));
 
-            ObjectFactory.Configure(cfg => cfg.For<IHubCommunicator>().Use(hubCommunicator.Object));
-            
-            _activity = new Search_DocuSign_History_v1();
-            
-            _crateManager = ObjectFactory.GetInstance<ICrateManager>();
+            //ObjectFactory.Configure(cfg => cfg.For<IHubCommunicator>().Use(hubCommunicator.Object));
+
+            //_activity = new Search_DocuSign_History_v1();
+
+            //_crateManager = ObjectFactory.GetInstance<ICrateManager>();
         }
-        
+
         private static List<FolderItem> Search(string login, string password, string searchText, string folderId, string status = null, DateTime? fromDate = null, DateTime? toDate = null)
         {
             return TerminalFixtureData.GetFolderInfo(folderId);

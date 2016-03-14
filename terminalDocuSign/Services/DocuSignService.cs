@@ -1,6 +1,7 @@
 ﻿using Data.Control;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.Manifests;
 using Data.States;
 using DocuSign.eSign.Api;
 using DocuSign.eSign.Client;
@@ -59,7 +60,23 @@ namespace terminalDocuSign.Services.New_Api
                 return new List<FieldDTO>();
         }
 
+        public static IEnumerable<FieldDTO> GetFolders(DocuSignApiConfiguration conf)
+        {
+            FoldersApi api = new FoldersApi(conf.Configuration);
+            var folders = api.List(conf.AccountId);
+            if (folders.Folders != null)
+                return folders.Folders.Select(a => new FieldDTO(a.Name, a.Name));
+            else
+                return new List<FieldDTO>();
+        }
 
+        public static DocuSignTemplateDTO DownloadDocuSignTemplate(DocuSignApiConfiguration config, string selectedDocusignTemplateId)
+        {
+            // we probably need to make multiple calls to api to collect all template info, i.e. recipients, tabs etc.
+            //return Mapper.Map<DocuSignTemplateDTO>(jObjTemplate);
+
+            throw new NotImplementedException();
+        }
 
         public static IEnumerable<FieldDTO> GetEnvelopeRecipientsAndTabs(DocuSignApiConfiguration conf, string envelopeId)
         {
@@ -72,6 +89,22 @@ namespace terminalDocuSign.Services.New_Api
             var tmpApi = new TemplatesApi(conf.Configuration);
             return GetRecipientsAndTabs(conf, tmpApi, templateId);
         }
+
+        #region GenerateDocuSignReport methods
+
+        public static int CountEnvelopes(DocuSignApiConfiguration config, DocusignQuery docusignQuery)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static object SearchDocuSign(DocuSignApiConfiguration config, List<FilterConditionDTO> conditions, HashSet<string> existing_envelopes, StandardPayloadDataCM search_result)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region Send DocuSign Envelope methods
 
         //this is purely for Send_DocuSign_Envelope activity
         public static Tuple<IEnumerable<FieldDTO>, IEnumerable<DocuSignTabDTO>> GetTemplateRecipientsTabsAndDocuSignTabs(DocuSignApiConfiguration conf, string templateId)
@@ -99,13 +132,13 @@ namespace terminalDocuSign.Services.New_Api
         public static void SendAnEnvelopeFromTemplate(DocuSignApiConfiguration loginInfo, List<FieldDTO> rolesList, List<FieldDTO> fieldList, string curTemplateId)
         {
 
-            //creatig an envelope
+            //creatig an envelope definiton
             EnvelopeDefinition envDef = new EnvelopeDefinition();
             envDef.EmailSubject = "Test message from Fr8";
             envDef.TemplateId = curTemplateId;
             envDef.Status = "created";
 
-            //requesting it back to update status at the end
+            //creating an envelope
             EnvelopesApi envelopesApi = new EnvelopesApi(loginInfo.Configuration);
             EnvelopeSummary envelopeSummary = envelopesApi.CreateEnvelope(loginInfo.AccountId, envDef);
 
@@ -182,11 +215,11 @@ namespace terminalDocuSign.Services.New_Api
             }
 
             envelopesApi.UpdateRecipients(loginInfo.AccountId, envelopeSummary.EnvelopeId, recepients);
-
-
-
+            
             envelopesApi.Update(loginInfo.AccountId, envelopeSummary.EnvelopeId, new Envelope() { Status = "sent" });
         }
+
+        #endregion
 
         #region private methods
 

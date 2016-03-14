@@ -26,8 +26,7 @@ namespace terminalDocuSign.Actions
 {
     public class Monitor_DocuSign_Envelope_Activity_v1 : BaseDocuSignActivity
     {
-        readonly DocuSignManager _docuSignManager = new DocuSignManager();
-
+        
         private const string DocuSignConnectName = "fr8DocuSignConnectConfiguration";
 
         private const string DocuSignOnEnvelopeSentEvent = "Sent";

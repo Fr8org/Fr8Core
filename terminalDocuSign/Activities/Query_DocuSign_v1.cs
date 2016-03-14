@@ -66,13 +66,7 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        private readonly DocuSignManager _docuSignManager;
-
-        public Query_DocuSign_v1()
-        {           
-            _docuSignManager = ObjectFactory.GetInstance<DocuSignManager>();
-        }
-
+       
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payload = await GetPayload(curActivityDO, containerId);
@@ -94,25 +88,27 @@ namespace terminalDocuSign.Actions
 
             var docuSignAuthDto = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
             var payloadCm = new StandardPayloadDataCM();
-            var envelopes = _docuSignManager.SearchDocusign(docuSignAuthDto, settings);
 
-            foreach (var envelope in envelopes)
-            {
-                var row = new PayloadObjectDTO();
+            //commented out by FR-2400
+            //var envelopes = _docuSignManager.SearchDocusign(docuSignAuthDto, settings);
 
-                row.PayloadObject.Add(new FieldDTO("Id", envelope.EnvelopeId));
-                row.PayloadObject.Add(new FieldDTO("Name", envelope.Name));
-                row.PayloadObject.Add(new FieldDTO("Subject", envelope.Subject));
-                row.PayloadObject.Add(new FieldDTO("Status", envelope.Status));
-                row.PayloadObject.Add(new FieldDTO("OwnerName", envelope.OwnerName));
-                row.PayloadObject.Add(new FieldDTO("SenderName", envelope.SenderName));
-                row.PayloadObject.Add(new FieldDTO("SenderEmail", envelope.SenderEmail));
-                row.PayloadObject.Add(new FieldDTO("Shared", envelope.Shared));
-                row.PayloadObject.Add(new FieldDTO("CompletedDate", envelope.CompletedDateTime.ToString(CultureInfo.InvariantCulture)));
-                row.PayloadObject.Add(new FieldDTO("CreatedDateTime", envelope.CreatedDateTime.ToString(CultureInfo.InvariantCulture)));
+            //foreach (var envelope in envelopes)
+            //{
+            //    var row = new PayloadObjectDTO();
 
-                payloadCm.PayloadObjects.Add(row);
-            }
+            //    row.PayloadObject.Add(new FieldDTO("Id", envelope.EnvelopeId));
+            //    row.PayloadObject.Add(new FieldDTO("Name", envelope.Name));
+            //    row.PayloadObject.Add(new FieldDTO("Subject", envelope.Subject));
+            //    row.PayloadObject.Add(new FieldDTO("Status", envelope.Status));
+            //    row.PayloadObject.Add(new FieldDTO("OwnerName", envelope.OwnerName));
+            //    row.PayloadObject.Add(new FieldDTO("SenderName", envelope.SenderName));
+            //    row.PayloadObject.Add(new FieldDTO("SenderEmail", envelope.SenderEmail));
+            //    row.PayloadObject.Add(new FieldDTO("Shared", envelope.Shared));
+            //    row.PayloadObject.Add(new FieldDTO("CompletedDate", envelope.CompletedDateTime.ToString(CultureInfo.InvariantCulture)));
+            //    row.PayloadObject.Add(new FieldDTO("CreatedDateTime", envelope.CreatedDateTime.ToString(CultureInfo.InvariantCulture)));
+
+            //    payloadCm.PayloadObjects.Add(row);
+            //}
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
@@ -131,8 +127,9 @@ namespace terminalDocuSign.Actions
 
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
             var configurationCrate = PackControls(new ActivityUi());
-            _docuSignManager.FillFolderSource(configurationCrate, "Folder", docuSignAuthDTO);
-            _docuSignManager.FillStatusSource(configurationCrate, "Status");
+            //commented out by FR-2400
+            //_docuSignManager.FillFolderSource(configurationCrate, "Folder", docuSignAuthDTO);
+            //_docuSignManager.FillStatusSource(configurationCrate, "Status");
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Add(configurationCrate);

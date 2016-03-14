@@ -118,13 +118,7 @@ namespace terminalDocuSign.Actions
                 });
             }
         }
-
-        public DocuSignManager DocuSignManager { get; set; }
-
-        public Track_DocuSign_Recipients_v1()
-        {
-            DocuSignManager = new DocuSignManager();
-        }
+        
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {

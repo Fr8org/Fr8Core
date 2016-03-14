@@ -31,11 +31,7 @@ namespace terminalDocuSign.Actions
 {
     public class Send_DocuSign_Envelope_v1 : BaseDocuSignActivity
     {
-        private DocuSignManager _docuSignManager = new DocuSignManager();
-        public Send_DocuSign_Envelope_v1()
-        {
-        }
-
+    
         public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             CheckAuthentication(authTokenDO);

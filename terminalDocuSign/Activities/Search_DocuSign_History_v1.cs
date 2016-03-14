@@ -71,13 +71,6 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        private readonly DocuSignManager _docuSignManager;
-
-        public Search_DocuSign_History_v1()
-        {
-            _docuSignManager = ObjectFactory.GetInstance<DocuSignManager>();
-        }
-        
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             return Success(await GetPayload(curActivityDO, containerId));
@@ -93,8 +86,9 @@ namespace terminalDocuSign.Actions
             var actionUi = new ActivityUi();
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);           
             var configurationCrate = PackControls(actionUi);
-            _docuSignManager.FillFolderSource(configurationCrate, "Folder", docuSignAuthDTO);
-            _docuSignManager.FillStatusSource(configurationCrate, "Status");
+            //commented out by FR-2400
+            //_docuSignManager.FillFolderSource(configurationCrate, "Folder", docuSignAuthDTO);
+            //_docuSignManager.FillStatusSource(configurationCrate, "Status");
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {

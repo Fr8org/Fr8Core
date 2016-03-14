@@ -71,6 +71,30 @@ namespace terminalDocuSign.Actions
             return envelopeIdField.Value;
         }
 
+        public static DropDownList CreateDocuSignTemplatePicker(
+            bool addOnChangeEvent,
+            string name = "Selected_DocuSign_Template",
+            string label = "Select DocuSign Template")
+        {
+            var control = new DropDownList()
+            {
+                Label = label,
+                Name = name,
+                Required = true,
+                Source = null
+            };
+
+            if (addOnChangeEvent)
+            {
+                control.Events = new List<ControlEvent>()
+                {
+                    new ControlEvent("onChange", "requestConfig")
+                };
+            }
+
+            return control;
+        }
+
         public void AddOrUpdateUserDefinedFields(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO, IUpdatableCrateStorage updater, string templateId, string envelopeId = null)
         {
             updater.RemoveByLabel("DocuSignTemplateUserDefinedFields");

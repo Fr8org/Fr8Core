@@ -31,12 +31,11 @@ namespace terminalDocuSign.Actions
 {
     public class Mail_Merge_Into_DocuSign_v1 : BaseDocuSignActivity
     {
-        readonly DocuSignManager _docuSignManager;
+       
         string _dataSourceValue;
         DropDownList _docuSignTemplate;
 
-
-        string _docuSignTemplateValue;
+        
         private const string SolutionName = "Mail Merge Into DocuSign";
         private const double SolutionVersion = 1.0;
         private const string TerminalName = "DocuSign";
@@ -45,11 +44,6 @@ namespace terminalDocuSign.Actions
                                             You can link specific fields from your source data to DocuSign fields</p>";
 
 
-        public Mail_Merge_Into_DocuSign_v1()
-            : base()
-        {
-            _docuSignManager = new DocuSignManager();
-        }
 
         /// <summary>
         /// Action processing infrastructure.
@@ -109,7 +103,7 @@ namespace terminalDocuSign.Actions
                 Required = true
             });
 
-            controlList.Add(DocuSignManager.CreateDocuSignTemplatePicker(false, "DocuSignTemplate", "2. Use which DocuSign Template?"));
+            controlList.Add(CreateDocuSignTemplatePicker(false, "DocuSignTemplate", "2. Use which DocuSign Template?"));
             controlList.Add(new Button()
             {
                 Label = "Prepare Mail Merge",
