@@ -16,11 +16,16 @@ module dockyard.directives.dropDownListBox {
     }
 
     export function DropDownListBox(): ng.IDirective {
-        var controller = ['$scope', 'UpstreamExtractor',
+        var controller = ['$scope', 'UpstreamExtractor','UIHelperService',
             function (
                 $scope: IDropDownListBoxScope,
-                UpstreamExtractor: services.UpstreamExtractor
+                UpstreamExtractor: services.UpstreamExtractor,
+                uiHelperService: services.IUIHelperService
             ) {
+
+                var alertMessage = new model.AlertDTO();
+                alertMessage.title = "Nofitication";
+                alertMessage.body = 'There are no upstream fields available right now. To learn more,<a href= "/documentation/UpstreamCrates.html" target= "_blank" > click here </a><i class="fa fa-question-circle" > </i>';
 
                 $scope.setSelectedItem = (item: model.FieldDTO) => {
                     $scope.field.value = item.value || (<any>item).Value;
@@ -36,6 +41,11 @@ module dockyard.directives.dropDownListBox {
                 $scope.toggle = false;
 
                 $scope.toggleDropDown = $select => {
+
+                    if ($scope.field.type == "TextSource" && $scope.field.listItems.length === 0) {
+                        uiHelperService.openConfirmationModal(alertMessage);
+                    }
+
                     if (!$scope.focusOutSet) {
                         var focusElem = angular.element($select.focusInput);
                         $scope.focusOutSet = isFocusOutFunc;
