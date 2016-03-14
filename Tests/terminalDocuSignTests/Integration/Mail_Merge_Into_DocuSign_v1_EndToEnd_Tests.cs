@@ -68,6 +68,7 @@ namespace terminalDocuSignTests.Integration
             var stAuthCrate = crateStorage.CratesOfType<StandardAuthenticationCM>().FirstOrDefault();
             bool defaultDocuSignAuthTokenExists = stAuthCrate == null;
 
+
             if (!defaultDocuSignAuthTokenExists)
             {
                 //
