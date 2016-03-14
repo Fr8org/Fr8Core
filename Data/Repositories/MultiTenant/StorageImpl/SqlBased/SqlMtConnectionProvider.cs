@@ -15,6 +15,8 @@ namespace Data.Repositories.MultiTenant.SqlBased
                 var adapter = (IObjectContextAdapter)_uow.Db;
                 var builder = new EntityConnectionStringBuilder(adapter.ObjectContext.Connection.ConnectionString);
 
+                System.Console.WriteLine(builder.ProviderConnectionString);
+
                 return builder.ProviderConnectionString;
             }
         }
