@@ -45,6 +45,11 @@ namespace terminalDocuSign.Actions
                                             You can link specific fields from your source data to DocuSign fields</p>";
 
 
+        public override Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        {
+            return Task.FromResult<ActivityDO>(curActivityDO);
+        }
+
         public Mail_Merge_Into_DocuSign_v1()
             : base()
         {
