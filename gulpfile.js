@@ -115,7 +115,6 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/Resizable.js',
         'Scripts/app/filters/ActionNameFormatter.js',
         'Scripts/app/filters/DateTimeFormatter.js',
-        'Scripts/app/controllers/AlertController.js',
         'Scripts/app/controllers/RouteBuilderController.js',
         'Scripts/app/controllers/SandboxController.js',
         'Scripts/app/controllers/RouteFormController.js',
