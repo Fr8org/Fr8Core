@@ -73,6 +73,7 @@ namespace terminalDocuSignTests.Integration
                 //
                 // Authenticate with DocuSign
                 //
+
                 var creds = new CredentialsDTO()
                 {
                     Username = "freight.testing@gmail.com",
