@@ -34,6 +34,7 @@ module dockyard.controllers {
         isBusy: () => boolean;
         onActionDrop: (group: model.ActionGroup, actionId: string, index: number) => void;
         mode: string;
+        editingMode: string;
         solutionName: string;
         curAggReloadingActions: Array<string>;
         addSubPlan: () => void;
@@ -210,9 +211,14 @@ module dockyard.controllers {
             this._loading = false;
         }
 
+        private setAdvancedEditingMode() {
+            this.$scope.editingMode = 'advanced';
+        }
+
         private addSubPlan() {
             var currentRoute = this.$scope.current.route;
-            
+
+            this.setAdvancedEditingMode();
             var newSubPlan = new model.SubrouteDTO(null, true, currentRoute.id, "SubPlan-" + currentRoute.subroutes.length);
             
             this.SubPlanService.create(newSubPlan).$promise.then((createdSubPlan: model.SubrouteDTO) => {
@@ -365,6 +371,9 @@ module dockyard.controllers {
             this.$scope.mode = mode;
             this.$scope.current.route = curRoute;
             //this.$scope.currentSubroute = curRoute.subroutes[0];
+            if (curRoute.subroutes.length > 1) {
+                this.setAdvancedEditingMode();
+            }
             this.renderRoute(curRoute);
         }
 
