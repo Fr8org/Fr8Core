@@ -60,7 +60,7 @@
                             <div ng-if="envelope.jumpTargets.length > 0" style="display: inline-block; height: 50px; margin: 84px 10px 0 7px; width: 55px;">
                                 <div ng-repeat="jumpTarget in envelope.jumpTargets" class="col-md-12">
                                     <div class="action-arrow-right-{{jumpTarget.TransitionType}}"></div>
-                                    <div style="padding-top: 15px; margin-left: 110px;">{{jumpTarget.Target}}</div>
+                                    <div class="jump-target-text">{{jumpTarget.Target}}</div>
                                 </div>
                             </div>
                             <div ng-if="envelope.allowsSiblings" class="action-arrow-right"></div>
@@ -75,11 +75,12 @@
                             <div class="action-arrow-right"></div>
                         </div>
                     </div>
-                    
+
                 </div>
             </div>
         </div>
+        <hr class="transition-seperator"/>
     </div>
 
-    <button ng-click="addSubPlan()" class="btn btn-default" style="margin-left: 25px; cursor: pointer;">Add Subplan</button>
+    <button ng-click="addSubPlan()" class="btn btn-primary" style="margin-left: 25px; cursor: pointer; background-color: #98AFC7;">Add Subplan</button>
 </div>

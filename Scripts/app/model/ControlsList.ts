@@ -88,9 +88,10 @@
         selected: boolean;
 
         constructor(key: string, value: string) {
+            super();
             this.key = key;
             this.value = value;
-            super();
+            
         }
     }
 

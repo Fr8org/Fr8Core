@@ -29,18 +29,64 @@ module dockyard.directives.containerTransition {
                 new model.DropDownListItem('Jump To Subplan', ContainerTransitions.JumpToSubplan.toString()),
                 new model.DropDownListItem('Stop Processing', ContainerTransitions.StopProcessing.toString()),
                 //new model.DropDownListItem('Suspend Processing', ContainerTransitions.SuspendProcessing.toString()),
-                new model.DropDownListItem('Proceed To Next Activity', ContainerTransitions.ProceedToNextActivity.toString())
+                //new model.DropDownListItem('Proceed To Next Activity', ContainerTransitions.ProceedToNextActivity.toString())
             ];
 
-            
 
-            var findSubPlanById = (id: string) =>  {
+            //TODO remove this to a helper service
+            var searchAction = (id: string, actionList: model.ActivityDTO[]): model.ActivityDTO => {
+                for (var i = 0; i < actionList.length; i++) {
+                    if (actionList[i].id === id) {
+                        return actionList[i];
+                    }
+                    if (actionList[i].childrenActivities.length) {
+                        var foundAction = searchAction(id, <model.ActivityDTO[]>actionList[i].childrenActivities);
+                        if (foundAction !== null) {
+                            return foundAction;
+                        }
+                    }
+                }
+                return null;
+            }
+
+            //TODO remove this to a helper service
+            var findActionById = (id: string): model.ActivityDTO => {
+                for (var subroute of $scope.route.subroutes) {
+                    var foundAction = searchAction(id, subroute.activities);
+                    if (foundAction !== null) {
+                        return foundAction;
+                    }
+                }
+
+                return null;
+            }
+
+            
+            
+            var findSubPlanById = (id: string) : model.SubrouteDTO =>  {
                 for(var i = 0; i< $scope.route.subroutes.length; i++) {
                     if($scope.route.subroutes[i].id === id) {
                         return $scope.route.subroutes[i];
                     }
                 }
+                //it seems this id belongs to an action
+                //lets look one level up
+                var action = findActionById(id);
+                if (action != null) {
+                    return findSubPlanById(action.parentRouteNodeId);
+                }
                 return null;
+            }
+
+            
+
+            //Alex requested that lower level of current activity
+            //shouldn't be listed as a jump target
+            //we are checking if this is the level we should stop
+            //each level = ActivityGroup
+            //each children creates a level
+            var isThisCurrentLevel = (activity: model.ActivityDTO): boolean => {
+                return $scope.currentAction.parentRouteNodeId === activity.parentRouteNodeId;
             }
 
             var getActivityTree = (activity: model.ActivityDTO) => {
@@ -48,13 +94,16 @@ module dockyard.directives.containerTransition {
                 if (activity.childrenActivities && activity.childrenActivities.length > 0) {
                     for (var i = 0; i < activity.childrenActivities.length; i++) {
                         childActivities.push(<model.ActivityDTO>activity.childrenActivities[i]);
-                        childActivities.concat(getActivityTree(<model.ActivityDTO>activity.childrenActivities[i]));
+                        if (!isThisCurrentLevel(<model.ActivityDTO>activity.childrenActivities[i])){
+                            childActivities.concat(getActivityTree(<model.ActivityDTO>activity.childrenActivities[i]));
+                        }
                     }
                 }
 
                 return childActivities;
             };
 
+            
             var getCurrentSubplanActivities = () => {
                 var currentSubplanId = $scope.currentAction.parentRouteNodeId;
                 var subplan = findSubPlanById(currentSubplanId);
@@ -66,9 +115,11 @@ module dockyard.directives.containerTransition {
                 for (var i = 0; i < subplan.activities.length; i++) {
                     var current = subplan.activities[i];
                     subplanActivities.push(new model.DropDownListItem(current.label, current.id));
-                    var childActivityTree = getActivityTree(current);
-                    for (var j = 0; j < childActivityTree.length; j++) {
-                        subplanActivities.push(new model.DropDownListItem(childActivityTree[j].label, childActivityTree[j].id));
+                    if (!isThisCurrentLevel(subplan.activities[i])){
+                        var childActivityTree = getActivityTree(current);
+                        for (var j = 0; j < childActivityTree.length; j++) {
+                            subplanActivities.push(new model.DropDownListItem(childActivityTree[j].label, childActivityTree[j].id));
+                        }
                     }
                 }
 
