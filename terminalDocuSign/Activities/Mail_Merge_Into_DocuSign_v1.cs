@@ -1,42 +1,32 @@
 ﻿using AutoMapper;
 using Data.Entities;
-using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
-using StructureMap;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Net.Http;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Data.Control;
 using Data.Crates;
 using Data.Interfaces.Manifests;
 using Hub.Managers;
-using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using TerminalBase.Infrastructure.Behaviors;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services;
-using Utilities.Configuration.Azure;
-using terminalDocuSign.Infrastructure;
 using Data.Constants;
-using Data.Repositories;
-using Data.States;
-using UtilitiesTesting.Fixtures;
 
 namespace terminalDocuSign.Actions
 {
     public class Mail_Merge_Into_DocuSign_v1 : BaseDocuSignActivity
     {
-        readonly DocuSignManager _docuSignManager;
-        string _dataSourceValue;
-        DropDownList _docuSignTemplate;
+        private readonly DocuSignManager _docuSignManager;
 
+        private string _dataSourceValue;
 
-        string _docuSignTemplateValue;
+        private DropDownList _docuSignTemplate;
+
         private const string SolutionName = "Mail Merge Into DocuSign";
         private const double SolutionVersion = 1.0;
         private const string TerminalName = "DocuSign";
@@ -45,52 +35,23 @@ namespace terminalDocuSign.Actions
                                             You can link specific fields from your source data to DocuSign fields</p>";
 
 
+        public override Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        {
+            return Task.FromResult<ActivityDO>(curActivityDO);
+        }
+
         public Mail_Merge_Into_DocuSign_v1()
-            : base()
         {
             _docuSignManager = new DocuSignManager();
         }
 
+        protected override string ActivityUserFriendlyName => SolutionName;
+
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        protected internal override async Task<PayloadDTO> RunInternal(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            /*
-            var payloadCrates = await GetPayload(curActivityDO, containerId);
-
-            if (NeedsAuthentication(authTokenDO))
-            {
-                return NeedsAuthenticationError(payloadCrates);
-            }
-
-            var storage = Crate.GetStorage(curActivityDO);
-            DropDownList docuSignTemplate = GetStdConfigurationControl<DropDownList>(storage, "DocuSignTemplate");
-            string envelopeId = docuSignTemplate.Value;
-
-            // Make sure that it exists
-            if (string.IsNullOrEmpty(envelopeId))
-            {
-                return Error(payloadCrates, "EnvelopeId", ActionErrorCode.PAYLOAD_DATA_MISSING);
-            }
-
-            //Create run-time fields
-            var fields = CreateDocuSignEventFields();
-            foreach (var field in fields)
-            {
-                field.Value = GetValueForKey(payloadCrates, field.Key);
-            }
-
-            using (var crateStorage = Crate.GetUpdatableStorage(payloadCrates))
-            {
-                updater.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(fields)));
-
-                //var userDefinedFieldsPayload = _docuSignManager.CreateActionPayload(curActivityDO, authTokenDO, envelopeId);
-                //updater.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Data", userDefinedFieldsPayload));
-            }
-            */
-            //i (bahadir) think solutions should not do anything on their run method
-            //they are just preconfiguring existing activities
             return Success(await GetPayload(curActivityDO, containerId));
         }
 
@@ -109,7 +70,7 @@ namespace terminalDocuSign.Actions
                 Required = true
             });
 
-            controlList.Add(DocuSignManager.CreateDocuSignTemplatePicker(false, "DocuSignTemplate", "2. Use which DocuSign Template?"));
+            controlList.Add(_docuSignManager.CreateDocuSignTemplatePicker(true, "DocuSignTemplate", "2. Use which DocuSign Template?"));
             controlList.Add(new Button()
             {
                 Label = "Prepare Mail Merge",
@@ -173,65 +134,49 @@ namespace terminalDocuSign.Actions
             return Task.FromResult((Crate)PackControlsCrate(controlList.ToArray()));
         }
 
-        private T GetStdConfigurationControl<T>(ICrateStorage storage, string name)
-            where T : ControlDefinitionDTO
+        private T GetStdConfigurationControl<T>(ICrateStorage storage, string name) where T : ControlDefinitionDTO
         {
             var controls = storage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             if (controls == null)
             {
                 return null;
             }
-
             var control = (T)controls.FindByName(name);
             return control;
         }
-
-
-        /// <summary>
-        /// All validation scenarios for Mail_Merge_Into_DocuSign action
-        /// </summary>
-        /// <param name="curActivityDO"></param>
-        /// <returns></returns>
-        protected override async Task<ICrateStorage> ValidateActivity(ActivityDO curActivityDO)
+        /*
+        protected internal override ValidationResult ValidateActivityInternal(ActivityDO curActivityDO)
         {
-            ValidateDocuSignAtLeastOneTemplate(curActivityDO);
-
-            return await Task.FromResult<ICrateStorage>(null);
-        }
-
-        private bool ValidateDocuSignAtLeastOneTemplate(ActivityDO curActivityDO)
-        {
-            bool noError = true;
-
+            var errorMessages = new List<string>();
             //validate DocuSignTemplate for present selected template 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                var configControl = GetStdConfigurationControl<DropDownList>(crateStorage, "DocuSignTemplate");
-                if (configControl != null && configControl.ListItems.Count == 0)
+                var templateList = GetStdConfigurationControl<DropDownList>(crateStorage, "DocuSignTemplate");
+                if (templateList == null)
                 {
-                    configControl.ErrorMessage = "Please link some templates to your DocuSign account.";
-                    noError = false;
+                    return new ValidationResult(DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage);
                 }
-
-                if (string.IsNullOrEmpty(configControl.Value))
-                {
-                    configControl.ErrorMessage = "Please select a value";
-                    noError = false;
-                }else
-                     configControl.ErrorMessage = null;
-
+                errorMessages.Add(templateList.ErrorMessage =
+                                  DocuSignValidationUtils.AtLeastOneItemExists(templateList)
+                                      ? DocuSignValidationUtils.ItemIsSelected(templateList)
+                                            ? string.Empty
+                                            : DocuSignValidationUtils.TemplateIsNotSelectedErrorMessage
+                                      : DocuSignValidationUtils.NoTemplateExistsErrorMessage);
                 var sourceConfigControl = GetStdConfigurationControl<DropDownList>(crateStorage, "DataSource");
-                if (string.IsNullOrEmpty(sourceConfigControl.Value))
+                if (sourceConfigControl == null)
                 {
-                    sourceConfigControl.ErrorMessage = "Please select a value";
-                    noError = false;
-                }else
-                    sourceConfigControl.ErrorMessage = null;
+                    return new ValidationResult(DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage);
+                }
+                errorMessages.Add(sourceConfigControl.ErrorMessage =
+                    DocuSignValidationUtils.AtLeastOneItemExists(sourceConfigControl)
+                        ? DocuSignValidationUtils.ItemIsSelected(sourceConfigControl)
+                            ? string.Empty
+                            : "Data source is not selected"
+                        : "No data source exists");
             }
-
-            return noError;
+            return errorMessages.Count == 0 ? ValidationResult.Success : new ValidationResult(string.Join(Environment.NewLine, errorMessages.Where(x => !string.IsNullOrEmpty(x))));
         }
-
+        */
         /// <summary>
         /// If there's a value in select_file field of the crate, then it is a followup call.
         /// </summary>
@@ -257,7 +202,7 @@ namespace terminalDocuSign.Actions
             // If no values selected in textboxes, remain on initial phase
             DropDownList dataSource = GetStdConfigurationControl<DropDownList>(storage, "DataSource");
             if (dataSource.Value != null)
-            _dataSourceValue = dataSource.Value;
+                _dataSourceValue = dataSource.Value;
 
             _docuSignTemplate = GetStdConfigurationControl<DropDownList>(storage, "DocuSignTemplate");
 
@@ -274,11 +219,8 @@ namespace terminalDocuSign.Actions
             return activityTemplate.Tags != null && activityTemplate.Tags.Split(',').Any(t => t.ToLowerInvariant().Contains("table"));
         }
 
-        protected override async Task<ActivityDO> FollowupConfigurationResponse(
-            ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            if (ValidateDocuSignAtLeastOneTemplate(curActivityDO))
-            {
             using (var updater = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 // extract fields in docusign form
@@ -310,8 +252,6 @@ namespace terminalDocuSign.Actions
 
             var behavior = new ReconfigurationListBehavior(this);
             await behavior.ReconfigureActivities(curActivityDO, authTokenDO, reconfigList);
-
-            }
             return await Task.FromResult(curActivityDO);
         }
 
@@ -335,9 +275,9 @@ namespace terminalDocuSign.Actions
         private async Task<ActivityDO> CreateFirstChildActivity(ReconfigurationContext context)
         {
             var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null))
-                .Select(x => Mapper.Map<ActivityTemplateDO>(x))
+                .Select(Mapper.Map<ActivityTemplateDO>)
                 .ToList();
-            
+
             // Let's check if activity template generates table data
             var selectedReceiver = curActivityTemplates.Single(x => x.Name == _dataSourceValue);
             var dataSourceActivity = await AddAndConfigureChildActivity(
@@ -417,7 +357,7 @@ namespace terminalDocuSign.Actions
         private async Task<ActivityDO> CreateSecondChildActivity(ReconfigurationContext context)
         {
             var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null))
-                .Select(x => Mapper.Map<ActivityTemplateDO>(x))
+                .Select(Mapper.Map<ActivityTemplateDO>)
                 .ToList();
 
             var selectedReceiver = curActivityTemplates.Single(x => x.Name == _dataSourceValue);
@@ -426,8 +366,7 @@ namespace terminalDocuSign.Actions
 
             if (DoesActivityTemplateGenerateTableData(selectedReceiver))
             {
-                var loopActivity = await AddAndConfigureChildActivity(
-                    context.SolutionActivity, "Loop", "Loop", "Loop", 2);
+                var loopActivity = await AddAndConfigureChildActivity(context.SolutionActivity, "Loop", "Loop", "Loop", 2);
 
                 using (var crateStorage = CrateManager.GetUpdatableStorage(loopActivity))
                 {
@@ -439,7 +378,6 @@ namespace terminalDocuSign.Actions
                         tableDescription.Selected = true;
                     }
                 }
-
                 parentActivity = loopActivity;
                 activityIndex = 1;
             }
@@ -457,7 +395,7 @@ namespace terminalDocuSign.Actions
                 _docuSignTemplate.ListItems
                     .FirstOrDefault(a => a.Key == _docuSignTemplate.selectedKey)
             );
-            
+
             await ConfigureChildActivity(parentActivity, sendDocuSignActivity);
 
             return activityIndex == 1 ? sendDocuSignActivity : parentActivity;
@@ -541,7 +479,7 @@ namespace terminalDocuSign.Actions
             {
                 var curSolutionPage = GetDefaultDocumentation(SolutionName, SolutionVersion, TerminalName, SolutionBody);
                 return Task.FromResult(curSolutionPage);
-              
+
             }
             if (curDocumentation.Contains("HelpMenu"))
             {

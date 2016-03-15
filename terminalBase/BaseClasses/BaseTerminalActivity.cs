@@ -388,12 +388,13 @@ namespace TerminalBase.BaseClasses
 
         protected async Task<ActivityDO> ProcessConfigurationRequest(ActivityDO curActivityDO, ConfigurationEvaluator configurationEvaluationResult, AuthorizationTokenDO authToken)
         {
-            if (configurationEvaluationResult(curActivityDO) == ConfigurationRequestType.Initial)
+            var configRequestType = configurationEvaluationResult(curActivityDO);
+            if (configRequestType == ConfigurationRequestType.Initial)
             {
                 return await InitialConfigurationResponse(curActivityDO, authToken);
             }
 
-            else if (configurationEvaluationResult(curActivityDO) == ConfigurationRequestType.Followup)
+            else if (configRequestType == ConfigurationRequestType.Followup)
             {
                 var validationErrors = await ValidateActivity(curActivityDO);
                 if (validationErrors != null)
