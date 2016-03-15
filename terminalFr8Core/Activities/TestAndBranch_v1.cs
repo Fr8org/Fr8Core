@@ -23,9 +23,53 @@ namespace terminalFr8Core.Actions
 {
     public class TestAndBranch_v1 : TestIncomingData_v1
     {
+#if DEBUG
+        private const int SmoothRunLimit = 5;
+        private const int SlowRunLimit = 10;
+#else
+        private const int SmoothRunLimit = 100;
+        private const int SlowRunLimit = 250;
+#endif
+
+        private const int MinAllowedElapsedTimeInSeconds = 5;
+
         public override async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var curPayloadDTO = await GetPayload(curActivityDO, containerId);
+            
+
+            //let's check current branch status
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curPayloadDTO))
+            {
+                var operationsCrate = crateStorage.CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
+                if (operationsCrate == null)
+                {
+                    return Error(curPayloadDTO, "This Action can't run without OperationalStateCM crate", ActivityErrorCode.PAYLOAD_DATA_MISSING);
+                }
+
+                var currentBranch = GetCurrentBranch(operationsCrate, curActivityDO.GetLoopId());
+                if (currentBranch == null)
+                {
+                    CreateBranch(curActivityDO.GetLoopId());
+                }
+
+                currentBranch.Count += 1;
+                if (currentBranch.Count >= SlowRunLimit)
+                {
+                    return Error(curPayloadDTO, "This container hit a maximum loop count and was stopped because we're afraid it might be an infinite loop");
+                }
+                else if (currentBranch.Count >= SmoothRunLimit)
+                {
+                    //it seems we need to slow down things
+                    var diff = DateTime.UtcNow - currentBranch.LastBranchTime;
+                    if (diff.TotalSeconds < MinAllowedElapsedTimeInSeconds)
+                    {
+                        await Task.Delay(MinAllowedElapsedTimeInSeconds * 1000);
+                    }
+                }
+            }
+
+
             var payloadFields = GetAllPayloadFields(curPayloadDTO).AsQueryable();
 
             var configControls = GetConfigurationControls(curActivityDO);
@@ -62,7 +106,20 @@ namespace terminalFr8Core.Actions
             return Success(curPayloadDTO);
         }
 
-        
+        private OperationalStateCM.BranchStatus GetCurrentBranch(OperationalStateCM operationalState, string currentActivityId)
+        {
+            return operationalState.Branches.FirstOrDefault(l => l.Id == currentActivityId);
+        }
+
+        private OperationalStateCM.BranchStatus CreateBranch(string currentActivityId)
+        {
+            return new OperationalStateCM.BranchStatus
+            {
+                Count = 0,
+                Id = currentActivityId,
+                LastBranchTime = DateTime.UtcNow
+            };
+        }
 
         private bool CheckConditions(List<FilterConditionDTO> conditions, IQueryable<FieldDTO> fields)
         {
