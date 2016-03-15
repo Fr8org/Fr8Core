@@ -48,14 +48,8 @@ namespace terminalDocuSign.Actions
                 });
             }
         }
+        
 
-        private readonly IDocuSignManager _docuSignManager;
-        //Left for compaitbility reasons
-        public Archive_DocuSign_Template_v1() : this(null) { }
-        public Archive_DocuSign_Template_v1(IDocuSignManager docuSignManager)
-        {
-            _docuSignManager = docuSignManager ?? new DocuSignManager();
-        }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {

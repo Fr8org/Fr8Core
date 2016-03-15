@@ -35,8 +35,7 @@ namespace terminalDocuSign.Actions
         protected internal override async Task<PayloadDTO> RunInternal(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payloadCrates = await GetPayload(curActivityDO, containerId);
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
-            var loginInfo = DocuSignService.Login(docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
+            var loginInfo = DocuSignService.SetUp(authTokenDO);
 
             return HandleTemplateData(curActivityDO, loginInfo, payloadCrates);
         }
@@ -222,7 +221,7 @@ namespace terminalDocuSign.Actions
                 // One to hold the ui controls
                 if (crateStorage.All(c => c.ManifestType.Id != (int)MT.FieldDescription))
                 {
-                    var configurationCrate = CreateDocusignTemplateConfigurationControls(curActivityDO);
+                    var configurationCrate = CreateDocusignTemplateConfigurationControls();
                     FillDocuSignTemplateSource(configurationCrate, "target_docusign_template", authTokenDO);
                     crateStorage.Replace(new CrateStorage(configurationCrate));
                 }
@@ -286,7 +285,7 @@ namespace terminalDocuSign.Actions
                     "DocuSignTemplateUserDefinedFields",
                     userDefinedFields.Concat(roles).ToArray()
                 );
-                
+
                 crateStorage.RemoveByLabel("DocuSignTemplateUserDefinedFields");
                 crateStorage.Add(crateUserDefinedDTO);
 
@@ -342,7 +341,7 @@ namespace terminalDocuSign.Actions
 
                     dropdownListMappingBehavior.Append(dropDownListDTO.Name, string.Format("For the <strong>{0}</strong>, use:", item.Name), dropDownListDTO.Items.Where(x => x.Text != string.Empty || x.Value != string.Empty).Select(x => new ListItem()
                     {
-                        Key = string.IsNullOrEmpty(x.Value) ? x.Text : x.Value, 
+                        Key = string.IsNullOrEmpty(x.Value) ? x.Text : x.Value,
                         Value = string.IsNullOrEmpty(x.Text) ? x.Value : x.Text,
                         Selected = x.Selected,
                     }).ToList());

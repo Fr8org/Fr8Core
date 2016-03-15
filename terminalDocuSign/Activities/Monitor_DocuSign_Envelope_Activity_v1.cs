@@ -39,14 +39,6 @@ namespace terminalDocuSign.Actions
 
         private const string EnvelopeRecievedEventName = "EnvelopeReceived";
 
-        public Monitor_DocuSign_Envelope_Activity_v1(IDocuSignManager docuSignManager)
-        {
-            _docuSignManager = docuSignManager ?? new DocuSignManager();
-        }
-        //Left for compatibility
-        public Monitor_DocuSign_Envelope_Activity_v1() : this(null)
-        {
-        }
 
         public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
@@ -295,8 +287,8 @@ namespace terminalDocuSign.Actions
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
             {
-                crateStorage.Add(Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(fields)));
-                crateStorage.Add(Crate.FromContent("Log Messages", logMessages));
+                crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(fields)));
+                crateStorage.Add(Data.Crates.Crate.FromContent("Log Messages", logMessages));
                 if (curSelectedOption == "template")
                 {
                     var userDefinedFieldsPayload = CreateActivityPayload(curActivityDO, authTokenDO, envelopeId);
@@ -309,9 +301,9 @@ namespace terminalDocuSign.Actions
 
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-
-            var configurationCrate = PackCrate_ConfigurationControls();
-            FillDocuSignTemplateSource(configurationCrate, "UpstreamCrate", authTokenDO);
+            
+            var controlsCrate = PackControls(CreateActivityUi());
+            FillDocuSignTemplateSource(controlsCrate, "UpstreamCrate", authTokenDO);
             var eventFields = CrateManager.CreateDesignTimeFieldsCrate("DocuSign Event Fields", AvailabilityType.RunTime, CreateDocuSignEventFields().ToArray());
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))

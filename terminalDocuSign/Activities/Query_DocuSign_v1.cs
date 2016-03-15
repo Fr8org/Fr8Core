@@ -64,11 +64,6 @@ namespace terminalDocuSign.Actions
         }
 
 
-        public Query_DocuSign_v1()
-        {           
-            _docuSignManager = ObjectFactory.GetInstance<DocuSignManager>();
-        }
-
         protected override string ActivityUserFriendlyName => "Query DocuSign";
 
         protected internal override async Task<PayloadDTO> RunInternal(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)

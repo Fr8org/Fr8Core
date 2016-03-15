@@ -10,18 +10,18 @@ using UtilitiesTesting.Fixtures;
 
 namespace terminalDocuSignTests.Activities
 {
-    public class BaseTest : UtilitiesTesting.BaseTest
-    {
-        [SetUp]
-        public override void SetUp()
-        {
-            base.SetUp();
-            var hubCommunicatorMock = new Mock<IHubCommunicator>();
+    //public class BaseTest : UtilitiesTesting.BaseTest
+    //{
+    //    [SetUp]
+    //    public override void SetUp()
+    //    {
+    //        base.SetUp();
+    //        var hubCommunicatorMock = new Mock<IHubCommunicator>();
 
-            hubCommunicatorMock.Setup(x => x.GetPayload(It.IsAny<ActivityDO>(), It.IsAny<Guid>(), It.IsAny<string>()))
-                               .Returns(Task.FromResult(FixtureData.PayloadDTO2()));
-            ObjectFactory.Configure(x => x.For<IHubCommunicator>().Use(hubCommunicatorMock.Object));
-            ObjectFactory.Configure(x => x.For<IDocuSignFolder>().Use(new Mock<IDocuSignFolder>().Object));
-        }
-    }
+    //        hubCommunicatorMock.Setup(x => x.GetPayload(It.IsAny<ActivityDO>(), It.IsAny<Guid>(), It.IsAny<string>()))
+    //                           .Returns(Task.FromResult(FixtureData.PayloadDTO2()));
+    //        ObjectFactory.Configure(x => x.For<IHubCommunicator>().Use(hubCommunicatorMock.Object));
+    //        ObjectFactory.Configure(x => x.For<IDocuSignFolder>().Use(new Mock<IDocuSignFolder>().Object));
+    //    }
+    //}
 }

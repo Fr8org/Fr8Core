@@ -68,12 +68,6 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        private readonly DocuSignManager _docuSignManager;
-
-        public Search_DocuSign_History_v1()
-        {
-            _docuSignManager = ObjectFactory.GetInstance<DocuSignManager>();
-        }
 
         protected override string ActivityUserFriendlyName => "Search DocuSign History";
 
@@ -149,7 +143,7 @@ namespace terminalDocuSign.Actions
                 throw new Exception("Can't find activity template: Query_DocuSign");
             }
 
-            var storage = new CrateStorage(Crate.FromContent("Config", config));
+            var storage = new CrateStorage(Data.Crates.Crate.FromContent("Config", config));
 
             storage.Add(PackControlsCrate(new TextArea
             {

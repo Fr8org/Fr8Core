@@ -21,8 +21,7 @@ namespace terminalDocuSign.Actions
 {
     public class Mail_Merge_Into_DocuSign_v1 : BaseDocuSignActivity
     {
-        private readonly DocuSignManager _docuSignManager;
-
+      
         private string _dataSourceValue;
 
         private DropDownList _docuSignTemplate;
@@ -38,11 +37,6 @@ namespace terminalDocuSign.Actions
         public override Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             return Task.FromResult<ActivityDO>(curActivityDO);
-        }
-
-        public Mail_Merge_Into_DocuSign_v1()
-        {
-            _docuSignManager = new DocuSignManager();
         }
 
         protected override string ActivityUserFriendlyName => SolutionName;

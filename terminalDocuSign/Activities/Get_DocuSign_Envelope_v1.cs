@@ -70,7 +70,7 @@ namespace terminalDocuSign.Actions
                 crateStorage.ReplaceByLabel(upstreamFieldsCrate);
 
                 var control = FindControl(CrateManager.GetStorage(curActivityDO), "EnvelopeIdSelector");
-                string envelopeId = GetEnvelopeId(control as TextSource, authTokenDO);
+                string envelopeId = GetEnvelopeId(control as TextSource);
                 AddOrUpdateUserDefinedFields(curActivityDO, authTokenDO, crateStorage, envelopeId);
             }
             return await Task.FromResult(curActivityDO);

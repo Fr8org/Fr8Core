@@ -18,20 +18,13 @@ using Data.States;
 using Utilities;
 using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Services.New_Api;
+using Data.Constants;
 
 namespace terminalDocuSign.Actions
 {
     public class Get_DocuSign_Template_v1 : BaseDocuSignActivity
     {
 
-        public Get_DocuSign_Template_v1(IDocuSignManager docuSignManager)
-        {
-            _docuSignManager = docuSignManager ?? new DocuSignManager();
-        }
-        //Left for compatibility
-        public Get_DocuSign_Template_v1() : this(null)
-        {
-        }
 
         public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
@@ -46,7 +39,7 @@ namespace terminalDocuSign.Actions
         protected override string ActivityUserFriendlyName => "Get DocuSign Template";
 
         protected internal override async Task<PayloadDTO> RunInternal(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
-            {
+        {
             var payloadCrates = await GetPayload(activityDO, containerId);
             //Get template Id
             var control = (DropDownList)FindControl(CrateManager.GetStorage(activityDO), "Available_Templates");
@@ -78,7 +71,7 @@ namespace terminalDocuSign.Actions
                 Status = template.EnvelopeData.status
             };
 
-            return Crate.FromContent("DocuSign Template", manifest);
+            return Data.Crates.Crate.FromContent("DocuSign Template", manifest);
         }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
