@@ -353,12 +353,13 @@ namespace TerminalBase.BaseClasses
 
         protected async Task<ActivityDO> ProcessConfigurationRequest(ActivityDO curActivityDO, ConfigurationEvaluator configurationEvaluationResult, AuthorizationTokenDO authToken)
         {
-            if (configurationEvaluationResult(curActivityDO) == ConfigurationRequestType.Initial)
+            var configRequestType = configurationEvaluationResult(curActivityDO);
+            if (configRequestType == ConfigurationRequestType.Initial)
             {
                 return await InitialConfigurationResponse(curActivityDO, authToken);
             }
 
-            else if (configurationEvaluationResult(curActivityDO) == ConfigurationRequestType.Followup)
+            else if (configRequestType == ConfigurationRequestType.Followup)
             {
                 var validationErrors = await ValidateActivity(curActivityDO);
                 if (validationErrors != null)
@@ -624,12 +625,24 @@ namespace TerminalBase.BaseClasses
         /// <param name="filterByTag">Filter for upstream source, Empty by default</param>
         /// <param name="addRequestConfigEvent">True if onChange event needs to be configured, False otherwise. True by default</param>
         /// <param name="required">True if the control is required, False otherwise. False by default</param>
-        protected void AddTextSourceControl(ICrateStorage storage, string label, string controlName,
-                                            string upstreamSourceLabel, string filterByTag = "",
-                                            bool addRequestConfigEvent = false, bool required = false)
+        protected void AddTextSourceControl(
+            ICrateStorage storage,
+            string label,
+            string controlName,
+            string upstreamSourceLabel,
+            string filterByTag = "",
+            bool addRequestConfigEvent = false,
+            bool required = false,
+            bool requestUpstream = false)
         {
-            var textSourceControl = CreateSpecificOrUpstreamValueChooser(label, controlName, upstreamSourceLabel,
-                filterByTag, addRequestConfigEvent);
+            var textSourceControl = CreateSpecificOrUpstreamValueChooser(
+                label,
+                controlName,
+                upstreamSourceLabel,
+                filterByTag,
+                addRequestConfigEvent,
+                requestUpstream
+            );
             textSourceControl.Required = required;
 
             AddControl(storage, textSourceControl);
@@ -639,15 +652,27 @@ namespace TerminalBase.BaseClasses
         /// Adds Text Source for the DTO type. 
         /// </summary>
         /// <remarks>The (T), DTO's Proerty Names will be used to name and label the new Text Source Controls</remarks>
-        protected void AddTextSourceControlForDTO<T>(ICrateStorage storage, string upstreamSourceLabel,
-                                                     string filterByTag = "",
-                                                     bool addRequestConfigEvent = false, bool required = false)
+        protected void AddTextSourceControlForDTO<T>(
+            ICrateStorage storage,
+            string upstreamSourceLabel,
+            string filterByTag = "",
+            bool addRequestConfigEvent = false,
+            bool required = false,
+            bool requestUpstream = false)
         {
             typeof(T).GetProperties()
                 .Where(property => !property.Name.Equals("Id")).ToList().ForEach(property =>
                 {
-                    AddTextSourceControl(storage, property.Name, property.Name, upstreamSourceLabel, filterByTag,
-                        addRequestConfigEvent, required);
+                    AddTextSourceControl(
+                        storage,
+                        property.Name,
+                        property.Name,
+                        upstreamSourceLabel,
+                        filterByTag,
+                        addRequestConfigEvent,
+                        required,
+                        requestUpstream
+                    );
                 });
         }
 

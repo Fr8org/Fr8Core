@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Configuration;
-using System.Linq;
-using System.Threading;
-using NUnit.Core;
-using HealthMonitor.Configuration;
-using System.Configuration;
-using System.Diagnostics;
-using System.IO;
 using System.Data.SqlClient;
+using System.Linq;
+using NUnit.Core;
 
 namespace HealthMonitor
 {
@@ -26,8 +21,7 @@ namespace HealthMonitor
             var overrideDbName = string.Empty;
             var connectionString = string.Empty;
             var csName = string.Empty;
-
-            Debug.AutoFlush = true;
+            var skipLocal = false;
 
             if (args != null)
             {
@@ -52,6 +46,10 @@ namespace HealthMonitor
                     else if (args[i] == "--self-hosting")
                     {
                         selfHosting = true;
+                    }
+                    else if (args[i] == "--skip-local")
+                    {
+                        skipLocal = true;
                     }
                     else if (i > 0 && args[i - 1] == "--test" && args[i] != null)
                     {
@@ -115,7 +113,14 @@ namespace HealthMonitor
 
             try
             {
-                errorCount = new Program().Run(ensureTerminalsStartup, sendEmailReport, appName, specificTest, appInsightsInstrumentationKey);
+                errorCount = new Program().Run(
+                    ensureTerminalsStartup,
+                    sendEmailReport,
+                    appName,
+                    specificTest,
+                    skipLocal,
+                    appInsightsInstrumentationKey
+                );
             }
             catch (Exception)
             {
@@ -186,6 +191,7 @@ namespace HealthMonitor
             bool sendEmailReport,
             string appName,
             string test,
+            bool skipLocal,
             string appInsightsInstrumentationKey)
         {
             CoreExtensions.Host.InitializeService();
@@ -196,7 +202,7 @@ namespace HealthMonitor
             }
 
             var testRunner = new NUnitTestRunner(appInsightsInstrumentationKey);
-            var report = testRunner.Run(test);
+            var report = testRunner.Run(test, skipLocal);
 
             if (sendEmailReport)
             {

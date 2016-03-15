@@ -109,6 +109,10 @@ namespace Data.Interfaces.Manifests
             Controls.AddRange(controls);
         }
 
+        public StandardConfigurationControlsCM(params ControlDefinitionDTO[] controls) : this(controls as IEnumerable<ControlDefinitionDTO>)
+        {
+        }
+
         // Find control by its name. Note, that this methods is no recursive
         public ControlDefinitionDTO FindByName(string name)
         {
