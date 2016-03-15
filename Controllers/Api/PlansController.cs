@@ -362,18 +362,18 @@ namespace HubWeb.Controllers
 
             //RUN
             CrateDTO curCrateDto;
-            Crate curCrate = null;
+            Crate curPayload = null;
 
             if (model != null)
             {
                 try
                 {
                     curCrateDto = JsonConvert.DeserializeObject<CrateDTO>(model.Payload);
-                    curCrate = _crate.FromDto(curCrateDto);
+                    curPayload = _crate.FromDto(curCrateDto);
                 }
                 catch (Exception ex)
                 {
-                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, "You payload is invalid. Make sure that it represents a valid crate object JSON.");
+                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, "Your payload is invalid. Make sure that it represents a valid crate object JSON.");
 
                     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
@@ -395,7 +395,7 @@ namespace HubWeb.Controllers
                         _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS,
                             string.Format("Launching a new Container for Plan \"{0}\"", planDO.Name));
 
-                        var containerDO = await _plan.Run(planDO, curCrate);
+                        var containerDO = await _plan.Run(planDO, curPayload);
                         if (!planDO.IsOngoingPlan())
                         {
                             var deactivateDTO = await _plan.Deactivate(planId);
@@ -430,17 +430,16 @@ namespace HubWeb.Controllers
                     currentPlanType = planDO.IsOngoingPlan() ? PlanType.Ongoing.ToString() : PlanType.RunOnce.ToString();
                     return BadRequest(currentPlanType);
                 }
-                catch (ErrorResponseException exception)
+                catch (ErrorResponseException ex)
                 {
-                    //this response contains details about the error that happened on some terminal and need to be shown to client
-                    exception.ContainerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? PlanType.Ongoing : PlanType.RunOnce;
-                    return Ok(exception.ContainerDTO);
+                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, $"Plan \"{planDO.Name}\" failed");
+                    ex.ContainerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? PlanType.Ongoing : PlanType.RunOnce;
+                    throw;
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    string message = String.Format("Plan \"{0}\" failed", planDO.Name);
-
-                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, message);
+                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, $"Plan \"{planDO.Name}\" failed");
+                    throw;
                 }
                 finally
                 {

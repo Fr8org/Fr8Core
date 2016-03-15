@@ -72,7 +72,7 @@ namespace HubWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var activityTemplate = _activityTemplate.GetQuery().FirstOrDefault(at => at.Name == solutionName);
-                
+
                 if (activityTemplate == null)
                 {
                     throw new ArgumentException(String.Format("actionTemplate (solution) name {0} is not found in the database.", solutionName));
@@ -166,26 +166,26 @@ namespace HubWeb.Controllers
                 return Ok(resultActionDTO);
             }
         }
-[HttpPost]
-[AllowAnonymous]
-public async Task<IHttpActionResult> Documentation([FromBody] ActivityDTO curActivityDTO)
-{
-    var curDocSupport = curActivityDTO.Documentation;
-    //check if the DocumentationSupport comma separated string has the correct form
-    if (!ValidateDocumentationSupport(curDocSupport))
-        return BadRequest();
-    if (curDocSupport.Contains("MainPage"))
-    {
-        var solutionPageDTO = await _activity.GetActivityDocumentation<SolutionPageDTO>(curActivityDTO, true);
-        return Ok(solutionPageDTO);
-    }
-    if (curDocSupport.Contains("HelpMenu"))
-    {
-        var activityRepsonceDTO = await _activity.GetActivityDocumentation<ActivityResponseDTO>(curActivityDTO);
-        return Ok(activityRepsonceDTO);
-    }
-    return BadRequest();
-}
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IHttpActionResult> Documentation([FromBody] ActivityDTO curActivityDTO)
+        {
+            var curDocSupport = curActivityDTO.Documentation;
+            //check if the DocumentationSupport comma separated string has the correct form
+            if (!ValidateDocumentationSupport(curDocSupport))
+                return BadRequest();
+            if (curDocSupport.Contains("MainPage"))
+            {
+                var solutionPageDTO = await _activity.GetActivityDocumentation<SolutionPageDTO>(curActivityDTO, true);
+                return Ok(solutionPageDTO);
+            }
+            if (curDocSupport.Contains("HelpMenu"))
+            {
+                var activityRepsonceDTO = await _activity.GetActivityDocumentation<ActivityResponseDTO>(curActivityDTO);
+                return Ok(activityRepsonceDTO);
+            }
+            return BadRequest();
+        }
         private bool ValidateDocumentationSupport(string docSupport)
         {
             var curStringArray = docSupport.Split(',');
@@ -198,28 +198,19 @@ public async Task<IHttpActionResult> Documentation([FromBody] ActivityDTO curAct
 
         [HttpGet]
         [AllowAnonymous]
+        public IHttpActionResult GetTerminalSolutionList(string terminalName)
+        {
+            var solutionNameList = _activity.GetSolutionList(terminalName);
+            return Json(solutionNameList);
+        }
+        [HttpGet]
+        [AllowAnonymous]
         public IHttpActionResult GetDocuSignSolutionList()
         {
             var terminalName = "terminalDocuSign";
             var solutionNameList = _activity.GetSolutionList(terminalName);
             return Json(solutionNameList);
         }
-        //        /// <summary>
-        //        /// POST : updates the given action
-        //        /// </summary>
-        //        [HttpPost]
-        //        [Route("update")]
-        //        public IHttpActionResult Update(ActionDTO curActionDTO)
-        //        {
-        //            ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);
-        //
-        //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //            {
-        //                await _action.SaveUpdateAndConfigure(uow, submittedActionDO);
-        //            }
-        //
-        //            return Ok();
-        //        }      
-	}
+    }
 
 }

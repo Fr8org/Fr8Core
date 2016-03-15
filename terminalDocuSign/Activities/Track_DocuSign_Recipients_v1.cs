@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Constants;
 using Data.Interfaces;
 using Newtonsoft.Json;
 using Data.Control;
@@ -16,10 +13,7 @@ using Hub.Managers;
 using StructureMap;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services;
-using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using terminalDocuSign.Infrastructure;
-using AutoMapper;
 using Data.States;
 using Data.Repositories.MultiTenant;
 
@@ -456,9 +450,9 @@ namespace terminalDocuSign.Actions
             return availableHandlersCrate;
         }
 
+        protected override string ActivityUserFriendlyName => SolutionName;
 
-
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        protected internal override async Task<PayloadDTO> RunInternal(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payload = await GetPayload(curActivityDO, containerId);
 

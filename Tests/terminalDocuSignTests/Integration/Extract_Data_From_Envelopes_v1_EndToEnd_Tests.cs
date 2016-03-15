@@ -45,7 +45,7 @@ namespace terminalDocuSignTests.Integration
             //
             _solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure?id=" + solution.Id, solution);
             _crateStorage = Crate.FromDto(_solution.CrateStorage);
-            await ResolveAuth(_solution, _crateStorage);
+            var authTokenId = await ResolveAuth(_solution, _crateStorage);
 
             //
             // Send configuration request with authentication token
@@ -74,8 +74,27 @@ namespace terminalDocuSignTests.Integration
             Assert.True(_solution.ChildrenActivities.Any(a => a.Label == "Monitor DocuSign Envelope Activity" && a.Ordering == 1));
             Assert.True(_solution.ChildrenActivities.Any(a => a.Label == "Send DocuSign Envelope" && a.Ordering == 2));
 
+
+            var monitorDocuSignEnvelopeActivity = _solution.ChildrenActivities
+                .Single(x => x.Label == "Monitor DocuSign Envelope Activity");
+
             //
-            //Rename route
+            // Apply auth-token to child MonitorDocuSignEvnelope activity.
+            //
+            var applyToken = new ManageAuthToken_Apply()
+            {
+                ActivityId = monitorDocuSignEnvelopeActivity.Id,
+                AuthTokenId = authTokenId,
+                IsMain = true
+            };
+
+            await HttpPostAsync<ManageAuthToken_Apply[], string>(
+                _baseUrl + "ManageAuthToken/apply",
+                new ManageAuthToken_Apply[] { applyToken }
+            );
+            
+            //
+            // Rename route
             //
             var newName = plan.Name + " | " + DateTime.UtcNow.ToShortDateString() + " " +
                 DateTime.UtcNow.ToShortTimeString();
@@ -90,7 +109,7 @@ namespace terminalDocuSignTests.Integration
                  
             controlsCrate = _crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
             
-            var checkbox = (CheckBox)controlsCrate.Content.Controls.Single(c => c.Type == ControlTypes.CheckBox && c.Name == "Event_Envelope_Sent");
+            var checkbox = (CheckBox)controlsCrate.Content.Controls.Single(c => c.Type == ControlTypes.CheckBox && c.Name == "EnvelopeSent");
             checkbox.Selected = true;
 
             var radioButtonGroup = (RadioButtonGroup)controlsCrate.Content.Controls.Single(c => c.Type == ControlTypes.RadioButtonGroup && c.Name == "TemplateRecipientPicker");
@@ -241,10 +260,13 @@ namespace terminalDocuSignTests.Integration
 
         }
 
-        private async Task ResolveAuth(ActivityDTO solution, ICrateStorage crateStorage)
+        private async Task<Guid> ResolveAuth(ActivityDTO solution, ICrateStorage crateStorage)
         {
-            var stAuthCrate = crateStorage.CratesOfType<StandardAuthenticationCM>().FirstOrDefault();
-            var defaultDocuSignAuthTokenExists = stAuthCrate == null;
+            var stAuthCrate = crateStorage
+                .CratesOfType<StandardAuthenticationCM>()
+                .FirstOrDefault();
+
+            var defaultDocuSignAuthTokenExists = stAuthCrate != null;
             if (!defaultDocuSignAuthTokenExists)
             {
                 //
@@ -257,8 +279,16 @@ namespace terminalDocuSignTests.Integration
                     IsDemoAccount = true,
                     TerminalId = solution.ActivityTemplate.TerminalId
                 };
-                var token = await HttpPostAsync<CredentialsDTO, JObject>(_baseUrl + "authentication/token", creds);
-                Assert.AreEqual(false, String.IsNullOrEmpty(token["authTokenId"].Value<string>()), "AuthTokenId is missing in API response.");
+                var token = await HttpPostAsync<CredentialsDTO, JObject>(
+                    _baseUrl + "authentication/token",
+                    creds
+                );
+                Assert.AreEqual(
+                    false,
+                    string.IsNullOrEmpty(token["authTokenId"].Value<string>()),
+                    "AuthTokenId is missing in API response."
+                );
+
                 Guid tokenGuid = Guid.Parse(token["authTokenId"].Value<string>());
 
                 //
@@ -270,7 +300,32 @@ namespace terminalDocuSignTests.Integration
                     AuthTokenId = tokenGuid,
                     IsMain = true
                 };
-                await HttpPostAsync<ManageAuthToken_Apply[], string>(_baseUrl + "ManageAuthToken/apply", new ManageAuthToken_Apply[] { applyToken });
+
+                await HttpPostAsync<ManageAuthToken_Apply[], string>(
+                    _baseUrl + "ManageAuthToken/apply",
+                    new ManageAuthToken_Apply[] { applyToken }
+                );
+
+                return tokenGuid;
+            }
+            else
+            {
+                var terminalsAndTokens =
+                    await HttpGetAsync<ManageAuthToken_Terminal[]>(
+                        _baseUrl + "manageauthtoken/"
+                    );
+
+                var terminalDocuSign = terminalsAndTokens.Single(x => x.Name == "terminalDocuSign");
+
+                var token = terminalDocuSign.AuthTokens.FirstOrDefault(x => x.IsMain);
+                if (token == null)
+                {
+                    token = terminalDocuSign.AuthTokens.FirstOrDefault();
+                }
+
+                Assert.NotNull(token);
+
+                return token.Id;
             }
         }
     }
