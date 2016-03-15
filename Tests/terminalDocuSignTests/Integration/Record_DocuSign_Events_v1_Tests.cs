@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -50,7 +51,7 @@ namespace terminalDocuSignTests.Integration
         {
             Assert.IsNotNull(control.Subscriptions);
             Assert.IsTrue(control.Subscriptions.Count > 0);
-        }        
+        }
 
         /// <summary>
         /// Validate correct crate-storage structure in initial configuration response.
@@ -107,7 +108,7 @@ namespace terminalDocuSignTests.Integration
         public async Task Record_DocuSign_Events_Run_NoAuth()
         {
             var runUrl = GetTerminalRunUrl();
-            
+
             var dataDTO = HealthMonitor_FixtureData.Record_Docusign_v1_InitialConfiguration_Fr8DataDTO(this);
             dataDTO.ActivityDTO.AuthToken = null;
             AddOperationalStateCrate(dataDTO, new OperationalStateCM());
@@ -125,12 +126,12 @@ namespace terminalDocuSignTests.Integration
 
             var dataDTO = HealthMonitor_FixtureData.Record_Docusign_v1_InitialConfiguration_Fr8DataDTO(this);
 
-            var date = DateTime.Now.ToShortDateString();
+            var date = DateTime.Now.ToString(DateTimeFormatInfo.InvariantInfo.ShortDatePattern);
             var envelopeId = Guid.NewGuid().ToString();
             var accountId = "foo@bar.com";
             var eventId = Guid.NewGuid().ToString();
             var recipientId = Guid.NewGuid().ToString();
-            
+
             AddPayloadCrate(
                dataDTO,
                new EventReportCM()
@@ -161,7 +162,7 @@ namespace terminalDocuSignTests.Integration
 
             var responsePayloadDTO =
                 await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
-            
+
             var crateStorage = Crate.GetStorage(responsePayloadDTO);
             Assert.AreEqual(1, crateStorage.CrateContentsOfType<DocuSignEnvelopeCM>(x => x.Label == "DocuSign Envelope").Count());
             Assert.AreEqual(1, crateStorage.CrateContentsOfType<DocuSignEventCM>(x => x.Label == "DocuSign Event").Count());

@@ -215,7 +215,7 @@ namespace terminalDocuSign.Services.New_Api
             }
 
             envelopesApi.UpdateRecipients(loginInfo.AccountId, envelopeSummary.EnvelopeId, recepients);
-            
+
             envelopesApi.Update(loginInfo.AccountId, envelopeSummary.EnvelopeId, new Envelope() { Status = "sent" });
         }
 
@@ -257,8 +257,9 @@ namespace terminalDocuSign.Services.New_Api
                 recipients.Signers.ForEach(
                     a =>
                     {
-                        result.Add(new FieldDTO(a.RoleName + " role name", a.Name) { Tags = "DocuSigner, recipientId:" + a.RecipientId });
-                        result.Add(new FieldDTO(a.RoleName + " role email", a.Email) { Tags = "DocuSigner, recipientId:" + a.RecipientId });
+                        //use RoleName. If unavailable use a Name. If unavaible use email
+                        result.Add(new FieldDTO((a.RoleName ?? a.Name ?? a.Email) + " role name", a.Name) { Tags = "DocuSigner, recipientId:" + a.RecipientId });
+                        result.Add(new FieldDTO((a.RoleName ?? a.Name ?? a.Email) + " role email", a.Email) { Tags = "DocuSigner, recipientId:" + a.RecipientId });
                     });
             return result;
         }
