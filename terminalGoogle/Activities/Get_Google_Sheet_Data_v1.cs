@@ -203,6 +203,7 @@ namespace terminalGoogle.Actions
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Replace(AssembleCrateStorage(configurationControlsCrate));
+                crateStorage.Add(GetAvailableRunTimeTableCrate("--"));
             }
 
             return Task.FromResult(curActivityDO);
@@ -226,6 +227,19 @@ namespace terminalGoogle.Actions
             return ConfigurationRequestType.Initial;
         }
 
+        private Crate GetAvailableRunTimeTableCrate(string descriptionLabel)
+        {
+            var availableRunTimeCrates = Crate.FromContent("Available Run Time Crates", new CrateDescriptionCM(
+                    new CrateDescriptionDTO
+                    {
+                        ManifestType = MT.StandardTableData.GetEnumDisplayName(),
+                        Label = descriptionLabel,
+                        ManifestId = (int)MT.StandardTableData,
+                        ProducedBy = "Get_Google_Sheet_Data_v1"
+                    }), AvailabilityType.RunTime);
+            return availableRunTimeCrates;
+        }
+
         //if the user provides a file name, this action attempts to load the excel file and extracts the column headers from the first sheet in the file.
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
@@ -245,15 +259,7 @@ namespace terminalGoogle.Actions
                 crateStorage.Add(configControlsCrate);
                 //Inform donwstream Activities about the availability of the Run Time crates
                 crateStorage.RemoveByLabelPrefix("Available Run Time Crates");
-                var availableRunTimeCrates = Crate.FromContent("Available Run Time Crates", new CrateDescriptionCM(
-                    new CrateDescriptionDTO
-                    {
-                        ManifestType = MT.StandardTableData.GetEnumDisplayName(),
-                        Label = TableCrateLabelPrefix + selectedSpreadsheetName,
-                        ManifestId = (int)MT.StandardTableData,
-                        ProducedBy = "Get_Google_Sheet_Data_v1"
-                    }), AvailabilityType.RunTime);
-                crateStorage.Add(availableRunTimeCrates);
+                crateStorage.Add(GetAvailableRunTimeTableCrate(TableCrateLabelPrefix + selectedSpreadsheetName));
             }
 
             if (!string.IsNullOrEmpty(spreadsheetsFromUserSelection))
