@@ -112,7 +112,7 @@ namespace terminalSalesforce.Actions
             string curSelectedSalesForceObject =
                 ((DropDownList)GetControl(curActivityDO, "WhatKindOfData", ControlTypes.DropDownList)).selectedKey;
 
-            var curSalesforceObjectFields = CrateManager.GetStorage(curActivityDO)
+            var curSalesforceObjectFields = CrateManager.GetStorage( curActivityDO )
                                                          .CratesOfType<StandardQueryFieldsCM>()
                                                          .Single(c => c.Label.Equals("Queryable Criteria"))
                                                          .Content.Fields.Select(f => f.Name);
