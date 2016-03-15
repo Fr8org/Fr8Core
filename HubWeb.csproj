@@ -598,6 +598,9 @@
     <Content Include="Content\img\select-info.png" />
     <Content Include="Content\img\site\alex-photo.png" />
     <Content Include="Content\img\site\arrow_blue_ic_arrow_forward_48px-512.png" />
+    <Content Include="Content\img\site\arrow_deep_blue_ic_arrow_forward_48px-512.png" />
+    <Content Include="Content\img\site\arrow_red_ic_arrow_forward_48px-512.png" />
+    <Content Include="Content\img\site\arrow_yellow_ic_arrow_forward_48px-512.png" />
     <Content Include="Content\img\site\browser-header.jpg" />
     <Content Include="Content\img\site\docusign-dashboard-example.png" />
     <Content Include="Content\img\site\docusign-workflow-example-1.png" />

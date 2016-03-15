@@ -141,8 +141,11 @@ module dockyard.directives.containerTransition {
                     target.TransitionType = $scope.field.transitions[i].transition;
                     target.Target = '';
                     var dd = <model.DropDownList>(<any>$scope.field.transitions[i])._dummyOperationDD;
-                    if (dd) {
-                        target.Target = dd.selectedKey;
+                    
+                    target.Target = dd.selectedKey;
+                    var dd2 = <model.DropDownList>(<any>$scope.field.transitions[i])._dummySecondaryOperationDD;
+                    if (dd2 && dd2.selectedKey && dd2.selectedKey.length > 0) {
+                        target.Target += ': ' + dd2.selectedKey;
                     }
 
                     targets.push(target);
@@ -189,6 +192,7 @@ module dockyard.directives.containerTransition {
             };
             $scope.removeTransition = (index: number) => {
                 $scope.field.transitions.splice(index, 1);
+                triggerChange();
             };
 
             //let's add initial transition

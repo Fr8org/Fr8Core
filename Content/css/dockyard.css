@@ -177,6 +177,43 @@
     width: 50px;
 }
 
+.action-arrow-right-0 {
+    background-image: url('/Content/img/site/arrow_yellow_ic_arrow_forward_48px-512.png');
+    background-size: contain;
+    display: inline-block;
+    height: 50px;
+    width: 100px;
+    float: left;
+}
+
+.action-arrow-right-2 {
+    background-image: url('/Content/img/site/arrow_deep_blue_ic_arrow_forward_48px-512.png');
+    background-size: contain;
+    display: inline-block;
+    height: 50px;
+    width: 100px;
+    float: left;
+}
+
+.action-arrow-right-3 {
+    background-image: url('/Content/img/site/arrow_red_ic_arrow_forward_48px-512.png');
+    background-size: contain;
+    display: inline-block;
+    height: 50px;
+    width: 100px;
+    float: left;
+}
+
+.action-arrow-right-5 {
+    background-image: url('/Content/img/site/arrow_blue_ic_arrow_forward_48px-512.png');
+    background-size: contain;
+    display: inline-block;
+    height: 50px;
+    width: 100px;
+    float: left;
+}
+
+
 .action-arrow-bottom {
     background-color: #58B8A9;
     position: absolute;
