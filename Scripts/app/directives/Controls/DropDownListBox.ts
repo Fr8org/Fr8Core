@@ -3,6 +3,12 @@
 module dockyard.directives.dropDownListBox {
     'use strict';
 
+    import pca = dockyard.directives.paneConfigureAction;
+
+    export enum MessageType {
+        DropDownListBox_NoRecords
+    }
+
     export interface IDropDownListBoxScope extends ng.IScope {
         field: model.DropDownList;
         currentAction: model.ActivityDTO;
@@ -16,16 +22,13 @@ module dockyard.directives.dropDownListBox {
     }
 
     export function DropDownListBox(): ng.IDirective {
-        var controller = ['$scope', 'UpstreamExtractor','UIHelperService',
+        var controller = ['$scope', 'UpstreamExtractor',
             function (
                 $scope: IDropDownListBoxScope,
-                UpstreamExtractor: services.UpstreamExtractor,
-                uiHelperService: services.IUIHelperService
+                UpstreamExtractor: services.UpstreamExtractor
             ) {
 
-                var alertMessage = new model.AlertDTO();
-                alertMessage.title = "Notification";
-                alertMessage.body = 'There are no upstream fields available right now. To learn more,<a href= "/documentation/UpstreamCrates.html" target= "_blank" > click here </a><i class="fa fa-question-circle" > </i>';
+               
 
                 $scope.setSelectedItem = (item: model.FieldDTO) => {
                     $scope.field.value = item.value || (<any>item).Value;
@@ -94,18 +97,14 @@ module dockyard.directives.dropDownListBox {
                                 $select.open = !$scope.toggle;
                                 $scope.toggle = !$scope.toggle;
 
-                                if ($scope.field.type == "TextSource" && $scope.field.listItems.length === 0) {
-                                    uiHelperService.openConfirmationModal(alertMessage);
-                                }
+                                triggerNoRecords();
+
                             });
                     }
                     else {
                         $select.open = !$scope.toggle;
                         $scope.toggle = !$scope.toggle;
-
-                        if ($scope.field.type == "TextSource" && $scope.field.listItems.length === 0) {
-                            uiHelperService.openConfirmationModal(alertMessage);
-                        }
+                        triggerNoRecords();
                     }
                 }
 
@@ -113,6 +112,12 @@ module dockyard.directives.dropDownListBox {
                     focusElem.focusout(() => {
                         $scope.toggle = false;
                     });
+                }
+
+                var triggerNoRecords = () => {
+                    if ($scope.field.listItems.length === 0) {
+                        $scope.$emit(MessageType[MessageType.DropDownListBox_NoRecords], new AlertEventArgs());
+                    }
                 }
 
                 var findAndSetSelectedItem = () => {
