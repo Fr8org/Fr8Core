@@ -6,6 +6,7 @@ module dockyard.services {
         placeActions(actionGroups, startingId): model.ActionGroup[];
         setSiblingStatus(action: model.ActivityDTO, allowSiblings: boolean): void;
         setJumpTargets(action: model.ActivityDTO, targets: Array<model.ActivityJumpTarget>): void;
+        resetLayout(): void;
     }
 
     export class LayoutService implements ILayoutService {
@@ -15,7 +16,7 @@ module dockyard.services {
         public ARROW_WIDTH = 16;
         public ADD_ACTION_BUTTON_WIDTH = 150;
 
-        public processedGroups: model.ActionGroup[] = [];
+        public subplans: Array<Array<model.ActionGroup>> = [];
 
         constructor(private CrateHelper: services.CrateHelper) {
         }
@@ -26,12 +27,12 @@ module dockyard.services {
         }
 
         resetLayout() {
-            this.processedGroups = [];
+            this.subplans = [];
         }
 
         placeActions(actions: model.ActivityDTO[], parentId: string): model.ActionGroup[] {
 
-            this.resetLayout();
+            var processedGroups: model.ActionGroup[] = [];
 
             var actionGroups = _.toArray<model.ActivityDTO[]>(
                 _.groupBy<model.ActivityDTO>(actions, (action) => action.parentRouteNodeId)
@@ -39,12 +40,12 @@ module dockyard.services {
 
             if (actions.length) {
                 var startingGroup = this.findChildGroup(actionGroups, parentId);
-                this.processGroup(actionGroups, new model.ActionGroup(startingGroup, null, parentId), this.processedGroups);
+                this.processGroup(actionGroups, new model.ActionGroup(startingGroup, null, parentId), processedGroups);
             } else {
-                this.processedGroups.push(new model.ActionGroup([], null, parentId));
+                processedGroups.push(new model.ActionGroup([], null, parentId));
             }
-
-            return this.processedGroups;
+            this.subplans.push(processedGroups);
+            return processedGroups;
         }
 
         recalculateTop(actionGroups: model.ActionGroup[]) {
@@ -152,13 +153,17 @@ module dockyard.services {
         }
 
         private findEnvelope(activityId: string): model.ActivityEnvelope {
-            for (var i = 0; i < this.processedGroups.length; i++) {
-                for (var j = 0; j < this.processedGroups[i].envelopes.length; j++) {
-                    if (this.processedGroups[i].envelopes[j].activity.id === activityId) {
-                        return this.processedGroups[i].envelopes[j];
+            for (var k = 0; k < this.subplans.length; k++) {
+                var pGroup = this.subplans[k];
+                for (var i = 0; i < pGroup.length; i++) {
+                    for (var j = 0; j < pGroup[i].envelopes.length; j++) {
+                        if (pGroup[i].envelopes[j].activity.id === activityId) {
+                            return pGroup[i].envelopes[j];
+                        }
                     }
                 }
             }
+            
 
             return null;
         }

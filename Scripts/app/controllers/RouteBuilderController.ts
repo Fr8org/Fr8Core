@@ -94,6 +94,7 @@ module dockyard.controllers {
             private SubPlanService: services.ISubPlanService
             ) {
 
+            this.LayoutService.resetLayout();
             this.$scope.current = new model.RouteBuilderState();
             this.$scope.actionGroups = [];
 
@@ -420,6 +421,9 @@ module dockyard.controllers {
         }
 
         private renderRoute(curRoute: interfaces.IRouteVM) {
+
+            this.LayoutService.resetLayout();
+
             if (curRoute.subroutes.length == 0) return;
             
             this.$scope.processedSubRoutes = [];
