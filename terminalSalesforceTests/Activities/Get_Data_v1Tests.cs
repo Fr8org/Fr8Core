@@ -97,7 +97,7 @@ namespace terminalSalesforceTests.Actions
 
             //Assert
             var stroage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(activityDO);
-            Assert.AreEqual(4, stroage.Count, "Number of configuration crates not populated correctly");
+            Assert.AreEqual(3, stroage.Count, "Number of configuration crates not populated correctly");
 
             Assert.AreEqual(stroage.CratesOfType<StandardQueryFieldsCM>()
                     .Single(c => c.Label.Equals("Queryable Criteria"))
