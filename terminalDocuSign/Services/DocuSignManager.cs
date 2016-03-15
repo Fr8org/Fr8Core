@@ -23,47 +23,7 @@ using terminalDocuSign.Interfaces;
 
 namespace terminalDocuSign.Services
 {
-    public class DocusignQuery
-    {
-        public static readonly FieldDTO[] Statuses =
-        {
-            new FieldDTO("Any status", "<any>"),
-            new FieldDTO("Sent", "sent"),
-            new FieldDTO("Delivered", "delivered"),
-            new FieldDTO("Signed", "signed"),
-            new FieldDTO("Completed", "completed"),
-            new FieldDTO("Declined", "declined"),
-            new FieldDTO("Voided", "voided"),
-            new FieldDTO("Timed Out", "timedout"),
-            new FieldDTO("Authoritative Copy", "authoritativecopy"),
-            new FieldDTO("Transfer Completed", "transfercompleted"),
-            new FieldDTO("Template", "template"),
-            new FieldDTO("Correct", "correct"),
-            new FieldDTO("Created", "created"),
-            new FieldDTO("Delivered", "delivered"),
-            new FieldDTO("Signed", "signed"),
-            new FieldDTO("Declined", "declined"),
-            new FieldDTO("Completed", "completed"),
-            new FieldDTO("Fax Pending", "faxpending"),
-            new FieldDTO("Auto Responded", "autoresponded"),
-        };
-
-        public DocusignQuery()
-        {
-            Conditions = new List<FilterConditionDTO>();
-        }
-
-        public DateTime? FromDate;
-        public DateTime? ToDate;
-
-        public string SearchText;
-        public string Status;
-        public string Folder;
-
-        public List<FilterConditionDTO> Conditions { get; set; }
-    }
-
-    public class DocuSignManager
+    public class DocuSignManager : IDocuSignManager
     {
         protected ICrateManager Crate;
         private readonly IDocuSignFolder _docuSignFolder;
@@ -74,10 +34,7 @@ namespace terminalDocuSign.Services
             _docuSignFolder = ObjectFactory.GetInstance<IDocuSignFolder>();
         }
 
-        public static DropDownList CreateDocuSignTemplatePicker(
-            bool addOnChangeEvent,
-            string name = "Selected_DocuSign_Template",
-            string label = "Select DocuSign Template")
+        public DropDownList CreateDocuSignTemplatePicker(bool addOnChangeEvent, string name = "Selected_DocuSign_Template", string label = "Select DocuSign Template")
         {
             var control = new DropDownList()
             {
@@ -124,6 +81,10 @@ namespace terminalDocuSign.Services
             if (control != null)
             {
                 control.ListItems = GetDocuSignTemplates(authToken);
+                if (control.ListItems.Count == 0)
+                {
+                    control.ErrorMessage = "Please link at least one template to your DocuSign account";
+                }
             }
         }
 
