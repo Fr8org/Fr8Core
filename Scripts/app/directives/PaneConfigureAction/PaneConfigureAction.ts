@@ -141,12 +141,13 @@ module dockyard.directives.paneConfigureAction {
     }
 
     export interface IPaneConfigureActionController {
-        setJumpTargets: () => void;
+        setJumpTargets: (targets: Array<model.ActivityJumpTarget>) => void;
     }
 
-    //More detail on creating directives in TypeScript: 
-    //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
     export class PaneConfigureActionController implements IPaneConfigureActionController {
+
+        static $inject = ['$scope', 'ActionService', 'AuthService', 'ConfigureTrackerService', 'CrateHelper', '$filter',
+            '$timeout', '$modal', '$window', '$http', '$q', 'LayoutService'];
 
         private configLoadingError: boolean = false;
         private ignoreConfigurationChange: boolean = false;
@@ -161,17 +162,17 @@ module dockyard.directives.paneConfigureAction {
             
             $scope.collapsed = false;
 
-            $scope.$on("onChange", this.onControlChange);
-            $scope.$on("onClick", this.onClickEvent);
+            $scope.$on("onChange", <() => void>angular.bind(this, this.onControlChange));
+            $scope.$on("onClick", <() => void>angular.bind(this, this.onClickEvent));
 
             // These are exposed for unit testing.
-            $scope.onControlChange = this.onControlChange;
-            $scope.loadConfiguration = this.loadConfiguration;
-            $scope.reloadConfiguration = this.reloadConfiguration;
-            $scope.onConfigurationChanged = this.onConfigurationChanged;
-            $scope.processConfiguration = this.processConfiguration;
-            $scope.setSolutionMode = this.setSolutionMode;
-            $scope.populateAllActivities = this.populateAllActivities;
+            $scope.onControlChange = <() => void> angular.bind(this, this.onControlChange);
+            $scope.loadConfiguration = <() => void>angular.bind(this, this.loadConfiguration);
+            $scope.reloadConfiguration = <() => void>angular.bind(this, this.reloadConfiguration);
+            $scope.onConfigurationChanged = <() => void>angular.bind(this, this.onConfigurationChanged);
+            $scope.processConfiguration = <() => void>angular.bind(this, this.processConfiguration);
+            $scope.setSolutionMode = <() => void>angular.bind(this, this.setSolutionMode);
+            $scope.populateAllActivities = <() => void>angular.bind(this, this.populateAllActivities);
             $scope.allActivities = Array<model.ActivityDTO>();
 
             $scope.$on(MessageType[MessageType.PaneConfigureAction_Reconfigure], (event: ng.IAngularEvent, reConfigureActionEventArgs: ActionReconfigureEventArgs) => {
@@ -500,8 +501,9 @@ module dockyard.directives.paneConfigureAction {
                 return deferred.promise;
             };
 
-            public setJumpTargets() {
-
+            public setJumpTargets(targets: Array<model.ActivityJumpTarget>) {
+                this.LayoutService.setSiblingStatus(this.$scope.currentAction, false);
+                this.LayoutService.setJumpTargets(this.$scope.currentAction, targets);
             }
 
             private processConfiguration() {
@@ -564,14 +566,13 @@ module dockyard.directives.paneConfigureAction {
             private setSolutionMode() {
                 this.$scope.$emit(MessageType[MessageType.PaneConfigureAction_SetSolutionMode]);
             }
-        };
+        }
     }
     app.directive('paneConfigureAction', () => {
         return {
             restrict: 'E',
             templateUrl: '/AngularTemplate/PaneConfigureAction',
-            controller: ['$scope', 'ActionService', 'AuthService', 'ConfigureTrackerService', 'CrateHelper', '$filter',
-                '$timeout', '$modal', '$window', '$http', '$q', 'LayoutService', dockyard.directives.paneConfigureAction.PaneConfigureActionController],
+            controller: dockyard.directives.paneConfigureAction.PaneConfigureActionController,
             scope: {
                 currentAction: '=',
                 mode: '=',

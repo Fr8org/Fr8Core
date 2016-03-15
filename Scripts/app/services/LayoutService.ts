@@ -5,6 +5,7 @@ module dockyard.services {
     export interface ILayoutService {
         placeActions(actionGroups, startingId): model.ActionGroup[];
         setSiblingStatus(action: model.ActivityDTO, allowSiblings: boolean): void;
+        setJumpTargets(action: model.ActivityDTO, targets: Array<model.ActivityJumpTarget>): void;
     }
 
     export class LayoutService implements ILayoutService {
@@ -19,8 +20,19 @@ module dockyard.services {
         constructor(private CrateHelper: services.CrateHelper) {
         }
 
+        setJumpTargets(action: model.ActivityDTO, targets: Array<model.ActivityJumpTarget>) {
+            var env = this.findEnvelope(action.id);
+            env.jumpTargets = targets;
+        }
+
+        resetLayout() {
+            this.processedGroups = [];
+        }
+
         placeActions(actions: model.ActivityDTO[], parentId: string): model.ActionGroup[] {
-            
+
+            this.resetLayout();
+
             var actionGroups = _.toArray<model.ActivityDTO[]>(
                 _.groupBy<model.ActivityDTO>(actions, (action) => action.parentRouteNodeId)
             );

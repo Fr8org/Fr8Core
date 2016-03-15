@@ -1,5 +1,6 @@
 ﻿/// <reference path="../../_all.ts" />
 module dockyard.directives.containerTransition {
+    import ContainerTransitions = dockyard.model.ContainerTransitions;
     'use strict';
 
     interface IContainerTransitionScope extends ng.IScope {
@@ -15,21 +16,12 @@ module dockyard.directives.containerTransition {
         PCA: directives.paneConfigureAction.IPaneConfigureActionController;
     }
 
-    export class ContainerTransitions {
-        public static get JumpToActivity(): number { return 0; };
-        public static get JumpToPlan(): number { return 1; };
-        public static get JumpToSubplan(): number { return 2; };
-        public static get StopProcessing(): number { return 3; };
-        public static get SuspendProcessing(): number { return 4; };
-        public static get ProceedToNextActivity(): number { return 5; };        
-    }
-
     //More detail on creating directives in TypeScript: 
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
     export function ContainerTransition(): ng.IDirective {
 
         
-        var controller = ['$scope', '$element', '$attrs', ($scope: IContainerTransitionScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => {
+        var controller = ['$scope', '$timeout', ($scope: IContainerTransitionScope, $timeout: ng.ITimeoutService) => {
 
             var operationList = [
                 new model.DropDownListItem('Jump To Activity', ContainerTransitions.JumpToActivity.toString()),
@@ -40,11 +32,7 @@ module dockyard.directives.containerTransition {
                 new model.DropDownListItem('Proceed To Next Activity', ContainerTransitions.ProceedToNextActivity.toString())
             ];
 
-            var triggerChange = () => {
-                if ($scope.change != null && angular.isFunction($scope.change)) {
-                    $scope.change()($scope.field);
-                }
-            };
+            
 
             var findSubPlanById = (id: string) =>  {
                 for(var i = 0; i< $scope.route.subroutes.length; i++) {
@@ -146,6 +134,34 @@ module dockyard.directives.containerTransition {
             $scope.addTransition = () => {
                 $scope.field.transitions.push(new model.ContainerTransitionField());
             };
+            var buildJumpTargets = (): Array<model.ActivityJumpTarget> => {
+                var targets = new Array<model.ActivityJumpTarget>();
+                for (var i = 0; i < $scope.field.transitions.length; i++) {
+                    var target = new model.ActivityJumpTarget();
+                    target.TransitionType = $scope.field.transitions[i].transition;
+                    target.Target = '';
+                    var dd = <model.DropDownList>(<any>$scope.field.transitions[i])._dummyOperationDD;
+                    if (dd) {
+                        target.Target = dd.selectedKey;
+                    }
+
+                    targets.push(target);
+                }
+                return targets;
+            };
+
+            var informJumpTargets = () => {
+                var targets = buildJumpTargets();
+                $scope.PCA.setJumpTargets(targets);
+            };
+
+            var triggerChange = () => {
+                if ($scope.change != null && angular.isFunction($scope.change)) {
+                    $scope.change()($scope.field);
+                }
+
+                informJumpTargets();
+            };
 
             $scope.onTargetChange = (transition: model.ContainerTransitionField) => {
                 var dd = <model.DropDownList>(<any>transition)._dummySecondaryOperationDD;
@@ -179,15 +195,16 @@ module dockyard.directives.containerTransition {
             if ($scope.field.transitions.length < 1) {
                 $scope.addTransition();
             }
+
+            $timeout(informJumpTargets);
         }];
 
         return {
             restrict: 'E',
             templateUrl: '/AngularTemplate/ContainerTransition',
             require: '^paneConfigureAction',
-            link: (scope: IContainerTransitionScope, element, attrs, PCA) => {
+            link: (scope: IContainerTransitionScope, element, attrs, PCA: directives.paneConfigureAction.IPaneConfigureActionController) => {
                 scope.PCA = PCA;
-                debugger;
             },
             controller: controller,
             scope: {
