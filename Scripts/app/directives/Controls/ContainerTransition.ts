@@ -12,7 +12,7 @@ module dockyard.directives.containerTransition {
         change: () => (field: model.ControlDefinitionDTO) => void;
         currentAction: model.ActivityDTO;
         removeTransition: (index: number) => void;
-        PCA: directives.paneConfigureAction.PaneConfigureAction;
+        PCA: directives.paneConfigureAction.IPaneConfigureActionController;
     }
 
     export class ContainerTransitions {
@@ -181,7 +181,6 @@ module dockyard.directives.containerTransition {
             }
         }];
 
-        //The factory function returns Directive object as per Angular requirements
         return {
             restrict: 'E',
             templateUrl: '/AngularTemplate/ContainerTransition',
