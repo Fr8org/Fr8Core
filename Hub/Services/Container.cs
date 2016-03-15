@@ -222,7 +222,7 @@ namespace Hub.Services
             while (curContainerDO.CurrentRouteNodeId != null)
             {
                 var activityResponseDTO = await ProcessActivity(uow, curContainerDO, actionState);
-                
+
                 //extract ActivityResponse type from result
                 ActivityResponse activityResponse = ActivityResponse.Null;
                 if (activityResponseDTO != null)
@@ -255,7 +255,7 @@ namespace Hub.Services
                         curContainerDO.ContainerState = ContainerState.Completed;
                         EventManager.ProcessingTerminatedPerActivityResponse(curContainerDO, ActivityResponse.RequestTerminate);
 
-                        return;
+                    return;
 
                     case ActivityResponse.JumpToActivity:
                         actionState = ActivityState.InitialRun;
