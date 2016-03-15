@@ -46,7 +46,7 @@ namespace terminalSlack.Controllers
                 NeedsAuthentication = true,
                 Version = "1",
                 WebService = webService,
-                MinPaneWidth = 330
+                MinPaneWidth = 440
             };
 
             var publishToSlackAction = new ActivityTemplateDTO
