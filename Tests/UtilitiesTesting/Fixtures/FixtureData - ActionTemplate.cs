@@ -104,5 +104,30 @@ namespace UtilitiesTesting.Fixtures
 
             return curActivityDO;
         }
+        public static ActivityTemplateDO TestActivityTemplateDO3()
+        {
+            var curActivityDO = new ActivityTemplateDO
+            {
+                Id = 1,
+                Name = "Mail_Merge_Into_DocuSign",
+                Label = "Mail Merge Into DocuSign",
+                Terminal = TerminalSeven(),
+                Category = ActivityCategory.Solution,
+                Version = "1"
+            };
+            return curActivityDO;
+        }
+        public static ActivityTemplateDO TestActivityTemplateDO4()
+        {
+            var curActivityDO = new ActivityTemplateDO
+            {
+                Name = "Extract_Data_From_Envelopes",
+                Label = "Extract Data From Envelopes",
+                Terminal = TerminalSeven(),
+                Category = ActivityCategory.Solution,
+                Version = "1"
+            };
+            return curActivityDO;
+        }
     }
 }

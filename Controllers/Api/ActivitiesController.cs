@@ -203,14 +203,6 @@ namespace HubWeb.Controllers
             var solutionNameList = _activity.GetSolutionList(terminalName);
             return Json(solutionNameList);
         }
-        [HttpGet]
-        [AllowAnonymous]
-        public IHttpActionResult GetDocuSignSolutionList()
-        {
-            var terminalName = "terminalDocuSign";
-            var solutionNameList = _activity.GetSolutionList(terminalName);
-            return Json(solutionNameList);
-        }
     }
 
 }
