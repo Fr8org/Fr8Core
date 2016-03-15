@@ -31,7 +31,7 @@ namespace terminalFr8Core.Actions
         private const int SlowRunLimit = 250;
 #endif
 
-        private const int MinAllowedElapsedTimeInSeconds = 5;
+        private const int MinAllowedElapsedTimeInSeconds = 12;
 
         public override async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
@@ -50,10 +50,12 @@ namespace terminalFr8Core.Actions
                 var currentBranch = GetCurrentBranch(operationsCrate, curActivityDO.GetLoopId());
                 if (currentBranch == null)
                 {
-                    CreateBranch(curActivityDO.GetLoopId());
+                    currentBranch = CreateBranch(curActivityDO.GetLoopId());
+                    operationsCrate.Branches.Add(currentBranch);
                 }
 
                 currentBranch.Count += 1;
+                
                 if (currentBranch.Count >= SlowRunLimit)
                 {
                     return Error(curPayloadDTO, "This container hit a maximum loop count and was stopped because we're afraid it might be an infinite loop");
@@ -64,9 +66,11 @@ namespace terminalFr8Core.Actions
                     var diff = DateTime.UtcNow - currentBranch.LastBranchTime;
                     if (diff.TotalSeconds < MinAllowedElapsedTimeInSeconds)
                     {
-                        await Task.Delay(MinAllowedElapsedTimeInSeconds * 1000);
+                        await Task.Delay(10000);
                     }
                 }
+
+                currentBranch.LastBranchTime = DateTime.UtcNow;
             }
 
 
