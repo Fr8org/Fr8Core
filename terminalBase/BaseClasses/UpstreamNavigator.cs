@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Crates;
@@ -23,79 +22,59 @@ namespace TerminalBase.BaseClasses
             _hubCommunicator = hubCommunicator;
             _userId = userId;
         }
-        
-        public virtual async Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(CrateDirection direction)
+
+        public async Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(CrateDirection direction)
         {
             return await _hubCommunicator.GetCratesByDirection<TManifest>(_activity, direction, _userId);
         }
 
-        public virtual async Task<List<Crate>> GetCratesByDirection(CrateDirection direction)
+        public async Task<List<TManifest>> GetCratesManifestByDirection<TManifest>(CrateDirection direction)
+        {
+            return (await _hubCommunicator.GetCratesByDirection<TManifest>(_activity, direction, _userId)).Select(x => x.Content).ToList();
+        }
+
+        public async Task<List<Crate>> GetCratesByDirection(CrateDirection direction)
         {
             return await _hubCommunicator.GetCratesByDirection(_activity, direction, _userId);
         }
 
-        public virtual async Task<FieldDescriptionsCM> GetDesignTimeFields(CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet)
+        public async Task<FieldDescriptionsCM> GetFieldDescriptions(CrateDirection direction, AvailabilityType availability)
         {
-            var mergedFields = await _hubCommunicator.GetDesignTimeFieldsByDirection(_activity.Id, direction, availability, _userId);
-            return mergedFields;
+            return await _hubCommunicator.GetDesignTimeFieldsByDirection(_activity.Id, direction, availability, _userId);
         }
-        
-        public virtual async Task<List<CrateManifestType>> BuildUpstreamManifestList()
+
+        public async Task<Crate<FieldDescriptionsCM>> GetFieldDescriptionsCrate(string label, AvailabilityType availability)
+        {
+            var curUpstreamFields = await _hubCommunicator.GetDesignTimeFieldsByDirection(_activity.Id, CrateDirection.Upstream, availability, _userId);
+            return Crate<FieldDescriptionsCM>.FromContent(label, curUpstreamFields);
+        }
+
+        public async Task<List<CrateManifestType>> GetUpstreamManifestList()
         {
             var upstreamCrates = await GetCratesByDirection<Manifest>(CrateDirection.Upstream);
             return upstreamCrates.Where(x => !BaseTerminalActivity.ExcludedManifestTypes.Contains(x.ManifestType)).Select(f => f.ManifestType).Distinct().ToList();
         }
 
-        public virtual async Task<List<string>> BuildUpstreamCrateLabelList()
+        public async Task<Crate<FieldDescriptionsCM>> GetUpstreamManifestListCrate(string label = "AvailableUpstreamManifests")
+        {
+            var manifestList = await GetUpstreamManifestList();
+            var fields = manifestList.Select(f => new FieldDTO(f.Type, f.Id.ToString())).ToArray();
+
+            return Crate<FieldDescriptionsCM>.FromContent(label, new FieldDescriptionsCM(fields));
+        }
+
+        public async Task<List<string>> GetUpstreamCrateLabelList()
         {
             var curCrates = await this.GetCratesByDirection<Manifest>(CrateDirection.Upstream);
             return curCrates.Where(x => !BaseTerminalActivity.ExcludedManifestTypes.Contains(x.ManifestType)).Select(f => f.Label).Distinct().ToList();
         }
-
-        public virtual async Task<Crate<FieldDescriptionsCM>> GetUpstreamManifestListCrate()
+        
+        public async Task<Crate<FieldDescriptionsCM>> GetUpstreamCrateLabelListCrate(string label = "AvailableUpstreamLabels")
         {
-            var manifestList = await BuildUpstreamManifestList();
-            var fields = manifestList.Select(f => new FieldDTO(f.Type, f.Id.ToString())).ToArray();
-
-            return Crate<FieldDescriptionsCM>.FromContent("AvailableUpstreamManifests", new FieldDescriptionsCM {Fields = fields.ToList()});
-        }
-
-        public virtual async Task<Crate<FieldDescriptionsCM>> GetUpstreamCrateLabelListCrate()
-        {
-            var labelList = await BuildUpstreamCrateLabelList();
+            var labelList = await GetUpstreamCrateLabelList();
             var fields = labelList.Select(f => new FieldDTO(f, f)).ToArray();
 
-            return Crate<FieldDescriptionsCM>.FromContent("AvailableUpstreamLabels", new FieldDescriptionsCM { Fields = fields.ToList() });
-        }
-
-        protected virtual async Task<List<Crate<StandardFileDescriptionCM>>> GetUpstreamFileHandleCrates()
-        {
-            return await _hubCommunicator.GetCratesByDirection<StandardFileDescriptionCM>(_activity, CrateDirection.Upstream, _userId);
-        }
-
-        protected async Task<Crate<FieldDescriptionsCM>> MergeUpstreamFields(string label)
-        {
-            var curUpstreamFields = (await GetDesignTimeFields(CrateDirection.Upstream)).Fields.ToArray();
-            return Crate<FieldDescriptionsCM>.FromContent(label, new FieldDescriptionsCM {Fields = curUpstreamFields.ToList()});
-        }
-
-        /// <summary>
-        /// Creates a crate with available design-time fields.
-        /// </summary>
-        /// <param name="activityDO">ActionDO.</param>
-        /// <returns></returns>
-        protected async Task<Crate> CreateAvailableFieldsCrate(string crateLabel = "Upstream Terminal-Provided Fields",
-                                                               AvailabilityType availabilityTypeUpstream = AvailabilityType.RunTime,
-                                                               AvailabilityType availabilityTypeFieldsCrate = AvailabilityType.Configuration)
-        {
-            var curUpstreamFields = await _hubCommunicator.GetDesignTimeFieldsByDirection(_activity, CrateDirection.Upstream, availabilityTypeUpstream, _userId);
-
-            if (curUpstreamFields == null)
-            {
-                curUpstreamFields = new FieldDescriptionsCM();
-            }
-
-            return Crate<FieldDescriptionsCM>.FromContent(crateLabel, new FieldDescriptionsCM() { Fields = curUpstreamFields.Fields }, availabilityTypeFieldsCrate);
+            return Crate<FieldDescriptionsCM>.FromContent(label, new FieldDescriptionsCM (fields));
         }
     }
 }

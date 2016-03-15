@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data.Entity.Core.Mapping;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Constants;
@@ -8,12 +7,13 @@ using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.DataTransferObjects.Helpers;
 using Data.Interfaces.Manifests;
+using Data.States;
 using Hub.Managers;
 using TerminalBase.Infrastructure;
 
 namespace TerminalBase.BaseClasses
 {
-    public abstract partial class EnhancedTerminalAction<T> : BaseTerminalActivity
+    public abstract class EnhancedTerminalAction<T> : BaseTerminalActivity
        where T : StandardConfigurationControlsCM, new()
     {
         /**********************************************************************************/
@@ -54,7 +54,7 @@ namespace TerminalBase.BaseClasses
             }
         }
 
-        protected bool IsAuthenticationReqiured { get; set; }
+        protected bool IsAuthenticationReqiured { get; }
         protected ICrateStorage CurrentActivityStorage { get; private set; }
         protected ActivityDO CurrentActivity { get; private set; }
         protected AuthorizationTokenDO AuthorizationToken { get; private set; }
@@ -65,6 +65,13 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
         // Functions
+        /**********************************************************************************/
+
+        protected EnhancedTerminalAction(bool isAuthenticationRequired)
+        {
+            IsAuthenticationReqiured = isAuthenticationRequired;
+        }
+
         /**********************************************************************************/
 
         public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
@@ -132,9 +139,12 @@ namespace TerminalBase.BaseClasses
         {
             ConfigurationControls = CrateConfigurationControls();
             CurrentActivityStorage.Clear();
-            CurrentActivityStorage.Add(PackControls(ConfigurationControls));
+
+            CurrentActivityStorage.Add(Crate.FromContent(ConfigurationControlsLabel, ConfigurationControls, AvailabilityType.Configuration));
 
             await Initialize();
+
+            SyncConfControlsBack();
         }
 
         /**********************************************************************************/
@@ -274,14 +284,7 @@ namespace TerminalBase.BaseClasses
 
             return processPayload;
         }
-
-        /**********************************************************************************/
-
-        protected virtual Task<Crate> MergeUpstreamFields<TManifest>(string label)
-        {
-            return MergeUpstreamFields<TManifest>(CurrentActivity, label);
-        }
-
+        
         /**********************************************************************************/
 
         protected virtual T CrateConfigurationControls()
@@ -365,7 +368,8 @@ namespace TerminalBase.BaseClasses
         private void SyncConfControlsBack()
         {
             CurrentActivityStorage.Remove<StandardConfigurationControlsCM>();
-            CurrentActivityStorage.Add(PackControls(ConfigurationControls));
+            // we clone ConfigurationControls.Controls to remove possible custom properties from ActionUi from serialization
+            CurrentActivityStorage.Add(Crate.FromContent(ConfigurationControlsLabel, new StandardConfigurationControlsCM(ConfigurationControls.Controls), AvailabilityType.Configuration));
         }
 
         /**********************************************************************************/
