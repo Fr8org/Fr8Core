@@ -26,12 +26,7 @@ namespace HubTests.Integration
         {
             //Arrnage
             //create a new web service for integration test
-            using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                uow.WebServiceRepository.Add(FixtureData.BasicWebServiceDO());
-
-                uow.SaveChanges();
-            }
+            await CreateNewWebService();
 
             //Act
             string baseUrl = GetHubApiBaseUrl();
@@ -50,14 +45,7 @@ namespace HubTests.Integration
         [Test]
         public async Task Post_PostNewWebService_CheckDatabaseForTheNewWebService()
         {
-            //Arrange
-            var webServiceDTO = FixtureData.BasicWebServiceDTOWithoutId();
-
-            //Act
-            string baseUrl = GetHubApiBaseUrl();
-            var webServicesPostUrl = baseUrl + "WebServices/Post";
-
-            var newWebService = await HttpPostAsync<WebServiceDTO, WebServiceDTO>(webServicesPostUrl, webServiceDTO);
+            var newWebService = await CreateNewWebService();
 
             //Assert
             Assert.IsNotNull(newWebService, "The new Web Service is not posted to HubWeb");
@@ -98,6 +86,19 @@ namespace HubTests.Integration
 
                 uow.SaveChanges();
             }
+        }
+
+        private async Task<WebServiceDTO> CreateNewWebService()
+        {
+            var webServiceDTO = FixtureData.BasicWebServiceDTOWithoutId();
+
+            //Act
+            string baseUrl = GetHubApiBaseUrl();
+            var webServicesPostUrl = baseUrl + "WebServices/Post";
+
+            var newWebService = await HttpPostAsync<WebServiceDTO, WebServiceDTO>(webServicesPostUrl, webServiceDTO);
+
+            return newWebService;
         }
     }
 }
