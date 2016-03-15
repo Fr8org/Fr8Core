@@ -258,10 +258,10 @@ namespace Hub.Services
                     if (response != null && activityResponseDTO.TryParseResponseMessageDTO(out responseMessage))
                     {
                         if (responseMessage != null && !string.IsNullOrEmpty(responseMessage.Message))
-                    {
-                        break;
+                        {
+                            break;
+                        }
                     }
-                }
                 }
 
                 await ProcessCurrentActivityResponse(uow, curContainerDO, activityResponseDTO);

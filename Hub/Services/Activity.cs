@@ -479,7 +479,11 @@ namespace Hub.Services
             }
         }
        
-        private Task<TResult> CallTerminalActivityAsync<TResult>(IUnitOfWork uow, string activityName, ActivityDO curActivityDO, Guid containerId, string curDocumentationSupport = null)
+        private Task<TResult> CallTerminalActivityAsync<TResult>(
+            IUnitOfWork uow, string activityName,
+            ActivityDO curActivityDO,
+            Guid containerId,
+            string curDocumentationSupport = null)
         {
             if (activityName == null) throw new ArgumentNullException("activityName");
             if (curActivityDO == null) throw new ArgumentNullException("curActivityDO");
