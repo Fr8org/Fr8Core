@@ -4,7 +4,7 @@ using System.Configuration;
 using System.Linq;
 using NUnit.Core;
 using HealthMonitor.Configuration;
-using System.IO;
+using HealthMonitorUtility;
 
 namespace HealthMonitor
 {
@@ -37,7 +37,7 @@ namespace HealthMonitor
         }
 
 
-        private Type[] GetTestSuiteTypes()
+        private Type[] GetTestSuiteTypes(bool skipLocal)
         {
             var healthMonitorCS = (HealthMonitorConfigurationSection)
                 ConfigurationManager.GetSection("healthMonitor");
@@ -49,15 +49,20 @@ namespace HealthMonitor
 
             var testSuites = healthMonitorCS.TestSuites
                 .Select(x => Type.GetType(x.Type))
-                .Where(x => x != null)
-                .ToArray();
+                .Where(x => x != null);
 
-            return testSuites;
+            if (skipLocal)
+            {
+                testSuites = testSuites
+                    .Where(x => !x.GetCustomAttributes(typeof(SkipLocalAttribute), false).Any());
+            }
+
+            return testSuites.ToArray();
         }
 
-        public TestReport Run(string specificTestName = null)
+        public TestReport Run(string specificTestName = null, bool skipLocal = false)
         {
-            var testSuiteTypes = GetTestSuiteTypes();
+            var testSuiteTypes = GetTestSuiteTypes(skipLocal);
             if (testSuiteTypes == null || testSuiteTypes.Length == 0)
             {
                 return new TestReport()

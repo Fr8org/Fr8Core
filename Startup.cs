@@ -128,6 +128,7 @@ namespace HubWeb
             var activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
             var terminalService = ObjectFactory.GetInstance<ITerminal>();
 
+
             foreach (string url in terminalUrls)
             {
                 try

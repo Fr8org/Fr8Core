@@ -556,8 +556,12 @@ namespace terminalDocuSign.Actions
 
                         if (upstreamCrateChooser != null)
                         {
-                            upstreamCrateChooser.SelectedCrates[0].ManifestType.selectedKey = upstreamManifestTypes.Fields[0].Key;
-                            upstreamCrateChooser.SelectedCrates[0].ManifestType.Value = upstreamManifestTypes.Fields[0].Value;
+                            if (upstreamManifestTypes != null)
+                            {
+                                upstreamCrateChooser.SelectedCrates[0].ManifestType.selectedKey = upstreamManifestTypes.Fields[0].Key;
+                                upstreamCrateChooser.SelectedCrates[0].ManifestType.Value = upstreamManifestTypes.Fields[0].Value;
+                            }
+
                             upstreamCrateChooser.SelectedCrates[0].Label.selectedKey = QueryCrateLabel;
                             upstreamCrateChooser.SelectedCrates[0].Label.Value = QueryCrateLabel;
                         }
