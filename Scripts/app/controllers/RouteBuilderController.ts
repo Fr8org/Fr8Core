@@ -424,7 +424,7 @@ module dockyard.controllers {
 
             this.LayoutService.resetLayout();
 
-            if (curRoute.subroutes.length == 0) return;
+            if (curRoute.subroutes.length === 0) return;
             
             this.$scope.processedSubRoutes = [];
             for (var subroute of curRoute.subroutes) {

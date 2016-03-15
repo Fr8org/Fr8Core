@@ -20,7 +20,7 @@ module dockyard.directives.paneConfigureAction {
     }
 
     export class ActionReconfigureEventArgs {
-        public action: interfaces.IActivityDTO
+        public action: interfaces.IActivityDTO;
 
         constructor(action: interfaces.IActivityDTO) {
             // Clone Action to prevent any issues due to possible mutation of source object
