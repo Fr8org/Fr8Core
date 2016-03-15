@@ -270,10 +270,11 @@ namespace terminalFr8Core.Actions
                 crateStorage.Add(await GetUpstreamManifestTypes(curActivityDO));
             }
 
+            
+
             if (crateChooser.CrateDescriptions != null)
             {
                 var selected = crateChooser.CrateDescriptions.FirstOrDefault(x => x.Selected);
-
                 if (selected != null)
                 {
                     var labelList = await GetLabelsByManifestType(curActivityDO, selected.ManifestType);
@@ -281,7 +282,17 @@ namespace terminalFr8Core.Actions
                     using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
                     {
                         crateStorage.RemoveByLabel("Available Labels");
-                        crateStorage.Add(Data.Crates.Crate.FromContent("Available Labels", new FieldDescriptionsCM() { Fields = labelList }));
+                        crateStorage.Add(Data.Crates.Crate.FromContent("Available Labels",
+                            new FieldDescriptionsCM() {Fields = labelList}));
+                    }
+                }
+                else
+                {
+                    var configurationControlsCrate = await CreateControlsCrate(curActivityDO);
+
+                    using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+                    {
+                        crateStorage.Replace(AssembleCrateStorage(configurationControlsCrate));
                     }
                 }
             }

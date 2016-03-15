@@ -12,10 +12,7 @@ using Hub.Managers;
 using Newtonsoft.Json;
 using StructureMap;
 using terminalDocuSign.DataTransferObjects;
-using terminalDocuSign.Interfaces;
-using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Services;
 
 namespace terminalDocuSign.Actions
@@ -45,33 +42,42 @@ namespace terminalDocuSign.Actions
                             "<div>Envelope contains text:</div>"
                 });
 
-                Controls.Add((SearchText = new TextBox
+                Controls.Add(SearchText = new TextBox
                 {
                     Name = "SearchText",
                     Events = new List<ControlEvent> {ControlEvent.RequestConfig},
-                }));
+                                          });
 
-                Controls.Add((Folder = new DropDownList
+                Controls.Add(Folder = new DropDownList
                 {
                     Label = "Envelope is in folder:",
                     Name = "Folder",
                     Events = new List<ControlEvent> {ControlEvent.RequestConfig},
                     Source = null
-                }));
+                                      });
 
-                Controls.Add((Status = new DropDownList
+                Controls.Add(Status = new DropDownList
                 {
                     Label = "Envelope has status:",
                     Name = "Status",
                     Events = new List<ControlEvent> {ControlEvent.RequestConfig},
                     Source = null
-                }));
+                                      });
 
                 Controls.Add(new RunRouteButton());
             }
         }
 
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        private readonly DocuSignManager _docuSignManager;
+
+        public Search_DocuSign_History_v1()
+        {
+            _docuSignManager = ObjectFactory.GetInstance<DocuSignManager>();
+        }
+
+        protected override string ActivityUserFriendlyName => "Search DocuSign History";
+
+        protected internal override async Task<PayloadDTO> RunInternal(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             return Success(await GetPayload(curActivityDO, containerId));
         }
@@ -143,7 +149,7 @@ namespace terminalDocuSign.Actions
                 throw new Exception("Can't find activity template: Query_DocuSign");
             }
 
-            var storage = new CrateStorage(Data.Crates.Crate.FromContent("Config", config));
+            var storage = new CrateStorage(Crate.FromContent("Config", config));
 
             storage.Add(PackControlsCrate(new TextArea
             {
