@@ -857,11 +857,9 @@
     <Content Include="Scripts\dummyTemplates.js" />
     <Content Include="Scripts\templateCache.js" />
     <Content Include="_PowerShellScripts\RunIntegrationTests-DEV.ps1" />
-    <Content Include="_PowerShellScripts\DEV-HealthMonitor.exe.config" />
     <Content Include="_PowerShellScripts\DeployAzureWebJob-HealthMonitor-DEV.ps1" />
     <Content Include="_PowerShellScripts\DEV-job-run.cmd" />
     <Content Include="_PowerShellScripts\DEV-settings.job" />
-    <Content Include="_PowerShellScripts\MASTER-HealthMonitor.exe.config" />
     <Content Include="_PowerShellScripts\RunIntegrationTests-MASTER.ps1" />
     <Content Include="_PowerShellScripts\MASTER-job-run.cmd" />
     <Content Include="_PowerShellScripts\MASTER-settings.job" />
