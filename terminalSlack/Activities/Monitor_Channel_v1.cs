@@ -138,10 +138,10 @@ namespace terminalSlack.Actions
 
             var infoLabel = GenerateTextBlock("",
                     @"Slack doesn't currently offer a way for us to automatically request events for this channel. 
-                    You can do it manually, here are the steps. </br>
+                    To enable events to be sent to Fr8, do the following: </br>
                     <ol>
                         <li>Go to https://{yourteamname}.slack.com/services/new/outgoing-webhook. </li>
-                        <li>Hit 'Add Outgoing WebHooks Integration'</li>
+                        <li>Click 'Add Outgoing WebHooks Integration'</li>
                         <li>In the Outgoing WebHook form go to 'URL(s)' field fill the following address: 
                             <strong>https://terminalslack.fr8.co/terminals/terminalslack/events</strong>
                         </li>
