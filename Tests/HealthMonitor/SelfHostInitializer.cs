@@ -64,6 +64,7 @@ namespace HealthMonitor
                         StartHub(app, connectionString);
                     }
                     else {
+                        // Run terminals
                         var terminal = terminals.FirstOrDefault(t => t.Name == app.Name && t.Version == CURRENT_TERMINAL_VERSION.ToString());
                         if (terminal != null)
                         {
