@@ -25,7 +25,7 @@ while ($true) {
 		exit 0
 	}
 	catch {
-		if ($_.Exception.Message -contains "is not currently available") {
+		if ($_.Exception.Message -contains "available") {
 			if ([DateTime]::UtcNow -ge $startTime.AddSeconds($timeout) ) {
 				Write-Host "Database availability timeout."
 				exit 1
