@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -11,10 +12,6 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
 using HealthMonitorUtility;
-using Hub.Services;
-using terminalDocuSign.Services;
-using terminalDocuSign.Services.New_Api;
-using Utilities.Configuration.Azure;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -22,15 +19,58 @@ namespace terminalDocuSignTests.Integration
     [SkipLocal]
     public class MonitorAllDocuSignEvents_Tests : BaseHubIntegrationTest
     {
-        // private const string UserAccountName = "y.gnusin@gmail.com";
-        private const string UserAccountName = "IntegrationTestUser1";
-        private const int AwaitPeriod = 120000;
-        private const string TemplateName = "Medical_Form_v2";
+        private const string EnvelopeToSend = @"<?xml version=""1.0"" encoding=""UTF-8"" ?>
+<DocuSignEnvelopeInformation xmlns = ""http://www.docusign.net/API/3.0"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"">
+   <EnvelopeStatus>
+      <RecipientStatuses>
+         <RecipientStatus>
+            <Type>CertifiedDelivery</Type>
+            <Email>hal9000@discovery.com</Email>
+            <UserName>HAL-9000</UserName>
+            <RoutingOrder>1</RoutingOrder>
+            <Sent>2015-09-29T07:38:22.653</Sent>
+            <DeclineReason xsi:nil= ""true"" />
+            <Status>Sent</Status>
+            <RecipientIPAddress/>
+            <CustomFields/>
+            <AccountStatus>Active</AccountStatus>
+            <RecipientId>279a1173-04cc-4902-8039-68b1992639e9</RecipientId>
+         </RecipientStatus>
+      </RecipientStatuses>
+      <TimeGenerated>2015-09-29T07:38:42.7464809</TimeGenerated>
+      <EnvelopeID>{0}</EnvelopeID>
+      <Subject>Open the Pod bay doors, HAL</Subject>
+      <UserName>Dave Bowman</UserName>
+      <Email>freight.testing@gmail.com</Email>
+      <Status>Sent</Status>
+      <Created>2015-09-29T07:37:42.813</Created>
+      <Sent>2015-09-29T07:38:22.7</Sent>
+      <ACStatus>Original</ACStatus>
+      <ACStatusDate>2015-09-29T07:37:42.813</ACStatusDate>
+      <ACHolder>Dave Bowman</ACHolder>
+      <ACHolderEmail>freight.testing@gmail.com</ACHolderEmail>
+      <ACHolderLocation>DocuSign</ACHolderLocation>
+      <SigningLocation>Online</SigningLocation>
+      <SenderIPAddress>10.103.101.11</SenderIPAddress>
+      <EnvelopePDFHash />
+      <CustomFields />
+      <AutoNavigation>true</AutoNavigation>
+      <EnvelopeIdStamping>true</EnvelopeIdStamping>
+      <AuthoritativeCopy>false</AuthoritativeCopy>
+      <DocumentStatuses>
+         <DocumentStatus>
+            <ID>85548272</ID>
+            <Name>image.jpg</Name>
+            <TemplateName />
+            <Sequence>1</Sequence>
+         </DocumentStatus>
+      </DocumentStatuses>
+   </EnvelopeStatus>
+</DocuSignEnvelopeInformation>";
 
-        private const string ToEmail = "freight.testing@gmail.com";
+        private const int AwaitPeriod = 30000;
         private const string DocuSignEmail = "freight.testing@gmail.com";
         private const string DocuSignApiPassword = "I6HmXEbCxN";
-
 
         public override string TerminalName
         {
@@ -44,16 +84,17 @@ namespace terminalDocuSignTests.Integration
             {
                 var testAccount = unitOfWork.UserRepository
                     .GetQuery()
-                    .SingleOrDefault(x => x.UserName == UserAccountName);
-
+                    .SingleOrDefault(x => x.UserName == this.TestUserEmail);
+                
                 var docuSignTerminal = unitOfWork.TerminalRepository
                     .GetQuery()
                     .SingleOrDefault(x => x.Name == TerminalName);
+                
 
                 if (testAccount == null)
                 {
                     throw new ApplicationException(
-                        string.Format("No test account found with UserName = {0}", UserAccountName)
+                        string.Format("No test account found with UserName = {0}", TestUserEmail)
                     );
                 }
 
@@ -63,22 +104,42 @@ namespace terminalDocuSignTests.Integration
                         string.Format("No terminal found with Name = {0}", TerminalName)
                     );
                 }
-
+                
                 await RecreateDefaultAuthToken(unitOfWork, testAccount, docuSignTerminal);
 
                 var mtDataCountBefore = unitOfWork.MultiTenantObjectRepository
                     .AsQueryable<DocuSignEnvelopeCM>(testAccount.Id.ToString())
                     .Count();
 
-                await SendDocuSignTestEnvelope();
+                //await SendDocuSignTestEnvelope();
+                
+                await HttpPostAsync<string>(GetTerminalEventsUrl(), new StringContent(string.Format(EnvelopeToSend, Guid.NewGuid())));
+                
+                var result = await Task.Run(async () =>
+                {
+                    for (int i = 0; i < AwaitPeriod; i += 1000)
+                    {
+                        await Task.Delay(1000);
 
-                await Task.Delay(AwaitPeriod);
+                        int mtDataCountAfter;
 
-                var mtDataCountAfter = unitOfWork.MultiTenantObjectRepository
-                    .AsQueryable<DocuSignEnvelopeCM>(testAccount.Id.ToString())
-                    .Count();
+                        using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                        {
+                            mtDataCountAfter = uow.MultiTenantObjectRepository
+                                .AsQueryable<DocuSignEnvelopeCM>(testAccount.Id)
+                                .Count();
+                        }
 
-                Assert.IsTrue(mtDataCountBefore < mtDataCountAfter);
+                        if (mtDataCountAfter > mtDataCountBefore)
+                        {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                });
+                
+                Assert.IsTrue(result);
             }
         }
 
@@ -95,7 +156,7 @@ namespace terminalDocuSignTests.Integration
                 if (docusignTokens != null)
                 {
                     var existingToken = docusignTokens.AuthTokens
-                        .FirstOrDefault(x => x.ExternalAccountName == DocuSignEmail);
+                        .FirstOrDefault(x => x.ExternalAccountName == TestUserEmail);
 
                     if (existingToken != null)
                     {
@@ -160,7 +221,7 @@ namespace terminalDocuSignTests.Integration
             uow.SaveChanges();
         }
 
-        private async Task SendDocuSignTestEnvelope()
+        /*private async Task SendDocuSignTestEnvelope()
         {
             var endpoint = CloudConfigurationManager.GetSetting("endpoint");
 
@@ -210,6 +271,6 @@ namespace terminalDocuSignTests.Integration
                 fieldsList,
                 template.Id
             );
-        }
+        }*/
     }
 }

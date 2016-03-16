@@ -185,6 +185,8 @@ namespace Hub.Services
                 }
                 else
                 {
+                    // Secure part (Token property) of the token from public data query is can not be updated. 
+                    authToken = uow.AuthorizationTokenRepository.FindTokenById(authToken.Id);
                     authToken.Token = terminalResponseAuthTokenDTO.Token;
                     authToken.ExternalAccountId = terminalResponseAuthTokenDTO.ExternalAccountId;
                 }
