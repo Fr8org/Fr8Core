@@ -581,7 +581,7 @@ namespace Data.Control
 
         [JsonProperty("selectedCrates")]
         [ForcePropertySync]
-        public List<CrateDetails> SelectedCrates { get; set; }
+        public List<CrateDetails> SelectedCrates { get; set; } = new List<CrateDetails>();
 
         [JsonProperty("multiSelection")]
         public bool MultiSelection { get; set; }

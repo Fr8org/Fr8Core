@@ -1109,25 +1109,25 @@ namespace TerminalBase.BaseClasses
             return GetControl(controls, name, controlType);
         }
 
-        // do not use after EnhancedTerminalAction is introduced
+        // do not use after EnhancedTerminalActivity is introduced
         protected ICrateStorage AssembleCrateStorage(params Crate[] curCrates)
         {
             return new CrateStorage(curCrates);
         }
 
-        // do not use after EnhancedTerminalAction is introduced
+        // do not use after EnhancedTerminalActivity is introduced
         protected Crate PackControls(StandardConfigurationControlsCM page)
         {
             return PackControlsCrate(page.Controls.ToArray());
         }
 
-        // do not use after EnhancedTerminalAction is introduced
+        // do not use after EnhancedTerminalActivity is introduced
         protected Crate<StandardConfigurationControlsCM> PackControlsCrate(params ControlDefinitionDTO[] controlsList)
         {
             return Crate<StandardConfigurationControlsCM>.FromContent(ConfigurationControlsLabel, new StandardConfigurationControlsCM(controlsList), AvailabilityType.Configuration);
         }
 
-        // do not use after EnhancedTerminalAction is introduced
+        // do not use after EnhancedTerminalActivity is introduced
         protected string ExtractControlFieldValue(ActivityDO curActivityDO, string fieldName)
         {
             var storage = CrateManager.GetStorage(curActivityDO);
@@ -1373,21 +1373,21 @@ namespace TerminalBase.BaseClasses
             return finalCondition;
         }
 
-        // do not use after EnhancedTerminalAction is introduced
+        // do not use after EnhancedTerminalActivity is introduced
         protected StandardConfigurationControlsCM GetConfigurationControls(ActivityDO curActivityDO)
         {
             var storage = CrateManager.GetStorage(curActivityDO);
             return GetConfigurationControls(storage);
         }
 
-        // do not use after EnhancedTerminalAction is introduced
+        // do not use after EnhancedTerminalActivity is introduced
         protected StandardConfigurationControlsCM GetConfigurationControls(ICrateStorage storage)
         {
             var controlsCrate = storage.CrateContentsOfType<StandardConfigurationControlsCM>(c => c.Label == ConfigurationControlsLabel).FirstOrDefault();
             return controlsCrate;
         }
 
-        // do not use after EnhancedTerminalAction is introduced
+        // do not use after EnhancedTerminalActivity is introduced
         /// <summary>
         /// Method to be used with Loop Action
         /// Is a helper method to decouple some of the GetCurrentElement Functionality
@@ -1406,7 +1406,7 @@ namespace TerminalBase.BaseClasses
             return curIndex;
         }
 
-        // do not use after EnhancedTerminalAction is introduced
+        // do not use after EnhancedTerminalActivity is introduced
         /// <summary>
         /// Trivial method to return element at specified index of the IEnumerable object.
         /// To be used with Loop Action.

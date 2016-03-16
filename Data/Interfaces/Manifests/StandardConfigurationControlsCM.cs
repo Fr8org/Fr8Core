@@ -114,6 +114,11 @@ namespace Data.Interfaces.Manifests
         {
         }
 
+        public void Add(ControlDefinitionDTO control)
+        {
+            Controls.Add(control);
+        }
+
         // Find control by its name. Note, that this methods is no recursive
         public ControlDefinitionDTO FindByName(string name)
         {

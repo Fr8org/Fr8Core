@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Constants;
@@ -13,7 +14,7 @@ using TerminalBase.Infrastructure;
 
 namespace TerminalBase.BaseClasses
 {
-    public abstract class EnhancedTerminalAction<T> : BaseTerminalActivity
+    public abstract class EnhancedTerminalActivity<T> : BaseTerminalActivity
        where T : StandardConfigurationControlsCM, new()
     {
         /**********************************************************************************/
@@ -60,6 +61,7 @@ namespace TerminalBase.BaseClasses
         protected AuthorizationTokenDO AuthorizationToken { get; private set; }
         protected T ConfigurationControls { get; private set; }
         protected UpstreamNavigator UpstreamNavigator { get; private set; }
+        protected UiBuilder UiBuilder { get; private set; }
         protected int LoopIndex => GetLoopIndex(OperationalState, LoopId);
         protected string LoopId => CurrentActivity.GetLoopId();
 
@@ -67,14 +69,15 @@ namespace TerminalBase.BaseClasses
         // Functions
         /**********************************************************************************/
 
-        protected EnhancedTerminalAction(bool isAuthenticationRequired)
+        protected EnhancedTerminalActivity(bool isAuthenticationRequired)
         {
             IsAuthenticationReqiured = isAuthenticationRequired;
+            UiBuilder = new UiBuilder();
         }
 
         /**********************************************************************************/
 
-        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        public sealed override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             if (IsAuthenticationReqiured)
             {
@@ -85,7 +88,7 @@ namespace TerminalBase.BaseClasses
             CurrentActivity = curActivityDO;
 
             UpstreamNavigator = new UpstreamNavigator(CurrentActivity, HubCommunicator, CurrentFr8UserId);
-
+            
             using (var storage = CrateManager.GetUpdatableStorage(CurrentActivity))
             {
                 CurrentActivityStorage = storage;
@@ -119,20 +122,7 @@ namespace TerminalBase.BaseClasses
                 throw new InvalidOperationException(message);
             }
         }
-
-        /**********************************************************************************/
-
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
-        {
-            CurrentActivity = curActivityDO;
-
-            using (var storage = CrateManager.GetUpdatableStorage(CurrentActivity))
-            {
-                CurrentActivityStorage = storage;
-                return GetConfigurationRequestType();
-            }
-        }
-
+        
         /**********************************************************************************/
 
         private async Task InitialConfiguration()
@@ -163,7 +153,7 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        public override async Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        public sealed override async Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             if (IsAuthenticationReqiured)
             {
@@ -192,7 +182,7 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        public override async Task<ActivityDO> Deactivate(ActivityDO curActivityDO)
+        public sealed override async Task<ActivityDO> Deactivate(ActivityDO curActivityDO)
         {
             CurrentActivity = curActivityDO;
 
@@ -211,7 +201,7 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        public override Task<PayloadDTO> ExecuteChildActivities(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public sealed override Task<PayloadDTO> ExecuteChildActivities(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             return Run(curActivityDO, containerId, authTokenDO, ChildActivitiesExecuted);
         }
@@ -250,8 +240,7 @@ namespace TerminalBase.BaseClasses
 
                 if (OperationalState == null)
                 {
-                    Error("OperationalState crate is missing");
-                    return processPayload;
+                    throw new InvalidOperationException("Operational state crate is not found");
                 }
 
                 SyncConfControls();
@@ -343,7 +332,7 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        private Task<bool> Validate()
+        protected virtual Task<bool> Validate()
         {
             return Task.FromResult(true);
         }
@@ -360,7 +349,7 @@ namespace TerminalBase.BaseClasses
             }
 
             ConfigurationControls = CrateConfigurationControls();
-            ConfigurationControls.ClonePropertiesFrom(ui);
+            ConfigurationControls.SyncWith(ui);
         }
 
         /**********************************************************************************/
@@ -373,7 +362,6 @@ namespace TerminalBase.BaseClasses
         }
 
         /**********************************************************************************/
-
         /// <summary>
         /// Creates a suspend request for hub execution
         /// </summary>
@@ -383,7 +371,6 @@ namespace TerminalBase.BaseClasses
         }
 
         /**********************************************************************************/
-
         /// <summary>
         /// Creates a terminate request for hub execution
         /// after that we could stop throwing exceptions on actions
@@ -394,7 +381,6 @@ namespace TerminalBase.BaseClasses
         }
 
         /**********************************************************************************/
-
         /// <summary>
         /// returns success to hub
         /// </summary>
@@ -412,7 +398,6 @@ namespace TerminalBase.BaseClasses
         }
 
         /**********************************************************************************/
-
         /// <summary>
         /// skips children of this action
         /// </summary>
@@ -422,13 +407,34 @@ namespace TerminalBase.BaseClasses
         }
 
         /**********************************************************************************/
-
         /// <summary>
         /// Creates a reprocess child actions request
         /// </summary>
         protected void ReprocessChildren()
         {
             SetResponse(ActivityResponse.ReProcessChildren);
+        }
+
+        /**********************************************************************************/
+        /// <summary>
+        /// Jumps to an activity that resides in same subplan as current activity
+        /// </summary>
+        /// <returns></returns>
+        protected void JumpToActivity(Guid targetActivityId)
+        {
+            SetResponse(ActivityResponse.JumpToActivity);
+            OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() {Details = targetActivityId});
+        }
+
+        /**********************************************************************************/
+        /// <summary>
+        /// Jumps to an activity that resides in same subplan as current activity
+        /// </summary>
+        /// <returns></returns>
+        protected void JumpToSubplan(Guid targetSubplanId)
+        {
+            SetResponse(ActivityResponse.JumpToSubplan);
+            OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Details = targetSubplanId });
         }
 
         /**********************************************************************************/
@@ -444,7 +450,6 @@ namespace TerminalBase.BaseClasses
         }
 
         /**********************************************************************************/
-
         /// <summary>
         /// returns error to hub
         /// </summary>
@@ -453,6 +458,88 @@ namespace TerminalBase.BaseClasses
             SetResponse(ActivityResponse.Error);
             OperationalState.CurrentActivityErrorCode = errorCode;
             OperationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(errorMessage, ErrorType.Generic, errorCode.ToString(), null, null, null));
+        }
+
+        /**********************************************************************************/
+        // we don't want uncontrollable extensibility
+        protected sealed override Task<ICrateStorage> ValidateActivity(ActivityDO curActivityDO)
+        {
+            return base.ValidateActivity(curActivityDO);
+        }
+
+        public sealed override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        {
+            return base.ConfigurationEvaluator(curActivityDO);
+        }
+
+        protected sealed override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        {
+            return base.InitialConfigurationResponse(curActivityDO, authTokenDO);
+        }
+
+        protected sealed override Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        {
+            return base.FollowupConfigurationResponse(curActivityDO, authTokenDO);
+        }
+
+        protected sealed override Crate MergeUpstreamFields<TManifest>(ActivityDO curActivityDO, string label, FieldDTO[] upstreamFields)
+        {
+            return base.MergeUpstreamFields<TManifest>(curActivityDO, label, upstreamFields);
+        }
+
+        public sealed override Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActivityDO activityDO, CrateDirection direction)
+        {
+            return base.GetCratesByDirection<TManifest>(activityDO, direction);
+        }
+
+        public sealed override Task<List<Crate>> GetCratesByDirection(ActivityDO activityDO, CrateDirection direction)
+        {
+            return base.GetCratesByDirection(activityDO, direction);
+        }
+
+        public sealed override Task<FieldDescriptionsCM> GetDesignTimeFields(Guid activityId, CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet)
+        {
+            return base.GetDesignTimeFields(activityId, direction, availability);
+        }
+
+        public sealed override Task<FieldDescriptionsCM> GetDesignTimeFields(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet)
+        {
+            return base.GetDesignTimeFields(activityDO, direction, availability);
+        }
+
+        public sealed override Task<List<CrateManifestType>> BuildUpstreamManifestList(ActivityDO activityDO)
+        {
+            return base.BuildUpstreamManifestList(activityDO);
+        }
+
+        public sealed override Task<List<string>> BuildUpstreamCrateLabelList(ActivityDO activityDO)
+        {
+            return base.BuildUpstreamCrateLabelList(activityDO);
+        }
+
+        public sealed override Task<Crate<FieldDescriptionsCM>> GetUpstreamManifestListCrate(ActivityDO activityDO)
+        {
+            return base.GetUpstreamManifestListCrate(activityDO);
+        }
+
+        public sealed override Task<Crate<FieldDescriptionsCM>> GetUpstreamCrateLabelListCrate(ActivityDO activityDO)
+        {
+            return base.GetUpstreamCrateLabelListCrate(activityDO);
+        }
+
+        protected sealed override Task<List<Crate<StandardFileDescriptionCM>>> GetUpstreamFileHandleCrates(ActivityDO activityDO)
+        {
+            return base.GetUpstreamFileHandleCrates(activityDO);
+        }
+
+        protected sealed override Task<Crate> MergeUpstreamFields<TManifest>(ActivityDO curActivityDO, string label)
+        {
+            return base.MergeUpstreamFields<TManifest>(curActivityDO, label);
+        }
+
+        protected sealed override Task<FieldDTO[]> GetCratesFieldsDTO<TManifest>(ActivityDO curActivityDO, CrateDirection crateDirection)
+        {
+            return base.GetCratesFieldsDTO<TManifest>(curActivityDO, crateDirection);
         }
 
         /**********************************************************************************/
