@@ -475,6 +475,12 @@ namespace Hub.Services
             }
         }
 
+        public async Task<ContainerDO> Run(IUnitOfWork uow, PlanDO curPlan, Crate curPayload)
+        {
+            var curContainerDO = Create(uow, curPlan.Id, curPayload);
+            return await Run(uow, curContainerDO);
+        }
+
         public async Task<ContainerDO> Run(PlanDO curPlan, Crate curPayload)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

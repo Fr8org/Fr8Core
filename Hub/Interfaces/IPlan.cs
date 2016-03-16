@@ -30,6 +30,7 @@ namespace Hub.Interfaces
 
         ContainerDO Create(IUnitOfWork uow, Guid planId, Crate curEvent);
         Task<ContainerDO> Run(PlanDO curPlan, Crate curPayload);
+        Task<ContainerDO> Run(IUnitOfWork uow, PlanDO curPlan, Crate curPayload);
         Task<ContainerDO> Continue(Guid containerId);
     }
 }    

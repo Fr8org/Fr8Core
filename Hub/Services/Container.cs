@@ -199,6 +199,17 @@ namespace Hub.Services
             return subplan?.ChildNodes.OrderBy(c => c.Ordering).FirstOrDefault()?.Id;
         }
 
+        private async Task LoadAndRunPlan(IUnitOfWork uow, ContainerDO curContainerDO, Guid planId)
+        {
+            var plan = ObjectFactory.GetInstance<IPlan>();
+            var planDO = uow.PlanRepository.GetById<PlanDO>(planId);
+            var freshContainer = uow.ContainerRepository.GetByKey(curContainerDO.Id);
+            //var payload = JsonConvert.DeserializeObject<CrateStorageDTO>(freshContainer.CrateStorage);
+            var curCrateDto = JsonConvert.DeserializeObject<CrateDTO>(freshContainer.CrateStorage);
+            var payload = _crate.FromDto(curCrateDto);
+            await plan.Run(uow, planDO, payload);
+        }
+
         public async Task Run(IUnitOfWork uow, ContainerDO curContainerDO)
         {
             if (curContainerDO == null)
@@ -268,6 +279,13 @@ namespace Hub.Services
                         activityResponseDTO.TryParseResponseMessageDTO(out responseMessage);
                         var subplanId = Guid.Parse((string) responseMessage.Details);
                         curContainerDO.CurrentRouteNodeId = GetFirstActivityOfSubplan(uow, curContainerDO ,subplanId);
+                        break;
+
+                    case ActivityResponse.RequestLaunch:
+                        activityResponseDTO.TryParseResponseMessageDTO(out responseMessage);
+                        var planId = Guid.Parse((string)responseMessage.Details);
+                        //hmm what to do now
+                        await LoadAndRunPlan(uow, curContainerDO, planId);
                         break;
 
                     default:
