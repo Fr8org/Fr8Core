@@ -22,7 +22,7 @@ namespace terminalDocuSign.Services.New_Api
     public class DocuSignApiConfiguration
     {
         public string AccountId;
-        public Configuration Configuration;
+        public dynamic Configuration;
     }
 
     public class DocuSignManager
