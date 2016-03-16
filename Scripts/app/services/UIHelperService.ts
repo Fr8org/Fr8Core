@@ -1,21 +1,21 @@
 ﻿/// <reference path="../_all.ts" />
 
 /*
-    The service implements centralized string storage.
+    The service implements centralized alert Dialog storage.
 */
 
 module dockyard.services {
 
     export interface IUIHelperService {
-        openConfirmationModal: (message: string) => ng.IPromise<void>
+        openConfirmationModal: (message: model.AlertDTO) => ng.IPromise<void>
     }
 
+    // Use this for Showing alert mechanism 
     class UIHelperService implements IUIHelperService {
         constructor(private $modal: any) {
-            
         }
 
-        public openConfirmationModal(message: string) {
+        public openConfirmationModal(message: model.AlertDTO) {
             return this.$modal.open({
                 animation: true,
                 templateUrl: '/AngularTemplate/ConfirmationModal',
