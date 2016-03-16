@@ -53,7 +53,7 @@
         -->
     <div ng-if='field.type == "DropDownList"'>
         <label ng-if="field.label !== null && field.label.length > 0" class='control-label' ng-bind-html="field.label"></label>
-        <drop-down-list-box field='field' click='onClick' change='onChange' data-field-name='{{::field.name}}'></drop-down-list-box>
+        <drop-down-list-box current-action="currentAction" field='field' click='onClick' change='onChange' data-field-name='{{::field.name}}'></drop-down-list-box>
         <div data-ng-if="field.errorMessage != null && field.errorMessage !==''" class="validationWraper">
             <span class="validation-Icon"></span><div class="validation-message">{{field.errorMessage}}</div>
         </div>
@@ -117,7 +117,7 @@
     TextSource template
         -->
     <div ng-if='field.type == "TextSource"'>
-        <text-source change="onChange" data-field-name='{{::field.name}}' field="field"></text-source>
+        <text-source current-action="currentAction" change="onChange" data-field-name='{{::field.name}}' field="field"></text-source>
     </div>
 
     <!--
@@ -180,7 +180,7 @@
 
     <!-- DatePicker -->
     <div ng-if='field.type == "DatePicker"'>
-        <date-picker field="field"/>
+        <date-picker field="field" />
     </div>
 
     <!-- CrateChooser -->

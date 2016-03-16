@@ -18,6 +18,8 @@ namespace Hub.Interfaces
         List<PlanNodeDO> GetDownstreamActivities(IUnitOfWork uow, PlanNodeDO curActivityDO);
 
         FieldDescriptionsCM GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability);
+        List<T> GetCrateManifestsByDirection<T>(Guid activityId, CrateDirection direction,
+            AvailabilityType availability) where T: Manifest;
 
         Task Process(Guid curActivityId, ActivityState curActionState, ContainerDO curContainerDO);
 

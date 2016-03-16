@@ -211,7 +211,7 @@ insert into #MtProperties values ('PrimaryCategory', 'c5d060aa-2100-4432-8d39-38
 insert into #MtProperties values ('SecondaryCategory', 'c5d060aa-2100-4432-8d39-388f541b0105', '09932a02-9bac-4fd7-8384-30a5bb1cb9aa',  4)
 insert into #MtProperties values ('Activity', 'c5d060aa-2100-4432-8d39-388f541b0105', '09932a02-9bac-4fd7-8384-30a5bb1cb9aa',  5)
 
-select MT_Fields.* into #tfields from  MT_fields  inner join   (select max(id) as id from Mt_Fields group by MT_objectid, Name) as t on  t.Id = MT_Fields.ID
+select MT_Fields.* into #tfields from  MT_fields  inner join   (select max(Id) as Id from Mt_Fields group by MT_ObjectId, Name) as t on  t.Id = MT_Fields.ID
 delete from Mt_Fields
 insert into Mt_fields ([Name]
       ,[FieldColumnOffset]
@@ -244,7 +244,7 @@ select Id,Alias, ClrName, case when IsPrimitive is null then 0 else IsPrimitive 
 where #TypeMapping.LegacyId  in (select max(LegacyId) from #TypeMapping  group by Id)
 
 insert into MtProperties (Name, Offset, DeclaringType, Type)
-select Name, Offset, DeclaringType, PropertyType from #PropMapping where #PropMapping.Id  in (select max(id) from #PropMapping group by DeclaringType, Name)
+select Name, Offset, DeclaringType, PropertyType from #PropMapping where #PropMapping.Id  in (select max(Id) from #PropMapping group by DeclaringType, Name)
 
 Select distinct pm.DeclaringType,
 	(
@@ -253,14 +253,14 @@ Select distinct pm.DeclaringType,
 								else
 									', Value' + Convert(nvarchar, (#PropMapping.Offset+1)) 
 								end
-		FROM #PropMapping where pm.DeclaringType = #PropMapping.DeclaringType and #PropMapping.Id  in (select max(id) from #PropMapping group by DeclaringType, Name) order by Id
+		FROM #PropMapping where pm.DeclaringType = #PropMapping.DeclaringType and #PropMapping.Id  in (select max(Id) from #PropMapping group by DeclaringType, Name) order by Id
 		FOR XML PATH('')) ,1,1,'') AS Txt
 	) as new, 
 			
 	(
 			SELECT STUFF((SELECT ', Value' + Convert(nvarchar, (#PropMapping.LegacyOffset)) 
 						  
-        FROM #PropMapping where pm.DeclaringType = #PropMapping.DeclaringType and #PropMapping.Id  in (select max(id) from #PropMapping group by DeclaringType, Name) order by Id
+        FROM #PropMapping where pm.DeclaringType = #PropMapping.DeclaringType and #PropMapping.Id  in (select max(Id) from #PropMapping group by DeclaringType, Name) order by Id
         FOR XML PATH('')) ,1,1,'') AS Txt
 	)  as legacy
     into #mapStr			

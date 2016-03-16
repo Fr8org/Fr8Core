@@ -198,28 +198,19 @@ namespace HubWeb.Controllers
 
         [HttpGet]
         [AllowAnonymous]
+        public IHttpActionResult GetTerminalSolutionList(string terminalName)
+        {
+            var solutionNameList = _activity.GetSolutionList(terminalName);
+            return Json(solutionNameList);
+        }
+        [HttpGet]
+        [AllowAnonymous]
         public IHttpActionResult GetDocuSignSolutionList()
         {
             var terminalName = "terminalDocuSign";
             var solutionNameList = _activity.GetSolutionList(terminalName);
             return Json(solutionNameList);
         }
-        //        /// <summary>
-        //        /// POST : updates the given action
-        //        /// </summary>
-        //        [HttpPost]
-        //        [Route("update")]
-        //        public IHttpActionResult Update(ActionDTO curActionDTO)
-        //        {
-        //            ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);
-        //
-        //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //            {
-        //                await _action.SaveUpdateAndConfigure(uow, submittedActionDO);
-        //            }
-        //
-        //            return Ok();
-        //        }      
     }
 
 }

@@ -66,7 +66,7 @@ namespace terminalDocuSignTests.Integration
         /// Please don't delete this method. i (bahadir) use this to quick test docusign events
         /// </summary>
         /// <returns></returns>
-        [Test, Ignore]
+        [Test, Ignore("This is for manual testing only. Bahadir uses this to quick test docusign events.")]
         public async Task SendFakeEvent()
         {
             await PostFakeEvent();

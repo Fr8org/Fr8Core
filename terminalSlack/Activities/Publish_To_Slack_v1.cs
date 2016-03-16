@@ -90,16 +90,15 @@ namespace terminalSlack.Actions
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             var oauthToken = authTokenDO.Token;
-            var channels = await _slackIntegration.GetAllChannelList(oauthToken);
+            var configurationCrate = PackCrate_ConfigurationControls();
+           await FillSlackChannelsSource(configurationCrate, "Selected_Slack_Channel", oauthToken);
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Clear();
-                crateStorage.Add(PackCrate_ConfigurationControls());
-                crateStorage.Add(CreateAvailableChannelsCrate(channels));
+                crateStorage.Add(configurationCrate);             
                 crateStorage.Add(await CreateAvailableFieldsCrate(curActivityDO, "Available Fields"));
             }
-
             return curActivityDO;
         }
 
@@ -120,11 +119,7 @@ namespace terminalSlack.Actions
                 Label = "Select Slack Channel",
                 Name = "Selected_Slack_Channel",
                 Required = true,
-                Source = new FieldSourceDTO
-                {
-                    Label = "Available Channels",
-                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                }
+                Source = null
             };
 
             var fieldSelect = new TextSource("Select Message Field", "Available Fields", "Select_Message_Field");
@@ -136,18 +131,6 @@ namespace terminalSlack.Actions
             };
 
             return CrateManager.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
-        }
-
-        private Crate CreateAvailableChannelsCrate(IEnumerable<FieldDTO> channels)
-        {
-            var crate =
-                CrateManager.CreateDesignTimeFieldsCrate(
-                    "Available Channels",
-                    AvailabilityType.Configuration,
-                    channels.ToArray()
-                );
-
-            return crate;
         }
 
         private async Task<Crate> CreateAvailableFieldsCrate(ActivityDO activityDO)
@@ -189,5 +172,22 @@ namespace terminalSlack.Actions
             return responseText;
         }
         */
+
+        #region Fill Source
+        private async Task FillSlackChannelsSource(Crate configurationCrate, string controlName, string oAuthToken)
+        {
+            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
+            var control = configurationControl.FindByNameNested<DropDownList>(controlName);
+            if (control != null)
+            {
+                control.ListItems = await GetAllChannelList(oAuthToken);
+            }
+        }
+        private async Task<List<ListItem>> GetAllChannelList(string oAuthToken)
+        {
+            var channels = await _slackIntegration.GetAllChannelList(oAuthToken);
+            return channels.Select(x => new ListItem() { Key = x.Key, Value = x.Value }).ToList();
+        }
+        #endregion
     }
 }

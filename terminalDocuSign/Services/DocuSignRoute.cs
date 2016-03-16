@@ -24,17 +24,11 @@ namespace terminalDocuSign.Services
     /// </summary>
     public class DocuSignPlan : IDocuSignPlan
     {
-        private readonly IActivityTemplate _activityTemplate;
-        private readonly IActivity _activity;
         private readonly IHubCommunicator _hubCommunicator;
         private readonly ICrateManager _crateManager;
 
-        
-
         public DocuSignPlan()
         {
-            _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
-            _activity = ObjectFactory.GetInstance<IActivity>();
             _hubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
             _hubCommunicator.Configure("terminalDocuSign");

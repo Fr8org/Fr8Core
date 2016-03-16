@@ -28,13 +28,17 @@ namespace terminalDocuSignTests.Integration
             get { return "terminalDocuSign"; }
         }
 
-        private void AssertCrateTypes(ICrateStorage crateStorage)
+        private void AssertCrateTypes(ICrateStorage crateStorage, bool expectValidationErrors = false)
         {
-            Assert.AreEqual(3, crateStorage.Count);
+            Assert.AreEqual(expectValidationErrors ? 4 : 3, crateStorage.Count);
 
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
             Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "DocuSign Event Fields"));
             Assert.AreEqual(1, crateStorage.CratesOfType<EventSubscriptionCM>().Count(x => x.Label == "Standard Event Subscriptions"));
+            if (expectValidationErrors)
+            {
+                Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Validation Errors"));
+            }
         }
 
         private void AssertControls(StandardConfigurationControlsCM controls)
@@ -53,9 +57,9 @@ namespace terminalDocuSignTests.Integration
             // Assert that 2nd-5th controls are a CheckBoxes
             // with corresponding labels and event: onChange => requestConfig.
             var checkBoxLabels = new[] {
-                "Event_Envelope_Sent",
-                "Event_Envelope_Received",
-                "Event_Recipient_Signed"
+                "EnvelopeSent",
+                "EnvelopeReceived",
+                "RecipientSigned"
             };
 
             for (var i = 0; i < checkBoxLabels.Length; ++i)
@@ -115,6 +119,9 @@ namespace terminalDocuSignTests.Integration
                 var controls = crateStorage
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
                     .Single();
+                //Part of FR-2474: mark first checkbox as selected so activity will pass validation
+                var checkBox = controls.Controls.OfType<CheckBox>().First();
+                checkBox.Selected = true;
 
                 var radioGroup = (RadioButtonGroup)controls.Controls[4];
                 radioGroup.Radios[0].Selected = true;
@@ -147,6 +154,9 @@ namespace terminalDocuSignTests.Integration
                 var controls = crateStorage
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
                     .Single();
+                //Part of FR-2474: mark first checkbox as selected so activity will pass validation
+                var checkBox = controls.Controls.OfType<CheckBox>().First();
+                checkBox.Selected = true;
 
                 var radioGroup = (RadioButtonGroup)controls.Controls[4];
                 radioGroup.Radios[0].Selected = false;
@@ -157,7 +167,7 @@ namespace terminalDocuSignTests.Integration
                 Assert.IsTrue(templateDdl.ListItems.Count > 0);
 
                 templateDdl.Value = templateDdl.ListItems[0].Value;
-                selectedTemplate = templateDdl.ListItems[0].Key;
+                selectedTemplate = templateDdl.selectedKey = templateDdl.ListItems[0].Key;
             }
 
             return new Tuple<ActivityDTO, string>(responseActionDTO, selectedTemplate);
@@ -239,7 +249,7 @@ namespace terminalDocuSignTests.Integration
             Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
-            AssertCrateTypes(crateStorage);
+            AssertCrateTypes(crateStorage, true);
             AssertControls(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single());
         }
 

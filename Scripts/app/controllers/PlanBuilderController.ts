@@ -483,8 +483,13 @@ module dockyard.controllers {
                 self.stopLoader();
             }, (error) => {
                 //TODO check error status while completing DO-1335
+
+                var alertMessage = new model.AlertDTO();
+                alertMessage.title = "Please confirm";
+                alertMessage.body = "Are you sure you want to delete this Activity? You will have to reconfigure all downstream Actions.";
+
                 this.uiHelperService
-                    .openConfirmationModal('Are you sure you want to delete this Activity? You will have to reconfigure all downstream Actions.')
+                    .openConfirmationModal(alertMessage)
                     .then(() => {
                         self.startLoader();
                         self.ActionService.deleteById({ id: action.id, confirmed: true }).$promise.then(() => {

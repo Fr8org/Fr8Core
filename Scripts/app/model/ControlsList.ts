@@ -91,6 +91,7 @@
         public manifestType: string;
         public label: string;
         public filterByTag: string;
+        public requestUpstream: boolean;
     }
 
     export class DropDownList extends ControlDefinitionDTO {
@@ -112,6 +113,7 @@
     export class CrateChooser extends ControlDefinitionDTO {
         crateDescriptions: Array<CrateDescriptionDTO>;
         singleManifestOnly: boolean;
+        requestUpstream: boolean;
     }
 
     export class TextSource extends DropDownList {

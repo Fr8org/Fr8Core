@@ -18,7 +18,7 @@ namespace terminalAzure
         {
             public LiveMode()
             {
-                For<IActivity>().Use<Hub.Services.Activity>();
+                For<IActivity>().Use<Hub.Services.Activity>().Singleton();
                 For<ITerminal>().Use<Terminal>().Singleton();
                 For<ICrateManager>().Use<CrateManager>();
                 For<IDbProvider>().Use<SqlClientDbProvider>();

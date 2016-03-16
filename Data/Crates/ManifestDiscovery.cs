@@ -103,6 +103,11 @@ namespace Data.Crates
             }
         }
 
+        public bool TryResolveManifestType(string manifestTypeName, out CrateManifestType manifestType)
+        {
+            return ManifestTypeCache.TryResolveManifest(manifestTypeName, out manifestType);
+        }
+
         /**********************************************************************************/
 
         public void RegisterManifest(Type type)

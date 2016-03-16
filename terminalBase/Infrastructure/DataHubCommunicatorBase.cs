@@ -191,9 +191,12 @@ namespace TerminalBase.Infrastructure
             return mergedFields;
         }
 
-        public Task<FieldDescriptionsCM> GetDesignTimeFieldsByDirection(Guid actionId, CrateDirection direction, AvailabilityType availability, string userId)
+        public async Task<FieldDescriptionsCM> GetDesignTimeFieldsByDirection(Guid actionId, CrateDirection direction, AvailabilityType availability, string userId)
         {
-            throw new NotImplementedException();
+            var mergedFields = new FieldDescriptionsCM();
+            var curCrates = await GetCratesByDirection<FieldDescriptionsCM>(null, direction, userId);
+            mergedFields.Fields.AddRange(Crate.MergeContentFields(curCrates).Fields);
+            return mergedFields;
         }
 
         public Task<ActivityDTO> ConfigureActivity(ActivityDTO activityDTO, string userId)

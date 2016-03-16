@@ -32,7 +32,6 @@ namespace Hub.Interfaces
         
         Task<ActivityDTO> Activate(ActivityDO curActivityDO);
         Task<ActivityDTO> Deactivate(ActivityDO curActivityDO);
-        StandardConfigurationControlsCM GetControlsManifest(ActivityDO curActivity);
         Task<T> GetActivityDocumentation<T>(ActivityDTO curActivityDTO, bool isSolution = false);
         List<string> GetSolutionList(string terminalName);
         void Delete(Guid id);

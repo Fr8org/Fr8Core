@@ -1,4 +1,7 @@
-﻿using HealthMonitor.Configuration;
+﻿using Data.Entities;
+using Data.Interfaces;
+using HealthMonitor.Configuration;
+using StructureMap;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -9,6 +12,9 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Data;
+using Data.Infrastructure;
+using Data.Infrastructure.StructureMap;
 
 namespace HealthMonitor
 {
@@ -18,33 +24,60 @@ namespace HealthMonitor
         ManualResetEventSlim _waitHandle = new ManualResetEventSlim(false);
         Process _hubProcess;
 
+        private const string HUB_ENDPOINT = "http://localhost:30643";
+        private const int CURRENT_TERMINAL_VERSION = 1;
+
         public void Initialize(string connectionString)
         {
-            var selfHostedTerminals = GetSelfHostedTerminals();
+            IEnumerable<TerminalDO> terminals;
+
+            var _container = new Container();
+            _container.Configure(expression =>
+                expression.AddRegistry<DatabaseStructureMapBootStrapper.LiveMode>());
+
+            var selfHostedApps = GetSelfHostedApps();
+            using (var uow = _container.GetInstance<IUnitOfWork>())
+            {
+                terminals = uow.TerminalRepository.GetAll();
+            }
+
             try
             {
-                foreach (SelfHostedTerminalsElement terminal in selfHostedTerminals)
+                foreach (SelfHostedAppsElement app in selfHostedApps)
                 {
-                    Type calledType = Type.GetType(terminal.Type);
+                    Type calledType = Type.GetType(app.Type);
                     if (calledType == null)
                     {
                         throw new ArgumentException(
                             string.Format(
                                 "Unable to instantiate the terminal type {0}.",
-                                terminal.Type
+                                app.Type
                             )
                         );
                     }
 
-                    if (terminal.Type.IndexOf("HubWeb") > -1)
+                    if (string.Equals(app.Name, "Hub", StringComparison.InvariantCultureIgnoreCase))
                     {
+                        app.Endpoint = HUB_ENDPOINT;
                         // Run the Hub in a separate appdomain to avoid conflict with StructureMap configurations for
                         // termianls and the Hub.
-                        StartHub(terminal, connectionString);
+                        StartHub(app, connectionString);
                     }
                     else {
+                        // Run terminals
+                        var terminal = terminals.FirstOrDefault(t => t.Name == app.Name && t.Version == CURRENT_TERMINAL_VERSION.ToString());
+                        if (terminal != null)
+                        {
+                            app.Endpoint = terminal.Endpoint;
+                        }
+                        else
+                        {
+                            throw new ApplicationException(
+                                String.Format("Cannot find terminal {0}, version {1} in the Terminals table.", app.Name, CURRENT_TERMINAL_VERSION));
+                        }
+                        app.Endpoint = Utility.Utilities.NormalizeSchema(app.Endpoint);
                         MethodInfo curMethodInfo = calledType.GetMethod("CreateServer", BindingFlags.Static | BindingFlags.Public);
-                        _selfHostedTerminals.Add((IDisposable)curMethodInfo.Invoke(null, new string[] { terminal.Url }));
+                        _selfHostedTerminals.Add((IDisposable)curMethodInfo.Invoke(null, new string[] { app.Endpoint }));
                     }
                 }
             }
@@ -80,11 +113,11 @@ namespace HealthMonitor
         /// </summary>
         /// <param name="hub"></param>
         /// <param name="connectionString"></param>
-        private void StartHub(SelfHostedTerminalsElement hub, string connectionString)
+        private void StartHub(SelfHostedAppsElement hub, string connectionString)
         {
             Console.WriteLine("Starting HubLauncher...");
             string hubLauncherDirectory = GetHubLauncherDirectory();
-            string args = "--endpoint " + hub.Url + " --selfHostFactory \"" + hub.Type + "\" --connectionString \"" + connectionString + "\"";
+            string args = "--endpoint " + hub.Endpoint + " --selfHostFactory \"" + hub.Type + "\" --connectionString \"" + connectionString + "\"";
             ProcessStartInfo psi = new ProcessStartInfo(Path.Combine(hubLauncherDirectory, "HealthMonitor.HubLauncher.exe"), args);
             Console.WriteLine("HubLauncher Path: " + psi.FileName);
             psi.UseShellExecute = false;
@@ -126,17 +159,17 @@ namespace HealthMonitor
             Console.WriteLine("HubLauncher:\\> " + e.Data);
         }
 
-        private SelfHostedTerminalsCollection GetSelfHostedTerminals()
+        private SelfHostedTerminalsCollection GetSelfHostedApps()
         {
             var healthMonitorCS = (HealthMonitorConfigurationSection)
                 ConfigurationManager.GetSection("healthMonitor");
 
-            if (healthMonitorCS == null || healthMonitorCS.SelfHostedTerminals == null)
+            if (healthMonitorCS == null || healthMonitorCS.SelfHostedApps == null)
             {
                 return null;
             }
 
-            return healthMonitorCS.SelfHostedTerminals;
+            return healthMonitorCS.SelfHostedApps;
         }
 
         public void Dispose()

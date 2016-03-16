@@ -17,11 +17,12 @@ namespace terminalSalesforceTests.Integration
     [Explicit]
     public class Terminal_Discover_v1Tests : BaseTerminalIntegrationTest
     {
-        private const int ActivityCount = 4;
+        private const int ActivityCount = 5;
         private const string Create_Account_Activity_Name = "Create_Account";
         private const string Create_Contact_Activity_Name = "Create_Contact";
         private const string Create_Lead_Activity_Name = "Create_Lead";
         private const string Get_Data_Activity_Name = "Get_Data";
+        private const string Post_To_Chatter_Name = "Post_To_Chatter";
 
 
         public override string TerminalName
@@ -51,6 +52,8 @@ namespace terminalSalesforceTests.Integration
                 "Action " + Create_Lead_Activity_Name + " was not loaded");
             Assert.AreEqual(terminalDiscoverResponse.Activities.Any(a => a.Name == Get_Data_Activity_Name), true,
                 "Action " + Get_Data_Activity_Name + " was not loaded");
+            Assert.AreEqual(terminalDiscoverResponse.Activities.Any(a => a.Name == Post_To_Chatter_Name), true,
+                "Action " + Post_To_Chatter_Name + " was not loaded");
         }
     }
 }

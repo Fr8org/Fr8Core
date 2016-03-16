@@ -943,6 +943,13 @@ div.activity-list::after {
     margin-top: 10px;
 }
 
+.toast-activity-info {
+    display: block;
+    min-width: 200px;
+    text-align: left;
+    font-size: 13px;
+}
+
 .bdp-input {
     border-radius: 2px;
     padding: 0 3px;

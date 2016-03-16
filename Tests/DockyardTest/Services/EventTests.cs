@@ -94,6 +94,12 @@ namespace DockyardTest.Services
             }
         }
 
+        public List<T> GetCrateManifestsByDirection<T>(Guid activityId, CrateDirection direction,
+            AvailabilityType availability) where T : Manifest
+        {
+            throw new NotImplementedException();
+        }
+
         public List<PlanNodeDO> GetUpstreamActivities(IUnitOfWork uow, PlanNodeDO curActivityDO)
         {
             throw new NotImplementedException();

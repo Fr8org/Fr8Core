@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -80,6 +81,47 @@ namespace Hub.Services
             foreach (var child in root.ChildNodes.OrderBy(x => x.Ordering))
             {
                 GetDownstreamRecusive(child, items);
+            }
+        }
+
+        public List<T> GetCrateManifestsByDirection<T>(
+            Guid activityId,
+            CrateDirection direction,
+            AvailabilityType availability) where T : Data.Interfaces.Manifests.Manifest
+        {
+            Func<FieldDTO, bool> fieldPredicate;
+            if (availability == AvailabilityType.NotSet)
+            {
+                fieldPredicate = (FieldDTO f) => true;
+            }
+            else
+            {
+                fieldPredicate = (FieldDTO f) => f.Availability == availability;
+            }
+
+            Func<Crate<T>, bool> cratePredicate;
+            if (availability == AvailabilityType.NotSet)
+            {
+                cratePredicate = (Crate<T> f) => true;
+            }
+            else
+            {
+                cratePredicate = (Crate<T> f) =>
+                {
+                    return f.Availability == availability;
+                };
+            }
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var activityDO = uow.PlanRepository.GetById<ActivityDO>(activityId);
+                var result = GetActivitiesByDirection(uow, direction, activityDO)
+                    .OfType<ActivityDO>()
+                    .SelectMany(x => _crate.GetStorage(x).CratesOfType<T>().Where(cratePredicate))
+                    .Select(x => x.Content)
+                    .ToList();
+
+                return result;
             }
         }
 
@@ -293,8 +335,13 @@ namespace Hub.Services
 
                 if (curActivityDO is ActivityDO)
                 {
+                    // Explicitly extract authorization token to make AuthTokenDTO pass to activities.
+                    var currentActivity = (ActivityDO)curActivityDO;
+                    currentActivity.AuthorizationToken = uow.AuthorizationTokenRepository
+                        .FindTokenById(currentActivity.AuthorizationTokenId);
+
                     IActivity _activity = ObjectFactory.GetInstance<IActivity>();
-                    await _activity.PrepareToExecute((ActivityDO)curActivityDO, curActionState, curContainerDO, uow);
+                    await _activity.PrepareToExecute(currentActivity, curActionState, curContainerDO, uow);
                     //TODO inspect this
                     //why do we get container from db again???
                     containerDO.CrateStorage = curContainerDO.CrateStorage;
