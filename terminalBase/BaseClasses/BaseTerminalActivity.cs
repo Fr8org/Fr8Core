@@ -90,12 +90,47 @@ namespace TerminalBase.BaseClasses
         /// </summary>
         /// <param name="payload"></param>
         /// <returns></returns>
-        protected PayloadDTO TerminateHubExecution(PayloadDTO payload)
+        protected PayloadDTO TerminateHubExecution(PayloadDTO payload, string message = null)
         {
             using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
                 var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
                 operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.RequestTerminate);
+                operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Message = message });
+            }
+
+            return payload;
+        }
+
+        /// <summary>
+        /// Jumps to an activity that resides in same subplan as current activity
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <returns></returns>
+        protected PayloadDTO JumpToActivity(PayloadDTO payload, Guid targetActivityId)
+        {
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
+            {
+                var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.JumpToActivity);
+                operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Details = targetActivityId });
+            }
+
+            return payload;
+        }
+
+        /// <summary>
+        /// Jumps to an activity that resides in same subplan as current activity
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <returns></returns>
+        protected PayloadDTO JumpToSubplan(PayloadDTO payload, Guid targetSubplanId)
+        {
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
+            {
+                var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.JumpToSubplan);
+                operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Details = targetSubplanId });
             }
 
             return payload;
@@ -269,12 +304,13 @@ namespace TerminalBase.BaseClasses
 
         protected async Task<ActivityDO> ProcessConfigurationRequest(ActivityDO curActivityDO, ConfigurationEvaluator configurationEvaluationResult, AuthorizationTokenDO authToken)
         {
-            if (configurationEvaluationResult(curActivityDO) == ConfigurationRequestType.Initial)
+            var configRequestType = configurationEvaluationResult(curActivityDO);
+            if (configRequestType == ConfigurationRequestType.Initial)
             {
                 return await InitialConfigurationResponse(curActivityDO, authToken);
             }
 
-            else if (configurationEvaluationResult(curActivityDO) == ConfigurationRequestType.Followup)
+            else if (configRequestType == ConfigurationRequestType.Followup)
             {
                 var validationErrors = await ValidateActivity(curActivityDO);
                 if (validationErrors != null)

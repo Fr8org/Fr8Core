@@ -31,7 +31,7 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public virtual async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var curPayloadDTO = await GetPayload(curActivityDO, containerId);
 
@@ -43,14 +43,7 @@ namespace terminalFr8Core.Actions
                 return Error(curPayloadDTO, "No control found with Type == \"filterPane\"");
             }
 
-            var valuesCrates = CrateManager.FromDto(curPayloadDTO.CrateStorage).CrateContentsOfType<StandardPayloadDataCM>();
-            var curValues = new List<FieldDTO>();
-
-            foreach (var valuesCrate in valuesCrates)
-            {
-                curValues.AddRange(valuesCrate.AllValues());
-            }
-
+            var curValues = GetAllPayloadFields(curPayloadDTO);
             // Prepare envelope data.
 
             // Evaluate criteria using Contents json body of found Crate.
@@ -69,6 +62,19 @@ namespace terminalFr8Core.Actions
             }
 
             return Success(curPayloadDTO);
+        }
+
+        protected List<FieldDTO> GetAllPayloadFields(PayloadDTO curPayloadDTO)
+        {
+            var valuesCrates = CrateManager.FromDto(curPayloadDTO.CrateStorage).CrateContentsOfType<StandardPayloadDataCM>();
+            var curValues = new List<FieldDTO>();
+
+            foreach (var valuesCrate in valuesCrates)
+            {
+                curValues.AddRange(valuesCrate.AllValues());
+            }
+
+            return curValues;
         }
 
         private bool Evaluate(string criteria, Guid processId, IEnumerable<FieldDTO> values)
@@ -109,7 +115,7 @@ namespace terminalFr8Core.Actions
             }
         }
 
-        private Expression ParseCriteriaExpression(
+        protected Expression ParseCriteriaExpression(
             IEnumerable<FilterConditionDTO> conditions,
             IQueryable<FieldDTO> queryableData)
         {
@@ -211,7 +217,7 @@ namespace terminalFr8Core.Actions
             return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authToken);
         }
 
-        private Crate CreateControlsCrate()
+        protected virtual Crate CreateControlsCrate()
         {
             var fieldFilterPane = new FilterPane()
             {

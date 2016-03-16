@@ -49,6 +49,7 @@ namespace Data.Control
         public const string UpstreamCrateChooser = "UpstreamCrateChooser";
         public const string DatePicker = "DatePicker";
         public const string CrateChooser = "CrateChooser";
+        public const string ContainerTransition = "ContainerTransition";
     }
 
     public class CheckBox : ControlDefinitionDTO
@@ -124,6 +125,17 @@ namespace Data.Control
         public QueryBuilder()
         {
             Type = ControlTypes.QueryBuilder;
+        }
+    }
+
+    public class ContainerTransition : ControlDefinitionDTO
+    {
+        [JsonProperty("transitions")]
+        public List<ContainerTransitionField> Transitions { get; set; } 
+        public ContainerTransition()
+        {
+            Type = ControlTypes.ContainerTransition;
+            this.Transitions = new List<ContainerTransitionField>();
         }
     }
 
@@ -489,6 +501,28 @@ namespace Data.Control
         {
             return Controls;
         }
+    }
+
+    public enum ContainerTransitions
+    {
+        JumpToActivity = 0,
+        JumpToPlan,
+        JumpToSubplan,
+        StopProcessing,
+        SuspendProcessing,
+        ProceedToNextActivity
+    }
+
+    public class ContainerTransitionField
+    {
+        [JsonProperty("conditions")]
+        public List<FilterConditionDTO> Conditions { get; set; }
+
+        [JsonProperty("transition")]
+        public ContainerTransitions Transition { get; set; }
+
+        [JsonProperty("targetNodeId")]
+        public Guid? TargetNodeId;
     }
 
     public class FilterPaneField

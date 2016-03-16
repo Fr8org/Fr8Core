@@ -12,6 +12,7 @@ namespace Hub.Interfaces
     /// </summary>
     public interface ISubroute
     {
+        void Create(IUnitOfWork uow, SubrouteDO subroute);
         void Update(IUnitOfWork uow, SubrouteDO subroute);
         void Delete(IUnitOfWork uow, Guid id);
         Task<bool> DeleteAllChildNodes(Guid activityId);

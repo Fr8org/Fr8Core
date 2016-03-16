@@ -45,7 +45,7 @@ namespace terminalDocuSignTests.Integration
             //
             _solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure?id=" + solution.Id, solution);
             _crateStorage = Crate.FromDto(_solution.CrateStorage);
-            await ResolveAuth(_solution, _crateStorage);
+            var authTokenId = await ResolveAuth(_solution, _crateStorage);
 
             //
             // Send configuration request with authentication token
@@ -74,8 +74,32 @@ namespace terminalDocuSignTests.Integration
             Assert.True(_solution.ChildrenActivities.Any(a => a.Label == "Monitor DocuSign Envelope Activity" && a.Ordering == 1));
             Assert.True(_solution.ChildrenActivities.Any(a => a.Label == "Send DocuSign Envelope" && a.Ordering == 2));
 
+
+            var monitorDocuSignEnvelopeActivity = _solution.ChildrenActivities
+                .Single(x => x.Label == "Monitor DocuSign Envelope Activity");
+
             //
-            //Rename route
+            // Apply auth-token to child MonitorDocuSignEvnelope activity.
+            //
+            var applyToken = new ManageAuthToken_Apply()
+            {
+                ActivityId = monitorDocuSignEnvelopeActivity.Id,
+                AuthTokenId = authTokenId,
+                IsMain = false
+            };
+
+            await HttpPostAsync<ManageAuthToken_Apply[], string>(
+                _baseUrl + "ManageAuthToken/apply",
+                new ManageAuthToken_Apply[] { applyToken }
+            );
+
+            monitorDocuSignEnvelopeActivity = await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                _baseUrl + "activities/configure?id=" + monitorDocuSignEnvelopeActivity.Id,
+                monitorDocuSignEnvelopeActivity
+            );
+
+            //
+            // Rename route
             //
             var newName = plan.Name + " | " + DateTime.UtcNow.ToShortDateString() + " " +
                 DateTime.UtcNow.ToShortTimeString();
@@ -85,25 +109,24 @@ namespace terminalDocuSignTests.Integration
             //
             // Configure Monitor DocuSign Envelope action
             //
-            var monitorDocuSignAction = _solution.ChildrenActivities.Single(a => a.Label == "Monitor DocuSign Envelope Activity");
-            _crateStorage = Crate.FromDto(monitorDocuSignAction.CrateStorage);
+            _crateStorage = Crate.FromDto(monitorDocuSignEnvelopeActivity.CrateStorage);
                  
             controlsCrate = _crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
             
-            var checkbox = (CheckBox)controlsCrate.Content.Controls.Single(c => c.Type == ControlTypes.CheckBox && c.Name == "Event_Envelope_Sent");
+            var checkbox = (CheckBox)controlsCrate.Content.Controls.Single(c => c.Type == ControlTypes.CheckBox && c.Name == "EnvelopeSent");
             checkbox.Selected = true;
 
             var radioButtonGroup = (RadioButtonGroup)controlsCrate.Content.Controls.Single(c => c.Type == ControlTypes.RadioButtonGroup && c.Name == "TemplateRecipientPicker");
             radioButtonGroup.Radios[1].Selected = true;
             
-            using (var updatableStorage = Crate.GetUpdatableStorage(monitorDocuSignAction))
+            using (var updatableStorage = Crate.GetUpdatableStorage(monitorDocuSignEnvelopeActivity))
             {
                 updatableStorage.Remove<StandardConfigurationControlsCM>();
                 updatableStorage.Add(controlsCrate);
             }
 
-            monitorDocuSignAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", monitorDocuSignAction);
-            monitorDocuSignAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure", monitorDocuSignAction);
+            monitorDocuSignEnvelopeActivity = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", monitorDocuSignEnvelopeActivity);
+            monitorDocuSignEnvelopeActivity = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure", monitorDocuSignEnvelopeActivity);
 
             radioButtonGroup = (RadioButtonGroup)controlsCrate.Content.Controls.Single(c => c.Type == ControlTypes.RadioButtonGroup && c.Name == "TemplateRecipientPicker");
             var docuSignTemplate = radioButtonGroup.Radios[1].Controls.OfType<DropDownList>().First();
@@ -111,16 +134,16 @@ namespace terminalDocuSignTests.Integration
             docuSignTemplate.selectedKey = "Medical_Form_v1";
             docuSignTemplate.ListItems.Add(new ListItem() { Value = "9a4d2154-5b18-4316-9824-09432e62f458", Key = "Medical_Form_v1" });
 
-            using (var updatableStorage = Crate.GetUpdatableStorage(monitorDocuSignAction))
+            using (var updatableStorage = Crate.GetUpdatableStorage(monitorDocuSignEnvelopeActivity))
             {
                 updatableStorage.Remove<StandardConfigurationControlsCM>();
                 updatableStorage.Add(controlsCrate);
             }
 
-            monitorDocuSignAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", monitorDocuSignAction);
-            monitorDocuSignAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure", monitorDocuSignAction);
+            monitorDocuSignEnvelopeActivity = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", monitorDocuSignEnvelopeActivity);
+            monitorDocuSignEnvelopeActivity = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure", monitorDocuSignEnvelopeActivity);
 
-            _crateStorage = Crate.FromDto(monitorDocuSignAction.CrateStorage);
+            _crateStorage = Crate.FromDto(monitorDocuSignEnvelopeActivity.CrateStorage);
             controlsCrate = _crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
             radioButtonGroup = (RadioButtonGroup)controlsCrate.Content.Controls.Single(c => c.Type == ControlTypes.RadioButtonGroup && c.Name == "TemplateRecipientPicker");
             docuSignTemplate = radioButtonGroup.Radios[1].Controls.OfType<DropDownList>().First();
@@ -132,6 +155,23 @@ namespace terminalDocuSignTests.Integration
             // Configure Send DocuSign Envelope action
             //
             var sendEnvelopeAction = _solution.ChildrenActivities.Single(a => a.Label == "Send DocuSign Envelope");
+
+            applyToken = new ManageAuthToken_Apply()
+            {
+                ActivityId = sendEnvelopeAction.Id,
+                AuthTokenId = authTokenId,
+                IsMain = false
+            };
+
+            await HttpPostAsync<ManageAuthToken_Apply[], string>(
+                _baseUrl + "ManageAuthToken/apply",
+                new ManageAuthToken_Apply[] { applyToken }
+            );
+
+            sendEnvelopeAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                _baseUrl + "activities/configure?id=" + sendEnvelopeAction.Id,
+                sendEnvelopeAction
+            );
 
             _crateStorage = Crate.FromDto(sendEnvelopeAction.CrateStorage);
             controlsCrate = _crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
@@ -238,13 +278,15 @@ namespace terminalDocuSignTests.Integration
             // Delete plan
             //
             await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Id);
-
         }
 
-        private async Task ResolveAuth(ActivityDTO solution, ICrateStorage crateStorage)
+        private async Task<Guid> ResolveAuth(ActivityDTO solution, ICrateStorage crateStorage)
         {
-            var stAuthCrate = crateStorage.CratesOfType<StandardAuthenticationCM>().FirstOrDefault();
-            var defaultDocuSignAuthTokenExists = stAuthCrate == null;
+            var stAuthCrate = crateStorage
+                .CratesOfType<StandardAuthenticationCM>()
+                .FirstOrDefault();
+
+            var defaultDocuSignAuthTokenExists = stAuthCrate != null;
             if (!defaultDocuSignAuthTokenExists)
             {
                 //
@@ -257,8 +299,16 @@ namespace terminalDocuSignTests.Integration
                     IsDemoAccount = true,
                     TerminalId = solution.ActivityTemplate.TerminalId
                 };
-                var token = await HttpPostAsync<CredentialsDTO, JObject>(_baseUrl + "authentication/token", creds);
-                Assert.AreEqual(false, String.IsNullOrEmpty(token["authTokenId"].Value<string>()), "AuthTokenId is missing in API response.");
+                var token = await HttpPostAsync<CredentialsDTO, JObject>(
+                    _baseUrl + "authentication/token",
+                    creds
+                );
+                Assert.AreEqual(
+                    false,
+                    string.IsNullOrEmpty(token["authTokenId"].Value<string>()),
+                    "AuthTokenId is missing in API response."
+                );
+
                 Guid tokenGuid = Guid.Parse(token["authTokenId"].Value<string>());
 
                 //
@@ -268,9 +318,34 @@ namespace terminalDocuSignTests.Integration
                 {
                     ActivityId = solution.Id,
                     AuthTokenId = tokenGuid,
-                    IsMain = true
+                    IsMain = false
                 };
-                await HttpPostAsync<ManageAuthToken_Apply[], string>(_baseUrl + "ManageAuthToken/apply", new ManageAuthToken_Apply[] { applyToken });
+
+                await HttpPostAsync<ManageAuthToken_Apply[], string>(
+                    _baseUrl + "ManageAuthToken/apply",
+                    new ManageAuthToken_Apply[] { applyToken }
+                );
+
+                return tokenGuid;
+            }
+            else
+            {
+                var terminalsAndTokens =
+                    await HttpGetAsync<ManageAuthToken_Terminal[]>(
+                        _baseUrl + "manageauthtoken/"
+                    );
+
+                var terminalDocuSign = terminalsAndTokens.Single(x => x.Name == "terminalDocuSign");
+
+                var token = terminalDocuSign.AuthTokens.FirstOrDefault(x => x.IsMain);
+                if (token == null)
+                {
+                    token = terminalDocuSign.AuthTokens.FirstOrDefault();
+                }
+
+                Assert.NotNull(token);
+
+                return token.Id;
             }
         }
     }
