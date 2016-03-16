@@ -96,11 +96,6 @@ namespace HealthMonitor.Utility
             return TerminalUrl + "/activities/activate";
         }
 
-        public string GetTerminalEventsUrl()
-        {
-            return TerminalUrl + $"/terminals/{TerminalName}/events";
-        }
-
         public string GetTerminalDeactivateUrl()
         {
             return TerminalUrl + "/activities/deactivate";
