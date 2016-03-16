@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Data.Control;
 using Data.Crates;
 using Data.Entities;
+using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
@@ -22,12 +23,14 @@ namespace Hub.Services
         private readonly ICrateManager _crate;
         private readonly IRouteNode _routeNode;
         private readonly IActivity _activity;
+        private readonly ISecurityServices _security;
 
         public Subroute()
         {
             _routeNode = ObjectFactory.GetInstance<IRouteNode>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
             _activity = ObjectFactory.GetInstance<IActivity>();
+            _security = ObjectFactory.GetInstance<ISecurityServices>(); ;
         }
 
         /// <summary>
@@ -55,33 +58,57 @@ namespace Hub.Services
             //we don't want to save changes here, to enable upstream transactions
         }
 
-//        // <summary>
-//        /// Creates noew Subroute entity and add it to RouteDO. If RouteDO has no child subroute created plan becomes starting subroute.
-//        /// </summary>
-//        public SubrouteDO Create(IUnitOfWork uow, PlanDO plan, string name)
-//        {
-//            var subroute = new SubrouteDO();
-//            subroute.Id = Guid.NewGuid();
-//            subroute.RootRouteNode = plan;
-//            subroute.Fr8Account = plan.Fr8Account;
-//
-//            uow.SubrouteRepository.Add(subroute);
-//
-//            if (plan != null)
-//            {
-//                //if (!plan.Subroutes.Any())
-//                //{
-//                    plan.StartingSubroute = subroute;
-//                    subroute.StartingSubroute = true;
-//                //}
-//            }
-//
-//            subroute.Name = name;
-//
-//
-//
-//            return subroute;
-//        }
+        //        // <summary>
+        //        /// Creates noew Subroute entity and add it to RouteDO. If RouteDO has no child subroute created plan becomes starting subroute.
+        //        /// </summary>
+        //        public SubrouteDO Create(IUnitOfWork uow, PlanDO plan, string name)
+        //        {
+        //            var subroute = new SubrouteDO();
+        //            subroute.Id = Guid.NewGuid();
+        //            subroute.RootRouteNode = plan;
+        //            subroute.Fr8Account = plan.Fr8Account;
+        //
+        //            uow.SubrouteRepository.Add(subroute);
+        //
+        //            if (plan != null)
+        //            {
+        //                //if (!plan.Subroutes.Any())
+        //                //{
+        //                    plan.StartingSubroute = subroute;
+        //                    subroute.StartingSubroute = true;
+        //                //}
+        //            }
+        //
+        //            subroute.Name = name;
+        //
+        //
+        //
+        //            return subroute;
+        //        }
+
+        /// <summary>
+        /// Create Subroute entity.
+        /// </summary>
+        public void Create(IUnitOfWork uow, SubrouteDO subroute)
+        {
+            if (subroute == null)
+            {
+                throw new ArgumentNullException(nameof(subroute));
+            }
+
+            subroute.Fr8Account = _security.GetCurrentAccount(uow);
+            subroute.CreateDate = DateTime.UtcNow;
+            subroute.LastUpdated = subroute.CreateDate;
+
+            var curPlan = uow.PlanRepository.GetById<PlanDO>(subroute.RootRouteNodeId);
+
+            if (curPlan == null)
+            {
+                throw new Exception($"Unable to find plan by id = {subroute.RootRouteNodeId}");
+            }
+
+            curPlan.AddChildWithDefaultOrdering(subroute);
+        }
 
         /// <summary>
         /// Update Subroute entity.

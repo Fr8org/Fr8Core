@@ -16,7 +16,7 @@ module dockyard.controllers {
         planId: string;
         subroutes: Array<model.SubrouteDTO>;
         fields: Array<model.Field>;
-        currentSubroute: model.SubrouteDTO;
+        //currentSubroute: model.SubrouteDTO;
 
         // Identity of currently edited processNodeTemplate.
         //curNodeId: number;
@@ -24,6 +24,7 @@ module dockyard.controllers {
         //curNodeIsTempId: boolean;
         current: model.RouteBuilderState;
         actionGroups: model.ActionGroup[];
+        processedSubRoutes: any[];
 
         addAction(group: model.ActionGroup): void;
         deleteAction: (action: model.ActivityDTO) => void;
@@ -33,8 +34,10 @@ module dockyard.controllers {
         isBusy: () => boolean;
         onActionDrop: (group: model.ActionGroup, actionId: string, index: number) => void;
         mode: string;
+        editingMode: string;
         solutionName: string;
         curAggReloadingActions: Array<string>;
+        addSubPlan: () => void;
     }
 
 
@@ -43,7 +46,7 @@ module dockyard.controllers {
     import pca = dockyard.directives.paneConfigureAction;
     import psa = dockyard.directives.paneSelectAction;
 
-    class RouteBuilderController {
+    export class RouteBuilderController {
         // $inject annotation.
         // It provides $injector with information about dependencies to be injected into constructor
         // it is better to have it close to the constructor, because the parameters must match in count and type.
@@ -65,7 +68,8 @@ module dockyard.controllers {
             'LayoutService',
             '$modal',
             'AuthService',
-            'ConfigureTrackerService'
+            'ConfigureTrackerService',
+            'SubPlanService'
         ];
 
         private _longRunningActionsCounter: number;
@@ -86,9 +90,11 @@ module dockyard.controllers {
             private LayoutService: services.ILayoutService,
             private $modal: any,
             private AuthService: services.AuthService,
-            private ConfigureTrackerService: services.ConfigureTrackerService
+            private ConfigureTrackerService: services.ConfigureTrackerService,
+            private SubPlanService: services.ISubPlanService
             ) {
 
+            this.LayoutService.resetLayout();
             this.$scope.current = new model.RouteBuilderState();
             this.$scope.actionGroups = [];
 
@@ -107,6 +113,7 @@ module dockyard.controllers {
             this._longRunningActionsCounter = 0;
 
             $scope.deleteAction = <() => void>angular.bind(this, this.deleteAction);
+            $scope.addSubPlan = <() => void> angular.bind(this, this.addSubPlan);
             $scope.reConfigureAction = (action: model.ActivityDTO) => {
                 var actionsArray = new Array<model.ActivityDTO>();
                 actionsArray.push(action);
@@ -137,9 +144,9 @@ module dockyard.controllers {
 
                 //TODO check parent action change with a more solid method
                 //this action is moved to a different parent
-                if (realAction.parentRouteNodeId !== group.activities[0].parentRouteNodeId) {
+                if (realAction.parentRouteNodeId !== group.envelopes[0].activity.parentRouteNodeId) {
                     //set new parent
-                    realAction.parentRouteNodeId = group.activities[0].parentRouteNodeId;
+                    realAction.parentRouteNodeId = group.envelopes[0].activity.parentRouteNodeId;
                 } else {
                     //this action is moved to same parent
                     //our index calculation might have been wrong
@@ -203,6 +210,24 @@ module dockyard.controllers {
 
         private stopLoader() {
             this._loading = false;
+        }
+
+        private setAdvancedEditingMode() {
+            this.$scope.editingMode = 'advanced';
+        }
+
+        private addSubPlan() {
+            var currentRoute = this.$scope.current.route;
+
+            this.setAdvancedEditingMode();
+            var newSubPlan = new model.SubrouteDTO(null, true, currentRoute.id, "SubPlan-" + currentRoute.subroutes.length);
+            
+            this.SubPlanService.create(newSubPlan).$promise.then((createdSubPlan: model.SubrouteDTO) => {
+                createdSubPlan.activities = [];
+                createdSubPlan.criteria = null;
+                currentRoute.subroutes.push(createdSubPlan);
+                this.renderRoute(<interfaces.IRouteVM>currentRoute);
+            });
         }
 
         //re-orders actions according to their position on array
@@ -285,13 +310,11 @@ module dockyard.controllers {
 
         private findActionById(id: string): model.ActivityDTO {
             for (var subroute of this.$scope.current.route.subroutes) {
-                for (var action of subroute.activities) {
                     var foundAction = this.searchAction(id, subroute.activities);
                     if (foundAction !== null) {
                         return foundAction;
                     }
                 }
-            }
 
             return null;
         }
@@ -348,7 +371,10 @@ module dockyard.controllers {
 
             this.$scope.mode = mode;
             this.$scope.current.route = curRoute;
-            this.$scope.currentSubroute = curRoute.subroutes[0];
+            //this.$scope.currentSubroute = curRoute.subroutes[0];
+            if (curRoute.subroutes.length > 1) {
+                this.setAdvancedEditingMode();
+            }
             this.renderRoute(curRoute);
         }
 
@@ -395,17 +421,17 @@ module dockyard.controllers {
         }
 
         private renderRoute(curRoute: interfaces.IRouteVM) {
-            if (curRoute.subroutes.length == 0) return;
 
-            var actions = [];
+            this.LayoutService.resetLayout();
+
+            if (curRoute.subroutes.length === 0) return;
+
+            this.$scope.processedSubRoutes = [];
             for (var subroute of curRoute.subroutes) {
-                for (var action of subroute.activities) {
-                    actions.push(action);
+                var actionGroups = this.LayoutService.placeActions(subroute.activities, subroute.id);
+                this.$scope.processedSubRoutes.push({ subroute: subroute, actionGroups: actionGroups });
                 }
             }
-
-            this.$scope.actionGroups = this.LayoutService.placeActions(actions, curRoute.startingSubrouteId);
-        }
 
         private renderActions(activitiesCollection: model.ActivityDTO[]) {
             if (activitiesCollection != null && activitiesCollection.length != 0) {
@@ -446,10 +472,10 @@ module dockyard.controllers {
         private getDownstreamActions(currentAction: model.ActivityDTO) {
             var results: Array<model.ActivityDTO> = [];
             this.$scope.actionGroups.forEach(group => {
-                group.activities.filter((action: model.ActivityDTO) => {
-                    return action.parentRouteNodeId === currentAction.parentRouteNodeId && action.ordering > currentAction.ordering;
-                }).forEach(action => {
-                    results.push(action);
+                group.envelopes.filter((envelope: model.ActivityEnvelope) => {
+                    return envelope.activity.parentRouteNodeId === currentAction.parentRouteNodeId && envelope.activity.ordering > currentAction.ordering;
+                }).forEach(envelope => {
+                    results.push(envelope.activity);
                 });
             });
             return results;
@@ -505,12 +531,7 @@ module dockyard.controllers {
             var activityTemplate = eventArgs.activityTemplate;
             // Generate next Id.
             var id = this.LocalIdentityGenerator.getNextId();
-            var parentId = this.$scope.currentSubroute.id;
-            if (eventArgs.group !== null && eventArgs.group.parentAction !== null) {
-                parentId = eventArgs.group.parentAction.id;
-            }
-            // Create new action object.
-
+            var parentId = eventArgs.group.parentId;
             var action = new model.ActivityDTO(this.$scope.planId, parentId, id);
 
             action.label = activityTemplate.label;
@@ -522,16 +543,14 @@ module dockyard.controllers {
 
         private addActionToUI(action: model.ActivityDTO, group: model.ActionGroup) {
             this.$scope.current.activities = action;
-            if (group !== null && group.parentAction !== null) {
-                group.parentAction.childrenActivities.push(action);
-            } else {
-                this.$scope.currentSubroute.activities.push(action);
-            }
 
-            //lets check if this add operation requires a complete re-render
-            /*if (action.childrenActions.length < 1 && action.activityTemplate.type !== 'Loop') {
-                return;
-            }*/
+            var parentAction = this.findActionById(action.parentRouteNodeId);
+            if (parentAction != null) {
+                parentAction.childrenActivities.push(action);
+            } else {
+                var subRoute = this.findSubRouteById(action.parentRouteNodeId);
+                subRoute.activities.push(action);
+            }
 
             this.renderRoute(<interfaces.IRouteVM>this.$scope.current.route);
         }
@@ -729,10 +748,10 @@ module dockyard.controllers {
         private getAgressiveReloadingActions (actionGroups: Array<model.ActionGroup>, currentAction: interfaces.IActivityDTO) {
             var results: Array<model.ActivityDTO> = [];
             actionGroups.forEach(group => {
-                group.activities.filter(action => {
-                    return action.activityTemplate.tags !== null && action.activityTemplate.tags.indexOf('AggressiveReload') !== -1;
-                }).forEach(action => {
-                    results.push(action);
+                group.envelopes.filter(envelope => {
+                    return envelope.activity.activityTemplate.tags !== null && envelope.activity.activityTemplate.tags.indexOf('AggressiveReload') !== -1;
+                }).forEach(env => {
+                    results.push(env.activity);
                 });
             });
 

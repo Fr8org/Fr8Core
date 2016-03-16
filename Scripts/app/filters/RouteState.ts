@@ -6,17 +6,15 @@
 module dockyard {
     'use strict';
     app.filter('RouteState', () =>
-        function(input : number) : string {
+        (input : number): string => {
             switch (input)
             {
-                case model.RouteState.Active:
-                    return "Active";
-                    break;
-                case model.RouteState.Inactive:
-                    return "Inactive";
-                    break;
-                default:
-                    return "Inactive";
+            case model.RouteState.Active:
+                return "Active";
+            case model.RouteState.Inactive:
+                return "Inactive";
+            default:
+                return "Inactive";
             }
         }); 
 }
