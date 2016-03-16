@@ -48,14 +48,8 @@ namespace terminalDocuSign.Actions
                 });
             }
         }
+        
 
-        private readonly IDocuSignManager _docuSignManager;
-        //Left for compaitbility reasons
-        public Archive_DocuSign_Template_v1() : this(null) { }
-        public Archive_DocuSign_Template_v1(IDocuSignManager docuSignManager)
-        {
-            _docuSignManager = docuSignManager ?? new DocuSignManager();
-        }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
@@ -69,9 +63,8 @@ namespace terminalDocuSign.Actions
 
         protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
             var configurationCrate = PackControls(new ActivityUi());
-            _docuSignManager.FillDocuSignTemplateSource(configurationCrate, "Available_Templates", docuSignAuthDTO);
+            FillDocuSignTemplateSource(configurationCrate, "Available_Templates", authTokenDO);
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
