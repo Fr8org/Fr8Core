@@ -464,7 +464,6 @@ namespace HubWeb.Controllers
                     responseMsg = "\n" + responseMessage.Message;
                 }
             }
-
             return responseMsg;
         }
 
