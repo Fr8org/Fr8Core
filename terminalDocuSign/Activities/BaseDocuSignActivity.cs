@@ -13,21 +13,21 @@ using TerminalBase.BaseClasses;
 using terminalDocuSign.Infrastructure;
 using Hub.Managers;
 using Data.States;
-using Newtonsoft.Json;
 using terminalDocuSign.Services.New_Api;
 using StructureMap;
-using Data.Control;
 
 namespace terminalDocuSign.Actions
 {
     public abstract class BaseDocuSignActivity : BaseTerminalActivity
     {
+        protected IDocuSignManager DocuSignManager;
 
         protected ICrateManager Crate;
 
         public BaseDocuSignActivity()
         {
             Crate = ObjectFactory.GetInstance<ICrateManager>();
+            DocuSignManager = ObjectFactory.GetInstance<IDocuSignManager>();
         }
 
         protected List<FieldDTO> CreateDocuSignEventFields()

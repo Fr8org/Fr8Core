@@ -123,6 +123,8 @@ namespace terminalDocuSign.Actions
             }
         }
 
+        private IDocuSignManager _docuSignManager;
+
         // Mapping between quiery builder control field names and information about how this field is routed to the backed 
         private Dictionary<string, FieldBackedRoutingInfo> _queryBuilderFields;
 
@@ -147,7 +149,7 @@ namespace terminalDocuSign.Actions
         public Generate_DocuSign_Report_v1()
         {
             _plan = ObjectFactory.GetInstance<IPlan>();
-
+            _docuSignManager = ObjectFactory.GetInstance<IDocuSignManager>();
             InitQueryBuilderFields();
         }
 
@@ -673,7 +675,7 @@ namespace terminalDocuSign.Actions
         public ControlDefinitionDTO CreateFolderDropDownListControl(
         string key, AuthorizationTokenDO authToken)
         {
-            var conf = DocuSignManager.SetUp(authToken);
+            var conf = _docuSignManager.SetUp(authToken);
             return new DropDownList()
             {
                 Name = "QueryField_" + key,

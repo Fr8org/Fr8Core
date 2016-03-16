@@ -136,11 +136,10 @@ namespace terminalDocuSign.Actions
             var control = (T)controls.FindByName(name);
             return control;
         }
-        /*
+        
         protected internal override ValidationResult ValidateActivityInternal(ActivityDO curActivityDO)
         {
             var errorMessages = new List<string>();
-            //validate DocuSignTemplate for present selected template 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 var templateList = GetStdConfigurationControl<DropDownList>(crateStorage, "DocuSignTemplate");
@@ -166,9 +165,9 @@ namespace terminalDocuSign.Actions
                             : "Data source is not selected"
                         : "No data source exists");
             }
+            errorMessages.RemoveAll(string.IsNullOrEmpty);
             return errorMessages.Count == 0 ? ValidationResult.Success : new ValidationResult(string.Join(Environment.NewLine, errorMessages.Where(x => !string.IsNullOrEmpty(x))));
         }
-        */
         /// <summary>
         /// If there's a value in select_file field of the crate, then it is a followup call.
         /// </summary>

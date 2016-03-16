@@ -18,16 +18,15 @@ using Utilities.Configuration.Azure;
 
 namespace terminalDocuSign.Services.New_Api
 {
-
     public class DocuSignApiConfiguration
     {
         public string AccountId;
         public Configuration Configuration;
     }
 
-    public class DocuSignManager
+    public class DocuSignManager : IDocuSignManager
     {
-        public static DocuSignApiConfiguration SetUp(AuthorizationTokenDO authTokenDO)
+        public DocuSignApiConfiguration SetUp(AuthorizationTokenDO authTokenDO)
         {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
             //create configuration for future api calls
@@ -49,7 +48,7 @@ namespace terminalDocuSign.Services.New_Api
             return result;
         }
 
-        public static List<FieldDTO> GetTemplatesList(DocuSignApiConfiguration conf)
+        public List<FieldDTO> GetTemplatesList(DocuSignApiConfiguration conf)
         {
             var tmpApi = new TemplatesApi(conf.Configuration);
             var result = tmpApi.ListTemplates(conf.AccountId);
@@ -60,7 +59,7 @@ namespace terminalDocuSign.Services.New_Api
                 return new List<FieldDTO>();
         }
 
-        public static JObject DownloadDocuSignTemplate(DocuSignApiConfiguration config, string selectedDocusignTemplateId)
+        public JObject DownloadDocuSignTemplate(DocuSignApiConfiguration config, string selectedDocusignTemplateId)
         {
             // we probably need to make multiple calls to api to collect all template info, i.e. recipients, tabs etc.
             //return Mapper.Map<DocuSignTemplateDTO>(jObjTemplate);
@@ -68,13 +67,13 @@ namespace terminalDocuSign.Services.New_Api
             throw new NotImplementedException();
         }
 
-        public static IEnumerable<FieldDTO> GetEnvelopeRecipientsAndTabs(DocuSignApiConfiguration conf, string envelopeId)
+        public IEnumerable<FieldDTO> GetEnvelopeRecipientsAndTabs(DocuSignApiConfiguration conf, string envelopeId)
         {
             var envApi = new EnvelopesApi(conf.Configuration);
             return GetRecipientsAndTabs(conf, envApi, envelopeId);
         }
 
-        public static IEnumerable<FieldDTO> GetTemplateRecipientsAndTabs(DocuSignApiConfiguration conf, string templateId)
+        public IEnumerable<FieldDTO> GetTemplateRecipientsAndTabs(DocuSignApiConfiguration conf, string templateId)
         {
             var tmpApi = new TemplatesApi(conf.Configuration);
             return GetRecipientsAndTabs(conf, tmpApi, templateId);
@@ -83,7 +82,7 @@ namespace terminalDocuSign.Services.New_Api
         #region Send DocuSign Envelope methods
 
         //this is purely for Send_DocuSign_Envelope activity
-        public static Tuple<IEnumerable<FieldDTO>, IEnumerable<DocuSignTabDTO>> GetTemplateRecipientsTabsAndDocuSignTabs(DocuSignApiConfiguration conf, string templateId)
+        public Tuple<IEnumerable<FieldDTO>, IEnumerable<DocuSignTabDTO>> GetTemplateRecipientsTabsAndDocuSignTabs(DocuSignApiConfiguration conf, string templateId)
         {
             var tmpApi = new TemplatesApi(conf.Configuration);
             var recipientsAndTabs = new List<FieldDTO>();
@@ -105,7 +104,7 @@ namespace terminalDocuSign.Services.New_Api
             return new Tuple<IEnumerable<FieldDTO>, IEnumerable<DocuSignTabDTO>>(recipientsAndTabs, docuTabs);
         }
 
-        public static void SendAnEnvelopeFromTemplate(DocuSignApiConfiguration loginInfo, List<FieldDTO> rolesList, List<FieldDTO> fieldList, string curTemplateId)
+        public void SendAnEnvelopeFromTemplate(DocuSignApiConfiguration loginInfo, List<FieldDTO> rolesList, List<FieldDTO> fieldList, string curTemplateId)
         {
 
             //creatig an envelope definiton
