@@ -25,7 +25,7 @@ namespace terminalSlackTests.Integration
 
     [Explicit]
     [Category("terminalSlack.Integration")]
-    public class Monitor_Channel_v1Test : BaseTerminalIntegrationTest
+    public class Monitor_Channel_v1Tests : BaseTerminalIntegrationTest
     {
         private const string infoTextBlockValue =
           @"Slack doesn't currently offer a way for us to automatically request events for this channel. 
