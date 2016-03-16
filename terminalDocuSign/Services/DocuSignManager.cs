@@ -1,287 +1,246 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Web;
-using AutoMapper;
-using Data.Constants;
-using Data.Control;
-using Data.Crates;
-using Data.States;
-using DocuSign.Integrations.Client;
-using StructureMap;
-using Data.Interfaces;
+﻿using Data.Control;
+using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Hub.Managers;
-using terminalDocuSign.DataTransferObjects;
-using Data.Entities;
+using Data.States;
+using DocuSign.eSign.Api;
+using DocuSign.eSign.Client;
+using DocuSign.eSign.Model;
 using Newtonsoft.Json;
-using terminalDocuSign.Actions;
-using terminalDocuSign.Infrastructure;
-using terminalDocuSign.Interfaces;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using terminalDocuSign.DataTransferObjects;
+using terminalDocuSign.Services.NewApi;
+using Utilities.Configuration.Azure;
 
-namespace terminalDocuSign.Services
+namespace terminalDocuSign.Services.New_Api
 {
 
+    public class DocuSignApiConfiguration
+    {
+        public string AccountId;
+        public dynamic Configuration;
+    }
 
-    //public class DocuSignManager
-    //{
-    //    protected ICrateManager Crate;
-    //   // private readonly IDocuSignFolder _docuSignFolder;
+    public class DocuSignManager
+    {
+        public static DocuSignApiConfiguration SetUp(AuthorizationTokenDO authTokenDO)
+        {
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
+            //create configuration for future api calls
+            string baseUrl = CloudConfigurationManager.GetSetting("environment") + "restapi/";
+            string integratorKey = CloudConfigurationManager.GetSetting("DocuSignIntegratorKey");
+            ApiClient apiClient = new ApiClient(baseUrl);
+            string authHeader = "bearer " + docuSignAuthDTO.ApiPassword;
+            Configuration conf = new Configuration(apiClient);
+            conf.AddDefaultHeader("Authorization", authHeader);
+            DocuSignApiConfiguration result = new DocuSignApiConfiguration() { AccountId = docuSignAuthDTO.AccountId, Configuration = conf };
 
-    //    public DocuSignManager()
-    //    {
-    //        Crate = ObjectFactory.GetInstance<ICrateManager>();
-    //       // _docuSignFolder = ObjectFactory.GetInstance<IDocuSignFolder>();
-    //    }
+            if (string.IsNullOrEmpty(docuSignAuthDTO.AccountId)) //we deal with and old token, that don't have accountId yet
+            {
+                AuthenticationApi authApi = new AuthenticationApi(conf);
+                LoginInformation loginInfo = authApi.Login();
+                result.AccountId = loginInfo.LoginAccounts[0].AccountId; //it seems that althought one DocuSign account can have multiple users - only one is returned, the one that oAuth token was created for
+            }
 
-    //    public static DropDownList CreateDocuSignTemplatePicker(
-    //        bool addOnChangeEvent,
-    //        string name = "Selected_DocuSign_Template",
-    //        string label = "Select DocuSign Template")
-    //    {
-    //        var control = new DropDownList()
-    //        {
-    //            Label = label,
-    //            Name = name,
-    //            Required = true,
-    //            Source = null
-    //        };
+            return result;
+        }
 
-    //        if (addOnChangeEvent)
-    //        {
-    //            control.Events = new List<ControlEvent>()
-    //            {
-    //                new ControlEvent("onChange", "requestConfig")
-    //            };
-    //        }
+        public static List<FieldDTO> GetTemplatesList(DocuSignApiConfiguration conf)
+        {
+            var tmpApi = new TemplatesApi(conf.Configuration);
+            var result = tmpApi.ListTemplates(conf.AccountId);
+            if (result.EnvelopeTemplates != null && result.EnvelopeTemplates.Count > 0)
+                return result.EnvelopeTemplates.Where(a => !string.IsNullOrEmpty(a.Name))
+                    .Select(a => new FieldDTO(a.Name, a.TemplateId) { Availability = AvailabilityType.Configuration }).ToList();
+            else
+                return new List<FieldDTO>();
+        }
 
-    //        return control;
-    //    }
+        public static JObject DownloadDocuSignTemplate(DocuSignApiConfiguration config, string selectedDocusignTemplateId)
+        {
+            // we probably need to make multiple calls to api to collect all template info, i.e. recipients, tabs etc.
+            //return Mapper.Map<DocuSignTemplateDTO>(jObjTemplate);
 
-    //    //public DocuSignTemplateDTO DownloadDocuSignTemplate(DocuSignAuthTokenDTO authToken, string templateId)
-    //    //{
-    //    //    var template = new DocuSignTemplate();
-    //    //    var templateDTO = template.GetTemplateById(authToken.Email, authToken.ApiPassword, templateId);
-    //    //    return templateDTO;
-    //    //}
+            throw new NotImplementedException();
+        }
 
-    //    //public Crate PackCrate_DocuSignTemplateNames(DocuSignAuthTokenDTO authToken)
-    //    //{
-    //    //    var template = new DocuSignTemplate();
-    //    //    var templates = template.GetTemplateNames(authToken.Email, authToken.ApiPassword);
-    //    //    var fields = templates.Select(x => new FieldDTO() { Key = x.Name, Value = x.Id, Availability = AvailabilityType.Configuration }).ToArray();
-    //    //    var createDesignTimeFields = Crate.CreateDesignTimeFieldsCrate(
-    //    //        "Available Templates",
-    //    //        AvailabilityType.Configuration,
-    //    //        fields);
-    //    //    return createDesignTimeFields;
-    //    //}
+        public static IEnumerable<FieldDTO> GetEnvelopeRecipientsAndTabs(DocuSignApiConfiguration conf, string envelopeId)
+        {
+            var envApi = new EnvelopesApi(conf.Configuration);
+            return GetRecipientsAndTabs(conf, envApi, envelopeId);
+        }
 
+        public static IEnumerable<FieldDTO> GetTemplateRecipientsAndTabs(DocuSignApiConfiguration conf, string templateId)
+        {
+            var tmpApi = new TemplatesApi(conf.Configuration);
+            return GetRecipientsAndTabs(conf, tmpApi, templateId);
+        }
 
+        #region Send DocuSign Envelope methods
 
-    //    //private List<ListItem> GetDocuSignTemplates(DocuSignAuthTokenDTO authToken)
-    //    //{
-    //    //    var template = new DocuSignTemplate();
-    //    //    var templates = template.GetTemplateNames(authToken.Email, authToken.ApiPassword);
-    //    //    return templates.Select(x => new ListItem() { Key = x.Name, Value = x.Id }).ToList();
-    //    //}
+        //this is purely for Send_DocuSign_Envelope activity
+        public static Tuple<IEnumerable<FieldDTO>, IEnumerable<DocuSignTabDTO>> GetTemplateRecipientsTabsAndDocuSignTabs(DocuSignApiConfiguration conf, string templateId)
+        {
+            var tmpApi = new TemplatesApi(conf.Configuration);
+            var recipientsAndTabs = new List<FieldDTO>();
+            var docuTabs = new List<DocuSignTabDTO>();
 
-    //    #region Fill Folder Source
+            var recipients = GetRecipients(conf, tmpApi, templateId);
+            recipientsAndTabs.AddRange(MapRecipientsToFieldDTO(recipients));
 
-    //    //public void FillFolderSource(Crate configurationCrate, string controlName, DocuSignAuthTokenDTO authToken)
-    //    //{
-    //    //    var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
-    //    //    var control = configurationControl.FindByNameNested<DropDownList>(controlName);
-    //    //    if (control != null)
-    //    //    {
-    //    //        control.ListItems = GetFolderItems(authToken);
-    //    //    }
-    //    //}
+            foreach (var signer in recipients.Signers)
+            {
+                var tabs = tmpApi.ListTabs(conf.AccountId, templateId, signer.RecipientId, new Tabs());
+                var signersdocutabs = DocuSignTab.ExtractTabs(JObject.Parse(tabs.ToJson()), signer.RoleName).ToList();
+                docuTabs.AddRange(signersdocutabs);
+                recipientsAndTabs.AddRange(DocuSignTab.MapTabsToFieldDTO(signersdocutabs));
+            }
 
-    //    //private List<ListItem> GetFolderItems(DocuSignAuthTokenDTO authToken)
-    //    //{
-    //    //    var folders = _docuSignFolder.GetSearchFolders(authToken.Email, authToken.ApiPassword);
-    //    //    return folders.Select(x => new ListItem() { Key = x.Name, Value = x.FolderId }).ToList();
-    //    //}
+            recipientsAndTabs.ForEach(a => a.Availability = AvailabilityType.RunTime);
 
-    //    #endregion
+            return new Tuple<IEnumerable<FieldDTO>, IEnumerable<DocuSignTabDTO>>(recipientsAndTabs, docuTabs);
+        }
 
-    //    #region Fill Status Source
+        public static void SendAnEnvelopeFromTemplate(DocuSignApiConfiguration loginInfo, List<FieldDTO> rolesList, List<FieldDTO> fieldList, string curTemplateId)
+        {
 
-    //    //public void FillStatusSource(Crate configurationCrate, string controlName)
-    //    //{
-    //    //    var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
-    //    //    var control = configurationControl.FindByNameNested<DropDownList>(controlName);
-    //    //    if (control != null)
-    //    //    {
-    //    //        control.ListItems = DocusignQuery.Statuses.Select(x => new ListItem() { Key = x.Key, Value = x.Value }).ToList();
-    //    //    }
-    //    //}
-    //    #endregion
+            //creatig an envelope definiton
+            EnvelopeDefinition envDef = new EnvelopeDefinition();
+            envDef.EmailSubject = "Test message from Fr8";
+            envDef.TemplateId = curTemplateId;
+            envDef.Status = "created";
 
-    //    //public StandardPayloadDataCM CreateActivityPayload(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO, string curEnvelopeId, string templateId)
-    //    //{
-    //    //    var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
-
-    //    //    var docusignEnvelope = new DocuSignEnvelope(
-    //    //        docuSignAuthDTO.Email,
-    //    //        docuSignAuthDTO.ApiPassword);
-
-    //    //    var templateFields = ExtractTemplateFieldsAndAddToCrate(templateId, docuSignAuthDTO, curActivityDO);
-
-    //    //    var curEnvelopeData = docusignEnvelope.GetEnvelopeData(curEnvelopeId);
-    //    //    var payload = docusignEnvelope.FormEnvelopePayload(templateFields.ToList(), curEnvelopeId, curEnvelopeData);
-
-    //    //    return new StandardPayloadDataCM(payload.ToArray());
-    //    //}
+            //creating an envelope
+            EnvelopesApi envelopesApi = new EnvelopesApi(loginInfo.Configuration);
+            EnvelopeSummary envelopeSummary = envelopesApi.CreateEnvelope(loginInfo.AccountId, envDef);
 
 
-    //    ////Has to be retrofit after https://maginot.atlassian.net/browse/FR-1280 is done
-    //    //public string GetEnvelopeIdFromPayload(PayloadDTO curPayloadDTO)
-    //    //{
-    //    //    var standardPayload = Crate.FromDto(curPayloadDTO.CrateStorage).CrateContentsOfType<StandardPayloadDataCM>().FirstOrDefault();
+            var templatesApi = new TemplatesApi(loginInfo.Configuration);
+            var templateRecepients = templatesApi.ListRecipients(loginInfo.AccountId, curTemplateId);
 
-    //    //    if (standardPayload == null)
-    //    //    {
-    //    //        return null;
-    //    //    }
+            var recepients = envelopesApi.ListRecipients(loginInfo.AccountId, envelopeSummary.EnvelopeId);
 
-    //    //    var envelopeId = standardPayload.GetValues("EnvelopeId").FirstOrDefault();
+            //updating recipients
+            foreach (var recepient in recepients.Signers)
+            {
+                var corresponding_template_recipient = templateRecepients.Signers.Where(a => a.RoutingOrder == recepient.RoutingOrder).FirstOrDefault();
+                var related_fields = rolesList.Where(a => a.Tags.Contains("recipientId:" + corresponding_template_recipient.RecipientId));
+                recepient.Name = related_fields.Where(a => a.Key.Contains("role name")).FirstOrDefault().Value;
+                recepient.Email = related_fields.Where(a => a.Key.Contains("role email")).FirstOrDefault().Value;
 
-    //    //    return envelopeId;
-    //    //}
+                //updating tabs
+                var tabs = envelopesApi.ListTabs(loginInfo.AccountId, envelopeSummary.EnvelopeId, recepient.RecipientId);
+                JObject jobj = JObject.Parse(tabs.ToJson());
+                foreach (var item in jobj.Properties())
+                {
+                    string tab_type = item.Name;
+                    var fields = fieldList.Where(a => a.Tags.Contains(tab_type) && a.Tags.Contains("recipientId:" + corresponding_template_recipient.RecipientId));
+                    foreach (JObject tab in item.Value)
+                    {
+                        FieldDTO corresponding_field = null;
+                        switch (tab_type)
+                        {
+                            case "radioGroupTabs":
+                                corresponding_field = fields.Where(a => a.Key.Contains(tab.Property("groupName").Value.ToString())).FirstOrDefault();
+                                if (corresponding_field == null)
+                                    break;
+                                tab["radios"].Where(a => a["value"].ToString() == corresponding_field.Value).FirstOrDefault()["selected"] = "true";
+                                foreach (var radioItem in tab["radios"].Where(a => a["value"].ToString() != corresponding_field.Value).ToList())
+                                {
+                                    radioItem["selected"] = "false";
+                                }
+                                break;
 
-    //    //public int UpdateUserDefinedFields(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO, IUpdatableCrateStorage updater, string templateId, string envelopeId = null)
-    //    //{
-    //    //    int fieldCount = 0;
-    //    //    updater.RemoveByLabel("DocuSignTemplateUserDefinedFields");
-    //    //    if (!String.IsNullOrEmpty(templateId))
-    //    //    {
-    //    //        var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
-    //    //        var userDefinedFields = ExtractTemplateFieldsAndAddToCrate(templateId, docuSignAuthDTO, curActivityDO);
-    //    //        updater.Add(Crate.CreateDesignTimeFieldsCrate("DocuSignTemplateUserDefinedFields", AvailabilityType.RunTime, userDefinedFields.ToArray()));
-    //    //        fieldCount = userDefinedFields.Count();
-    //    //    }
-    //    //    return fieldCount;
-    //    //}
+                            case "listTabs":
+                                corresponding_field = fields.Where(a => a.Key.Contains(tab.Property("tabLabel").Value.ToString())).FirstOrDefault();
+                                if (corresponding_field == null)
+                                    break;
+                                tab["listItems"].Where(a => a["value"].ToString() == corresponding_field.Value.Trim()).FirstOrDefault()["selected"] = "true";
+                                foreach (var listItem in tab["listItems"].Where(a => a["value"].ToString() != corresponding_field.Value.Trim()))
+                                {
+                                    //set all other to false
+                                    listItem["selected"] = "false";
+                                }
+                                //["selected"] = "true";
+                                tab["value"] = corresponding_field.Value;
+                                break;
+                            case "checkboxTabs":
+                                corresponding_field = fields.Where(a => a.Key.Contains(tab.Property("tabLabel").Value.ToString())).FirstOrDefault();
+                                if (corresponding_field == null)
+                                    break;
+                                tab["selected"] = corresponding_field.Value;
+                                break;
+                            default:
+                                corresponding_field = fields.Where(a => a.Key.Contains(tab.Property("tabLabel").Value.ToString())).FirstOrDefault();
+                                if (corresponding_field == null)
+                                    break;
+                                tab["value"] = corresponding_field.Value;
+                                break;
+                        }
+                    }
+                }
 
-    //    /// <summary>
-    //    /// Extracts fields from a DocuSign envelope.
-    //    /// </summary>
-    //    /// <param name="docuSignTemplateId">DocuSign TemplateId.</param>
-    //    /// <param name="docuSignAuthToken">DocuSign authentication token.</param>
-    //    /// <param name="curActivityDO">ActionDO object representing the current action. The crate with extracted 
-    //    /// fields will be added to this Action replacing any older instances of that crate.</param>
-    //    //public IEnumerable<FieldDTO> ExtractTemplateFieldsAndAddToCrate(string templateId, DocuSignAuthTokenDTO docuSignAuthToken, ActivityDO curActivityDO)
-    //    //{
-    //    //    if (!string.IsNullOrEmpty(templateId))
-    //    //    {
-    //    //        var docusignEnvelope = new DocuSignEnvelope(
-    //    //            docuSignAuthToken.Email, docuSignAuthToken.ApiPassword);
+                tabs = jobj.ToObject<Tabs>();
 
-    //    //        var userDefinedFields = docusignEnvelope
-    //    //            .GetEnvelopeDataByTemplate(templateId);
+                envelopesApi.UpdateTabs(loginInfo.AccountId, envelopeSummary.EnvelopeId, recepient.RecipientId, tabs);
+                //end of tabs updating
+            }
 
-    //    //        var fieldCollection = userDefinedFields
-    //    //            .Select(f => new FieldDTO
-    //    //            {
-    //    //                Key = f.Name,
-    //    //                Value = f.Value == string.Empty ? null : f.Value, //set value as null because is causing problems in upstream crates selection FR-2486 
-    //    //                Availability = AvailabilityType.RunTime
-    //    //            });
-    //    //        return fieldCollection;
-    //    //    }
+            envelopesApi.UpdateRecipients(loginInfo.AccountId, envelopeSummary.EnvelopeId, recepients);
 
-    //    //    throw new ApplicationException("Docusign TemplateId is null or emty");
-    //    //}
+            envelopesApi.Update(loginInfo.AccountId, envelopeSummary.EnvelopeId, new Envelope() { Status = "sent" });
+        }
 
-    //    //public Crate CrateCrateFromFields(string docuSignTemplateId, DocuSignAuthTokenDTO docuSignAuthToken, string crateLabel)
-    //    //{
-    //    //    if (!string.IsNullOrEmpty(docuSignTemplateId))
-    //    //    {
-    //    //        var docusignEnvelope = new DocuSignEnvelope(
-    //    //            docuSignAuthToken.Email, docuSignAuthToken.ApiPassword);
+        #endregion
 
-    //    //        var userDefinedFields = docusignEnvelope
-    //    //            .GetEnvelopeDataByTemplate(docuSignTemplateId);
+        #region private methods
 
-    //    //        var fieldCollection = userDefinedFields
-    //    //            .Select(f => new FieldDTO
-    //    //            {
-    //    //                Key = f.Name,
-    //    //                Value = f.Value
-    //    //            });
+        private static IEnumerable<FieldDTO> GetRecipientsAndTabs(DocuSignApiConfiguration conf, dynamic api, string id)
+        {
+            var result = new List<FieldDTO>();
+            var recipients = GetRecipients(conf, api, id);
+            result.AddRange(MapRecipientsToFieldDTO(recipients));
+            foreach (var recipient in recipients.Signers)
+            {
+                result.AddRange(GetTabs(conf, api, id, recipient));
+            }
 
-    //    //        return Crate.CreateDesignTimeFieldsCrate(crateLabel, fieldCollection.ToArray());
-    //    //    }
-    //    //    return null;
-    //    //}
+            return result;
+        }
 
-    //    //public int CountEnvelopes(DocuSignAuthTokenDTO authToken, DocusignQuery query)
-    //    //{
-    //    //    int result = 0;
+        private static Recipients GetRecipients(DocuSignApiConfiguration conf, dynamic api, string id)
+        {
+            return api.ListRecipients(conf.AccountId, id) as Recipients;
+        }
 
-    //    //    if (string.IsNullOrWhiteSpace(query.Folder) || query.Folder == "<any>")
-    //    //    {
-    //    //        var searchFolders = _docuSignFolder
-    //    //            .GetSearchFolders(authToken.Email, authToken.ApiPassword);
+        private static IEnumerable<FieldDTO> GetTabs(DocuSignApiConfiguration conf, dynamic api, string id, Signer recipient)
+        {
+            var docutabs = (api is EnvelopesApi) ?
+                       api.ListTabs(conf.AccountId, id, recipient.RecipientId)
+                       : api.ListTabs(conf.AccountId, id, recipient.RecipientId, new Tabs());
 
-    //    //        foreach (var folder in searchFolders)
-    //    //        {
-    //    //            try
-    //    //            {
-    //    //                result += CountFolder(authToken, query, folder.FolderId);
-    //    //            }
-    //    //            catch (Exception ex)
-    //    //            {
-    //    //            }
-    //    //        }
-    //    //    }
-    //    //    else
-    //    //    {
-    //    //        result = CountFolder(authToken, query, query.Folder);
-    //    //    }
+            return (DocuSignTab.GetEnvelopeTabsPerSigner(JObject.Parse(docutabs.ToJson()), recipient.RoleName));
+        }
 
-    //    //    return result;
-    //    //}
+        private static IEnumerable<FieldDTO> MapRecipientsToFieldDTO(Recipients recipients)
+        {
+            var result = new List<FieldDTO>();
+            if (recipients.Signers != null)
+                recipients.Signers.ForEach(
+                    a =>
+                    {
+                        //use RoleName. If unavailable use a Name. If unavaible use email
+                        result.Add(new FieldDTO((a.RoleName ?? a.Name ?? a.Email) + " role name", a.Name) { Tags = "DocuSigner, recipientId:" + a.RecipientId });
+                        result.Add(new FieldDTO((a.RoleName ?? a.Name ?? a.Email) + " role email", a.Email) { Tags = "DocuSigner, recipientId:" + a.RecipientId });
+                    });
+            return result;
+        }
 
-    //    //public List<FolderItem> SearchDocusign(DocuSignAuthTokenDTO authToken, DocusignQuery query)
-    //    //{
-    //    //    var envelopes = new List<FolderItem>();
+        #endregion
 
-    //    //    if (string.IsNullOrWhiteSpace(query.Folder) || query.Folder == "<any>")
-    //    //    {
-    //    //        foreach (var folder in _docuSignFolder.GetSearchFolders(authToken.Email, authToken.ApiPassword))
-    //    //        {
-    //    //            try
-    //    //            {
-    //    //                SearchFolder(authToken, query, folder.FolderId, envelopes);
-    //    //            }
-    //    //            catch (Exception ex)
-    //    //            {
-    //    //                // some folders can't be searched
-    //    //                // log error somehow
-    //    //            }
-    //    //        }
-    //    //    }
-    //    //    else
-    //    //    {
-    //    //        SearchFolder(authToken, query, query.Folder, envelopes);
-    //    //    }
-
-    //    //    return envelopes;
-    //    //}
-
-    //    //private void SearchFolder(DocuSignAuthTokenDTO authToken, DocusignQuery query, string folder, List<FolderItem> envelopes)
-    //    //{
-    //    //    envelopes.AddRange(_docuSignFolder.Search(authToken.Email, authToken.ApiPassword, query.SearchText, folder, query.Status == "<any>" ? null : query.Status, query.FromDate, query.ToDate, query.Conditions));
-    //    //}
-
-    //    //private int CountFolder(DocuSignAuthTokenDTO authToken, DocusignQuery query, string folder)
-    //    //{
-    //    //    return _docuSignFolder.Count(authToken.Email, authToken.ApiPassword, query.SearchText, folder, query.Status == "<any>" ? null : query.Status, query.FromDate, query.ToDate);
-    //    //}
-    //}
+    }
 }

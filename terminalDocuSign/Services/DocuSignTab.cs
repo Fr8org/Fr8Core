@@ -130,7 +130,7 @@ namespace terminalDocuSign.Services.NewApi
                     dynamic grpTab = groupTab;
                     var groupWrapperEnvelopeData = new DocuSignMultipleOptionsTabDTO()
                     {
-                        DocumentId = grpTab["documentId"],
+                        DocumentId = Convert.ToInt32(grpTab["documentId"]),
                         RecipientId = grpTab["recipientId"],
                         Name = string.Format("{0}({1})", grpTab["groupName"], roleName),
                         TabId = grpTab["tabId"],

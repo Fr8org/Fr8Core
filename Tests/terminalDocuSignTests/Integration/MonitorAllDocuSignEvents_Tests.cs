@@ -180,7 +180,7 @@ namespace terminalDocuSignTests.Integration
             var authToken = HealthMonitor_FixtureData.DocuSign_AuthToken(this);
             var authTokenDO = new AuthorizationTokenDO() { Token = authToken.Token };
 
-            var loginInfo = DocuSignService.SetUp(authTokenDO);
+            var loginInfo = DocuSignManager.SetUp(authTokenDO);
 
             var password = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token).ApiPassword;
 
@@ -236,7 +236,7 @@ namespace terminalDocuSignTests.Integration
                 }
             };
 
-            DocuSignService.SendAnEnvelopeFromTemplate(
+            DocuSignManager.SendAnEnvelopeFromTemplate(
                 loginInfo,
                 rolesList,
                 fieldsList,

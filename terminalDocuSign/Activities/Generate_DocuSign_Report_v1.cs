@@ -673,11 +673,11 @@ namespace terminalDocuSign.Actions
         public ControlDefinitionDTO CreateFolderDropDownListControl(
         string key, AuthorizationTokenDO authToken)
         {
-            var conf = DocuSignService.SetUp(authToken);
+            var conf = DocuSignManager.SetUp(authToken);
             return new DropDownList()
             {
                 Name = "QueryField_" + key,
-                ListItems = DocuSignService.GetFolders(conf)
+                ListItems = DocuSignFolders.GetFolders(conf)
                     .Select(x => new ListItem() { Key = x.Key, Value = x.Value })
                     .ToList()
             };

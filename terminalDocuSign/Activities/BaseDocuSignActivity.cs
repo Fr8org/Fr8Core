@@ -102,16 +102,16 @@ namespace terminalDocuSign.Actions
             updater.RemoveByLabel("DocuSignTemplateUserDefinedFields");
             if (!String.IsNullOrEmpty(templateId))
             {
-                var conf = DocuSignService.SetUp(authTokenDO);
-                var userDefinedFields = DocuSignService.GetTemplateRecipientsAndTabs(conf, templateId);
+                var conf = DocuSignManager.SetUp(authTokenDO);
+                var userDefinedFields = DocuSignManager.GetTemplateRecipientsAndTabs(conf, templateId);
                 updater.Add(Crate.CreateDesignTimeFieldsCrate("DocuSignTemplateUserDefinedFields", AvailabilityType.RunTime, userDefinedFields.ToArray()));
             }
         }
 
         public StandardPayloadDataCM CreateActivityPayload(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO, string curEnvelopeId)
         {
-            var conf = DocuSignService.SetUp(authTokenDO);
-            var payload = DocuSignService.GetEnvelopeRecipientsAndTabs(conf, curEnvelopeId);
+            var conf = DocuSignManager.SetUp(authTokenDO);
+            var payload = DocuSignManager.GetEnvelopeRecipientsAndTabs(conf, curEnvelopeId);
             return new StandardPayloadDataCM(payload.ToArray());
         }
 
@@ -121,8 +121,8 @@ namespace terminalDocuSign.Actions
             var control = configurationControl.FindByNameNested<DropDownList>(controlName);
             if (control != null)
             {
-                var conf = DocuSignService.SetUp(authToken);
-                var templates = DocuSignService.GetTemplatesList(conf);
+                var conf = DocuSignManager.SetUp(authToken);
+                var templates = DocuSignManager.GetTemplatesList(conf);
                 control.ListItems = templates.Select(x => new ListItem() { Key = x.Key, Value = x.Value }).ToList();
             }
         }

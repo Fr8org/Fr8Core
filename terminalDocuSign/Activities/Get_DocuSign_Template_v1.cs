@@ -19,6 +19,7 @@ using Utilities;
 using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Services.New_Api;
 using Data.Constants;
+using Newtonsoft.Json.Linq;
 
 namespace terminalDocuSign.Actions
 {
@@ -49,9 +50,9 @@ namespace terminalDocuSign.Actions
                 return Error(payloadCrates, "No Template was selected at design time", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
             }
 
-            var config = DocuSignService.SetUp(authTokenDO);
+            var config = DocuSignManager.SetUp(authTokenDO);
             //lets download specified template from user's docusign account
-            var downloadedTemplate = DocuSignService.DownloadDocuSignTemplate(config, selectedDocusignTemplateId);
+            var downloadedTemplate = DocuSignManager.DownloadDocuSignTemplate(config, selectedDocusignTemplateId);
             //and add it to payload
             var templateCrate = CreateDocuSignTemplateCrateFromDto(downloadedTemplate);
             using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
@@ -61,14 +62,14 @@ namespace terminalDocuSign.Actions
             return Success(payloadCrates);
         }
 
-        private Crate CreateDocuSignTemplateCrateFromDto(DocuSignTemplateDTO template)
+        private Crate CreateDocuSignTemplateCrateFromDto(JObject template)
         {
             var manifest = new DocuSignTemplateCM
             {
                 Body = JsonConvert.SerializeObject(template),
                 CreateDate = DateTime.UtcNow,
-                Name = template.Name,
-                Status = template.EnvelopeData.status
+                Name = template["Name"].ToString(),
+                Status = template.Property("Name").SelectToken("status").Value<string>()
             };
 
             return Data.Crates.Crate.FromContent("DocuSign Template", manifest);

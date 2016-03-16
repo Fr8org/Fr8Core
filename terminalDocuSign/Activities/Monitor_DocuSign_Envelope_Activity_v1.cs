@@ -12,11 +12,11 @@ using Hub.Managers;
 using Newtonsoft.Json;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using DocuSign.Integrations.Client;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Services;
 using Data.States;
+using DocuSign.Integrations.Client;
 
 namespace terminalDocuSign.Actions
 {

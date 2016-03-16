@@ -3,7 +3,6 @@ using System.Linq;
 using Data.Control;
 using Data.Interfaces;
 
-using DocuSign.Integrations.Client;
 
 using NUnit.Framework;
 

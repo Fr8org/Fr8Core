@@ -35,7 +35,7 @@ namespace terminalDocuSign.Actions
         protected internal override async Task<PayloadDTO> RunInternal(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payloadCrates = await GetPayload(curActivityDO, containerId);
-            var loginInfo = DocuSignService.SetUp(authTokenDO);
+            var loginInfo = DocuSignManager.SetUp(authTokenDO);
 
             return HandleTemplateData(curActivityDO, loginInfo, payloadCrates);
         }
@@ -68,7 +68,7 @@ namespace terminalDocuSign.Actions
 
                 try
                 {
-                    DocuSignService.SendAnEnvelopeFromTemplate(loginInfo, rolesList, fieldList, curTemplateId);
+                    DocuSignManager.SendAnEnvelopeFromTemplate(loginInfo, rolesList, fieldList, curTemplateId);
                 }
                 //TODO: log this exception
                 catch
@@ -263,9 +263,9 @@ namespace terminalDocuSign.Actions
                 var docusignTemplateId = dropdownControlDTO.Value;
 
 
-                var conf = DocuSignService.SetUp(authTokenDO);
+                var conf = DocuSignManager.SetUp(authTokenDO);
 
-                var tabsandfields = DocuSignService.GetTemplateRecipientsTabsAndDocuSignTabs(conf, docusignTemplateId);
+                var tabsandfields = DocuSignManager.GetTemplateRecipientsTabsAndDocuSignTabs(conf, docusignTemplateId);
 
                 var roles = tabsandfields.Item1.Where(a => a.Tags.Contains("DocuSigner"));
                 var crateRolesDTO = CrateManager.CreateDesignTimeFieldsCrate(

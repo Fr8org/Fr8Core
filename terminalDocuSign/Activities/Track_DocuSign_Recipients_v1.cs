@@ -399,8 +399,8 @@ namespace terminalDocuSign.Actions
 
         private Crate PackAvailableTemplates(AuthorizationTokenDO authTokenDO)
         {
-            var conf = DocuSignService.SetUp(authTokenDO);
-            var fields = DocuSignService.GetTemplatesList(conf);
+            var conf = DocuSignManager.SetUp(authTokenDO);
+            var fields = DocuSignManager.GetTemplatesList(conf);
 
             var crate = Crate.CreateDesignTimeFieldsCrate(
                 "AvailableTemplates",
