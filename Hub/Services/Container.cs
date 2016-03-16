@@ -54,6 +54,17 @@ namespace Hub.Services
             return operationalState.CurrentActivityResponse;
         }
 
+        private void ResetActivityResponse(IUnitOfWork uow, ContainerDO curContainerDO)
+        {
+            using (var crateStorage = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
+            {
+                var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Null);
+            }
+
+            uow.SaveChanges();
+        }
+
         public List<ContainerDO> LoadContainers(IUnitOfWork uow, PlanDO plan)
         {
             return uow.ContainerRepository.GetQuery().Where(x => x.PlanId == plan.Id).ToList();
@@ -154,6 +165,7 @@ namespace Hub.Services
         /// <returns></returns>
         private async Task<ActivityResponseDTO> ProcessActivity(IUnitOfWork uow, ContainerDO curContainerDO, ActivityState state)
         {
+            ResetActivityResponse(uow, curContainerDO);
             await _activity.Process(curContainerDO.CurrentRouteNodeId.Value, state, curContainerDO);
             return GetCurrentActivityResponse(curContainerDO);
         }
@@ -204,10 +216,14 @@ namespace Hub.Services
             var plan = ObjectFactory.GetInstance<IPlan>();
             var planDO = uow.PlanRepository.GetById<PlanDO>(planId);
             var freshContainer = uow.ContainerRepository.GetByKey(curContainerDO.Id);
-            //var payload = JsonConvert.DeserializeObject<CrateStorageDTO>(freshContainer.CrateStorage);
-            var curCrateDto = JsonConvert.DeserializeObject<CrateDTO>(freshContainer.CrateStorage);
-            var payload = _crate.FromDto(curCrateDto);
-            await plan.Run(uow, planDO, payload);
+
+            var crateStorage = _crate.GetStorage(freshContainer.CrateStorage);
+            var operationStateCrate = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+            operationStateCrate.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Null);
+            operationStateCrate.History.Add(new OperationalStateCM.HistoryElement { Description = "Launch Triggered by Container ID "+ curContainerDO.Id });
+
+            var payloadCrates = crateStorage.AsEnumerable().ToArray();
+            await plan.Run(uow, planDO, payloadCrates);
         }
 
         public async Task Run(IUnitOfWork uow, ContainerDO curContainerDO)
@@ -248,8 +264,7 @@ namespace Hub.Services
                     case ActivityResponse.ReProcessChildren:
                     case ActivityResponse.Null://let's assume this is success for now
 
-                        var shouldSkipChildren = ShouldSkipChildren(curContainerDO, actionState, activityResponse);
-                        actionState = MoveToNextRoute(uow, curContainerDO, shouldSkipChildren);
+                        
 
                         break;
                     case ActivityResponse.RequestSuspend:
@@ -272,14 +287,14 @@ namespace Hub.Services
                         actionState = ActivityState.InitialRun;
                         activityResponseDTO.TryParseResponseMessageDTO(out responseMessage);
                         curContainerDO.CurrentRouteNodeId = Guid.Parse((string)responseMessage.Details);
-                        break;
+                        continue;
 
                     case ActivityResponse.JumpToSubplan:
                         actionState = ActivityState.InitialRun;
                         activityResponseDTO.TryParseResponseMessageDTO(out responseMessage);
                         var subplanId = Guid.Parse((string) responseMessage.Details);
                         curContainerDO.CurrentRouteNodeId = GetFirstActivityOfSubplan(uow, curContainerDO ,subplanId);
-                        break;
+                        continue;
 
                     case ActivityResponse.RequestLaunch:
                         activityResponseDTO.TryParseResponseMessageDTO(out responseMessage);
@@ -291,8 +306,9 @@ namespace Hub.Services
                     default:
                         throw new Exception("Unknown activity state on activity with id " + curContainerDO.CurrentRouteNodeId);
                 }
-                
-                
+
+                var shouldSkipChildren = ShouldSkipChildren(curContainerDO, actionState, activityResponse);
+                actionState = MoveToNextRoute(uow, curContainerDO, shouldSkipChildren);
             }
 
             if(curContainerDO.ContainerState == ContainerState.Executing)

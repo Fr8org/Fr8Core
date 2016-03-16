@@ -10,6 +10,12 @@ namespace Data.Interfaces.Manifests
 {
     public class OperationalStateCM : Manifest
     {
+
+        public class HistoryElement
+        {
+            public string Description { get; set; }
+        }
+
         public class LoopStatus
         {
             public string Id { get; set; }
@@ -29,6 +35,7 @@ namespace Data.Interfaces.Manifests
 
         public List<LoopStatus> Loops { get; set; }
         public List<BranchStatus> Branches { get; set; }
+        public List<HistoryElement> History { get; set; }
         //public ActivityResponse CurrentActivityResponse { get; set; }
         public ActivityErrorCode? CurrentActivityErrorCode { get; set; }
         public string CurrentActivityErrorMessage { get; set; }
@@ -41,6 +48,7 @@ namespace Data.Interfaces.Manifests
         {
             Loops = new List<LoopStatus>();
             Branches = new List<BranchStatus>();
+            History = new List<HistoryElement>();
         }
 
     }

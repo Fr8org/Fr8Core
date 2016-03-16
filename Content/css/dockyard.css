@@ -186,6 +186,16 @@
     float: left;
 }
 
+
+.action-arrow-right-1 {
+    background-image: url('/Content/img/site/arrow_blue_gray_ic_arrow_forward_48px-512.png');
+    background-size: contain;
+    display: inline-block;
+    height: 50px;
+    width: 50px;
+    float: left;
+}
+
 .action-arrow-right-2 {
     background-image: url('/Content/img/site/arrow_blue_gray_ic_arrow_forward_48px-512.png');
     background-size: contain;

@@ -187,8 +187,7 @@ module dockyard.directives.containerTransition {
                         (<any>transition)._dummySecondaryOperationDD = buildActivityDropdown();
                         break;
                     case ContainerTransitions.JumpToPlan:
-                        
-                        (<any>transition)._dummySecondaryOperationDD = buildActivityDropdown();
+                        (<any>transition)._dummySecondaryOperationDD = buildPlanDropdown();
                         break;
                     case ContainerTransitions.JumpToSubplan:
                         (<any>transition)._dummySecondaryOperationDD = buildSubplanDropdown();
