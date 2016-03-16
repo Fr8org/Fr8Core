@@ -55,10 +55,10 @@ namespace terminalSalesforce.Infrastructure
         /// <summary>
         /// Gets Salesforce objects based on query
         /// </summary>
-        public async Task<IList<PayloadObjectDTO>> GetByQuery(string conditionQuery, ForceClient forceClient)
+        public async Task<IList<PayloadObjectDTO>> GetByQuery(string salesforceObjectName, IEnumerable<string> fields, string conditionQuery, ForceClient forceClient)
         {
-            //get select all query for the object. Delegated to derived classes
-            var selectQuery = GetSelectAllQuery();
+            //get select all query for the object.
+            var selectQuery = string.Format("select {0} from {1}", string.Join(", ", fields.ToList()), salesforceObjectName);
 
             //if condition query is not empty, add it to where clause
             if (!string.IsNullOrEmpty(conditionQuery))
@@ -74,8 +74,32 @@ namespace terminalSalesforce.Infrastructure
 
         protected abstract bool ValidateObject(object salesforceObject);
 
-        protected abstract string GetSelectAllQuery();
+        private IList<PayloadObjectDTO> ParseQueryResult(QueryResult<object> queryResult)
+        {
+            var resultLeads = new List<JObject>();
 
-        protected abstract IList<PayloadObjectDTO> ParseQueryResult(QueryResult<object> queryResult);
+            if (queryResult.Records.Count > 0)
+            {
+                resultLeads = queryResult.Records.Select(record => ((JObject)record)).ToList();
+            }
+
+            var payloads = new List<PayloadObjectDTO>();
+
+            payloads.AddRange(resultLeads
+                                .Select(l => new PayloadObjectDTO
+                                    {
+                                        PayloadObject = l.Properties()
+                                                         .Where(p => p.Value.Type == JTokenType.String && !string.IsNullOrEmpty(p.Value.Value<string>()))
+                                                         .Select(p => 
+                                                            new FieldDTO {
+                                                                Key = p.Name,
+                                                                Value = p.Value.Value<string>(),
+                                                                Availability = Data.States.AvailabilityType.RunTime
+                                                            })
+                                                            .ToList()
+                                }));
+
+            return payloads;
+        }
     }
 }

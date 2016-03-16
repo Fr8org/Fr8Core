@@ -111,6 +111,7 @@ namespace Hub.StructureMap
                 For<ITerminalTransmitter>().Use<TerminalTransmitter>();
                 For<IPlan>().Use<Hub.Services.Plan>();
                 For<InternalInterfaces.IContainer>().Use<InternalClass.Container>();
+                For<InternalInterfaces.IFact>().Use<InternalClass.Fact>();
                 For<ICriteria>().Use<Criteria>();
                 For<IActivity>().Use<Activity>().Singleton();
 				For<IRouteNode>().Use<RouteNode>();
@@ -168,6 +169,8 @@ namespace Hub.StructureMap
                 var mockSegment = new Mock<ITracker>();
                 For<ITracker>().Use(mockSegment.Object);
                 For<InternalInterfaces.IContainer>().Use<InternalClass.Container>();
+                For<InternalInterfaces.IFact>().Use<InternalClass.Fact>();
+
                 For<ICriteria>().Use<Criteria>();
                 For<ISubscription>().Use<Subscription>();
                 For<IActivity>().Use<Activity>().Singleton();
