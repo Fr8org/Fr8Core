@@ -24,8 +24,19 @@ namespace terminalSlackTests.Integration
     //https://maginot.atlassian.net/wiki/display/DDW/Monitor_Channel_v1+test+case
 
     [Explicit]
+    [Category("terminalSlack.Integration")]
     public class Monitor_Channel_v1Test : BaseTerminalIntegrationTest
     {
+        private const string infoTextBlockValue =
+          @"Slack doesn't currently offer a way for us to automatically request events for this channel. 
+                    To enable events to be sent to Fr8, do the following: </br>
+                    <ol>
+                        <li>Go to https://{yourteamname}.slack.com/services/new/outgoing-webhook. </li>
+                        <li>Click 'Add Outgoing WebHooks Integration'</li>
+                        <li>In the Outgoing WebHook form go to 'URL(s)' field fill the following address: 
+                            <strong>https://terminalslack.fr8.co/terminals/terminalslack/events</strong>
+                        </li>
+                    </ol>";
         public override string TerminalName
         {
             get { return "terminalSlack"; }
@@ -53,20 +64,21 @@ namespace terminalSlackTests.Integration
             AssertControls(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single());
         }
 
-        private void AssertControls(StandardConfigurationControlsCM controls)
+        private void AssertControls(StandardConfigurationControlsCM controlsCrate)
         {
-            Assert.AreEqual(2, controls.Controls.Count);
+            var controls = controlsCrate.Controls;
+            Assert.AreEqual(2, controls.Count);
 
             //DDLB test
-            Assert.IsTrue(controls.Controls[0] is DropDownList);
-            Assert.AreEqual("Selected_Slack_Channel", controls.Controls[0].Name);
+            Assert.IsTrue(controls[0] is DropDownList);
+            Assert.AreEqual("Selected_Slack_Channel", controls[0].Name);
             //@AlexAvrutin: Commented this since the 'Select Channel' list does not require requestConfig event. 
             //Assert.AreEqual(1, controls.Controls[0].Events.Count);
             //Assert.AreEqual("onChange", controls.Controls[0].Events[0].Name);
             //Assert.AreEqual("requestConfig", controls.Controls[0].Events[0].Handler);
 
-            Assert.IsTrue(controls.Controls[1] is TextBlock);
-            Assert.AreEqual("Info_Label", controls.Controls[1].Name);
+            Assert.AreEqual(1, controls.Count(x => x.Name == "Info_Label" && x.Type == ControlTypes.TextBlock), "There is no information block on initial configuration");
+            Assert.AreEqual(1, controls.Count(x => x.Value == infoTextBlockValue), "Information block reflects incorrect data");
         }
 
         private void AssertCrateTypes(ICrateStorage crateStorage)
