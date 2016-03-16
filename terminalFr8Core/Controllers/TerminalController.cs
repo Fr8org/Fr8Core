@@ -277,6 +277,18 @@ namespace terminalFr8Core.Controllers
                 Tags = "HideChildren"
             });
 
+            result.Add(new ActivityTemplateDTO
+            {
+                Name = "TestAndBranch",
+                Label = "Test and Branch",
+                Version = "1",
+                Category = ActivityCategory.Processors,
+                NeedsAuthentication = false,
+                Terminal = terminal,
+                WebService = webService,
+                MinPaneWidth = 350
+            });
+
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
                 Definition = terminal,

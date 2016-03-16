@@ -4,7 +4,6 @@ using Data.Entities;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
-using terminalDocuSign.Interfaces;
 using TerminalBase.Infrastructure;
 using UtilitiesTesting.Fixtures;
 
@@ -21,7 +20,7 @@ namespace terminalDocuSignTests.Activities
             hubCommunicatorMock.Setup(x => x.GetPayload(It.IsAny<ActivityDO>(), It.IsAny<Guid>(), It.IsAny<string>()))
                                .Returns(Task.FromResult(FixtureData.PayloadDTO2()));
             ObjectFactory.Configure(x => x.For<IHubCommunicator>().Use(hubCommunicatorMock.Object));
-            ObjectFactory.Configure(x => x.For<IDocuSignFolder>().Use(new Mock<IDocuSignFolder>().Object));
+
         }
     }
 }

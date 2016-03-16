@@ -121,16 +121,18 @@ module dockyard.directives.dropDownListBox {
                 }
 
                 var findAndSetSelectedItem = () => {
+                    $scope.selectedItem = null;
+
                     if (!$scope.field.listItems) {
                         return;
                     }
 
                     for (var i = 0; i < $scope.field.listItems.length; i++) {
                         if ($scope.field.listItems[i].selected ||
-                            ($scope.field.value == $scope.field.listItems[i].value
+                            ($scope.field.value === $scope.field.listItems[i].value
                                 && (!$scope.field.hasOwnProperty('selectedKey')
                                     || $scope.field.hasOwnProperty('selectedKey')
-                                    && $scope.field.selectedKey == $scope.field.listItems[i].key
+                                    && $scope.field.selectedKey === $scope.field.listItems[i].key
                                 ))) {
                             $scope.selectedItem = $scope.field.listItems[i];
                             break;
@@ -138,7 +140,11 @@ module dockyard.directives.dropDownListBox {
                     }
                 };
 
+                $scope.$watch('field', () => {
                 findAndSetSelectedItem();
+                });
+
+                //findAndSetSelectedItem();
             }
         ];
 

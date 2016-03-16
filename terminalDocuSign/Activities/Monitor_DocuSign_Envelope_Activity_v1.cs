@@ -12,17 +12,16 @@ using Hub.Managers;
 using Newtonsoft.Json;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using DocuSign.Integrations.Client;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Services;
 using Data.States;
+using DocuSign.Integrations.Client;
 
 namespace terminalDocuSign.Actions
 {
     public class Monitor_DocuSign_Envelope_Activity_v1 : BaseDocuSignActivity
     {
-        private readonly IDocuSignManager _docuSignManager;
 
         private const string DocuSignConnectName = "fr8DocuSignConnectConfiguration";
 
@@ -40,14 +39,6 @@ namespace terminalDocuSign.Actions
 
         private const string EnvelopeRecievedEventName = "EnvelopeReceived";
 
-        public Monitor_DocuSign_Envelope_Activity_v1(IDocuSignManager docuSignManager)
-        {
-            _docuSignManager = docuSignManager ?? new DocuSignManager();
-        }
-        //Left for compatibility
-        public Monitor_DocuSign_Envelope_Activity_v1() : this(null)
-        {
-        }
 
         public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
@@ -78,14 +69,14 @@ namespace terminalDocuSign.Actions
             {
                 selectedOption = activityUi.SentToRecipientOption.Name;
                 selectedValue = activityUi.Recipient.Value;
-            }
-        }
+                        }
+                    }                   
 
         private DocuSignEvents GetUserSelectedEnvelopeEvents(ActivityDO curActivityDO)
         {
             ActivityUi activityUi = GetConfigurationControls(curActivityDO);
             return new DocuSignEvents
-            {
+        {
                 EnvelopeSent = activityUi?.EnvelopeSentOption?.Selected ?? false,
                 EnvelopRecieved = activityUi?.EnvelopeRecievedOption?.Selected ?? false,
                 EnvelopeSigned = activityUi?.EnvelopeSignedOption?.Selected ?? false
@@ -195,11 +186,11 @@ namespace terminalDocuSign.Actions
             if (events.EnvelopRecieved)
             {
                 envelopeEvents.Add(DocuSignOnEnvelopeReceivedEvent);
-            }
+                }
             if (events.EnvelopeSigned)
             {
                 envelopeEvents.Add(DocuSignOnEnvelopeSignedEvent);
-            }
+                }
             //get existing connect configuration
             DocuSignAccount.CreateOrUpdateDefaultDocuSignConnectConfiguration(string.Join(",", envelopeEvents));
         }
@@ -233,12 +224,12 @@ namespace terminalDocuSign.Actions
                 {
                     case "template":
                         //filter the incoming envelope by template value selected by the user                       
-                        var incommingTemplate = GetValueForKey(payloadCrates, "TemplateName");
+                        var incommingTemplate = GetValueForEventKey(payloadCrates, "TemplateName");
                         if (incommingTemplate != null)
                         {
                             if (curSelectedTemplate == incommingTemplate)
                             {
-                                envelopeId = GetValueForKey(payloadCrates, "EnvelopeId");
+                                envelopeId = GetValueForEventKey(payloadCrates, "EnvelopeId");
                             }
                             else
                             {
@@ -249,13 +240,13 @@ namespace terminalDocuSign.Actions
                         break;
                     case "recipient":
                         //filter incoming envelope by recipient email address specified by the user
-                        var curRecipientEmail = GetValueForKey(payloadCrates, "RecipientEmail");
+                        var curRecipientEmail = GetValueForEventKey(payloadCrates, "RecipientEmail");
                         if (curRecipientEmail != null)
                         {
                             //if the incoming envelope's recipient is user specified one, get the envelope ID
                             if (curRecipientEmail.Equals(curSelectedValue))
                             {
-                                envelopeId = GetValueForKey(payloadCrates, "EnvelopeId");
+                                envelopeId = GetValueForEventKey(payloadCrates, "EnvelopeId");
                             }
                             else
                             {
@@ -271,14 +262,14 @@ namespace terminalDocuSign.Actions
             if (string.IsNullOrEmpty(envelopeId))
             {
                 await Activate(curActivityDO, authTokenDO);
-                return Success(payloadCrates, "Route successfully activated. It will wait and respond to specified DocuSign Event messages");
+                return TerminateHubExecution(payloadCrates, "Route successfully activated. It will wait and respond to specified DocuSign Event messages");
             }
 
             //Create run-time fields
             var fields = CreateDocuSignEventFields();
             foreach (var field in fields)
             {
-                field.Value = GetValueForKey(payloadCrates, field.Key);
+                field.Value = GetValueForEventKey(payloadCrates, field.Key);
             }
 
             //Create log message
@@ -296,12 +287,12 @@ namespace terminalDocuSign.Actions
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
             {
-                crateStorage.Add(Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(fields)));
-                crateStorage.Add(Crate.FromContent("Log Messages", logMessages));
+                crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(fields)));
+                crateStorage.Add(Data.Crates.Crate.FromContent("Log Messages", logMessages));
                 if (curSelectedOption == "template")
                 {
-                    var userDefinedFieldsPayload = _docuSignManager.CreateActivityPayload(curActivityDO, authTokenDO, envelopeId, curSelectedValue);
-                    crateStorage.Add(Crate.FromContent("DocuSign Envelope Data", userDefinedFieldsPayload));
+                    var userDefinedFieldsPayload = CreateActivityPayload(curActivityDO, authTokenDO, envelopeId);
+                    crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Data", userDefinedFieldsPayload));
                 }
             }
 
@@ -310,9 +301,9 @@ namespace terminalDocuSign.Actions
 
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
+            
             var controlsCrate = PackControls(CreateActivityUi());
-            _docuSignManager.FillDocuSignTemplateSource(controlsCrate, "UpstreamCrate", docuSignAuthDTO);
+            FillDocuSignTemplateSource(controlsCrate, "UpstreamCrate", authTokenDO);
             var eventFields = CrateManager.CreateDesignTimeFieldsCrate("DocuSign Event Fields", AvailabilityType.RunTime, CreateDocuSignEventFields().ToArray());
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
@@ -335,7 +326,8 @@ namespace terminalDocuSign.Actions
                 UpdateSelectedEvents(crateStorage);
                 string selectedOption, selectedValue, selectedTemplate;
                 GetTemplateRecipientPickerValue(curActivityDO, out selectedOption, out selectedValue, out selectedTemplate);
-                _docuSignManager.UpdateUserDefinedFields(curActivityDO, authTokenDO, crateStorage, selectedValue);
+                if (selectedOption == "template")
+                    AddOrUpdateUserDefinedFields(curActivityDO, authTokenDO, crateStorage, selectedValue);
             }
             return Task.FromResult(curActivityDO);
         }
@@ -380,13 +372,13 @@ namespace terminalDocuSign.Actions
             var subscriptions = new List<string>();
             ActivityUi activityUi = configurationFields;
             if (activityUi.EnvelopeSentOption.Selected)
-            {
+                    {
                 subscriptions.Add(EnvelopeSentEventname);
-            }
+                    }
             if (activityUi.EnvelopeRecievedOption.Selected)
             {
                 subscriptions.Add(EnvelopeRecievedEventName);
-            }
+                }
             if (activityUi.EnvelopeSignedOption.Selected)
             {
                 subscriptions.Add(RecipientSignedEventName);
@@ -401,16 +393,16 @@ namespace terminalDocuSign.Actions
         private ActivityUi CreateActivityUi()
         {
             var result = new ActivityUi
-            {
+        {
                 ActivityDescription = new TextArea
-                {
-                    IsReadOnly = true,
-                    Label = "",
-                    Value = "<p>Process incoming DocuSign Envelope notifications if the following are true:</p>"
+            {
+                IsReadOnly = true,
+                Label = "",
+                Value = "<p>Process incoming DocuSign Envelope notifications if the following are true:</p>"
                 },
                 EnvelopeSentOption = new CheckBox
-                {
-                    Label = "You sent a DocuSign Envelope",
+            {
+                Label = "You sent a DocuSign Envelope",
                     Name = EnvelopeSentEventname,
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig },
                 },
@@ -433,7 +425,7 @@ namespace terminalDocuSign.Actions
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 },
                 SentToRecipientOption = new RadioButtonOption
-                {
+            {
                     Selected = false,
                     Name = "recipient",
                     Value = "Was sent to a specific recipient"
@@ -446,7 +438,7 @@ namespace terminalDocuSign.Actions
                     ShowDocumentation = ActivityResponseDTO.CreateDocumentationResponse("Minicon", "ExplainMonitoring")
                 },
                 BasedOnTemplateOption = new RadioButtonOption
-                {
+            {
                     Selected = false,
                     Name = "template",
                     Value = "Was based on a specific template"
@@ -491,9 +483,9 @@ namespace terminalDocuSign.Actions
                     return null;
                 }
                 try
-                {
+                    {
                     var result = new ActivityUi
-                                 {
+                        {
                                      ActivityDescription = (TextArea)controlsManifest.Controls[0],
                                      EnvelopeSentOption = (CheckBox)controlsManifest.Controls[1],
                                      EnvelopeRecievedOption = (CheckBox)controlsManifest.Controls[2],
@@ -507,23 +499,23 @@ namespace terminalDocuSign.Actions
                     return result;
                 }
                 catch
-                {
+                            {
                     return null;
-                }
-            }
+                            }
+                        }
 
             public static implicit operator StandardConfigurationControlsCM(ActivityUi activityUi)
-            {
+                        {
                 if (activityUi == null)
-                {
+                            {
                     return null;
-                }
+                    }
                 return new StandardConfigurationControlsCM(activityUi.ActivityDescription,
                                                            activityUi.EnvelopeSentOption,
                                                            activityUi.EnvelopeRecievedOption,
                                                            activityUi.EnvelopeSignedOption,
                                                            activityUi.TemplateRecipientOptionSelector);
-            }
+                }
         }
     }
 }

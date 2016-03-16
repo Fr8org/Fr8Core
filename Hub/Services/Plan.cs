@@ -86,7 +86,8 @@ namespace Hub.Services
 
                 submittedPlan.ChildNodes.Add(new SubrouteDO(true)
                 {
-                    Id = Guid.NewGuid()
+                    Id = Guid.NewGuid(),
+                    Name = "Starting Subplan"
                 });
 
                 uow.PlanRepository.Add(submittedPlan);
