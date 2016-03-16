@@ -18,12 +18,12 @@ using Data.States;
 using Data.Control;
 namespace terminalGoogle.Actions
 {
-    public class Save_In_Google_Sheet_v1 : BaseTerminalActivity
+    public class Save_To_Google_Sheet_v1 : BaseTerminalActivity
     {
         private readonly IGoogleSheet _googleSheet;
         private string _spreedsheetUri = "";
 
-        public Save_In_Google_Sheet_v1()
+        public Save_To_Google_Sheet_v1()
         {
             _googleSheet = new GoogleSheet();
         }
@@ -62,7 +62,7 @@ namespace terminalGoogle.Actions
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Clear();
-                crateStorage.Add(CreateControlsCrate());
+                crateStorage.Add(await CreateControlsCrate(curActivityDO));
             }
             await AddCrateDesignTimeFieldsSource(curActivityDO);
             await AddSpreadsheetDesignTimeFieldsSource(curActivityDO, authTokenDO);
@@ -84,6 +84,7 @@ namespace terminalGoogle.Actions
 
             //get payload crates for data
             StandardTableDataCM standardTableCM = await ExtractDataFromUpstreamCrates("UpstreamCrateChooser", curActivityDO);
+
             if(standardTableCM.Table.Count > 0)
             {
                 try
@@ -111,6 +112,16 @@ namespace terminalGoogle.Actions
             return Success(payloadCrates);
         }
 
+        private Crate FindCrateToProcess(ActivityDO curActivityDO, ICrateStorage payloadStorage)
+        {
+            var configControls = GetConfigurationControls(curActivityDO);
+            var crateChooser = (CrateChooser)configControls.Controls.Single(c => c.Name == "UpstreamCrateChooser");
+            var selectedCrateDescription = crateChooser.CrateDescriptions.Single(c => c.Selected);
+
+            //find crate by user selected values
+            return payloadStorage.FirstOrDefault(c => c.ManifestType.Type == selectedCrateDescription.ManifestType && c.Label == selectedCrateDescription.Label);
+        }
+
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             UpdateWorksheetFields(curActivityDO, authTokenDO);
@@ -120,11 +131,18 @@ namespace terminalGoogle.Actions
         #endregion
 
         #region Configuration Controls
-        private Crate CreateControlsCrate()
+        private async Task<Crate> CreateControlsCrate(ActivityDO curActivityDO)
         {
             var controls = new List<ControlDefinitionDTO>()
             {
-                CreateUpstreamCrateChooser("UpstreamCrateChooser", "Store which Crates?"),
+                await GenerateCrateChooser(
+                    curActivityDO,
+                    "UpstreamCrateChooser",
+                    "Store which Crates?",
+                    true,
+                    requestUpstream: true,
+                    requestConfig: true
+                ),
                 CreateSpreadsheetControls(),
                 CreateWorksheetControls()
             };

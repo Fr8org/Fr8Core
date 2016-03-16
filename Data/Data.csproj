@@ -643,6 +643,10 @@
     <Compile Include="Migrations\201603051236490_FasterMigrateMTData.Designer.cs">
       <DependentUpon>201603051236490_FasterMigrateMTData.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201603152035015_Rename_Save_In_Google_Sheet_Activity.cs" />
+    <Compile Include="Migrations\201603152035015_Rename_Save_In_Google_Sheet_Activity.Designer.cs">
+      <DependentUpon>201603152035015_Rename_Save_In_Google_Sheet_Activity.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryBase.cs" />
@@ -1123,6 +1127,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201603051236490_FasterMigrateMTData.resx">
       <DependentUpon>201603051236490_FasterMigrateMTData.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201603152035015_Rename_Save_In_Google_Sheet_Activity.resx">
+      <DependentUpon>201603152035015_Rename_Save_In_Google_Sheet_Activity.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
