@@ -54,7 +54,7 @@
     "waypoints": "2.0.5"
   },
   "resolutions": {
-    "angular": "1.4.9"
+    "angular": "~1.4.9"
   },
   "devDependencies": {
     "angular-ivh-treeview": "~1.0.3",
