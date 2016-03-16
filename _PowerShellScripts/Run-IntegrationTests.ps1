@@ -3,11 +3,14 @@ param(
 	[string]$buildConfiguration,
 
 	[Parameter(Mandatory = $false)]
-	[int]$delay = 90
+	[int]$delay = 90,
+
+	[Parameter(Mandatory = $false)]
+	[string]$moreArgs = ""
 )
 
 $RootDir = Split-Path -parent $PSCommandPath
-$HealthMonitorCmd = "$RootDir\..\Tests\HealthMonitor\bin\$buildConfiguration\HealthMonitor.exe --app-name VSO-$($buildConfiguration.ToUpper()) --ensure-startup"
+$HealthMonitorCmd = "$RootDir\..\Tests\HealthMonitor\bin\$buildConfiguration\HealthMonitor.exe --app-name VSO-$($buildConfiguration.ToUpper()) --ensure-startup $moreArgs"
 Write-Host $HealthMonitorCmd
 
 Start-Sleep -s $delay
