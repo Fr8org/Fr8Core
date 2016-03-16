@@ -124,6 +124,11 @@ namespace terminalDocuSignTests.Integration
                 creds
             );
 
+            Assert.NotNull(
+                tokenResponse["authTokenId"],
+                "AuthTokenId is missing in API response."
+            );
+
             var tokenId = Guid.Parse(tokenResponse["authTokenId"].Value<string>());
 
             AssignAuthTokens(uow, account, tokenId);

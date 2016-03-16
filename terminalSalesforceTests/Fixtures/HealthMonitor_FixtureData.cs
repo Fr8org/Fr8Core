@@ -16,7 +16,7 @@ namespace terminalSalesforceTests.Fixtures
                 "3MVG9KI2HHAq33RzZO3sQ8KU8JPwmpiZBpe_fka3XktlR5qbCWstH3vbAG.kLmaldx8L1V9OhqoAYUedWAO_e",
                 "611998545425677937",
                 "alex@dockyard.company",
-                "thales@34");
+                "thales@123");
 
             return new AuthorizationTokenDTO()
             {

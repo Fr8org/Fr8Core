@@ -36,7 +36,8 @@ module dockyard.controllers {
             '$modal',
             'DTOptionsBuilder',
             'DTColumnDefBuilder',
-            '$state'
+            '$state',
+            'UIHelperService'
         ];
 
         constructor(
@@ -45,7 +46,9 @@ module dockyard.controllers {
             private $modal,
             private DTOptionsBuilder,
             private DTColumnDefBuilder,
-            private $state: ng.ui.IStateService) {
+            private $state: ng.ui.IStateService,
+            private uiHelperService: services.IUIHelperService
+            ) {
 
             $scope.$on('$viewContentLoaded', () => {
                 // initialize core components
@@ -184,40 +187,26 @@ module dockyard.controllers {
         private deleteRoute(planId: string, isActive: number) {
             //to save closure of our controller
             var self = this;
-            this.$modal.open({
-                animation: true,
-                templateUrl: 'modalDeleteConfirmation',
-                controller: 'RouteListController__DeleteConfirmation'
 
-            }).result.then(() => {
-                //Deletion confirmed
-                this.RouteService.delete({ id: planId }).$promise.then(() => {
-                    var procTemplates = isActive === 2 ? self.$scope.activeRoutes : self.$scope.inActiveRoutes;
-                    //now loop through our existing templates and remove from local memory
-                    for (var i = 0; i < procTemplates.length; i++) {
-                        if (procTemplates[i].id === planId) {
-                            procTemplates.splice(i, 1);
-                            break;
+            var alertMessage = new model.AlertDTO();
+            alertMessage.title = "Delete Confirmation";
+            alertMessage.body = "Are you sure that you wish to delete this Plan?";
+
+            this.uiHelperService
+                .openConfirmationModal(alertMessage).then(() => {
+                    //Deletion confirmed
+                    this.RouteService.delete({ id: planId }).$promise.then(() => {
+                        var procTemplates = isActive === 2 ? self.$scope.activeRoutes : self.$scope.inActiveRoutes;
+                        //now loop through our existing templates and remove from local memory
+                        for (var i = 0; i < procTemplates.length; i++) {
+                            if (procTemplates[i].id === planId) {
+                                procTemplates.splice(i, 1);
+                                break;
+                            }
                         }
-                    }
+                    });
                 });
-            });
         }
     }
     app.controller('RouteListController', RouteListController);
-
-    /*
-        A simple controller for Delete confirmation dialog.
-        Note: here goes a simple (not really a TypeScript) way to define a controller. 
-        Not as a class but as a lambda function.
-    */
-    app.controller('RouteListController__DeleteConfirmation', ['$scope', '$modalInstance', ($scope: any, $modalInstance: any): void => {
-        $scope.ok = () => {
-            $modalInstance.close();
-        };
-
-        $scope.cancel = () => {
-            $modalInstance.dismiss('cancel');
-        };
-    }]);
 }

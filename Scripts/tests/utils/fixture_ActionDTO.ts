@@ -1,6 +1,8 @@
 ﻿
 module dockyard.tests.utils.fixtures {
 
+    import models = dockyard.model;
+
     export class ActivityDTO {
 
         public static newRoute = <interfaces.IRouteVM> {
@@ -9,10 +11,10 @@ module dockyard.tests.utils.fixtures {
             routeState: 1
         };
 
-        public static configurationControls = {
-            "fields":
+        public static configurationControls = <models.ControlsList>{
+            fields:
             [
-                {
+                <models.ControlDefinitionDTO>{
                     "type": "textField",
                     "name": "connection_string",
                     "required": true,
@@ -20,7 +22,8 @@ module dockyard.tests.utils.fixtures {
                     "errorMessage": null,
                     "fieldLabel": "SQL Connection String",
                     "events": [],
-                    "isFocused": false
+                    "isFocused": false,
+                    "label": null
                 },
                 {
                     "type": "textField",
@@ -76,7 +79,7 @@ module dockyard.tests.utils.fixtures {
         };
 
         public static fieldMappingSettings = {
-            "fields": [
+            fields: [
                 {
                     "name": "[_AccessLevelTemplate].Value]",
                     "value": "Text"

@@ -10,6 +10,7 @@
     export class ControlDefinitionDTO {
         type: string;
         fieldLabel: string;
+        label: string;
         name: string;
         errorMessage : string;
         events: Array<ControlEvent>;
@@ -85,6 +86,13 @@
 
     export class DropDownListItem extends FieldDTO {
         selected: boolean;
+
+        constructor(key: string, value: string) {
+            super();
+            this.key = key;
+            this.value = value;
+            
+        }
     }
 
     export class FieldSource {
@@ -98,6 +106,28 @@
         listItems: Array<DropDownListItem>;
         source: FieldSource;
         selectedKey: string;
+    }
+
+    export class FilterConditionDTO {
+        field: string;
+        operator: string;
+        value: string;
+    }
+
+    export class ContainerTransitionField {
+        conditions: Array<FilterConditionDTO>;
+        transition: number;
+        targetNodeId: string;
+
+        constructor() {
+            this.conditions = [];
+            this.transition = 0;
+            this.targetNodeId = null;
+        }
+    }
+
+    export class ContainerTransition extends ControlDefinitionDTO {
+        transitions: Array<ContainerTransitionField>;
     }
 
     export class CrateDetails {

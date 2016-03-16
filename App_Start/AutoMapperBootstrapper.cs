@@ -60,6 +60,10 @@ namespace HubWeb.App_Start
             Mapper.CreateMap<UserVM, EmailAddressDO>()
                 .ForMember(userDO => userDO.Address, opts => opts.ResolveUsing(e => e.EmailAddress));
 
+            
+
+            
+
             Mapper.CreateMap<UserVM, Fr8AccountDO>()
                 .ForMember(userDO => userDO.Id, opts => opts.ResolveUsing(e => e.Id))
                 .ForMember(userDO => userDO.FirstName, opts => opts.ResolveUsing(e => e.FirstName))
@@ -67,6 +71,9 @@ namespace HubWeb.App_Start
                 .ForMember(userDO => userDO.UserName, opts => opts.ResolveUsing(e => e.UserName))
                 .ForMember(userDO => userDO.EmailAddress, opts => opts.ResolveUsing(e => new EmailAddressDO {Address = e.EmailAddress}))
                 .ForMember(userDO => userDO.Roles, opts => opts.Ignore());
+
+
+            
         }
 
         private static List<RouteNodeDO> MapActivities(IEnumerable<ActivityDTO> activities)

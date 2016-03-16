@@ -3,6 +3,12 @@
 module dockyard.directives.dropDownListBox {
     'use strict';
 
+    import pca = dockyard.directives.paneConfigureAction;
+
+    export enum MessageType {
+        DropDownListBox_NoRecords
+    }
+
     export interface IDropDownListBoxScope extends ng.IScope {
         field: model.DropDownList;
         currentAction: model.ActivityDTO;
@@ -22,6 +28,8 @@ module dockyard.directives.dropDownListBox {
                 UpstreamExtractor: services.UpstreamExtractor
             ) {
 
+               
+
                 $scope.setSelectedItem = (item: model.FieldDTO) => {
                     $scope.field.value = item.value || (<any>item).Value;
                     $scope.field.selectedKey = item.key;
@@ -36,6 +44,7 @@ module dockyard.directives.dropDownListBox {
                 $scope.toggle = false;
 
                 $scope.toggleDropDown = $select => {
+
                     if (!$scope.focusOutSet) {
                         var focusElem = angular.element($select.focusInput);
                         $scope.focusOutSet = isFocusOutFunc;
@@ -65,7 +74,6 @@ module dockyard.directives.dropDownListBox {
                                                 break;
                                             }
                                         }
-
                                         if (!found) {
                                             listItems.push(<model.DropDownListItem>it);
                                         }
@@ -88,11 +96,15 @@ module dockyard.directives.dropDownListBox {
 
                                 $select.open = !$scope.toggle;
                                 $scope.toggle = !$scope.toggle;
+
+                                triggerNoRecords();
+
                             });
                     }
                     else {
                         $select.open = !$scope.toggle;
                         $scope.toggle = !$scope.toggle;
+                        triggerNoRecords();
                     }
                 }
 
@@ -102,17 +114,25 @@ module dockyard.directives.dropDownListBox {
                     });
                 }
 
+                var triggerNoRecords = () => {
+                    if ($scope.field.listItems.length === 0) {
+                        $scope.$emit(MessageType[MessageType.DropDownListBox_NoRecords], new AlertEventArgs());
+                    }
+                }
+
                 var findAndSetSelectedItem = () => {
+                    $scope.selectedItem = null;
+
                     if (!$scope.field.listItems) {
                         return;
                     }
 
                     for (var i = 0; i < $scope.field.listItems.length; i++) {
                         if ($scope.field.listItems[i].selected ||
-                            ($scope.field.value == $scope.field.listItems[i].value
+                            ($scope.field.value === $scope.field.listItems[i].value
                                 && (!$scope.field.hasOwnProperty('selectedKey')
                                     || $scope.field.hasOwnProperty('selectedKey')
-                                    && $scope.field.selectedKey == $scope.field.listItems[i].key
+                                    && $scope.field.selectedKey === $scope.field.listItems[i].key
                                 ))) {
                             $scope.selectedItem = $scope.field.listItems[i];
                             break;
@@ -120,7 +140,11 @@ module dockyard.directives.dropDownListBox {
                     }
                 };
 
+                $scope.$watch('field', () => {
                 findAndSetSelectedItem();
+                });
+
+                //findAndSetSelectedItem();
             }
         ];
 

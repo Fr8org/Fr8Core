@@ -16,6 +16,11 @@ module dockyard.services {
         runAndProcessClientAction: (id: string) => ng.IPromise<model.ContainerDTO>;
     }
 
+    export interface ISubPlanService extends ng.resource.IResourceClass<interfaces.ISubrouteVM> {
+        create: (subPlan: model.SubrouteDTO) => interfaces.ISubrouteVM;
+        update: (subPlan: model.SubrouteDTO) => interfaces.ISubrouteVM;
+    }
+
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
         configure: (action: interfaces.IActivityDTO) => ng.resource.IResource<interfaces.IActionVM>;
         getByRoute: (id: Object) => ng.resource.IResource<Array<interfaces.IActionVM>>;
@@ -214,6 +219,23 @@ module dockyard.services {
     */
     app.factory('DocuSignTriggerService', ['$resource', ($resource: ng.resource.IResourceService): IDocuSignTriggerService =>
         <IDocuSignTriggerService>$resource('/api/route/triggersettings')
+    ]);
+
+    
+    app.factory('SubPlanService', ['$resource', ($resource: ng.resource.IResourceService): ISubPlanService =>
+        <ISubPlanService>$resource('/api/subplans/', null,
+            {
+                'create': {
+                    method: 'POST',
+                    isArray: false,
+                    url: '/api/subplans'
+                },
+                'update': {
+                    method: 'PUT',
+                    isArray: false,
+                    url: '/api/subplans'
+                }
+            })
     ]);
 
     app.factory('ActionTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IActionService =>

@@ -58,4 +58,6 @@
             this.isTempId = isTempId;
         }
     }
+
+    export class AlertEventArgs extends EventArgsBase { }
 }
