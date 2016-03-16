@@ -40,13 +40,13 @@ namespace terminalSlack.Actions
             }
             catch (ArgumentException)
             {
-                return ActivateAndReturnSuccess(activityDO, authTokenDO, payloadCrates).Result;
+                return ActivateAndTerminateExecution(activityDO, authTokenDO, payloadCrates).Result;
             }
 
             var payloadChannelIdField = payloadFields.FirstOrDefault(x => x.Key == "channel_id");
             if (payloadChannelIdField == null)
             {
-                return await ActivateAndReturnSuccess(activityDO, authTokenDO, payloadCrates);
+                return await ActivateAndTerminateExecution(activityDO, authTokenDO, payloadCrates);
             }
 
             var payloadChannelId = payloadChannelIdField.Value;
@@ -65,10 +65,10 @@ namespace terminalSlack.Actions
             return Success(payloadCrates);
         }
 
-        private async Task<PayloadDTO> ActivateAndReturnSuccess(ActivityDO activityDO, AuthorizationTokenDO authTokenDO, PayloadDTO payloadCrates)
+        private async Task<PayloadDTO> ActivateAndTerminateExecution(ActivityDO activityDO, AuthorizationTokenDO authTokenDO, PayloadDTO payloadCrates)
         {
             await Activate(activityDO, authTokenDO);
-            return Success(payloadCrates, "Plan successfully activated. It will wait and respond to specified Slack postings");
+            return TerminateHubExecution(payloadCrates, "Plan successfully activated. It will wait and respond to specified Slack postings");
         }
 
         private List<FieldDTO> ExtractPayloadFields(PayloadDTO payloadCrates)
@@ -120,7 +120,7 @@ namespace terminalSlack.Actions
             {
                 crateStorage.Clear();
                 crateStorage.Add(configurationCrate);
-                crateStorage.Add(crateDesignTimeFields);                
+                crateStorage.Add(crateDesignTimeFields);
                 crateStorage.Add(crateEventSubscriptions);
             }
             return await Task.FromResult<ActivityDO>(curActivityDO);
@@ -129,10 +129,10 @@ namespace terminalSlack.Actions
         private Crate CreateControlsCrate()
         {
             var selectedSlackChannel = new DropDownList()
-            {
-                Label = "Select Slack Channel",
-                Name = "Selected_Slack_Channel",
-                Required = true,
+                {
+                    Label = "Select Slack Channel",
+                    Name = "Selected_Slack_Channel",
+                    Required = true,
                 Source = null
             };
 

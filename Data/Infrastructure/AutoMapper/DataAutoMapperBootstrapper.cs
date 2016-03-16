@@ -96,11 +96,26 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<RouteEmptyDTO, PlanDO>();
             Mapper.CreateMap<PlanDO, RouteEmptyDTO>();
             Mapper.CreateMap<SubrouteDTO, SubrouteDO>()
-                .ForMember(x => x.ParentRouteNodeId, opts => opts.ResolveUsing(x => x.PlanId))
-                .ForMember(x => x.RootRouteNodeId, opts => opts.ResolveUsing(x => x.PlanId));
+                .ForMember(x => x.Name, opts => opts.MapFrom(e => e.Name))
+                .ForMember(x => x.NodeTransitions, opts => opts.MapFrom(e => e.TransitionKey))
+                .ForMember(x => x.Id, opts => opts.MapFrom(e => e.Id ?? Guid.Empty))
+                .ForMember(x => x.ParentRouteNodeId, opts => opts.MapFrom(e => e.PlanId))
+                .ForMember(x => x.RootRouteNodeId, opts => opts.MapFrom(e => e.PlanId))
+                .ForMember(x => x.StartingSubroute, opts => opts.UseValue(false))
+                .ForMember(x => x.RootRouteNode, opts => opts.Ignore())
+                .ForMember(x => x.ParentRouteNode, opts => opts.Ignore())
+                .ForMember(x => x.ChildNodes, opts => opts.Ignore())
+                .ForMember(x => x.Fr8AccountId, opts => opts.Ignore())
+                .ForMember(x => x.Fr8Account, opts => opts.Ignore())
+                .ForMember(x => x.Ordering, opts => opts.Ignore())
+                .ForMember(x => x.LastUpdated, opts => opts.Ignore())
+                .ForMember(x => x.CreateDate, opts => opts.Ignore());
+
             Mapper.CreateMap<SubrouteDO, SubrouteDTO>()
-                .ForMember(x => x.PlanId, opts => opts.ResolveUsing(x => x.ParentRouteNodeId))
-                .ForMember(x => x.PlanId, opts => opts.ResolveUsing(x => x.RootRouteNodeId));
+                .ForMember(x => x.Name, opts => opts.ResolveUsing(e => e.Name))
+                .ForMember(x => x.TransitionKey, opts => opts.ResolveUsing(e => e.NodeTransitions))
+                .ForMember(x => x.Id, opts => opts.ResolveUsing(e => e.Id))
+                .ForMember(x => x.PlanId, opts => opts.ResolveUsing(e => e.ParentRouteNodeId));
 
             Mapper.CreateMap<CriteriaDO, CriteriaDTO>()
                 .ForMember(x => x.Conditions, opts => opts.ResolveUsing(y => y.ConditionsJSON));
@@ -145,6 +160,8 @@ namespace Data.Infrastructure.AutoMapper
 
             Mapper.CreateMap<TerminalDO, TerminalDTO>();
             Mapper.CreateMap<TerminalDTO, TerminalDO>();
+
+            
 
 
         }

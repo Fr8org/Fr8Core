@@ -19,7 +19,16 @@ namespace Data.Interfaces.Manifests
             public string CrateManifest { get; set; }
             public string Label { get; set; }
         }
+
+        public class BranchStatus
+        {
+            public string Id { get; set; }
+            public int Count { get; set; }
+            public DateTime LastBranchTime { get; set; }
+        }
+
         public List<LoopStatus> Loops { get; set; }
+        public List<BranchStatus> Branches { get; set; }
         //public ActivityResponse CurrentActivityResponse { get; set; }
         public ActivityErrorCode? CurrentActivityErrorCode { get; set; }
         public string CurrentActivityErrorMessage { get; set; }
@@ -31,6 +40,7 @@ namespace Data.Interfaces.Manifests
             : base(MT.OperationalStatus)
         {
             Loops = new List<LoopStatus>();
+            Branches = new List<BranchStatus>();
         }
 
     }
