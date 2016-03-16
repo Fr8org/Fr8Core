@@ -20,6 +20,7 @@ namespace terminalDocuSignTests.Activities
             hubCommunicatorMock.Setup(x => x.GetPayload(It.IsAny<ActivityDO>(), It.IsAny<Guid>(), It.IsAny<string>()))
                                .Returns(Task.FromResult(FixtureData.PayloadDTO2()));
             ObjectFactory.Configure(x => x.For<IHubCommunicator>().Use(hubCommunicatorMock.Object));
+
         }
     }
 }
