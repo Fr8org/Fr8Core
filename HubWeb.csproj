@@ -873,6 +873,8 @@
     <Content Include="_PowerShellScripts\CopyAppInsightsConfigs.ps1" />
     <Content Include="_PowerShellScripts\Set-CS.ps1" />
     <Content Include="_PowerShellScripts\Set-CloudServiceSettings.ps1" />
+    <Content Include="_PowerShellScripts\Wait-Database.ps1" />
+    <Content Include="_PowerShellScripts\Run-IntegrationTests.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryListController.ts" />
@@ -893,6 +895,7 @@
     <TypeScriptCompile Include="Scripts\app\controllers\AuthenticationDialogController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManageAuthTokenController.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IManifestRegistry.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\AlertDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ManifestDescriptionDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\CrateDescriptionDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\services\AuthService.ts" />
@@ -4340,7 +4343,6 @@
     <Content Include="Views\AngularTemplate\TextSource.cshtml" />
     <Content Include="Views\AngularTemplate\_RouteList.cshtml" />
     <Content Include="Views\AngularTemplate\SolutionList.cshtml" />
-    <Content Include="Views\AngularTemplate\_DeleteRouteModal.cshtml" />
     <Content Include="Views\AuthenticationCallback\Error.cshtml" />
     <Content Include="Views\AngularTemplate\WebServiceList.cshtml" />
     <Content Include="Views\AngularTemplate\QueryBuilder.cshtml" />

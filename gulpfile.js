@@ -51,6 +51,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/model/TerminalActionSetDTO.js',
         'Scripts/app/model/ManageAuthToken.js',
         'Scripts/app/model/SolutionDTO.js',
+        'Scripts/app/model/AlertDTO.js',
         'Scripts/app/services/CrateHelper.js',
         'Scripts/app/services/AuthService.js',
         'Scripts/app/services/ConfigureTrackerService.js',
