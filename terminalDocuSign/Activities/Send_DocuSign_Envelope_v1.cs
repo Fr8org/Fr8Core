@@ -22,7 +22,6 @@ namespace terminalDocuSign.Actions
 {
     public class Send_DocuSign_Envelope_v1 : BaseDocuSignActivity
     {
-        private DocuSignManager _docuSignManager = new DocuSignManager();
 
         public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
@@ -36,8 +35,7 @@ namespace terminalDocuSign.Actions
         protected internal override async Task<PayloadDTO> RunInternal(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payloadCrates = await GetPayload(curActivityDO, containerId);
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
-            var loginInfo = DocuSignService.Login(docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
+            var loginInfo = DocuSignManager.SetUp(authTokenDO);
 
             return HandleTemplateData(curActivityDO, loginInfo, payloadCrates);
         }
@@ -57,7 +55,7 @@ namespace terminalDocuSign.Actions
             return result;
         }
 
-        private PayloadDTO HandleTemplateData(ActivityDO curActivityDO, DocuSignLoginInformation loginInfo, PayloadDTO payloadCrates)
+        private PayloadDTO HandleTemplateData(ActivityDO curActivityDO, DocuSignApiConfiguration loginInfo, PayloadDTO payloadCrates)
         {
             var curTemplateId = ExtractTemplateId(curActivityDO);
             var payloadCrateStorage = CrateManager.GetStorage(payloadCrates);
@@ -70,7 +68,7 @@ namespace terminalDocuSign.Actions
 
                 try
                 {
-                    DocuSignService.SendAnEnvelopeFromTemplate(loginInfo, rolesList, fieldList, curTemplateId);
+                    DocuSignManager.SendAnEnvelopeFromTemplate(loginInfo, rolesList, fieldList, curTemplateId);
                 }
                 //TODO: log this exception
                 catch
@@ -215,7 +213,6 @@ namespace terminalDocuSign.Actions
 
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
@@ -225,7 +222,7 @@ namespace terminalDocuSign.Actions
                 if (crateStorage.All(c => c.ManifestType.Id != (int)MT.FieldDescription))
                 {
                     var configurationCrate = CreateDocusignTemplateConfigurationControls();
-                    _docuSignManager.FillDocuSignTemplateSource(configurationCrate, "target_docusign_template", docuSignAuthDTO);
+                    FillDocuSignTemplateSource(configurationCrate, "target_docusign_template", authTokenDO);
                     crateStorage.Replace(new CrateStorage(configurationCrate));
                 }
 
@@ -265,11 +262,12 @@ namespace terminalDocuSign.Actions
                 // Get DocuSign Template Id
                 var docusignTemplateId = dropdownControlDTO.Value;
 
-                // Get Template
-                var docuSignEnvelope = new DocuSignEnvelope(docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
 
-                var template = docuSignEnvelope.GetTemplateDetails(docusignTemplateId);
-                var roles = docuSignEnvelope.GetTemplateRoles(template);
+                var conf = DocuSignManager.SetUp(authTokenDO);
+
+                var tabsandfields = DocuSignManager.GetTemplateRecipientsTabsAndDocuSignTabs(conf, docusignTemplateId);
+
+                var roles = tabsandfields.Item1.Where(a => a.Tags.Contains("DocuSigner"));
                 var crateRolesDTO = CrateManager.CreateDesignTimeFieldsCrate(
                   "DocuSignTemplateRolesFields",
                   roles.ToArray()
@@ -278,17 +276,16 @@ namespace terminalDocuSign.Actions
                 crateStorage.RemoveByLabel("DocuSignTemplateRolesFields");
                 crateStorage.Add(crateRolesDTO);
 
-                var envelopeDataDTO = docuSignEnvelope.GetTemplateEnvelopeData(template).ToList();
 
-                // when we're in design mode, there are no values
-                // we just want the names of the fields
-                var userDefinedFields = envelopeDataDTO.Select(x => new FieldDTO() { Key = x.Name, Value = x.Name, Availability = AvailabilityType.RunTime, Tags = x.TabName + " " + "recipientId:" + x.RecipientId }).ToList();
+                var envelopeDataDTO = tabsandfields.Item2;
+
+                var userDefinedFields = tabsandfields.Item1.Where(a => a.Tags.Contains("DocuSignTab"));
 
                 var crateUserDefinedDTO = CrateManager.CreateDesignTimeFieldsCrate(
                     "DocuSignTemplateUserDefinedFields",
                     userDefinedFields.Concat(roles).ToArray()
                 );
-                
+
                 crateStorage.RemoveByLabel("DocuSignTemplateUserDefinedFields");
                 crateStorage.Add(crateUserDefinedDTO);
 
@@ -331,7 +328,7 @@ namespace terminalDocuSign.Actions
                 checkBoxMappingBehavior.Clear();
                 foreach (var item in envelopeDataDTO.Where(x => x.Type == ControlTypes.CheckBox).ToList())
                 {
-                    checkBoxMappingBehavior.Append(item.Name,item.Name);
+                    checkBoxMappingBehavior.Append(item.Name, item.Name);
                 }
 
                 //create dropdown controls
@@ -342,9 +339,9 @@ namespace terminalDocuSign.Actions
                     var dropDownListDTO = item as DocuSignMultipleOptionsTabDTO;
                     if (dropDownListDTO == null) continue;
 
-                    dropdownListMappingBehavior.Append(dropDownListDTO.Name, string.Format("For the <strong>{0}</strong>, use:", item.Name), dropDownListDTO.Items.Where(x=>x.Text != string.Empty || x.Value != string.Empty ).Select(x => new ListItem()
+                    dropdownListMappingBehavior.Append(dropDownListDTO.Name, string.Format("For the <strong>{0}</strong>, use:", item.Name), dropDownListDTO.Items.Where(x => x.Text != string.Empty || x.Value != string.Empty).Select(x => new ListItem()
                     {
-                        Key = string.IsNullOrEmpty(x.Value) ? x.Text : x.Value, 
+                        Key = string.IsNullOrEmpty(x.Value) ? x.Text : x.Value,
                         Value = string.IsNullOrEmpty(x.Text) ? x.Value : x.Text,
                         Selected = x.Selected,
                     }).ToList());
