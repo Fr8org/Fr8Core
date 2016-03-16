@@ -21,8 +21,7 @@ namespace terminalDocuSign.Actions
 {
     public class Mail_Merge_Into_DocuSign_v1 : BaseDocuSignActivity
     {
-        private readonly DocuSignManager _docuSignManager;
-
+      
         private string _dataSourceValue;
 
         private DropDownList _docuSignTemplate;
@@ -38,11 +37,6 @@ namespace terminalDocuSign.Actions
         public override Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             return Task.FromResult<ActivityDO>(curActivityDO);
-        }
-
-        public Mail_Merge_Into_DocuSign_v1()
-        {
-            _docuSignManager = new DocuSignManager();
         }
 
         protected override string ActivityUserFriendlyName => SolutionName;
@@ -70,7 +64,7 @@ namespace terminalDocuSign.Actions
                 Required = true
             });
 
-            controlList.Add(_docuSignManager.CreateDocuSignTemplatePicker(true, "DocuSignTemplate", "2. Use which DocuSign Template?"));
+            controlList.Add(CreateDocuSignTemplatePicker(false, "DocuSignTemplate", "2. Use which DocuSign Template?"));
             controlList.Add(new Button()
             {
                 Label = "Prepare Mail Merge",
@@ -106,11 +100,9 @@ namespace terminalDocuSign.Actions
                     }
                     else
                     {
-                        var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
-
                         //build a controls crate to render the pane
                         var configurationCrate = await CreateConfigurationControlsCrate(curActivityDO);
-                        _docuSignManager.FillDocuSignTemplateSource(configurationCrate, "DocuSignTemplate", docuSignAuthDTO);
+                        FillDocuSignTemplateSource(configurationCrate, "DocuSignTemplate", authTokenDO);
                         crateStorage.Add(configurationCrate);
                     }
                 }
@@ -201,7 +193,7 @@ namespace terminalDocuSign.Actions
             // If no values selected in textboxes, remain on initial phase
             DropDownList dataSource = GetStdConfigurationControl<DropDownList>(storage, "DataSource");
             if (dataSource.Value != null)
-                _dataSourceValue = dataSource.Value;
+            _dataSourceValue = dataSource.Value;
 
             _docuSignTemplate = GetStdConfigurationControl<DropDownList>(storage, "DocuSignTemplate");
 
@@ -219,11 +211,11 @@ namespace terminalDocuSign.Actions
         }
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
+            {
             using (var updater = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 // extract fields in docusign form
-                _docuSignManager.UpdateUserDefinedFields(
+                    AddOrUpdateUserDefinedFields(
                     curActivityDO,
                     authTokenDO,
                     updater,
@@ -276,7 +268,7 @@ namespace terminalDocuSign.Actions
             var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null))
                 .Select(Mapper.Map<ActivityTemplateDO>)
                 .ToList();
-
+            
             // Let's check if activity template generates table data
             var selectedReceiver = curActivityTemplates.Single(x => x.Name == _dataSourceValue);
             var dataSourceActivity = await AddAndConfigureChildActivity(
@@ -394,7 +386,7 @@ namespace terminalDocuSign.Actions
                 _docuSignTemplate.ListItems
                     .FirstOrDefault(a => a.Key == _docuSignTemplate.selectedKey)
             );
-
+            
             await ConfigureChildActivity(parentActivity, sendDocuSignActivity);
 
             return activityIndex == 1 ? sendDocuSignActivity : parentActivity;
@@ -478,7 +470,7 @@ namespace terminalDocuSign.Actions
             {
                 var curSolutionPage = GetDefaultDocumentation(SolutionName, SolutionVersion, TerminalName, SolutionBody);
                 return Task.FromResult(curSolutionPage);
-
+              
             }
             if (curDocumentation.Contains("HelpMenu"))
             {

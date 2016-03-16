@@ -9,33 +9,33 @@ using Utilities.Configuration.Azure;
 
 namespace terminalDocuSign.Services
 {
-    public class DocuSignAuthentication
-    {
-        public async Task<string> ObtainOAuthToken(string username, string password, string baseUrl)
-        {
-            var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
-            try
-            {
-                var response = await client
-                .PostAsync(new Uri(new Uri(baseUrl), "oauth2/token"),
-                    (HttpContent)new FormUrlEncodedContent(new[]
-                    {
-                        new KeyValuePair<string, string>("grant_type", "password"),
-                        new KeyValuePair<string, string>("client_id", CloudConfigurationManager.GetSetting("DocuSignIntegratorKey")),
-                        new KeyValuePair<string, string>("username", username),
-                        new KeyValuePair<string, string>("password", password),
-                        new KeyValuePair<string, string>("scope", "api"),
-                    }));
+    //public class DocuSignAuthentication
+    //{
+    //    public async Task<string> ObtainOAuthToken(string username, string password, string baseUrl)
+    //    {
+    //        var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
+    //        try
+    //        {
+    //            var response = await client
+    //            .PostAsync(new Uri(new Uri(baseUrl), "oauth2/token"),
+    //                (HttpContent)new FormUrlEncodedContent(new[]
+    //                {
+    //                    new KeyValuePair<string, string>("grant_type", "password"),
+    //                    new KeyValuePair<string, string>("client_id", CloudConfigurationManager.GetSetting("DocuSignIntegratorKey")),
+    //                    new KeyValuePair<string, string>("username", username),
+    //                    new KeyValuePair<string, string>("password", password),
+    //                    new KeyValuePair<string, string>("scope", "api"),
+    //                }));
 
-                var responseObject = JsonConvert.DeserializeAnonymousType(response, new { access_token = "" });
+    //            var responseObject = JsonConvert.DeserializeAnonymousType(response, new { access_token = "" });
 
-                return responseObject.access_token;
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
+    //            return responseObject.access_token;
+    //        }
+    //        catch (Exception ex)
+    //        {
+    //            throw;
+    //        }
+    //    }
 
-    }
+    //}
 }

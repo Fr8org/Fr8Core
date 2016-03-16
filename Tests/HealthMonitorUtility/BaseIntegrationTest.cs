@@ -51,7 +51,7 @@ namespace HealthMonitor.Utility
         {
             get
             {
-                return _terminalUrl ?? (_terminalUrl = GetTerminalUrl());
+                return _terminalUrl ?? (_terminalUrl = GetTerminalUrlInternally());
             }
         }
 
@@ -63,7 +63,7 @@ namespace HealthMonitor.Utility
             Crate = new CrateManager();
         }
 
-        private string GetTerminalUrl()
+        private string GetTerminalUrlInternally()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -105,6 +105,12 @@ namespace HealthMonitor.Utility
         {
             return TerminalUrl + "/activities/run";
         }
+
+        public string GetTerminalUrl()
+        {
+            return TerminalUrl;
+        }
+
 
         public void CheckIfPayloadHasNeedsAuthenticationError(PayloadDTO payload)
         {

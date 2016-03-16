@@ -116,8 +116,8 @@ namespace terminalDocuSign.Controllers
 
             var collectFormDataSolution = new ActivityTemplateDTO
             {
-				Name = "Extract_Data_From_Envelopes",
-				Label = "Extract Data From Envelopes",
+                Name = "Extract_Data_From_Envelopes",
+                Label = "Extract Data From Envelopes",
                 Version = "1",
                 Category = ActivityCategory.Solution,
                 Terminal = terminal,
@@ -136,8 +136,8 @@ namespace terminalDocuSign.Controllers
                 WebService = webService,
                 MinPaneWidth = 380
             };
-            
-            
+
+
             var queryDocusign = new ActivityTemplateDTO
             {
                 Name = "Query_DocuSign",
@@ -163,28 +163,28 @@ namespace terminalDocuSign.Controllers
                 Tags = "HideChildren"
             };
 
-            var searchDocusignHistory = new ActivityTemplateDTO
-            {
-                Name = "Search_DocuSign_History",
-                Label = "Search DocuSign History",
-                Version = "1",
-                Category = ActivityCategory.Receivers,
-                NeedsAuthentication = true,
-                Terminal = terminal,
-                WebService = webService,
-                MinPaneWidth = 380
-            };
+            //var searchDocusignHistory = new ActivityTemplateDTO
+            //{
+            //    Name = "Search_DocuSign_History",
+            //    Label = "Search DocuSign History",
+            //    Version = "1",
+            //    Category = ActivityCategory.Receivers,
+            //    NeedsAuthentication = true,
+            //    Terminal = terminal,
+            //    WebService = webService,
+            //    MinPaneWidth = 380
+            //};
 
-            var archiveDocusignTemplate = new ActivityTemplateDTO
-            {
-                Name = "Archive_DocuSign_Template",
-                Label = "Archive DocuSign Template",
-                Version = "1",
-                NeedsAuthentication = true,
-                Category = ActivityCategory.Solution,
-                WebService = webService,
-                Terminal = terminal
-            };
+            //var archiveDocusignTemplate = new ActivityTemplateDTO
+            //{
+            //    Name = "Archive_DocuSign_Template",
+            //    Label = "Archive DocuSign Template",
+            //    Version = "1",
+            //    NeedsAuthentication = true,
+            //    Category = ActivityCategory.Solution,
+            //    WebService = webService,
+            //    Terminal = terminal
+            //};
 
 
             var actionList = new List<ActivityTemplateDTO>()
@@ -198,9 +198,9 @@ namespace terminalDocuSign.Controllers
                 trackDocuSignRecipientsSolution,
                 queryDocusign,
                 generateDocusignReport,
-                searchDocusignHistory,
-                getDocuSignTemplateActionTemplate,
-                archiveDocusignTemplate
+                //searchDocusignHistory,
+                //archiveDocusignTemplate,
+                getDocuSignTemplateActionTemplate
             };
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
