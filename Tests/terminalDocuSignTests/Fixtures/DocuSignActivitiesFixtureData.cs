@@ -26,36 +26,36 @@ namespace terminalDocuSignTests.Fixtures
             return result.Object;
         }
 
-        public static IDocuSignManager DocuSignManagerWithTemplates()
-        {
-            var result = new Mock<IDocuSignManager>();
-            result.Setup(x => x.FillDocuSignTemplateSource(It.IsAny<Crate>(), It.IsAny<string>(), It.IsAny<DocuSignAuthTokenDTO>()))
-                  .Callback<Crate, string, DocuSignAuthTokenDTO>((crate, name, token) =>
-                            {
-                                var configurationControl = crate.Get<StandardConfigurationControlsCM>();
-                                var control = configurationControl.FindByNameNested<DropDownList>(name);
-                                if (control != null)
-                                {
-                                    control.ListItems = new List<ListItem> { new ListItem { Key = "First", Value = "1" } };
-                                }
-                            });
-            return result.Object;
-        }
+        //public static IDocuSignManager DocuSignManagerWithTemplates()
+        //{
+        //    var result = new Mock<IDocuSignManager>();
+        //    result.Setup(x => x.FillDocuSignTemplateSource(It.IsAny<Crate>(), It.IsAny<string>(), It.IsAny<DocuSignAuthTokenDTO>()))
+        //          .Callback<Crate, string, DocuSignAuthTokenDTO>((crate, name, token) =>
+        //                    {
+        //                        var configurationControl = crate.Get<StandardConfigurationControlsCM>();
+        //                        var control = configurationControl.FindByNameNested<DropDownList>(name);
+        //                        if (control != null)
+        //                        {
+        //                            control.ListItems = new List<ListItem> { new ListItem { Key = "First", Value = "1" } };
+        //                        }
+        //                    });
+        //    return result.Object;
+        //}
 
-        public static IDocuSignManager DocuSignManagerWithoutTemplates()
-        {
-            var result = new Mock<IDocuSignManager>();
-            result.Setup(x => x.FillDocuSignTemplateSource(It.IsAny<Crate>(), It.IsAny<string>(), It.IsAny<DocuSignAuthTokenDTO>()))
-                  .Callback<Crate, string, DocuSignAuthTokenDTO>((crate, name, token) =>
-                  {
-                      var configurationControl = crate.Get<StandardConfigurationControlsCM>();
-                      var control = configurationControl.FindByNameNested<DropDownList>(name);
-                      if (control != null)
-                      {
-                          control.ListItems = new List<ListItem>();
-                      }
-                  });
-            return result.Object;
-        }
+        //public static IDocuSignManager DocuSignManagerWithoutTemplates()
+        //{
+        //    var result = new Mock<IDocuSignManager>();
+        //    result.Setup(x => x.FillDocuSignTemplateSource(It.IsAny<Crate>(), It.IsAny<string>(), It.IsAny<DocuSignAuthTokenDTO>()))
+        //          .Callback<Crate, string, DocuSignAuthTokenDTO>((crate, name, token) =>
+        //          {
+        //              var configurationControl = crate.Get<StandardConfigurationControlsCM>();
+        //              var control = configurationControl.FindByNameNested<DropDownList>(name);
+        //              if (control != null)
+        //              {
+        //                  control.ListItems = new List<ListItem>();
+        //              }
+        //          });
+        //    return result.Object;
+        //}
     }
 }
