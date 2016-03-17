@@ -16,7 +16,10 @@ namespace Data.Constants
         SkipChildren,
         ReProcessChildren,
         ExecuteClientActivity,
-        ShowDocumentation
+        ShowDocumentation,
+        JumpToActivity,
+        JumpToSubplan,
+        RequestLaunch
     }
 
     public enum PlanType

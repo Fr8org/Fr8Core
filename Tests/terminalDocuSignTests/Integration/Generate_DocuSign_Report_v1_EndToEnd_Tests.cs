@@ -30,6 +30,8 @@ namespace terminalDocuSignTests.Integration
         {
             try
             {
+                await RevokeTokens();
+
                 // Create Solution plan & initial configuration.
                 var plan = await CreateSolution();
                 var solution = ExtractSolution(plan);
@@ -226,7 +228,8 @@ namespace terminalDocuSignTests.Integration
 
         private void ValidateContainer(ContainerDTO container)
         {
-            Assert.AreEqual(ActivityResponse.ExecuteClientActivity, container.CurrentActivityResponse);
+            //Activity Responses should be resetted
+            Assert.AreEqual(ActivityResponse.Null, container.CurrentActivityResponse);
             Assert.AreEqual("ShowTableReport", container.CurrentClientActivityName);
         }
 

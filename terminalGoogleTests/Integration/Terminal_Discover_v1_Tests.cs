@@ -37,7 +37,7 @@ namespace terminalGoogleTests.Integration
             Assert.AreEqual("terminalGoogle", googleTerminalDiscoveryResponse.Definition.Name);
             Assert.AreEqual(googleTerminalDiscoveryResponse.Activities.Any(a => a.Name == "Get_Google_Sheet_Data"), true, "Action Get_Google_Sheet_Data was not loaded");
             Assert.AreEqual(googleTerminalDiscoveryResponse.Activities.Any(a => a.Name == "Receive_Google_Form"), true, "Action Receive_Google_Form was not loaded");
-            Assert.AreEqual(googleTerminalDiscoveryResponse.Activities.Any(a => a.Name == "Save_In_Google_Sheet"), true, "Action Save_In_Google_Sheet was not loaded");
+            Assert.AreEqual(googleTerminalDiscoveryResponse.Activities.Any(a => a.Name == "Save_To_Google_Sheet"), true, "Action Save_To_Google_Sheet was not loaded");
         }
     }
 }

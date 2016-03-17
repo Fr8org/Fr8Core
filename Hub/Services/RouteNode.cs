@@ -20,6 +20,7 @@ using Utilities.Configuration.Azure;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Data.Interfaces.Manifests;
 using DocuSign.Integrations.Client;
+using Utilities;
 
 namespace Hub.Services
 {
@@ -39,7 +40,7 @@ namespace Hub.Services
             _crate = ObjectFactory.GetInstance<ICrateManager>();
             _restfulServiceClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
         }
-        
+
         public List<RouteNodeDO> GetUpstreamActivities(IUnitOfWork uow, RouteNodeDO curActivityDO)
         {
             if (curActivityDO == null)
@@ -47,13 +48,13 @@ namespace Hub.Services
             if (curActivityDO.ParentRouteNodeId == null)
                 return new List<RouteNodeDO>();
 
-            List<RouteNodeDO> routeNodes  = new List<RouteNodeDO>();
+            List<RouteNodeDO> routeNodes = new List<RouteNodeDO>();
             var node = curActivityDO;
 
             do
             {
                 var currentNode = node;
-                
+
                 if (node.ParentRouteNode != null)
                 {
                     foreach (var predcessors in node.ParentRouteNode.ChildNodes.Where(x => x.Ordering < currentNode.Ordering && x != currentNode).OrderByDescending(x => x.Ordering))
@@ -63,7 +64,7 @@ namespace Hub.Services
                 }
 
                 node = node.ParentRouteNode;
-    
+
                 if (node != null)
                 {
                     routeNodes.Add(node);
@@ -78,9 +79,9 @@ namespace Hub.Services
         {
             items.Add(root);
 
-            foreach (var child in root.ChildNodes.OrderBy(x=>x.Ordering))
+            foreach (var child in root.ChildNodes.OrderBy(x => x.Ordering))
             {
-               GetDownstreamRecusive(child, items);
+                GetDownstreamRecusive(child, items);
             }
         }
 
@@ -175,10 +176,10 @@ namespace Hub.Services
                     return GetUpstreamActivities(uow, curActivityDO);
                 case CrateDirection.Both:
                 default:
-                    return  GetDownstreamActivities(uow, curActivityDO).Concat(GetUpstreamActivities(uow, curActivityDO)).ToList();
+                    return GetDownstreamActivities(uow, curActivityDO).Concat(GetUpstreamActivities(uow, curActivityDO)).ToList();
             }
         }
-        
+
         public List<RouteNodeDO> GetDownstreamActivities(IUnitOfWork uow, RouteNodeDO curActivityDO)
         {
             if (curActivityDO == null)
@@ -187,12 +188,12 @@ namespace Hub.Services
                 return new List<RouteNodeDO>();
 
             List<RouteNodeDO> nodes = new List<RouteNodeDO>();
-            
+
             foreach (var routeNodeDo in curActivityDO.ChildNodes)
             {
-                GetDownstreamRecusive(routeNodeDo, nodes);    
+                GetDownstreamRecusive(routeNodeDo, nodes);
             }
-            
+
 
             while (curActivityDO != null)
             {
@@ -209,7 +210,7 @@ namespace Hub.Services
 
             return nodes;
         }
-        
+
         public RouteNodeDO GetParent(RouteNodeDO currentActivity)
         {
             return currentActivity.ParentRouteNode;
@@ -294,7 +295,7 @@ namespace Hub.Services
 
             TraverseActivity(activity, activities.Add);
 
-	        activities.Reverse();
+            activities.Reverse();
 
             activities.ForEach(x =>
             {
@@ -319,7 +320,7 @@ namespace Hub.Services
             foreach (RouteNodeDO child in parent.ChildNodes)
                 TraverseActivity(child, visitAction);
         }
-        
+
         public async Task Process(Guid curActivityId, ActivityState curActionState, ContainerDO containerDO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -341,7 +342,11 @@ namespace Hub.Services
                         .FindTokenById(currentActivity.AuthorizationTokenId);
 
                     IActivity _activity = ObjectFactory.GetInstance<IActivity>();
-                    await _activity.PrepareToExecute(currentActivity, curActionState, curContainerDO, uow);
+
+                    //FR-2642 Logic to skip execution of activities with "SkipAtRunTime" Tag
+                    var template = _activityTemplate.GetByKey(currentActivity.ActivityTemplateId);
+                    if (!(template.Tags != null && template.Tags.Contains("SkipAtRunTime", StringComparison.InvariantCultureIgnoreCase)))
+                        await _activity.PrepareToExecute(currentActivity, curActionState, curContainerDO, uow);
                     //TODO inspect this
                     //why do we get container from db again???
                     containerDO.CrateStorage = curContainerDO.CrateStorage;
@@ -391,7 +396,7 @@ namespace Hub.Services
             IEnumerable<ActivityTemplateDTO> curActivityTemplates;
             curActivityTemplates = _activityTemplate
                 .GetAll()
-                .Where(at => at.Category == Data.States.ActivityCategory.Solution 
+                .Where(at => at.Category == Data.States.ActivityCategory.Solution
                     && at.ActivityTemplateState == Data.States.ActivityTemplateState.Active)
                 .OrderBy(t => t.Category)
                 .Select(Mapper.Map<ActivityTemplateDTO>)

@@ -48,16 +48,16 @@ namespace terminalDocuSign.Tests
         /// <param name="fullPathToExampleDocument">Full file path to document that will be signed.</param>
         /// <param name="tabCollection">Docusign tab collection.</param>
         /// <returns>Envelope of Docusign.</returns>
-        public DocuSignEnvelope CreateAndFillEnvelope(Account account, DocuSignEnvelope envelope, string fullPathToExampleDocument, TabCollection tabCollection)
-        {
-            // create a new DocuSign envelope...
-            envelope.Create(fullPathToExampleDocument);
+        //public DocuSignEnvelope CreateAndFillEnvelope(Account account, DocuSignEnvelope envelope, string fullPathToExampleDocument, TabCollection tabCollection)
+        //{
+        //    // create a new DocuSign envelope...
+        //    envelope.Create(fullPathToExampleDocument);
 
-            //populate it with some Tabs with values. Example "Amount" is a text field with value "45".
-            envelope.AddTabs(tabCollection);
+        //    //populate it with some Tabs with values. Example "Amount" is a text field with value "45".
+        //    envelope.AddTabs(tabCollection);
 
-            return envelope;
-        }
+        //    return envelope;
+        //}
 
         #region [ private methods ]
         private static string GetRestErrorAsSerialized(Account account, string errorText)

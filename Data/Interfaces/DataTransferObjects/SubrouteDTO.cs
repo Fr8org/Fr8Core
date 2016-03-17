@@ -9,7 +9,7 @@ namespace Data.Interfaces.DataTransferObjects
     /// </summary>
     public class SubrouteDTO
     {
-        public Guid Id { get; set; }
+        public Guid? Id { get; set; }
 
         public Guid? PlanId { get; set; }
 

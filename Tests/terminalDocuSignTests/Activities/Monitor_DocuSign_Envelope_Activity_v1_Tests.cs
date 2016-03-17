@@ -6,8 +6,10 @@ using Data.Entities;
 using Data.Interfaces.Manifests;
 using Hub.Managers;
 using NUnit.Framework;
+using StructureMap;
 using terminalDocuSign;
 using terminalDocuSign.Actions;
+using terminalDocuSign.Services.New_Api;
 using terminalDocuSignTests.Fixtures;
 using UtilitiesTesting.Fixtures;
 
@@ -20,6 +22,7 @@ namespace terminalDocuSignTests.Activities
         [Test]
         public void ActivityIsValid_WhenIsNotConfigured_ReturnsFalse()
         {
+            ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithoutTemplates()));
             var target = new Monitor_DocuSign_Envelope_Activity_v1();
             var result = target.ValidateActivityInternal(FixtureData.TestActivity1());
             Assert.AreNotEqual(ValidationResult.Success, result);
@@ -29,7 +32,8 @@ namespace terminalDocuSignTests.Activities
         [Test]
         public void ActivityIsValid_WhenNoNotificationIsSelected_ReturnsFalse()
         {
-            var target = new Monitor_DocuSign_Envelope_Activity_v1(DocuSignActivityFixtureData.DocuSignManagerWithoutTemplates());
+            ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithoutTemplates()));
+            var target = new Monitor_DocuSign_Envelope_Activity_v1();
             var activityDO = FixtureData.TestActivity1();
             activityDO = target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration()).Result;
             SetRecipientConditionSelected(activityDO);
@@ -42,7 +46,8 @@ namespace terminalDocuSignTests.Activities
         [Test]
         public void ActivityIsValid_WhenNoEnvelopeConditionIsSelected_ReturnsFalse()
         {
-            var target = new Monitor_DocuSign_Envelope_Activity_v1(DocuSignActivityFixtureData.DocuSignManagerWithoutTemplates());
+            ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithoutTemplates()));
+            var target = new Monitor_DocuSign_Envelope_Activity_v1();
             var activityDO = FixtureData.TestActivity1();
             activityDO = target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration()).Result;
             SetNotificationSelected(activityDO);
@@ -54,7 +59,8 @@ namespace terminalDocuSignTests.Activities
         [Test]
         public void ActivityIsValid_WhenTemplateMustBeSetButThereAreNoTemplates_ReturnsFalse()
         {
-            var target = new Monitor_DocuSign_Envelope_Activity_v1(DocuSignActivityFixtureData.DocuSignManagerWithoutTemplates());
+            ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithoutTemplates()));
+            var target = new Monitor_DocuSign_Envelope_Activity_v1();
             var activityDO = FixtureData.TestActivity1();
             activityDO = target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration()).Result;
             SetNotificationSelected(activityDO);
@@ -67,7 +73,8 @@ namespace terminalDocuSignTests.Activities
         [Test]
         public void ActivityIsValid_WhenTemplateMustBeSetButItIsNot_ReturnsFalse()
         {
-            var target = new Monitor_DocuSign_Envelope_Activity_v1(DocuSignActivityFixtureData.DocuSignManagerWithTemplates());
+            ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithTemplates()));
+            var target = new Monitor_DocuSign_Envelope_Activity_v1();
             var activityDO = FixtureData.TestActivity1();
             activityDO = target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration()).Result;
             SetNotificationSelected(activityDO);
@@ -79,7 +86,8 @@ namespace terminalDocuSignTests.Activities
         [Test]
         public void ActivityIsValid_WhenAllFieldsAreSet_ReturnsTrue()
         {
-            var target = new Monitor_DocuSign_Envelope_Activity_v1(DocuSignActivityFixtureData.DocuSignManagerWithTemplates());
+            ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithTemplates()));
+            var target = new Monitor_DocuSign_Envelope_Activity_v1();
             var activityDO = FixtureData.TestActivity1();
             activityDO = target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration()).Result;
             SetNotificationSelected(activityDO);

@@ -12,7 +12,7 @@ namespace terminalFr8CoreTests.Integration
     [Explicit]
     public class Terminal_Discover_v1Tests : BaseTerminalIntegrationTest
     {
-        private const int Fr8CoreActivityCount = 21;
+        private const int Fr8CoreActivityCount = 22;
 
         private const string TestIncomingDataName = "TestIncomingData";
         private const string MapFieldsName = "MapFields";
@@ -35,6 +35,7 @@ namespace terminalFr8CoreTests.Integration
         private const string GetFileFromFr8Store = "GetFileFromFr8Store";
         private const string BuildMessage = "Build_Message";
         private const string SearchFr8Warehouse = "SearchFr8Warehouse";
+        private const string TestAndBranch = "TestAndBranch";
 
 
         public override string TerminalName
@@ -72,6 +73,8 @@ namespace terminalFr8CoreTests.Integration
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == GetFileFromFr8Store));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == BuildMessage));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == SearchFr8Warehouse));
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == TestAndBranch));
+            
         }
     }
 }

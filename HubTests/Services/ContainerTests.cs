@@ -22,7 +22,7 @@ namespace HubTests.Services
             {
                 try
                 {
-                    container.ProcessCurrentActivityResponse(uow, containerDO, activityResponseDTO).Wait();
+                    //container.ProcessCurrentActivityResponse(uow, containerDO, activityResponseDTO).Wait();
                     Assert.Fail("Exception must be thrown when processing ActivityResponse of error type");
                 }
                 catch (AggregateException ex)
@@ -44,7 +44,7 @@ namespace HubTests.Services
             {
                 try
                 {
-                    container.ProcessCurrentActivityResponse(uow, containerDO, activityResponseDTO).Wait();
+                    //container.ProcessCurrentActivityResponse(uow, containerDO, activityResponseDTO).Wait();
                     Assert.Fail("Exception must be thrown when processing ActivityResponse of error type");
                 }
                 catch (AggregateException ex)

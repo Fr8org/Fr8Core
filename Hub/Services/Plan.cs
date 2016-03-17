@@ -64,7 +64,7 @@ namespace Hub.Services
                 planQuery = planQuery.Where(c => string.IsNullOrEmpty(c.Category));
 
             return (status == null
-                ? planQuery
+                ? planQuery.Where(pt => pt.RouteState != RouteState.Deleted)
                 : planQuery.Where(pt => pt.RouteState == status)).ToList();
 
         }
@@ -87,7 +87,8 @@ namespace Hub.Services
 
                 submittedPlan.ChildNodes.Add(new SubrouteDO(true)
                 {
-                    Id = Guid.NewGuid()
+                    Id = Guid.NewGuid(),
+                    Name = "Starting Subplan"
                 });
 
                 uow.PlanRepository.Add(submittedPlan);
@@ -405,8 +406,11 @@ namespace Hub.Services
         /// <param name="planId"></param>
         /// <param name="envelopeId"></param>
         /// <returns></returns>
-        public ContainerDO Create(IUnitOfWork uow, Guid planId, Crate curEvent)
+        public ContainerDO Create(IUnitOfWork uow, Guid planId, params Crate[] curPayload)
         {
+            //let's exclude null payload crates
+            curPayload = curPayload.Where(c => c != null).ToArray();
+
             var containerDO = new ContainerDO { Id = Guid.NewGuid() };
 
             var curPlan = uow.PlanRepository.GetById<PlanDO>(planId);
@@ -417,11 +421,11 @@ namespace Hub.Services
             containerDO.Name = curPlan.Name;
             containerDO.ContainerState = ContainerState.Unstarted;
 
-            if (curEvent != null)
+            if (curPayload.Length > 0)
             {
                 using (var crateStorage = _crate.UpdateStorage(() => containerDO.CrateStorage))
                 {
-                    crateStorage.Add(curEvent);
+                    crateStorage.AddRange(curPayload);
                 }
             }
 
@@ -483,6 +487,12 @@ namespace Hub.Services
                  * */
                 uow.SaveChanges();
             }
+        }
+
+        public async Task<ContainerDO> Run(IUnitOfWork uow, PlanDO curPlan, params Crate[] curPayload)
+        {
+            var curContainerDO = Create(uow, curPlan.Id, curPayload);
+            return await Run(uow, curContainerDO);
         }
 
         public async Task<ContainerDO> Run(PlanDO curPlan, Crate curPayload)

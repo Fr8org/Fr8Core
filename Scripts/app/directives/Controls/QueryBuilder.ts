@@ -38,6 +38,7 @@ module dockyard.directives {
 
         addCondition: () => void;
         removeCondition: (index: number) => void;
+        addRowText: string;
     }
 
     export interface IQueryBuilderConditionScope extends ng.IScope {
@@ -62,7 +63,8 @@ module dockyard.directives {
                 currentAction: '=',
                 field: '=',
                 rows: '=?',
-                isDisabled: '='
+                isDisabled: '=',
+                addRowText: '@'
             },
             controller: ['$scope', '$timeout', 'CrateHelper',
                 function (
@@ -79,6 +81,7 @@ module dockyard.directives {
                         { text: '<>', value: 'neq' }
                     ];
 
+                    $scope.addRowText = $scope.addRowText || 'Add Row';
                     $scope.defaultOperator = '';
 
                     $scope.$watch('currentAction', (newValue: model.ActivityDTO) => {

@@ -49,7 +49,7 @@ namespace terminalDocuSignTests.Integration
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestDataDTO = HealthMonitor_FixtureData.Extract_Data_From_Envelopes_v1_InitialConfiguration_Fr8DataDTO();
+            var requestDataDTO = await HealthMonitor_FixtureData.Extract_Data_From_Envelopes_v1_InitialConfiguration_Fr8DataDTO(this);
             AddHubActivityTemplate(requestDataDTO);
 
             string selectedAction;
@@ -86,7 +86,7 @@ namespace terminalDocuSignTests.Integration
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestDataDTO = HealthMonitor_FixtureData.Extract_Data_From_Envelopes_v1_InitialConfiguration_Fr8DataDTO();
+            var requestDataDTO = await HealthMonitor_FixtureData.Extract_Data_From_Envelopes_v1_InitialConfiguration_Fr8DataDTO(this);
             AddHubActivityTemplate(requestDataDTO);
 
             var responseActionDTO =
@@ -158,7 +158,7 @@ namespace terminalDocuSignTests.Integration
             var configureUrl = GetTerminalActivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestDataDTO = HealthMonitor_FixtureData.Extract_Data_From_Envelopes_v1_InitialConfiguration_Fr8DataDTO();
+            var requestDataDTO = await HealthMonitor_FixtureData.Extract_Data_From_Envelopes_v1_InitialConfiguration_Fr8DataDTO(this);
             AddHubActivityTemplate(requestDataDTO);
 
             //Act
@@ -180,7 +180,7 @@ namespace terminalDocuSignTests.Integration
             var configureUrl = GetTerminalDeactivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestDataDTO = HealthMonitor_FixtureData.Extract_Data_From_Envelopes_v1_InitialConfiguration_Fr8DataDTO();
+            var requestDataDTO = await HealthMonitor_FixtureData.Extract_Data_From_Envelopes_v1_InitialConfiguration_Fr8DataDTO(this);
             AddHubActivityTemplate(requestDataDTO);
 
             //Act

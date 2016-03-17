@@ -183,6 +183,7 @@ namespace Data.Infrastructure
         public delegate void ActivityRunRequestedHandler(ActivityDO activityDo, ContainerDO containerDO);
         public static event ActivityRunRequestedHandler EventActivityRunRequested;
 
+
         public delegate void ActivityResponseReceivedHandler(ActivityDO activityDo, ActivityResponse responseType);
         public static event ActivityResponseReceivedHandler EventActivityResponseReceived;
 

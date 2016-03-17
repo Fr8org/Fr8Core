@@ -14,21 +14,18 @@ using terminalDocuSign.Services;
 using TerminalBase.Infrastructure;
 using Data.Entities;
 using Data.Crates;
+using Data.States;
+using Utilities;
+using terminalDocuSign.Infrastructure;
+using terminalDocuSign.Services.New_Api;
+using Data.Constants;
+using Newtonsoft.Json.Linq;
 
 namespace terminalDocuSign.Actions
 {
     public class Get_DocuSign_Template_v1 : BaseDocuSignActivity
     {
-        private readonly IDocuSignManager _docuSignManager;
 
-        public Get_DocuSign_Template_v1(IDocuSignManager docuSignManager)
-        {
-            _docuSignManager = docuSignManager ?? new DocuSignManager();
-        }
-        //Left for compatibility
-        public Get_DocuSign_Template_v1() : this(null)
-        {
-        }
 
         public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
@@ -47,10 +44,15 @@ namespace terminalDocuSign.Actions
             var payloadCrates = await GetPayload(activityDO, containerId);
             //Get template Id
             var control = (DropDownList)FindControl(CrateManager.GetStorage(activityDO), "Available_Templates");
-            var selectedDocusignTemplateId = control.Value;
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
+            string selectedDocusignTemplateId = control.Value;
+            if (selectedDocusignTemplateId == null)
+            {
+                return Error(payloadCrates, "No Template was selected at design time", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+            }
+
+            var config = DocuSignManager.SetUp(authTokenDO);
             //lets download specified template from user's docusign account
-            var downloadedTemplate = _docuSignManager.DownloadDocuSignTemplate(docuSignAuthDTO, selectedDocusignTemplateId);
+            var downloadedTemplate = DocuSignManager.DownloadDocuSignTemplate(config, selectedDocusignTemplateId);
             //and add it to payload
             var templateCrate = CreateDocuSignTemplateCrateFromDto(downloadedTemplate);
             using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
@@ -60,17 +62,17 @@ namespace terminalDocuSign.Actions
             return Success(payloadCrates);
         }
 
-        private Crate CreateDocuSignTemplateCrateFromDto(DocuSignTemplateDTO template)
+        private Crate CreateDocuSignTemplateCrateFromDto(JObject template)
         {
             var manifest = new DocuSignTemplateCM
             {
                 Body = JsonConvert.SerializeObject(template),
                 CreateDate = DateTime.UtcNow,
-                Name = template.Name,
-                Status = template.EnvelopeData.status
+                Name = template["Name"].ToString(),
+                Status = template.Property("Name").SelectToken("status").Value<string>()
             };
 
-            return Crate.FromContent("DocuSign Template", manifest);
+            return Data.Crates.Crate.FromContent("DocuSign Template", manifest);
         }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
@@ -85,9 +87,9 @@ namespace terminalDocuSign.Actions
 
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
             var configurationCrate = CreateControlsCrate();
-            _docuSignManager.FillDocuSignTemplateSource(configurationCrate, "Available_Templates", docuSignAuthDTO);
+            FillDocuSignTemplateSource(configurationCrate, "Available_Templates", authTokenDO);
+
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Clear();

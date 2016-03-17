@@ -26,8 +26,16 @@ namespace HealthMonitor.Utility
     {
         HttpClient _httpClient;
 
-        protected string TestUserEmail = "integration_test_runner@fr8.company";
-        protected string TestUserPassword = "fr8#s@lt!";
+        protected virtual string TestUserEmail
+        {
+            get { return "integration_test_runner@fr8.company"; }
+        }
+
+        protected virtual string TestUserPassword
+        {
+            get { return "fr8#s@lt!"; }
+        }
+
         protected string TestEmail;
         protected string TestEmailName;
 
@@ -66,7 +74,7 @@ namespace HealthMonitor.Utility
             return ConfigurationManager.AppSettings["HubApiBaseUrl"];
         }
 
-        private async Task LoginUser(string email, string password)
+        protected async Task LoginUser(string email, string password)
         {
             // The functions below re using ASP.NET MVC endpoi9nts to authenticate the user. 
             // Since we cannot use them in the self-hosted mode, we use WebAPI based 
@@ -86,6 +94,27 @@ namespace HealthMonitor.Utility
             }
         }
 
+        protected async Task RevokeTokens()
+        {
+            var tokens = await HttpGetAsync<IEnumerable<ManageAuthToken_Terminal>>(
+                _baseUrl + "manageauthtoken/"
+            );
+
+            if (tokens != null)
+            {
+                var docusignTokens = tokens.FirstOrDefault(x => x.Name == TerminalName);
+                if (docusignTokens != null)
+                {
+                    foreach (var token in docusignTokens.AuthTokens)
+                    {
+                        await HttpPostAsync<string>(
+                            _baseUrl + "manageauthtoken/revoke?id=" + token.Id.ToString(),
+                            null
+                        );
+                    }
+                }
+            }
+        }
 
         private Uri GetHubBaseUrl()
         {

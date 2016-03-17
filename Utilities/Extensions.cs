@@ -89,7 +89,10 @@ namespace Utilities
             return String.Compare(left, right, StringComparison.OrdinalIgnoreCase) == 0;
         }
 
-
+        public static bool Contains(this string source, string toCheck, StringComparison comp)
+        {
+            return source.IndexOf(toCheck, comp) >= 0;
+        }
 
         /// <summary>
         /// Uses Uri.EscapeDataString() based on recommendations on MSDN

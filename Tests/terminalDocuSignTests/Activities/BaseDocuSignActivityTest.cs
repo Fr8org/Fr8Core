@@ -4,7 +4,9 @@ using System.Threading.Tasks;
 using Data.Entities;
 using Moq;
 using NUnit.Framework;
+using StructureMap;
 using terminalDocuSign.Actions;
+using terminalDocuSign.Services.New_Api;
 using terminalDocuSignTests.Fixtures;
 using UtilitiesTesting.Asserts;
 using UtilitiesTesting.Fixtures;
@@ -15,6 +17,13 @@ namespace terminalDocuSignTests.Activities
     [Category("BaseDocuSignActivity")]
     public class BaseDocuSignActivityTest : BaseTest
     {
+        [SetUp]
+        public override void SetUp()
+        {
+            base.SetUp();
+            ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(new Mock<IDocuSignManager>().Object));
+        }
+
         [Test]
         public void Run_WhenNoAuthorization_Fails()
         {
