@@ -179,6 +179,22 @@ namespace terminaBaselTests.BaseClasses
         }
     }
 
+    class ActivityWithUiBuilder : EnhancedTerminalActivity<ActivityWithUiBuilder.ActivityUi>
+    {
+        public class ActivityUi : StandardConfigurationControlsCM
+        {
+            public ActivityUi(UiBuilder uiBuilder)
+            {
+                Assert.IsNotNull(uiBuilder);
+            }
+        }
+
+        public ActivityWithUiBuilder()
+            :base(false)
+        {
+        }
+    }
+
     [TestFixture]
     [Category("EnhancedTerminalActivityTests")]
     public class EnhancedTerminalActivityTests : BaseTest
@@ -249,15 +265,15 @@ namespace terminaBaselTests.BaseClasses
         public async Task CanActivate()
         {
             var activity = new ActivityOverrideCheckMock(false);
-            await activity.Configure(CreateActivity(Crate.FromContent("crate", new StandardConfigurationControlsCM())), new AuthorizationTokenDO());
-            Assert.IsTrue(activity.CalledMethods == (CalledMethod.Activate));
+            await activity.Activate(CreateActivity(Crate.FromContent("crate", new StandardConfigurationControlsCM())), new AuthorizationTokenDO());
+            Assert.IsTrue(activity.CalledMethods == (CalledMethod.Activate | CalledMethod.Validate));
         }
 
         [Test]
         public async Task CanDeactivate()
         {
             var activity = new ActivityOverrideCheckMock(false);
-            await activity.Configure(CreateActivity(Crate.FromContent("crate", new StandardConfigurationControlsCM())), new AuthorizationTokenDO());
+            await activity.Deactivate(CreateActivity(Crate.FromContent("crate", new StandardConfigurationControlsCM())));
             Assert.IsTrue(activity.CalledMethods == (CalledMethod.Deactivate));
         }
         
@@ -352,6 +368,24 @@ namespace terminaBaselTests.BaseClasses
             {
                 x.TextBox.Value = "123123123";
                 x.TextBox.ErrorMessage = "error";
+
+                x.UpstreamUpstreamCrateChooser.SelectedCrates.Add(new CrateDetails()
+                {
+                    Label = new DropDownList()
+                    {
+                        selectedKey = "sk1",
+                        Value = "val1",
+                        ListItems = {new ListItem() {Key = "sk1", Selected = true, Value = "sk1"},
+                                 new ListItem() {Key = "sk2", Selected = false, Value = "sk2"} }
+                    },
+                    ManifestType = new DropDownList()
+                    {
+                        selectedKey = "sk2",
+                        Value = "val2",
+                        ListItems = {new ListItem() {Key = "sk1", Selected = true, Value = "sk1"},
+                                 new ListItem() {Key = "sk2", Selected = false, Value = "sk2"} }
+                    }
+                });
             };
 
             var refCC = new UiSyncActivityMock.ActivityUi();
@@ -361,8 +395,32 @@ namespace terminaBaselTests.BaseClasses
 
             refCC.TextBox.Value = "123123123";
             refCC.TextBox.ErrorMessage = "error";
+            refCC.UpstreamUpstreamCrateChooser.SelectedCrates.Add(new CrateDetails()
+            {
+                Label = new DropDownList()
+                {
+                    selectedKey = "sk1",
+                    Value = "val1",
+                    ListItems = {new ListItem() {Key = "sk1", Selected = true, Value = "sk1"},
+                                 new ListItem() {Key = "sk2", Selected = false, Value = "sk2"} }
+                },
+                ManifestType = new DropDownList()
+                {
+                    selectedKey = "sk2",
+                    Value = "val2",
+                    ListItems = {new ListItem() {Key = "sk1", Selected = true, Value = "sk1"},
+                                 new ListItem() {Key = "sk2", Selected = false, Value = "sk2"} }
+                }
+            });
 
             AssertEquals(refCC, cc);
+        }
+
+        [Test]
+        public async Task CanUseUiBuilder()
+        {
+            var activity = new ActivityWithUiBuilder();
+            await activity.Configure(CreateActivity(Crate.FromContent("crate", new StandardConfigurationControlsCM())), new AuthorizationTokenDO());
         }
     }
 }

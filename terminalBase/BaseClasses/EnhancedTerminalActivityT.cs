@@ -15,7 +15,7 @@ using TerminalBase.Infrastructure;
 namespace TerminalBase.BaseClasses
 {
     public abstract class EnhancedTerminalActivity<T> : BaseTerminalActivity
-       where T : StandardConfigurationControlsCM, new()
+       where T : StandardConfigurationControlsCM
     {
         /**********************************************************************************/
         // Declarations
@@ -278,7 +278,21 @@ namespace TerminalBase.BaseClasses
 
         protected virtual T CrateConfigurationControls()
         {
-            return new T();
+            var uiBuilderConstructor = typeof (T).GetConstructor(new [] {typeof (UiBuilder)});
+
+            if (uiBuilderConstructor != null)
+            {
+                return (T) uiBuilderConstructor.Invoke(new object[] {UiBuilder});
+            }
+
+            var defaultConstructor = typeof (T).GetConstructor(new Type[0]);
+
+            if (defaultConstructor == null)
+            {
+                throw new InvalidOperationException($"Unablerhen to find default constructor or constructor accepting UiBuilder for type {typeof(T).FullName}");
+            }
+
+            return (T)defaultConstructor.Invoke(null);
         }
 
         /**********************************************************************************/
