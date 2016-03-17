@@ -753,17 +753,17 @@ namespace terminalDocuSign.Actions
             {
                 if (curDocumentation.Contains("ExplainMailMerge"))
                 {
-                    return Task.FromResult(GenerateDocumentationRepsonce(@"This solution work with DocuSign Reports"));
+                    return Task.FromResult(GenerateDocumentationRepsonse(@"This solution work with DocuSign Reports"));
                 }
                 if (curDocumentation.Contains("ExplainService"))
                 {
-                    return Task.FromResult(GenerateDocumentationRepsonce(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
+                    return Task.FromResult(GenerateDocumentationRepsonse(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
                 }
-                return Task.FromResult(GenerateErrorRepsonce("Unknown contentPath"));
+                return Task.FromResult(GenerateErrorRepsonse("Unknown contentPath"));
             }
             return
                 Task.FromResult(
-                    GenerateErrorRepsonce("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
+                    GenerateErrorRepsonse("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
         }
     }
 }

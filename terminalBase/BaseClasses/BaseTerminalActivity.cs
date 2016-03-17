@@ -491,7 +491,7 @@ namespace TerminalBase.BaseClasses
         }
 
        
-        public ActivityResponseDTO GenerateDocumentationRepsonce(string documentation)
+        public ActivityResponseDTO GenerateDocumentationRepsonse(string documentation)
         {
             return new ActivityResponseDTO
             {
@@ -499,7 +499,7 @@ namespace TerminalBase.BaseClasses
                 Type = ActivityResponse.ShowDocumentation.ToString()
             };
         }
-        public ActivityResponseDTO GenerateErrorRepsonce(string errorMessage)
+        public ActivityResponseDTO GenerateErrorRepsonse(string errorMessage)
         {
             return new ActivityResponseDTO
             {
@@ -554,25 +554,6 @@ namespace TerminalBase.BaseClasses
         /*******************************************************************************************/
         // Working with upstream
         /*******************************************************************************************/
-
-
-        protected virtual Crate MergeUpstreamFields<TManifest>(ActivityDO curActivityDO, string label, FieldDTO[] upstreamFields)
-        {
-            if (upstreamFields != null)
-            {
-                var availableFieldsCrate =
-                        CrateManager.CreateDesignTimeFieldsCrate(
-                            label,
-                            upstreamFields
-                        );
-
-                return availableFieldsCrate;
-            }
-
-            return null;
-        }
-
-
 
         //wrapper for support test method
         public virtual async Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActivityDO activityDO, CrateDirection direction)
@@ -666,141 +647,29 @@ namespace TerminalBase.BaseClasses
 
             return availableFieldsCrate;
         }
-        
-        /// <summary>
-        /// Extract value from RadioButtonGroup or TextSource where specific value or upstream field was specified.
-        /// </summary>
-        protected string ExtractSpecificOrUpstreamValue(ActivityDO activityDO, PayloadDTO payloadCrates, string controlName)
+       
+        // create crate with list of fields available upstream
+        protected async Task<Crate<FieldDescriptionsCM>> CreateDesignTimeFieldsCrate(ActivityDO curActivityDO, string label)
         {
-            var designTimeCrateStorage = CrateManager.GetStorage(activityDO.CrateStorage);
-            var runTimeCrateStorage = CrateManager.FromDto(payloadCrates.CrateStorage);
-
-            var controls = designTimeCrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-            var control = controls.Controls.SingleOrDefault(c => c.Name == controlName);
-
-            if (control as RadioButtonGroup != null)
-            {
-                // Get value from a combination of RadioButtonGroup, TextField and DDLB controls
-                // (old approach prior to TextSource) 
-                return ExtractSpecificOrUpstreamValueLegacy((RadioButtonGroup)control, runTimeCrateStorage, activityDO);
-            }
-
-            if (control as TextSource == null)
-            {
-                throw new ApplicationException("TextSource control was expected but not found.");
-            }
-
-            var textSourceControl = (TextSource)control;
-
-            switch (textSourceControl.ValueSource)
-            {
-                case "specific":
-                    return textSourceControl.TextValue;
-
-                case "upstream":
-                    return ExtractPayloadFieldValue(runTimeCrateStorage, textSourceControl.selectedKey, activityDO);
-
-                default:
-                    throw new ApplicationException("Could not extract recipient, unknown recipient mode.");
-            }
-        }
-
-        private string ExtractSpecificOrUpstreamValueLegacy(RadioButtonGroup radioButtonGroupControl, ICrateStorage runTimeCrateStorage, ActivityDO curActivity)
-        {
-            var radioButton = radioButtonGroupControl
-                .Radios
-                .FirstOrDefault(x => x.Selected);
-
-            if (radioButton == null)
-            {
-                throw new ApplicationException("radioButton == null;");
-            }
-
-            var returnValue = string.Empty;
-
-            try
-            {
-                switch (radioButton.Name)
-                {
-                    case "specific":
-                        returnValue = radioButton.Controls[0].Value;
-                        break;
-
-                    case "upstream":
-                        var recipientField = radioButton.Controls[0];
-                        returnValue = ExtractPayloadFieldValue(runTimeCrateStorage, radioButton.Controls[0].Value, curActivity);
-                        break;
-
-                    default:
-                        throw new ApplicationException("Could not extract recipient, unknown recipient mode.");
-                }
-            }
-            catch (ApplicationException)
-            {
-
-            }
-
-            return returnValue;
-        }
-        
-        protected virtual async Task<Crate> MergeUpstreamFields<TManifest>(ActivityDO curActivityDO, string label)
-        {
-            List<Data.Crates.Crate<TManifest>> crates = null;
+            List<Crate<FieldDescriptionsCM>> crates = null;
 
             try
             {
                 //throws exception from test classes when it cannot call webservice
-                crates = await GetCratesByDirection<TManifest>(curActivityDO, CrateDirection.Upstream);
+                crates = await GetCratesByDirection<FieldDescriptionsCM>(curActivityDO, CrateDirection.Upstream);
             }
             catch { }
 
             if (crates != null)
             {
-                FieldDTO[] upstreamFields;
-                Crate availableFieldsCrate = null;
-                if (crates is List<Data.Crates.Crate<FieldDescriptionsCM>>)
-                {
-                    upstreamFields = (crates as List<Data.Crates.Crate<FieldDescriptionsCM>>).SelectMany(x => x.Content.Fields).Where(a => a.Availability != AvailabilityType.Configuration).ToArray();
+                var upstreamFields = crates.SelectMany(x => x.Content.Fields).Where(a => a.Availability != AvailabilityType.Configuration).ToArray();
 
-                    availableFieldsCrate =
-                        CrateManager.CreateDesignTimeFieldsCrate(
-                            label,
-                            upstreamFields
-                        );
-                }
-
-                return await Task.FromResult(availableFieldsCrate);
+                return CrateManager.CreateDesignTimeFieldsCrate(label, upstreamFields);
             }
 
-            return await Task.FromResult<Crate>(null);
+            return null;
         }
-
-        protected virtual async Task<FieldDTO[]> GetCratesFieldsDTO<TManifest>(ActivityDO curActivityDO, CrateDirection crateDirection)
-        {
-            List<Data.Crates.Crate<TManifest>> crates = null;
-
-            try
-            {
-                //throws exception from test classes when it cannot call webservice
-                crates = await GetCratesByDirection<TManifest>(curActivityDO, crateDirection);
-            }
-            catch { }
-
-            if (crates != null)
-            {
-                FieldDTO[] upstreamFields = null;
-                if (crates is List<Data.Crates.Crate<FieldDescriptionsCM>>)
-                {
-                    upstreamFields = (crates as List<Data.Crates.Crate<FieldDescriptionsCM>>).SelectMany(x => x.Content.Fields).Where(a => a.Availability != AvailabilityType.Configuration).ToArray();
-                }
-
-                return await Task.FromResult(upstreamFields);
-            }
-
-            return await Task.FromResult<FieldDTO[]>(null);
-        }
-
-
+        
         /// <summary>
         /// Extract upstream data based on Upstream Crate Chooser Control's selected manifest and label 
         /// </summary>
@@ -1014,63 +883,9 @@ namespace TerminalBase.BaseClasses
                 CssClass = curCssClass
             };
         }
-        
+       
         /*******************************************************************************************/
-        // Not used
-        /*******************************************************************************************/
-
-        protected Crate PackCrate_ErrorTextBox(string fieldLabel, string errorMessage)
-        {
-            ControlDefinitionDTO[] controls =
-            {
-                GenerateTextBlock(fieldLabel,errorMessage,"well well-lg")
-            };
-
-            var crateControls = CrateManager.CreateStandardConfigurationControlsCrate(
-                        ConfigurationControlsLabel, controls
-                    );
-
-            return crateControls;
-        }
-
-        protected FieldDTO GetPayloadValue(CrateStorage payloadStorage, string fieldName, MT manifestType = MT.StandardPayloadData, string label = null)
-        {
-            Func<Crate, bool> crateSearchArguments = (c) => c.ManifestType.Type == CrateManifestType.FromEnum(manifestType).Type;
-            if (label != null)
-            {
-                crateSearchArguments = (c) => c.ManifestType.Type == CrateManifestType.FromEnum(manifestType).Type && c.Label == label;
-            }
-            //find user requested crate
-            var foundCrate = payloadStorage.FirstOrDefault(crateSearchArguments);
-            if (foundCrate == null)
-            {
-                return null;
-            }
-            object searchArea = null;
-            //check if this crate is loop related
-            var operationalState = payloadStorage.CrateContentsOfType<OperationalStateCM>().Single();
-            //let's check if we are in a loop
-            //and this is a loop data?
-            var deepestLoop = operationalState.Loops.OrderByDescending(l => l.Level).FirstOrDefault(l => !l.BreakSignalReceived && l.Label == foundCrate.Label && l.CrateManifest == foundCrate.ManifestType.Type);
-            if (deepestLoop != null)
-            {
-                //this is a loop related data request
-                var dataList = Fr8ReflectionHelper.FindFirstArray(foundCrate);
-                searchArea = dataList[deepestLoop.Index];
-            }
-            else
-            {
-                //hmmm this is a regular data request
-                searchArea = foundCrate;
-            }
-
-            //we should find first related field and return
-            var fields = Fr8ReflectionHelper.FindFieldsRecursive(searchArea);
-            return fields.FirstOrDefault(f => f.Key == fieldName);
-        }
-
-        /*******************************************************************************************/
-        // Depricated methods
+        // Deprecated methods
         // Can be refactored if necessary
         /*******************************************************************************************/
 

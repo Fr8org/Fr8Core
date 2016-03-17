@@ -496,11 +496,6 @@ namespace TerminalBase.BaseClasses
             return base.FollowupConfigurationResponse(curActivityDO, authTokenDO);
         }
 
-        protected sealed override Crate MergeUpstreamFields<TManifest>(ActivityDO curActivityDO, string label, FieldDTO[] upstreamFields)
-        {
-            return base.MergeUpstreamFields<TManifest>(curActivityDO, label, upstreamFields);
-        }
-
         public sealed override Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActivityDO activityDO, CrateDirection direction)
         {
             return base.GetCratesByDirection<TManifest>(activityDO, direction);
@@ -544,16 +539,6 @@ namespace TerminalBase.BaseClasses
         protected sealed override Task<List<Crate<StandardFileDescriptionCM>>> GetUpstreamFileHandleCrates(ActivityDO activityDO)
         {
             return base.GetUpstreamFileHandleCrates(activityDO);
-        }
-
-        protected sealed override Task<Crate> MergeUpstreamFields<TManifest>(ActivityDO curActivityDO, string label)
-        {
-            return base.MergeUpstreamFields<TManifest>(curActivityDO, label);
-        }
-
-        protected sealed override Task<FieldDTO[]> GetCratesFieldsDTO<TManifest>(ActivityDO curActivityDO, CrateDirection crateDirection)
-        {
-            return base.GetCratesFieldsDTO<TManifest>(curActivityDO, crateDirection);
         }
 
         /**********************************************************************************/
