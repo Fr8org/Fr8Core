@@ -239,7 +239,7 @@ namespace terminalDocuSignTests.Integration
                 ActivityTemplate = apmActivityTemplate,
                 Label = apmActivityTemplate.Label,
                 ParentPlanNodeId = _solution.Id,
-                RootPlanNodeId = plan.Id
+                RootPlanNodeId = plan.Plan.Id
             };
             apmAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", apmAction);
             Assert.NotNull(apmAction, "Add Payload Manually action failed to create");
@@ -267,17 +267,17 @@ namespace terminalDocuSignTests.Integration
             //
             // Activate and run plan
             //
-            await HttpPostAsync<string, string>(_baseUrl + "plans/run?planId=" + plan.Id, null);
+            await HttpPostAsync<string, string>(_baseUrl + "plans/run?planId=" + plan.Plan.Id, null);
 
             //
             // Deactivate plan
             //
-            await HttpPostAsync<string, string>(_baseUrl + "plans/deactivate?planId=" + plan.Id, null);
+            await HttpPostAsync<string, string>(_baseUrl + "plans/deactivate?planId=" + plan.Plan.Id, null);
 
             //
             // Delete plan
             //
-            await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Id);
+            await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Plan.Id);
         }
 
         private async Task<Guid> ResolveAuth(ActivityDTO solution, ICrateStorage crateStorage)
