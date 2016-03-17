@@ -83,7 +83,8 @@ namespace terminalSalesforce.Services
         /// <summary>
         /// Gets Salesforce objects by given query. The query will be executed agains the given Salesforce Object Name
         /// </summary>
-        public async Task<StandardPayloadDataCM> GetObjectByQuery(string salesforceObjectName, string conditionQuery, AuthorizationTokenDO authTokenDO)
+        public async Task<StandardPayloadDataCM> GetObjectByQuery(
+            string salesforceObjectName, IEnumerable<string> fields, string conditionQuery, AuthorizationTokenDO authTokenDO)
         {
             _salesforceObject = GetSalesforceObject(salesforceObjectName);
             var forceClient = (ForceClient)CreateSalesforceClient(typeof(ForceClient), authTokenDO);
@@ -91,14 +92,14 @@ namespace terminalSalesforce.Services
             IList<PayloadObjectDTO> resultObjects = null;
             try
             {
-                resultObjects = await _salesforceObject.GetByQuery(conditionQuery, forceClient);
+                resultObjects = await _salesforceObject.GetByQuery(salesforceObjectName, fields, conditionQuery, forceClient);
             }
             catch (ForceException salesforceException)
             {
                 if (salesforceException.Message.Equals("Session expired or invalid"))
                 {
                     forceClient = (ForceClient)CreateSalesforceClient(typeof(ForceClient), authTokenDO, true);
-                    resultObjects = await _salesforceObject.GetByQuery(conditionQuery, forceClient);
+                    resultObjects = await _salesforceObject.GetByQuery(salesforceObjectName, fields, conditionQuery, forceClient);
                 }
                 else
                 {

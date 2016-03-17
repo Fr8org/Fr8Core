@@ -369,6 +369,7 @@
     <Compile Include="Controllers\Api\ActivitiesController.cs" />
     <Compile Include="Controllers\Api\AlarmsController.cs" />
     <Compile Include="Controllers\Api\AuthenticationController.cs" />
+    <Compile Include="Controllers\Api\FactsController.cs" />
     <Compile Include="Controllers\Api\ManageAuthTokenController.cs" />
     <Compile Include="Controllers\Api\ConfigurationController.cs" />
     <Compile Include="Controllers\Api\ManifestRegistryController.cs" />
@@ -875,6 +876,7 @@
     <Content Include="_PowerShellScripts\Set-CloudServiceSettings.ps1" />
     <Content Include="_PowerShellScripts\Wait-Database.ps1" />
     <Content Include="_PowerShellScripts\Run-IntegrationTests.ps1" />
+    <Content Include="_PowerShellScripts\Set-HubApiBaseUrl.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryListController.ts" />

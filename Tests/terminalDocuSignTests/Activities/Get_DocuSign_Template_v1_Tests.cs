@@ -6,8 +6,10 @@ using Data.Entities;
 using Data.Interfaces.Manifests;
 using Hub.Managers;
 using NUnit.Framework;
+using StructureMap;
 using terminalDocuSign;
 using terminalDocuSign.Actions;
+using terminalDocuSign.Services.New_Api;
 using terminalDocuSignTests.Fixtures;
 using UtilitiesTesting.Fixtures;
 
@@ -20,6 +22,7 @@ namespace terminalDocuSignTests.Activities
         [Test]
         public void ActivityIsValid_WhenIsNotConfigured_ReturnsFalse()
         {
+            ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithoutTemplates()));
             var target = new Get_DocuSign_Template_v1();
             var result = target.ValidateActivityInternal(FixtureData.TestActivity1());
             Assert.AreNotEqual(ValidationResult.Success, result);
@@ -29,7 +32,8 @@ namespace terminalDocuSignTests.Activities
         [Test]
         public void ActivityIsValid_WhenThereAreNoTemplates_ReturnsFalse()
         {
-            var target = new Get_DocuSign_Template_v1(DocuSignActivityFixtureData.DocuSignManagerWithoutTemplates());
+            ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithoutTemplates()));
+            var target = new Get_DocuSign_Template_v1();
             var activityDO = FixtureData.TestActivity1();
             activityDO = target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration()).Result;
             var result = target.ValidateActivityInternal(activityDO);
@@ -40,7 +44,8 @@ namespace terminalDocuSignTests.Activities
         [Test]
         public void ActivityIsValid_WhenTemplateIsNotSelected_ReturnsFalse()
         {
-            var target = new Get_DocuSign_Template_v1(DocuSignActivityFixtureData.DocuSignManagerWithTemplates());
+            ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithTemplates()));
+            var target = new Get_DocuSign_Template_v1();
             var activityDO = FixtureData.TestActivity1();
             activityDO = target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration()).Result;
             var result = target.ValidateActivityInternal(activityDO);
@@ -50,7 +55,8 @@ namespace terminalDocuSignTests.Activities
         [Test]
         public void ActivityIsValid_WhenTemplatetIsSelected_ReturnsTrue()
         {
-            var target = new Get_DocuSign_Template_v1(DocuSignActivityFixtureData.DocuSignManagerWithTemplates());
+            ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithTemplates()));
+            var target = new Get_DocuSign_Template_v1();
             var activityDO = FixtureData.TestActivity1();
             activityDO = target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration()).Result;
             SelectTemplate(activityDO);

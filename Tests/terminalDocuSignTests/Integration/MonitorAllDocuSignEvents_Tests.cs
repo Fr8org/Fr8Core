@@ -15,6 +15,9 @@ using Hub.Services;
 using terminalDocuSign.Services;
 using terminalDocuSign.Services.New_Api;
 using Utilities.Configuration.Azure;
+using terminalDocuSignTests.Fixtures;
+using Newtonsoft.Json;
+using terminalDocuSign.DataTransferObjects;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -25,7 +28,8 @@ namespace terminalDocuSignTests.Integration
         // private const string UserAccountName = "y.gnusin@gmail.com";
         private const string UserAccountName = "IntegrationTestUser1";
         private const int AwaitPeriod = 120000;
-        private const string TemplateName = "Medical_Form_v2";
+
+        private const string templateId = "392f63c3-cabb-4b21-b331-52dabf1c2993"; // "SendEnvelopeIntegrationTest" template
 
         private const string ToEmail = "freight.testing@gmail.com";
         private const string DocuSignEmail = "freight.testing@gmail.com";
@@ -83,7 +87,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         private async Task RecreateDefaultAuthToken(IUnitOfWork uow,
-            Fr8AccountDO account, TerminalDO docuSignTerminal) 
+            Fr8AccountDO account, TerminalDO docuSignTerminal)
         {
             var tokens = await HttpGetAsync<IEnumerable<ManageAuthToken_Terminal>>(
                 _baseUrl + "manageauthtoken/"
@@ -167,53 +171,77 @@ namespace terminalDocuSignTests.Integration
 
         private async Task SendDocuSignTestEnvelope()
         {
-            var endpoint = CloudConfigurationManager.GetSetting("endpoint");
+            //var endpoint = CloudConfigurationManager.GetSetting("endpoint");
 
-            var authManager = new DocuSignAuthentication();
-            var password = await authManager
-                .ObtainOAuthToken(DocuSignEmail, DocuSignApiPassword, endpoint);
+            //var authManager = new DocuSignAuthentication();
+            //var password = await authManager
+            //    .ObtainOAuthToken(DocuSignEmail, DocuSignApiPassword, endpoint);
 
-            var templateManager = new DocuSignTemplate();
-            var template = templateManager
-                .GetTemplateNames(
-                    DocuSignEmail,
-                    password
-                )
-                .FirstOrDefault(x => x.Name == TemplateName);
+            var authToken = HealthMonitor_FixtureData.DocuSign_AuthToken(this);
+            var authTokenDO = new AuthorizationTokenDO() { Token = authToken.Token };
+            var docuSignManager = new DocuSignManager();
 
-            if (template == null)
-            {
-                throw new ApplicationException(string.Format("Unable to extract {0} template from DocuSign", TemplateName));
-            }
+            var loginInfo = docuSignManager.SetUp(authTokenDO);
 
-            var loginInfo = DocuSignService.Login(
-                DocuSignEmail,
-                password
-            );
+            var password = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token).ApiPassword;
+
+
 
             var rolesList = new List<FieldDTO>()
             {
                 new FieldDTO()
                 {
-                    Tags = "recipientId:72179268",
+                    Tags = "recipientId:1",
                     Key = "role name",
                     Value = ToEmail
                 },
                 new FieldDTO()
                 {
-                    Tags = "recipientId:72179268",
+                    Tags = "recipientId:1",
                     Key = "role email",
                     Value = ToEmail
                 }
             };
 
-            var fieldsList = new List<FieldDTO>();
-            
-            DocuSignService.SendAnEnvelopeFromTemplate(
+            var fieldsList = new List<FieldDTO>()
+            {
+                new FieldDTO()
+                {
+                    Tags = "recipientId:1",
+                    Key="companyTabs",
+                    Value="test"
+                },
+                new FieldDTO()
+                {
+                    Tags = "recipientId:1",
+                    Key="textTabs",
+                    Value="test"
+                },
+                new FieldDTO()
+                {
+                    Tags = "recipientId:1",
+                    Key="noteTabs",
+                    Value="test"
+                },
+                new FieldDTO()
+                {
+                    Tags = "recipientId:1",
+                    Key="checkboxTabs",
+                    Value="Radio 1"
+                },
+                new FieldDTO()
+                {
+                    Tags = "recipientId:1",
+                    Key="listTabs",
+                    Value="1"
+                }
+            };
+
+            docuSignManager.SendAnEnvelopeFromTemplate(
                 loginInfo,
                 rolesList,
                 fieldsList,
-                template.Id
+                templateId
             );
         }
     }
