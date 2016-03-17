@@ -20,14 +20,14 @@ using Data.Constants;
 namespace terminalDocuSign.Services
 {
     /// <summary>
-    /// Service to create DocuSign related routes in Hub
+    /// Service to create DocuSign related plans in Hub
     /// </summary>
-    public class DocuSignRoute : IDocuSignRoute
+    public class DocuSignPlan : IDocuSignPlan
     {
         private readonly IHubCommunicator _hubCommunicator;
         private readonly ICrateManager _crateManager;
 
-        public DocuSignRoute()
+        public DocuSignPlan()
         {
             _hubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
@@ -37,44 +37,47 @@ namespace terminalDocuSign.Services
         /// <summary>
         /// Creates Monitor All DocuSign Events plan with Record DocuSign Events and Store MT Data actions.
         /// </summary>
-        public async Task CreateRoute_MonitorAllDocuSignEvents(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
+        public async Task CreatePlan_MonitorAllDocuSignEvents(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
         {
-            var existingRoutes = (await _hubCommunicator.GetPlansByName("MonitorAllDocuSignEvents", curFr8UserId)).ToList();
-            existingRoutes = existingRoutes.Where(r => r.Tag == ("docusign-auto-monitor-plan-" + curFr8UserId)).ToList();
-            if (existingRoutes.Any(x => x.RouteState != RouteState.Deleted))
+            var existingPlans = (await _hubCommunicator.GetPlansByName("MonitorAllDocuSignEvents", curFr8UserId)).ToList();
+
+            existingPlans = existingPlans.Where(r => r.Plan.Tag == ("docusign-auto-monitor-plan-" + curFr8UserId)).ToList();
+
+            if (existingPlans.Any(x => x.Plan.PlanState != PlanState.Deleted))
             {
                 //hmmmm which one belongs to us?
                 //lets assume there will be only single plan
-                var existingRoute = existingRoutes.First(x => x.RouteState != RouteState.Deleted);
-                if (existingRoute.RouteState == RouteState.Inactive)
+                var existingPlan = existingPlans.First(x => x.Plan.PlanState != PlanState.Deleted);
+
+                if (existingPlan.Plan.PlanState == PlanState.Inactive)
                 {
-                    var existingRouteDO = Mapper.Map<PlanDO>(existingRoute);
-                    await _hubCommunicator.ActivatePlan(existingRouteDO, curFr8UserId);
+                    var existingPlanDO = Mapper.Map<PlanDO>(existingPlan.Plan);
+                    await _hubCommunicator.ActivatePlan(existingPlanDO, curFr8UserId);
                 }
 
                 return;
             }
             //first check if this exists
-            var emptyMonitorRoute = new RouteEmptyDTO
+            var emptyMonitorPlan = new PlanEmptyDTO
             {
                 Name = "MonitorAllDocuSignEvents",
                 Description = "MonitorAllDocuSignEvents",
-                RouteState = RouteState.Active,
+                PlanState = PlanState.Active,
                 Tag = "docusign-auto-monitor-plan-" + curFr8UserId,
                 Visibility = PlanVisibility.Internal
             };
-            var monitorDocusignRoute = await _hubCommunicator.CreatePlan(emptyMonitorRoute, curFr8UserId);
+            var monitorDocusignPlan = await _hubCommunicator.CreatePlan(emptyMonitorPlan, curFr8UserId);
             var activityTemplates = await _hubCommunicator.GetActivityTemplates(null, curFr8UserId);
             var recordDocusignEventsTemplate = GetActivityTemplate(activityTemplates, "Record_DocuSign_Events");
             var storeMTDataTemplate = GetActivityTemplate(activityTemplates, "SaveToFr8Warehouse");
             await _hubCommunicator.CreateAndConfigureActivity(recordDocusignEventsTemplate.Id, 
-                curFr8UserId, "Record DocuSign Events", 1, monitorDocusignRoute.StartingSubrouteId, false, new Guid(authTokenDTO.Id));
+                curFr8UserId, "Record DocuSign Events", 1, monitorDocusignPlan.Plan.StartingSubPlanId, false, new Guid(authTokenDTO.Id));
             var storeMTDataActivity = await _hubCommunicator.CreateAndConfigureActivity(storeMTDataTemplate.Id, 
-                curFr8UserId, "Save To Fr8 Warehouse", 2, monitorDocusignRoute.StartingSubrouteId);
+                curFr8UserId, "Save To Fr8 Warehouse", 2, monitorDocusignPlan.Plan.StartingSubPlanId);
             SetSelectedCrates(storeMTDataActivity);
             //save this
             await _hubCommunicator.ConfigureActivity(storeMTDataActivity, curFr8UserId);
-            var planDO = Mapper.Map<PlanDO>(monitorDocusignRoute);
+            var planDO = Mapper.Map<PlanDO>(monitorDocusignPlan.Plan);
             await _hubCommunicator.ActivatePlan(planDO, curFr8UserId);
         }
 

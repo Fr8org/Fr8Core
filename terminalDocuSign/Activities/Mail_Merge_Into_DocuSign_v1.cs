@@ -241,6 +241,7 @@ namespace terminalDocuSign.Actions
                 }
             };
 
+                curActivityDO.ChildNodes = new List<PlanNodeDO>();
             var behavior = new ReconfigurationListBehavior(this);
             await behavior.ReconfigureActivities(curActivityDO, authTokenDO, reconfigList);
             return await Task.FromResult(curActivityDO);

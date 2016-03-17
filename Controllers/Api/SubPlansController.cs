@@ -34,16 +34,16 @@ namespace HubWeb.Controllers
     [Fr8ApiAuthorize]
     public class SubPlansController : ApiController
     {
-        
-        private readonly ISubroute _subPlan;
+
+        private readonly ISubPlan _subPlan;
 
         public SubPlansController()
         {
-            _subPlan = ObjectFactory.GetInstance<ISubroute>();
+            _subPlan = ObjectFactory.GetInstance<ISubPlan>();
         }
 
-        [ResponseType(typeof(SubrouteDTO))]
-        public IHttpActionResult Post(SubrouteDTO subPlanDTO)
+        [ResponseType(typeof(SubPlanDTO))]
+        public IHttpActionResult Post(SubPlanDTO subPlanDTO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -59,21 +59,21 @@ namespace HubWeb.Controllers
                 //TODO invalid mappings prevent this line from running
                 //fix invalid automapper configurations
                 //var curSubPlanDO = Mapper.Map<SubrouteDTO, SubrouteDO>(subPlanDTO);
-                var curSubPlanDO = new SubrouteDO(false)
+                var curSubPlanDO = new SubPlanDO(false)
                 {
                     Id = Guid.Empty,
-                    ParentRouteNodeId = subPlanDTO.PlanId,
-                    RootRouteNodeId = subPlanDTO.PlanId,
+                    ParentPlanNodeId = subPlanDTO.PlanId,
+                    RootPlanNodeId = subPlanDTO.PlanId,
                     Name = subPlanDTO.Name
                 };
                 _subPlan.Create(uow, curSubPlanDO);
                 uow.SaveChanges();
-                return Ok(Mapper.Map<SubrouteDO, SubrouteDTO>(curSubPlanDO));
+                return Ok(Mapper.Map<SubPlanDO, SubPlanDTO>(curSubPlanDO));
             }
         }
 
-        [ResponseType(typeof(SubrouteDTO))]
-        public IHttpActionResult Put(SubrouteDTO subPlanDTO)
+        [ResponseType(typeof(SubPlanDTO))]
+        public IHttpActionResult Put(SubPlanDTO subPlanDTO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -89,16 +89,16 @@ namespace HubWeb.Controllers
                 //TODO invalid mappings prevent this line from running
                 //fix invalid automapper configurations
                 //var curSubPlanDO = Mapper.Map<SubrouteDTO, SubrouteDO>(subPlanDTO);
-                var curSubPlanDO = new SubrouteDO(false)
+                var curSubPlanDO = new SubPlanDO(false)
                 {
-                    Id = subPlanDTO.Id.Value,
-                    ParentRouteNodeId = subPlanDTO.PlanId,
-                    RootRouteNodeId = subPlanDTO.PlanId,
+                    Id = subPlanDTO.SubPlanId.Value,
+                    ParentPlanNodeId = subPlanDTO.PlanId,
+                    RootPlanNodeId = subPlanDTO.PlanId,
                     Name = subPlanDTO.Name
                 };
                 _subPlan.Update(uow, curSubPlanDO);
                 uow.SaveChanges();
-                return Ok(Mapper.Map<SubrouteDO, SubrouteDTO>(curSubPlanDO));
+                return Ok(Mapper.Map<SubPlanDO, SubPlanDTO>(curSubPlanDO));
             }
         }
     }

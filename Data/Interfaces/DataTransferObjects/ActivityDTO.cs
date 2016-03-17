@@ -12,9 +12,9 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonConverter(typeof(ActivityTemplateActivityConverter))]
         public ActivityTemplateDTO ActivityTemplate { get; set; }
 
-        public Guid? RootRouteNodeId { get; set; }
+        public Guid? RootPlanNodeId { get; set; }
 
-        public Guid? ParentRouteNodeId { get; set; }
+        public Guid? ParentPlanNodeId { get; set; }
 
         public string CurrentView { get; set; }
 

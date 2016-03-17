@@ -10,7 +10,7 @@
         public extractUpstreamData(activityId: string, manifestType: string, availability: string) {
             var defer = this.$q.defer();
 
-            var url = '/api/routenodes/upstream_fields/?id=' + activityId
+            var url = '/api/plannodes/upstream_fields/?id=' + activityId
                 + '&manifestType=' + manifestType
                 + '&availability=' + availability;
 

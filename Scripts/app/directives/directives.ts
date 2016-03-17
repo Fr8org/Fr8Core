@@ -69,7 +69,7 @@ app.directive("checkboxGroup", function () {
     }
 });
 
-// Route State Load Spinner(used on page or content load)
+// Web URL State Load Spinner(used on page or content load)
 app.directive('ngSpinnerBar', ['$rootScope',
     function ($rootScope) {
         return {

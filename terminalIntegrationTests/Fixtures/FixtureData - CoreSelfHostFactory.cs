@@ -23,7 +23,7 @@ namespace terminalIntegrationTests.Fixtures
             public ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
             {
                 return new Type[] {
-                    typeof(HubWeb.Controllers.RouteNodesController),
+                    typeof(HubWeb.Controllers.PlanNodesController),
                     typeof(HubWeb.Controllers.ContainersController)
                 };
             }

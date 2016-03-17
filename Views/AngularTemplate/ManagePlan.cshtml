@@ -1,0 +1,13 @@
+﻿<div style="padding: 10px;">
+    <div>
+        <div class="form-group">
+            <label>Name:</label>
+            <input type="text" class="form-control" ng-model="savePlanName" />
+        </div>
+        <a href class="btn btn-primary" ng-click="savePlan()">Save for future use</a>
+    </div>
+
+    <div style="margin-top: 30px;" ng-show="copySuccess">
+        Saved to &laquo;<a href="/Dashboard#/plans/{{copySuccess.id}}/builder" target="_blank">{{copySuccess.name}}</a>&raquo; plan.
+    </div>
+</div>

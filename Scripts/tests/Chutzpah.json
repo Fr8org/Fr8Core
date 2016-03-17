@@ -125,7 +125,7 @@
       "Excludes": [ "*.ts" ]
     },
     {
-      "Path": "../app/RouteBuilder/",
+      "Path": "../app/PlanBuilder/",
       "Includes": [ "*.js" ],
       "Excludes": [ "*.ts" ]
     },

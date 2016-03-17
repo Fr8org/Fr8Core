@@ -12,7 +12,7 @@ using System.Reflection;
 
 namespace Data.Entities
 {
-    public class ActivityDO : RouteNodeDO
+    public class ActivityDO : PlanNodeDO
 	{
         public string CrateStorage { get; set; }
         public string Label { get; set; }
@@ -33,7 +33,7 @@ namespace Data.Entities
             return Id.ToString();
         }
 
-        protected override RouteNodeDO CreateNewInstance()
+        protected override PlanNodeDO CreateNewInstance()
         {
             return new ActivityDO();
         }
@@ -60,7 +60,7 @@ namespace Data.Entities
             }
         }
 
-        protected override void CopyProperties(RouteNodeDO source)
+        protected override void CopyProperties(PlanNodeDO source)
         {
             var activity = (ActivityDO) source;
 
