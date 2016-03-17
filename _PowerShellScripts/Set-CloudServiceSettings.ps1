@@ -52,16 +52,8 @@ if(Test-Path $ConfigFile)
 
    if ($updateService) {
       Write-Host "Uploading and applying the file to Azure Cloud Service..."
-	   try
-	   {
-		  Set-AzureDeployment -Config -ServiceName $serviceName -Slot "Staging" -Configuration $ConfigFile
-		  Write-Host "Azure Cloud Service $serviceName updated"
-	   }
-	   catch
-	   {
-		  Write-Host "Exception while updating Cloud Service - $($_.Exception.Message)" 
-		  exit 1 
-	   } 
+	  Set-AzureDeployment -Config -ServiceName $serviceName -Slot "Staging" -Configuration $ConfigFile -ErrorAction Ignore 
+	  Write-Host "Azure Cloud Service $serviceName updated"
    }
 }
 else
