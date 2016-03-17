@@ -18,7 +18,8 @@ namespace Data.Constants
         ExecuteClientActivity,
         ShowDocumentation,
         JumpToActivity,
-        JumpToSubplan
+        JumpToSubplan,
+        RequestLaunch
     }
 
     public enum PlanType
