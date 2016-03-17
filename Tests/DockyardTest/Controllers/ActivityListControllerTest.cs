@@ -20,7 +20,7 @@ namespace DockyardTest.Controllers
     [Category("ActionListController")]
     public class ActivityListControllerTest : ApiControllerTestBase
     {
-        private SubPlanDO _curSubroute;
+        private SubPlanDO _curSubPlan;
         private ActionListController _activityListController;
 
         public override void SetUp()

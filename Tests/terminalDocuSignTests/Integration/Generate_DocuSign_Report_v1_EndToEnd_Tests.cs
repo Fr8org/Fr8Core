@@ -231,7 +231,8 @@ namespace terminalDocuSignTests.Integration
 
         private void ValidateContainer(ContainerDTO container)
         {
-            Assert.AreEqual(ActivityResponse.ExecuteClientActivity, container.CurrentActivityResponse);
+            //Activity Responses should be resetted
+            Assert.AreEqual(ActivityResponse.Null, container.CurrentActivityResponse);
             Assert.AreEqual("ShowTableReport", container.CurrentClientActivityName);
         }
 

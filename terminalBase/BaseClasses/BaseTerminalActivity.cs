@@ -137,6 +137,24 @@ namespace TerminalBase.BaseClasses
             return payload;
         }
 
+
+        /// <summary>
+        /// Jumps to an activity that resides in same subplan as current activity
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <returns></returns>
+        protected PayloadDTO LaunchPlan(PayloadDTO payload, Guid targetPlanId)
+        {
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
+            {
+                var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.RequestLaunch);
+                operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Details = targetPlanId });
+            }
+
+            return payload;
+        }
+
         /// <summary>
         /// returns success to hub
         /// </summary>

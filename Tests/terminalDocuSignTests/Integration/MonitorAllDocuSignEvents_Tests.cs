@@ -18,6 +18,7 @@ using Utilities.Configuration.Azure;
 using terminalDocuSignTests.Fixtures;
 using Newtonsoft.Json;
 using terminalDocuSign.DataTransferObjects;
+using System.Diagnostics;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -27,13 +28,25 @@ namespace terminalDocuSignTests.Integration
     {
         // private const string UserAccountName = "y.gnusin@gmail.com";
         private const string UserAccountName = "IntegrationTestUser1";
-        private const int AwaitPeriod = 120000;
+        private const int MaxAwaitPeriod = 300000;
+        private const int SingleAwaitPeriod = 10000;
 
-        private const string templateId = "392f63c3-cabb-4b21-b331-52dabf1c2993"; // "SendEnvelopeIntegrationTest" template
+        private const string templateId = "b0c8eb61-ff16-410d-be0b-6a2feec57f4c"; // "392f63c3-cabb-4b21-b331-52dabf1c2993"; // "SendEnvelopeIntegrationTest" template
 
-        private const string ToEmail = "freight.testing@gmail.com";
-        private const string DocuSignEmail = "freight.testing@gmail.com";
+        private const string ToEmail = "fr8.madse.testing@gmail.com"; // "freight.testing@gmail.com";
+        private const string DocuSignEmail = "fr8.madse.testing@gmail.com"; // "freight.testing@gmail.com";
         private const string DocuSignApiPassword = "I6HmXEbCxN";
+
+
+        protected override string TestUserEmail
+        {
+            get { return UserAccountName; }
+        }
+
+        protected override string TestUserPassword
+        {
+            get { return "123qwe"; }
+        }
 
 
         public override string TerminalName
@@ -76,11 +89,23 @@ namespace terminalDocuSignTests.Integration
 
                 await SendDocuSignTestEnvelope();
 
-                await Task.Delay(AwaitPeriod);
+                var stopwatch = new Stopwatch();
+                stopwatch.Start();
 
-                var mtDataCountAfter = unitOfWork.MultiTenantObjectRepository
-                    .AsQueryable<DocuSignEnvelopeCM>(testAccount.Id.ToString())
-                    .Count();
+                int mtDataCountAfter = mtDataCountBefore;
+                while (stopwatch.ElapsedMilliseconds <= MaxAwaitPeriod)
+                {
+                    await Task.Delay(SingleAwaitPeriod);
+
+                    mtDataCountAfter = unitOfWork.MultiTenantObjectRepository
+                        .AsQueryable<DocuSignEnvelopeCM>(testAccount.Id.ToString())
+                        .Count();
+
+                    if (mtDataCountBefore < mtDataCountAfter)
+                    {
+                        break;
+                    }
+                }
 
                 Assert.IsTrue(mtDataCountBefore < mtDataCountAfter);
             }
@@ -98,13 +123,10 @@ namespace terminalDocuSignTests.Integration
                 var docusignTokens = tokens.FirstOrDefault(x => x.Name == "terminalDocuSign");
                 if (docusignTokens != null)
                 {
-                    var existingToken = docusignTokens.AuthTokens
-                        .FirstOrDefault(x => x.ExternalAccountName == DocuSignEmail);
-
-                    if (existingToken != null)
+                    foreach (var token in docusignTokens.AuthTokens)
                     {
                         await HttpPostAsync<string>(
-                            _baseUrl + "manageauthtoken/revoke?id=" + existingToken.Id.ToString(),
+                            _baseUrl + "manageauthtoken/revoke?id=" + token.Id.ToString(),
                             null
                         );
                     }
@@ -148,9 +170,9 @@ namespace terminalDocuSignTests.Integration
 
             while (queue.Count > 0)
             {
-                var routeNode = queue.Dequeue();
+                var planNode = queue.Dequeue();
 
-                var activity = routeNode as ActivityDO;
+                var activity = planNode as ActivityDO;
                 if (activity != null)
                 {
                     if (activity.ActivityTemplate.Terminal.Name == TerminalName
@@ -161,7 +183,7 @@ namespace terminalDocuSignTests.Integration
                 }
 
                 uow.PlanRepository.GetNodesQueryUncached()
-                    .Where(x => x.ParentPlanNodeId == routeNode.Id)
+                    .Where(x => x.ParentPlanNodeId == planNode.Id)
                     .ToList()
                     .ForEach(x => queue.Enqueue(x));
             }
@@ -169,23 +191,31 @@ namespace terminalDocuSignTests.Integration
             uow.SaveChanges();
         }
 
+        private async Task<AuthorizationTokenDTO> Authenticate()
+        {
+            var creds = new CredentialsDTO()
+            {
+                Username = DocuSignEmail,
+                Password = DocuSignApiPassword,
+                IsDemoAccount = true
+            };
+
+            string endpoint = GetTerminalUrl() + "/authentication/internal";
+            var jobject = await HttpPostAsync<CredentialsDTO, JObject>(endpoint, creds);
+            var docuSignToken = JsonConvert.DeserializeObject<AuthorizationTokenDTO>(jobject.ToString());
+            Assert.IsTrue(string.IsNullOrEmpty(docuSignToken.Error));
+
+            return docuSignToken;
+        }
+
         private async Task SendDocuSignTestEnvelope()
         {
-            //var endpoint = CloudConfigurationManager.GetSetting("endpoint");
-
-            //var authManager = new DocuSignAuthentication();
-            //var password = await authManager
-            //    .ObtainOAuthToken(DocuSignEmail, DocuSignApiPassword, endpoint);
-
-            var authToken = HealthMonitor_FixtureData.DocuSign_AuthToken(this);
+            var authToken = await Authenticate();
             var authTokenDO = new AuthorizationTokenDO() { Token = authToken.Token };
             var docuSignManager = new DocuSignManager();
 
             var loginInfo = docuSignManager.SetUp(authTokenDO);
-
             var password = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token).ApiPassword;
-
-
 
             var rolesList = new List<FieldDTO>()
             {

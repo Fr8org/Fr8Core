@@ -20,6 +20,7 @@ using Utilities.Configuration.Azure;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Data.Interfaces.Manifests;
 using DocuSign.Integrations.Client;
+using Utilities;
 
 namespace Hub.Services
 {
@@ -341,7 +342,11 @@ namespace Hub.Services
                         .FindTokenById(currentActivity.AuthorizationTokenId);
 
                     IActivity _activity = ObjectFactory.GetInstance<IActivity>();
-                    await _activity.PrepareToExecute(currentActivity, curActionState, curContainerDO, uow);
+
+                    //FR-2642 Logic to skip execution of activities with "SkipAtRunTime" Tag
+                    var template = _activityTemplate.GetByKey(currentActivity.ActivityTemplateId);
+                    if (!(template.Tags != null && template.Tags.Contains("SkipAtRunTime", StringComparison.InvariantCultureIgnoreCase)))
+                        await _activity.PrepareToExecute(currentActivity, curActionState, curContainerDO, uow);
                     //TODO inspect this
                     //why do we get container from db again???
                     containerDO.CrateStorage = curContainerDO.CrateStorage;

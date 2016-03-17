@@ -90,7 +90,7 @@ namespace terminalFr8Core.Actions
                             //TODO check if targetNodeId is selected
                             return JumpToActivity(curPayloadDTO, containerTransitionField.TargetNodeId.Value);
                             case ContainerTransitions.JumpToPlan:
-                            throw new NotImplementedException();
+                            return LaunchPlan(curPayloadDTO, containerTransitionField.TargetNodeId.Value);
                             case ContainerTransitions.JumpToSubplan:
                             return JumpToSubplan(curPayloadDTO, containerTransitionField.TargetNodeId.Value);
                             case ContainerTransitions.ProceedToNextActivity:
