@@ -151,6 +151,7 @@ namespace Hub.Managers
                         Name = "UpstreamCrateChooser_mnfst_dropdown_1",
                         Source = existingDdlbSource
                     };
+
                     var containerLaunched = new DropDownList
                     {
                         selectedKey = "ContainerLaunched",
