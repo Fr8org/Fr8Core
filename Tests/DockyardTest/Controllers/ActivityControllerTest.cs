@@ -475,28 +475,5 @@ namespace DockyardTest.Controllers
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(okResult.Content);
         }
-
-        [Test]
-        public void ActivityController_GetSolutionList()
-        {
-            //Arrange
-            var controller = new ActivitiesController();
-            //Add two activity templates to the database
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                uow.ActivityTemplateRepository.Add(FixtureData.TestActivityTemplateDO3());
-                uow.ActivityTemplateRepository.Add(FixtureData.TestActivityTemplateDO4());
-                uow.SaveChanges();
-            }
-            //Act
-            //Call the activities/GetTerminalSolutionList?terminalName=terminalDocuSign
-            var actionResult = (JsonResult<List<string>>)controller.GetTerminalSolutionList("terminalDocuSign");
-            var solutionList = actionResult.Content.ToList();
-            //Assert
-            Assert.True(solutionList.Any());
-            Assert.True(solutionList.Count == 2);
-            Assert.Contains("Mail_Merge_Into_DocuSign", solutionList);
-            Assert.Contains("Extract_Data_From_Envelopes", solutionList);
-        }
     }
 }

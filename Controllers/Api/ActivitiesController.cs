@@ -174,6 +174,12 @@ namespace HubWeb.Controllers
             //check if the DocumentationSupport comma separated string has the correct form
             if (!ValidateDocumentationSupport(curDocSupport))
                 return BadRequest();
+            if (curDocSupport.Contains("Terminal="))
+            {
+                var terminalName = curDocSupport.Split('=')[1];
+                var solutionNameList = _activity.GetSolutionList(terminalName);
+                return Ok(solutionNameList);
+            }
             if (curDocSupport.Contains("MainPage"))
             {
                 var solutionPageDTO = await _activity.GetActivityDocumentation<SolutionPageDTO>(curActivityDTO, true);
@@ -189,20 +195,17 @@ namespace HubWeb.Controllers
         private bool ValidateDocumentationSupport(string docSupport)
         {
             var curStringArray = docSupport.Split(',');
-            if (curStringArray.Contains("MainPage") && curStringArray.Contains("HelpMenu"))
+            var hasTerminalName = curStringArray.Contains("Terminal=");
+            var hasMainPage = curStringArray.Contains("MainPage");
+            var hasHelpMenu = curStringArray.Contains("HelpMenu");
+            if (hasTerminalName &&
+                (hasMainPage || hasHelpMenu))
+                throw new Exception("ActionDTO cannot have TerminalName and MainPage and/or HelpMenu in the Documentation Support field value");
+            if (hasMainPage && hasHelpMenu)
                 throw new Exception("ActionDTO cannot have both MainPage and HelpMenu in the Documentation Support field value");
-            if (curStringArray.Contains("MainPage") || curStringArray.Contains("HelpMenu"))
+            if (hasMainPage || hasHelpMenu || hasTerminalName)
                 return true;
             return false;
         }
-
-        [HttpGet]
-        [AllowAnonymous]
-        public IHttpActionResult GetTerminalSolutionList(string terminalName)
-        {
-            var solutionNameList = _activity.GetSolutionList(terminalName);
-            return Json(solutionNameList);
-        }
     }
-
 }

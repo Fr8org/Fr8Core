@@ -27,10 +27,10 @@ namespace HubTests.Integration
         [Test]
         private async Task GetDocuSignSolutionList()
         {
-            string baseUrl = GetHubApiBaseUrl();
-            var getSolutionListUrl = baseUrl + "activities/GetTerminalSolutionList?terminalName=terminalDocuSign";
-            var response = await HttpGetAsync<List<string>>(getSolutionListUrl);
-            var solutionNameList = response.ToList();
+            var baseUrl = GetHubApiBaseUrl();
+            var getSolutionListUrl = baseUrl + "activities/Documentation";
+            var emptyActivityDTO = new ActivityDTO { Documentation = "Terminal=terminalDocuSign" };
+            var solutionNameList = await HttpPostAsync<ActivityDTO, List<string>>(getSolutionListUrl, emptyActivityDTO);
             Assert.IsNotNull(solutionNameList);
             Assert.IsTrue(solutionNameList.Any());
             Assert.Contains("Mail_Merge_Into_DocuSign", solutionNameList);
@@ -42,10 +42,10 @@ namespace HubTests.Integration
         [Test]
         private async Task GetFr8CoreSolutionList()
         {
-            string baseUrl = GetHubApiBaseUrl();
-            var getSolutionListUrl = baseUrl + "activities/GetTerminalSolutionList?terminalName=terminalFr8Core";
-            var response = await HttpGetAsync<List<string>>(getSolutionListUrl);
-            var solutionNameList = response.ToList();
+            var baseUrl = GetHubApiBaseUrl();
+            var getSolutionListUrl = baseUrl + "activities/Documentation";
+            var emptyActivityDTO = new ActivityDTO { Documentation = "Terminal=terminalFr8Core" };
+            var solutionNameList = await HttpPostAsync<ActivityDTO, List<string>>(getSolutionListUrl, emptyActivityDTO);
             Assert.IsNotNull(solutionNameList);
             Assert.IsTrue(solutionNameList.Any());
             Assert.Contains("FindObjects_Solution", solutionNameList);

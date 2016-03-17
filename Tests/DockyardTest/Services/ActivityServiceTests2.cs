@@ -689,27 +689,48 @@ namespace DockyardTest.Services
             _eventReceived = true;
         }
 
+        [Test]
+        public void ActivityController_GetSolutionList()
+        {
+            //Arrange
+            //Add two activity templates to the database
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.ActivityTemplateRepository.Add(FixtureData.TestActivityTemplateDO3());
+                uow.ActivityTemplateRepository.Add(FixtureData.TestActivityTemplateDO4());
+                uow.SaveChanges();
+            }
+            //Act
+            //Call the activities/GetTerminalSolutionList?terminalName=terminalDocuSign
+            var solutionList = _activity.GetSolutionList("terminalDocuSign");
+            //Assert
+            Assert.True(solutionList.Any());
+            Assert.True(solutionList.Count == 2);
+            Assert.Contains("Mail_Merge_Into_DocuSign", solutionList);
+            Assert.Contains("Extract_Data_From_Envelopes", solutionList);
+        }
+
         // DO-1214
-//        private void UpdateDatabase(ActionDO curActionDo)
-//        {
-//
-//            curActionDo.ActivityTemplate.Plugin.Endpoint = "pluginDocusign";
-//            _uow.ActivityTemplateRepository.Add(curActionDo.ActivityTemplate);
-//            _uow.SaveChanges();
-//
-//            _uow.RouteRepository.Add(FixtureData.TestRoute1());
-//
-//            ActionListDO parentActivity = (ActionListDO)curActionDo.ParentActivity;
-//            parentActivity.Process.RouteId = 33;
-//            _uow.ProcessRepository.Add(parentActivity.Process);
-//            _uow.SaveChanges();
-//
-//            _uow.ActionListRepository.Add(parentActivity);
-//            _uow.SaveChanges();
-//
-//            _uow.ActionRepository.Add(curActionDo);
-//            _uow.SaveChanges();
-//        }
+        //        private void UpdateDatabase(ActionDO curActionDo)
+        //        {
+        //
+        //            curActionDo.ActivityTemplate.Plugin.Endpoint = "pluginDocusign";
+        //            _uow.ActivityTemplateRepository.Add(curActionDo.ActivityTemplate);
+        //            _uow.SaveChanges();
+        //
+        //            _uow.RouteRepository.Add(FixtureData.TestRoute1());
+        //
+        //            ActionListDO parentActivity = (ActionListDO)curActionDo.ParentActivity;
+        //            parentActivity.Process.RouteId = 33;
+        //            _uow.ProcessRepository.Add(parentActivity.Process);
+        //            _uow.SaveChanges();
+        //
+        //            _uow.ActionListRepository.Add(parentActivity);
+        //            _uow.SaveChanges();
+        //
+        //            _uow.ActionRepository.Add(curActionDo);
+        //            _uow.SaveChanges();
+        //        }
     }
 
 }
