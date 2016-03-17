@@ -28,7 +28,7 @@ namespace terminalFr8Core.Controllers
 
             var terminal = new TerminalDTO
             {
-                Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
+                Endpoint = CloudConfigurationManager.GetSetting("terminalFr8Core.TerminalEndpoint"),
                 TerminalStatus = TerminalStatus.Active,
                 Name = "terminalFr8Core",
                 Version = "1"

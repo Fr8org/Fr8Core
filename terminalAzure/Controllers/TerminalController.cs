@@ -36,7 +36,7 @@ namespace terminalAzure.Controllers
 
             var terminal = new TerminalDTO
             {
-                Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
+                Endpoint = CloudConfigurationManager.GetSetting("terminalAzure.TerminalEndpoint"),
                 TerminalStatus = TerminalStatus.Active,
                 Name = "terminalAzure",
                 Version = "1"

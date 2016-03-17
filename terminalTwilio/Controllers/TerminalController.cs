@@ -20,7 +20,7 @@ namespace terminalTwilio.Controllers
             {
                 Name = "terminalTwilio",
                 TerminalStatus = TerminalStatus.Active,
-                Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
+                Endpoint = CloudConfigurationManager.GetSetting("terminalTwilio.TerminalEndpoint"),
                 Version = "1",
                 AuthenticationType = AuthenticationType.None
             };
