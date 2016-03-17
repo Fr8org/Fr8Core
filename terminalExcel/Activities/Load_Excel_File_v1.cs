@@ -63,6 +63,8 @@ namespace terminalExcel.Actions
             }
         }
 
+        private const string ColumnHeadersCrateLabel = "Spreadsheet Column Headers";
+
         public Load_Excel_File_v1() : base("Load Excel File") { }
 
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
@@ -74,10 +76,6 @@ namespace terminalExcel.Actions
             if (tableData == null)
             {
                 return Error(payloadCrates, "No Standard Table Data Manifest exists in activity storage. Probably Excel file is not uploaded or is empty", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
-            }
-            if (!tableData.FirstRowHeaders)
-            {
-                return Error(payloadCrates, "No headers found in the Standard Table Data Manifest.");
             }
             // Create a crate of payload data by using Standard Table Data manifest and use its contents to tranform into a Payload Data manifest.
             // Add a crate of PayloadData to action's crate storage
@@ -132,9 +130,11 @@ namespace terminalExcel.Actions
                 activityStorage.Remove<StandardConfigurationControlsCM>();
                 activityStorage.Add(PackControls(new ActivityUi(fileName, uploadFilePath)));
                 activityStorage.Remove<StandardTableDataCM>();
+                activityStorage.RemoveByLabel(ColumnHeadersCrateLabel);
                 if (!string.IsNullOrEmpty(uploadFilePath))
                 {
                     activityStorage.Add(Crate.FromContent(GenerateRuntimeCrateLabel(fileName), ExcelUtils.GetTableData(uploadFilePath), AvailabilityType.RunTime));
+                    activityStorage.Add(Crate.FromContent(ColumnHeadersCrateLabel, ExcelUtils.GetColumnHeadersData(uploadFilePath), AvailabilityType.RunTime));
                 }
             }
             return Task.FromResult(curActivityDO);
