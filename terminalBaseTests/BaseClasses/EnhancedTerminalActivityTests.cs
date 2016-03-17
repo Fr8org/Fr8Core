@@ -68,7 +68,7 @@ namespace terminaBaselTests.BaseClasses
             return Task.FromResult(0);
         }
 
-        protected override Task Run()
+        protected override Task RunCurrentActivity()
         {
             CalledMethods |= CalledMethod.Run;
             CheckBasicPropeties();
@@ -79,7 +79,7 @@ namespace terminaBaselTests.BaseClasses
             return Task.FromResult(0);
         }
 
-        protected override Task ChildActivitiesExecuted()
+        protected override Task RunChildActivities()
         {
             CalledMethods |= CalledMethod.ChildActivitiesExecuted;
             CheckBasicPropeties();
@@ -119,7 +119,7 @@ namespace terminaBaselTests.BaseClasses
         private void CheckBasicPropeties()
         {
             Assert.NotNull(UiBuilder);
-            Assert.NotNull(UpstreamNavigator);
+            Assert.NotNull(UpstreamQueryManager);
             Assert.NotNull(CurrentActivity);
             Assert.NotNull(CurrentActivityStorage);
         }

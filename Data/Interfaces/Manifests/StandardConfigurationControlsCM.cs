@@ -263,20 +263,14 @@ namespace Data.Interfaces.Manifests
 
                             if (targetList != null)
                             {
-                                try
+                                targetList.Clear();
+
+                                if (sourceList != null)
                                 {
-                                    targetList.Clear();
-                                    
-                                    if (sourceList != null)
+                                    foreach (var item in sourceList)
                                     {
-                                        foreach (var item in sourceList)
-                                        {
-                                            targetList.Add(item);
-                                        }
+                                        targetList.Add(item);
                                     }
-                                }
-                                catch
-                                {
                                 }
                             }
 

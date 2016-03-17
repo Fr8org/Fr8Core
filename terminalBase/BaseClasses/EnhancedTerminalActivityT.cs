@@ -55,12 +55,12 @@ namespace TerminalBase.BaseClasses
             }
         }
 
-        protected bool IsAuthenticationReqiured { get; }
+        protected bool IsAuthenticationRequired { get; }
         protected ICrateStorage CurrentActivityStorage { get; private set; }
         protected ActivityDO CurrentActivity { get; private set; }
         protected AuthorizationTokenDO AuthorizationToken { get; private set; }
         protected T ConfigurationControls { get; private set; }
-        protected UpstreamNavigator UpstreamNavigator { get; private set; }
+        protected UpstreamQueryManager UpstreamQueryManager { get; private set; }
         protected UiBuilder UiBuilder { get; private set; }
         protected int LoopIndex => GetLoopIndex(OperationalState, LoopId);
         protected string LoopId => CurrentActivity.GetLoopId();
@@ -71,23 +71,30 @@ namespace TerminalBase.BaseClasses
 
         protected EnhancedTerminalActivity(bool isAuthenticationRequired)
         {
-            IsAuthenticationReqiured = isAuthenticationRequired;
+            IsAuthenticationRequired = isAuthenticationRequired;
             UiBuilder = new UiBuilder();
+        }
+
+        /**********************************************************************************/
+
+        private void AuthorizeIfNecessary(AuthorizationTokenDO authTokenDO)
+        {
+            if (IsAuthenticationRequired)
+            {
+                CheckAuthentication(authTokenDO);
+            }
         }
 
         /**********************************************************************************/
 
         public sealed override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            if (IsAuthenticationReqiured)
-            {
-                CheckAuthentication(authTokenDO);
-            }
+            AuthorizeIfNecessary(authTokenDO);            
 
             AuthorizationToken = authTokenDO;
             CurrentActivity = curActivityDO;
 
-            UpstreamNavigator = new UpstreamNavigator(CurrentActivity, HubCommunicator, CurrentFr8UserId);
+            UpstreamQueryManager = new UpstreamQueryManager(CurrentActivity, HubCommunicator, CurrentFr8UserId);
             
             using (var storage = CrateManager.GetUpdatableStorage(CurrentActivity))
             {
@@ -155,15 +162,12 @@ namespace TerminalBase.BaseClasses
 
         public sealed override async Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            if (IsAuthenticationReqiured)
-            {
-                CheckAuthentication(authTokenDO);
-            }
+            AuthorizeIfNecessary(authTokenDO);
 
             AuthorizationToken = authTokenDO;
             CurrentActivity = curActivityDO;
 
-            UpstreamNavigator = new UpstreamNavigator(CurrentActivity, HubCommunicator, CurrentFr8UserId);
+            UpstreamQueryManager = new UpstreamQueryManager(CurrentActivity, HubCommunicator, CurrentFr8UserId);
 
             using (var storage = CrateManager.GetUpdatableStorage(CurrentActivity))
             {
@@ -186,7 +190,7 @@ namespace TerminalBase.BaseClasses
         {
             CurrentActivity = curActivityDO;
 
-            UpstreamNavigator = new UpstreamNavigator(CurrentActivity, HubCommunicator, CurrentFr8UserId);
+            UpstreamQueryManager = new UpstreamQueryManager(CurrentActivity, HubCommunicator, CurrentFr8UserId);
 
             using (var storage = CrateManager.GetUpdatableStorage(CurrentActivity))
             {
@@ -203,23 +207,23 @@ namespace TerminalBase.BaseClasses
 
         public sealed override Task<PayloadDTO> ExecuteChildActivities(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            return Run(curActivityDO, containerId, authTokenDO, ChildActivitiesExecuted);
+            return Run(curActivityDO, containerId, authTokenDO, RunChildActivities);
         }
 
         /**********************************************************************************/
 
         public Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            return Run(curActivityDO, containerId, authTokenDO, Run);
+            return Run(curActivityDO, containerId, authTokenDO, RunCurrentActivity);
         }
 
         /**********************************************************************************/
 
-        private async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO, Func<Task> runCore)
+        private async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO, Func<Task> runMode)
         {
             var processPayload = await HubCommunicator.GetPayload(curActivityDO, containerId, CurrentFr8UserId);
 
-            if (IsAuthenticationReqiured && NeedsAuthentication(authTokenDO))
+            if (IsAuthenticationRequired && NeedsAuthentication(authTokenDO))
             {
                 return NeedsAuthenticationError(processPayload);
             }
@@ -227,14 +231,14 @@ namespace TerminalBase.BaseClasses
             AuthorizationToken = authTokenDO;
             CurrentActivity = curActivityDO;
             
-            UpstreamNavigator = new UpstreamNavigator(CurrentActivity, HubCommunicator, CurrentFr8UserId);
+            UpstreamQueryManager = new UpstreamQueryManager(CurrentActivity, HubCommunicator, CurrentFr8UserId);
 
             _isRunTime = true;
 
             using (var payloadstorage = CrateManager.GetUpdatableStorage(processPayload))
-            using (var actionStoragestorage = CrateManager.GetUpdatableStorage(CurrentActivity))
+            using (var activityStorage = CrateManager.GetUpdatableStorage(CurrentActivity))
             {
-                CurrentActivityStorage = actionStoragestorage;
+                CurrentActivityStorage = activityStorage;
                 CurrentPayloadStorage = payloadstorage;
                 OperationalState = CurrentPayloadStorage.CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
 
@@ -253,7 +257,7 @@ namespace TerminalBase.BaseClasses
                         return processPayload;
                     }
 
-                    await runCore();
+                    await runMode();
 
                     Success();
                 }
@@ -318,14 +322,11 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        protected virtual Task Run()
-        {
-            return Task.FromResult(0);
-        }
+        protected abstract Task RunCurrentActivity();
 
         /**********************************************************************************/
 
-        protected virtual Task ChildActivitiesExecuted()
+        protected virtual Task RunChildActivities()
         {
             return Task.FromResult(0);
         }
@@ -352,7 +353,11 @@ namespace TerminalBase.BaseClasses
         }
 
         /**********************************************************************************/
-
+        // SyncConfControls and SyncConfControlsBack are pair of methods that serves the following reason:
+        // We want to work with StandardConfigurationControlsCM in form of ActivityUi that has handy properties to directly access certain controls
+        // But when we deserialize activity's crate storage we get StandardConfigurationControlsCM. So we need a way to 'convert' StandardConfigurationControlsCM
+        // from crate storage to ActivityUI.
+        // SyncConfControls takes properties of controls in StandardConfigurationControlsCM from activity's storage and copies them into ActivityUi.
         private void SyncConfControls()
         {
             var ui = CurrentActivityStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
@@ -367,11 +372,15 @@ namespace TerminalBase.BaseClasses
         }
 
         /**********************************************************************************/
-
+        // Activity logic can update state of configuration controls. But as long we have copied  configuration controls crate from the storage into 
+        // new instance of ActivityUi changes made to ActivityUi won't be reflected in storage.
+        // we have to persist in storage changes we've made to ActivityUi.
+        // we do this in the most simple way by replacing old StandardConfigurationControlsCM with ActivityUi.
         private void SyncConfControlsBack()
         {
             CurrentActivityStorage.Remove<StandardConfigurationControlsCM>();
-            // we clone ConfigurationControls.Controls to remove possible custom properties from ActionUi from serialization
+            // we create new StandardConfigurationControlsCM with controls from ActivityUi.
+            // We do this because ActivityUi can has properties to access specific controls. We don't want those propeties exist in serialized crate.
             CurrentActivityStorage.Add(Crate.FromContent(ConfigurationControlsLabel, new StandardConfigurationControlsCM(ConfigurationControls.Controls), AvailabilityType.Configuration));
         }
 
@@ -379,7 +388,7 @@ namespace TerminalBase.BaseClasses
         /// <summary>
         /// Creates a suspend request for hub execution
         /// </summary>
-        protected void SuspendHubExecution(string message = null)
+        protected void RequestHubExecutionSuspension(string message = null)
         {
             SetResponse(ActivityResponse.RequestSuspend, message);
         }
@@ -389,7 +398,7 @@ namespace TerminalBase.BaseClasses
         /// Creates a terminate request for hub execution
         /// after that we could stop throwing exceptions on actions
         /// </summary>
-        protected void TerminateHubExecution(string message = null)
+        protected void RequestHubExecutionTermination(string message = null)
         {
             SetResponse(ActivityResponse.RequestTerminate, message);
         }
@@ -405,7 +414,7 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        protected void ExecuteClientActivity(string clientActionName)
+        protected void RequestClientActivityExecution(string clientActionName)
         {
             SetResponse(ActivityResponse.ExecuteClientActivity);
             OperationalState.CurrentClientActivityName = clientActionName;
@@ -415,7 +424,7 @@ namespace TerminalBase.BaseClasses
         /// <summary>
         /// skips children of this action
         /// </summary>
-        protected void SkipChildren()
+        protected void RequestSkipChildren()
         {
             SetResponse(ActivityResponse.SkipChildren);
         }
@@ -424,7 +433,7 @@ namespace TerminalBase.BaseClasses
         /// <summary>
         /// Creates a reprocess child actions request
         /// </summary>
-        protected void ReprocessChildren()
+        protected void RequestReprocessChildren()
         {
             SetResponse(ActivityResponse.ReProcessChildren);
         }
@@ -434,7 +443,7 @@ namespace TerminalBase.BaseClasses
         /// Jumps to an activity that resides in same subplan as current activity
         /// </summary>
         /// <returns></returns>
-        protected void JumpToActivity(Guid targetActivityId)
+        protected void RequestJumpToActivity(Guid targetActivityId)
         {
             SetResponse(ActivityResponse.JumpToActivity);
             OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() {Details = targetActivityId});
@@ -445,7 +454,7 @@ namespace TerminalBase.BaseClasses
         /// Jumps to an activity that resides in same subplan as current activity
         /// </summary>
         /// <returns></returns>
-        protected void JumpToSubplan(Guid targetSubplanId)
+        protected void RequestJumpToSubplan(Guid targetSubplanId)
         {
             SetResponse(ActivityResponse.JumpToSubplan);
             OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Details = targetSubplanId });

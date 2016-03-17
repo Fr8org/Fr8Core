@@ -10,13 +10,13 @@ using TerminalBase.Infrastructure;
 
 namespace TerminalBase.BaseClasses
 {
-    public class UpstreamNavigator
+    public class UpstreamQueryManager
     {
         private readonly ActivityDO _activity;
         private readonly IHubCommunicator _hubCommunicator;
         private readonly string _userId;
 
-        public UpstreamNavigator(ActivityDO activity, IHubCommunicator hubCommunicator, string userId)
+        public UpstreamQueryManager(ActivityDO activity, IHubCommunicator hubCommunicator, string userId)
         {
             _activity = activity;
             _hubCommunicator = hubCommunicator;
@@ -28,7 +28,7 @@ namespace TerminalBase.BaseClasses
             return await _hubCommunicator.GetCratesByDirection<TManifest>(_activity, direction, _userId);
         }
 
-        public async Task<List<TManifest>> GetCratesManifestByDirection<TManifest>(CrateDirection direction)
+        public async Task<List<TManifest>> GetCrateManifestsByDirection<TManifest>(CrateDirection direction)
         {
             return (await _hubCommunicator.GetCratesByDirection<TManifest>(_activity, direction, _userId)).Select(x => x.Content).ToList();
         }

@@ -5,6 +5,12 @@ using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
 {
+    // We have logic that can copy properties from one StandardConfigurationControlsCM to another.
+    // Important moment here is that we want to copy only properties (i.e what can be changed by user) no structure.
+    // We don't want to suddedly insert new Control that exists in one StandardConfigurationControlsCM to another. It is very important in 
+    // Easy way not modify structure is not to sync collection properties (at least until we don't have control that has property of type ControlDefinitionDTO).
+    // But sometimes we have to sync collections. For example in case of UpstreamCrateChooser.SelectedCrates.
+    // To force collection property synchronization we introduce this attribute
     [AttributeUsage(AttributeTargets.Property, Inherited = true)]
     sealed class ForcePropertySyncAttribute : Attribute
     {
