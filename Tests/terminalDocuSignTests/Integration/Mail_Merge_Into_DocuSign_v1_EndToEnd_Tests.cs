@@ -34,6 +34,7 @@ namespace terminalDocuSignTests.Integration
             get { return "terminalDocuSign"; }
         }
 
+
         ActivityDTO solution;
         ICrateStorage crateStorage;
 
@@ -59,8 +60,8 @@ namespace terminalDocuSignTests.Integration
             //
             // Create solution
             //
-            var plan = await HttpPostAsync<string, RouteFullDTO>(solutionCreateUrl, null);
-            var solution = plan.Subroutes.FirstOrDefault().Activities.FirstOrDefault();
+            var plan = await HttpPostAsync<string, PlanDTO>(solutionCreateUrl, null);
+            var solution = plan.Plan.SubPlans.FirstOrDefault().Activities.FirstOrDefault();
 
             //
             // Send configuration request without authentication token
@@ -123,10 +124,10 @@ namespace terminalDocuSignTests.Integration
             //
             //Rename route
             //
-            var newName = plan.Name + " | " + DateTime.UtcNow.ToShortDateString() + " " +
+            var newName = plan.Plan.Name + " | " + DateTime.UtcNow.ToShortDateString() + " " +
                 DateTime.UtcNow.ToShortTimeString();
-            await HttpPostAsync<object, RouteFullDTO>(_baseUrl + "plans?id=" + plan.Id,
-                new { id = plan.Id, name = newName });
+            await HttpPostAsync<object, PlanFullDTO>(_baseUrl + "plans?id=" + plan.Plan.Id,
+                new { id = plan.Plan.Id, name = newName });
 
             //
             // Configure solution
@@ -153,8 +154,8 @@ namespace terminalDocuSignTests.Integration
             {
                 ActivityTemplate = apmActivityTemplate,
                 Label = apmActivityTemplate.Label,
-                ParentRouteNodeId = this.solution.Id,
-                RootRouteNodeId = plan.Id
+                ParentPlanNodeId = this.solution.Id,
+                RootPlanNodeId = plan.Plan.Id
             };
             apmAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", apmAction);
             Assert.NotNull(apmAction, "Add Payload Manually action failed to create");
@@ -285,7 +286,7 @@ namespace terminalDocuSignTests.Integration
             //
             // Activate and run plan
             //
-            await HttpPostAsync<string, string>(_baseUrl + "plans/run?planId=" + plan.Id, null);
+            await HttpPostAsync<string, string>(_baseUrl + "plans/run?planId=" + plan.Plan.Id, null);
 
             ////check if container state == completed
             //var containerIds = await HttpGetAsync<IEnumerable<string>>(_baseUrl + "containers/GetIdsByName?name=" + newName);
@@ -312,7 +313,7 @@ namespace terminalDocuSignTests.Integration
             //
             // Delete plan
             //
-            await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Id);
+            await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Plan.Id);
 
         }
     }

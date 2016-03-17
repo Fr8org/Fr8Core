@@ -1,7 +1,7 @@
 ﻿module dockyard.model {
     export class ActivityDTO implements interfaces.IActivityDTO {
-        rootRouteNodeId: string;
-        parentRouteNodeId: string;
+        rootPlanNodeId: string;
+        parentPlanNodeId: string;
         id: string;
         label: string;
         crateStorage: model.CrateStorage;
@@ -13,12 +13,12 @@
         ordering: number;
         documentation: string;
         constructor(
-            rootRouteNodeId: string,
-            parentRouteNodeId: string,
+            rootPlanNodeId: string,
+            parentPlanNodeId: string,
             id: string
         ) {
-            this.rootRouteNodeId = rootRouteNodeId;
-            this.parentRouteNodeId = parentRouteNodeId;
+            this.rootPlanNodeId = rootPlanNodeId;
+            this.parentPlanNodeId = parentPlanNodeId;
             this.id = id;
             this.configurationControls = new ControlsList();
         }
@@ -29,8 +29,8 @@
 
         clone(): ActivityDTO {
             var result = new ActivityDTO(
-                this.rootRouteNodeId,
-                this.parentRouteNodeId,
+                this.rootPlanNodeId,
+                this.parentPlanNodeId,
                 this.id
             );
             result.ordering = this.ordering;
@@ -48,7 +48,7 @@
             result.configurationControls = dataObject.configurationControls;
             result.id = dataObject.id;
             result.label = dataObject.label;
-            result.parentRouteNodeId = dataObject.parentRouteNodeId;
+            result.parentPlanNodeId = dataObject.parentPlanNodeId;
             result.ordering = dataObject.ordering;
             return result;
         }

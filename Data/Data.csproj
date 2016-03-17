@@ -257,7 +257,7 @@
     <Compile Include="Crates\ManifestDiscovery.cs" />
     <Compile Include="Crates\ManifestTypeCache.cs" />
     <Compile Include="Entities\EncryptedAuthorizationData.cs" />
-    <Compile Include="Entities\RouteNodeDO.cs" />
+    <Compile Include="Entities\PlanNodeDO.cs" />
     <Compile Include="Entities\FileDO.cs" />
     <Compile Include="Entities\TerminalSubscriptionDO.cs" />
     <Compile Include="Entities\WebServiceDO.cs" />
@@ -268,7 +268,7 @@
     <Compile Include="Helpers\Fr8ReflectionHelper.cs" />
     <Compile Include="Infrastructure\AutoMapper\JSONToStringConverter.cs" />
     <Compile Include="Infrastructure\AutoMapper\DataAutoMapperBootstrapper.cs" />
-    <Compile Include="Infrastructure\AutoMapper\RouteDOFullConverter.cs" />
+    <Compile Include="Infrastructure\AutoMapper\PlanDOFullConverter.cs" />
     <Compile Include="Entities\ActivityTemplateDO.cs" />
     <Compile Include="Infrastructure\AutoMapper\StringToJSONConverter.cs" />
     <Compile Include="Infrastructure\CloudFileManager.cs" />
@@ -326,14 +326,14 @@
     <Compile Include="Interfaces\DataTransferObjects\ControlDefinitionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FileDescriptionDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\RouteFullDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\PlanFullDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ManufacturerDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\PayloadDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ContainerDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\QueryDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\SubrouteDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\SubPlanDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\SolutionPageDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\RouteEmptyDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\PlanEmptyDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\SlackPayloadDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\TerminalDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\UserDTO.cs" />
@@ -351,7 +351,7 @@
     <Compile Include="Interfaces\Manifests\MtPrimaryKeyAttribute.cs" />
     <Compile Include="Interfaces\Manifests\StandardAccountingTransactionCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFileListCM.cs" />
-    <Compile Include="Interfaces\Manifests\StandardFr8RoutesCM .cs" />
+    <Compile Include="Interfaces\Manifests\StandardFr8PlansCM .cs" />
     <Compile Include="Interfaces\Manifests\DocuSignEnvelopeCM.cs" />
     <Compile Include="Interfaces\Manifests\DocuSignEventCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFr8TerminalCM.cs" />
@@ -374,6 +374,7 @@
     <Compile Include="Interfaces\Manifests\FieldDescriptionsCM.cs" />
     <Compile Include="Interfaces\Manifests\EventReportCM.cs" />
     <Compile Include="Interfaces\Manifests\EventSubscriptionCM.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\PlanDTO.cs" />
     <Compile Include="Migrations\201510120408332_InitialMigration.cs" />
     <Compile Include="Migrations\201510120408332_InitialMigration.Designer.cs">
       <DependentUpon>201510120408332_InitialMigration.cs</DependentUpon>
@@ -631,10 +632,6 @@
     <Compile Include="Migrations\201603021529530_MoveToSqlMt.Designer.cs">
       <DependentUpon>201603021529530_MoveToSqlMt.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201603032006159_EmptyMigration1.cs" />
-    <Compile Include="Migrations\201603032006159_EmptyMigration1.Designer.cs">
-      <DependentUpon>201603032006159_EmptyMigration1.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201603041104310_MigrateMTData.cs" />
     <Compile Include="Migrations\201603041104310_MigrateMTData.Designer.cs">
       <DependentUpon>201603041104310_MigrateMTData.cs</DependentUpon>
@@ -646,6 +643,10 @@
     <Compile Include="Migrations\201603152035015_Rename_Save_In_Google_Sheet_Activity.cs" />
     <Compile Include="Migrations\201603152035015_Rename_Save_In_Google_Sheet_Activity.Designer.cs">
       <DependentUpon>201603152035015_Rename_Save_In_Google_Sheet_Activity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201603170621005_ChangeRouteToPlan.cs" />
+    <Compile Include="Migrations\201603170621005_ChangeRouteToPlan.Designer.cs">
+      <DependentUpon>201603170621005_ChangeRouteToPlan.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -707,9 +708,9 @@
     <Compile Include="Repositories\Plan\PlanRepository.cs" />
     <Compile Include="Repositories\Plan\PlanStorageProviderMockedDb.cs" />
     <Compile Include="Repositories\Plan\PlanStorageProviderEf.cs" />
-    <Compile Include="Repositories\Plan\RouteSnapshot.cs" />
-    <Compile Include="Repositories\Plan\RouteTreeHelper.cs" />
-    <Compile Include="Repositories\Plan\Internal\RouteNodeRepository.cs" />
+    <Compile Include="Repositories\Plan\PlanSnapshot.cs" />
+    <Compile Include="Repositories\Plan\PlanTreeHelper.cs" />
+    <Compile Include="Repositories\Plan\Internal\PlanNodeRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\Plan\SlidingExpirationStrategy.cs" />
     <Compile Include="Repositories\TagRepository.cs" />
@@ -762,8 +763,8 @@
     <Compile Include="Repositories\EmailStatusRepository.cs" />
     <Compile Include="Repositories\EnvelopeRepository.cs" />
     <Compile Include="Repositories\ProcessNodeRepository.cs" />
-    <Compile Include="Repositories\Plan\Internal\SubrouteRepository.cs" />
-    <Compile Include="Repositories\Plan\Internal\RouteRepository.cs" />
+    <Compile Include="Repositories\Plan\Internal\SubPlanRepository.cs" />
+    <Compile Include="Repositories\Plan\Internal\PlansRepository.cs" />
     <Compile Include="Repositories\HistoryRepository.cs" />
     <Compile Include="Repositories\ContainerRepository.cs" />
     <Compile Include="Repositories\MetaflowRepository.cs" />
@@ -791,7 +792,7 @@
     <Compile Include="States\ExpectedResponseStatus.cs" />
     <Compile Include="States\InvitationType.cs" />
     <Compile Include="States\ParticipationStatus.cs" />
-    <Compile Include="States\RouteState.cs" />
+    <Compile Include="States\PlanState.cs" />
     <Compile Include="States\ProcessTemplateType.cs" />
     <Compile Include="States\Roles.cs" />
     <Compile Include="States\Templates\_AccessLevelTemplate.cs" />
@@ -800,7 +801,7 @@
     <Compile Include="States\Templates\_AuthorizationTokenStateTemplate.cs" />
     <Compile Include="States\Templates\_CriteriaExecutionTypeTemplate.cs" />
     <Compile Include="States\Templates\_TerminalStatusTemplate.cs" />
-    <Compile Include="Entities\SubrouteDO.cs" />
+    <Compile Include="Entities\SubPlanDO.cs" />
     <Compile Include="States\Templates\_ProcessNodeStatusTemplate.cs" />
     <Compile Include="States\Templates\_ContainerStateTemplate.cs" />
     <Compile Include="States\Templates\IStateTemplate.cs" />
@@ -1119,9 +1120,6 @@
     <EmbeddedResource Include="Migrations\201603021529530_MoveToSqlMt.resx">
       <DependentUpon>201603021529530_MoveToSqlMt.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201603032006159_EmptyMigration1.resx">
-      <DependentUpon>201603032006159_EmptyMigration1.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201603041104310_MigrateMTData.resx">
       <DependentUpon>201603041104310_MigrateMTData.cs</DependentUpon>
     </EmbeddedResource>
@@ -1130,6 +1128,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201603152035015_Rename_Save_In_Google_Sheet_Activity.resx">
       <DependentUpon>201603152035015_Rename_Save_In_Google_Sheet_Activity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201603170621005_ChangeRouteToPlan.resx">
+      <DependentUpon>201603170621005_ChangeRouteToPlan.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -18,20 +18,20 @@ namespace HubWeb.Controllers
     public class ActionListController: ApiController
 	{
         /// <summary>
-        /// Retrieve ActionList by specifying Subroute.Id and ActionListType.
+        /// Retrieve ActionList by specifying SubPlan.Id and ActionListType.
         /// </summary>
-        /// <param name="id">Subroute.Id</param>
+        /// <param name="id">SubPlan.Id</param>
         /// <param name="actionListType">ActionListType</param>
         /// <returns></returns>
         //[ResponseType(typeof(ActionListDTO))]
-        [ActionName("bySubroute")]
+        [ActionName("bySubPlan")]
         [HttpGet]
-        public IHttpActionResult GetBySubrouteId(int id, int actionListType)
+        public IHttpActionResult GetBySubPlanId(int id, int actionListType)
         {
 //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 //            {
 //                var curActionList = uow..GetQuery()
-//                    .SingleOrDefault(x => x.SubrouteID == id && x.ActionListType == actionListType);
+//                    .SingleOrDefault(x => x.SubPlanID == id && x.ActionListType == actionListType);
 //
 //                return Ok(Mapper.Map<ActionListDTO>(curActionList));
 //            }

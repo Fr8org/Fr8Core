@@ -165,14 +165,14 @@ namespace terminalDocuSignTests.Integration
                 throw new ApplicationException("Could not find MonitorAllDocuSignEvents plan.");
             }
 
-            var queue = new Queue<RouteNodeDO>();
+            var queue = new Queue<PlanNodeDO>();
             queue.Enqueue(plan);
 
             while (queue.Count > 0)
             {
-                var routeNode = queue.Dequeue();
+                var planNode = queue.Dequeue();
 
-                var activity = routeNode as ActivityDO;
+                var activity = planNode as ActivityDO;
                 if (activity != null)
                 {
                     if (activity.ActivityTemplate.Terminal.Name == TerminalName
@@ -183,7 +183,7 @@ namespace terminalDocuSignTests.Integration
                 }
 
                 uow.PlanRepository.GetNodesQueryUncached()
-                    .Where(x => x.ParentRouteNodeId == routeNode.Id)
+                    .Where(x => x.ParentPlanNodeId == planNode.Id)
                     .ToList()
                     .ForEach(x => queue.Enqueue(x));
             }

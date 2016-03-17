@@ -108,7 +108,7 @@ namespace TerminalBase.Infrastructure.Behaviors
 
             if (solution.ChildNodes == null)
             {
-                solution.ChildNodes = new List<RouteNodeDO>();
+                solution.ChildNodes = new List<PlanNodeDO>();
             }
 
             while (queue.Count > 0)

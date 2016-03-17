@@ -48,7 +48,7 @@ namespace terminalIntegrationTests
 
         private Fr8AccountDO _testUserAccount;
         private PlanDO _planDO;
-        private SubrouteDO _subrouteDO;
+        private SubPlanDO _subPlanDO;
         //private ActionListDO _actionList;
         private AuthorizationTokenDO _authToken;
         private ActivityTemplateDO _waitForDocuSignEventActivityTemplate;
@@ -73,16 +73,14 @@ namespace terminalIntegrationTests
 
             _testUserAccount = FixtureData.TestUser1();
 
-            _planDO = FixtureData.Route_TerminalIntegration();
+            _planDO = FixtureData.Plan_TerminalIntegration();
             _planDO.Fr8Account = _testUserAccount;
             System.Threading.Thread.CurrentPrincipal = new GenericPrincipal(new GenericIdentity(_testUserAccount.Id), new string[] { "User" });
 
-            _subrouteDO = FixtureData.Subroute_TerminalIntegration();
-            _subrouteDO.ParentRouteNode = _planDO;
+            _subPlanDO = FixtureData.SubPlan_TerminalIntegration();
+            _subPlanDO.ParentPlanNode = _planDO;
 
 
-            //_actionList = FixtureData.TestActionList_ImmediateActions();
-            // _actionList.Subroute = _subrouteDO;
 
             _waitForDocuSignEventActivityTemplate =
                 FixtureData.TestActivityTemplateDO_WaitForDocuSignEvent();
@@ -112,11 +110,7 @@ namespace terminalIntegrationTests
                 uow.AuthorizationTokenRepository.Add(_authToken);
 
                 uow.PlanRepository.Add(_planDO);
-               // uow.RouteRepository.Add(_planDO);
-               // uow.SubrouteRepository.Add(_subrouteDO);
-                // This fix inability of MockDB to correctly resolve requests to collections of derived entites
-               // uow.RouteNodeRepository.Add(_subrouteDO);
-                //uow.RouteNodeRepository.Add(_planDO);
+             
                 uow.SaveChanges();
             }
 
@@ -206,10 +200,10 @@ namespace terminalIntegrationTests
             var curActionController = CreateActivityController();
             var curActivityDO = FixtureData.TestActivity_Blank();
 
-            if (_subrouteDO.ChildNodes == null)
+            if (_subPlanDO.ChildNodes == null)
             {
-                _subrouteDO.ChildNodes = new List<RouteNodeDO>();
-                _subrouteDO.ChildNodes.Add(curActivityDO);
+                _subPlanDO.ChildNodes = new List<PlanNodeDO>();
+                _subPlanDO.ChildNodes.Add(curActivityDO);
             }
 
             if (activityTemplate != null)
@@ -218,8 +212,8 @@ namespace terminalIntegrationTests
                 curActivityDO.ActivityTemplateId = activityTemplate.Id;
             }
 
-            curActivityDO.ParentRouteNode = _subrouteDO;
-            curActivityDO.ParentRouteNodeId = _subrouteDO.Id;
+            curActivityDO.ParentPlanNode = _subPlanDO;
+            curActivityDO.ParentPlanNodeId = _subPlanDO.Id;
 
             var curActionDTO = Mapper.Map<ActivityDTO>(curActivityDO);
             var result = curActionController.Save(curActionDTO)
@@ -289,7 +283,7 @@ namespace terminalIntegrationTests
 //            {
 //                var activity = uow.ActivityRepository.GetByKey(id);
 //
-//                activity.ParentRouteNode = (RouteNodeDO)uow.SubrouteRepository.GetByKey(activity.ParentRouteNodeId) ?? uow.ActivityRepository.GetByKey(activity.ParentRouteNodeId);
+//                activity.ParentPlanNode = (PlanNodeDO)uow.SubPlanRepository.GetByKey(activity.ParentPlanNodeId) ?? uow.ActivityRepository.GetByKey(activity.ParentPlanNodeId);
 //                uow.SaveChanges();
 //            }
 //        }

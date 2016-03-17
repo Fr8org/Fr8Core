@@ -34,7 +34,7 @@ namespace terminalDropbox
                 For<IActivity>().Use<Hub.Services.Activity>();
                 For<ITerminal>().Use<Terminal>().Singleton();
                 For<ICrateManager>().Use<CrateManager>();
-                For<IRouteNode>().Use<RouteNode>();
+                For<IPlanNode>().Use<PlanNode>();
                 For<IDropboxService>().Use<DropboxService>();
             }
         }

@@ -25,23 +25,23 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static PlanDO Route_TerminalIntegration()
+        public static PlanDO Plan_TerminalIntegration()
         {
             return new PlanDO()
             {
                 Id = GetTestGuidById(1000),
                 Name = "Test Plan Name",
                 Description = "Test Plan Description",
-                RouteState = RouteState.Active,
+                PlanState = PlanState.Active,
             };
         }
 
-        public static SubrouteDO Subroute_TerminalIntegration()
+        public static SubPlanDO SubPlan_TerminalIntegration()
         {
-            return new SubrouteDO()
+            return new SubPlanDO()
             {
                 Id = GetTestGuidById(1001),
-                Name = "Test Subroute"
+                Name = "Test SubPlan"
             };
         }
 

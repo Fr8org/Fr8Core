@@ -172,8 +172,8 @@ namespace terminalDocuSign.Actions
             var queryFr8WarehouseActionTask = AddAndConfigureChildActivity(activityDO, "QueryFr8Warehouse", "Query Fr8 Warehouse", "Query Fr8 Warehouse", 3);
             var filterActionTask = AddAndConfigureChildActivity(activityDO, "TestIncomingData", "Test Incoming Data", "Test Incoming Data", 4);
 
-            var buildMessageActivityTask = AddAndConfigureChildActivity((Guid)activityDO.ParentRouteNodeId, "Build_Message", "Build a Message", "Build a Message", 2);
-            var notifierActivityTask = AddAndConfigureChildActivity((Guid)activityDO.ParentRouteNodeId, howToBeNotifiedDdl.Value, howToBeNotifiedDdl.selectedKey, howToBeNotifiedDdl.selectedKey, 3);
+            var buildMessageActivityTask = AddAndConfigureChildActivity((Guid)activityDO.ParentPlanNodeId, "Build_Message", "Build a Message", "Build a Message", 2);
+            var notifierActivityTask = AddAndConfigureChildActivity((Guid)activityDO.ParentPlanNodeId, howToBeNotifiedDdl.Value, howToBeNotifiedDdl.selectedKey, howToBeNotifiedDdl.selectedKey, 3);
 
             await Task.WhenAll(monitorDocuSignActionTask, setDelayActionTask, queryFr8WarehouseActionTask, filterActionTask, notifierActivityTask, buildMessageActivityTask);
 

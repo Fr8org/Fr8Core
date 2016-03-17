@@ -6,23 +6,23 @@ namespace Data.Interfaces
 {
     public interface IPlanRepository
     {
-        TRouteNode Reload<TRouteNode>(Guid id)
-             where TRouteNode : RouteNodeDO;
+        TPlanNode Reload<TPlanNode>(Guid id)
+             where TPlanNode : PlanNodeDO;
 
-        TRouteNode Reload<TRouteNode>(Guid? id)
-            where TRouteNode : RouteNodeDO;
+        TPlanNode Reload<TPlanNode>(Guid? id)
+            where TPlanNode : PlanNodeDO;
 
-        TRouteNode GetById<TRouteNode>(Guid id)
-            where TRouteNode : RouteNodeDO;
+        TPlanNode GetById<TPlanNode>(Guid id)
+            where TPlanNode : PlanNodeDO;
 
-        TRouteNode GetById<TRouteNode>(Guid? id)
-            where TRouteNode : RouteNodeDO;
+        TPlanNode GetById<TPlanNode>(Guid? id)
+            where TPlanNode : PlanNodeDO;
 
         void Add(PlanDO plan);
         void Delete(PlanDO node);
         IQueryable<PlanDO> GetPlanQueryUncached();
         IQueryable<ActivityDO> GetActivityQueryUncached();
-        IQueryable<RouteNodeDO> GetNodesQueryUncached();
+        IQueryable<PlanNodeDO> GetNodesQueryUncached();
         void RemoveAuthorizationTokenFromCache(ActivityDO activity);
     }
 }

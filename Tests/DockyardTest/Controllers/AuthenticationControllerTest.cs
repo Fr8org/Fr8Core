@@ -126,7 +126,7 @@ namespace DockyardTest.Controllers
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name="name",
-                    RouteState = RouteState.Active,
+                    PlanState = PlanState.Active,
                     ChildNodes = {activityDO }
                 });
                 

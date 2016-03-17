@@ -3,21 +3,21 @@ using Data.Entities;
 
 namespace Data.Repositories.Plan
 {
-    internal class LoadedRoute
+    internal class LoadedPlan
     {
-        public readonly RouteNodeDO Root;
+        public readonly PlanNodeDO Root;
         public bool IsDeleted;
         public bool IsNew;
-        public RouteSnapshot Snapshot;
+        public PlanSnapshot Snapshot;
 
-        public LoadedRoute(RouteNodeDO root, bool isNew = false)
+        public LoadedPlan(PlanNodeDO root, bool isNew = false)
         {
             IsNew = isNew;
             Root = root;
 
             if (isNew)
             {
-                Snapshot = new RouteSnapshot();
+                Snapshot = new PlanSnapshot();
             }
             else
             {
@@ -25,25 +25,25 @@ namespace Data.Repositories.Plan
             }
         }
 
-        public RouteSnapshot RebuildSnapshot()
+        public PlanSnapshot RebuildSnapshot()
         {
             var prev = Snapshot;
             
-            Snapshot = new RouteSnapshot(Root, true);
+            Snapshot = new PlanSnapshot(Root, true);
 
             return prev;
         }
 
-        public RouteNodeDO Find(Guid nodeId)
+        public PlanNodeDO Find(Guid nodeId)
         {
             if (IsDeleted)
             {
                 return null;
             }
 
-            RouteNodeDO result = null;
+            PlanNodeDO result = null;
 
-            RouteTreeHelper.Visit(Root, x =>
+            PlanTreeHelper.Visit(Root, x =>
             {
                 if (x.Id == nodeId)
                 {

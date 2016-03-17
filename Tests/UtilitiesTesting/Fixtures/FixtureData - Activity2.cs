@@ -98,7 +98,7 @@ namespace UtilitiesTesting.Fixtures
             var actionTemplate = ActivityTemplate();
             var origActionDO = new ActivityDO()
             {
-                ParentRouteNodeId = null,
+                ParentPlanNodeId = null,
                 Id = GetTestGuidById(34),
                 CrateStorage = "config settings",
 
@@ -143,7 +143,7 @@ namespace UtilitiesTesting.Fixtures
             return new ActivityDO
             {
                 Id = GetTestGuidById(6),
-                ParentRouteNodeId = GetTestGuidById(1),
+                ParentPlanNodeId = GetTestGuidById(1),
                 Ordering = 2,
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate
@@ -156,22 +156,22 @@ namespace UtilitiesTesting.Fixtures
             return new ActivityDO
             {
                 Id = GetTestGuidById(7),
-                ParentRouteNodeId = GetTestGuidById(1),
+                ParentPlanNodeId = GetTestGuidById(1),
                 Ordering = 3,
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate
             };
         }
 
-        public static ActivityDO TestActivity8(RouteNodeDO parentActivity)
+        public static ActivityDO TestActivity8(PlanNodeDO parentActivity)
         {
             var actionTemplate = ActivityTemplate();
             return new ActivityDO
             {
                 Id = GetTestGuidById(8),
-                ParentRouteNodeId = GetTestGuidById(1),
+                ParentPlanNodeId = GetTestGuidById(1),
                 Ordering = 4,
-                ParentRouteNode = parentActivity,
+                ParentPlanNode = parentActivity,
 
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate
@@ -184,7 +184,7 @@ namespace UtilitiesTesting.Fixtures
             return new ActivityDO
             {
                 Id = GetTestGuidById(5),
-                ParentRouteNodeId = GetTestGuidById(1),
+                ParentPlanNodeId = GetTestGuidById(1),
                 Ordering = 1,
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate
@@ -208,7 +208,7 @@ namespace UtilitiesTesting.Fixtures
             return new ActivityDO
             {
                 Id = GetTestGuidById(1),
-                ParentRouteNodeId = GetTestGuidById(1),
+                ParentPlanNodeId = GetTestGuidById(1),
                 Ordering = 1,
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate
@@ -221,7 +221,7 @@ namespace UtilitiesTesting.Fixtures
             return new ActivityDO
             {
                 Id = GetTestGuidById(2),
-                ParentRouteNodeId = GetTestGuidById(1),
+                ParentPlanNodeId = GetTestGuidById(1),
                 Ordering = 2,
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate
@@ -235,7 +235,7 @@ namespace UtilitiesTesting.Fixtures
             return new ActivityDO
             {
                 Id = GetTestGuidById(10),
-                ParentRouteNodeId = GetTestGuidById(1),
+                ParentPlanNodeId = GetTestGuidById(1),
                 CrateStorage = "JSON Config Settings",
 
                 Ordering = 1,
@@ -263,31 +263,30 @@ namespace UtilitiesTesting.Fixtures
             var actionTemplate = ActivityTemplate();
 
 
-            var routeDo = TestRoute2();
+            var planDo = TestPlan2();
 
             var containerDO = new ContainerDO()
             {
                 Id = TestContainer_Id_1(),
                 ContainerState = 1,
-                PlanId = routeDo.Id,
-                Plan = routeDo
+                PlanId = planDo.Id,
+                Plan = planDo
             };
 
-            var subrouteDo = new SubrouteDO()
+            var subPlanDo = new SubPlanDO()
             {
                 Id = GetTestGuidById(1),
                 Name = "C",
-                ParentRouteNodeId = routeDo.Id,
-                ParentRouteNode = routeDo,
-                RootRouteNodeId = routeDo.Id,
-              //  RootRouteNode = routeDo
+                ParentPlanNodeId = planDo.Id,
+                ParentPlanNode = planDo,
+                RootPlanNodeId = planDo.Id,
             };
 
 
             var actionDo = new ActivityDO()
             {
-                ParentRouteNode = subrouteDo,
-                ParentRouteNodeId = GetTestGuidById(1),
+                ParentPlanNode = subPlanDo,
+                ParentPlanNodeId = GetTestGuidById(1),
                 Id = GetTestGuidById(1),
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate,
@@ -326,7 +325,7 @@ namespace UtilitiesTesting.Fixtures
                 Id = GetTestGuidById(1),
 
                 CrateStorage = "config settings",
-                ParentRouteNodeId = GetTestGuidById(88),
+                ParentPlanNodeId = GetTestGuidById(88),
                 ActivityTemplateId = FixtureData.TestActivityTemplate1().Id
             };
             return actionDo;
@@ -337,30 +336,29 @@ namespace UtilitiesTesting.Fixtures
             var actionTemplate = ActivityTemplate();
             //string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";
 
-            var routeDo = new PlanDO()
+            var planDo = new PlanDO()
             {
                 Id = GetTestGuidById(1),
                 Name = "A",
                 Description = "B",
-                RouteState = RouteState.Active
+                PlanState = PlanState.Active
             };
 
             var containerDO = new ContainerDO()
             {
                 Id = TestContainer_Id_1(),
                 ContainerState = 1,
-                PlanId = routeDo.Id,
-                Plan = routeDo
+                PlanId = planDo.Id,
+                Plan = planDo
             };
 
-            var subrouteDo = new SubrouteDO()
+            var subPlanDo = new SubPlanDO()
             {
                 Id = GetTestGuidById(1),
                 Name = "C",
-                ParentRouteNodeId = routeDo.Id,
-                ParentRouteNode = routeDo,
-                RootRouteNodeId = routeDo.Id,
-               // RootRouteNode = routeDo
+                ParentPlanNodeId = planDo.Id,
+                ParentPlanNode = planDo,
+                RootPlanNodeId = planDo.Id,
             };
 
             using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => containerDO.CrateStorage))
@@ -371,7 +369,7 @@ namespace UtilitiesTesting.Fixtures
             return new ActivityDO
             {
                 Id = GetTestGuidById(1),
-                ParentRouteNode = routeDo,
+                ParentPlanNode = planDo,
 
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate
@@ -407,7 +405,7 @@ namespace UtilitiesTesting.Fixtures
                 Id = GetTestGuidById(1),
                 Description = "descr 1",
                 Name = "template1",
-                RouteState = RouteState.Active,
+                PlanState = PlanState.Active,
                 Fr8Account = FixtureData.TestDockyardAccount1()
             };
 
@@ -419,22 +417,22 @@ namespace UtilitiesTesting.Fixtures
             };
 
 
-            var subroute = new SubrouteDO(true)
+            var subPlan = new SubPlanDO(true)
             {
-                ParentRouteNode = curPlanDO,
-                ParentRouteNodeId = curPlanDO.Id,
-                RootRouteNodeId = curPlanDO.Id,
+                ParentPlanNode = curPlanDO,
+                ParentPlanNodeId = curPlanDO.Id,
+                RootPlanNodeId = curPlanDO.Id,
               //  RootRouteNode = curPlanDO
             };
 
             ActivityDO curActivityDO = new ActivityDO();
             curActivityDO.Id = GetTestGuidById(3);
-            curActivityDO.ParentRouteNode = subroute;
-            curActivityDO.ParentRouteNodeId = subroute.Id;
+            curActivityDO.ParentPlanNode = subPlan;
+            curActivityDO.ParentPlanNodeId = subPlan.Id;
             curActivityDO.ActivityTemplateId = 1;
             curActivityDO.ActivityTemplate = curActivityTemplateDO;
             
-            subroute.ChildNodes.Add(curActivityDO);
+            subPlan.ChildNodes.Add(curActivityDO);
 
             //  curActivityDO.ConfigurationSettings = "config settings";
             //  curActivityDO.ParentActionListId = 1;
@@ -449,7 +447,7 @@ namespace UtilitiesTesting.Fixtures
         }
 
 
-        public static PlanDO GetPlan(RouteNodeDO node)
+        public static PlanDO GetPlan(PlanNodeDO node)
         {
             while (node != null)
             {
@@ -458,10 +456,10 @@ namespace UtilitiesTesting.Fixtures
                     return (PlanDO)node;
                 }
 
-                node = node.ParentRouteNode;
+                node = node.ParentPlanNode;
             }
 
-            throw new InvalidOperationException("No route found for activity");
+            throw new InvalidOperationException("No Plan found for activity");
         }
 
         public static ActivityDO WaitForDocuSignEvent_Activity()
@@ -529,7 +527,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = GetTestGuidById(57),
                 Ordering = 2,
-                ParentRouteNodeId = GetTestGuidById(54),
+                ParentPlanNodeId = GetTestGuidById(54),
                 ActivityTemplateId = 1
             };
 
@@ -553,30 +551,30 @@ namespace UtilitiesTesting.Fixtures
                 Ordering = 1,
                 CrateStorage = crateStorage,
                 ActivityTemplateId = 1,
-                ChildNodes = new List<RouteNodeDO>
+                ChildNodes = new List<PlanNodeDO>
                 {
                     new ActivityDO
                     {
                         Id = GetTestGuidById(23),
                         Ordering = 1,
-                        ParentRouteNodeId = GetTestGuidById(1),
+                        ParentPlanNodeId = GetTestGuidById(1),
                          CrateStorage=  crateStorage,
                          ActivityTemplateId = 1
                     },
                     new ActivityDO
                     {
                         Id = GetTestGuidById(43),
-                        ParentRouteNodeId = GetTestGuidById(1),
+                        ParentPlanNodeId = GetTestGuidById(1),
                         Ordering = 2,
                         CrateStorage = crateStorage,
                          ActivityTemplateId = 1,
-                        ChildNodes = new List<RouteNodeDO>
+                        ChildNodes = new List<PlanNodeDO>
                         {
                             new ActivityDO
                             {
                                 Id = GetTestGuidById(44),
                                 Ordering = 1,
-                                ParentRouteNodeId = GetTestGuidById(43),
+                                ParentPlanNodeId = GetTestGuidById(43),
                                 CrateStorage=  crateStorage,
                          ActivityTemplateId = 1
                             },
@@ -584,7 +582,7 @@ namespace UtilitiesTesting.Fixtures
                             {
                                 Id = GetTestGuidById(46),
                                 Ordering = 2,
-                                ParentRouteNodeId = GetTestGuidById(43),
+                                ParentPlanNodeId = GetTestGuidById(43),
                                 CrateStorage=  crateStorage,
                          ActivityTemplateId = 1
                             },
@@ -592,40 +590,40 @@ namespace UtilitiesTesting.Fixtures
                             {
                                 Id = GetTestGuidById(48),
                                 Ordering = 3,
-                                ParentRouteNodeId = GetTestGuidById(43),
+                                ParentPlanNodeId = GetTestGuidById(43),
                                 CrateStorage=  crateStorage,
                          ActivityTemplateId = 1
                             },
 
                         }
                     },
-                    new RouteNodeDO
+                    new PlanNodeDO
                     {
                         Id = GetTestGuidById(52),
                         Ordering = 3,
-                        ParentRouteNodeId = GetTestGuidById(1),
-                        ChildNodes = new List<RouteNodeDO>
+                        ParentPlanNodeId = GetTestGuidById(1),
+                        ChildNodes = new List<PlanNodeDO>
                         {
                             new ActivityDO
                             {
                                 Id = GetTestGuidById(53),
                                 Ordering = 1,
-                                ParentRouteNodeId = GetTestGuidById(52),
+                                ParentPlanNodeId = GetTestGuidById(52),
                                 CrateStorage=  crateStorage,
                          ActivityTemplateId = 1
                             },
-                            new RouteNodeDO
+                            new PlanNodeDO
                             {
                                 Id = GetTestGuidById(54),
-                                ParentRouteNodeId = GetTestGuidById(52),
+                                ParentPlanNodeId = GetTestGuidById(52),
                                 Ordering = 2,
 
-                                ChildNodes = new List<RouteNodeDO>
+                                ChildNodes = new List<PlanNodeDO>
                                 {
                                     new ActivityDO
                                     {
                                         Id = GetTestGuidById(56),
-                                        ParentRouteNodeId = GetTestGuidById(54),
+                                        ParentPlanNodeId = GetTestGuidById(54),
                                         Ordering = 1,
                                         CrateStorage=  crateStorage,
                          ActivityTemplateId = 1
@@ -633,7 +631,7 @@ namespace UtilitiesTesting.Fixtures
                                     new ActivityDO
                                     {
                                         Id = GetTestGuidById(57),
-                                        ParentRouteNodeId = GetTestGuidById(54),
+                                        ParentPlanNodeId = GetTestGuidById(54),
                                         Ordering = 2,
                                         CrateStorage=  crateStorage,
                          ActivityTemplateId = 1
@@ -641,7 +639,7 @@ namespace UtilitiesTesting.Fixtures
                                     new ActivityDO
                                     {
                                         Id = GetTestGuidById(58),
-                                        ParentRouteNodeId = GetTestGuidById(54),
+                                        ParentPlanNodeId = GetTestGuidById(54),
                                         Ordering = 3,
                                         CrateStorage = crateStorage,
                          ActivityTemplateId = 1
@@ -652,7 +650,7 @@ namespace UtilitiesTesting.Fixtures
                             new ActivityDO
                             {
                                 Id = GetTestGuidById(55),
-                                ParentRouteNodeId = GetTestGuidById(52),
+                                ParentPlanNodeId = GetTestGuidById(52),
                                 Ordering = 3,
                                 CrateStorage=  crateStorage,
                          ActivityTemplateId = 1
@@ -664,15 +662,15 @@ namespace UtilitiesTesting.Fixtures
                     {
                         Id = GetTestGuidById(59),
                         Ordering = 4,
-                        ParentRouteNodeId = GetTestGuidById(1),
+                        ParentPlanNodeId = GetTestGuidById(1),
                          CrateStorage=  crateStorage,
                          ActivityTemplateId = 1,
-                        ChildNodes = new List<RouteNodeDO>
+                        ChildNodes = new List<PlanNodeDO>
                         {
                             new ActivityDO
                             {
                                 Id = GetTestGuidById(60),
-                                ParentRouteNodeId = GetTestGuidById(59),
+                                ParentPlanNodeId = GetTestGuidById(59),
                                 Ordering = 1,
                                 CrateStorage=  crateStorage,
                          ActivityTemplateId = 1
@@ -680,16 +678,16 @@ namespace UtilitiesTesting.Fixtures
                             new ActivityDO
                             {
                                 Id = GetTestGuidById(61),
-                                ParentRouteNodeId = GetTestGuidById(59),
+                                ParentPlanNodeId = GetTestGuidById(59),
                                 Ordering = 2,
                                 CrateStorage=  crateStorage,
                          ActivityTemplateId = 1,
-                                ChildNodes = new List<RouteNodeDO>
+                                ChildNodes = new List<PlanNodeDO>
                                 {
                                     new ActivityDO
                                     {
                                         Id = GetTestGuidById(63),
-                                        ParentRouteNodeId = GetTestGuidById(61),
+                                        ParentPlanNodeId = GetTestGuidById(61),
                                         Ordering = 1,
                                         CrateStorage=  crateStorage,
                          ActivityTemplateId = 1
@@ -697,7 +695,7 @@ namespace UtilitiesTesting.Fixtures
                                     new ActivityDO
                                     {
                                         Id = GetTestGuidById(64),
-                                        ParentRouteNodeId = GetTestGuidById(61),
+                                        ParentPlanNodeId = GetTestGuidById(61),
                                         Ordering = 2,
                                         CrateStorage = crateStorage,
                          ActivityTemplateId = 1
@@ -705,7 +703,7 @@ namespace UtilitiesTesting.Fixtures
                                     new ActivityDO
                                     {
                                         Id = GetTestGuidById(65),
-                                        ParentRouteNodeId = GetTestGuidById(61),
+                                        ParentPlanNodeId = GetTestGuidById(61),
                                         Ordering = 3,
                                         CrateStorage = crateStorage,
                          ActivityTemplateId = 1
@@ -716,7 +714,7 @@ namespace UtilitiesTesting.Fixtures
                             new ActivityDO
                             {
                                 Id = GetTestGuidById(62),
-                                ParentRouteNodeId = GetTestGuidById(59),
+                                ParentPlanNodeId = GetTestGuidById(59),
                                 Ordering = 3,
                                 CrateStorage=  crateStorage,
                          ActivityTemplateId = 1
@@ -746,30 +744,30 @@ namespace UtilitiesTesting.Fixtures
                 Ordering = 1,
                 CrateStorage = crateStorage,
                 ActivityTemplateId = 1,
-                ChildNodes = new List<RouteNodeDO>
+                ChildNodes = new List<PlanNodeDO>
                 {
                     new ActivityDO
                     {
                         Id = GetTestGuidById(23),
                         Ordering = 1,
-                        ParentRouteNodeId = GetTestGuidById(1),
+                        ParentPlanNodeId = GetTestGuidById(1),
                         CrateStorage=  crateStorage,
                         ActivityTemplateId = 1
                     },
                     new ActivityDO
                     {
                         Id = GetTestGuidById(43),
-                        ParentRouteNodeId = GetTestGuidById(1),
+                        ParentPlanNodeId = GetTestGuidById(1),
                         Ordering = 2,
                         CrateStorage=  crateStorage,
                         ActivityTemplateId = 1,
-                        ChildNodes = new List<RouteNodeDO>
+                        ChildNodes = new List<PlanNodeDO>
                         {
                             new ActivityDO
                             {
                                 Id = GetTestGuidById(44),
                                 Ordering = 1,
-                                ParentRouteNodeId = GetTestGuidById(43),
+                                ParentPlanNodeId = GetTestGuidById(43),
                                 CrateStorage = crateStorage,
                                 ActivityTemplateId = 1
                             },
@@ -777,7 +775,7 @@ namespace UtilitiesTesting.Fixtures
                             {
                                 Id = GetTestGuidById(46),
                                 Ordering = 2,
-                                ParentRouteNodeId = GetTestGuidById(43),
+                                ParentPlanNodeId = GetTestGuidById(43),
                                 CrateStorage = crateStorage,
                                 ActivityTemplateId = 1
                             },
@@ -785,7 +783,7 @@ namespace UtilitiesTesting.Fixtures
                             {
                                 Id = GetTestGuidById(48),
                                 Ordering = 3,
-                                ParentRouteNodeId = GetTestGuidById(43),
+                                ParentPlanNodeId = GetTestGuidById(43),
                                 CrateStorage=  crateStorage,
                                 ActivityTemplateId = 1
                             },
@@ -796,30 +794,30 @@ namespace UtilitiesTesting.Fixtures
                     {
                         Id = GetTestGuidById(52),
                         Ordering = 3,
-                        ParentRouteNodeId = GetTestGuidById(1),
+                        ParentPlanNodeId = GetTestGuidById(1),
                         ActivityTemplateId = 1,
-                        ChildNodes = new List<RouteNodeDO>
+                        ChildNodes = new List<PlanNodeDO>
                         {
                             new ActivityDO
                             {
                                 Id = GetTestGuidById(53),
                                 Ordering = 1,
-                                ParentRouteNodeId = GetTestGuidById(52),
+                                ParentPlanNodeId = GetTestGuidById(52),
                                 CrateStorage=  crateStorage,
                                 ActivityTemplateId = 1
                             },
                             new ActivityDO
                             {
                                 Id = GetTestGuidById(54),
-                                ParentRouteNodeId = GetTestGuidById(52),
+                                ParentPlanNodeId = GetTestGuidById(52),
                                 Ordering = 2,
                                 ActivityTemplateId = 1,
-                                ChildNodes = new List<RouteNodeDO>
+                                ChildNodes = new List<PlanNodeDO>
                                 {
                                     new ActivityDO
                                     {
                                         Id = GetTestGuidById(56),
-                                        ParentRouteNodeId = GetTestGuidById(54),
+                                        ParentPlanNodeId = GetTestGuidById(54),
                                         Ordering = 1,
                                         CrateStorage=  crateStorage,
                                         ActivityTemplateId = 1
@@ -827,14 +825,14 @@ namespace UtilitiesTesting.Fixtures
                                     new ActivityDO
                                     {
                                         Id = GetTestGuidById(57),
-                                        ParentRouteNodeId = GetTestGuidById(54),
+                                        ParentPlanNodeId = GetTestGuidById(54),
                                         Ordering = 2,
                                         ActivityTemplateId = 1
                                     },
                                     new ActivityDO
                                     {
                                         Id = GetTestGuidById(58),
-                                        ParentRouteNodeId = GetTestGuidById(54),
+                                        ParentPlanNodeId = GetTestGuidById(54),
                                         Ordering = 3,
                                         CrateStorage = crateStorage,
                                         ActivityTemplateId = 1
@@ -845,7 +843,7 @@ namespace UtilitiesTesting.Fixtures
                             new ActivityDO
                             {
                                 Id = GetTestGuidById(55),
-                                ParentRouteNodeId = GetTestGuidById(52),
+                                ParentPlanNodeId = GetTestGuidById(52),
                                 Ordering = 3,
                                 CrateStorage=  crateStorage,
                                 ActivityTemplateId = 1
@@ -857,15 +855,15 @@ namespace UtilitiesTesting.Fixtures
                     {
                         Id = GetTestGuidById(59),
                         Ordering = 4,
-                        ParentRouteNodeId = GetTestGuidById(1),
+                        ParentPlanNodeId = GetTestGuidById(1),
                         CrateStorage = crateStorage,
                         ActivityTemplateId = 1,
-                        ChildNodes = new List<RouteNodeDO>
+                        ChildNodes = new List<PlanNodeDO>
                         {
                             new ActivityDO
                             {
                                 Id = GetTestGuidById(60),
-                                ParentRouteNodeId = GetTestGuidById(59),
+                                ParentPlanNodeId = GetTestGuidById(59),
                                 Ordering = 1,
                                 CrateStorage=  crateStorage,
                                 ActivityTemplateId = 1
@@ -873,16 +871,16 @@ namespace UtilitiesTesting.Fixtures
                             new ActivityDO
                             {
                                 Id = GetTestGuidById(61),
-                                ParentRouteNodeId = GetTestGuidById(59),
+                                ParentPlanNodeId = GetTestGuidById(59),
                                 Ordering = 2,
                                 CrateStorage=  crateStorage,
                                 ActivityTemplateId = 1,
-                                ChildNodes = new List<RouteNodeDO>
+                                ChildNodes = new List<PlanNodeDO>
                                 {
                                     new ActivityDO
                                     {
                                         Id = GetTestGuidById(63),
-                                        ParentRouteNodeId = GetTestGuidById(61),
+                                        ParentPlanNodeId = GetTestGuidById(61),
                                         Ordering = 1,
                                         CrateStorage = crateStorage,
                                 ActivityTemplateId = 1
@@ -890,7 +888,7 @@ namespace UtilitiesTesting.Fixtures
                                     new ActivityDO
                                     {
                                         Id = GetTestGuidById(64),
-                                        ParentRouteNodeId = GetTestGuidById(61),
+                                        ParentPlanNodeId = GetTestGuidById(61),
                                         Ordering = 2,
                                         CrateStorage = crateStorage,
                                 ActivityTemplateId = 1
@@ -898,7 +896,7 @@ namespace UtilitiesTesting.Fixtures
                                     new ActivityDO
                                     {
                                         Id = GetTestGuidById(65),
-                                        ParentRouteNodeId = GetTestGuidById(61),
+                                        ParentPlanNodeId = GetTestGuidById(61),
                                         Ordering = 3,
                                         CrateStorage = crateStorage,
                                 ActivityTemplateId = 1
@@ -909,7 +907,7 @@ namespace UtilitiesTesting.Fixtures
                             new ActivityDO
                             {
                                 Id = GetTestGuidById(62),
-                                ParentRouteNodeId = GetTestGuidById(59),
+                                ParentPlanNodeId = GetTestGuidById(59),
                                 Ordering = 3,
                                 CrateStorage = crateStorage,
                                 ActivityTemplateId = 1
@@ -981,7 +979,7 @@ namespace UtilitiesTesting.Fixtures
 //            {
 //                Id = 1,
 //                CrateStorage = EnvelopeIdCrateJson(),
-//                RouteId = TestRoute2().Id,
+//                planId = TestPlan2().Id,
 //                ContainerState = 1
 //            };
 //
@@ -990,7 +988,7 @@ namespace UtilitiesTesting.Fixtures
 //                Name = "testaction",
 //                Id = 57,
 //                Ordering = 2,
-//                ParentRouteNodeId = 54,
+//                ParentPlanNodeId = 54,
 //                ActivityTemplateId = actionTemplate.Id,
 //                ActivityTemplate = actionTemplate,
 //                CrateStorage = EnvelopeIdCrateJson()
@@ -1011,86 +1009,86 @@ namespace UtilitiesTesting.Fixtures
                 Id = GetTestGuidById(1),
                 Ordering = 1,
                 CrateStorage = crateStorage,
-                ChildNodes = new List<RouteNodeDO>
+                ChildNodes = new List<PlanNodeDO>
                 {
                     new ActivityDO
                     {
                         Id = GetTestGuidById(23),
                         Ordering = 1,
-                        ParentRouteNodeId = GetTestGuidById(1),
+                        ParentPlanNodeId = GetTestGuidById(1),
                         CrateStorage=  crateStorage
                     },
                     new ActivityDO
                     {
                         Id = GetTestGuidById(43),
-                        ParentRouteNodeId = GetTestGuidById(1),
+                        ParentPlanNodeId = GetTestGuidById(1),
                         Ordering = 2,
                         CrateStorage=  crateStorage,
-                        ChildNodes = new List<RouteNodeDO>
+                        ChildNodes = new List<PlanNodeDO>
                         {
                             new ActivityDO
                             {
                                 Id = GetTestGuidById(44),
                                 Ordering = 1,
-                                ParentRouteNodeId = GetTestGuidById(43),
+                                ParentPlanNodeId = GetTestGuidById(43),
                                 CrateStorage=  crateStorage
                             },
                             new ActivityDO
                             {
                                 Id = GetTestGuidById(46),
                                 Ordering = 2,
-                                ParentRouteNodeId = GetTestGuidById(43),
+                                ParentPlanNodeId = GetTestGuidById(43),
                                 CrateStorage=  crateStorage
                             },
                             new ActivityDO
                             {
                                 Id = GetTestGuidById(48),
                                 Ordering = 3,
-                                ParentRouteNodeId = GetTestGuidById(43),
+                                ParentPlanNodeId = GetTestGuidById(43),
                                 CrateStorage=  crateStorage
                             },
 
                         }
                     },
-                    new RouteNodeDO
+                    new PlanNodeDO
                     {
                         Id = GetTestGuidById(52),
                         Ordering = 3,
-                        ParentRouteNodeId = GetTestGuidById(1),
-                        ChildNodes = new List<RouteNodeDO>
+                        ParentPlanNodeId = GetTestGuidById(1),
+                        ChildNodes = new List<PlanNodeDO>
                         {
                             new ActivityDO
                             {
                                 Id = GetTestGuidById(53),
                                 Ordering = 1,
-                                ParentRouteNodeId = GetTestGuidById(52),
+                                ParentPlanNodeId = GetTestGuidById(52),
                                 CrateStorage=  crateStorage
                             },
-                            new RouteNodeDO
+                            new PlanNodeDO
                             {
                                 Id = GetTestGuidById(54),
-                                ParentRouteNodeId = GetTestGuidById(52),
+                                ParentPlanNodeId = GetTestGuidById(52),
                                 Ordering = 2,
 
-                                ChildNodes = new List<RouteNodeDO>
+                                ChildNodes = new List<PlanNodeDO>
                                 {
                                     new ActivityDO
                                     {
                                         Id = GetTestGuidById(56),
-                                        ParentRouteNodeId = GetTestGuidById(54),
+                                        ParentPlanNodeId = GetTestGuidById(54),
                                         Ordering = 1,
                                         CrateStorage = crateStorage
                                     },
                                     new ActivityDO
                                     {
                                         Id = GetTestGuidById(57),
-                                        ParentRouteNodeId = GetTestGuidById(54),
+                                        ParentPlanNodeId = GetTestGuidById(54),
                                         Ordering = 2
                                     },
                                     new ActivityDO
                                     {
                                         Id = GetTestGuidById(58),
-                                        ParentRouteNodeId = GetTestGuidById(54),
+                                        ParentPlanNodeId = GetTestGuidById(54),
                                         Ordering = 3,
                                         CrateStorage = crateStorage
                                     },
@@ -1100,7 +1098,7 @@ namespace UtilitiesTesting.Fixtures
                             new ActivityDO
                             {
                                 Id = GetTestGuidById(55),
-                                ParentRouteNodeId = GetTestGuidById(52),
+                                ParentPlanNodeId = GetTestGuidById(52),
                                 Ordering = 3,
                                 CrateStorage = crateStorage
                             }
@@ -1110,43 +1108,43 @@ namespace UtilitiesTesting.Fixtures
                     {
                         Id = GetTestGuidById(59),
                         Ordering = 4,
-                        ParentRouteNodeId = GetTestGuidById(1),
+                        ParentPlanNodeId = GetTestGuidById(1),
                         CrateStorage=  crateStorage,
-                        ChildNodes = new List<RouteNodeDO>
+                        ChildNodes = new List<PlanNodeDO>
                         {
                             new ActivityDO
                             {
                                 Id = GetTestGuidById(60),
-                                ParentRouteNodeId = GetTestGuidById(59),
+                                ParentPlanNodeId = GetTestGuidById(59),
                                 Ordering = 1,
                                 CrateStorage = crateStorage
                             },
                             new ActivityDO
                             {
                                 Id = GetTestGuidById(61),
-                                ParentRouteNodeId = GetTestGuidById(59),
+                                ParentPlanNodeId = GetTestGuidById(59),
                                 Ordering = 2,
                                 CrateStorage = crateStorage,
-                                ChildNodes = new List<RouteNodeDO>
+                                ChildNodes = new List<PlanNodeDO>
                                 {
                                     new ActivityDO
                                     {
                                         Id = GetTestGuidById(63),
-                                        ParentRouteNodeId = GetTestGuidById(61),
+                                        ParentPlanNodeId = GetTestGuidById(61),
                                         Ordering = 1,
                                         CrateStorage = crateStorage
                                     },
                                     new ActivityDO
                                     {
                                         Id = GetTestGuidById(64),
-                                        ParentRouteNodeId = GetTestGuidById(61),
+                                        ParentPlanNodeId = GetTestGuidById(61),
                                         Ordering = 2,
                                         CrateStorage = crateStorage
                                     },
                                     new ActivityDO
                                     {
                                         Id = GetTestGuidById(65),
-                                        ParentRouteNodeId = GetTestGuidById(61),
+                                        ParentPlanNodeId = GetTestGuidById(61),
                                         Ordering = 3,
                                         CrateStorage = crateStorage
                                     },
@@ -1156,7 +1154,7 @@ namespace UtilitiesTesting.Fixtures
                             new ActivityDO
                             {
                                 Id = GetTestGuidById(62),
-                                ParentRouteNodeId = GetTestGuidById(59),
+                                ParentPlanNodeId = GetTestGuidById(59),
                                 Ordering = 3,
                                 CrateStorage=  crateStorage
                             },
@@ -1186,13 +1184,13 @@ namespace UtilitiesTesting.Fixtures
                 CrateStorage = crateStorage,
                 ActivityTemplate = curActionTemplate,
                 ActivityTemplateId = curActionTemplate.Id,
-                ChildNodes = new List<RouteNodeDO>
+                ChildNodes = new List<PlanNodeDO>
                 {
                     new ActivityDO
                     {
                         Id = GetTestGuidById(23),
                         Ordering = 1,
-                        ParentRouteNodeId = GetTestGuidById(1),
+                        ParentPlanNodeId = GetTestGuidById(1),
                         CrateStorage=  crateStorage,
                          ActivityTemplate = curActionTemplate,
                           ActivityTemplateId = curActionTemplate.Id,
@@ -1200,18 +1198,18 @@ namespace UtilitiesTesting.Fixtures
                     new ActivityDO
                     {
                         Id = GetTestGuidById(43),
-                        ParentRouteNodeId = GetTestGuidById(1),
+                        ParentPlanNodeId = GetTestGuidById(1),
                         Ordering = 2,
                         CrateStorage = crateStorage,
                         ActivityTemplate = curActionTemplate,
                          ActivityTemplateId = curActionTemplate.Id,
-                        ChildNodes = new List<RouteNodeDO>
+                        ChildNodes = new List<PlanNodeDO>
                         {
                             new ActivityDO
                             {
                                 Id = GetTestGuidById(44),
                                 Ordering = 1,
-                                ParentRouteNodeId = GetTestGuidById(43),
+                                ParentPlanNodeId = GetTestGuidById(43),
                                 CrateStorage = crateStorage,
                               
                                 ActivityTemplate = curActionTemplate,
@@ -1221,7 +1219,7 @@ namespace UtilitiesTesting.Fixtures
                             {
                                 Id = GetTestGuidById(46),
                                 Ordering = 2,
-                                ParentRouteNodeId = GetTestGuidById(43),
+                                ParentPlanNodeId = GetTestGuidById(43),
                                CrateStorage = crateStorage,
                                
                                 ActivityTemplate = curActionTemplate,
@@ -1229,26 +1227,26 @@ namespace UtilitiesTesting.Fixtures
                             }
                         }
                     },
-                    new RouteNodeDO
+                    new PlanNodeDO
                     {
                         Id = GetTestGuidById(52),
                         Ordering = 3,
-                        ParentRouteNodeId = GetTestGuidById(1),
+                        ParentPlanNodeId = GetTestGuidById(1),
                     },
                     new ActivityDO
                     {
                         Id = GetTestGuidById(59),
                         Ordering = 4,
-                        ParentRouteNodeId = GetTestGuidById(1),
+                        ParentPlanNodeId = GetTestGuidById(1),
                         CrateStorage = crateStorage,
                         ActivityTemplate = curActionTemplate,
                          ActivityTemplateId = curActionTemplate.Id,
-                        ChildNodes = new List<RouteNodeDO>
+                        ChildNodes = new List<PlanNodeDO>
                         {
                             new ActivityDO
                             {
                                 Id = GetTestGuidById(60),
-                                ParentRouteNodeId = GetTestGuidById(59),
+                                ParentPlanNodeId = GetTestGuidById(59),
                                 Ordering = 1,
                                 CrateStorage = crateStorage,
                                 
@@ -1258,7 +1256,7 @@ namespace UtilitiesTesting.Fixtures
                             new ActivityDO
                             {
                                 Id = GetTestGuidById(62),
-                                ParentRouteNodeId = GetTestGuidById(59),
+                                ParentPlanNodeId = GetTestGuidById(59),
                                 Ordering = 3,
                                 CrateStorage = crateStorage,
                                
@@ -1280,7 +1278,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = GetTestGuidById(1),
                 CrateStorage = "config settings",
-                ParentRouteNodeId = GetTestGuidById(1),
+                ParentPlanNodeId = GetTestGuidById(1),
                 ActivityTemplateId = FixtureData.TestActivityTemplate1().Id
             };
             return actionDo;
