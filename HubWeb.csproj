@@ -369,10 +369,12 @@
     <Compile Include="Controllers\Api\ActivitiesController.cs" />
     <Compile Include="Controllers\Api\AlarmsController.cs" />
     <Compile Include="Controllers\Api\AuthenticationController.cs" />
+    <Compile Include="Controllers\Api\FactsController.cs" />
     <Compile Include="Controllers\Api\ManageAuthTokenController.cs" />
     <Compile Include="Controllers\Api\ConfigurationController.cs" />
     <Compile Include="Controllers\Api\ManifestRegistryController.cs" />
     <Compile Include="Controllers\Api\ManifestsController.cs" />
+    <Compile Include="Controllers\Api\SubPlansController.cs" />
     <Compile Include="Controllers\Api\PlansController.cs" />
     <Compile Include="Controllers\Api\TerminalsController.cs" />
     <Compile Include="Controllers\CompanyController.cs" />
@@ -596,7 +598,11 @@
     <Content Include="Content\img\salesforce.png" />
     <Content Include="Content\img\select-info.png" />
     <Content Include="Content\img\site\alex-photo.png" />
+    <Content Include="Content\img\site\arrow_blue_gray_ic_arrow_forward_48px-512.png" />
     <Content Include="Content\img\site\arrow_blue_ic_arrow_forward_48px-512.png" />
+    <Content Include="Content\img\site\arrow_deep_blue_ic_arrow_forward_48px-512.png" />
+    <Content Include="Content\img\site\arrow_red_ic_arrow_forward_48px-512.png" />
+    <Content Include="Content\img\site\arrow_yellow_ic_arrow_forward_48px-512.png" />
     <Content Include="Content\img\site\browser-header.jpg" />
     <Content Include="Content\img\site\docusign-dashboard-example.png" />
     <Content Include="Content\img\site\docusign-workflow-example-1.png" />
@@ -853,6 +859,8 @@
     <Content Include="Content\css\fonts\fontawesome-webfont.woff2" />
     <Content Include="Content\videos\motion.ogv" />
     <Content Include="Content\videos\motion.webm" />
+    <Content Include="Views\AngularTemplate\ContainerTransition.cshtml" />
+    <Content Include="Views\AngularTemplate\SubplanHeader.cshtml" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
     <Content Include="Scripts\templateCache.js" />
@@ -875,11 +883,13 @@
     <Content Include="_PowerShellScripts\Set-CloudServiceSettings.ps1" />
     <Content Include="_PowerShellScripts\Wait-Database.ps1" />
     <Content Include="_PowerShellScripts\Run-IntegrationTests.ps1" />
+    <Content Include="_PowerShellScripts\Set-HubApiBaseUrl.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionDocumentationController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\ActionPicker.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\ContainerTransition.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\DatePicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\SourceableCriteria.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\CrateChooser.ts" />
@@ -887,6 +897,7 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamCrateChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamFieldChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Resizable.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\SubplanHeader.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Validators\ManifestDescriptionValidators.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\DateTimeFormatter.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\FilterByTag.ts" />

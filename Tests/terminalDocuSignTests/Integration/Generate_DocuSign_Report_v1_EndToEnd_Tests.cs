@@ -31,6 +31,8 @@ namespace terminalDocuSignTests.Integration
         {
             try
             {
+                await RevokeTokens();
+
                 // Create Solution plan & initial configuration.
                 var plan = await CreateSolution();
                 var solution = ExtractSolution(plan.Plan);

@@ -96,9 +96,26 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<PlanEmptyDTO, PlanDO>();
             Mapper.CreateMap<PlanDO, PlanEmptyDTO>();
             Mapper.CreateMap<SubPlanDTO, SubPlanDO>()
-                .ForMember(x => x.ParentPlanNodeId, opts => opts.ResolveUsing(x => x.PlanId))
-                .ForMember(x => x.RootPlanNodeId, opts => opts.ResolveUsing(x => x.PlanId))
-                .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.SubPlanId));
+                .ForMember(x => x.Name, opts => opts.MapFrom(e => e.Name))
+                .ForMember(x => x.NodeTransitions, opts => opts.MapFrom(e => e.TransitionKey))
+                .ForMember(x => x.Id, opts => opts.MapFrom(e => e.SubPlanId ?? Guid.Empty))
+                .ForMember(x => x.ParentPlanNodeId, opts => opts.MapFrom(e => e.PlanId))
+                .ForMember(x => x.RootPlanNodeId, opts => opts.MapFrom(e => e.PlanId))
+                .ForMember(x => x.StartingSubPlan, opts => opts.UseValue(false))
+                .ForMember(x => x.RootPlanNode, opts => opts.Ignore())
+                .ForMember(x => x.ParentPlanNode, opts => opts.Ignore())
+                .ForMember(x => x.ChildNodes, opts => opts.Ignore())
+                .ForMember(x => x.Fr8AccountId, opts => opts.Ignore())
+                .ForMember(x => x.Fr8Account, opts => opts.Ignore())
+                .ForMember(x => x.Ordering, opts => opts.Ignore())
+                .ForMember(x => x.LastUpdated, opts => opts.Ignore())
+                .ForMember(x => x.CreateDate, opts => opts.Ignore());
+
+            Mapper.CreateMap<SubPlanDO, SubPlanDTO>()
+                .ForMember(x => x.Name, opts => opts.ResolveUsing(e => e.Name))
+                .ForMember(x => x.TransitionKey, opts => opts.ResolveUsing(e => e.NodeTransitions))
+                .ForMember(x => x.SubPlanId, opts => opts.ResolveUsing(e => e.Id))
+                .ForMember(x => x.PlanId, opts => opts.ResolveUsing(e => e.ParentPlanNodeId));
 
             Mapper.CreateMap<SubPlanDO, SubPlanDTO>()
                 .ForMember(x => x.PlanId, opts => opts.ResolveUsing(x => x.ParentPlanNodeId))
@@ -155,6 +172,8 @@ namespace Data.Infrastructure.AutoMapper
 
             Mapper.CreateMap<TerminalDO, TerminalDTO>();
             Mapper.CreateMap<TerminalDTO, TerminalDO>();
+
+            
 
 
         }

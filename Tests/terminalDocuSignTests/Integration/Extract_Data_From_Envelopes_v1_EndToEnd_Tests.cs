@@ -85,12 +85,17 @@ namespace terminalDocuSignTests.Integration
             {
                 ActivityId = monitorDocuSignEnvelopeActivity.Id,
                 AuthTokenId = authTokenId,
-                IsMain = true
+                IsMain = false
             };
 
             await HttpPostAsync<ManageAuthToken_Apply[], string>(
                 _baseUrl + "ManageAuthToken/apply",
                 new ManageAuthToken_Apply[] { applyToken }
+            );
+
+            monitorDocuSignEnvelopeActivity = await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                _baseUrl + "activities/configure?id=" + monitorDocuSignEnvelopeActivity.Id,
+                monitorDocuSignEnvelopeActivity
             );
 
             //
@@ -104,8 +109,7 @@ namespace terminalDocuSignTests.Integration
             //
             // Configure Monitor DocuSign Envelope action
             //
-            var monitorDocuSignAction = _solution.ChildrenActivities.Single(a => a.Label == "Monitor DocuSign Envelope Activity");
-            _crateStorage = Crate.FromDto(monitorDocuSignAction.CrateStorage);
+            _crateStorage = Crate.FromDto(monitorDocuSignEnvelopeActivity.CrateStorage);
 
             controlsCrate = _crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
 
@@ -115,14 +119,14 @@ namespace terminalDocuSignTests.Integration
             var radioButtonGroup = (RadioButtonGroup)controlsCrate.Content.Controls.Single(c => c.Type == ControlTypes.RadioButtonGroup && c.Name == "TemplateRecipientPicker");
             radioButtonGroup.Radios[1].Selected = true;
 
-            using (var updatableStorage = Crate.GetUpdatableStorage(monitorDocuSignAction))
+            using (var updatableStorage = Crate.GetUpdatableStorage(monitorDocuSignEnvelopeActivity))
             {
                 updatableStorage.Remove<StandardConfigurationControlsCM>();
                 updatableStorage.Add(controlsCrate);
             }
 
-            monitorDocuSignAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", monitorDocuSignAction);
-            monitorDocuSignAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure", monitorDocuSignAction);
+            monitorDocuSignEnvelopeActivity = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", monitorDocuSignEnvelopeActivity);
+            monitorDocuSignEnvelopeActivity = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure", monitorDocuSignEnvelopeActivity);
 
             radioButtonGroup = (RadioButtonGroup)controlsCrate.Content.Controls.Single(c => c.Type == ControlTypes.RadioButtonGroup && c.Name == "TemplateRecipientPicker");
             var docuSignTemplate = radioButtonGroup.Radios[1].Controls.OfType<DropDownList>().First();
@@ -130,16 +134,16 @@ namespace terminalDocuSignTests.Integration
             docuSignTemplate.selectedKey = "Medical_Form_v1";
             docuSignTemplate.ListItems.Add(new ListItem() { Value = "9a4d2154-5b18-4316-9824-09432e62f458", Key = "Medical_Form_v1" });
 
-            using (var updatableStorage = Crate.GetUpdatableStorage(monitorDocuSignAction))
+            using (var updatableStorage = Crate.GetUpdatableStorage(monitorDocuSignEnvelopeActivity))
             {
                 updatableStorage.Remove<StandardConfigurationControlsCM>();
                 updatableStorage.Add(controlsCrate);
             }
 
-            monitorDocuSignAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", monitorDocuSignAction);
-            monitorDocuSignAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure", monitorDocuSignAction);
+            monitorDocuSignEnvelopeActivity = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", monitorDocuSignEnvelopeActivity);
+            monitorDocuSignEnvelopeActivity = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure", monitorDocuSignEnvelopeActivity);
 
-            _crateStorage = Crate.FromDto(monitorDocuSignAction.CrateStorage);
+            _crateStorage = Crate.FromDto(monitorDocuSignEnvelopeActivity.CrateStorage);
             controlsCrate = _crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
             radioButtonGroup = (RadioButtonGroup)controlsCrate.Content.Controls.Single(c => c.Type == ControlTypes.RadioButtonGroup && c.Name == "TemplateRecipientPicker");
             docuSignTemplate = radioButtonGroup.Radios[1].Controls.OfType<DropDownList>().First();
@@ -151,6 +155,23 @@ namespace terminalDocuSignTests.Integration
             // Configure Send DocuSign Envelope action
             //
             var sendEnvelopeAction = _solution.ChildrenActivities.Single(a => a.Label == "Send DocuSign Envelope");
+
+            applyToken = new ManageAuthToken_Apply()
+            {
+                ActivityId = sendEnvelopeAction.Id,
+                AuthTokenId = authTokenId,
+                IsMain = false
+            };
+
+            await HttpPostAsync<ManageAuthToken_Apply[], string>(
+                _baseUrl + "ManageAuthToken/apply",
+                new ManageAuthToken_Apply[] { applyToken }
+            );
+
+            sendEnvelopeAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(
+                _baseUrl + "activities/configure?id=" + sendEnvelopeAction.Id,
+                sendEnvelopeAction
+            );
 
             _crateStorage = Crate.FromDto(sendEnvelopeAction.CrateStorage);
             controlsCrate = _crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
@@ -257,7 +278,6 @@ namespace terminalDocuSignTests.Integration
             // Delete plan
             //
             await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Id);
-
         }
 
         private async Task<Guid> ResolveAuth(ActivityDTO solution, ICrateStorage crateStorage)
@@ -298,7 +318,7 @@ namespace terminalDocuSignTests.Integration
                 {
                     ActivityId = solution.Id,
                     AuthTokenId = tokenGuid,
-                    IsMain = true
+                    IsMain = false
                 };
 
                 await HttpPostAsync<ManageAuthToken_Apply[], string>(

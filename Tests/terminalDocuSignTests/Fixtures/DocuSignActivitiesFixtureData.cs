@@ -1,13 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Data.Control;
-using Data.Crates;
 using Data.Entities;
-using Data.Interfaces.Manifests;
+using Data.Interfaces.DataTransferObjects;
 using Moq;
 using terminalDocuSign.Actions;
-using terminalDocuSign.DataTransferObjects;
-using terminalDocuSign.Services;
+using terminalDocuSign.Services.New_Api;
 
 namespace terminalDocuSignTests.Fixtures
 {
@@ -29,32 +26,16 @@ namespace terminalDocuSignTests.Fixtures
         public static IDocuSignManager DocuSignManagerWithTemplates()
         {
             var result = new Mock<IDocuSignManager>();
-            result.Setup(x => x.FillDocuSignTemplateSource(It.IsAny<Crate>(), It.IsAny<string>(), It.IsAny<DocuSignAuthTokenDTO>()))
-                  .Callback<Crate, string, DocuSignAuthTokenDTO>((crate, name, token) =>
-                            {
-                                var configurationControl = crate.Get<StandardConfigurationControlsCM>();
-                                var control = configurationControl.FindByNameNested<DropDownList>(name);
-                                if (control != null)
-                                {
-                                    control.ListItems = new List<ListItem> { new ListItem { Key = "First", Value = "1" } };
-                                }
-                            });
+            result.Setup(x => x.GetTemplatesList(It.IsAny<DocuSignApiConfiguration>()))
+                  .Returns(new List<FieldDTO> { new FieldDTO("1", "First") });
             return result.Object;
         }
 
         public static IDocuSignManager DocuSignManagerWithoutTemplates()
         {
             var result = new Mock<IDocuSignManager>();
-            result.Setup(x => x.FillDocuSignTemplateSource(It.IsAny<Crate>(), It.IsAny<string>(), It.IsAny<DocuSignAuthTokenDTO>()))
-                  .Callback<Crate, string, DocuSignAuthTokenDTO>((crate, name, token) =>
-                  {
-                      var configurationControl = crate.Get<StandardConfigurationControlsCM>();
-                      var control = configurationControl.FindByNameNested<DropDownList>(name);
-                      if (control != null)
-                      {
-                          control.ListItems = new List<ListItem>();
-                      }
-                  });
+            result.Setup(x => x.GetTemplatesList(It.IsAny<DocuSignApiConfiguration>()))
+                  .Returns(new List<FieldDTO>());
             return result.Object;
         }
     }

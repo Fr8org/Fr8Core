@@ -204,6 +204,7 @@
     <Compile Include="Activities\ConnectToSql_v1.cs" />
     <Compile Include="Activities\GetFileFromFr8Store_v1.cs" />
     <Compile Include="Activities\SearchFr8Warehouse_v1.cs" />
+    <Compile Include="Activities\TestAndBranch_v1.cs" />
     <Compile Include="Activities\StoreFile_v1.cs" />
     <Compile Include="Activities\ConvertCrates_v1.cs" />
     <Compile Include="Activities\SetDelay_v1.cs" />
@@ -217,7 +218,7 @@
     <Compile Include="Activities\SaveToFr8Warehouse_v1.cs" />
     <Compile Include="App_Start\RoutesConfig.cs" />
     <Compile Include="Controllers\ActivityController.cs" />
-    <Compile Include="Activities\TestIncomingData_v1.cs" />
+    <Compile Include="App_Start\TestIncomingData_v1.cs" />
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\TerminalController.cs" />
     <Compile Include="Converters\StandardFileDescriptionToDocuSignTemplateConversion.cs" />

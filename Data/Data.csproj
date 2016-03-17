@@ -640,9 +640,13 @@
     <Compile Include="Migrations\201603051236490_FasterMigrateMTData.Designer.cs">
       <DependentUpon>201603051236490_FasterMigrateMTData.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201603070707165_UpdatingChangeRouteToPlanToBeLatestMigration.cs" />
-    <Compile Include="Migrations\201603070707165_UpdatingChangeRouteToPlanToBeLatestMigration.Designer.cs">
-      <DependentUpon>201603070707165_UpdatingChangeRouteToPlanToBeLatestMigration.cs</DependentUpon>
+    <Compile Include="Migrations\201603152035015_Rename_Save_In_Google_Sheet_Activity.cs" />
+    <Compile Include="Migrations\201603152035015_Rename_Save_In_Google_Sheet_Activity.Designer.cs">
+      <DependentUpon>201603152035015_Rename_Save_In_Google_Sheet_Activity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201603170621005_ChangeRouteToPlan.cs" />
+    <Compile Include="Migrations\201603170621005_ChangeRouteToPlan.Designer.cs">
+      <DependentUpon>201603170621005_ChangeRouteToPlan.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -1122,8 +1126,11 @@
     <EmbeddedResource Include="Migrations\201603051236490_FasterMigrateMTData.resx">
       <DependentUpon>201603051236490_FasterMigrateMTData.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201603070707165_UpdatingChangeRouteToPlanToBeLatestMigration.resx">
-      <DependentUpon>201603070707165_UpdatingChangeRouteToPlanToBeLatestMigration.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201603152035015_Rename_Save_In_Google_Sheet_Activity.resx">
+      <DependentUpon>201603152035015_Rename_Save_In_Google_Sheet_Activity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201603170621005_ChangeRouteToPlan.resx">
+      <DependentUpon>201603170621005_ChangeRouteToPlan.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

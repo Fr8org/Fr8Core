@@ -50,8 +50,6 @@ namespace HubWeb.Controllers
 
                 curPayloadDTO.CrateStorage = JsonConvert.DeserializeObject<CrateStorageDTO>(curContainerDO.CrateStorage);
 
-                EventManager.ProcessRequestReceived(curContainerDO);
-
                 return Ok(curPayloadDTO);
             }
         }

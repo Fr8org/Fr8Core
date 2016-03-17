@@ -28,20 +28,14 @@ namespace terminalDocuSign.Infrastructure.StructureMap
 		{
 			public LiveMode()
 			{
-			    For<IDocuSignFolder>().Use<DocuSignFolder>();
-				For<IDocuSignEnvelope>().Use<DocuSignEnvelope>();
-				For<IDocuSignTemplate>().Use<DocuSignTemplate>();
 			    For<IDocuSignPlan>().Use<DocuSignPlan>();
-			}
+            }
 		}
 
 		public class TestMode : Registry
 		{
 			public TestMode()
 			{
-                For<IDocuSignFolder>().Use<DocuSignFolder>();
-				For<IDocuSignEnvelope>().Use<DocuSignEnvelope>();
-				For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 For<IDocuSignPlan>().Use(new Mock<DocuSignPlan>(MockBehavior.Default).Object);
 			}
 		}

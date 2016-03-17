@@ -86,6 +86,27 @@ namespace HealthMonitor.Utility
             }
         }
 
+        protected async Task RevokeTokens()
+        {
+            var tokens = await HttpGetAsync<IEnumerable<ManageAuthToken_Terminal>>(
+                _baseUrl + "manageauthtoken/"
+            );
+
+            if (tokens != null)
+            {
+                var docusignTokens = tokens.FirstOrDefault(x => x.Name == TerminalName);
+                if (docusignTokens != null)
+                {
+                    foreach (var token in docusignTokens.AuthTokens)
+                    {
+                        await HttpPostAsync<string>(
+                            _baseUrl + "manageauthtoken/revoke?id=" + token.Id.ToString(),
+                            null
+                        );
+                    }
+                }
+            }
+        }
 
         private Uri GetHubBaseUrl()
         {

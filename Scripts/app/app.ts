@@ -272,7 +272,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
 
         .state('reports', {
             url: "/reports",
-            templateUrl: "/AngularTemplate/RouteReportList",
+            templateUrl: "/AngularTemplate/PlanReportList",
             data: { pageTitle: 'Reports', pageSubTitle: 'This page displays all Reports' }
         });
 }]);

@@ -16,6 +16,7 @@ using terminalDocuSign.Services;
 using TerminalBase.Infrastructure;
 using Data.States;
 using Data.Repositories.MultiTenant;
+using terminalDocuSign.Services.New_Api;
 
 namespace terminalDocuSign.Actions
 {
@@ -111,13 +112,7 @@ namespace terminalDocuSign.Actions
                 });
             }
         }
-
-        public DocuSignManager DocuSignManager { get; set; }
-
-        public Track_DocuSign_Recipients_v1()
-        {
-            DocuSignManager = new DocuSignManager();
-        }
+        
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
@@ -164,7 +159,7 @@ namespace terminalDocuSign.Actions
             {
                 return activityDO;
             }
-            
+
             var specificTemplate = specificTemplateOption.Controls.Single();
             if (specificTemplateOption.Selected && string.IsNullOrEmpty(specificTemplate.Value))
             {
@@ -249,7 +244,7 @@ namespace terminalDocuSign.Actions
                     emailSubjectField.ValueSource = "specific";
                     emailSubjectField.TextValue = "Fr8 Notification Message";
                 }
-                
+
 
             }
             else if (notifierActivity.ActivityTemplate.Name == "Send_Via_Twilio")
@@ -307,7 +302,7 @@ namespace terminalDocuSign.Actions
                             {
                                 Name = "QueryField_Status"
                             })});
-                var queryFieldsCrate = Crate.FromContent("Queryable Criteria", queryableCriteria);
+                var queryFieldsCrate = Data.Crates.Crate.FromContent("Queryable Criteria", queryableCriteria);
                 crateStorage.RemoveByLabel("Queryable Criteria");
                 crateStorage.Add(queryFieldsCrate);
             }
@@ -360,7 +355,8 @@ namespace terminalDocuSign.Actions
                     Conditions = conditions
                 });
 
-                var queryCriteria = Crate.FromContent("Queryable Criteria", new StandardQueryFieldsCM(GetFieldsByObjectId(selectedObject.Id)));
+
+                var queryCriteria = Data.Crates.Crate.FromContent("Queryable Criteria", new StandardQueryFieldsCM(GetFieldsByObjectId(selectedObject.Id)));
                 crateStorage.Add(queryCriteria);
             }
         }
@@ -403,12 +399,13 @@ namespace terminalDocuSign.Actions
 
         private Crate PackAvailableTemplates(AuthorizationTokenDO authTokenDO)
         {
-            var docuSignAuthDTO = JsonConvert
-                .DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
+            var conf = DocuSignManager.SetUp(authTokenDO);
+            var fields = DocuSignManager.GetTemplatesList(conf);
 
-            var crate = DocuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
-            crate.Label = "AvailableTemplates";
-
+            var crate = Crate.CreateDesignTimeFieldsCrate(
+                "AvailableTemplates",
+                AvailabilityType.Configuration,
+                fields.ToArray());
             return crate;
         }
 
@@ -461,10 +458,10 @@ namespace terminalDocuSign.Actions
             var delayValue = (Duration)configControls.Single(c => c.Name == "Delay_Duration" && c.Type == ControlTypes.Duration);
 
             var runTimePayloadData = new List<FieldDTO>();
-            var delayTimeString = delayValue.Days + " days, " + delayValue.Hours + " hours and "+delayValue.Minutes+" minutes";
+            var delayTimeString = delayValue.Days + " days, " + delayValue.Hours + " hours and " + delayValue.Minutes + " minutes";
             runTimePayloadData.Add(new FieldDTO("DelayTime", delayTimeString, AvailabilityType.RunTime));
 
-            var filterPane = (FilterPane) configControls.Single(c => c.Name == "Selected_Filter" && c.Type == ControlTypes.FilterPane);
+            var filterPane = (FilterPane)configControls.Single(c => c.Name == "Selected_Filter" && c.Type == ControlTypes.FilterPane);
 
             var conditions = JsonConvert.DeserializeObject<FilterDataDTO>(filterPane.Value);
 
@@ -476,7 +473,7 @@ namespace terminalDocuSign.Actions
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
-                crateStorage.Add(Data.Crates.Crate.FromContent("Track DocuSign Recipients Payload Data", new StandardPayloadDataCM(runTimePayloadData)));   
+                crateStorage.Add(Data.Crates.Crate.FromContent("Track DocuSign Recipients Payload Data", new StandardPayloadDataCM(runTimePayloadData)));
             }
 
 

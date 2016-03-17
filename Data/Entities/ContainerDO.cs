@@ -80,7 +80,6 @@ namespace Data.Entities
         public override void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
         {
             base.OnModify(originalValues, currentValues);
-            EventManager.ContainerStateChanged(currentValues);
         }
     }
 }

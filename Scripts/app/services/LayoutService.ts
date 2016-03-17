@@ -4,6 +4,9 @@ module dockyard.services {
 
     export interface ILayoutService {
         placeActions(actionGroups, startingId): model.ActionGroup[];
+        setSiblingStatus(action: model.ActivityDTO, allowSiblings: boolean): void;
+        setJumpTargets(action: model.ActivityDTO, targets: Array<model.ActivityJumpTarget>): void;
+        resetLayout(): void;
     }
 
     export class LayoutService implements ILayoutService {
@@ -13,10 +16,22 @@ module dockyard.services {
         public ARROW_WIDTH = 16;
         public ADD_ACTION_BUTTON_WIDTH = 150;
 
+        public subplans: Array<Array<model.ActionGroup>> = [];
+
         constructor(private CrateHelper: services.CrateHelper) {
         }
 
-        placeActions(actions: model.ActivityDTO[], startingId: string): model.ActionGroup[] {
+        setJumpTargets(action: model.ActivityDTO, targets: Array<model.ActivityJumpTarget>) {
+            var env = this.findEnvelope(action.id);
+            env.jumpTargets = targets;
+        }
+
+        resetLayout() {
+            this.subplans = [];
+        }
+
+        placeActions(actions: model.ActivityDTO[], parentId: string): model.ActionGroup[] {
+
             var processedGroups: model.ActionGroup[] = [];
 
             var actionGroups = _.toArray<model.ActivityDTO[]>(
@@ -24,12 +39,12 @@ module dockyard.services {
             );
 
             if (actions.length) {
-                var startingGroup = this.findChildGroup(actionGroups, startingId);
-                this.processGroup(actionGroups, new model.ActionGroup(startingGroup, null), processedGroups);
+                var startingGroup = this.findChildGroup(actionGroups, parentId);
+                this.processGroup(actionGroups, new model.ActionGroup(startingGroup, null, parentId), processedGroups);
             } else {
-                processedGroups.push(new model.ActionGroup([], null));
+                processedGroups.push(new model.ActionGroup([], null, parentId));
             }
-
+            this.subplans.push(processedGroups);
             return processedGroups;
         }
 
@@ -52,16 +67,15 @@ module dockyard.services {
             }
 
             processedGroups.push(group);
-            group.activities = _.sortBy(group.activities, (action: model.ActivityDTO) => action.ordering);
-
-            for (var i = group.activities.length - 1; i > -1; i--) {
+            
+            for (var i = group.envelopes.length - 1; i > -1; i--) {
                 //var childGroup = this.findChildGroup(actionGroups, group.actions[i].id);
-                if (group.activities[i].childrenActivities.length) {
-                    var newGroup = new model.ActionGroup(<model.ActivityDTO[]>group.activities[i].childrenActivities, group.activities[i]);
+                if (group.envelopes[i].activity.childrenActivities.length) {
+                    var newGroup = new model.ActionGroup(<model.ActivityDTO[]>group.envelopes[i].activity.childrenActivities, group.envelopes[i].activity, group.envelopes[i].activity.id);
                     this.calculateGroupPosition(newGroup, group, processedGroups);
                     this.processGroup(actionGroups, newGroup, processedGroups);
-                } else if (this.allowsChildren(group.activities[i])) { //has no children, but allows it. we should place an add action button below
-                    var potentialGroup = new model.ActionGroup([], group.activities[i]);
+                } else if (this.allowsChildren(group.envelopes[i].activity)) { //has no children, but allows it. we should place an add action button below
+                    var potentialGroup = new model.ActionGroup([], group.envelopes[i].activity, group.envelopes[i].activity.id);
                     this.calculateGroupPosition(potentialGroup, group, processedGroups);
                     this.processGroup(actionGroups, potentialGroup, processedGroups);
                 }
@@ -84,14 +98,14 @@ module dockyard.services {
 
             var i = 0, offsetLeft = parentGroup.offsetLeft;
             //calculate left offset by summing existing elements
-            while (parentGroup.activities[i].id != currentGroup.parentAction.id) {
-                offsetLeft += (parentGroup.activities[i].activityTemplate.minPaneWidth || this.ACTION_WIDTH) + this.ACTION_PADDING;
+            while (parentGroup.envelopes[i].activity.id != currentGroup.parentAction.id) {
+                offsetLeft += (parentGroup.envelopes[i].activity.activityTemplate.minPaneWidth || this.ACTION_WIDTH) + this.ACTION_PADDING;
                 i++;
             }
 
             //offsetLeft += ((parentGroup.actions[i].activityTemplate.minPaneWidth || this.ACTION_WIDTH) - (action.activityTemplate.minPaneWidth || this.ACTION_WIDTH)) / 2;
-            if (currentGroup.activities.length) {
-                offsetLeft += ((parentGroup.activities[i].activityTemplate.minPaneWidth || this.ACTION_WIDTH) - (currentGroup.activities[0].activityTemplate.minPaneWidth || this.ACTION_WIDTH)) / 2;
+            if (currentGroup.envelopes.length) {
+                offsetLeft += ((parentGroup.envelopes[i].activity.activityTemplate.minPaneWidth || this.ACTION_WIDTH) - (currentGroup.envelopes[0].activity.activityTemplate.minPaneWidth || this.ACTION_WIDTH)) / 2;
             } else {
                 offsetLeft += (this.ACTION_WIDTH - this.ADD_ACTION_BUTTON_WIDTH) / 2;
             }
@@ -110,23 +124,24 @@ module dockyard.services {
         }
 
         private calculateArrowOffsetLeft(group: model.ActionGroup): number {
-            if (group.activities.length) {
-                return ((group.activities[0].activityTemplate.minPaneWidth || this.ACTION_WIDTH) - this.ARROW_WIDTH) / 2;
+            if (group.envelopes.length) {
+                return ((group.envelopes[0].activity.activityTemplate.minPaneWidth || this.ACTION_WIDTH) - this.ARROW_WIDTH) / 2;
             } else {
                 return 70; //TODO calculate this for real //(this.ACTION_WIDTH - this.ARROW_WIDTH) / 2;
             }
         }
 
         private findParentAction(group: model.ActionGroup, parentGroup: model.ActionGroup): model.ActivityDTO {
-            return _.find(parentGroup.activities, (action: model.ActivityDTO) => {
-                return action.id === group.parentAction.id;
+            var envelope = _.find(parentGroup.envelopes, (envelope: model.ActivityEnvelope) => {
+                return envelope.activity.id === group.parentAction.id;
             });
+            return envelope.activity;
         }      
 
         private findParentGroup(actionGroups: model.ActionGroup[], parentId: string): model.ActionGroup {
             return _.find(actionGroups, (group: model.ActionGroup) => {
-                return group.activities.some((action: model.ActivityDTO) => {
-                    return action.id === parentId;
+                return group.envelopes.some((envelope: model.ActivityEnvelope) => {
+                    return envelope.activity.id === parentId;
                 });
             });
         }        
@@ -135,7 +150,28 @@ module dockyard.services {
             return _.find(actionGroups, (group: model.ActivityDTO[]) => {
                 return group[0].parentPlanNodeId === parentId;
             });
-        }        
+        }
+
+        private findEnvelope(activityId: string): model.ActivityEnvelope {
+            for (var k = 0; k < this.subplans.length; k++) {
+                var pGroup = this.subplans[k];
+                for (var i = 0; i < pGroup.length; i++) {
+                    for (var j = 0; j < pGroup[i].envelopes.length; j++) {
+                        if (pGroup[i].envelopes[j].activity.id === activityId) {
+                            return pGroup[i].envelopes[j];
+                        }
+                    }
+                }
+            }
+            
+
+            return null;
+        }
+
+        setSiblingStatus(action: model.ActivityDTO, allowSiblings: boolean): void {
+            var env = this.findEnvelope(action.id);
+            env.allowsSiblings = allowSiblings;
+        }
     }
 
     app.service('LayoutService', ['CrateHelper', LayoutService]);

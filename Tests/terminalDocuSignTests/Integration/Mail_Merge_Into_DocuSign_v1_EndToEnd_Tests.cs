@@ -53,6 +53,8 @@ namespace terminalDocuSignTests.Integration
         [Test]
         public async Task Mail_Merge_Into_DocuSign_EndToEnd()
         {
+            await RevokeTokens();
+
             var solutionCreateUrl = _baseUrl + "activities/create?solutionName=Mail_Merge_Into_DocuSign";
 
             //

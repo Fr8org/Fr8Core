@@ -13,6 +13,7 @@ namespace Hub.Interfaces
     public interface ISubPlan
     {
         void Update(IUnitOfWork uow, SubPlanDO subPlan);
+        void Create(IUnitOfWork uow, SubPlanDO subPlan);
         void Delete(IUnitOfWork uow, Guid id);
         Task<bool> DeleteAllChildNodes(Guid activityId);
         /// <summary>

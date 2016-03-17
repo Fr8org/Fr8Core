@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Data.Control;
 using Data.Crates;
 using Data.Entities;
+using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
@@ -22,12 +23,14 @@ namespace Hub.Services
         private readonly ICrateManager _crate;
         private readonly IPlanNode _planNode;
         private readonly IActivity _activity;
+        private readonly ISecurityServices _security;
 
         public SubPlan()
         {
             _planNode = ObjectFactory.GetInstance<IPlanNode>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
             _activity = ObjectFactory.GetInstance<IActivity>();
+            _security = ObjectFactory.GetInstance<ISecurityServices>(); ;
         }
 
         /// <summary>
@@ -84,7 +87,31 @@ namespace Hub.Services
         //        }
 
         /// <summary>
-        /// Update SubPlan entity.
+        /// Create Subroute entity.
+        /// </summary>
+        public void Create(IUnitOfWork uow, SubPlanDO subPlan)
+        {
+            if (subPlan == null)
+            {
+                throw new ArgumentNullException(nameof(subPlan));
+            }
+
+            subPlan.Fr8Account = _security.GetCurrentAccount(uow);
+            subPlan.CreateDate = DateTime.UtcNow;
+            subPlan.LastUpdated = subPlan.CreateDate;
+
+            var curPlan = uow.PlanRepository.GetById<PlanDO>(subPlan.RootPlanNodeId);
+
+            if (curPlan == null)
+            {
+                throw new Exception($"Unable to find plan by id = {subPlan.RootPlanNodeId}");
+            }
+
+            curPlan.AddChildWithDefaultOrdering(subPlan);
+        }
+
+        /// <summary>
+        /// Update Subroute entity.
         /// </summary>
         public void Update(IUnitOfWork uow, SubPlanDO subPlan)
         {

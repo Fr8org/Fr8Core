@@ -42,7 +42,7 @@ namespace terminalDocuSignTests
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Send_DocuSign_Envelope_v1_Example_Fr8DataDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Send_DocuSign_Envelope_v1_Example_Fr8DataDTO(this);
             var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, requestActionDTO);
 
             return responseActionDTO;
@@ -52,7 +52,7 @@ namespace terminalDocuSignTests
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var dataDTO = HealthMonitor_FixtureData.Send_DocuSign_Envelope_v1_Example_Fr8DataDTO();
+            var dataDTO = HealthMonitor_FixtureData.Send_DocuSign_Envelope_v1_Example_Fr8DataDTO(this);
 
             var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
 
@@ -139,7 +139,7 @@ namespace terminalDocuSignTests
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var dataDTO = HealthMonitor_FixtureData.Send_DocuSign_Envelope_v1_Example_Fr8DataDTO();
+            var dataDTO = HealthMonitor_FixtureData.Send_DocuSign_Envelope_v1_Example_Fr8DataDTO(this);
             dataDTO.ActivityDTO.AuthToken = null;
 
             await HttpPostAsync<Fr8DataDTO, JToken>(
@@ -177,7 +177,7 @@ namespace terminalDocuSignTests
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var dataDTO = HealthMonitor_FixtureData.Send_DocuSign_Envelope_v1_Example_Fr8DataDTO();
+            var dataDTO = HealthMonitor_FixtureData.Send_DocuSign_Envelope_v1_Example_Fr8DataDTO(this);
 
             var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
 
@@ -203,7 +203,7 @@ namespace terminalDocuSignTests
         {
             var runUrl = GetTerminalRunUrl();
             var configureUrl = GetTerminalConfigureUrl();
-            var dataDTO = HealthMonitor_FixtureData.Send_DocuSign_Envelope_v1_Example_Fr8DataDTO();
+            var dataDTO = HealthMonitor_FixtureData.Send_DocuSign_Envelope_v1_Example_Fr8DataDTO(this);
             var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
             var storage = _crateManager.GetStorage(responseActionDTO);
 
@@ -231,7 +231,7 @@ namespace terminalDocuSignTests
         {
             var runUrl = GetTerminalRunUrl();
             var configureUrl = GetTerminalConfigureUrl();
-            var dataDTO = HealthMonitor_FixtureData.Send_DocuSign_Envelope_v1_Example_Fr8DataDTO();
+            var dataDTO = HealthMonitor_FixtureData.Send_DocuSign_Envelope_v1_Example_Fr8DataDTO(this);
             var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
             var storage = _crateManager.GetStorage(responseActionDTO);
 
@@ -280,7 +280,7 @@ namespace terminalDocuSignTests
             var configureUrl = GetTerminalActivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = HealthMonitor_FixtureData.Send_DocuSign_Envelope_v1_Example_Fr8DataDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Send_DocuSign_Envelope_v1_Example_Fr8DataDTO(this);
 
             //Act
             var responseActionDTO =
@@ -301,7 +301,7 @@ namespace terminalDocuSignTests
             var configureUrl = GetTerminalDeactivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = HealthMonitor_FixtureData.Send_DocuSign_Envelope_v1_Example_Fr8DataDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Send_DocuSign_Envelope_v1_Example_Fr8DataDTO(this);
 
             //Act
             var responseActionDTO =

@@ -105,22 +105,13 @@ module dockyard.controllers {
             this._scope.radioDemoField = radioDemoField;
 
             var dropdownDemoField = new model.DropDownList();
-            var demoSelectItem1 = new model.DropDownListItem();
+            var demoSelectItem1 = new model.DropDownListItem("Operation 1", "operation_1");
 
-            demoSelectItem1.key = "Operation 1";
-            demoSelectItem1.value = "operation_1";
-            var demoSelectItem2 = new model.DropDownListItem();
+            var demoSelectItem2 = new model.DropDownListItem("Operation 2", "operation_2");
+            var demoSelectItem3 = new model.DropDownListItem("Operation 3", "operation_3");
 
-            demoSelectItem2.key = "Operation 2";
-            demoSelectItem2.value = "operation_2";
-            var demoSelectItem3 = new model.DropDownListItem();
+            var demoSelectItem4 = new model.DropDownListItem("Operation 4", "operation_4");
 
-            demoSelectItem3.key = "Operation 3";
-            demoSelectItem3.value = "operation_3";
-            var demoSelectItem4 = new model.DropDownListItem();
-
-            demoSelectItem4.key = "Operation 4";
-            demoSelectItem4.value = "operation_4";
             dropdownDemoField.fieldLabel = "Operation List";
             dropdownDemoField.listItems = new Array<model.DropDownListItem>();
             dropdownDemoField.listItems.push(demoSelectItem1);

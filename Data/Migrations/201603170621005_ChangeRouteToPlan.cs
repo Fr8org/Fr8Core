@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class UpdatingChangeRouteToPlanToBeLatestMigration : DbMigration
+    public partial class ChangeRouteToPlan : DbMigration
     {
         public override void Up()
         {
@@ -44,7 +44,6 @@ namespace Data.Migrations
             //AddForeignKey("dbo.ProcessNodes", "SubPlanId", "dbo.SubPlans", "Id");
 
             Sql("ALTER TABLE[dbo].[ProcessNodes] WITH NOCHECK ADD CONSTRAINT[FK_dbo.ProcessNodes_dbo.SubPlans_SubPlanId] FOREIGN KEY([SubPlanId]) REFERENCES[dbo].[SubPlans] ([Id])");
-
             AddForeignKey("dbo.Criteria", "SubPlanId", "dbo.SubPlans", "Id");
             DropColumn("dbo.ProcessNodes", "SubrouteId");
             DropColumn("dbo.Criteria", "SubrouteId");

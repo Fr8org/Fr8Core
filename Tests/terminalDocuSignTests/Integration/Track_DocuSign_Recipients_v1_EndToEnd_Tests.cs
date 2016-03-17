@@ -75,6 +75,8 @@ namespace terminalDocuSignTests.Integration
         [Test]
         public async Task Track_DocuSign_Recipients_EndToEnd()
         {
+            await RevokeTokens();
+
             string baseUrl = GetHubApiBaseUrl();
             
             var solutionCreateUrl = baseUrl + "activities/create?solutionName=Track_DocuSign_Recipients";

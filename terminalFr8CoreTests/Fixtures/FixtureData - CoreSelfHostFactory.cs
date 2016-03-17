@@ -104,7 +104,7 @@ namespace terminalFr8CoreTests.Fixtures
                 Version = "1"
             };
         }
-
+        
         public static Fr8DataDTO ExecuteSql_InitialConfiguration_Fr8DataDTO()
         {
             var activityTemplate = ExecuteSql_ActivityTemplate();
@@ -125,6 +125,30 @@ namespace terminalFr8CoreTests.Fixtures
             {
                 Id = 2,
                 Name = "ExecuteSql_TEST",
+                Version = "1"
+            };
+        }
+
+        public static Fr8DataDTO SaveToFr8Wareouse_InitialConfiguration_Fr8DataDTO()
+        {
+            var activityTemplate = SaveToFr8Wareouse_ActivityTemplate();
+
+            var activityDTO = new ActivityDTO()
+            {
+                Id = Guid.NewGuid(),
+                Label = "ExecuteSql Fr8Core",
+                ActivityTemplate = activityTemplate
+            };
+
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
+        }
+
+        public static ActivityTemplateDTO SaveToFr8Wareouse_ActivityTemplate()
+        {
+            return new ActivityTemplateDTO()
+            {
+                Id = 6,
+                Name = "SaveToFr8Warehouse_TEST",
                 Version = "1"
             };
         }
