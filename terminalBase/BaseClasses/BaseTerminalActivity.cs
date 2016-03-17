@@ -315,7 +315,7 @@ namespace TerminalBase.BaseClasses
             }
         }
 
-        protected bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
+        protected virtual bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
         {
             return authTokenDO == null || string.IsNullOrEmpty(authTokenDO.Token);
         }

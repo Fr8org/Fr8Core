@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using Data.States;
 using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
@@ -45,7 +46,7 @@ namespace terminalExcel.Actions
                 });
                 if (!string.IsNullOrEmpty(uploadedFileName))
                 {
-                    Controls.Add(new TextBlock
+                    Controls.Add(UploadedFileTextBlock =  new TextBlock
                     {
                         Label = string.Empty,
                         Value = UploadedFileLabel + Uri.UnescapeDataString(uploadedFileName),
@@ -82,7 +83,7 @@ namespace terminalExcel.Actions
             // Add a crate of PayloadData to action's crate storage
             using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
             {
-                crateStorage.Add(Crate<StandardTableDataCM>.FromContent(GenerateRuntimeCrateLabel(ExtractFileName(GetUploadFilePath(curActivityDO))), tableData));
+                crateStorage.Add(Crate.FromContent(GenerateRuntimeCrateLabel(ExtractFileName(GetUploadFilePath(curActivityDO))), tableData, AvailabilityType.RunTime));
             }
             return Success(payloadCrates);
         }
@@ -133,7 +134,7 @@ namespace terminalExcel.Actions
                 activityStorage.Remove<StandardTableDataCM>();
                 if (!string.IsNullOrEmpty(uploadFilePath))
                 {
-                    activityStorage.Add(Crate<StandardTableDataCM>.FromContent(GenerateRuntimeCrateLabel(fileName), ExcelUtils.GetTableData(uploadFilePath)));
+                    activityStorage.Add(Crate.FromContent(GenerateRuntimeCrateLabel(fileName), ExcelUtils.GetTableData(uploadFilePath), AvailabilityType.RunTime));
                 }
             }
             return Task.FromResult(curActivityDO);
