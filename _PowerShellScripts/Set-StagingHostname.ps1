@@ -6,8 +6,13 @@
 	Add this script to VSO as an Azure Power Shell task since it requires Azure subscription info.
 #>
 param(
+    [Parameter(Mandatory = $true)]
 	[string]$serviceName,
-    [string]$connectionString,
+
+    [Parameter(Mandatory = $true)]
+	[string]$connectionString,
+	
+	[Parameter(Mandatory = $false)]
 	[string]$overrideDbName
 )
 	
@@ -16,4 +21,11 @@ $rootDir = Split-Path -parent $PSCommandPath
 $deployment = Get-AzureDeployment -ServiceName $serviceName -Slot Staging
 $hostName = $deployment.Url.Host
 Write-Host $hostName
-Invoke-Expression "$rootDir\UpdateTerminalHostnameInDb.ps1 -connectionString '$connectionString' -newHostname $hostName -overrideDbName $overrideDbName"
+
+$commandLine = "$rootDir\UpdateTerminalHostnameInDb.ps1 -connectionString '$connectionString' -newHostname $hostName"
+if ([String]::IsNullOrEmpty($overrideDbName) -eq $false) {
+	$commandLine +=  " -overrideDbName $overrideDbName"
+}
+Invoke-Expression $commandLine
+
+Invoke-Expression "$rootDir\UpdateTerminalUrl.ps1 $hostName"

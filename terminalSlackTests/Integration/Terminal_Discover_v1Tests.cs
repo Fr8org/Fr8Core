@@ -35,7 +35,7 @@ namespace terminalSlackTests.Integration
             Assert.IsNotNull(terminalDiscoverResponse, "Terminal Slack discovery did not happen.");
             Assert.IsNotNull(terminalDiscoverResponse.Activities, "Slack terminal actions were not loaded");
             Assert.AreEqual(ActivityCount, terminalDiscoverResponse.Activities.Count, "Not all terminal slack actions were loaded");
-            Assert.AreEqual(terminalDiscoverResponse.Activities.Any(a => a.Name == Monitor_Channel_Activity_Name), true, "Action "+Monitor_Channel_Activity_Name+" was not loaded");
+            Assert.AreEqual(terminalDiscoverResponse.Activities.Any(a => a.Name == Monitor_Channel_Activity_Name), true, "Action " + Monitor_Channel_Activity_Name + " was not loaded");
             Assert.AreEqual(terminalDiscoverResponse.Activities.Any(a => a.Name == Publish_To_Slack_Activity_Name), true, "Action " + Publish_To_Slack_Activity_Name + " was not loaded");
         }
     }

@@ -1038,3 +1038,8 @@ div.activity-list::after {
 .bdp-label {
     font-size: 70%;
 }
+
+.inactive {
+    background-color: #428bca;
+    border-color: #357ebd;
+}
