@@ -2,6 +2,7 @@
 using StructureMap;
 using terminalDocuSign.Interfaces;
 using terminalDocuSign.Services;
+using terminalDocuSign.Services.New_Api;
 
 namespace terminalDocuSign
 {
@@ -30,8 +31,9 @@ namespace terminalDocuSign
         {
             public LiveMode()
             {
-                For<IDocuSignFolder>().Use<DocuSignFolder>();
+                //For<IDocuSignFolder>().Use<DocuSignFolder>();
                 For<IDocuSignRoute>().Use<DocuSignRoute>();
+                For<IDocuSignManager>().Use<DocuSignManager>();
             }
         }
 

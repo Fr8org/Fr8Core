@@ -43,37 +43,31 @@ namespace terminalDocuSign.Actions
                 });
 
                 Controls.Add(SearchText = new TextBox
-                                          {
-                                              Name = "SearchText",
-                                              Events = new List<ControlEvent> {ControlEvent.RequestConfig},
+                {
+                    Name = "SearchText",
+                    Events = new List<ControlEvent> {ControlEvent.RequestConfig},
                                           });
 
                 Controls.Add(Folder = new DropDownList
-                                      {
-                                          Label = "Envelope is in folder:",
-                                          Name = "Folder",
-                                          Events = new List<ControlEvent> {ControlEvent.RequestConfig},
-                                          Source = null
+                {
+                    Label = "Envelope is in folder:",
+                    Name = "Folder",
+                    Events = new List<ControlEvent> {ControlEvent.RequestConfig},
+                    Source = null
                                       });
 
                 Controls.Add(Status = new DropDownList
-                                      {
-                                          Label = "Envelope has status:",
-                                          Name = "Status",
-                                          Events = new List<ControlEvent> {ControlEvent.RequestConfig},
-                                          Source = null
+                {
+                    Label = "Envelope has status:",
+                    Name = "Status",
+                    Events = new List<ControlEvent> {ControlEvent.RequestConfig},
+                    Source = null
                                       });
 
                 Controls.Add(new RunRouteButton());
             }
         }
 
-        private readonly DocuSignManager _docuSignManager;
-
-        public Search_DocuSign_History_v1()
-        {
-            _docuSignManager = ObjectFactory.GetInstance<DocuSignManager>();
-        }
 
         protected override string ActivityUserFriendlyName => "Search DocuSign History";
 
@@ -92,8 +86,9 @@ namespace terminalDocuSign.Actions
             var actionUi = new ActivityUi();
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);           
             var configurationCrate = PackControls(actionUi);
-            _docuSignManager.FillFolderSource(configurationCrate, "Folder", docuSignAuthDTO);
-            _docuSignManager.FillStatusSource(configurationCrate, "Status");
+            //commented out by FR-2400
+            //_docuSignManager.FillFolderSource(configurationCrate, "Folder", docuSignAuthDTO);
+            //_docuSignManager.FillStatusSource(configurationCrate, "Status");
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
@@ -148,7 +143,7 @@ namespace terminalDocuSign.Actions
                 throw new Exception("Can't find activity template: Query_DocuSign");
             }
 
-            var storage = new CrateStorage(Crate.FromContent("Config", config));
+            var storage = new CrateStorage(Data.Crates.Crate.FromContent("Config", config));
 
             storage.Add(PackControlsCrate(new TextArea
             {

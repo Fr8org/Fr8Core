@@ -52,6 +52,8 @@ namespace terminalDocuSignTests.Integration
         [Test]
         public async Task Mail_Merge_Into_DocuSign_EndToEnd()
         {
+            await RevokeTokens();
+
             var solutionCreateUrl = _baseUrl + "activities/create?solutionName=Mail_Merge_Into_DocuSign";
 
             //
@@ -66,13 +68,15 @@ namespace terminalDocuSignTests.Integration
             this.solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure?id=" + solution.Id, solution);
             crateStorage = Crate.FromDto(this.solution.CrateStorage);
             var stAuthCrate = crateStorage.CratesOfType<StandardAuthenticationCM>().FirstOrDefault();
-            bool defaultDocuSignAuthTokenExists = stAuthCrate != null;
+            bool defaultDocuSignAuthTokenExists = stAuthCrate == null;
+
 
             if (!defaultDocuSignAuthTokenExists)
             {
                 //
                 // Authenticate with DocuSign
                 //
+
                 var creds = new CredentialsDTO()
                 {
                     Username = "freight.testing@gmail.com",

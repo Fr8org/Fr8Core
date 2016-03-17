@@ -31,6 +31,7 @@ using Hub.Infrastructure;
 using Hub.Interfaces;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Utilities.Configuration.Azure;
+using terminalDocuSign.Services.New_Api;
 
 namespace terminalDocuSign.Actions
 {
@@ -59,13 +60,13 @@ namespace terminalDocuSign.Actions
             public readonly QueryFieldType FieldType;
             public readonly string DocusignQueryName;
             public readonly string MtDbPropertyName;
-            public readonly Func<string, DocuSignAuthTokenDTO, ControlDefinitionDTO> ControlFactory;
+            public readonly Func<string, AuthorizationTokenDO, ControlDefinitionDTO> ControlFactory;
 
             public FieldBackedRoutingInfo(
                 QueryFieldType fieldType,
                 string docusignQueryName,
                 string mtDbPropertyName,
-                Func<string, DocuSignAuthTokenDTO, ControlDefinitionDTO> controlFactory)
+                Func<string, AuthorizationTokenDO, ControlDefinitionDTO> controlFactory)
             {
                 FieldType = fieldType;
                 DocusignQueryName = docusignQueryName;
@@ -122,6 +123,8 @@ namespace terminalDocuSign.Actions
             }
         }
 
+        private IDocuSignManager _docuSignManager;
+
         // Mapping between quiery builder control field names and information about how this field is routed to the backed 
         private Dictionary<string, FieldBackedRoutingInfo> _queryBuilderFields;
 
@@ -141,16 +144,12 @@ namespace terminalDocuSign.Actions
             "Template",
             "Correct"
         };
-
-        private readonly DocuSignManager _docuSignManager;
-        private readonly IDocuSignFolder _docuSignFolder;
+        
         private readonly IPlan _plan;
         public Generate_DocuSign_Report_v1()
         {
-            _docuSignManager = ObjectFactory.GetInstance<DocuSignManager>();
-            _docuSignFolder = ObjectFactory.GetInstance<IDocuSignFolder>();
             _plan = ObjectFactory.GetInstance<IPlan>();
-
+            _docuSignManager = ObjectFactory.GetInstance<IDocuSignManager>();
             InitQueryBuilderFields();
         }
 
@@ -301,20 +300,20 @@ namespace terminalDocuSign.Actions
 
         private void SearchDocusignInRealTime(DocuSignAuthTokenDTO docuSignAuthToken, List<FilterConditionDTO> criteria, StandardPayloadDataCM searchResult, HashSet<string> existingEnvelopes)
         {
-            var docusignQuery = BuildDocusignQuery(docuSignAuthToken, criteria);
-            var envelopes = _docuSignManager.SearchDocusign(docuSignAuthToken, docusignQuery);
+            //var docusignQuery = BuildDocusignQuery(docuSignAuthToken, criteria);
+           // var envelopes = _docuSignManager.SearchDocusign(docuSignAuthToken, docusignQuery);
 
-            foreach (var envelope in envelopes)
-            {
-                if (string.IsNullOrWhiteSpace(envelope.EnvelopeId))
-                {
-                    continue;
-                }
+            //foreach (var envelope in envelopes)
+            //{
+            //    if (string.IsNullOrWhiteSpace(envelope.EnvelopeId))
+            //    {
+            //        continue;
+            //    }
 
-                searchResult.PayloadObjects.Add(CreatePayloadObjectFromDocusignFolderItem(envelope));
+            //    searchResult.PayloadObjects.Add(CreatePayloadObjectFromDocusignFolderItem(envelope));
 
-                existingEnvelopes.Add(envelope.EnvelopeId);
-            }
+            //    existingEnvelopes.Add(envelope.EnvelopeId);
+            //}
         }
 
         // FolderItem is something that was put into the Docusing filder and it is not strictly envelope in terms of Docusign API. 
@@ -360,7 +359,7 @@ namespace terminalDocuSign.Actions
                         // cache list of folders
                         if (folders == null)
                         {
-                            folders = _docuSignFolder.GetSearchFolders(authToken.Email, authToken.ApiPassword);
+                            //folders = _docuSignFolder.GetSearchFolders(authToken.Email, authToken.ApiPassword);
                         }
 
                         var value = condition.Value;
@@ -427,13 +426,11 @@ namespace terminalDocuSign.Actions
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            var docuSignAuthToken = JsonConvert
-                .DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Add(PackControls(new ActivityUi()));
-                crateStorage.AddRange(PackDesignTimeData(docuSignAuthToken));
+                crateStorage.AddRange(PackDesignTimeData(authTokenDO));
             }
 
             RouteFullDTO plan = await UpdatePlanCategory(curActivityDO.Id, "report");
@@ -441,15 +438,15 @@ namespace terminalDocuSign.Actions
             return await Task.FromResult(curActivityDO);
         }
 
-        private int ExtractDocuSignResultSize(
-            DocuSignAuthTokenDTO authToken,
-            List<FilterConditionDTO> criteria)
-        {
-            var docusignQuery = BuildDocusignQuery(authToken, criteria);
-            var count = _docuSignManager.CountEnvelopes(authToken, docusignQuery);
+        //private int ExtractDocuSignResultSize(
+        //    DocuSignAuthTokenDTO authToken,
+        //    List<FilterConditionDTO> criteria)
+        //{
+        //    var docusignQuery = BuildDocusignQuery(authToken, criteria);
+        //    var count = _docuSignManager.CountEnvelopes(authToken, docusignQuery);
 
-            return count;
-        }
+        //    return count;
+        //}
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO activityDO, AuthorizationTokenDO authTokenDO)
         {
@@ -652,7 +649,7 @@ namespace terminalDocuSign.Actions
             return null;
         }
 
-        public QueryFieldDTO[] GetFieldListForQueryBuilder(DocuSignAuthTokenDTO authToken)
+        public QueryFieldDTO[] GetFieldListForQueryBuilder(AuthorizationTokenDO authToken)
         {
             return _queryBuilderFields
                 .Select(x =>
@@ -667,7 +664,7 @@ namespace terminalDocuSign.Actions
         }
 
         private static ControlDefinitionDTO CreateTextBoxQueryControl(
-            string key, DocuSignAuthTokenDTO authToken)
+            string key, AuthorizationTokenDO authToken)
         {
             return new TextBox()
             {
@@ -675,20 +672,21 @@ namespace terminalDocuSign.Actions
             };
         }
 
-        private ControlDefinitionDTO CreateFolderDropDownListControl(
-            string key, DocuSignAuthTokenDTO authToken)
+        public ControlDefinitionDTO CreateFolderDropDownListControl(
+        string key, AuthorizationTokenDO authToken)
         {
+            var conf = _docuSignManager.SetUp(authToken);
             return new DropDownList()
             {
                 Name = "QueryField_" + key,
-                ListItems = _docuSignFolder.GetFolders(authToken.Email, authToken.ApiPassword)
-                    .Select(x => new ListItem() { Key = x.Name, Value = x.Name })
+                ListItems = DocuSignFolders.GetFolders(conf)
+                    .Select(x => new ListItem() { Key = x.Key, Value = x.Value })
                     .ToList()
             };
         }
 
         private ControlDefinitionDTO CreateStatusDropDownListControl(
-            string key, DocuSignAuthTokenDTO authToken)
+            string key, AuthorizationTokenDO authToken)
         {
             return new DropDownList()
             {
@@ -700,7 +698,7 @@ namespace terminalDocuSign.Actions
         }
 
         private ControlDefinitionDTO CreateDatePickerQueryControl(
-            string key, DocuSignAuthTokenDTO authToken)
+            string key, AuthorizationTokenDO authToken)
         {
             return new DatePicker()
             {
@@ -708,7 +706,7 @@ namespace terminalDocuSign.Actions
             };
         }
 
-        private IEnumerable<Crate> PackDesignTimeData(DocuSignAuthTokenDTO authToken)
+        private IEnumerable<Crate> PackDesignTimeData(AuthorizationTokenDO authToken)
         {
             yield return Data.Crates.Crate.FromContent(
                 "Queryable Criteria",

@@ -66,8 +66,8 @@ namespace terminalGoogle.Controllers
 
             var saveDataAction = new ActivityTemplateDTO
             {
-                Name = "Save_In_Google_Sheet",
-                Label = "Save In Google Sheet",
+                Name = "Save_To_Google_Sheet",
+                Label = "Save To Google Sheet",
                 Version = "1",
                 Description = "Save crates into google spreadsheet",
                 Category = ActivityCategory.Forwarders,

@@ -15,7 +15,7 @@ namespace terminalDocuSign.Tests
         /// <param name="account">Docusign account.</param>
         /// <param name="restSettings">Docusign restsettings instance.</param>
         /// <returns>Logged account object ( Docusign.Integrations.Client.Account ).</returns>
-        DocuSignAccount LoginDocusign(DocuSignAccount account, RestSettings restSettings);
+        //DocuSignAccount LoginDocusign(DocuSignAccount account, RestSettings restSettings);
 
         /// <summary>
         /// Create envelope wrapper with fill it with data, and return it back.
@@ -25,6 +25,6 @@ namespace terminalDocuSign.Tests
         /// <param name="fullPathToExampleDocument">Full file path to document that will be signed.</param>
         /// <param name="tabCollection">Docusign tab collection.</param>
         /// <returns>Envelope of Docusign.</returns>
-        DocuSignEnvelope CreateAndFillEnvelope(Account account, DocuSignEnvelope envelope, string fullPathToExampleDocument, TabCollection tabCollection);
+        //DocuSignEnvelope CreateAndFillEnvelope(Account account, DocuSignEnvelope envelope, string fullPathToExampleDocument, TabCollection tabCollection);
     }
 }

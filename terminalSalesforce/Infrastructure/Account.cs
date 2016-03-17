@@ -20,40 +20,5 @@ namespace terminalSalesforce.Infrastructure
 
             return true;
         }
-
-        protected override string GetSelectAllQuery()
-        {
-            //return the query to select all accounts
-            return "select Name, AccountNumber, Phone from Account";
-        }
-
-        protected override IList<PayloadObjectDTO> ParseQueryResult(QueryResult<object> queryResult)
-        {
-            var resultAccounts = new List<AccountDTO>();
-
-            if (queryResult.Records.Count > 0)
-            {
-                resultAccounts.AddRange(
-                    queryResult.Records.Select(record => ((JObject)record).ToObject<AccountDTO>()));
-            }
-
-            var payloads = new List<PayloadObjectDTO>();
-
-            payloads.AddRange(
-                resultAccounts.Select(
-                    account =>
-                        new PayloadObjectDTO
-                        {
-                            PayloadObject =
-                                new List<FieldDTO>
-                                {
-                                    new FieldDTO {Key = "AccountNumber", Value = account.AccountNumber},
-                                    new FieldDTO {Key = "Name", Value = account.Name},
-                                    new FieldDTO {Key = "Phone", Value = account.Phone}
-                                }
-                        }));
-
-            return payloads;
-        }
     }
 }

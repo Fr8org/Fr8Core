@@ -14,11 +14,12 @@ module dockyard.directives.textSource {
 
     //Setup aliases
     import pca = dockyard.directives.paneConfigureAction;
-    
+    import ddl = dockyard.directives.dropDownListBox;
+
     export function TextSource(): ng.IDirective {
         
         var uniqueDirectiveId = 1;
-        var controller = ['$scope', ($scope: ITextSourceScope) => {
+        var controller = ['$scope', 'UIHelperService', ($scope: ITextSourceScope, uiHelperService: services.IUIHelperService) => {
             $scope.uniqueDirectiveId = ++uniqueDirectiveId;
             $scope.onChange = (fieldName: string) => {
                 if ($scope.change != null && angular.isFunction($scope.change)) {
@@ -30,11 +31,21 @@ module dockyard.directives.textSource {
                 }
             };
 
+            var alertMessage = new model.AlertDTO();
+            alertMessage.title = "Notification";
+            alertMessage.body = 'There are no upstream fields available right now. To learn more,<a href= "/documentation/UpstreamCrates.html" target= "_blank" > click here </a><i class="fa fa-question-circle" > </i>';
+
             $scope.$on("onFieldFocus", function(event, args:pca.CallConfigureResponseEventArgs) {
                 if ($scope.field.name === args.focusElement.name) {
                     $scope.isFocused = true;
                 } else {
                     $scope.isFocused = false;
+                }
+            });
+
+            $scope.$on(ddl.MessageType[ddl.MessageType.DropDownListBox_NoRecords], function (event, args: AlertEventArgs) {
+                if ($scope.field.listItems.length === 0) {
+                    uiHelperService.openConfirmationModal(alertMessage);
                 }
             });
 
