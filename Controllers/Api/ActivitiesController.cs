@@ -174,7 +174,7 @@ namespace HubWeb.Controllers
             //check if the DocumentationSupport comma separated string has the correct form
             if (!ValidateDocumentationSupport(curDocSupport))
                 return BadRequest();
-            if (curDocSupport.Contains("Terminal="))
+            if (curDocSupport.StartsWith("Terminal="))
             {
                 var terminalName = curDocSupport.Split('=')[1];
                 var solutionNameList = _activity.GetSolutionList(terminalName);
@@ -195,7 +195,7 @@ namespace HubWeb.Controllers
         private bool ValidateDocumentationSupport(string docSupport)
         {
             var curStringArray = docSupport.Split(',');
-            var hasTerminalName = curStringArray.Contains("Terminal=");
+            var hasTerminalName = curStringArray.Any(x=>x.StartsWith("Terminal="));
             var hasMainPage = curStringArray.Contains("MainPage");
             var hasHelpMenu = curStringArray.Contains("HelpMenu");
             if (hasTerminalName &&
