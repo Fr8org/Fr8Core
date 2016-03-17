@@ -79,8 +79,6 @@ namespace terminalDocuSignTests.Integration
             
             var plan = await HttpPostAsync<string, PlanDTO>(solutionCreateUrl, null);
 
-            Assert.AreEqual(true, JsonConvert.SerializeObject(plan), solutionCreateUrl);
-
             return plan;
         }
 
