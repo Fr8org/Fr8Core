@@ -37,8 +37,8 @@ namespace terminalDocuSignTests.Integration
             //
             // Create solution
             //
-            var plan = await HttpPostAsync<string, PlanFullDTO>(solutionCreateUrl, null);
-            var solution = plan.SubPlans.FirstOrDefault().Activities.FirstOrDefault();
+            var plan = await HttpPostAsync<string, PlanDTO>(solutionCreateUrl, null);
+            var solution = plan.Plan.SubPlans.FirstOrDefault().Activities.FirstOrDefault();
 
             //
             // Send configuration request without authentication token
@@ -101,10 +101,10 @@ namespace terminalDocuSignTests.Integration
             //
             // Rename route
             //
-            var newName = plan.Name + " | " + DateTime.UtcNow.ToShortDateString() + " " +
+            var newName = plan.Plan.Name + " | " + DateTime.UtcNow.ToShortDateString() + " " +
                 DateTime.UtcNow.ToShortTimeString();
-            await HttpPostAsync<object, PlanFullDTO>(_baseUrl + "plans?id=" + plan.Id,
-                new { id = plan.Id, name = newName });
+            await HttpPostAsync<object, PlanFullDTO>(_baseUrl + "plans?id=" + plan.Plan.Id,
+                new { id = plan.Plan.Id, name = newName });
 
             //
             // Configure Monitor DocuSign Envelope action
