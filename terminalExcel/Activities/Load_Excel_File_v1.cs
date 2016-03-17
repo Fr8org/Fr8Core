@@ -125,7 +125,7 @@ namespace terminalExcel.Actions
                 {
                     var activityUi = new ActivityUi();
                     activityUi.ClonePropertiesFrom(activityStorage.FirstCrate<StandardConfigurationControlsCM>().Content);
-                    fileName = activityUi.UploadedFileTextBlock.Value.Substring(ActivityUi.UploadedFileLabel.Length);
+                    fileName = activityUi.UploadedFileTextBlock.Value?.Substring(ActivityUi.UploadedFileLabel.Length);
                 }
                 activityStorage.Remove<StandardConfigurationControlsCM>();
                 activityStorage.Add(PackControls(new ActivityUi(fileName, uploadFilePath)));

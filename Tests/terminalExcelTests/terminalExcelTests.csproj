@@ -79,7 +79,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activities\Load_Excel_File_v1_Tests.cs" />
-    <Compile Include="Fixtures\ExcelActivitiesFixtureData.cs" />
     <Compile Include="Fixtures\HealthMonitor_FixtureData.cs" />
     <Compile Include="Integration\Load_Table_Data_v1_Tests.cs" />
     <Compile Include="Integration\Terminal_Authentication_v1_Tests.cs" />
