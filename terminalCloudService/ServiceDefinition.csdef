@@ -136,6 +136,20 @@
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" />
       <Setting name="Fr8.ConnectionString"/>
       <Setting name="CoreWebServerUrl"/>
+      <Setting name="terminalAtlassian.TerminalEndpoint"/>
+      <Setting name="terminalAzure.TerminalEndpoint"/>
+      <Setting name="terminalDocuSign.TerminalEndpoint"/>
+      <Setting name="terminalDropbox.TerminalEndpoint"/>
+      <Setting name="terminalExcel.TerminalEndpoint"/>
+      <Setting name="terminalFr8Core.TerminalEndpoint"/>
+      <Setting name="terminalGoogle.TerminalEndpoint"/>
+      <Setting name="terminalPapertrail.TerminalEndpoint"/>
+      <Setting name="terminalQuickBooks.TerminalEndpoint"/>
+      <Setting name="terminalSalesforce.TerminalEndpoint"/>
+      <Setting name="terminalSendGrid.TerminalEndpoint"/>
+      <Setting name="terminalSlack.TerminalEndpoint"/>
+      <Setting name="terminalTwilio.TerminalEndpoint"/>
+      <Setting name="terminalYammer.TerminalEndpoint"/>      
     </ConfigurationSettings>
     <Endpoints>
       <InputEndpoint name="server80" protocol="http" port="80" />
