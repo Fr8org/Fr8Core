@@ -112,6 +112,11 @@ namespace terminalSalesforce.Actions
             string curSelectedSalesForceObject =
                 ((DropDownList)GetControl(curActivityDO, "WhatKindOfData", ControlTypes.DropDownList)).selectedKey;
 
+            var curSalesforceObjectFields = CrateManager.GetStorage( curActivityDO )
+                                                         .CratesOfType<StandardQueryFieldsCM>()
+                                                         .Single(c => c.Label.Equals("Queryable Criteria"))
+                                                         .Content.Fields.Select(f => f.Name);
+
             if (string.IsNullOrEmpty(curSelectedSalesForceObject))
             {
                 return Error(payloadCrates, "No Salesforce object is selected by user");
@@ -130,7 +135,7 @@ namespace terminalSalesforce.Actions
                 parsedCondition = ParseConditionToText(filterDataDTO);
             }
 
-            var resultObjects = await _salesforce.GetObjectByQuery(curSelectedSalesForceObject, parsedCondition, authTokenDO);
+            var resultObjects = await _salesforce.GetObjectByQuery(curSelectedSalesForceObject, curSalesforceObjectFields, parsedCondition, authTokenDO);
 
             //update the payload with result objects
             using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
