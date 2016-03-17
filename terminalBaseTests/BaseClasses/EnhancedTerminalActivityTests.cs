@@ -177,6 +177,11 @@ namespace terminaBaselTests.BaseClasses
             OnConfigure?.Invoke(ConfigurationControls);
             return Task.FromResult(0);
         }
+
+        protected override Task RunCurrentActivity()
+        {
+            return Task.FromResult(0);
+        }
     }
 
     class ActivityWithUiBuilder : EnhancedTerminalActivity<ActivityWithUiBuilder.ActivityUi>
@@ -192,6 +197,21 @@ namespace terminaBaselTests.BaseClasses
         public ActivityWithUiBuilder()
             :base(false)
         {
+        }
+
+        protected override Task Initialize()
+        {
+            return Task.FromResult(0);
+        }
+
+        protected override Task Configure()
+        {
+            return Task.FromResult(0);
+        }
+
+        protected override Task RunCurrentActivity()
+        {
+            return Task.FromResult(0);
         }
     }
 

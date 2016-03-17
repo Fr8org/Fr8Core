@@ -308,17 +308,8 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        protected virtual Task Initialize()
-        {
-            return Task.FromResult(0);
-        }
-
-        /**********************************************************************************/
-
-        protected virtual Task Configure()
-        {
-            return Task.FromResult(0);
-        }
+        protected abstract Task Initialize();
+        protected abstract Task Configure();
 
         /**********************************************************************************/
 
