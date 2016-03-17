@@ -52,5 +52,6 @@
     export class ActivityJumpTarget {
         public TransitionType: number;
         public Target: string;
+
     }
 }
