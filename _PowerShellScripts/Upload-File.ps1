@@ -13,7 +13,7 @@ param(
 )
 
 $rootDir = Split-Path -parent (Split-Path -parent $MyInvocation.MyCommand.Path)
-$localFile = $rootDir + $localFile
+$localFile = [System.IO.Path]::Combine($rootDir, $localFile)
 
 # Create FTP Rquest Object
 $ftpRequest = [System.Net.FtpWebRequest]::Create("$remoteFile")
