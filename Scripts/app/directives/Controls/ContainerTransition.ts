@@ -21,11 +21,22 @@ module dockyard.directives.containerTransition {
     export function ContainerTransition(): ng.IDirective {
 
         
-        var controller = ['$scope', '$timeout', ($scope: IContainerTransitionScope, $timeout: ng.ITimeoutService) => {
+        var controller = ['$scope', '$timeout', 'RouteService', ($scope: IContainerTransitionScope, $timeout: ng.ITimeoutService, RouteService: services.IRouteService) => {
+
+            var planOptions = new Array<model.DropDownListItem>();
+
+            //let's load and keep all plans in cache
+            //TODO think about this - maybe we need to request data from PCA or PB
+            //this direct access will create unnecessary requests to server
+            RouteService.getbystatus({ id: null, status: null, category: '' }).$promise.then((plans: Array<model.RouteDTO>) => {
+                for (var i = 0; i < plans.length; i++) {
+                    planOptions.push(new model.DropDownListItem(plans[i].name, plans[i].id));
+                }
+            });
 
             var operationList = [
                 new model.DropDownListItem('Jump To Activity', ContainerTransitions.JumpToActivity.toString()),
-                //new model.DropDownListItem('Jump To Plan', ContainerTransitions.JumpToPlan.toString()),
+                new model.DropDownListItem('Launch Plan', ContainerTransitions.JumpToPlan.toString()),
                 new model.DropDownListItem('Jump To Subplan', ContainerTransitions.JumpToSubplan.toString()),
                 new model.DropDownListItem('Stop Processing', ContainerTransitions.StopProcessing.toString()),
                 //new model.DropDownListItem('Suspend Processing', ContainerTransitions.SuspendProcessing.toString()),
@@ -152,6 +163,15 @@ module dockyard.directives.containerTransition {
                 return dd;
             };
 
+            var buildPlanDropdown = () => {
+                var dd = new model.DropDownList();
+                dd.label = "Select Target Plan";
+                dd.listItems = planOptions;
+                dd.value = null;
+                dd.selectedKey = null;
+                return dd;
+            };
+
             var buildSubplanDropdown = () => {
                 var dd = new model.DropDownList();
                 dd.label = "Select Target Subplan";
@@ -167,8 +187,7 @@ module dockyard.directives.containerTransition {
                         (<any>transition)._dummySecondaryOperationDD = buildActivityDropdown();
                         break;
                     case ContainerTransitions.JumpToPlan:
-                        //TODO implement this
-
+                        (<any>transition)._dummySecondaryOperationDD = buildPlanDropdown();
                         break;
                     case ContainerTransitions.JumpToSubplan:
                         (<any>transition)._dummySecondaryOperationDD = buildSubplanDropdown();
