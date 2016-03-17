@@ -95,7 +95,7 @@ namespace terminalDocuSignTests.Integration
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestDataDTO = HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_Fr8DataDTO(this);
+            var requestDataDTO = await HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_Fr8DataDTO(this);
 
             AddHubActivityTemplate(requestDataDTO);
             
@@ -104,8 +104,8 @@ namespace terminalDocuSignTests.Integration
                     configureUrl,
                     requestDataDTO
                 );
-            
-            responseActionDTO.AuthToken = HealthMonitor_FixtureData.DocuSign_AuthToken(this);
+
+            responseActionDTO.AuthToken = requestDataDTO.ActivityDTO.AuthToken;
 
             using (var crateStorage = Crate.GetUpdatableStorage(responseActionDTO))
             {
@@ -136,7 +136,7 @@ namespace terminalDocuSignTests.Integration
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestDataDTO = HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_Fr8DataDTO(this);
+            var requestDataDTO = await HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_Fr8DataDTO(this);
 
             AddHubActivityTemplate(requestDataDTO);
 
@@ -208,7 +208,7 @@ namespace terminalDocuSignTests.Integration
             var configureUrl = GetTerminalActivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_Fr8DataDTO(this);
+            var requestActionDTO = await HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_Fr8DataDTO(this);
 
             //Act
             var responseActionDTO =
@@ -229,7 +229,7 @@ namespace terminalDocuSignTests.Integration
             var configureUrl = GetTerminalDeactivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_Fr8DataDTO(this);
+            var requestActionDTO = await HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_Fr8DataDTO(this);
 
             //Act
             var responseActionDTO =
