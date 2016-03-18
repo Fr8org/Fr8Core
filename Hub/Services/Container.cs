@@ -59,7 +59,18 @@ namespace Hub.Services
             using (var crateStorage = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
             {
                 var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Null);
+
+                var isRequestSuspend = false;
+                if (operationalState.CurrentActivityResponse != null
+                    && operationalState.CurrentActivityResponse.Type == ActivityResponse.RequestSuspend.ToString())
+                {
+                    isRequestSuspend = true;
+                }
+
+                if (!isRequestSuspend)
+                {
+                    operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Null);
+                }
             }
 
             uow.SaveChanges();
