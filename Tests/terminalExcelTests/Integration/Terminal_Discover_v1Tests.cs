@@ -12,9 +12,10 @@ namespace terminalExcelTests.Integration
     [Explicit]
     public class Terminal_Discover_v1Tests : BaseTerminalIntegrationTest
     {
-        private const int ActivityCount = 1;
+        private const int ActivityCount = 2;
         private const string Load_Excel_File_Name = "Load_Excel_File";
-       
+        private const string SetExcelTemplate = "SetExcelTemplate";
+
         public override string TerminalName
         {
             get { return "terminalExcel"; }
@@ -30,6 +31,7 @@ namespace terminalExcelTests.Integration
             Assert.NotNull(terminalDiscoverResponse);
             Assert.AreEqual(ActivityCount, terminalDiscoverResponse.Activities.Count);
             Assert.AreEqual(terminalDiscoverResponse.Activities.Any(a => a.Name == Load_Excel_File_Name), true);
+            Assert.AreEqual(terminalDiscoverResponse.Activities.Any(a => a.Name == SetExcelTemplate), true);
         }
     }
 }
