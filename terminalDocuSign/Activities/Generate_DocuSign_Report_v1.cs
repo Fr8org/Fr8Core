@@ -54,7 +54,7 @@ namespace terminalDocuSign.Actions
         // Docusign -> find all envelopes where Status = Sent
         // MT DB -> find all envelopes where Status = Sent and Recipient = chucknorris@gmail.com
         //
-        // This little class is storing information about how certian field displayed in Query Builder controls is routed to the backed
+        // This little class is storing information about how certian field displayed in Query Builder controls is query to the backed
         class FieldBackedRoutingInfo
         {
             public readonly QueryFieldType FieldType;
@@ -433,7 +433,7 @@ namespace terminalDocuSign.Actions
                 crateStorage.AddRange(PackDesignTimeData(authTokenDO));
             }
 
-            RouteFullDTO plan = await UpdatePlanCategory(curActivityDO.Id, "report");
+            PlanFullDTO plan = await UpdatePlanCategory(curActivityDO.Id, "report");
 
             return await Task.FromResult(curActivityDO);
         }
@@ -623,7 +623,7 @@ namespace terminalDocuSign.Actions
             return Crate<StandardQueryCM>.FromContent(QueryCrateLabel, queryCM);
         }
 
-        private async Task<RouteFullDTO> UpdatePlanName(ActivityDO activityDO)
+        private async Task<PlanFullDTO> UpdatePlanName(ActivityDO activityDO)
         {
             using (var crateStorage = CrateManager.GetUpdatableStorage(activityDO))
             {

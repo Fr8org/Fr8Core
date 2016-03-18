@@ -12,20 +12,20 @@ namespace Data.Migrations
 {
     partial class MigrationConfiguration
     {
-        private class RouteBuilder
+        private class PlanBuilder
         {
             private readonly string _name;
             private readonly Fr8AccountDO _fr8AccountDO;
             private readonly List<Crate> _crates = new List<Crate>();
             private Guid _ptId;
 
-            public RouteBuilder(string name, Fr8AccountDO fr8AccountDO)
+            public PlanBuilder(string name, Fr8AccountDO fr8AccountDO)
             {
                 _name = name;
                 _fr8AccountDO = fr8AccountDO;
             }
 
-            public RouteBuilder AddCrate(Crate crateDto)
+            public PlanBuilder AddCrate(Crate crateDto)
             {
                 _crates.Add(crateDto);
                 return this;
@@ -73,7 +73,7 @@ namespace Data.Migrations
                 plan.Description = "Template for testing";
 				plan.CreateDate = DateTime.UtcNow;
 				plan.LastUpdated = DateTime.UtcNow;
-                plan.RouteState = RouteState.Inactive; // we don't want this process template can be executed ouside of tests
+                plan.PlanState = PlanState.Inactive; // we don't want this process template can be executed ouside of tests
 
                 if (add)
                 {

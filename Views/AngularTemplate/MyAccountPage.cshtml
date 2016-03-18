@@ -9,7 +9,7 @@
 <!-- END PAGE BREADCRUMB -->
 <!-- BEGIN MAIN CONTENT -->
 
-<div ng-controller="RouteListController" class="margin-top-10" id="nav-tables">
+<div ng-controller="PlanListController" class="margin-top-10" id="nav-tables">
 	<div class="row" ng-init="isFr = true;">
 		<div class="col-md-2 col-sm-2 remove-padding">
 			<div class="left-pills">
@@ -25,7 +25,7 @@
 				<div id="Myfr8lines" ng-show="isFr">
 					<h3>My Plans <a href="#plans/add" class="btn green route-list-header-button">Add Plan</a></h3>
 
-					@Html.Partial("_RouteList")
+					@Html.Partial("_PlanList")
 
 				</div>
 				<div id="Setting" ng-show="!isFr">

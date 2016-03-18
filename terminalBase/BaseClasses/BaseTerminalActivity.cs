@@ -102,6 +102,18 @@ namespace TerminalBase.BaseClasses
             return payload;
         }
 
+        protected PayloadDTO LaunchPlan(PayloadDTO payload, Guid targetPlanId)
+        {
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
+            {
+                var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.RequestLaunch);
+                operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Details = targetPlanId });
+            }
+
+            return payload;
+        }
+
         /// <summary>
         /// Jumps to an activity that resides in same subplan as current activity
         /// </summary>
@@ -256,12 +268,12 @@ namespace TerminalBase.BaseClasses
             return await HubCommunicator.GetCurrentUser(activityDO, containerId, CurrentFr8UserId);
         }
 
-        protected async Task<RouteFullDTO> GetPlansByActivity(string activityId)
+        protected async Task<PlanDTO> GetPlansByActivity(string activityId)
         {
             return await HubCommunicator.GetPlansByActivity(activityId, CurrentFr8UserId);
         }
 
-        protected async Task<RouteFullDTO> UpdatePlan(RouteEmptyDTO plan)
+        protected async Task<PlanDTO> UpdatePlan(PlanEmptyDTO plan)
         {
             return await HubCommunicator.UpdatePlan(plan, CurrentFr8UserId);
         }
@@ -454,20 +466,20 @@ namespace TerminalBase.BaseClasses
         /// <param name="activityDO"></param>
         /// <param name="OriginalPlanName"></param>
         /// <returns></returns>
-        public async Task<RouteFullDTO> UpdatePlanName(Guid activityId, string OriginalPlanName, string NewPlanName)
+        public async Task<PlanFullDTO> UpdatePlanName(Guid activityId, string OriginalPlanName, string NewPlanName)
         {
             try
             {
-                RouteFullDTO plan = await GetPlansByActivity(activityId.ToString());
-                if (plan != null && plan.Name.Equals(OriginalPlanName, StringComparison.OrdinalIgnoreCase))
+                PlanDTO plan = await GetPlansByActivity(activityId.ToString());
+                if (plan != null && plan.Plan.Name.Equals(OriginalPlanName, StringComparison.OrdinalIgnoreCase))
                 {
-                    plan.Name = NewPlanName;
+                    plan.Plan.Name = NewPlanName;
 
-                    var emptyPlanDTO = Mapper.Map<RouteEmptyDTO>(plan);
+                    var emptyPlanDTO = Mapper.Map<PlanEmptyDTO>(plan.Plan);
                     plan = await UpdatePlan(emptyPlanDTO);
                 }
 
-                return plan;
+                return plan.Plan;
 
             }
             catch (Exception ex)
@@ -476,21 +488,21 @@ namespace TerminalBase.BaseClasses
             return null;
         }
 
-        public async Task<RouteFullDTO> UpdatePlanCategory(Guid activityId, string category)
+        public async Task<PlanFullDTO> UpdatePlanCategory(Guid activityId, string category)
         {
-            RouteFullDTO plan = await GetPlansByActivity(activityId.ToString());
-            if (plan != null)
+            PlanDTO plan = await GetPlansByActivity(activityId.ToString());
+            if (plan != null && plan.Plan != null)
             {
-                plan.Category = category;
+                plan.Plan.Category = category;
 
-                var emptyPlanDTO = Mapper.Map<RouteEmptyDTO>(plan);
+                var emptyPlanDTO = Mapper.Map<PlanEmptyDTO>(plan.Plan);
                 plan = await UpdatePlan(emptyPlanDTO);
             }
 
-            return plan;
+            return plan.Plan;
         }
 
-       
+
         public ActivityResponseDTO GenerateDocumentationRepsonse(string documentation)
         {
             return new ActivityResponseDTO

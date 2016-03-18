@@ -23,16 +23,16 @@ namespace HubWeb.Controllers
         /// <summary>
         /// Retrieve criteria by Subroute.Id.
         /// </summary>
-        /// <param name="id">Subroute.id.</param>
+        /// <param name="id">SubPlan.id.</param>
         [ResponseType(typeof(CriteriaDTO))]
-        //[Route("bySubroute")]
+        //[Route("bySubPlan")]
         [HttpGet]
-        public IHttpActionResult BySubrouteId(Guid id)
+        public IHttpActionResult BySubPlanId(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curCriteria = uow.CriteriaRepository.GetQuery()
-                    .SingleOrDefault(x => x.SubrouteId == id);
+                    .SingleOrDefault(x => x.SubPlanId == id);
 
                 return Ok(Mapper.Map<CriteriaDTO>(curCriteria));
             };

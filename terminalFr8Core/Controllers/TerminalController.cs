@@ -152,7 +152,7 @@ namespace terminalFr8Core.Controllers
 
             result.Add(new ActivityTemplateDTO
             {
-                Name = "ManageRoute",
+                Name = "ManagePlan",
                 Label = "Manage Plan",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,

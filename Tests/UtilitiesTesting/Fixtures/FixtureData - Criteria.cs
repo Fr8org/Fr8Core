@@ -13,7 +13,7 @@ namespace UtilitiesTesting.Fixtures
                 CriteriaExecutionType = 1,
                 ConditionsJSON = @"{""criteria"":[{""field"":""Value"",""operator"":""Equals"",""value"":""test value 1""}]}",
 				LastUpdated = DateTimeOffset.UtcNow,
-                Subroute = TestSubrouteDO1()
+                SubPlan = TestSubPlanDO1()
             };
             return criteriaDO;
         }

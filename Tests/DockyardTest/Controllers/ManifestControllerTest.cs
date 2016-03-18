@@ -61,7 +61,7 @@ namespace DockyardTest.Controllers
 
 
         [Test]
-        public void Check_StandardFr8RoutesCM()
+        public void Check_StandardFr8PlansCM()
         {
             //Arrange
             var manifestController = CreateManifestController();            
@@ -78,8 +78,8 @@ namespace DockyardTest.Controllers
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("LastUpdated")), "LastUpdated Not found");
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Name")), "Name Not found");
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Ordering")), "Ordering Not found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("RouteState")), "RouteState Not found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("SubRoutes")), "SubRoutes Not found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("PlanState")), "PlanState Not found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("SubPlans")), "SubPlans Not found");
         }
 
         [Test]

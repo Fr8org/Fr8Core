@@ -4,7 +4,7 @@ module dockyard.directives.containerTransition {
     'use strict';
 
     interface IContainerTransitionScope extends ng.IScope {
-        route: model.RouteDTO;
+        plan: model.PlanDTO;
         field: model.ContainerTransition;
         addTransition: () => void;
         getOperationField: (transition: model.ContainerTransitionField) => model.DropDownList;
@@ -20,12 +20,23 @@ module dockyard.directives.containerTransition {
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
     export function ContainerTransition(): ng.IDirective {
 
-        
-        var controller = ['$scope', '$timeout', ($scope: IContainerTransitionScope, $timeout: ng.ITimeoutService) => {
+
+        var controller = ['$scope', '$timeout', 'PlanService', ($scope: IContainerTransitionScope, $timeout: ng.ITimeoutService, PlanService: services.IPlanService) => {
+
+            var planOptions = new Array<model.DropDownListItem>();
+
+            //let's load and keep all plans in cache
+            //TODO think about this - maybe we need to request data from PCA or PB
+            //this direct access will create unnecessary requests to server
+            PlanService.getbystatus({ id: null, status: null, category: '' }).$promise.then((plans: Array<model.PlanDTO>) => {
+                for (var i = 0; i < plans.length; i++) {
+                    planOptions.push(new model.DropDownListItem(plans[i].name, plans[i].id));
+                }
+            });
 
             var operationList = [
                 new model.DropDownListItem('Jump To Activity', ContainerTransitions.JumpToActivity.toString()),
-                //new model.DropDownListItem('Jump To Plan', ContainerTransitions.JumpToPlan.toString()),
+                new model.DropDownListItem('Launch Plan', ContainerTransitions.JumpToPlan.toString()),
                 new model.DropDownListItem('Jump To Subplan', ContainerTransitions.JumpToSubplan.toString()),
                 new model.DropDownListItem('Stop Processing', ContainerTransitions.StopProcessing.toString()),
                 //new model.DropDownListItem('Suspend Processing', ContainerTransitions.SuspendProcessing.toString()),
@@ -51,8 +62,8 @@ module dockyard.directives.containerTransition {
 
             //TODO remove this to a helper service
             var findActionById = (id: string): model.ActivityDTO => {
-                for (var subroute of $scope.route.subroutes) {
-                    var foundAction = searchAction(id, subroute.activities);
+                for (var subPlan of $scope.plan.subPlans) {
+                    var foundAction = searchAction(id, subPlan.activities);
                     if (foundAction !== null) {
                         return foundAction;
                     }
@@ -61,24 +72,20 @@ module dockyard.directives.containerTransition {
                 return null;
             }
 
-            
-            
-            var findSubPlanById = (id: string) : model.SubrouteDTO =>  {
-                for(var i = 0; i< $scope.route.subroutes.length; i++) {
-                    if($scope.route.subroutes[i].id === id) {
-                        return $scope.route.subroutes[i];
+            var findSubPlanById = (id: string): model.SubPlanDTO => {
+                for (var i = 0; i < $scope.plan.subPlans.length; i++) {
+                    if ($scope.plan.subPlans[i].subPlanId === id) {
+                        return $scope.plan.subPlans[i];
                     }
                 }
                 //it seems this id belongs to an action
                 //lets look one level up
                 var action = findActionById(id);
                 if (action != null) {
-                    return findSubPlanById(action.parentRouteNodeId);
+                    return findSubPlanById(action.parentPlanNodeId);
                 }
                 return null;
             }
-
-            
 
             //Alex requested that lower level of current activity
             //shouldn't be listed as a jump target
@@ -86,7 +93,7 @@ module dockyard.directives.containerTransition {
             //each level = ActivityGroup
             //each children creates a level
             var isThisCurrentLevel = (activity: model.ActivityDTO): boolean => {
-                return $scope.currentAction.parentRouteNodeId === activity.parentRouteNodeId;
+                return $scope.currentAction.parentPlanNodeId === activity.parentPlanNodeId;
             }
 
             var getActivityTree = (activity: model.ActivityDTO) => {
@@ -94,7 +101,7 @@ module dockyard.directives.containerTransition {
                 if (activity.childrenActivities && activity.childrenActivities.length > 0) {
                     for (var i = 0; i < activity.childrenActivities.length; i++) {
                         childActivities.push(<model.ActivityDTO>activity.childrenActivities[i]);
-                        if (!isThisCurrentLevel(<model.ActivityDTO>activity.childrenActivities[i])){
+                        if (!isThisCurrentLevel(<model.ActivityDTO>activity.childrenActivities[i])) {
                             childActivities.concat(getActivityTree(<model.ActivityDTO>activity.childrenActivities[i]));
                         }
                     }
@@ -103,9 +110,9 @@ module dockyard.directives.containerTransition {
                 return childActivities;
             };
 
-            
+
             var getCurrentSubplanActivities = () => {
-                var currentSubplanId = $scope.currentAction.parentRouteNodeId;
+                var currentSubplanId = $scope.currentAction.parentPlanNodeId;
                 var subplan = findSubPlanById(currentSubplanId);
                 if (subplan == null) {
                     throw 'Unable to find subplan with id ' + currentSubplanId;
@@ -115,7 +122,7 @@ module dockyard.directives.containerTransition {
                 for (var i = 0; i < subplan.activities.length; i++) {
                     var current = subplan.activities[i];
                     subplanActivities.push(new model.DropDownListItem(current.label, current.id));
-                    if (!isThisCurrentLevel(subplan.activities[i])){
+                    if (!isThisCurrentLevel(subplan.activities[i])) {
                         var childActivityTree = getActivityTree(current);
                         for (var j = 0; j < childActivityTree.length; j++) {
                             subplanActivities.push(new model.DropDownListItem(childActivityTree[j].label, childActivityTree[j].id));
@@ -136,8 +143,8 @@ module dockyard.directives.containerTransition {
 
             var getCurrentSubplans = () => {
                 var subplans = new Array<model.DropDownListItem>();
-                for (var i = 0; i < $scope.route.subroutes.length; i++) {
-                    subplans.push(new model.DropDownListItem($scope.route.subroutes[i].name, $scope.route.subroutes[i].id));
+                for (var i = 0; i < $scope.plan.subPlans.length; i++) {
+                    subplans.push(new model.DropDownListItem($scope.plan.subPlans[i].name, $scope.plan.subPlans[i].subPlanId));
                 }
 
                 return subplans;
@@ -147,6 +154,15 @@ module dockyard.directives.containerTransition {
                 var dd = new model.DropDownList();
                 dd.label = "Select Target Activity";
                 dd.listItems = getCurrentSubplanActivities();
+                dd.value = null;
+                dd.selectedKey = null;
+                return dd;
+            };
+
+            var buildPlanDropdown = () => {
+                var dd = new model.DropDownList();
+                dd.label = "Select Target Plan";
+                dd.listItems = planOptions;
                 dd.value = null;
                 dd.selectedKey = null;
                 return dd;
@@ -167,8 +183,7 @@ module dockyard.directives.containerTransition {
                         (<any>transition)._dummySecondaryOperationDD = buildActivityDropdown();
                         break;
                     case ContainerTransitions.JumpToPlan:
-                        //TODO implement this
-
+                        (<any>transition)._dummySecondaryOperationDD = buildPlanDropdown();
                         break;
                     case ContainerTransitions.JumpToSubplan:
                         (<any>transition)._dummySecondaryOperationDD = buildSubplanDropdown();
@@ -192,7 +207,7 @@ module dockyard.directives.containerTransition {
                     target.TransitionType = $scope.field.transitions[i].transition;
                     target.Target = '';
                     var dd = <model.DropDownList>(<any>$scope.field.transitions[i])._dummyOperationDD;
-                    
+
                     target.Target = dd.selectedKey;
                     var dd2 = <model.DropDownList>(<any>$scope.field.transitions[i])._dummySecondaryOperationDD;
                     if (dd2 && dd2.selectedKey && dd2.selectedKey.length > 0) {
@@ -238,7 +253,7 @@ module dockyard.directives.containerTransition {
                     dd.listItems = operationList;
                     (<any>transition)._dummyOperationDD = dd;
                 }
-                
+
                 return (<any>transition)._dummyOperationDD;
             };
             $scope.removeTransition = (index: number) => {
@@ -263,7 +278,7 @@ module dockyard.directives.containerTransition {
             },
             controller: controller,
             scope: {
-                route: '=',
+                plan: '=',
                 field: '=',
                 currentAction: '='
             }

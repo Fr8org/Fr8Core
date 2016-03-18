@@ -7,7 +7,7 @@
 /// <reference path="interfaces/iapprootscope.ts" />
 /// <reference path="interfaces/icriteria.ts" />
 /// <reference path="interfaces/iquerybuilderwidgetscope.ts" />
-/// <reference path="interfaces/iroutebuilder.ts" />
+/// <reference path="interfaces/iplanbuilder.ts" />
 /// <reference path="interfaces/iuser.ts" />
 
 
@@ -18,17 +18,17 @@
 /// <reference path="model/condition.ts" />
 /// <reference path="model/criteria.ts" />
 /// <reference path="model/field.ts" />
-/// <reference path="model/route.ts" />
-/// <reference path="model/subroute.ts" />
+/// <reference path="model/plan.ts" />
+/// <reference path="model/subplan.ts" />
 /// <reference path="model/controlslist.ts" />
-/// <reference path="model/routebuilderstate.ts" />
+/// <reference path="model/planbuilderstate.ts" />
 /// <reference path="model/user.ts" />
 
 /*
     SERVICES
 */
 /// <reference path="services/localidentitygenerator.ts" />
-/// <reference path="services/routebuilderservice.ts" />
+/// <reference path="services/planbuilderservice.ts" />
 /// <reference path="services/stringservice.ts" />
 /// <reference path="services/pushernotifierservice.ts" />
 
@@ -37,7 +37,7 @@
 */
 /// <reference path="directives/eventargsbase.ts" />
 
-/// <reference path="filters/routestate.ts" />
+/// <reference path="filters/planstate.ts" />
 /// <reference path="filters/datetimeformatter.ts" />
 
 /// <reference path="directives/paneconfigureaction/paneconfigureaction.ts" />
@@ -54,9 +54,9 @@
 /*
     CONTROLLERS
 */
-/// <reference path="controllers/routebuildercontroller.ts" />
-/// <reference path="controllers/routeformcontroller.ts" />
-/// <reference path="controllers/routelistcontroller.ts" />
+/// <reference path="controllers/planbuildercontroller.ts" />
+/// <reference path="controllers/planformcontroller.ts" />
+/// <reference path="controllers/planlistcontroller.ts" />
 /// <reference path="controllers/managefilelistcontroller.ts" />
 
 

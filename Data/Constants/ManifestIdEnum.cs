@@ -63,8 +63,8 @@ namespace Data.Constants
         [Display(Name = "Standard Email Message")]
         StandardEmailMessage = 18,
 
-        [Display(Name = "Standard Fr8 Routes")]
-        StandardFr8Routes = 19,
+        [Display(Name = "Standard Fr8 Plans")]
+        StandardFr8Plans = 19,
 
         [Display(Name = "Standard Fr8 Hubs")]
         StandardFr8Hubs = 20,

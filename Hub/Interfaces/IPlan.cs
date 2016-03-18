@@ -18,7 +18,7 @@ namespace Hub.Interfaces
         void Delete(IUnitOfWork uow, Guid id);
         
         IList<PlanDO> GetMatchingPlans(string userId, EventReportCM curEventReport);
-        Task<ActivateActivitiesDTO> Activate(Guid planId, bool routeBuilderActivate);
+        Task<ActivateActivitiesDTO> Activate(Guid planId, bool planBuilderActivate);
         Task<string> Deactivate(Guid curPlanId);
         
         PlanDO GetPlanByActivityId(IUnitOfWork uow, Guid planActivityId);
@@ -28,8 +28,9 @@ namespace Hub.Interfaces
         PlanDO Copy(IUnitOfWork uow, PlanDO curPlanDO, string name);
 
 
-        ContainerDO Create(IUnitOfWork uow, Guid planId, Crate curEvent);
+        ContainerDO Create(IUnitOfWork uow, Guid planId, params Crate[] curPayload);
         Task<ContainerDO> Run(PlanDO curPlan, Crate curPayload);
+        Task<ContainerDO> Run(IUnitOfWork uow, PlanDO curPlan, params Crate[] curPayload);
         Task<ContainerDO> Continue(Guid containerId);
     }
 }    
