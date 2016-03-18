@@ -144,7 +144,7 @@ namespace Data.Interfaces.Manifests
         {
             var type = GetType();
 
-            // Clone fields
+            // Clone properties
             foreach (var prop in type.GetProperties(BindingFlags.Instance | BindingFlags.Public))
             {
                 if (MembersToIgnore.Contains(prop.Name) || !prop.CanRead)
@@ -152,10 +152,15 @@ namespace Data.Interfaces.Manifests
                     continue;
                 }
 
-                ClonePropertiesForObject(prop.GetValue(this), prop.Name, configurationControls);
+                var target = prop.GetValue(this);
+                if (target == null)
+                {
+                    prop.SetValue(this, target = Activator.CreateInstance(prop.PropertyType));
+                }
+                ClonePropertiesForObject(target, prop.Name, configurationControls);
             }
 
-            // Clone properties
+            // Clone fields
             foreach (var field in type.GetFields(BindingFlags.Instance | BindingFlags.Public))
             {
                 if (MembersToIgnore.Contains(field.Name))
