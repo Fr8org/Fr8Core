@@ -117,7 +117,7 @@ namespace terminalExcel.Infrastructure
         /// <param name="fileBytes">Byte rray representing Excel data.</param>
         /// <param name="extension">Excel file extension.</param>
         /// <returns>Dictionary<string, List<Tuple<string, string>>> => Dictionary<"Row Number", List<Tuple<"Column Number", "Cell Value">>></returns>
-        public static Dictionary<string, List<Tuple<string, string>>> GetTabularData(byte[] fileBytes, string extension)
+        public static Dictionary<string, List<Tuple<string, string>>> GetTabularData(byte[] fileBytes, string extension, bool isFirstRowAsColumnNames = true)
         {
             Dictionary<string, List<Tuple<string, string>>> excelRows = new Dictionary<string, List<Tuple<string, string>>>();
             IExcelDataReader excelReader = null;
@@ -131,7 +131,7 @@ namespace terminalExcel.Infrastructure
 
                 using (excelReader)
                 {
-                    excelReader.IsFirstRowAsColumnNames = true;
+                    excelReader.IsFirstRowAsColumnNames = isFirstRowAsColumnNames;
                     var dataSet = excelReader.AsDataSet();
                     var table = dataSet.Tables[0];
 
@@ -191,19 +191,22 @@ namespace terminalExcel.Infrastructure
             return curStandardTableDataMS;
         }
 
-        public static List<TableRowDTO> CreateTableCellPayloadObjects(Dictionary<string, List<Tuple<string, string>>> rowsDictionary, string[] headersArray)
+        public static List<TableRowDTO> CreateTableCellPayloadObjects(Dictionary<string, List<Tuple<string, string>>> rowsDictionary, string[] headersArray = null)
         {
             try
             {
                 var listOfRows = new List<TableRowDTO>();
                 // Add header as the first row in List<TableRowDTO> so that it is becomes the first row in StandardTableMS.
-                var headerTableRowDTO = new TableRowDTO() { Row = new List<TableCellDTO>(), };
-                for (int i = 0; i < headersArray.Count(); ++i)
-                {
-                    var tableCellDTO = TableCellDTO.Create((i + 1).ToString(), headersArray[i]);
-                    headerTableRowDTO.Row.Add(tableCellDTO);
+                if(headersArray != null)
+                { 
+                    var headerTableRowDTO = new TableRowDTO() { Row = new List<TableCellDTO>(), };
+                    for (int i = 0; i < headersArray.Count(); ++i)
+                    {
+                        var tableCellDTO = TableCellDTO.Create((i + 1).ToString(), headersArray[i]);
+                        headerTableRowDTO.Row.Add(tableCellDTO);
+                    }
+                    listOfRows.Insert(0, headerTableRowDTO);
                 }
-                listOfRows.Insert(0, headerTableRowDTO);
 
                 // Process each item in the dictionary and add it as an item in List<TableRowDTO>
                 foreach (var row in rowsDictionary.Keys)

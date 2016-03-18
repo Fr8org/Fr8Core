@@ -50,6 +50,18 @@ namespace terminalExcel.Controllers
 				WebService = webService
             });
 
+            result.Add(new ActivityTemplateDTO
+            {
+                Name = "SetExcelTemplate",
+                Label = "Set Excel Template",
+                Version = "1",
+                Description = "",
+                Category = ActivityCategory.Processors,
+                Terminal = terminal,
+                Tags = "Table Data Generator,Skip At Run-Time",
+                WebService = webService
+            });
+
 
             StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
