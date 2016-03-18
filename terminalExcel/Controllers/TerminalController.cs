@@ -26,7 +26,7 @@ namespace terminalExcel.Controllers
 
             var terminal = new TerminalDTO
             {
-                Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
+                Endpoint = CloudConfigurationManager.GetSetting("terminalExcel.TerminalEndpoint"),
                 TerminalStatus = TerminalStatus.Active,
                 Name = "terminalExcel",
                 Version = "1"

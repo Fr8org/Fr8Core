@@ -21,7 +21,7 @@ namespace terminalPapertrail.Controllers
             {
                 Name = "terminalPapertrail",
                 TerminalStatus = TerminalStatus.Active,
-                Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
+                Endpoint = CloudConfigurationManager.GetSetting("terminalPapertrail.TerminalEndpoint"),
                 Version = "1"
             };
 
