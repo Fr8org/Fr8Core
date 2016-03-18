@@ -4,4 +4,4 @@ param(
 )
 	
 $ErrorActionPreference = 'Stop'
-Stop-AzureWebsite -Name $serviceName -Slot Staging 
+Start-AzureWebsite -Name $serviceName -Slot Staging 
