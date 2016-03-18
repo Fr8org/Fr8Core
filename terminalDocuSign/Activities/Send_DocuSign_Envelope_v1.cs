@@ -59,30 +59,20 @@ namespace terminalDocuSign.Actions
         {
             var curTemplateId = ExtractTemplateId(curActivityDO);
             var payloadCrateStorage = CrateManager.GetStorage(payloadCrates);
-            var configurationControls = GetConfigurationControls(curActivityDO);
-
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            var fieldList = MapControlsToFields(CrateManager.GetStorage(curActivityDO), payloadCrateStorage);
+            var rolesList = MapRoleControlsToFields(CrateManager.GetStorage(curActivityDO), payloadCrateStorage);
+            try
             {
-                var fieldList = MapControlsToFields(CrateManager.GetStorage(curActivityDO), payloadCrateStorage);
-                var rolesList = MapRoleControlsToFields(CrateManager.GetStorage(curActivityDO), payloadCrateStorage);
-
-                try
-                {
-                    DocuSignManager.SendAnEnvelopeFromTemplate(loginInfo, rolesList, fieldList, curTemplateId);
-                }
-                //TODO: log this exception
-                catch
-                {
-                    return Error(payloadCrates, "Couldn't send an envelope");
-                }
+                DocuSignManager.SendAnEnvelopeFromTemplate(loginInfo, rolesList, fieldList, curTemplateId);
             }
-
-
+            catch (Exception ex)
+            {
+                return Error(payloadCrates, $"Couldn't send an envelope. {ex}");
+            }
             return Success(payloadCrates);
         }
 
-        private List<FieldDTO> MapControlsToFields(ICrateStorage activityCrateStorage,
-            ICrateStorage payloadCrateStorage)
+        private List<FieldDTO> MapControlsToFields(ICrateStorage activityCrateStorage, ICrateStorage payloadCrateStorage)
         {
             //todo: refactor the method
             var resultCollection = new List<FieldDTO>();
@@ -152,8 +142,7 @@ namespace terminalDocuSign.Actions
             return resultCollection;
         }
 
-        private List<FieldDTO> MapRoleControlsToFields(ICrateStorage activityCrateStorage,
-            ICrateStorage payloadCrateStorage)
+        private List<FieldDTO> MapRoleControlsToFields(ICrateStorage activityCrateStorage, ICrateStorage payloadCrateStorage)
         {
             var resultCollection = new List<FieldDTO>();
 
