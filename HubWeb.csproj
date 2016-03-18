@@ -874,7 +874,7 @@
     <Content Include="_PowerShellScripts\Set-CloudServiceSettings.ps1" />
     <Content Include="_PowerShellScripts\Wait-Database.ps1" />
     <Content Include="_PowerShellScripts\Run-IntegrationTests.ps1" />
-    <Content Include="_PowerShellScripts\Set-HubApiBaseUrl.ps1" />
+    <Content Include="_PowerShellScripts\Set-HealthMonitorSettings.ps1" />
     <Content Include="_PowerShellScripts\Upload-File.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryFormController.ts" />
