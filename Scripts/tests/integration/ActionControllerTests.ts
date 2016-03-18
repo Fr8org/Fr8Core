@@ -75,7 +75,7 @@ module dockyard.tests.controller {
             {
                     configurationControls: fx.ActivityDTO.configurationControls,
                     crateStorage: null,
-                    parentRouteNodeId: '89EBF277-0CC4-4D6D-856B-52457F10C686',
+                    parentPlanNodeId: '89EBF277-0CC4-4D6D-856B-52457F10C686',
                     activityTemplate: null,
                     id: '00000000-0000-0000-0000-000000000000',
                     childrenActivities: null,
@@ -98,7 +98,7 @@ module dockyard.tests.controller {
                     {
                         configurationControls: fx.ActivityDTO.configurationControls,
                         crateStorage: null,
-                        parentRouteNodeId: '89EBF277-0CC4-4D6D-856B-52457F10C686',
+                        parentPlanNodeId: '89EBF277-0CC4-4D6D-856B-52457F10C686',
                         activityTemplate: null,
                         id: '89EBF277-0CC4-4D6D-856B-52457F10C686',
                         childrenActivities: null,

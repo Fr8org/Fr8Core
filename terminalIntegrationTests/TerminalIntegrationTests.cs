@@ -48,7 +48,7 @@ namespace terminalIntegrationTests
 
         private Fr8AccountDO _testUserAccount;
         private PlanDO _planDO;
-        private SubrouteDO _subrouteDO;
+        private SubPlanDO _subPlanDO;
         //private ActionListDO _actionList;
         private AuthorizationTokenDO _authToken;
         private ActivityTemplateDO _waitForDocuSignEventActivityTemplate;
@@ -73,16 +73,14 @@ namespace terminalIntegrationTests
 
             _testUserAccount = FixtureData.TestUser1();
 
-            _planDO = FixtureData.Route_TerminalIntegration();
+            _planDO = FixtureData.Plan_TerminalIntegration();
             _planDO.Fr8Account = _testUserAccount;
             System.Threading.Thread.CurrentPrincipal = new GenericPrincipal(new GenericIdentity(_testUserAccount.Id), new string[] { "User" });
 
-            _subrouteDO = FixtureData.Subroute_TerminalIntegration();
-            _subrouteDO.ParentRouteNode = _planDO;
+            _subPlanDO = FixtureData.SubPlan_TerminalIntegration();
+            _subPlanDO.ParentPlanNode = _planDO;
 
 
-            //_actionList = FixtureData.TestActionList_ImmediateActions();
-            // _actionList.Subroute = _subrouteDO;
 
             _waitForDocuSignEventActivityTemplate =
                 FixtureData.TestActivityTemplateDO_WaitForDocuSignEvent();
@@ -112,11 +110,7 @@ namespace terminalIntegrationTests
                 uow.AuthorizationTokenRepository.Add(_authToken);
 
                 uow.PlanRepository.Add(_planDO);
-               // uow.RouteRepository.Add(_planDO);
-               // uow.SubrouteRepository.Add(_subrouteDO);
-                // This fix inability of MockDB to correctly resolve requests to collections of derived entites
-               // uow.RouteNodeRepository.Add(_subrouteDO);
-                //uow.RouteNodeRepository.Add(_planDO);
+             
                 uow.SaveChanges();
             }
 
@@ -201,15 +195,15 @@ namespace terminalIntegrationTests
             }
         }
 
-        private ActivityDTO CreateEmptyActivity(ActivityTemplateDO activityTemplate)
+        private async Task <ActivityDTO> CreateEmptyActivity(ActivityTemplateDO activityTemplate)
         {
             var curActionController = CreateActivityController();
             var curActivityDO = FixtureData.TestActivity_Blank();
 
-            if (_subrouteDO.ChildNodes == null)
+            if (_subPlanDO.ChildNodes == null)
             {
-                _subrouteDO.ChildNodes = new List<RouteNodeDO>();
-                _subrouteDO.ChildNodes.Add(curActivityDO);
+                _subPlanDO.ChildNodes = new List<PlanNodeDO>();
+                _subPlanDO.ChildNodes.Add(curActivityDO);
             }
 
             if (activityTemplate != null)
@@ -218,12 +212,11 @@ namespace terminalIntegrationTests
                 curActivityDO.ActivityTemplateId = activityTemplate.Id;
             }
 
-            curActivityDO.ParentRouteNode = _subrouteDO;
-            curActivityDO.ParentRouteNodeId = _subrouteDO.Id;
+            curActivityDO.ParentPlanNode = _subPlanDO;
+            curActivityDO.ParentPlanNodeId = _subPlanDO.Id;
 
             var curActionDTO = Mapper.Map<ActivityDTO>(curActivityDO);
-            var result = curActionController.Save(curActionDTO)
-                as OkNegotiatedContentResult<ActivityDTO>;
+            var result = (await curActionController.Save(curActionDTO)) as OkNegotiatedContentResult<ActivityDTO>;
 
             // Assert action was property saved.
             Assert.NotNull(result);
@@ -236,12 +229,11 @@ namespace terminalIntegrationTests
             return result.Content;
         }
 
-        private ActivityDTO SaveActivity(ActivityDTO curActivityDTO)
+        private async Task<ActivityDTO> SaveActivity(ActivityDTO curActivityDTO)
         {
             var curActionController = CreateActivityController();
 
-            var result = curActionController.Save(curActivityDTO)
-                as OkNegotiatedContentResult<ActivityDTO>;
+            var result = await curActionController.Save(curActivityDTO) as OkNegotiatedContentResult<ActivityDTO>;
 
             // Assert action was property saved.
             Assert.NotNull(result);
@@ -289,7 +281,7 @@ namespace terminalIntegrationTests
 //            {
 //                var activity = uow.ActivityRepository.GetByKey(id);
 //
-//                activity.ParentRouteNode = (RouteNodeDO)uow.SubrouteRepository.GetByKey(activity.ParentRouteNodeId) ?? uow.ActivityRepository.GetByKey(activity.ParentRouteNodeId);
+//                activity.ParentPlanNode = (PlanNodeDO)uow.SubPlanRepository.GetByKey(activity.ParentPlanNodeId) ?? uow.ActivityRepository.GetByKey(activity.ParentPlanNodeId);
 //                uow.SaveChanges();
 //            }
 //        }
@@ -415,7 +407,7 @@ namespace terminalIntegrationTests
         [Test, Ignore]
         public async Task TerminalIntegration_WaitForDocuSign_ConfigureInitial()
         {
-            var savedActionDTO = CreateEmptyActivity(_waitForDocuSignEventActivityTemplate);
+            var savedActionDTO = await CreateEmptyActivity(_waitForDocuSignEventActivityTemplate);
 
             await WaitForDocuSignEvent_ConfigureInitial(savedActionDTO);
         }
@@ -427,7 +419,7 @@ namespace terminalIntegrationTests
         public async Task TerminalIntegration_WaitForDocuSign_ConfigureFollowUp()
         {
             // Create blank WaitForDocuSignEventAction.
-            var savedActionDTO = CreateEmptyActivity(_waitForDocuSignEventActivityTemplate);
+            var savedActionDTO = await CreateEmptyActivity(_waitForDocuSignEventActivityTemplate);
 
             // Call Configure Initial for WaitForDocuSignEvent action.
             var initCrateStorageDTO = await WaitForDocuSignEvent_ConfigureInitial(savedActionDTO);
@@ -451,7 +443,7 @@ namespace terminalIntegrationTests
         public async Task TerminalIntegration_TestIncomingData_ConfigureInitial()
         {
             // Create blank WaitForDocuSignEvent action.
-            var waitForDocuSignEventAction = CreateEmptyActivity(_waitForDocuSignEventActivityTemplate);
+            var waitForDocuSignEventAction = await CreateEmptyActivity(_waitForDocuSignEventActivityTemplate);
 
             // Call Configure Initial for WaitForDocuSignEvent action.
             var initWaitForDocuSignEventCS = await WaitForDocuSignEvent_ConfigureInitial(waitForDocuSignEventAction);
@@ -477,7 +469,7 @@ namespace terminalIntegrationTests
         //    FixActionNavProps(waitForDocuSignEventAction.Id);
 
             // Create blank TestIncomingData action.
-            var filterAction = CreateEmptyActivity(_testIncomingDataActivityTemplate);
+            var filterAction = await CreateEmptyActivity(_testIncomingDataActivityTemplate);
 
 
             // Call Configure Initial for TestIncomingData action.
@@ -493,7 +485,7 @@ namespace terminalIntegrationTests
         public async Task TerminalIntegration_WriteToSqlServer_ConfigureInitial()
         {
             // Create blank WaitForDocuSignEvent action.
-            var emptyAction = CreateEmptyActivity(_writeToSqlServerActivityTemplate);
+            var emptyAction = await CreateEmptyActivity(_writeToSqlServerActivityTemplate);
 
             // Call Configure Initial for WriteToSqlServer action.
             await WriteToSqlServer_ConfigureInitial(emptyAction);
@@ -507,7 +499,7 @@ namespace terminalIntegrationTests
         public async Task TerminalIntegration_WriteToSqlServer_ConfigureFollowUp()
         {
             // Create blank WaitForDocuSignEventAction.
-            var savedActionDTO = CreateEmptyActivity(_writeToSqlServerActivityTemplate);
+            var savedActionDTO = await CreateEmptyActivity(_writeToSqlServerActivityTemplate);
 
             // Call Configure Initial for WaitForDocuSignEvent action.
             var initCrateStorageDTO = await WriteToSqlServer_ConfigureInitial(savedActionDTO);

@@ -13,34 +13,34 @@ using Data.Interfaces.Manifests;
 namespace DockyardTest.Entities
 {
     [TestFixture]
-    [Category("Route")]
-    public class RouteTests : BaseTest
+    [Category("Plan")]
+    public class PlanTests : BaseTest
     {
         [Test]
-        public void Route_ShouldBeAssignedStartingSubroute()
+        public void Plan_ShouldBeAssignedStartingSubPlan()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var plan = FixtureData.TestRoute2();
-                var subroute = FixtureData.TestSubrouteDO2();
+                var plan = FixtureData.TestPlan2();
+                var subPlan = FixtureData.TestSubPlanDO2();
 
-                plan.ChildNodes.Add(subroute);
+                plan.ChildNodes.Add(subPlan);
                 uow.PlanRepository.Add(plan);
-                plan.StartingSubroute = subroute;
+                plan.StartingSubPlan = subPlan;
 
                 uow.SaveChanges();
 
-                var result = uow.PlanRepository.GetById<PlanDO>(plan.Id);//.SingleOrDefault(pt => pt.StartingSubrouteId == subroute.Id);
+                var result = uow.PlanRepository.GetById<PlanDO>(plan.Id);//.SingleOrDefault(pt => pt.StartingSubPlanId == subPlan.Id);
 
-                Assert.AreEqual(subroute.Id, result.StartingSubroute.Id);
-                Assert.AreEqual(subroute.Name, result.StartingSubroute.Name);
+                Assert.AreEqual(subPlan.Id, result.StartingSubPlan.Id);
+                Assert.AreEqual(subPlan.Name, result.StartingSubPlan.Name);
             }
         }
 
         [Test]
-        public void GetStandardEventSubscribers_ReturnsRoutes()
+        public void GetStandardEventSubscribers_ReturnsPlans()
         {
-            FixtureData.TestRouteWithSubscribeEvent();
+            FixtureData.TestPlanWithSubscribeEvent();
             IPlan curPlan = ObjectFactory.GetInstance<IPlan>();
             EventReportCM curEventReport = FixtureData.StandardEventReportFormat();
 

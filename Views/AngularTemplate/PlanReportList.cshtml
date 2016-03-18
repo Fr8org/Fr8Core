@@ -1,0 +1,21 @@
+<ul class="page-breadcrumb breadcrumb hide"><!-- BEGIN PAGE BREADCRUMB -->
+	<li>
+		<a href="#">Home</a><i class="fa fa-circle"></i>
+	</li>
+	<li class="active">
+		Dashboard
+	</li>
+</ul>
+<!-- END PAGE BREADCRUMB -->
+<!-- BEGIN MAIN CONTENT -->
+
+<div ng-controller="PlanListController" class="margin-top-10">
+	<div class="row">
+		<div class="col-md-12 col-sm-12">
+			<h3 class="pull-left">Reports</h3>
+		</div>
+	</div>
+
+	@Html.Partial("_PlanReportList")
+</div>
+<!-- END MAIN CONTENT -->

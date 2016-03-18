@@ -1,0 +1,44 @@
+﻿using System.Data.Entity;
+using System.Linq;
+using AutoMapper;
+using Data.Entities;
+using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+
+namespace Data.Infrastructure.AutoMapper
+{
+    /// <summary>
+    /// AutoMapper converter to convert PlanDO to FullPlanDTO.
+    /// </summary>
+    public class PlanDOFullConverter
+        : ITypeConverter<PlanDO, PlanFullDTO>
+    {
+        public const string UnitOfWork_OptionsKey = "UnitOfWork";
+
+
+        public PlanFullDTO Convert(ResolutionContext context)
+        {
+            var plan = (PlanDO)context.SourceValue;
+            var uow = (IUnitOfWork)context.Options.Items[UnitOfWork_OptionsKey];
+
+            if (plan == null)
+            {
+                return null;
+            }
+
+            var subPlanDTOList = uow.PlanRepository.GetById<PlanDO>(plan.Id).ChildNodes.OfType<SubPlanDO>()
+                .Select(x =>
+                {
+                    var pntDTO = Mapper.Map<FullSubPlanDTO>(x);
+                    pntDTO.Activities = x.ChildNodes.OfType<ActivityDO>().Select(Mapper.Map<ActivityDTO>).ToList();
+                    return pntDTO;
+                }).ToList();
+
+            var result = Mapper.Map<PlanFullDTO>(Mapper.Map<PlanEmptyDTO>(plan));
+            result.SubPlans = subPlanDTOList;
+            result.Fr8UserId = plan.Fr8Account.Id;
+
+            return result;
+        }
+    }
+}

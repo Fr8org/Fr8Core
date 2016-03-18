@@ -84,7 +84,7 @@ namespace Hub.Managers
                 CustomerId = "unknown",
                 Data = "Plan activation failed, plan.Id = " + plan.Id.ToString()
                     + ", plan.Name = " + plan.Name
-                    + ", plan.RouteState = " + plan.RouteState.ToString()
+                    + ", plan.PlanState = " + plan.PlanState.ToString()
                     + ", reason = " + reason,
                 PrimaryCategory = "Plan",
                 SecondaryCategory = "Activation",

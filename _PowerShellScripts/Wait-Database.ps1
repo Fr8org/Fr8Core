@@ -25,14 +25,8 @@ while ($true) {
 		exit 0
 	}
 	catch {
-		if ($_.Exception.Message -contains "available") {
-			if ([DateTime]::UtcNow -ge $startTime.AddSeconds($timeout) ) {
-				Write-Host "Database availability timeout."
-				exit 1
-			}
-		}
-		else {
-			Write-Host "Error while connecting to the database:"  $_.Exception.Message
+		if ([DateTime]::UtcNow -ge $startTime.AddSeconds($timeout) ) {
+			Write-Host "Database availability timeout."
 			exit 1
 		}
 	}

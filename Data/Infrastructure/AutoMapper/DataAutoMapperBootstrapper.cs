@@ -41,8 +41,8 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<JToken, string>().ConvertUsing<JTokenToStringConverter>();
 
             Mapper.CreateMap<ActivityDO, ActivityDTO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
-                .ForMember(a => a.RootRouteNodeId, opts => opts.ResolveUsing(ad => ad.RootRouteNodeId))
-                .ForMember(a => a.ParentRouteNodeId, opts => opts.ResolveUsing(ad => ad.ParentRouteNodeId))
+                .ForMember(a => a.RootPlanNodeId, opts => opts.ResolveUsing(ad => ad.RootPlanNodeId))
+                .ForMember(a => a.ParentPlanNodeId, opts => opts.ResolveUsing(ad => ad.ParentPlanNodeId))
                 //.ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => ad.CrateStorage == null ? null : JsonConvert.DeserializeObject(ad.CrateStorage)))
                 .ForMember(a => a.CurrentView, opts => opts.ResolveUsing(ad => ad.currentView))
                 .ForMember(a => a.ChildrenActivities, opts => opts.ResolveUsing(ad => ad.ChildNodes.OfType<ActivityDO>().OrderBy(da => da.Ordering)))
@@ -52,8 +52,8 @@ namespace Data.Infrastructure.AutoMapper
 
 
             Mapper.CreateMap<ActivityDTO, ActivityDO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
-                .ForMember(a => a.RootRouteNodeId, opts => opts.ResolveUsing(ad => ad.RootRouteNodeId))
-                .ForMember(a => a.ParentRouteNodeId, opts => opts.ResolveUsing(ad => ad.ParentRouteNodeId))
+                .ForMember(a => a.RootPlanNodeId, opts => opts.ResolveUsing(ad => ad.RootPlanNodeId))
+                .ForMember(a => a.ParentPlanNodeId, opts => opts.ResolveUsing(ad => ad.ParentPlanNodeId))
                 .ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(ad => ad.ActivityTemplate))
                 //.ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.SerializeObject(ad.CrateStorage)))
                 .ForMember(a => a.currentView, opts => opts.ResolveUsing(ad => ad.CurrentView))
@@ -92,18 +92,18 @@ namespace Data.Infrastructure.AutoMapper
             //                .ForMember(x => x.ActionListType, opts => opts.ResolveUsing(x => x.ActionListType))
             //                .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name));
 
-            Mapper.CreateMap<PlanDO, RouteEmptyDTO>();
-            Mapper.CreateMap<RouteEmptyDTO, PlanDO>();
-            Mapper.CreateMap<PlanDO, RouteEmptyDTO>();
-            Mapper.CreateMap<SubrouteDTO, SubrouteDO>()
+            Mapper.CreateMap<PlanDO, PlanEmptyDTO>();
+            Mapper.CreateMap<PlanEmptyDTO, PlanDO>();
+            Mapper.CreateMap<PlanDO, PlanEmptyDTO>();
+            Mapper.CreateMap<SubPlanDTO, SubPlanDO>()
                 .ForMember(x => x.Name, opts => opts.MapFrom(e => e.Name))
                 .ForMember(x => x.NodeTransitions, opts => opts.MapFrom(e => e.TransitionKey))
-                .ForMember(x => x.Id, opts => opts.MapFrom(e => e.Id ?? Guid.Empty))
-                .ForMember(x => x.ParentRouteNodeId, opts => opts.MapFrom(e => e.PlanId))
-                .ForMember(x => x.RootRouteNodeId, opts => opts.MapFrom(e => e.PlanId))
-                .ForMember(x => x.StartingSubroute, opts => opts.UseValue(false))
-                .ForMember(x => x.RootRouteNode, opts => opts.Ignore())
-                .ForMember(x => x.ParentRouteNode, opts => opts.Ignore())
+                .ForMember(x => x.Id, opts => opts.MapFrom(e => e.SubPlanId ?? Guid.Empty))
+                .ForMember(x => x.ParentPlanNodeId, opts => opts.MapFrom(e => e.PlanId))
+                .ForMember(x => x.RootPlanNodeId, opts => opts.MapFrom(e => e.PlanId))
+                .ForMember(x => x.StartingSubPlan, opts => opts.UseValue(false))
+                .ForMember(x => x.RootPlanNode, opts => opts.Ignore())
+                .ForMember(x => x.ParentPlanNode, opts => opts.Ignore())
                 .ForMember(x => x.ChildNodes, opts => opts.Ignore())
                 .ForMember(x => x.Fr8AccountId, opts => opts.Ignore())
                 .ForMember(x => x.Fr8Account, opts => opts.Ignore())
@@ -111,23 +111,35 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.LastUpdated, opts => opts.Ignore())
                 .ForMember(x => x.CreateDate, opts => opts.Ignore());
 
-            Mapper.CreateMap<SubrouteDO, SubrouteDTO>()
+            Mapper.CreateMap<SubPlanDO, SubPlanDTO>()
                 .ForMember(x => x.Name, opts => opts.ResolveUsing(e => e.Name))
                 .ForMember(x => x.TransitionKey, opts => opts.ResolveUsing(e => e.NodeTransitions))
-                .ForMember(x => x.Id, opts => opts.ResolveUsing(e => e.Id))
-                .ForMember(x => x.PlanId, opts => opts.ResolveUsing(e => e.ParentRouteNodeId));
+                .ForMember(x => x.SubPlanId, opts => opts.ResolveUsing(e => e.Id))
+                .ForMember(x => x.PlanId, opts => opts.ResolveUsing(e => e.ParentPlanNodeId));
+
+            Mapper.CreateMap<SubPlanDO, SubPlanDTO>()
+                .ForMember(x => x.PlanId, opts => opts.ResolveUsing(x => x.ParentPlanNodeId))
+                .ForMember(x => x.PlanId, opts => opts.ResolveUsing(x => x.RootPlanNodeId))
+                .ForMember(x => x.SubPlanId, opts => opts.ResolveUsing(x => x.Id));
 
             Mapper.CreateMap<CriteriaDO, CriteriaDTO>()
                 .ForMember(x => x.Conditions, opts => opts.ResolveUsing(y => y.ConditionsJSON));
             Mapper.CreateMap<CriteriaDTO, CriteriaDO>()
                 .ForMember(x => x.ConditionsJSON, opts => opts.ResolveUsing(y => y.Conditions));
 
-            Mapper.CreateMap<PlanDO, RouteFullDTO>()
-                .ConvertUsing<RouteDOFullConverter>();
+            Mapper.CreateMap<PlanDO, PlanFullDTO>()
+                .ConvertUsing<PlanDOFullConverter>();
 
-            Mapper.CreateMap<RouteEmptyDTO, RouteFullDTO>();
+            Mapper.CreateMap<PlanEmptyDTO, PlanFullDTO>();
+
+
             //  Mapper.CreateMap<ActionListDO, FullActionListDTO>();
-            Mapper.CreateMap<SubrouteDO, FullSubrouteDTO>();
+            Mapper.CreateMap<SubPlanDO, FullSubPlanDTO>()
+                .ForMember(x => x.SubPlanId, opts => opts.ResolveUsing(x => x.Id));
+
+            Mapper.CreateMap<FullSubPlanDTO, SubPlanDO>()
+                .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.SubPlanId));
+
 
             //Mapper.CreateMap<Account, DocuSignAccount>();
             Mapper.CreateMap<FileDO, FileDescriptionDTO>();
@@ -166,9 +178,9 @@ namespace Data.Infrastructure.AutoMapper
 
         }
 
-        private static List<RouteNodeDO> MapActivities(IEnumerable<ActivityDTO> actions)
+        private static List<PlanNodeDO> MapActivities(IEnumerable<ActivityDTO> actions)
         {
-            var list = new List<RouteNodeDO>();
+            var list = new List<PlanNodeDO>();
 
             if (actions != null)
             {

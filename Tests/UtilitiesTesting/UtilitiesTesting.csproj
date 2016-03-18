@@ -191,9 +191,9 @@
     <Compile Include="Fixtures\FixtureData - Container.cs" />
     <Compile Include="Fixtures\FixtureData - ProcessNode.cs" />
     <Compile Include="Fixtures\FixtureData - SQLTable.cs" />
-    <Compile Include="Fixtures\FixtureData - SubrouteDO.cs" />
-    <Compile Include="Fixtures\FixtureData - Route.cs" />
-    <Compile Include="Fixtures\FixtureData - RouteDTO.cs" />
+    <Compile Include="Fixtures\FixtureData - SubPlanDO.cs" />
+    <Compile Include="Fixtures\FixtureData - Plan.cs" />
+    <Compile Include="Fixtures\FixtureData - PlanDTO.cs" />
     <Compile Include="Fixtures\FixtureData - RestSettings.cs" />
     <Compile Include="Fixtures\FixtureData - Role.cs" />
     <Compile Include="Fixtures\FixtureData - SQLScript.cs" />

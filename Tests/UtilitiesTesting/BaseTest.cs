@@ -87,8 +87,8 @@ namespace UtilitiesTesting
                   .ForMember(activityTemplateDO => activityTemplateDO.Name, opts => opts.ResolveUsing(e => e.Name))
                   .ForMember(activityTemplateDO => activityTemplateDO.Version, opts => opts.ResolveUsing(e => e.Version));
 
-            Mapper.CreateMap<RouteEmptyDTO, PlanDO>();
-            Mapper.CreateMap<PlanDO, RouteEmptyDTO>();
+            Mapper.CreateMap<PlanEmptyDTO, PlanDO>();
+            Mapper.CreateMap<PlanDO, PlanEmptyDTO>();
             Mapper.CreateMap<UserVM, EmailAddressDO>()
                 .ForMember(userDO => userDO.Address, opts => opts.ResolveUsing(e => e.EmailAddress));
             Mapper.CreateMap<UserVM, Fr8AccountDO>()

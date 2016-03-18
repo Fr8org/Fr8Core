@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.States.Templates
 {
-    public class _RouteStateTemplate : IStateTemplate<RouteState>
+    public class _PlanStateTemplate : IStateTemplate<PlanState>
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]

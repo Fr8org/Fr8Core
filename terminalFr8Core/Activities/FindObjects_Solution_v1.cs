@@ -253,9 +253,9 @@ namespace terminalFr8Core.Actions
         {
             AddControl(
                 updater,
-                new RunRouteButton()
+                new RunPlanButton()
                 {
-                    Name = "RunRoute",
+                    Name = "RunPlan",
                     Label = "Run Plan",
                 }
             );
@@ -263,7 +263,7 @@ namespace terminalFr8Core.Actions
 
         private void RemoveRunButton(IUpdatableCrateStorage updater)
         {
-            RemoveControl(updater, "RunRoute");
+            RemoveControl(updater, "RunPlan");
         }
 
         private string GetConnectionString()

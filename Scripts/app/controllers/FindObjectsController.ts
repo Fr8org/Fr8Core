@@ -12,7 +12,7 @@
             private $http: ng.IHttpService,
             private $location: ng.ILocationService) {
 
-            $http.post('/api/plans/createFindObjectsRoute', {})
+            $http.post('/api/plans/createFindObjectsPlan', {})
                 .then(function (res: any) {
                     $location.path('/plans/' + res.data.id + '/builder');
                 });

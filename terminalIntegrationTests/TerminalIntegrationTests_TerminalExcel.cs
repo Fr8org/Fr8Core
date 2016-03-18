@@ -33,7 +33,7 @@ namespace terminalIntegrationTests
                 {
                     Id = UtilitiesTesting.Fixtures.FixtureData.TestParentPlanID(),
                     Name = "1",
-                    RouteState = RouteState.Active
+                    PlanState = PlanState.Active
                 };
 
                 uow.PlanRepository.Add(plan);
@@ -62,7 +62,7 @@ namespace terminalIntegrationTests
 
             var curActionDTO = new ActivityDTO()
             {
-                ParentRouteNodeId =  UtilitiesTesting.Fixtures.FixtureData.TestParentPlanID()
+                ParentPlanNodeId =  UtilitiesTesting.Fixtures.FixtureData.TestParentPlanID()
             };
 
             using (var crateStorage = _crateManager.GetUpdatableStorage(curActionDTO))

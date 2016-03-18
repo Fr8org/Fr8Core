@@ -35,7 +35,7 @@ module dockyard.services {
             var processedGroups: model.ActionGroup[] = [];
 
             var actionGroups = _.toArray<model.ActivityDTO[]>(
-                _.groupBy<model.ActivityDTO>(actions, (action) => action.parentRouteNodeId)
+                _.groupBy<model.ActivityDTO>(actions, (action) => action.parentPlanNodeId)
             );
 
             if (actions.length) {
@@ -148,7 +148,7 @@ module dockyard.services {
 
         private findChildGroup(actionGroups: model.ActivityDTO[][], parentId: string): model.ActivityDTO[] {
             return _.find(actionGroups, (group: model.ActivityDTO[]) => {
-                return group[0].parentRouteNodeId === parentId;
+                return group[0].parentPlanNodeId === parentId;
             });
         }
 

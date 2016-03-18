@@ -26,8 +26,16 @@ namespace HealthMonitor.Utility
     {
         HttpClient _httpClient;
 
-        protected string TestUserEmail = "integration_test_runner@fr8.company";
-        protected string TestUserPassword = "fr8#s@lt!";
+        protected virtual string TestUserEmail
+        {
+            get { return "integration_test_runner@fr8.company"; }
+        }
+
+        protected virtual string TestUserPassword
+        {
+            get { return "fr8#s@lt!"; }
+        }
+
         protected string TestEmail;
         protected string TestEmailName;
 
@@ -66,7 +74,7 @@ namespace HealthMonitor.Utility
             return ConfigurationManager.AppSettings["HubApiBaseUrl"];
         }
 
-        private async Task LoginUser(string email, string password)
+        protected async Task LoginUser(string email, string password)
         {
             // The functions below re using ASP.NET MVC endpoi9nts to authenticate the user. 
             // Since we cannot use them in the self-hosted mode, we use WebAPI based 
@@ -173,7 +181,7 @@ namespace HealthMonitor.Utility
             return payload;
         }
 
-        protected async Task<ContainerDTO> ExecutePlan(RouteFullDTO plan)
+        protected async Task<ContainerDTO> ExecutePlan(PlanFullDTO plan)
         {
             var container = await HttpPostAsync<string, ContainerDTO>(
                 _baseUrl + "plans/run?planId=" + plan.Id.ToString(),

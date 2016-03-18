@@ -29,6 +29,6 @@ if(Test-Path $configPath)
 }
 else
 {
-    Write-Warning "Configuration file $($configPath) wasn't found."
+    Write-Error "Configuration file $($configPath) wasn't found."
 }
 

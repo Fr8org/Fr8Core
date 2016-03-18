@@ -141,10 +141,8 @@ module dockyard.directives.dropDownListBox {
                 };
 
                 $scope.$watch('field', () => {
-                findAndSetSelectedItem();
+                    findAndSetSelectedItem();
                 });
-
-                //findAndSetSelectedItem();
             }
         ];
 

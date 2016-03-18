@@ -8,7 +8,7 @@ namespace Hub.Interfaces
 {
 	public interface IProcessNode
 	{
-	    ProcessNodeDO Create(IUnitOfWork uow, Guid parentProcessId, Guid subrouteId, string name);
+	    ProcessNodeDO Create(IUnitOfWork uow, Guid parentProcessId, Guid subPlanId, string name);
 
         void CreateTruthTransition(ProcessNodeDO sourcePNode, ProcessNodeDO targetPNode);
 

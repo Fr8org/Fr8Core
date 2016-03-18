@@ -61,7 +61,7 @@ namespace terminalTests.Integration
         }
 
         [Test]
-        public void Run_With_Route_Payload()
+        public void Run_With_Plan_Payload()
         {
             var configureUrl = GetTerminalConfigureUrl();
             var requestActivityDTO = FixtureData.MonitorFr8Event_InitialConfiguration_ActivityDTO();
@@ -99,7 +99,7 @@ namespace terminalTests.Integration
                 Manufacturer = "Fr8 Company",
                 Data = "",
                 PrimaryCategory = "Plan",
-                SecondaryCategory = "RouteState",
+                SecondaryCategory = "PlanState",
                 Activity = "StateChanged",
                 Status = "",
                 CreateDate = new DateTime(),

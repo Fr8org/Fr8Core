@@ -64,7 +64,7 @@ namespace terminalDocuSign.Actions
                     Source = null
                                       });
 
-                Controls.Add(new RunRouteButton());
+                Controls.Add(new RunPlanButton());
             }
         }
 
