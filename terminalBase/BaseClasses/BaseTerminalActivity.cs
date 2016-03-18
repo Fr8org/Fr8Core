@@ -35,6 +35,7 @@ namespace TerminalBase.BaseClasses
         #region Fields
 
         protected ICrateManager CrateManager { get; private set; }
+        private const string RuntimeAvailableCratesLabel = "Runtime Available Crates";
         protected static readonly string ConfigurationControlsLabel = "Configuration_Controls";
         public string CurrentFr8UserId { get; set; }
         protected string ActivityName { get; set; }
@@ -55,11 +56,11 @@ namespace TerminalBase.BaseClasses
 
         }
 
-        public BaseTerminalActivity(string actionName)
+        public BaseTerminalActivity(string activityName)
         {
             CrateManager = ObjectFactory.GetInstance<ICrateManager>();
             HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
-            ActivityName = actionName;
+            ActivityName = activityName;
         }
 
         public void SetCurrentUser(string userId)
@@ -96,7 +97,7 @@ namespace TerminalBase.BaseClasses
             {
                 var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
                 operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.RequestTerminate);
-                operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Message = message });
+                operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO { Message = message });
             }
 
             return payload;
@@ -108,7 +109,7 @@ namespace TerminalBase.BaseClasses
             {
                 var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
                 operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.RequestLaunch);
-                operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Details = targetPlanId });
+                operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO { Details = targetPlanId });
             }
 
             return payload;
@@ -125,7 +126,7 @@ namespace TerminalBase.BaseClasses
             {
                 var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
                 operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.JumpToActivity);
-                operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Details = targetActivityId });
+                operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO { Details = targetActivityId });
             }
 
             return payload;
@@ -142,7 +143,7 @@ namespace TerminalBase.BaseClasses
             {
                 var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
                 operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.JumpToSubplan);
-                operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Details = targetSubplanId });
+                operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO { Details = targetSubplanId });
             }
 
             return payload;
@@ -159,7 +160,7 @@ namespace TerminalBase.BaseClasses
             {
                 var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
                 operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Success); 
-                operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Message = message });
+                operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO { Message = message });
             }
 
             return payload;
@@ -254,7 +255,7 @@ namespace TerminalBase.BaseClasses
             }
         }
 
-        protected bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
+        protected virtual bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
         {
             return authTokenDO == null || string.IsNullOrEmpty(authTokenDO.Token);
         }
@@ -333,10 +334,34 @@ namespace TerminalBase.BaseClasses
                     }
                     return curActivityDO;
                 }
-                return await FollowupConfigurationResponse(curActivityDO, authToken);
+                var result = await FollowupConfigurationResponse(curActivityDO, authToken);
+                UpdateRuntimeAvailableCrates(result);
+                return result;
             }
 
             throw new InvalidDataException("Activity's Configuration Store does not contain connection_string field.");
+        }
+
+        private void UpdateRuntimeAvailableCrates(ActivityDO curActivityDO)
+        {
+            using (var activityStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            {
+                activityStorage.RemoveByLabel(RuntimeAvailableCratesLabel);
+                var crateDescriptions = GetRuntimeAvailableCrateDescriptions(curActivityDO)?.ToArray();
+                if (crateDescriptions?.Length > 0)
+                {
+                    activityStorage.Add(Crate.FromContent(RuntimeAvailableCratesLabel, new CrateDescriptionCM(crateDescriptions), AvailabilityType.RunTime));
+                }
+            }
+        }
+        /// <summary>
+        /// Returns the list of items that describe crates available at runtime for downstream activities
+        /// NOTE: do not create <see cref="Hub.Managers.IUpdatableCrateStorage" /> for passed activity inside this method
+        /// as it may lead to unpredictable consequences
+        /// </summary>
+        protected virtual IEnumerable<CrateDescriptionDTO> GetRuntimeAvailableCrateDescriptions(ActivityDO curActivityDO)
+        {
+            yield break;
         }
 
         /// <summary>
@@ -427,11 +452,12 @@ namespace TerminalBase.BaseClasses
             label = string.IsNullOrEmpty(label) ? activityTemplate.Label : label;
             name = string.IsNullOrEmpty(name) ? activityTemplate.Label : label;
 
-            //parent must be a Subroute
-            //If Route is specified as a parent, then a new subroute will be created
-            //Guid parentId = (parent.ChildNodes.Count > 0) ? parent.ChildNodes[0].ParentRouteNodeId.Value : parent.RootRouteNodeId.Value;
 
-            var result = await HubCommunicator.CreateAndConfigureActivity(activityTemplate.Id, CurrentFr8UserId, label, order, parentActivityId);
+            //parent must be a SubPlan
+            //If Plan is specified as a parent, then a new subPlan will be created
+            //Guid parentId = (parent.ChildNodes.Count > 0) ? parent.ChildNodes[0].ParentPlanNodeId.Value : parent.RootPlanNodeId.Value;
+
+             var result = await HubCommunicator.CreateAndConfigureActivity(activityTemplate.Id, CurrentFr8UserId, label, order, parentActivityId);
             var resultDO = Mapper.Map<ActivityDO>(result);
             return resultDO;
         }
@@ -644,22 +670,16 @@ namespace TerminalBase.BaseClasses
             AvailabilityType availabilityTypeUpstream = AvailabilityType.RunTime,
             AvailabilityType availabilityTypeFieldsCrate = AvailabilityType.Configuration)
         {
-            var curUpstreamFields = await HubCommunicator.GetDesignTimeFieldsByDirection(activityDO, CrateDirection.Upstream, availabilityTypeUpstream, CurrentFr8UserId);
-
-            if (curUpstreamFields == null)
-            {
-                curUpstreamFields = new FieldDescriptionsCM();
-            }
+            var curUpstreamFields = await HubCommunicator.GetDesignTimeFieldsByDirection(activityDO, CrateDirection.Upstream, availabilityTypeUpstream, CurrentFr8UserId) ?? new FieldDescriptionsCM();
 
             var availableFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(
                     crateLabel,
                     curUpstreamFields.Fields,
-                    availabilityTypeFieldsCrate
-                );
+                    availabilityTypeFieldsCrate);
 
             return availableFieldsCrate;
         }
-       
+
         // create crate with list of fields available upstream
         protected async Task<Crate<FieldDescriptionsCM>> CreateDesignTimeFieldsCrate(ActivityDO curActivityDO, string label)
         {
@@ -751,7 +771,7 @@ namespace TerminalBase.BaseClasses
             bool requestConfig = false)
         {
             var crateDescriptions = await GetCratesByDirection<CrateDescriptionCM>(curActivityDO, CrateDirection.Upstream);
-            var runTimeCrateDescriptions = crateDescriptions.Where(c => c.Availability == AvailabilityType.RunTime).SelectMany(c => c.Content.CrateDescriptions);
+            var runTimeCrateDescriptions = crateDescriptions.Where(c => c.Availability == AvailabilityType.RunTime || c.Availability == AvailabilityType.Always).SelectMany(c => c.Content.CrateDescriptions);
             var control = new CrateChooser
             {
                 Label = label,
@@ -908,7 +928,7 @@ namespace TerminalBase.BaseClasses
 
             if (control == null)
             {
-                throw new ApplicationException(string.Format("No crate found with Label == \"Configuration_Controls\" and ManifestType == \"{0}\"", CrateManifestTypes.StandardConfigurationControls));
+                throw new ApplicationException($"No crate found with Label == \"Configuration_Controls\" and ManifestType == \"{CrateManifestTypes.StandardConfigurationControls}\"");
             }
 
             return control;
@@ -958,33 +978,10 @@ namespace TerminalBase.BaseClasses
         protected string ExtractControlFieldValue(ActivityDO curActivityDO, string fieldName)
         {
             var storage = CrateManager.GetStorage(curActivityDO);
-
             var controlsCrateMS = storage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var field = controlsCrateMS?.Controls.FirstOrDefault(x => x.Name == fieldName);
 
-            //            var controlsCrate = curActivityDto.CrateStorage.CrateDTO
-            //                .FirstOrDefault(
-            //                    x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
-            //                    && x.Label == "Configuration_Controls");
-            //
-            //            if (controlsCrate == null)
-            //            {
-            //                throw new ApplicationException("No Configuration_Controls crate found.");
-            //            }
-            //
-            //            var controlsCrateMS = JsonConvert
-            //                .DeserializeObject<StandardConfigurationControlsCM>(
-            //                    controlsCrate.Contents
-            //                );
-
-            var field = controlsCrateMS.Controls
-                .FirstOrDefault(x => x.Name == fieldName);
-
-            if (field == null)
-            {
-                return null;
-            }
-
-            return field.Value;
+            return field?.Value;
         }
 
 

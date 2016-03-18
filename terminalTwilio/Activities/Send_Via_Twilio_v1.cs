@@ -195,8 +195,7 @@ namespace terminalTwilio.Actions
                     }
                     if (bodyControl != null)
                     {
-                        var smsBody = bodyControl.TextValue;
-                        if (smsBody == null)
+                        if (bodyControl.TextValue == null && bodyControl.Value == null)
                         {
                             bodyControl.ErrorMessage = "SMS body can not be null.";
                             errors.Add(bodyControl.ErrorMessage);

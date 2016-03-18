@@ -48,7 +48,7 @@ namespace Data.Migrations
 
 
             // Uncomment four following lines to debug Seed method (in case running from NuGet Package Manager Console).
-            /*if (System.Diagnostics.Debugger.IsAttached == false)
+           /* if (System.Diagnostics.Debugger.IsAttached == false)
             {
                 System.Diagnostics.Debugger.Launch();
             }*/

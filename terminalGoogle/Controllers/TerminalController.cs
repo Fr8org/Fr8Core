@@ -31,7 +31,7 @@ namespace terminalGoogle.Controllers
 
             var terminal = new TerminalDTO()
             {
-                Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
+                Endpoint = CloudConfigurationManager.GetSetting("terminalGoogle.TerminalEndpoint"),
                 TerminalStatus = TerminalStatus.Active,
                 Name = "terminalGoogle",
                 Version = "1",

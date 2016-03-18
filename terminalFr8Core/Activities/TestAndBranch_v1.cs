@@ -74,7 +74,7 @@ namespace terminalFr8Core.Actions
             }
 
 
-            var payloadFields = GetAllPayloadFields(curPayloadDTO).AsQueryable();
+            var payloadFields = GetAllPayloadFields(curPayloadDTO).Where(f => !string.IsNullOrEmpty(f.Key) && !string.IsNullOrEmpty(f.Value)).AsQueryable();
 
             var configControls = GetConfigurationControls(curActivityDO);
             var containerTransition = (ContainerTransition)configControls.Controls.Single();
@@ -130,6 +130,7 @@ namespace terminalFr8Core.Actions
             var filterExpression = ParseCriteriaExpression(conditions, fields);
             var results = fields.Provider.CreateQuery<FieldDTO>(filterExpression);
             return results.Any();
+
         }
         
         protected override Crate CreateControlsCrate()

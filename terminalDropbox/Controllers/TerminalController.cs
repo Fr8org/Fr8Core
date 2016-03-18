@@ -21,7 +21,7 @@ namespace terminalDropbox.Controllers
             {
                 Name = "terminalDropbox",
                 TerminalStatus = TerminalStatus.Active,
-                Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
+                Endpoint = CloudConfigurationManager.GetSetting("terminalDropbox.TerminalEndpoint"),
                 Version = "1",
                 AuthenticationType = AuthenticationType.External
             };

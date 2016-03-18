@@ -195,7 +195,7 @@ namespace terminalIntegrationTests
             }
         }
 
-        private ActivityDTO CreateEmptyActivity(ActivityTemplateDO activityTemplate)
+        private async Task <ActivityDTO> CreateEmptyActivity(ActivityTemplateDO activityTemplate)
         {
             var curActionController = CreateActivityController();
             var curActivityDO = FixtureData.TestActivity_Blank();
@@ -216,8 +216,7 @@ namespace terminalIntegrationTests
             curActivityDO.ParentPlanNodeId = _subPlanDO.Id;
 
             var curActionDTO = Mapper.Map<ActivityDTO>(curActivityDO);
-            var result = curActionController.Save(curActionDTO)
-                as OkNegotiatedContentResult<ActivityDTO>;
+            var result = (await curActionController.Save(curActionDTO)) as OkNegotiatedContentResult<ActivityDTO>;
 
             // Assert action was property saved.
             Assert.NotNull(result);
@@ -230,12 +229,11 @@ namespace terminalIntegrationTests
             return result.Content;
         }
 
-        private ActivityDTO SaveActivity(ActivityDTO curActivityDTO)
+        private async Task<ActivityDTO> SaveActivity(ActivityDTO curActivityDTO)
         {
             var curActionController = CreateActivityController();
 
-            var result = curActionController.Save(curActivityDTO)
-                as OkNegotiatedContentResult<ActivityDTO>;
+            var result = await curActionController.Save(curActivityDTO) as OkNegotiatedContentResult<ActivityDTO>;
 
             // Assert action was property saved.
             Assert.NotNull(result);
@@ -409,7 +407,7 @@ namespace terminalIntegrationTests
         [Test, Ignore]
         public async Task TerminalIntegration_WaitForDocuSign_ConfigureInitial()
         {
-            var savedActionDTO = CreateEmptyActivity(_waitForDocuSignEventActivityTemplate);
+            var savedActionDTO = await CreateEmptyActivity(_waitForDocuSignEventActivityTemplate);
 
             await WaitForDocuSignEvent_ConfigureInitial(savedActionDTO);
         }
@@ -421,7 +419,7 @@ namespace terminalIntegrationTests
         public async Task TerminalIntegration_WaitForDocuSign_ConfigureFollowUp()
         {
             // Create blank WaitForDocuSignEventAction.
-            var savedActionDTO = CreateEmptyActivity(_waitForDocuSignEventActivityTemplate);
+            var savedActionDTO = await CreateEmptyActivity(_waitForDocuSignEventActivityTemplate);
 
             // Call Configure Initial for WaitForDocuSignEvent action.
             var initCrateStorageDTO = await WaitForDocuSignEvent_ConfigureInitial(savedActionDTO);
@@ -445,7 +443,7 @@ namespace terminalIntegrationTests
         public async Task TerminalIntegration_TestIncomingData_ConfigureInitial()
         {
             // Create blank WaitForDocuSignEvent action.
-            var waitForDocuSignEventAction = CreateEmptyActivity(_waitForDocuSignEventActivityTemplate);
+            var waitForDocuSignEventAction = await CreateEmptyActivity(_waitForDocuSignEventActivityTemplate);
 
             // Call Configure Initial for WaitForDocuSignEvent action.
             var initWaitForDocuSignEventCS = await WaitForDocuSignEvent_ConfigureInitial(waitForDocuSignEventAction);
@@ -471,7 +469,7 @@ namespace terminalIntegrationTests
         //    FixActionNavProps(waitForDocuSignEventAction.Id);
 
             // Create blank TestIncomingData action.
-            var filterAction = CreateEmptyActivity(_testIncomingDataActivityTemplate);
+            var filterAction = await CreateEmptyActivity(_testIncomingDataActivityTemplate);
 
 
             // Call Configure Initial for TestIncomingData action.
@@ -487,7 +485,7 @@ namespace terminalIntegrationTests
         public async Task TerminalIntegration_WriteToSqlServer_ConfigureInitial()
         {
             // Create blank WaitForDocuSignEvent action.
-            var emptyAction = CreateEmptyActivity(_writeToSqlServerActivityTemplate);
+            var emptyAction = await CreateEmptyActivity(_writeToSqlServerActivityTemplate);
 
             // Call Configure Initial for WriteToSqlServer action.
             await WriteToSqlServer_ConfigureInitial(emptyAction);
@@ -501,7 +499,7 @@ namespace terminalIntegrationTests
         public async Task TerminalIntegration_WriteToSqlServer_ConfigureFollowUp()
         {
             // Create blank WaitForDocuSignEventAction.
-            var savedActionDTO = CreateEmptyActivity(_writeToSqlServerActivityTemplate);
+            var savedActionDTO = await CreateEmptyActivity(_writeToSqlServerActivityTemplate);
 
             // Call Configure Initial for WaitForDocuSignEvent action.
             var initCrateStorageDTO = await WriteToSqlServer_ConfigureInitial(savedActionDTO);
