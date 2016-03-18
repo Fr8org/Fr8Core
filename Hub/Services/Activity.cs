@@ -51,13 +51,31 @@ namespace Hub.Services
             }
         }
 
-        public ActivityDO SaveOrUpdateActivity(IUnitOfWork uow, ActivityDO submittedActivityData)
+        private ActivityDTO SaveOrUpdateActivityCore(ActivityDO submittedActivityData)
         {
-            SaveAndUpdateActivity(uow, submittedActivityData, new List<ActivityDO>());
-            uow.SaveChanges();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                SaveAndUpdateActivity(uow, submittedActivityData, new List<ActivityDO>());
 
-            var result = uow.PlanRepository.GetById<ActivityDO>(submittedActivityData.Id);
-            return result;
+                uow.SaveChanges();
+
+                var result = uow.PlanRepository.GetById<ActivityDO>(submittedActivityData.Id);
+
+                return Mapper.Map<ActivityDTO>(result);
+            }
+        }
+
+        public async Task<ActivityDTO> SaveOrUpdateActivity(ActivityDO submittedActivityData)
+        {
+            if (submittedActivityData.Id == Guid.Empty)
+            {
+                return SaveOrUpdateActivityCore(submittedActivityData);
+            }
+           
+            using (await _configureLock.Lock(submittedActivityData.Id))
+            {
+                return SaveOrUpdateActivityCore(submittedActivityData);
+            }
         }
 
         private void UpdateActivityProperties(IUnitOfWork uow, ActivityDO submittedActivity)
@@ -323,8 +341,9 @@ namespace Hub.Services
 
                 if (saveResult)
                 {
-                    //save the received action as quickly as possible
-                    curActivityDO = SaveOrUpdateActivity(uow, curActivityDO);
+                    SaveAndUpdateActivity(uow, curActivityDO, new List<ActivityDO>());
+                    uow.SaveChanges();
+                    curActivityDO = uow.PlanRepository.GetById<ActivityDO>(curActivityDO.Id);
                     return Mapper.Map<ActivityDTO>(curActivityDO);
                 }
             }

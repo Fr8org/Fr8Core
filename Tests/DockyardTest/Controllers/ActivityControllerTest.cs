@@ -70,7 +70,7 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
-        public void ActivityController_Save_WithEmptyActions_NewActionShouldBeCreated()
+        public async Task ActivityController_Save_WithEmptyActions_NewActionShouldBeCreated()
         {
             var subPlan = FixtureData.TestSubPlanDO1();
 
@@ -91,7 +91,7 @@ namespace DockyardTest.Controllers
             actualAction.ParentPlanNodeId = subPlan.Id;
                 
             var controller = new ActivitiesController();
-            var result = (OkNegotiatedContentResult<ActivityDTO>) controller.Save(actualAction);
+            var result = (OkNegotiatedContentResult<ActivityDTO>) await controller.Save(actualAction);
             var savedAction = result.Content;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -107,7 +107,7 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
-        public void ActivityController_Save_WithActionNotExisting_NewActionShouldBeCreated()
+        public async Task ActivityController_Save_WithActionNotExisting_NewActionShouldBeCreated()
         {
             SubPlanDO subPlan;
 
@@ -131,7 +131,7 @@ namespace DockyardTest.Controllers
                 actualAction.ParentPlanNodeId = subPlan.Id;
 
                 var controller = new ActivitiesController();
-                var result = (OkNegotiatedContentResult<ActivityDTO>) controller.Save(actualAction);
+                var result = (OkNegotiatedContentResult<ActivityDTO>) await controller.Save(actualAction);
                 var savedAction = result.Content;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

@@ -14,7 +14,7 @@ namespace Hub.Interfaces
     public interface IActivity
     {
         IEnumerable<TViewModel> GetAllActivities<TViewModel>();
-        ActivityDO SaveOrUpdateActivity(IUnitOfWork uow, ActivityDO currentActivityDo);
+        Task<ActivityDTO> SaveOrUpdateActivity(ActivityDO currentActivityDo);
         Task<ActivityDTO> Configure(IUnitOfWork uow, string userId, ActivityDO curActivityDO, bool saveResult = true);
         //Task<ActionDO> SaveUpdateAndConfigure(IUnitOfWork uow, ActionDO submittedActionDo);
         ActivityDO GetById(IUnitOfWork uow, Guid id);
