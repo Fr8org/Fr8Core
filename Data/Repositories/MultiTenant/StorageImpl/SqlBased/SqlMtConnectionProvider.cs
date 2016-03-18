@@ -3,6 +3,7 @@ using System.Data.Entity.Core.EntityClient;
 using System.Data.Entity.Infrastructure;
 using Data.Infrastructure;
 using Data.Interfaces;
+using Utilities.Configuration.Azure;
 
 namespace Data.Repositories.MultiTenant.SqlBased
 {
@@ -23,7 +24,18 @@ namespace Data.Repositories.MultiTenant.SqlBased
 
                 // At runtime ConfigurationManager.ConnectionStrings provides both Azure and Local support.
                 // Settings from Azure portal override settings from web.config.
-                return DockyardDbContext.GetEFConnectionDetails();
+                string connectionDetails = DockyardDbContext.GetEFConnectionDetails();
+                if (connectionDetails.StartsWith("name="))
+                {
+                    // Handle connection string name
+                    string cnName = connectionDetails.Substring(5);
+                    return ConfigurationManager.ConnectionStrings[cnName];
+                }
+                else
+                {
+                    // Actual connection string
+                    return connectionDetails;
+                }
             }
         }
 
