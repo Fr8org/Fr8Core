@@ -29,7 +29,7 @@ namespace Data.Repositories.MultiTenant.SqlBased
                 {
                     // Handle connection string name
                     string cnName = connectionDetails.Substring(5);
-                    return ConfigurationManager.ConnectionStrings[cnName];
+                    return ConfigurationManager.ConnectionStrings[cnName].ConnectionString;
                 }
                 else
                 {
