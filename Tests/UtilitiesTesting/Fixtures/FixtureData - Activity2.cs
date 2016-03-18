@@ -100,7 +100,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 ParentPlanNodeId = null,
                 Id = GetTestGuidById(34),
-                CrateStorage = "config settings",
+                CrateStorage = "{}",
 
                 Ordering = 3,
                 ActivityTemplateId = actionTemplate.Id,

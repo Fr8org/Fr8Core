@@ -134,7 +134,7 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        public void CanCRUDActivities()
+        public async Task CanCRUDActivities()
         {
             ActivityDO origActivityDO;
 
@@ -157,11 +157,8 @@ namespace DockyardTest.Services
             IActivity activity = new Activity(ObjectFactory.GetInstance<ICrateManager>(), ObjectFactory.GetInstance<IAuthorization>(), ObjectFactory.GetInstance<ISecurityServices>(), ObjectFactory.GetInstance<IActivityTemplate>(), ObjectFactory.GetInstance<IPlanNode>());
 
             //Add
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                activity.SaveOrUpdateActivity(uow, origActivityDO);
-            }
-
+                await activity.SaveOrUpdateActivity(origActivityDO);
+            
             ActivityDO activityDO;
             //Get
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -176,11 +173,11 @@ namespace DockyardTest.Services
 
             ISubPlan subPlan = new SubPlan();
             //Delete
-            subPlan.DeleteActivity(null, activityDO.Id, true);
+            await subPlan.DeleteActivity(null, activityDO.Id, true);
         }
 
         [Test]
-        public void ActivityWithNestedUpdated_StructureUnchanged()
+        public async Task ActivityWithNestedUpdated_StructureUnchanged()
         {
             var tree = FixtureData.CreateTestActivityTreeWithOnlyActivityDo();
             var updatedTree = FixtureData.CreateTestActivityTreeWithOnlyActivityDo();
@@ -191,15 +188,18 @@ namespace DockyardTest.Services
                 {
                     PlanState = PlanState.Active,
                     Name = "name",
-                    ChildNodes = { tree }
+                    ChildNodes = {tree}
                 };
                 uow.PlanRepository.Add(plan);
                 uow.SaveChanges();
 
                 Visit(updatedTree, x => x.Label = string.Format("We were here {0}", x.Id));
+            }
 
-                _activity.SaveOrUpdateActivity(uow, updatedTree);
+            await _activity.SaveOrUpdateActivity(updatedTree);
 
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            { 
                 var result = uow.PlanRepository.GetById<ActivityDO>(tree.Id);
                 Compare(updatedTree, result, (r, a) =>
                 {
@@ -212,7 +212,7 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        public void ActivityWithNestedUpdated_RemoveElements()
+        public async Task ActivityWithNestedUpdated_RemoveElements()
         {
             var tree = FixtureData.CreateTestActivityTreeWithOnlyActivityDo();
             var updatedTree = FixtureData.CreateTestActivityTreeWithOnlyActivityDo();
@@ -224,7 +224,7 @@ namespace DockyardTest.Services
                 {
                     PlanState = PlanState.Active,
                     Name = "name",
-                    ChildNodes = { tree }
+                    ChildNodes = {tree}
                 };
                 uow.PlanRepository.Add(plan);
                 uow.SaveChanges();
@@ -232,17 +232,19 @@ namespace DockyardTest.Services
 
                 Visit(updatedTree, a =>
                 {
-                    if (removeCounter % 3 == 0 && a.ParentPlanNode != null)
+                    if (removeCounter%3 == 0 && a.ParentPlanNode != null)
                     {
                         a.ParentPlanNode.ChildNodes.Remove(a);
                     }
 
                     removeCounter++;
                 });
+            }
+            
+            await _activity.SaveOrUpdateActivity(updatedTree);
 
-                
-                _activity.SaveOrUpdateActivity(uow, updatedTree);
-
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
                 var result = uow.PlanRepository.GetById<ActivityDO>(tree.Id);
                 Compare(updatedTree, result, (r, a) =>
                 {
@@ -255,7 +257,7 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        public void ActivityWithNestedUpdated_AddElements()
+        public async Task ActivityWithNestedUpdated_AddElements()
         {
             var tree = FixtureData.CreateTestActivityTreeWithOnlyActivityDo();
             var updatedTree = FixtureData.CreateTestActivityTreeWithOnlyActivityDo();
@@ -267,7 +269,7 @@ namespace DockyardTest.Services
                 {
                     Name = "name",
                     PlanState = PlanState.Active,
-                    ChildNodes = { tree }
+                    ChildNodes = {tree}
                 };
 
                 uow.PlanRepository.Add(plan);
@@ -277,7 +279,7 @@ namespace DockyardTest.Services
 
                 Visit(updatedTree, a =>
                 {
-                    if (addCounter % 3 == 0 && a.ParentPlanNode != null)
+                    if (addCounter%3 == 0 && a.ParentPlanNode != null)
                     {
                         var newAction = new ActivityDO
                         {
@@ -314,9 +316,12 @@ namespace DockyardTest.Services
                 }
 
                 updatedTree.ParentPlanNodeId = plan.Id;
+            }
 
-                _activity.SaveOrUpdateActivity(uow, updatedTree);
+            await _activity.SaveOrUpdateActivity( updatedTree);
 
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
                 var result = uow.PlanRepository.GetById<ActivityDO>(tree.Id);
                 Compare(updatedTree, result, (r, a) =>
                 {

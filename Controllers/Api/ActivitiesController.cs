@@ -156,16 +156,15 @@ namespace HubWeb.Controllers
         /// POST : Saves or updates the given action
         /// </summary>
         [HttpPost]
-        public IHttpActionResult Save(ActivityDTO curActionDTO)
+        public async Task<IHttpActionResult> Save(ActivityDTO curActionDTO)
         {
             ActivityDO submittedActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var resultActionDO = _activity.SaveOrUpdateActivity(uow, submittedActivityDO);
-                var resultActionDTO = Mapper.Map<ActivityDTO>(resultActionDO);
-                return Ok(resultActionDTO);
-            }
+
+            var resultActionDTO = await _activity.SaveOrUpdateActivity(submittedActivityDO);
+
+            return Ok(resultActionDTO);
         }
+
         [HttpPost]
         [AllowAnonymous]
         public async Task<IHttpActionResult> Documentation([FromBody] ActivityDTO curActivityDTO)
