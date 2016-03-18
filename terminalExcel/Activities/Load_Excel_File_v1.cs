@@ -86,7 +86,8 @@ namespace terminalExcel.Actions
             // Add a crate of PayloadData to action's crate storage
             using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
             {
-                crateStorage.Add(Crate.FromContent(GenerateRuntimeCrateLabel(ExtractFileName(GetUploadFilePath(curActivityDO))), tableData, AvailabilityType.RunTime));
+                //crateStorage.Add(Crate.FromContent(GenerateRuntimeCrateLabel(ExtractFileName(GetUploadFilePath(curActivityDO))), tableData, AvailabilityType.RunTime));
+                crateStorage.Add(Crate.FromContent(RuntimeCrateLabelPrefix, tableData, AvailabilityType.RunTime));
             }
             return Success(payloadCrates);
         }
@@ -138,7 +139,8 @@ namespace terminalExcel.Actions
                 activityStorage.RemoveByLabel(ColumnHeadersCrateLabel);
                 if (!string.IsNullOrEmpty(uploadFilePath))
                 {
-                    activityStorage.Add(Crate.FromContent(GenerateRuntimeCrateLabel(fileName), ExcelUtils.GetTableData(uploadFilePath), AvailabilityType.RunTime));
+                    //activityStorage.Add(Crate.FromContent(GenerateRuntimeCrateLabel(fileName), ExcelUtils.GetTableData(uploadFilePath), AvailabilityType.RunTime));
+                    activityStorage.Add(Crate.FromContent(RuntimeCrateLabelPrefix, ExcelUtils.GetTableData(uploadFilePath), AvailabilityType.RunTime));
                     activityStorage.Add(Crate.FromContent(ColumnHeadersCrateLabel, ExcelUtils.GetColumnHeadersData(uploadFilePath), AvailabilityType.RunTime));
                 }
             }
@@ -180,20 +182,20 @@ namespace terminalExcel.Actions
             */
         }
 
-        private const string RuntimeCrateLabelPrefix = "Excel Data from ";
+        private const string RuntimeCrateLabelPrefix = "Standard Data Table";
 
         protected override IEnumerable<CrateDescriptionDTO> GetRuntimeAvailableCrateDescriptions(ActivityDO curActivityDO)
         {
             yield return new CrateDescriptionDTO
                 {
-                Label = GenerateRuntimeCrateLabel(ExtractFileName(GetUploadFilePath(curActivityDO))),
-                ManifestId = (int)MT.StandardTableData,
-                ManifestType = MT.StandardTableData.GetEnumDisplayName(),
-                ProducedBy = ActivityName
-            };
-            }
+                    Label = RuntimeCrateLabelPrefix,//GenerateRuntimeCrateLabel(ExtractFileName(GetUploadFilePath(curActivityDO))),
+                    ManifestId = (int)MT.StandardTableData,
+                    ManifestType = MT.StandardTableData.GetEnumDisplayName(),
+                    ProducedBy = ActivityName
+                };
+        }
 
-        private string GenerateRuntimeCrateLabel(string fileName) => $"{RuntimeCrateLabelPrefix} {fileName}";
+        //private string GenerateRuntimeCrateLabel(string fileName) => $"{RuntimeCrateLabelPrefix}";
 
         private string ExtractFileName(string uploadFilePath)
         {
