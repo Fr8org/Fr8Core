@@ -23,7 +23,7 @@ namespace terminalGoogle.Actions
     public class Get_Google_Sheet_Data_v1 : BaseTerminalActivity
     {
         private readonly IGoogleSheet _google;
-        private const string TableCrateLabelPrefix = "Data from ";
+
         private const string RunTimeCrateLabel = "Table Generated From Google Sheet Data";
         public Get_Google_Sheet_Data_v1()
         {
