@@ -23,9 +23,7 @@ namespace Data.Repositories.MultiTenant.SqlBased
 
                 // At runtime ConfigurationManager.ConnectionStrings provides both Azure and Local support.
                 // Settings from Azure portal override settings from web.config.
-                return ConfigurationManager
-                    .ConnectionStrings[DockyardDbContext.DefaultConnectionStringName]
-                    .ConnectionString;
+                return DockyardDbContext.GetEFConnectionDetails();
             }
         }
 

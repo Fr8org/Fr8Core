@@ -49,13 +49,16 @@ namespace Data.Infrastructure
         }
 
         public DockyardDbContext()
-            : base(GetConnectionString())
+            : base(GetEFConnectionDetails())
         {
             
             Database.SetInitializer(new MigrateDatabaseToLatestVersion<DockyardDbContext, Data.Migrations.MigrationConfiguration>());
         }
 
-        private static string GetConnectionString()
+        // IMPORTANT: In order to maintain compatibility with integration tests running on Production-Staging instance, 
+        // always use DockyardDbContext#GetEFConnectionDetails() to get connection details for EF 
+        // and not CloudConfigurationManager directly. 
+        public static string GetEFConnectionDetails()
         {
             //"Fr8.ConnectionString" is a configuration setting defined in terminalWebRole (Azure Cloud Service) 
             //and required to enable connection string management in order to run integration tests in Production/Staging 
@@ -63,7 +66,6 @@ namespace Data.Infrastructure
             string cs = CloudConfigurationManager.AppSettings.GetSetting("Fr8.ConnectionString");
             if (String.IsNullOrEmpty(cs))
             {
-                //Do not change this value! If you want to change the database you connect to, edit your web.config file
                 return "name=" + DefaultConnectionStringName;
             }
             else
