@@ -713,17 +713,17 @@ namespace Hub.Managers
         /// </summary>
         /// <param name="userId">UserId received from DocuSign.</param>
         /// <param name="planId">EnvelopeId received from DocuSign.</param>
-        public void RouteCreated(string userId, string routeName)
+        public void RouteCreated(string userId, string planName)
         {
             FactDO fact = new FactDO
             {
-                PrimaryCategory = "RouteService",
+                PrimaryCategory = "PlanService",
                 SecondaryCategory = null,
                 Activity = "Created",
                 CustomerId = userId,
                 ObjectId = "0",
                 Data = string.Format("Plan Name: {0}.",
-                        routeName)
+                        planName)
             };
             LogFactInformation(fact, "RouteCreated");
             SaveFact(fact);
@@ -1064,7 +1064,7 @@ namespace Hub.Managers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 containerInExecution = uow.ContainerRepository.GetQuery()
-                    .FirstOrDefault(p => p.CurrentRouteNodeId.Value == curActivity.Id);
+                    .FirstOrDefault(p => p.CurrentPlanNodeId.Value == curActivity.Id);
                 var plan = containerInExecution != null ? uow.PlanRepository.GetById<PlanDO>(containerInExecution.PlanId) : null;
 
                 fact = new FactDO

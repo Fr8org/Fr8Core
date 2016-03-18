@@ -12,7 +12,7 @@ namespace terminalFr8CoreTests.Integration
     [Explicit]
     public class Terminal_Discover_v1Tests : BaseTerminalIntegrationTest
     {
-        private const int Fr8CoreActivityCount = 22;
+        private const int Fr8CoreActivityCount = 23;
 
         private const string TestIncomingDataName = "TestIncomingData";
         private const string MapFieldsName = "MapFields";
@@ -22,7 +22,7 @@ namespace terminalFr8CoreTests.Integration
         private const string ConnectToSqlName = "ConnectToSql";
         private const string BuildQueryName = "BuildQuery";
         private const string ExecuteSqlName = "ExecuteSql";
-        private const string ManageRouteName = "ManageRoute";
+        private const string ManagePlanName = "ManagePlan";
         private const string FindObjectsSolutionName = "FindObjects_Solution";
         private const string LoopName = "Loop";
         private const string SetDelayName = "SetDelay";
@@ -36,6 +36,7 @@ namespace terminalFr8CoreTests.Integration
         private const string BuildMessage = "Build_Message";
         private const string SearchFr8Warehouse = "SearchFr8Warehouse";
         private const string TestAndBranch = "TestAndBranch";
+        private const string ExtractTableField = "ExtractTableField";
 
 
         public override string TerminalName
@@ -60,7 +61,7 @@ namespace terminalFr8CoreTests.Integration
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ConnectToSqlName));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == BuildQueryName));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ExecuteSqlName));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ManageRouteName));
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ManagePlanName));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == FindObjectsSolutionName));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == LoopName));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == SetDelayName));
@@ -74,7 +75,9 @@ namespace terminalFr8CoreTests.Integration
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == BuildMessage));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == SearchFr8Warehouse));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == TestAndBranch));
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ExtractTableField));
             
+
         }
     }
 }

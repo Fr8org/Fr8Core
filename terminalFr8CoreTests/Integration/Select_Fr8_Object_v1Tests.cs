@@ -62,7 +62,7 @@ namespace terminalFr8CoreTests.Integration
 		}
 
 		[Test]
-		public void Check_FollowUp_Configuration_Crate_Structure_When_Routes_Option_Is_Selected()
+		public void Check_FollowUp_Configuration_Crate_Structure_When_Plans_Option_Is_Selected()
 		{
 			var configureUrl = GetTerminalConfigureUrl();
 
@@ -71,7 +71,7 @@ namespace terminalFr8CoreTests.Integration
             var dataDTO = new Fr8DataDTO { ActivityDTO = requestActionDTO };
             var responseActionDTO = HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO).Result;
 
-			SetRoutesOptionSelected(responseActionDTO);
+			SetPlansOptionSelected(responseActionDTO);
 
 		    dataDTO.ActivityDTO = responseActionDTO;
             responseActionDTO = HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO).Result;
@@ -86,7 +86,7 @@ namespace terminalFr8CoreTests.Integration
 
 			Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(x => x.Label == "Configuration_Controls"));
 			Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Select Fr8 Object"));
-			Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "StandardFr8RoutesCM"));
+			Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "StandardFr8PlansCM"));
 
 			var configCrate = crateStorage
 				.CrateContentsOfType<StandardConfigurationControlsCM>(x => x.Label == "Configuration_Controls")
@@ -97,7 +97,7 @@ namespace terminalFr8CoreTests.Integration
 			var configurationControl = (DropDownList)configCrate.Controls.FirstOrDefault();
 
 			Assert.AreEqual("19", configurationControl.Value);
-			Assert.AreEqual("Routes", configurationControl.selectedKey);
+			Assert.AreEqual("Plans", configurationControl.selectedKey);
 
 			var selectFr8ObjectDesignTimeCrate = crateStorage
 				.CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "Select Fr8 Object")
@@ -105,37 +105,37 @@ namespace terminalFr8CoreTests.Integration
 
 			ValidateFr8ObjectCrateStructure(selectFr8ObjectDesignTimeCrate);
 
-			var fr8RoutesDesignTimeCrate = crateStorage
-				.CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "StandardFr8RoutesCM")
+			var fr8PlansDesignTimeCrate = crateStorage
+				.CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "StandardFr8PlansCM")
 				.SingleOrDefault();
 
-			Assert.AreEqual(8, fr8RoutesDesignTimeCrate.Fields.Count);
+			Assert.AreEqual(8, fr8PlansDesignTimeCrate.Fields.Count);
 
-			var fr8RoutesCrateFields = fr8RoutesDesignTimeCrate.Fields;
+			var fr8PlansCrateFields = fr8PlansDesignTimeCrate.Fields;
 
-			Assert.AreEqual("CreateDate", fr8RoutesCrateFields[0].Key);
-			Assert.AreEqual("DateTime", fr8RoutesCrateFields[0].Value);
+			Assert.AreEqual("CreateDate", fr8PlansCrateFields[0].Key);
+			Assert.AreEqual("DateTime", fr8PlansCrateFields[0].Value);
 
-			Assert.AreEqual("LastUpdated", fr8RoutesCrateFields[1].Key);
-			Assert.AreEqual("DateTime", fr8RoutesCrateFields[1].Value);
+			Assert.AreEqual("LastUpdated", fr8PlansCrateFields[1].Key);
+			Assert.AreEqual("DateTime", fr8PlansCrateFields[1].Value);
 
-			Assert.AreEqual("Description", fr8RoutesCrateFields[2].Key);
-			Assert.AreEqual("String", fr8RoutesCrateFields[2].Value);
+			Assert.AreEqual("Description", fr8PlansCrateFields[2].Key);
+			Assert.AreEqual("String", fr8PlansCrateFields[2].Value);
 
-			Assert.AreEqual("Name", fr8RoutesCrateFields[3].Key);
-			Assert.AreEqual("String", fr8RoutesCrateFields[3].Value);
+			Assert.AreEqual("Name", fr8PlansCrateFields[3].Key);
+			Assert.AreEqual("String", fr8PlansCrateFields[3].Value);
 
-			Assert.AreEqual("Ordering", fr8RoutesCrateFields[4].Key);
-			Assert.AreEqual("Int32", fr8RoutesCrateFields[4].Value);
+			Assert.AreEqual("Ordering", fr8PlansCrateFields[4].Key);
+			Assert.AreEqual("Int32", fr8PlansCrateFields[4].Value);
 
-			Assert.AreEqual("RouteState", fr8RoutesCrateFields[5].Key);
-			Assert.AreEqual("String", fr8RoutesCrateFields[5].Value);
+			Assert.AreEqual("PlanState", fr8PlansCrateFields[5].Key);
+			Assert.AreEqual("String", fr8PlansCrateFields[5].Value);
 
-			Assert.AreEqual("SubRoutes", fr8RoutesCrateFields[6].Key);
-			Assert.AreEqual("System.Collections.Generic.List`1[[Data.Interfaces.DataTransferObjects.SubrouteDTO, Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]", fr8RoutesCrateFields[6].Value);
+			Assert.AreEqual("SubPlans", fr8PlansCrateFields[6].Key);
+			Assert.AreEqual("System.Collections.Generic.List`1[[Data.Interfaces.DataTransferObjects.SubPlanDTO, Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]", fr8PlansCrateFields[6].Value);
 
-			Assert.AreEqual("ManifestType", fr8RoutesCrateFields[7].Key);
-			Assert.AreEqual("CrateManifestType", fr8RoutesCrateFields[7].Value);
+			Assert.AreEqual("ManifestType", fr8PlansCrateFields[7].Key);
+			Assert.AreEqual("CrateManifestType", fr8PlansCrateFields[7].Value);
 		}
 
 		[Test]
@@ -205,7 +205,7 @@ namespace terminalFr8CoreTests.Integration
 		}
 
 		[Test]
-		public void Run_With_Route_Payload()
+		public void Run_With_Plan_Payload()
 		{
 			var configureUrl = GetTerminalConfigureUrl();
 
@@ -215,21 +215,21 @@ namespace terminalFr8CoreTests.Integration
 
             var responseActionDTO = HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO).Result;
 
-			SetRoutesOptionSelected(responseActionDTO);
+			SetPlansOptionSelected(responseActionDTO);
 
 			var runUrl = GetTerminalRunUrl();
 
 		    dataDTO.ActivityDTO = responseActionDTO;
 
-            AddPayloadCrate(dataDTO, new StandardFr8RoutesCM
+            AddPayloadCrate(dataDTO, new StandardFr8PlansCM
 			{
 				CreateDate = DateTime.UtcNow,
 				LastUpdated = DateTime.UtcNow,
 				Description = "Some description",
 				Name = "Some name",
 				Ordering = 1,
-				RouteState = "Some state",
-				SubRoutes = new List<SubrouteDTO>()
+				PlanState = "Some state",
+				SubPlans = new List<SubPlanDTO>()
 			});
             AddOperationalStateCrate(dataDTO, new OperationalStateCM());
             
@@ -297,7 +297,7 @@ namespace terminalFr8CoreTests.Integration
 			return requestActionDTO;
 		}
 
-		private void SetRoutesOptionSelected(ActivityDTO responseActionDTO)
+		private void SetPlansOptionSelected(ActivityDTO responseActionDTO)
 		{
 			using (var crateStorage = Crate.GetUpdatableStorage(responseActionDTO))
 			{
@@ -306,7 +306,7 @@ namespace terminalFr8CoreTests.Integration
 					.Single();
 
 				var dropdownList = (DropDownList)controls.Controls[0];
-				dropdownList.selectedKey = "Routes";
+				dropdownList.selectedKey = "Plans";
 				dropdownList.Value = "19";
 			}
 		}
@@ -362,7 +362,7 @@ namespace terminalFr8CoreTests.Integration
 
 			var field1 = designTimeFields[0];
 
-			Assert.AreEqual("Routes", field1.Key);
+			Assert.AreEqual("Plans", field1.Key);
 			Assert.AreEqual("19", field1.Value);
 
 			var field2 = designTimeFields[1];

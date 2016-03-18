@@ -21,7 +21,7 @@ namespace Data.Crates
 
         /**********************************************************************************/
         /// <summary>
-        /// Returns first crate that complies with the predicate and with content of the give type.
+        /// Returns first crate that complies with the predicate and with content of the given type.
         /// This method will fail if no such crates exists
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -34,7 +34,20 @@ namespace Data.Crates
 
         /**********************************************************************************/
         /// <summary>
-        /// Returns first crate that complies with the predicate and with content of the give type.
+        /// Returns first crate of the given type.
+        /// This method will fail if no such crates exists
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public static Crate<T> FirstCrate<T>(this ICrateStorage storage)
+        {
+            return storage.CratesOfType<T>().First();
+        }
+
+        /**********************************************************************************/
+        /// <summary>
+        /// Returns first crate that complies with the predicate and with content of the given type.
         /// This method will return NULL if no such crates exists
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -43,6 +56,18 @@ namespace Data.Crates
         public static Crate<T> FirstCrateOrDefault<T>(this ICrateStorage storage, Predicate<Crate> predicate)
         {
             return storage.CratesOfType<T>(predicate).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Returns first crate with content of the given type.
+        /// This method will return NULL if no such crates exists
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public static Crate<T> FirstCrateOrDefault<T>(this ICrateStorage storage)
+        {
+            return storage.CratesOfType<T>().FirstOrDefault();
         }
 
         /**********************************************************************************/

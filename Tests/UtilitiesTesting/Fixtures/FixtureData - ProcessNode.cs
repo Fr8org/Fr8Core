@@ -12,8 +12,8 @@ namespace UtilitiesTesting.Fixtures
             var processNode = new ProcessNodeDO();
             processNode.Id = 50;
             processNode.ParentContainerId = TestContainer_Id_49();
-            processNode.SubrouteId = GetTestGuidById(50);
-            processNode.Subroute = TestSubrouteDO1();
+            processNode.SubPlanId = GetTestGuidById(50);
+            processNode.SubPlan = TestSubPlanDO1();
             processNode.ProcessNodeState = ProcessNodeState.Unstarted;
             processNode.ParentContainer = TestContainer1();
 
@@ -35,8 +35,8 @@ namespace UtilitiesTesting.Fixtures
             var processNode = new ProcessNodeDO();
             processNode.Id = 51;
             processNode.ParentContainerId = TestContainer_Id_49();
-            processNode.Subroute = TestSubrouteDO1();
-            processNode.Subroute.ChildNodes.AddRange(TestActivityList5());
+            processNode.SubPlan = TestSubPlanDO1();
+            processNode.SubPlan.ChildNodes.AddRange(TestActivityList5());
 
             return processNode;
         }
@@ -46,8 +46,8 @@ namespace UtilitiesTesting.Fixtures
             var processNode = new ProcessNodeDO();
             processNode.Id = 51;
             processNode.ParentContainerId = TestContainer_Id_49();
-            processNode.Subroute = TestSubrouteDO2();
-            processNode.Subroute.ChildNodes.AddRange(TestActivityList5());
+            processNode.SubPlan = TestSubPlanDO2();
+            processNode.SubPlan.ChildNodes.AddRange(TestActivityList5());
 
             return processNode;
         }
@@ -58,9 +58,9 @@ namespace UtilitiesTesting.Fixtures
             var processNode = new ProcessNodeDO();
             processNode.Id = 1;
             processNode.ParentContainerId = TestContainer_Id_49();
-            processNode.SubrouteId = GetTestGuidById(50);
-            processNode.Subroute = TestSubrouteDO3();
-            processNode.Subroute.ChildNodes.AddRange(TestActivityList6());
+            processNode.SubPlanId = GetTestGuidById(50);
+            processNode.SubPlan = TestSubPlanDO3();
+            processNode.SubPlan.ChildNodes.AddRange(TestActivityList6());
 
             return processNode;
         }

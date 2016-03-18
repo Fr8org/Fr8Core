@@ -576,7 +576,7 @@ module dockyard.directives.paneConfigureAction {
             scope: {
                 currentAction: '=',
                 mode: '=',
-                route: '='
+                plan: '='
             }
         };
     });

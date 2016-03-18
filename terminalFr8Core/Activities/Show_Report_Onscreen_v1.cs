@@ -33,7 +33,7 @@ namespace terminalFr8Core.Actions
                     Label = "Display which table?"
                 }));
 
-                Controls.Add(new RunRouteButton());
+                Controls.Add(new RunPlanButton());
             }
         }
 

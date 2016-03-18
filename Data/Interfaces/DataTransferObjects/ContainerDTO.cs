@@ -18,7 +18,7 @@ namespace Data.Interfaces.DataTransferObjects
         public Guid PlanId { get; set; }
         public int ContainerState;
 
-        public Guid? CurrentRouteNodeId { get; set; }
+        public Guid? CurrentPlanNodeId { get; set; }
         public Guid? NextRouteNodeId { get; set; }
 
         public DateTimeOffset LastUpdated { get; set; }

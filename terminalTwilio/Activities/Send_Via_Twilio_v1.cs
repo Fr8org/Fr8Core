@@ -147,15 +147,28 @@ namespace terminalTwilio.Actions
 
         protected override async Task<ICrateStorage> ValidateActivity(ActivityDO curActivityDO)
         {
-            var validationResult = ValidateSMSNumberAndBody(curActivityDO);
-            return await Task.FromResult<ICrateStorage>(validationResult);
+            var errors = new List<string>();
+
+            var isValid = ValidateSMSNumberAndBody(curActivityDO, errors);
+
+            if (!isValid)
+            {
+
+                return await Task.FromResult(new CrateStorage(Crate<FieldDescriptionsCM>.FromContent("Validation Errors",
+                    new FieldDescriptionsCM(new FieldDTO("Error Message",string.Join(", ", errors))))));
+            }
+
+            return null;
         }
 
-        private ICrateStorage ValidateSMSNumberAndBody(ActivityDO curActivityDO)
+        private bool  ValidateSMSNumberAndBody(ActivityDO curActivityDO, List<string> errors)
         {
             bool hasError = false;
+
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
+                crateStorage.RemoveByLabel("Validation Errors");
+
                 var configControl = GetConfigurationControls(crateStorage);
                 if (configControl != null)
                 {
@@ -166,36 +179,37 @@ namespace terminalTwilio.Actions
                     {
                         var smsNumber = numberControl.TextValue;
 
-                        var errorMessage = string.Empty;
+                        string errorMessage;
                         var isValid = ValidateSMSNumber(smsNumber, out errorMessage);
 
                         if (!isValid)
                         {
+                            errors.Add(errorMessage);
                             numberControl.ErrorMessage = errorMessage;
                             hasError = true;
+                        }
+                        else
+                        {
+                            numberControl.ErrorMessage = null;
                         }
                     }
                     if (bodyControl != null)
                     {
-                        var smsBody = bodyControl.TextValue;
-                        if (smsBody == null)
+                        if (bodyControl.TextValue == null && bodyControl.Value == null)
                         {
                             bodyControl.ErrorMessage = "SMS body can not be null.";
+                            errors.Add(bodyControl.ErrorMessage);
                             hasError = true;
+                        }
+                        else
+                        {
+                            bodyControl.ErrorMessage = null;
                         }
                     }
                 }
             }
 
-            if (hasError)
-            {
-                var storage = CrateManager.GetStorage(curActivityDO);
-                return storage;
-            }
-            else
-            {
-                return null;
-            }
+            return !hasError;
         }
 
         private string GetSMSNumber(TextSource control, ICrateStorage payloadCrates)

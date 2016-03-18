@@ -45,7 +45,7 @@ namespace terminalDocuSign.Infrastructure
         public static void CreateOrUpdateDefaultDocuSignConnectConfiguration(string envelopeEvents = "Sent, Delivered, Completed")
         {
             var account = new DocuSignAccount();
-            var publishUrl = "http://" + CloudConfigurationManager.GetSetting("TerminalEndpoint") + "/terminals/terminalDocuSign/events";
+            var publishUrl = "http://" + CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint") + "/terminals/terminalDocuSign/events";
 
             //get existing connect configuration
             var existingDocuSignConnectConfiguration = GetDocuSignConnectConfiguration(account);

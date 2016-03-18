@@ -26,7 +26,7 @@ namespace terminalExcel.Controllers
 
             var terminal = new TerminalDTO
             {
-                Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
+                Endpoint = CloudConfigurationManager.GetSetting("terminalExcel.TerminalEndpoint"),
                 TerminalStatus = TerminalStatus.Active,
                 Name = "terminalExcel",
                 Version = "1"
@@ -48,6 +48,18 @@ namespace terminalExcel.Controllers
                 Tags = "Table Data Generator",
                 MinPaneWidth = 300,
 				WebService = webService
+            });
+
+            result.Add(new ActivityTemplateDTO
+            {
+                Name = "SetExcelTemplate",
+                Label = "Set Excel Template",
+                Version = "1",
+                Description = "",
+                Category = ActivityCategory.Processors,
+                Terminal = terminal,
+                Tags = "Table Data Generator,Skip At Run-Time",
+                WebService = webService
             });
 
 

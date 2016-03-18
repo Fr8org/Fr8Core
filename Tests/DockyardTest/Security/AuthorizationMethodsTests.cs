@@ -152,7 +152,7 @@ namespace DockyardTest.Security
                     Id = FixtureData.GetTestGuidById(23),
                     Description = "HealthDemo Integration Test",
                     Name = "StandardEventTesting",
-                    RouteState = RouteState.Active,
+                    PlanState = PlanState.Active,
                     Fr8Account = tokenDO.UserDO
                 };
                 uow.PlanRepository.Add(planDO);
@@ -160,8 +160,8 @@ namespace DockyardTest.Security
 
                 var activityDO = new ActivityDO()
                 {
-                    ParentRouteNode = planDO,
-                    ParentRouteNodeId = planDO.Id,
+                    ParentPlanNode = planDO,
+                    ParentPlanNodeId = planDO.Id,
                     Id = FixtureData.GetTestGuidById(1),
                     ActivityTemplateId = activityTemplateDO.Id,
                     ActivityTemplate = activityTemplateDO,
@@ -206,7 +206,7 @@ namespace DockyardTest.Security
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    RouteState = RouteState.Active,
+                    PlanState = PlanState.Active,
                     ChildNodes = { activityDO }
                 });
                 
@@ -298,7 +298,7 @@ namespace DockyardTest.Security
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    RouteState = RouteState.Active,
+                    PlanState = PlanState.Active,
                     ChildNodes = { activityDO }
                 });
                 uow.SaveChanges();
@@ -348,7 +348,7 @@ namespace DockyardTest.Security
                    uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    RouteState = RouteState.Active,
+                    PlanState = PlanState.Active,
                     ChildNodes = { activityDO }
                 });
 
@@ -385,7 +385,7 @@ namespace DockyardTest.Security
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name="name",
-                    RouteState = RouteState.Active,
+                    PlanState = PlanState.Active,
                     ChildNodes = { activityDO }
                 });
 

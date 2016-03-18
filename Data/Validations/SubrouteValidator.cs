@@ -8,10 +8,10 @@ using Data.Interfaces;
 namespace Data.Validations
 {
       // Is not used anywhere
-    /*public class SubroutetValidator : AbstractValidator<SubrouteDO>
+    /*public class SubPlanetValidator : AbstractValidator<SubPlanDO>
     {
       
-        public SubroutetValidator()
+        public SubPlantValidator()
         {
             // Commented out. See https://maginot.atlassian.net/browse/DO-940 for more description.
             // RuleFor(pntDO => pntDO.Id).GreaterThan(0).WithMessage("Id must be a positive int");
@@ -21,7 +21,7 @@ namespace Data.Validations
             // Commented out, since NodeTransitions is not used in other parts of code.
             // RuleFor(pntDO => pntDO.NodeTransitions).NotEmpty().WithMessage("NodeTransitions is Required");
 
-            RuleFor(pntDO => pntDO.ParentRouteNodeId)
+            RuleFor(pntDO => pntDO.ParentPlanNodeId)
                 .NotEqual(Guid.Empty)
                 .Must(id =>
                 {
@@ -29,7 +29,7 @@ namespace Data.Validations
                     // By the time validation rule gets executed, external UnitOfWork will be disposed.
                     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
-                        var parentTemplateExists = id != null && (uow.PlanRepository.GetById<RouteNodeDO>(id.Value) != null);
+                        var parentTemplateExists = id != null && (uow.PlanRepository.GetById<PlanNodeDO>(id.Value) != null);
                         return parentTemplateExists;
                     }
                 })

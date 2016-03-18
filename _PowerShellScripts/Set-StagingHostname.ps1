@@ -26,6 +26,5 @@ $commandLine = "$rootDir\UpdateTerminalHostnameInDb.ps1 -connectionString '$conn
 if ([String]::IsNullOrEmpty($overrideDbName) -eq $false) {
 	$commandLine +=  " -overrideDbName $overrideDbName"
 }
-Invoke-Expression $commandLine
-
 Invoke-Expression "$rootDir\UpdateTerminalUrl.ps1 $hostName"
+Invoke-Expression $commandLine
