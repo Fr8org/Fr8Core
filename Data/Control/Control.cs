@@ -50,6 +50,7 @@ namespace Data.Control
         public const string DatePicker = "DatePicker";
         public const string CrateChooser = "CrateChooser";
         public const string ContainerTransition = "ContainerTransition";
+        public const string ControlContainer = "ControlContainer";
     }
 
     public class CheckBox : ControlDefinitionDTO
@@ -130,6 +131,53 @@ namespace Data.Control
         {
             Type = ControlTypes.ContainerTransition;
             this.Transitions = new List<ContainerTransitionField>();
+        }
+    }
+
+    public class TextBoxMetaDescriptionDTO : ControlMetaDescriptionDTO
+    {
+        public TextBoxMetaDescriptionDTO() : base(ControlTypes.TextBox)
+        {
+            this.Controls.Add(new TextBox { });
+        }
+    }
+
+    public class TextBlockMetaDescriptionDTO : ControlMetaDescriptionDTO
+    {
+        public TextBlockMetaDescriptionDTO() : base(ControlTypes.TextBlock)
+        {
+            this.Controls.Add(new TextArea());
+        }
+    }
+
+    public class FilePickerMetaDescriptionDTO : ControlMetaDescriptionDTO
+    {
+        public static string[] FileExtensions = {"xlsx"};
+        public FilePickerMetaDescriptionDTO() : base(ControlTypes.FilePicker)
+        {
+            this.Controls.Add(new TextBox());
+            this.Controls.Add(new DropDownList() { ListItems = FileExtensions.Select(x => new ListItem { Key = x, Value = x}).ToList()});
+        }
+    }
+
+    public class ControlMetaDescriptionDTO : ControlDefinitionDTO
+    {
+        [JsonProperty("controls")]
+        public List<ControlDefinitionDTO> Controls { get; set; } 
+        public ControlMetaDescriptionDTO(string type) : base(type)
+        {
+
+        }
+    }
+
+    public class ControlContainer : ControlDefinitionDTO
+    {
+        [JsonProperty("metaDescriptions")]
+        public List<ControlMetaDescriptionDTO> MetaDescriptions { get; set; }
+
+        public ControlContainer() : base(ControlTypes.ControlContainer)
+        {
+
         }
     }
 

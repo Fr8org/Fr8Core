@@ -60,12 +60,8 @@ namespace Hub.Services
             {
                 var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
 
-                var isRequestSuspend = false;
-                if (operationalState.CurrentActivityResponse != null
-                    && operationalState.CurrentActivityResponse.Type == ActivityResponse.RequestSuspend.ToString())
-                {
-                    isRequestSuspend = true;
-                }
+                bool isRequestSuspend = operationalState.CurrentActivityResponse != null
+                    && operationalState.CurrentActivityResponse.Type == ActivityResponse.RequestSuspend.ToString();
 
                 if (!isRequestSuspend)
                 {
