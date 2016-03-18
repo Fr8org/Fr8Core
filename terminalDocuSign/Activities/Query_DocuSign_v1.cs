@@ -63,7 +63,6 @@ namespace terminalDocuSign.Actions
             }
         }
 
-
         protected override string ActivityUserFriendlyName => "Query DocuSign";
 
         protected internal override async Task<PayloadDTO> RunInternal(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
@@ -75,33 +74,13 @@ namespace terminalDocuSign.Actions
             {
                 return Error(payload, "Action was not configured correctly");
             }
-
-
+            
             var settings = GetDocusignQuery(configurationControls);
 
-            var docuSignAuthDto = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
             var payloadCm = new StandardPayloadDataCM();
 
-            //commented out by FR-2400
-            //var envelopes = _docuSignManager.SearchDocusign(docuSignAuthDto, settings);
-
-            //foreach (var envelope in envelopes)
-            //{
-            //    var row = new PayloadObjectDTO();
-
-            //    row.PayloadObject.Add(new FieldDTO("Id", envelope.EnvelopeId));
-            //    row.PayloadObject.Add(new FieldDTO("Name", envelope.Name));
-            //    row.PayloadObject.Add(new FieldDTO("Subject", envelope.Subject));
-            //    row.PayloadObject.Add(new FieldDTO("Status", envelope.Status));
-            //    row.PayloadObject.Add(new FieldDTO("OwnerName", envelope.OwnerName));
-            //    row.PayloadObject.Add(new FieldDTO("SenderName", envelope.SenderName));
-            //    row.PayloadObject.Add(new FieldDTO("SenderEmail", envelope.SenderEmail));
-            //    row.PayloadObject.Add(new FieldDTO("Shared", envelope.Shared));
-            //    row.PayloadObject.Add(new FieldDTO("CompletedDate", envelope.CompletedDateTime.ToString(CultureInfo.InvariantCulture)));
-            //    row.PayloadObject.Add(new FieldDTO("CreatedDateTime", envelope.CreatedDateTime.ToString(CultureInfo.InvariantCulture)));
-
-            //    payloadCm.PayloadObjects.Add(row);
-            //}
+            var configuration = DocuSignManager.SetUp(authTokenDO);
+            DocuSignFolders.SearchDocuSign(configuration, settings, payloadCm);
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
@@ -118,17 +97,42 @@ namespace terminalDocuSign.Actions
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
             var configurationCrate = PackControls(new ActivityUi());
-            //commented out by FR-2400
-            //_docuSignManager.FillFolderSource(configurationCrate, "Folder", docuSignAuthDTO);
-            //_docuSignManager.FillStatusSource(configurationCrate, "Status");
+
+            FillFolderSource(configurationCrate, "Folder", authTokenDO);
+            FillStatusSource(configurationCrate, "Status");
+
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Add(configurationCrate);
             }
 
             return Task.FromResult(curActivityDO);
+        }
+
+        private void FillFolderSource(Crate configurationCrate, string controlName, AuthorizationTokenDO authTokenDO)
+        {
+            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
+            var control = configurationControl.FindByNameNested<DropDownList>(controlName);
+            if (control != null)
+            {
+                var conf = DocuSignManager.SetUp(authTokenDO);
+                control.ListItems = DocuSignFolders.GetFolders(conf)
+                    .Select(x => new ListItem() {Key = x.Key, Value = x.Value})
+                    .ToList();
+            }
+        }
+
+        private void FillStatusSource(Crate configurationCrate, string controlName)
+        {
+            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
+            var control = configurationControl.FindByNameNested<DropDownList>(controlName);
+            if (control != null)
+            {
+                control.ListItems = DocusignQuery.Statuses
+                    .Select(x => new ListItem() { Key = x.Key, Value = x.Value })
+                    .ToList();
+            }
         }
 
         private static DocusignQuery GetDocusignQuery(StandardConfigurationControlsCM configurationControls)
