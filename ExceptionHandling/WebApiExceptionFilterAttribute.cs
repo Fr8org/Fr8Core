@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using Microsoft.ApplicationInsights;
 using System.Collections.Generic;
 using System.Linq;
+using Data.Infrastructure;
 
 namespace HubWeb.ExceptionHandling
 {
