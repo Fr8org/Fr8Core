@@ -31,7 +31,7 @@ namespace DockyardTest.Controllers
             using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 unitOfWork.UserRepository.Add(_testUserAccount);
-                var plan = FixtureData.TestRoute4();
+                var plan = FixtureData.TestPlan4();
                 var container = FixtureData.TestContainerForFactsControllerTest();
                 unitOfWork.PlanRepository.Add(plan);
                 unitOfWork.ContainerRepository.Add(container);

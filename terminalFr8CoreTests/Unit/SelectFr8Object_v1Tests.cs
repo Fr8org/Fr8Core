@@ -66,7 +66,7 @@ namespace terminalFr8CoreTests.Unit
         }
 
         [Test]
-        public async Task Evaluate_IsValidJSONResponse_For_FollowupRequest_RouteSelected()
+        public async Task Evaluate_IsValidJSONResponse_For_FollowupRequest_PlanSelected()
         {
             ActivityDTO curActionDTO = FixtureData.TestActivityDTOSelectFr8ObjectFollowup("19");
             ActivityDO curActivityDO = Mapper.Map<ActivityDO>(curActionDTO);

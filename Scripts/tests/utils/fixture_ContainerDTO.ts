@@ -8,7 +8,7 @@ module dockyard.tests.utils.fixtures {
             name: "TestTemplate{0B6944E1-3CC5-45BA-AF78-728FFBE57358}",
             planId: 1,
             containerState: 2,
-            currentRouteNodeId: null,
+            currentPlanNodeId: null,
             nextRouteNodeId: null,
             lastUpdated: null,
             createDate: null

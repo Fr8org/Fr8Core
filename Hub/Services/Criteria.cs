@@ -41,7 +41,7 @@ namespace Hub.Services
         //	using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
         //	{
         //	    var cq = uow.CriteriaRepository.GetAll().ToList();
-        //		var curCriteria = uow.CriteriaRepository.FindOne(c => c.SubrouteId == curProcessNode.SubrouteId);
+        //		var curCriteria = uow.CriteriaRepository.FindOne(c => c.SubPlanId == curProcessNode.SubPlanId);
         //		if (curCriteria == null)
         //			throw new ApplicationException("failed to find expected CriteriaDO while evaluating ProcessNode");
         //		if (curCriteria.CriteriaExecutionType == CriteriaExecutionType.WithoutConditions)

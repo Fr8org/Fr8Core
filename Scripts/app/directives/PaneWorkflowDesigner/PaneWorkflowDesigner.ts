@@ -2,7 +2,7 @@
 
 module dockyard.directives.paneWorkflowDesigner {
     declare var Core: any;
-    declare var RouteBuilder: any;
+    declare var PlanBuilder: any;
 
     export function PaneWorkflowDesigner(): ng.IDirective {
 
@@ -52,8 +52,8 @@ module dockyard.directives.paneWorkflowDesigner {
             template: '<div style="overflow: auto;"></div>',
             scope: {},
             link: (scope: IPaneWorkflowDesignerScope, element: JQuery, attrs: any): void => {
-                var factory = new RouteBuilder.FabricJsFactory();
-                var widget = Core.create(RouteBuilder.Widget,
+                var factory = new PlanBuilder.FabricJsFactory();
+                var widget = Core.create(PlanBuilder.Widget,
                     element.children()[0], factory, attrs.width, attrs.height);
 
                 widget.on('addActionNode:click', function (e, criteriaId, actionType) {

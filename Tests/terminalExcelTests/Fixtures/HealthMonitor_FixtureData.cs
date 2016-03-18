@@ -18,7 +18,7 @@ namespace terminalExcelTests.Fixtures
             return new ActivityTemplateDTO()
             {
                 Id = 1,
-                Name = "Load_Table_Data_TEST",
+                Name = "Load_Excel_File",
                 Version = "1"
             };
         }

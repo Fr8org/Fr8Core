@@ -262,7 +262,7 @@ namespace terminalDocuSign.Actions
             if (string.IsNullOrEmpty(envelopeId))
             {
                 await Activate(curActivityDO, authTokenDO);
-                return TerminateHubExecution(payloadCrates, "Route successfully activated. It will wait and respond to specified DocuSign Event messages");
+                return TerminateHubExecution(payloadCrates, "Plan successfully activated. It will wait and respond to specified DocuSign Event messages");
             }
 
             //Create run-time fields

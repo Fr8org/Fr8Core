@@ -28,7 +28,7 @@ namespace terminalDocuSign.Infrastructure.StructureMap
 		{
 			public LiveMode()
 			{
-			    For<IDocuSignRoute>().Use<DocuSignRoute>();
+			    For<IDocuSignPlan>().Use<DocuSignPlan>();
             }
 		}
 
@@ -36,7 +36,7 @@ namespace terminalDocuSign.Infrastructure.StructureMap
 		{
 			public TestMode()
 			{
-                For<IDocuSignRoute>().Use(new Mock<DocuSignRoute>(MockBehavior.Default).Object);
+                For<IDocuSignPlan>().Use(new Mock<DocuSignPlan>(MockBehavior.Default).Object);
 			}
 		}
 

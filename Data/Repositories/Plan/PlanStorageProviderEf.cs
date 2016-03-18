@@ -16,103 +16,104 @@ namespace Data.Repositories.Plan
     public class PlanStorageProviderEf : IPlanStorageProvider
     {
         protected readonly IUnitOfWork Uow;
-        protected readonly RouteNodeRepository RouteNodes;
+        // Note repository Names are not renamed .....
+        protected readonly PlanNodeRepository PlanNodes;
         protected readonly ActivityRepository ActivityRepository;
-        protected readonly SubrouteRepository Subroutes;
-        protected readonly RouteRepository Routes;
+        protected readonly SubPlanRepository SubPlans;
+        protected readonly PlansRepository Plans;
 
         public PlanStorageProviderEf(IUnitOfWork uow)
         {
             Uow = uow;
-            RouteNodes = new RouteNodeRepository(uow);
+            PlanNodes = new PlanNodeRepository(uow);
             ActivityRepository = new ActivityRepository(uow);
-            Subroutes = new SubrouteRepository(uow);
-            Routes = new RouteRepository(uow);
+            SubPlans = new SubPlanRepository(uow);
+            Plans = new PlansRepository(uow);
         }
 
-        public RouteNodeDO LoadPlan(Guid planMemberId)
+        public PlanNodeDO LoadPlan(Guid planMemberId)
         {
-            var seed = RouteNodes.GetQuery().FirstOrDefault(x => x.Id == planMemberId);
+            var seed = PlanNodes.GetQuery().FirstOrDefault(x => x.Id == planMemberId);
 
             if (seed == null)
             {
                 return null;
-                throw new KeyNotFoundException("Unable to find route not with id = " + planMemberId);
+                throw new KeyNotFoundException("Unable to find plan not with id = " + planMemberId);
             }
 
-            var lookup = new Dictionary<Guid, RouteNodeDO>();
+            var lookup = new Dictionary<Guid, PlanNodeDO>();
 
-            var routes = Routes.GetQuery().Where(x => x.Id == seed.RootRouteNodeId).Include(x=>x.Fr8Account).AsEnumerable().Select(x => x.Clone()).ToArray();
-            var actions = ActivityRepository.GetQuery().Where(x => x.RootRouteNodeId == seed.RootRouteNodeId).Include(x => x.Fr8Account).AsEnumerable().Select(x => x.Clone()).ToArray();
-            var subroutes = Subroutes.GetQuery().Where(x => x.RootRouteNodeId == seed.RootRouteNodeId).Include(x => x.Fr8Account).AsEnumerable().Select(x => x.Clone()).ToArray();
+            var plans = Plans.GetQuery().Where(x => x.Id == seed.RootPlanNodeId).Include(x=>x.Fr8Account).AsEnumerable().Select(x => x.Clone()).ToArray();
+            var actions = ActivityRepository.GetQuery().Where(x => x.RootPlanNodeId == seed.RootPlanNodeId).Include(x => x.Fr8Account).AsEnumerable().Select(x => x.Clone()).ToArray();
+            var subPlans = SubPlans.GetQuery().Where(x => x.RootPlanNodeId == seed.RootPlanNodeId).Include(x => x.Fr8Account).AsEnumerable().Select(x => x.Clone()).ToArray();
 
-            foreach (var routeNodeDo in routes)
+            foreach (var planNodeDo in plans)
             {
-                lookup[routeNodeDo.Id] = routeNodeDo;
+                lookup[planNodeDo.Id] = planNodeDo;
             }
 
-            foreach (var routeNodeDo in actions)
+            foreach (var planNodeDo in actions)
             {
-                lookup[routeNodeDo.Id] = routeNodeDo;
+                lookup[planNodeDo.Id] = planNodeDo;
             }
 
-            foreach (var routeNodeDo in subroutes)
+            foreach (var planNodeDo in subPlans)
             {
-                lookup[routeNodeDo.Id] = routeNodeDo;
+                lookup[planNodeDo.Id] = planNodeDo;
             }
 
-            RouteNodeDO root = null;
+            PlanNodeDO root = null;
 
-            foreach (var routeNodeDo in lookup)
+            foreach (var planNodeDo in lookup)
             {
-                RouteNodeDO parent;
+                PlanNodeDO parent;
 
-                if (routeNodeDo.Value.ParentRouteNodeId == null || !lookup.TryGetValue(routeNodeDo.Value.ParentRouteNodeId.Value, out parent))
+                if (planNodeDo.Value.ParentPlanNodeId == null || !lookup.TryGetValue(planNodeDo.Value.ParentPlanNodeId.Value, out parent))
                 {
-                    root = routeNodeDo.Value;
+                    root = planNodeDo.Value;
                     continue;
                 }
 
-                routeNodeDo.Value.ParentRouteNode = parent;
-                parent.ChildNodes.Add(routeNodeDo.Value);
+                planNodeDo.Value.ParentPlanNode = parent;
+                parent.ChildNodes.Add(planNodeDo.Value);
             }
 
             return root;
         }
 
-        public virtual void Update(RouteSnapshot.Changes changes)
+        public virtual void Update(PlanSnapshot.Changes changes)
         {
             var adapter = (IObjectContextAdapter)Uow.Db;
             var objectContext = adapter.ObjectContext;
 
             ObjectStateEntry entry;
 
-            foreach (var routeNodeDo in changes.Delete)
+            foreach (var planNodeDo in changes.Delete)
             {
-                var entryStub = routeNodeDo.Clone();
+                var entryStub = planNodeDo.Clone();
 
                 ClearNavigationProperties(entryStub);
 
-                var key = objectContext.CreateEntityKey("RouteNodeDOes", entryStub);
+                var key = objectContext.CreateEntityKey("PlanNodeDOes", entryStub);
 
                 if (!objectContext.ObjectStateManager.TryGetObjectStateEntry(key, out entry))
                 {
-                    RouteNodes.Attach(entryStub);
+                    PlanNodes.Attach(entryStub);
                     entry = objectContext.ObjectStateManager.GetObjectStateEntry(entryStub);
                     entry.Delete();
                 }
                 else
                 {
-                    RouteNodes.Remove(routeNodeDo);
+                    PlanNodes.Remove(planNodeDo);
                 }
             }
 
-            foreach (var routeNodeDo in changes.Insert)
+            foreach (var planNodeDo in changes.Insert)
             {
-                var entity = routeNodeDo.Clone();
+                var entity = planNodeDo.Clone();
 
                 ClearNavigationProperties(entity);
-                RouteNodes.Add(entity);
+                PlanNodes.Add(entity);
             }
             
             foreach (var changedObject in changes.Update)
@@ -121,10 +122,10 @@ namespace Data.Repositories.Plan
 
                 ClearNavigationProperties(entryStub);
 
-                var key = objectContext.CreateEntityKey("RouteNodeDOes", entryStub);
+                var key = objectContext.CreateEntityKey("PlanNodeDOes", entryStub);
                 if (!objectContext.ObjectStateManager.TryGetObjectStateEntry(key, out entry))
                 {
-                    RouteNodes.Attach(entryStub);
+                    PlanNodes.Attach(entryStub);
                     entry = objectContext.ObjectStateManager.GetObjectStateEntry(entryStub);
                     foreach (var changedProperty in changedObject.ChangedProperties)
                     {
@@ -142,10 +143,10 @@ namespace Data.Repositories.Plan
         }
         
         //we do this not to accidentatlly add duplicates
-        protected void ClearNavigationProperties(RouteNodeDO entity)
+        protected void ClearNavigationProperties(PlanNodeDO entity)
         {
             entity.Fr8Account = null;
-            entity.ParentRouteNode = null;
+            entity.ParentPlanNode = null;
 
             var activity = entity as ActivityDO;
             if (activity != null)
@@ -157,7 +158,7 @@ namespace Data.Repositories.Plan
 
         public IQueryable<PlanDO> GetPlanQuery()
         {
-            return Routes.GetQuery();
+            return Plans.GetQuery();
         }
 
         public IQueryable<ActivityDO> GetActivityQuery()
@@ -165,9 +166,9 @@ namespace Data.Repositories.Plan
             return ActivityRepository.GetQuery();
         }
 
-        public IQueryable<RouteNodeDO> GetNodesQuery()
+        public IQueryable<PlanNodeDO> GetNodesQuery()
         {
-            return RouteNodes.GetQuery();
+            return PlanNodes.GetQuery();
         }
     }
 }

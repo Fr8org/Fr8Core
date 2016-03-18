@@ -8,7 +8,7 @@
         ];
         constructor(private $scope, private $http) {
             $scope.actionCategories = [];
-            $http.get('/route_nodes/available')
+            $http.get('/plan_nodes/available')
                 .then(function (resp) {
                     $scope.actionCategories = resp.data;
                 });

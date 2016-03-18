@@ -428,12 +428,12 @@ namespace Data.Infrastructure
             }
         }
 
-	  private RouteNodeRepository _routeNodeRepository;
-	  public RouteNodeRepository RouteNodeRepository
+	  private PlanNodeRepository _planNodeRepository;
+	  public PlanNodeRepository PlanNodeRepository
 	  {
 		  get
 		  {
-			  return _routeNodeRepository ?? (_routeNodeRepository = new RouteNodeRepository(this));
+			  return _planNodeRepository ?? (_planNodeRepository = new PlanNodeRepository(this));
 		  }
 	  }
 
@@ -447,13 +447,13 @@ namespace Data.Infrastructure
             }
         }
 
-        private SubrouteRepository _subrouteRepository;
+        private SubPlanRepository _subPlanRepository;
 
-        public ISubrouteRepository SubrouteRepository
+        public ISubPlanRepository SubPlanRepository
         {
             get
             {
-                return _subrouteRepository ?? (_subrouteRepository = new SubrouteRepository(this));
+                return _subPlanRepository ?? (_subPlanRepository = new SubPlanRepository(this));
             }
         }
 

@@ -4,9 +4,9 @@ using Data.Interfaces.DataTransferObjects;
 
 namespace HubWeb.ViewModels.Validators
 {
-    public class RouteDTOValidator : AbstractValidator<RouteEmptyDTO>
+    public class PlanDTOValidator : AbstractValidator<PlanEmptyDTO>
     {
-        public RouteDTOValidator()
+        public PlanDTOValidator()
         {
             RuleFor(ptdto => ptdto.Name).NotNull();
             RuleFor(ptdto => ptdto.Name).NotEmpty();
