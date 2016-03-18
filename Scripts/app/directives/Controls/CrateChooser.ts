@@ -43,7 +43,7 @@ module dockyard.directives.crateChooser {
                 };
 
                 if ($scope.field.requestUpstream) {
-                    UpstreamExtractor.extractUpstreamData($scope.currentAction.id, 'Crate Description', 'RunTime')
+                    UpstreamExtractor.extractUpstreamData($scope.currentAction.id, 'Crate Description', 'NotSet')
                         .then((data) => {
                             var descriptions = <Array<model.CrateDescriptionDTO>>[];
                             angular.forEach(data, (it) => {
