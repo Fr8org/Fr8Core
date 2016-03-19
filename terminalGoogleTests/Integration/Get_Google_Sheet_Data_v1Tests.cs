@@ -58,7 +58,7 @@ namespace terminalGoogleTests.Integration
 
         private void AssertCrateTypes_OnConfiguration(ICrateStorage crateStorage)
         {
-            Assert.AreEqual(1, crateStorage.Count);
+            Assert.AreEqual(2, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
         }
 
@@ -113,10 +113,10 @@ namespace terminalGoogleTests.Integration
             Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
-            Assert.AreEqual(5, crateStorage.Count);
+            Assert.AreEqual(4, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardTableDataCM>().Count());
-            Assert.AreEqual(1, crateStorage.CratesOfType<CrateDescriptionCM>().Count());
+            Assert.AreEqual(0, crateStorage.CratesOfType<CrateDescriptionCM>().Count());
             Assert.IsFalse(crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.FirstRowHeaders);
             
             // Due to performance issue, remove functionalilty to load table contents
@@ -151,10 +151,10 @@ namespace terminalGoogleTests.Integration
             Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
-            Assert.AreEqual(5, crateStorage.Count);
+            Assert.AreEqual(4, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardTableDataCM>().Count());
-            Assert.AreEqual(1, crateStorage.CratesOfType<CrateDescriptionCM>().Count());
+            Assert.AreEqual(0, crateStorage.CratesOfType<CrateDescriptionCM>().Count());
             Assert.IsFalse(crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.FirstRowHeaders);
 
             // Due to performance issue, remove functionalilty to load table contents
@@ -188,9 +188,9 @@ namespace terminalGoogleTests.Integration
             Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
-            Assert.AreEqual(4, crateStorage.Count);
+            Assert.AreEqual(3, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
-            Assert.AreEqual(1, crateStorage.CratesOfType<CrateDescriptionCM>().Count());
+            Assert.AreEqual(0, crateStorage.CratesOfType<CrateDescriptionCM>().Count());
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardTableDataCM>().Count());
             Assert.IsFalse(crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.FirstRowHeaders);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.Table.Count);
@@ -350,7 +350,7 @@ namespace terminalGoogleTests.Integration
             var storage = Crate.GetStorage(payload);
             var tableDataCrate = storage.CratesOfType<StandardTableDataCM>().Single();
             ////Assert
-            Assert.AreEqual("Data from Row_Only", tableDataCrate.Label);
+            Assert.AreEqual("Table Generated From Google Sheet Data", tableDataCrate.Label);
         }
         /////////////
         /// Run Tests End
