@@ -26,7 +26,7 @@ namespace terminalSalesforce.Controllers
             {
                 Name = "terminalSalesforce",
                 TerminalStatus = TerminalStatus.Active,
-                Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
+                Endpoint = CloudConfigurationManager.GetSetting("terminalSalesforce.TerminalEndpoint"),
                 Version = "1",
                 AuthenticationType = AuthenticationType.External
             };

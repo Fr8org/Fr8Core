@@ -1,12 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Net.Http;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using StructureMap;
 using Data.Constants;
 using Data.Control;
@@ -15,14 +11,11 @@ using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
-using Hub.Interfaces;
 using Hub.Managers;
-using Utilities.Configuration.Azure;
 using TerminalBase.Infrastructure;
 using AutoMapper;
 using Data.Helpers;
 using Data.Interfaces.DataTransferObjects.Helpers;
-using Hub.Helper;
 using Data.Interfaces;
 
 namespace TerminalBase.BaseClasses
@@ -35,17 +28,18 @@ namespace TerminalBase.BaseClasses
     {
         #region Fields
 
-        protected ICrateManager CrateManager { get; private set; }
+        protected ICrateManager CrateManager { get; }
+
         protected static readonly string ConfigurationControlsLabel = "Configuration_Controls";
         public string CurrentFr8UserId { get; set; }
-        protected string _activityName { get; set; }
+        protected string ActivityName { get; set; }
 
-        private List<ActivityTemplateDTO> _activityTemplateCache = null;
+        private List<ActivityTemplateDTO> _activityTemplateCache;
 
         public IHubCommunicator HubCommunicator { get; set; }
         #endregion
 
-        private static HashSet<CrateManifestType> ExcludedManifestTypes = new HashSet<CrateManifestType>()
+        private static readonly HashSet<CrateManifestType> ExcludedManifestTypes = new HashSet<CrateManifestType>()
         {
             ManifestDiscovery.Default.GetManifestType<StandardConfigurationControlsCM>(),
             ManifestDiscovery.Default.GetManifestType<EventSubscriptionCM>()
@@ -53,21 +47,19 @@ namespace TerminalBase.BaseClasses
 
         public BaseTerminalActivity() : this("Unknown")
         {
-
         }
 
-        public BaseTerminalActivity(string actionName)
+        public BaseTerminalActivity(string activityName)
         {
             CrateManager = ObjectFactory.GetInstance<ICrateManager>();
             HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
-            _activityName = actionName;
+            ActivityName = activityName;
         }
 
         public void SetCurrentUser(string userId)
         {
             CurrentFr8UserId = userId;
         }
-
         /// <summary>
         /// Creates a suspend request for hub execution
         /// </summary>
@@ -80,7 +72,6 @@ namespace TerminalBase.BaseClasses
                 var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
                 operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.RequestSuspend);
             }
-
             return payload;
         }
 
@@ -97,9 +88,8 @@ namespace TerminalBase.BaseClasses
             {
                 var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
                 operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.RequestTerminate);
-                operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Message = message });
+                operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO { Message = message });
             }
-
             return payload;
         }
 
@@ -179,7 +169,7 @@ namespace TerminalBase.BaseClasses
 
             if (control == null)
             {
-                throw new ApplicationException(string.Format("No crate found with Label == \"Configuration_Controls\" and ManifestType == \"{0}\"", CrateManifestTypes.StandardConfigurationControls));
+                throw new ApplicationException($"No crate found with Label == \"Configuration_Controls\" and ManifestType == \"{CrateManifestTypes.StandardConfigurationControls}\"");
             }
 
             return control;
@@ -330,8 +320,7 @@ namespace TerminalBase.BaseClasses
             var controlsCrate = storage.CrateContentsOfType<StandardConfigurationControlsCM>(c => c.Label == ConfigurationControlsLabel).FirstOrDefault();
             return controlsCrate;
         }
-
-
+        
         public virtual async Task<PayloadDTO> ExecuteChildActivities(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             return Success(await GetPayload(curActivityDO, containerId));
@@ -345,7 +334,7 @@ namespace TerminalBase.BaseClasses
             }
         }
 
-        protected bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
+        protected virtual bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
         {
             return authTokenDO == null || string.IsNullOrEmpty(authTokenDO.Token);
         }
@@ -424,10 +413,36 @@ namespace TerminalBase.BaseClasses
                     }
                     return curActivityDO;
                 }
-                return await FollowupConfigurationResponse(curActivityDO, authToken);
+                var result = await FollowupConfigurationResponse(curActivityDO, authToken);
+                UpdateRuntimeAvailableCrates(result);
+                return result;
             }
 
             throw new InvalidDataException("Activity's Configuration Store does not contain connection_string field.");
+        }
+
+        private const string RuntimeAvailableCratesLabel = "Runtime Available Crates";
+
+        private void UpdateRuntimeAvailableCrates(ActivityDO curActivityDO)
+        {
+            using (var activityStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            {
+                activityStorage.RemoveByLabel(RuntimeAvailableCratesLabel);
+                var crateDescriptions = GetRuntimeAvailableCrateDescriptions(curActivityDO)?.ToArray();
+                if (crateDescriptions?.Length > 0)
+                {
+                    activityStorage.Add(Crate.FromContent(RuntimeAvailableCratesLabel, new CrateDescriptionCM(crateDescriptions), AvailabilityType.RunTime));
+                }
+            }
+        }
+        /// <summary>
+        /// Returns the list of items that describe crates available at runtime for downstream activities
+        /// NOTE: do not create <see cref="Hub.Managers.IUpdatableCrateStorage" /> for passed activity inside this method
+        /// as it may lead to unpredictable consequences
+        /// </summary>
+        protected virtual IEnumerable<CrateDescriptionDTO> GetRuntimeAvailableCrateDescriptions(ActivityDO curActivityDO)
+        {
+            yield break;
         }
 
         /// <summary>
@@ -555,33 +570,9 @@ namespace TerminalBase.BaseClasses
         protected string ExtractControlFieldValue(ActivityDO curActivityDO, string fieldName)
         {
             var storage = CrateManager.GetStorage(curActivityDO);
-
             var controlsCrateMS = storage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-
-            //            var controlsCrate = curActivityDto.CrateStorage.CrateDTO
-            //                .FirstOrDefault(
-            //                    x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
-            //                    && x.Label == "Configuration_Controls");
-            //
-            //            if (controlsCrate == null)
-            //            {
-            //                throw new ApplicationException("No Configuration_Controls crate found.");
-            //            }
-            //
-            //            var controlsCrateMS = JsonConvert
-            //                .DeserializeObject<StandardConfigurationControlsCM>(
-            //                    controlsCrate.Contents
-            //                );
-
-            var field = controlsCrateMS.Controls
-                .FirstOrDefault(x => x.Name == fieldName);
-
-            if (field == null)
-            {
-                return null;
-            }
-
-            return field.Value;
+            var field = controlsCrateMS?.Controls.FirstOrDefault(x => x.Name == fieldName);
+            return field?.Value;
         }
 
         protected virtual async Task<List<Crate<StandardFileDescriptionCM>>> GetUpstreamFileHandleCrates(ActivityDO activityDO)
@@ -596,39 +587,6 @@ namespace TerminalBase.BaseClasses
 
             return upstreamFieldsCrate;
         }
-
-        /*protected ConfigurationRequestType ReturnInitialUnlessExistsField(ActionDTO curActionDTO, string fieldName, Data.Interfaces.Manifests.Manifest curSchema)
-        {
-            //CrateStorageDTO curCrates = curActionDTO.CrateStorage;
-            var stroage = Crate.GetStorage(curActionDTO.CrateStorage);
-
-            if (stroage.Count == 0)
-                return ConfigurationRequestType.Initial;
-
-            ActionDO curActivityDO = Mapper.Map<ActionDO>(curActionDTO);
-
-            //load configuration crates of manifest type Standard Control Crates
-            //look for a text field name select_file with a value
-            Data.Interfaces.Manifests.Manifest manifestSchema = new Data.Interfaces.Manifests.Manifest(Data.Constants.MT.StandardConfigurationControls);
-
-            var keys = Action.FindKeysByCrateManifestType(curActivityDO, manifestSchema, fieldName).Result
-                .Select(e => (string)e["value"])
-                .Where(s => !string.IsNullOrEmpty(s))
-                .ToArray();
-
-            //if there are more than 2 return keys, something is wrong
-            //if there are none or if there's one but it's value is "" the return initial else return followup
-            Validations.ValidateMax1(keys);
-
-            if (keys.Length == 0)
-                return ConfigurationRequestType.Initial;
-            else
-            {
-                return ConfigurationRequestType.Followup;
-            }
-
-        }*/
-
         /// <summary>
         /// Creates a crate with available design-time fields.
         /// </summary>
@@ -639,36 +597,15 @@ namespace TerminalBase.BaseClasses
             AvailabilityType availabilityTypeUpstream = AvailabilityType.RunTime,
             AvailabilityType availabilityTypeFieldsCrate = AvailabilityType.Configuration)
         {
-            var curUpstreamFields = await HubCommunicator.GetDesignTimeFieldsByDirection(activityDO, CrateDirection.Upstream, availabilityTypeUpstream, CurrentFr8UserId);
-
-            if (curUpstreamFields == null)
-            {
-                curUpstreamFields = new FieldDescriptionsCM();
-            }
+            var curUpstreamFields = await HubCommunicator.GetDesignTimeFieldsByDirection(activityDO, CrateDirection.Upstream, availabilityTypeUpstream, CurrentFr8UserId) ?? new FieldDescriptionsCM();
 
             var availableFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(
                     crateLabel,
                     curUpstreamFields.Fields,
-                    availabilityTypeFieldsCrate
-                );
+                    availabilityTypeFieldsCrate);
 
             return availableFieldsCrate;
         }
-
-        protected Crate PackCrate_ErrorTextBox(string fieldLabel, string errorMessage)
-        {
-            ControlDefinitionDTO[] controls =
-            {
-                GenerateTextBlock(fieldLabel,errorMessage,"well well-lg")
-            };
-
-            var crateControls = CrateManager.CreateStandardConfigurationControlsCrate(
-                        ConfigurationControlsLabel, controls
-                    );
-
-            return crateControls;
-        }
-
         /// <summary>
         /// Creates StandardConfigurationControlsCM with TextSource control
         /// </summary>
@@ -775,9 +712,6 @@ namespace TerminalBase.BaseClasses
 
             return ctrl;
         }
-
-
-
         /// <summary>
         /// Extract value from RadioButtonGroup or TextSource where specific value or upstream field was specified.
         /// </summary>
@@ -872,7 +806,7 @@ namespace TerminalBase.BaseClasses
             var exceptionMessage = string.Format("No field found with specified key: {0}.", fieldKey);
             //This is required for proper logging of the Incidents
             var fr8UserId = curActivity.AuthorizationToken.UserID;
-            baseEvent.SendTerminalErrorIncident(_activityName, exceptionMessage, _activityName, fr8UserId);
+            baseEvent.SendTerminalErrorIncident(ActivityName, exceptionMessage, ActivityName, fr8UserId);
 
             throw new ApplicationException(exceptionMessage);
         }
@@ -1067,19 +1001,23 @@ namespace TerminalBase.BaseClasses
 
         protected virtual async Task<Crate> MergeUpstreamFields<TManifest>(ActivityDO curActivityDO, string label)
         {
-            List<Data.Crates.Crate<TManifest>> crates = null;
+            List<Crate<TManifest>> crates = null;
 
             try
             {
                 //throws exception from test classes when it cannot call webservice
                 crates = await GetCratesByDirection<TManifest>(curActivityDO, CrateDirection.Upstream);
             }
-            catch { }
+            catch
+            {
+                //TODO: log or propagate this exception
+            }
 
             if (crates != null)
             {
                 FieldDTO[] upstreamFields;
                 Crate availableFieldsCrate = null;
+                //TODO: this code is unreachable as parameter T in List<T> is not contravariant 
                 if (crates is List<Data.Crates.Crate<FieldDescriptionsCM>>)
                 {
                     upstreamFields = (crates as List<Data.Crates.Crate<FieldDescriptionsCM>>).SelectMany(x => x.Content.Fields).Where(a => a.Availability != AvailabilityType.Configuration).ToArray();
@@ -1221,7 +1159,7 @@ namespace TerminalBase.BaseClasses
             bool requestConfig = false)
         {
             var crateDescriptions = await GetCratesByDirection<CrateDescriptionCM>(curActivityDO, CrateDirection.Upstream);
-            var runTimeCrateDescriptions = crateDescriptions.Where(c => c.Availability == AvailabilityType.RunTime).SelectMany(c => c.Content.CrateDescriptions);
+            var runTimeCrateDescriptions = crateDescriptions.Where(c => c.Availability == AvailabilityType.RunTime || c.Availability == AvailabilityType.Always).SelectMany(c => c.Content.CrateDescriptions);
             var control = new CrateChooser
             {
                 Label = label,

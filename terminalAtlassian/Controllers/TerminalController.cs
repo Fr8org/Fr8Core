@@ -21,7 +21,7 @@ namespace terminalAtlassian.Controllers
             {
                 Name = "terminalAtlassian",
                 TerminalStatus = TerminalStatus.Active,
-                Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
+                Endpoint = CloudConfigurationManager.GetSetting("terminalAtlassian.TerminalEndpoint"),
                 Version = "1",
                 AuthenticationType = AuthenticationType.InternalWithDomain
             };

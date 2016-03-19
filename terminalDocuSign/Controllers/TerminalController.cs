@@ -27,7 +27,7 @@ namespace terminalDocuSign.Controllers
             {
                 Name = "terminalDocuSign",
                 TerminalStatus = TerminalStatus.Active,
-                Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
+                Endpoint = CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint"),
                 Version = "1",
                 AuthenticationType = AuthenticationType.Internal
             };
@@ -122,7 +122,8 @@ namespace terminalDocuSign.Controllers
                 Category = ActivityCategory.Solution,
                 Terminal = terminal,
                 WebService = webService,
-                MinPaneWidth = 380
+                MinPaneWidth = 380,
+                NeedsAuthentication = true
             };
 
             var trackDocuSignRecipientsSolution = new ActivityTemplateDTO

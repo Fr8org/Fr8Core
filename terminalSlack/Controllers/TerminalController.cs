@@ -24,7 +24,7 @@ namespace terminalSlack.Controllers
         {
             var terminal = new TerminalDTO
             {
-                Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
+                Endpoint = CloudConfigurationManager.GetSetting("terminalSlack.TerminalEndpoint"),
                 TerminalStatus = TerminalStatus.Active,
                 Name = "terminalSlack",
                 Version = "1",
