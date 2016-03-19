@@ -33,7 +33,7 @@ namespace terminalIntegrationTests
 		[Test, Ignore]
         public async Task TerminalIntegration_SendDocuSignEnvelope_ConfigureInitial()
 		{
-			var curActionDTO = CreateEmptyActivity(_sendDocuSignEnvelopeActivityTemplate);
+			var curActionDTO = await CreateEmptyActivity(_sendDocuSignEnvelopeActivityTemplate);
 			await SendDocuSignEnvelope_ConfigureInitial(curActionDTO);
 		}
 
@@ -44,7 +44,7 @@ namespace terminalIntegrationTests
         public async Task TerminalIntegration_SendDocuSignEnvelopeV1_ConfigureFollowUp()
 		{
 			// Create blank WaitForDocuSignEventAction.
-			var savedActionDTO = CreateEmptyActivity(_sendDocuSignEnvelopeActivityTemplate);
+			var savedActionDTO = await CreateEmptyActivity(_sendDocuSignEnvelopeActivityTemplate);
 
 			// Call Configure Initial for WaitForDocuSignEvent action.
 			var initCrateStorageDTO = await SendDocuSignEnvelope_ConfigureInitial(savedActionDTO);

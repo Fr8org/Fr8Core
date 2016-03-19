@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Configuration;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Data.Control;
 using Data.Crates;
-using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Hub.Managers;
-using StructureMap;
 using TerminalBase.Infrastructure;
 using terminalDocuSign.Infrastructure;
 using TerminalBase.BaseClasses;
@@ -92,7 +88,7 @@ namespace terminalDocuSign.Actions
                         recipientEvents = string.Join(",", DocuSignEventNames.GetEventsFor("Recipient")),
                         name = "MonitorAllDocuSignEvents",
                         urlToPublishTo =
-                            Regex.Match(CloudConfigurationManager.GetSetting("TerminalEndpoint"), @"(\w+://\w+:\d+)").Value +
+                            Regex.Match(CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint"), @"(\w+://\w+:\d+)").Value +
                             "/terminals/terminalDocuSign/events"
                     };
 
@@ -101,7 +97,7 @@ namespace terminalDocuSign.Actions
             }
             catch(Exception ex)
             {
-
+                //TODO: log this exception
             }
             return Task.FromResult<ActivityDO>(curActivityDO);
         }

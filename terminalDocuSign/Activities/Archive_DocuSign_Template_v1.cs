@@ -1,21 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Newtonsoft.Json;
 using Data.Control;
-using Data.Crates;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Hub.Managers;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services;
-using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using Data.Constants;
+using Data.Crates;
 using Utilities;
 
 namespace terminalDocuSign.Actions
@@ -48,14 +48,8 @@ namespace terminalDocuSign.Actions
                 });
             }
         }
+        
 
-        private readonly DocuSignManager _docuSignManager;
-
-
-        public Archive_DocuSign_Template_v1()
-        {
-            _docuSignManager = new DocuSignManager();
-        }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
@@ -69,9 +63,8 @@ namespace terminalDocuSign.Actions
 
         protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
             var configurationCrate = PackControls(new ActivityUi());
-            _docuSignManager.FillDocuSignTemplateSource(configurationCrate, "Available_Templates", docuSignAuthDTO);
+            FillDocuSignTemplateSource(configurationCrate, "Available_Templates", authTokenDO);
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
@@ -96,7 +89,7 @@ namespace terminalDocuSign.Actions
                 return curActivityDO;
             }
 
-            curActivityDO.ChildNodes = new List<RouteNodeDO>();
+            curActivityDO.ChildNodes = new List<PlanNodeDO>();
             var activityTemplates = await HubCommunicator.GetActivityTemplates(CurrentFr8UserId);
             var getDocusignTemplate = GetActivityTemplate(activityTemplates, "Get_DocuSign_Template");
             var convertCratesTemplate = GetActivityTemplate(activityTemplates, "ConvertCrates");
@@ -118,6 +111,46 @@ namespace terminalDocuSign.Actions
 
             return curActivityDO;
         }
+        //This method is no longer applicable since this activity is deprecated
+        //protected internal override ValidationResult ValidateActivityInternal(ActivityDO curActivityDO)
+        //{
+        //    errorMessage = string.Empty;
+        //    var errorMessages = new List<string>();
+        //    using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+        //    {
+        //        var configControls = GetConfigurationControls(crateStorage);
+        //        if (configControls == null)
+        //        {
+        //            errorMessage = "Controls are not configured properly";
+        //            return false;
+        //        }
+        //        var templateList = configControls.Controls.OfType<DropDownList>().FirstOrDefault();
+        //        if (templateList?.ListItems.Count == 0)
+        //        {
+        //            errorMessage = templateList.ErrorMessage = "Please link at least one template to your DocuSign account";
+        //            if (!string.IsNullOrEmpty(errorMessage))
+        //            {
+        //                errorMessages.Add(errorMessage);
+        //            }
+        //        }
+        //        else
+        //        {
+        //            errorMessage = templateList.ErrorMessage = string.IsNullOrEmpty(templateList.selectedKey) ? "Template is not selected" : string.Empty;
+        //            if (!string.IsNullOrEmpty(errorMessage))
+        //            {
+        //                errorMessages.Add(errorMessage);
+        //            }
+        //        }
+        //        var fileNameTextBox = configControls.Controls.OfType<TextBox>().FirstOrDefault();
+        //        errorMessage = fileNameTextBox.ErrorMessage = string.IsNullOrEmpty(fileNameTextBox.Value) ? "File name is not specified" : string.Empty;
+        //        if (!string.IsNullOrEmpty(errorMessage))
+        //        {
+        //            errorMessages.Add(errorMessage);
+        //        }
+        //        errorMessage = string.Join(Environment.NewLine, errorMessages);
+        //        return errorMessages.Count == 0;
+        //    }
+        //}
 
         private async Task<ActivityDO> CreateGetDocuSignTemplateActivity(ActivityTemplateDTO template, AuthorizationTokenDO authTokenDO, ActivityDO parentAction)
         {
@@ -195,7 +228,9 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        protected override string ActivityUserFriendlyName => SolutionName;
+
+        protected internal override async Task<PayloadDTO> RunInternal(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             return Success(await GetPayload(curActivityDO, containerId));
         }

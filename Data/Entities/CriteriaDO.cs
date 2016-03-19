@@ -7,21 +7,21 @@ using Data.States.Templates;
 namespace Data.Entities
 {
     /// <summary>
-    /// Criteria object for Subroute.
+    /// Criteria object for SubPlan.
     /// </summary>
     public class CriteriaDO : BaseObject
     {
         [Key]
         public int Id { get; set; }
         
-        [ForeignKey("Subroute")]
-        public Guid? SubrouteId { get; set; }
+        [ForeignKey("SubPlan")]
+        public Guid? SubPlanId { get; set; }
 
         /// <summary>
-        /// Reference to parent RouteNode.
-        /// Every Criteria must belong to a single RouteNode.
+        /// Reference to parent PlanNode.
+        /// Every Criteria must belong to a single PlanNode.
         /// </summary>
-        public virtual SubrouteDO Subroute { get; set; }
+        public virtual SubPlanDO SubPlan { get; set; }
         
 
         //the criteria execution type reflects the radio button choice: apply criteria? or execute without worrying about the criteria?

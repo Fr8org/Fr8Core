@@ -1,6 +1,7 @@
 ﻿using Data.Interfaces.DataTransferObjects;
 using System;
 using System.Collections.Generic;
+using Data.States;
 
 namespace terminalSlackTests.Fixtures
 {
@@ -27,6 +28,8 @@ namespace terminalSlackTests.Fixtures
             {
                 Id = 1,
                 Name = "Monitor_Channel_TEST",
+                Label = "Monitor Channel",
+                Category = ActivityCategory.Monitors,
                 Version = "1"
             };
         }
@@ -55,6 +58,20 @@ namespace terminalSlackTests.Fixtures
                new FieldDTO("user_name", "sergeyp"),
                new FieldDTO("text", "test")
            };
+        }
+
+        public static Fr8DataDTO Monitor_Channel_v1_InitialConfiguration_Fr8DataDTO(bool isAuthToken)
+        {
+            var activityTemplate = Monitor_Channel_v1_ActivityTemplate();
+
+            var activityDTO = new ActivityDTO()
+            {
+                Id = Guid.NewGuid(),
+                Label = "Monitor_Channel",
+                AuthToken = isAuthToken ? Slack_AuthToken() : null,
+                ActivityTemplate = activityTemplate
+            };
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
 
         public static Fr8DataDTO Publish_To_Slack_v1_InitialConfiguration_Fr8DataDTO(bool isAuthToken = true)

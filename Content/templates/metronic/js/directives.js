@@ -2,7 +2,7 @@
 GLobal Directives
 ***/
 
-// Route State Load Spinner(used on page or content load)
+// web URL State Load Spinner(used on page or content load)
 MetronicApp.directive('ngSpinnerBar', ['$rootScope',
     function($rootScope) {
         return {

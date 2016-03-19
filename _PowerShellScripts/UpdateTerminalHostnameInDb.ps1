@@ -4,8 +4,13 @@
 	Called during CI process for non-Dev/Master builds. 
 #>
 param(
-    [string]$connectionString,
+    [Parameter(Mandatory = $true)]
+	[string]$connectionString,
+
+	[Parameter(Mandatory = $true)]
 	[string]$newHostname,
+
+	[Parameter(Mandatory = $false)]
 	[string]$overrideDbName
 )
 

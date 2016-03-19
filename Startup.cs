@@ -128,6 +128,7 @@ namespace HubWeb
             var activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
             var terminalService = ObjectFactory.GetInstance<ITerminal>();
 
+
             foreach (string url in terminalUrls)
             {
                 try
@@ -162,9 +163,9 @@ namespace HubWeb
 
             // At Startup Check If the Log Monitor Fr8 Event plan exist in the database then active it. otherwise create the new plan.
 
-            RouteManager manager = new RouteManager();
+            PlanManager manager = new PlanManager();
             string sytemUserEmail = ObjectFactory.GetInstance<IConfigRepository>().Get<string>("SystemUserEmail");
-            await manager.CreateRoute_LogFr8InternalEvents(sytemUserEmail).ConfigureAwait(true);
+            await manager.CreatePlan_LogFr8InternalEvents(sytemUserEmail).ConfigureAwait(true);
         }
 
         public static IDisposable CreateServer(string url)

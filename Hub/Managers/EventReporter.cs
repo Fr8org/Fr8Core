@@ -168,7 +168,52 @@ namespace Hub.Managers
                 uow.SaveChanges();
             }
         }
+        /*
+        private void JumpToPlanRequested(PlanDO targetPlanDO, ContainerDO containerDO)
+        {
+            try
+            {
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    var factDO = new FactDO()
+                    {
+                        PrimaryCategory = "Container",
+                        SecondaryCategory = "Plan",
+                        Activity = "Plan Launch",
+                        Status = "Plan Launch Initiating",
+                        ObjectId = targetPlanDO.Id.ToString(),
+                        CustomerId = _security.GetCurrentUser(),
+                        CreatedByID = _security.GetCurrentUser(),
+                        Data = string.Join(
+                            Environment.NewLine,
+                            "Plan Name: " + targetPlanDO?.Name
+                        )
+                    };
 
+                    uow.FactRepository.Add(factDO);
+                    uow.SaveChanges();
+                }
+
+                
+                //create user notifications
+                var pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
+
+                string pusherChannel = string.Format("fr8pusher_{0}", targetPlanDO.Fr8Account.UserName);
+                pusherNotifier.Notify(pusherChannel, "fr8pusher_activity_execution_info",
+                    new
+                    {
+                        ActivityName = activityDo.Label,
+                        PlanName = containerDO.Name,
+                        ContainerId = containerDO.Id.ToString(),
+                    });
+                    
+            }
+            catch (Exception exception)
+            {
+                EventManager.UnexpectedError(exception);
+            }
+        }
+*/
         private void ActivityRunRequested(ActivityDO activityDo, ContainerDO containerDO)
         {
             try
@@ -668,17 +713,17 @@ namespace Hub.Managers
         /// </summary>
         /// <param name="userId">UserId received from DocuSign.</param>
         /// <param name="planId">EnvelopeId received from DocuSign.</param>
-        public void RouteCreated(string userId, string routeName)
+        public void RouteCreated(string userId, string planName)
         {
             FactDO fact = new FactDO
             {
-                PrimaryCategory = "RouteService",
+                PrimaryCategory = "PlanService",
                 SecondaryCategory = null,
                 Activity = "Created",
                 CustomerId = userId,
                 ObjectId = "0",
                 Data = string.Format("Plan Name: {0}.",
-                        routeName)
+                        planName)
             };
             LogFactInformation(fact, "RouteCreated");
             SaveFact(fact);
@@ -1019,7 +1064,7 @@ namespace Hub.Managers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 containerInExecution = uow.ContainerRepository.GetQuery()
-                    .FirstOrDefault(p => p.CurrentRouteNodeId.Value == curActivity.Id);
+                    .FirstOrDefault(p => p.CurrentPlanNodeId.Value == curActivity.Id);
                 var plan = containerInExecution != null ? uow.PlanRepository.GetById<PlanDO>(containerInExecution.PlanId) : null;
 
                 fact = new FactDO

@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
-using AutoMapper;
-using Data.Constants;
 using Data.Control;
 using Data.Crates;
 using Data.Entities;
@@ -14,9 +10,7 @@ using Data.Interfaces.Manifests;
 using Data.States;
 using Newtonsoft.Json;
 using Hub.Managers;
-using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using terminalDocuSign.Infrastructure;
 
 namespace terminalDocuSign.Actions
 {
@@ -97,7 +91,7 @@ namespace terminalDocuSign.Actions
                 return curActivityDO;
             }
 
-            curActivityDO.ChildNodes = new List<RouteNodeDO>();
+            curActivityDO.ChildNodes = new List<PlanNodeDO>();
 
             // Always use default template for solution
             const string firstTemplateName = "Monitor_DocuSign_Envelope_Activity";
@@ -108,15 +102,11 @@ namespace terminalDocuSign.Actions
             return curActivityDO;
         }
 
-        public async Task<PayloadDTO> Run(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        protected override string ActivityUserFriendlyName => SolutionName;
+
+        protected internal override async Task<PayloadDTO> RunInternal(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             return Success(await GetPayload(activityDO, containerId));
-        }
-
-        private async Task<IEnumerable<ActivityTemplateDO>> FindTemplates(ActivityDO activityDO, Predicate<ActivityTemplateDO> query)
-        {
-            var templates = await HubCommunicator.GetActivityTemplates(CurrentFr8UserId);
-            return templates.Select(x => Mapper.Map<ActivityTemplateDO>(x)).Where(x => query(x));
         }
     
         /// <summary>

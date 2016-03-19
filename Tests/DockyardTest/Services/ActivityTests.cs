@@ -23,14 +23,14 @@ namespace DockyardTest.Services
     [Category("Activity")]
     public class ActivityTests : BaseTest
     {
-        private IRouteNode _activity;
+        private IPlanNode _activity;
         //private Mock<IAction> _actionMock;
-        private SubrouteDO _curSubroute;
+        private SubPlanDO _curSubPlan;
         [SetUp]
         public override void SetUp()
         {
  	        base.SetUp();
-            _activity = ObjectFactory.GetInstance<IRouteNode>();
+            _activity = ObjectFactory.GetInstance<IPlanNode>();
 
         }
 
@@ -48,15 +48,15 @@ namespace DockyardTest.Services
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    RouteState = RouteState.Active,
+                    PlanState = PlanState.Active,
                     ChildNodes = { root }
                 });
                 
                 uow.SaveChanges();
 
-                RouteNodeDO curActivity = root;
-                List<RouteNodeDO> seqToTest = new List<RouteNodeDO>();
-                List<RouteNodeDO> refSeq = new List<RouteNodeDO>();
+                PlanNodeDO curActivity = root;
+                List<PlanNodeDO> seqToTest = new List<PlanNodeDO>();
+                List<PlanNodeDO> refSeq = new List<PlanNodeDO>();
 
                 TraverseActivities(root, refSeq);
 
@@ -75,7 +75,7 @@ namespace DockyardTest.Services
             }
         }
 
-        private void TraverseActivities(RouteNodeDO root, List<RouteNodeDO> seq)
+        private void TraverseActivities(PlanNodeDO root, List<PlanNodeDO> seq)
         {
             seq.Add(root);
 
@@ -98,16 +98,16 @@ namespace DockyardTest.Services
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    RouteState = RouteState.Active,
+                    PlanState = PlanState.Active,
                     ChildNodes = { FixtureData.TestActivityTree() }
                 });
                 
                 uow.SaveChanges();
 
 
-                RouteNodeDO curActivity = uow.PlanRepository.GetById<RouteNodeDO>(FixtureData.TestActivity57().Id);
+                PlanNodeDO curActivity = uow.PlanRepository.GetById<PlanNodeDO>(FixtureData.TestActivity57().Id);
 
-                List<RouteNodeDO> upstreamActivities = _activity.GetUpstreamActivities(uow, curActivity).Where(x => !(x is PlanDO)).ToList();
+                List<PlanNodeDO> upstreamActivities = _activity.GetUpstreamActivities(uow, curActivity).Where(x => !(x is PlanDO)).ToList();
                 foreach (var activity in upstreamActivities)
                 {
                     Debug.WriteLine (FixtureData.GetTestIdByGuid(activity.Id));
@@ -132,16 +132,15 @@ namespace DockyardTest.Services
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    RouteState = RouteState.Active,
+                    PlanState = PlanState.Active,
                     ChildNodes = { FixtureData.TestActivityTree() }
                 });
                 
-                //uow.RouteNodeRepository.Add(FixtureData.TestActivityTree());
                 uow.SaveChanges();
 
 
-                RouteNodeDO curActivity = FixtureData.TestActivity57();
-                List<RouteNodeDO> downstreamActivities = _activity.GetDownstreamActivities(uow, uow.PlanRepository.GetById<RouteNodeDO>(curActivity.Id));
+                PlanNodeDO curActivity = FixtureData.TestActivity57();
+                List<PlanNodeDO> downstreamActivities = _activity.GetDownstreamActivities(uow, uow.PlanRepository.GetById<PlanNodeDO>(curActivity.Id));
                 foreach (var activity in downstreamActivities)
                 {
                     Debug.WriteLine(FixtureData.GetTestIdByGuid(activity.Id));
@@ -180,7 +179,7 @@ namespace DockyardTest.Services
         [Test]
         public void Process_curActivityDOIsNull()
         {
-            _activity = ObjectFactory.GetInstance<IRouteNode>();
+            _activity = ObjectFactory.GetInstance<IPlanNode>();
             var containerDO = FixtureData.TestContainer1();
             Task result = _activity.Process(It.IsAny<Guid>(), It.IsAny<ActivityState>(), containerDO);
             Assert.AreEqual(result.Exception.InnerException.Message, "Cannot find Activity with the supplied curActivityId");
@@ -205,7 +204,7 @@ namespace DockyardTest.Services
                 uow.SaveChanges();
 
                 ContainerDO containerDO = FixtureData.TestContainer1();
-                _activity = ObjectFactory.GetInstance<IRouteNode>();
+                _activity = ObjectFactory.GetInstance<IPlanNode>();
                 _activity.Process(FixtureData.GetTestGuidById(1), It.IsAny<ActivityState>(), containerDO);
             }
         }

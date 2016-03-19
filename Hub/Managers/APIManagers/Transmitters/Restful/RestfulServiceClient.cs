@@ -153,9 +153,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
         //    }
         //    return response;
         //}
-
-
-
+        
         protected virtual string ExtractErrorMessage(string responseContent)
         {
             return responseContent;

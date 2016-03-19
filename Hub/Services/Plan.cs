@@ -63,8 +63,8 @@ namespace Hub.Services
                 planQuery = planQuery.Where(c => string.IsNullOrEmpty(c.Category));
 
             return (status == null
-                ? planQuery
-                : planQuery.Where(pt => pt.RouteState == status)).ToList();
+                ? planQuery.Where(pt => pt.PlanState != PlanState.Deleted)
+                : planQuery.Where(pt => pt.PlanState == status)).ToList();
 
         }
 
@@ -81,12 +81,13 @@ namespace Hub.Services
             if (submittedPlan.Id == Guid.Empty)
             {
                 submittedPlan.Id = Guid.NewGuid();
-                submittedPlan.RouteState = RouteState.Inactive;
+                submittedPlan.PlanState = PlanState.Inactive;
                 submittedPlan.Fr8Account = _security.GetCurrentAccount(uow);
 
-                submittedPlan.ChildNodes.Add(new SubrouteDO(true)
+                submittedPlan.ChildNodes.Add(new SubPlanDO(true)
                 {
-                    Id = Guid.NewGuid()
+                    Id = Guid.NewGuid(),
+                    Name = "Starting Subplan"
                 });
 
                 uow.PlanRepository.Add(submittedPlan);
@@ -113,7 +114,7 @@ namespace Hub.Services
                 Id = Guid.NewGuid(),
                 Name = name,
                 Fr8Account = _security.GetCurrentAccount(uow),
-                RouteState = RouteState.Inactive,
+                PlanState = PlanState.Inactive,
                 Category = category
             };
 
@@ -131,9 +132,9 @@ namespace Hub.Services
                 throw new EntityNotFoundException<PlanDO>(id);
             }
 
-            plan.RouteState = RouteState.Deleted;
+            plan.PlanState = PlanState.Deleted;
 
-            //Route deletion will only update its RouteState = Deleted
+            //Plan deletion will only update its PlanState = Deleted
             foreach (var container in _container.LoadContainers(uow, plan))
             {
                 container.ContainerState = ContainerState.Deleted;
@@ -141,7 +142,7 @@ namespace Hub.Services
         }
 
 
-        public async Task<ActivateActivitiesDTO> Activate(Guid curPlanId, bool routeBuilderActivate)
+        public async Task<ActivateActivitiesDTO> Activate(Guid curPlanId, bool planBuilderActivate)
         {
             var result = new ActivateActivitiesDTO
             {
@@ -153,7 +154,7 @@ namespace Hub.Services
             {
                 var plan = uow.PlanRepository.GetById<PlanDO>(curPlanId);
 
-                if (plan.RouteState == RouteState.Deleted)
+                if (plan.PlanState == PlanState.Deleted)
                 {
                     EventManager.PlanActivationFailed(plan, "Cannot activate deleted plan");
                     throw new ApplicationException("Cannot activate deleted plan");
@@ -175,16 +176,16 @@ namespace Hub.Services
                             result.Container = errorContainerDTO;
                         }
 
-                        //if the activate call is comming from the Route Builder just render again the action group with the errors
-                        if (routeBuilderActivate)
+                        //if the activate call is comming from the Plan Builder just render again the action group with the errors
+                        if (planBuilderActivate)
                         {
                             result.ActivitiesCollections.Add(resultActivate);
                         }
                         else if (validationErrorChecker)
                         {
-                            //if the activate call is comming from the Routes List then show the first error message and redirect to plan builder 
+                            //if the activate call is comming from the Plans List then show the first error message and redirect to plan builder 
                             //so the user could fix the configuration
-                            result.RedirectToRouteBuilder = true;
+                            result.RedirectToPlanBuilder = true;
 
                             return result;
                         }
@@ -198,7 +199,7 @@ namespace Hub.Services
 
                 if (result.Status != "validation_error")
                 {
-                    plan.RouteState = RouteState.Active;
+                    plan.PlanState = PlanState.Active;
                     uow.SaveChanges();
                 }
             }
@@ -268,7 +269,7 @@ namespace Hub.Services
                 }
 
 
-                plan.RouteState = RouteState.Inactive;
+                plan.PlanState = PlanState.Inactive;
                 uow.SaveChanges();
             }
 
@@ -278,13 +279,13 @@ namespace Hub.Services
 
         public IList<PlanDO> GetMatchingPlans(string userId, EventReportCM curEventReport)
         {
-            List<PlanDO> routeSubscribers = new List<PlanDO>();
+            List<PlanDO> planSubscribers = new List<PlanDO>();
             if (String.IsNullOrEmpty(userId))
                 throw new ArgumentNullException("Parameter UserId is null");
             if (curEventReport == null)
                 throw new ArgumentNullException("Parameter Standard Event Report is null");
 
-            //1. Query all RouteDO that are Active
+            //1. Query all PlanDO that are Active
             //2. are associated with the determined DockyardAccount
             //3. their first Activity has a Crate of  Class "Standard Event Subscriptions" which has inside of it an event name that matches the event name 
             //in the Crate of Class "Standard Event Reports" which was passed in.
@@ -298,7 +299,7 @@ namespace Hub.Services
 
         public List<PlanDO> MatchEvents(List<PlanDO> curPlans, EventReportCM curEventReport)
         {
-            List<PlanDO> subscribingRoutes = new List<PlanDO>();
+            List<PlanDO> subscribingPlans = new List<PlanDO>();
 
             foreach (var curPlan in curPlans)
             {
@@ -325,13 +326,13 @@ namespace Hub.Services
 
                         if (hasEvents)
                         {
-                            subscribingRoutes.Add(curPlan);
+                            subscribingPlans.Add(curPlan);
                         }
                     }
                 }
             }
 
-            return subscribingRoutes;
+            return subscribingPlans;
         }
 
         private ActivityDO GetFirstActivityWithEventSubscriptions(Guid id)
@@ -356,46 +357,46 @@ namespace Hub.Services
         
         public PlanDO GetPlanByActivityId(IUnitOfWork uow, Guid id)
         {
-            return (PlanDO)uow.PlanRepository.GetById<RouteNodeDO>(id).GetTreeRoot();
+            return (PlanDO)uow.PlanRepository.GetById<PlanNodeDO>(id).GetTreeRoot();
         }
 
         public PlanDO Copy(IUnitOfWork uow, PlanDO plan, string name)
         {
             throw new NotImplementedException();
 
-//            var root = (PlanDO)plan.Clone();
-//            root.Id = Guid.NewGuid();
-//            root.Name = name;
-//            uow.PlanRepository.Add(root);
-//
-//            var queue = new Queue<Tuple<RouteNodeDO, Guid>>();
-//            queue.Enqueue(new Tuple<RouteNodeDO, Guid>(root, plan.Id));
-//
-//            while (queue.Count > 0)
-//            {
-//                var routeTuple = queue.Dequeue();
-//                var routeNode = routeTuple.Item1;
-//                var sourceRouteNodeId = routeTuple.Item2;
-//
-//                var sourceChildren = uow.
-//                    .GetQuery()
-//                    .Where(x => x.ParentRouteNodeId == sourceRouteNodeId)
-//                    .ToList();
-//
-//                foreach (var sourceChild in sourceChildren)
-//                {
-//                    var childCopy = sourceChild.Clone();
-//                    childCopy.Id = Guid.NewGuid();
-//                    childCopy.ParentRouteNode = routeNode;
-//                    routeNode.ChildNodes.Add(childCopy);
-//
-//                    uow.RouteNodeRepository.Add(childCopy);
-//
-//                    queue.Enqueue(new Tuple<RouteNodeDO, Guid>(childCopy, sourceChild.Id));
-//                }
-//            }
-//
-//            return root;
+            //            var root = (PlanDO)plan.Clone();
+            //            root.Id = Guid.NewGuid();
+            //            root.Name = name;
+            //            uow.PlanRepository.Add(root);
+            //
+            //            var queue = new Queue<Tuple<PlanNodeDO, Guid>>();
+            //            queue.Enqueue(new Tuple<PlanNodeDO, Guid>(root, plan.Id));
+            //
+            //            while (queue.Count > 0)
+            //            {
+            //                var planTuple = queue.Dequeue();
+            //                var planNode = planTuple.Item1;
+            //                var sourcePlanNodeId = planTuple.Item2;
+            //
+            //                var sourceChildren = uow.
+            //                    .GetQuery()
+            //                    .Where(x => x.ParentPlanNodeId == sourcePlanNodeId)
+            //                    .ToList();
+            //
+            //                foreach (var sourceChild in sourceChildren)
+            //                {
+            //                    var childCopy = sourceChild.Clone();
+            //                    childCopy.Id = Guid.NewGuid();
+            //                    childCopy.ParentPlanNode = planNode;
+            //                    planNode.ChildNodes.Add(childCopy);
+            //
+            //                    uow.PlanNodeRepository.Add(childCopy);
+            //
+            //                    queue.Enqueue(new Tuple<PlanNodeDO, Guid>(childCopy, sourceChild.Id));
+            //                }
+            //            }
+            //
+            //            return root;
         }
 
         /// <summary>
@@ -404,8 +405,11 @@ namespace Hub.Services
         /// <param name="planId"></param>
         /// <param name="envelopeId"></param>
         /// <returns></returns>
-        public ContainerDO Create(IUnitOfWork uow, Guid planId, Crate curEvent)
+        public ContainerDO Create(IUnitOfWork uow, Guid planId, params Crate[] curPayload)
         {
+            //let's exclude null payload crates
+            curPayload = curPayload.Where(c => c != null).ToArray();
+
             var containerDO = new ContainerDO { Id = Guid.NewGuid() };
 
             var curPlan = uow.PlanRepository.GetById<PlanDO>(planId);
@@ -416,20 +420,20 @@ namespace Hub.Services
             containerDO.Name = curPlan.Name;
             containerDO.ContainerState = ContainerState.Unstarted;
 
-            if (curEvent != null)
+            if (curPayload.Length > 0)
             {
                 using (var crateStorage = _crate.UpdateStorage(() => containerDO.CrateStorage))
                 {
-                    crateStorage.Add(curEvent);
+                    crateStorage.AddRange(curPayload);
                 }
             }
 
-            containerDO.CurrentRouteNodeId = curPlan.StartingSubrouteId;
+            containerDO.CurrentPlanNodeId = curPlan.StartingSubPlanId;
 
             uow.ContainerRepository.Add(containerDO);
 
             //then create process node
-            var curProcessNode = _processNode.Create(uow, containerDO.Id, curPlan.StartingSubrouteId, "process node");
+            var curProcessNode = _processNode.Create(uow, containerDO.Id, curPlan.StartingSubPlanId, "process node");
             containerDO.ProcessNodes.Add(curProcessNode);
 
             uow.SaveChanges();
@@ -442,7 +446,7 @@ namespace Hub.Services
         {
             var plan = uow.PlanRepository.GetById<PlanDO>(curContainerDO.PlanId);
 
-            if (plan.RouteState == RouteState.Deleted)
+            if (plan.PlanState == PlanState.Deleted)
             {
                 throw new ApplicationException("Cannot run plan that is in deleted state.");
             }
@@ -458,27 +462,33 @@ namespace Hub.Services
                 await _container.Run(uow, curContainerDO);
                 return curContainerDO;
             }
-            catch
+            catch(Exception e)
             {
                 curContainerDO.ContainerState = ContainerState.Failed;
-                throw;
+                throw e;
             }
             finally
             {
                 //TODO is this necessary? let's leave it as it is
                 /*
-                curContainerDO.CurrentRouteNode = null;
-                curContainerDO.NextRouteNode = null;
+                curContainerDO.CurrentPlanNode = null;
+                curContainerDO.NextPlanNode = null;
                  * */
                 uow.SaveChanges();
             }
         }
 
-        public async Task<ContainerDO> Run(PlanDO curPlan, Crate curEvent)
+        public async Task<ContainerDO> Run(IUnitOfWork uow, PlanDO curPlan, params Crate[] curPayload)
+        {
+            var curContainerDO = Create(uow, curPlan.Id, curPayload);
+            return await Run(uow, curContainerDO);
+        }
+
+        public async Task<ContainerDO> Run(PlanDO curPlan, Crate curPayload)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curContainerDO = Create(uow, curPlan.Id, curEvent);
+                var curContainerDO = Create(uow, curPlan.Id, curPayload);
                 return await Run(uow, curContainerDO);
             }
         }

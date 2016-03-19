@@ -24,18 +24,18 @@ namespace DockyardTest.Services
     public class DockyardEventTests : BaseTest
     {
         [Test]
-        public async Task Events_Multiplefr8AccountsAssociatedWithSameExternalAccountId_ShouldCheckRoutesForAllUsers()
+        public async Task Events_Multiplefr8AccountsAssociatedWithSameExternalAccountId_ShouldCheckPlansForAllUsers()
         {
             //Arrange 
             var externalAccountId = "docusign_developer@dockyard.company";
-            var plan1 = FixtureData.TestRouteWithSubscribeEvent(FixtureData.TestDockyardAccount1());
-            var plan2 = FixtureData.TestRouteWithSubscribeEvent(FixtureData.TestDeveloperAccount(), 23);
+            var plan1 = FixtureData.TestPlanWithSubscribeEvent(FixtureData.TestDockyardAccount1());
+            var plan2 = FixtureData.TestPlanWithSubscribeEvent(FixtureData.TestDeveloperAccount(), 23);
             FixtureData.AddAuthorizationToken(FixtureData.TestDockyardAccount1(), externalAccountId);
             FixtureData.AddAuthorizationToken(FixtureData.TestDeveloperAccount(), externalAccountId);
 
-            var activityMock = new RouteNodeMock(plan1, plan2);
+            var activityMock = new PlanNodeMock(plan1, plan2);
 
-            ObjectFactory.Container.Inject(typeof(IRouteNode), activityMock);
+            ObjectFactory.Container.Inject(typeof(IPlanNode), activityMock);
 
             //Act
             var eventService = new Event();
@@ -56,7 +56,7 @@ namespace DockyardTest.Services
         //[Test]
         //public void ProcessInbound_CorrectStandardEventReportLabel_CallLaunchProcess()
         //{
-        //    var processTemplateDO = FixtureData.TestRouteWithSubscribeEvent();
+        //    var processTemplateDO = FixtureData.TestPlanWithSubscribeEvent();
         //    var resultRoutes = new List<RouteDO>() { processTemplateDO };
         //    IRoute curPlan = ObjectFactory.GetInstance<IRoute>();
         //    EventReportMS curEventReport = FixtureData.StandardEventReportFormat();
@@ -76,21 +76,21 @@ namespace DockyardTest.Services
     }
 
 
-    public class RouteNodeMock : IRouteNode
+    public class PlanNodeMock : IPlanNode
     {
         public int Processed;
         private readonly Dictionary<Guid, PlanDO> _planNodes = new Dictionary<Guid, PlanDO>();
         private readonly HashSet<Guid> _plans = new HashSet<Guid>();
         private readonly ICrateManager _crate;
 
-        public RouteNodeMock(params PlanDO[] plans)
+        public PlanNodeMock(params PlanDO[] plans)
         {
             foreach (var planDo in plans)
             {
                 _crate = ObjectFactory.GetInstance<ICrateManager>();
                 _plans.Add(planDo.Id);
                 var plan = planDo;
-                RouteTreeHelper.Visit(planDo, x => _planNodes[x.Id] = plan);
+                PlanTreeHelper.Visit(planDo, x => _planNodes[x.Id] = plan);
             }
         }
 
@@ -100,12 +100,12 @@ namespace DockyardTest.Services
             throw new NotImplementedException();
         }
 
-        public List<RouteNodeDO> GetUpstreamActivities(IUnitOfWork uow, RouteNodeDO curActivityDO)
+        public List<PlanNodeDO> GetUpstreamActivities(IUnitOfWork uow, PlanNodeDO curActivityDO)
         {
             throw new NotImplementedException();
         }
 
-        public List<RouteNodeDO> GetDownstreamActivities(IUnitOfWork uow, RouteNodeDO curActivityDO)
+        public List<PlanNodeDO> GetDownstreamActivities(IUnitOfWork uow, PlanNodeDO curActivityDO)
         {
             throw new NotImplementedException();
         }
@@ -117,7 +117,7 @@ namespace DockyardTest.Services
 
         public Task Process(Guid curActivityId, ActivityState curActionState, ContainerDO curContainerDO)
         {
-            if (RouteTreeHelper.Linearize(_planNodes[curActivityId]).OfType<ActivityDO>().Any(x => x.Id == curActivityId))
+            if (PlanTreeHelper.Linearize(_planNodes[curActivityId]).OfType<ActivityDO>().Any(x => x.Id == curActivityId))
             {
                 Processed++;
 
@@ -141,32 +141,32 @@ namespace DockyardTest.Services
             throw new NotImplementedException();
         }
 
-        public RouteNodeDO GetNextActivity(RouteNodeDO currentActivity, RouteNodeDO root)
+        public PlanNodeDO GetNextActivity(PlanNodeDO currentActivity, PlanNodeDO root)
         {
             return null;
         }
 
-        public RouteNodeDO GetNextSibling(RouteNodeDO currentActivity)
+        public PlanNodeDO GetNextSibling(PlanNodeDO currentActivity)
         {
             return null;
         }
 
-        public RouteNodeDO GetParent(RouteNodeDO currentActivity)
+        public PlanNodeDO GetParent(PlanNodeDO currentActivity)
         {
             return null;
         }
 
-        public RouteNodeDO GetFirstChild(RouteNodeDO currentActivity)
+        public PlanNodeDO GetFirstChild(PlanNodeDO currentActivity)
         {
             return _planNodes[currentActivity.Id].ChildNodes.First().ChildNodes.First();
         }
 
-        public bool HasChildren(RouteNodeDO currentActivity)
+        public bool HasChildren(PlanNodeDO currentActivity)
         {
-            return _planNodes[currentActivity.Id].StartingSubrouteId == currentActivity.Id;
+            return _planNodes[currentActivity.Id].StartingSubPlanId == currentActivity.Id;
         }
 
-        public void Delete(IUnitOfWork uow, RouteNodeDO activity)
+        public void Delete(IUnitOfWork uow, PlanNodeDO activity)
         {
             throw new NotImplementedException();
         }

@@ -122,6 +122,7 @@ namespace terminalFr8Core.Actions
                     crate.Availability = Data.States.AvailabilityType.RunTime;
                     crateStorage.Add(crate);
                 }
+
             }
 
             return Task.FromResult(curActivityDO);

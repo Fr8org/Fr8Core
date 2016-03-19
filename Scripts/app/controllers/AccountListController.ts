@@ -6,6 +6,7 @@ module dockyard.controllers {
     export interface IAccountListScope extends ng.IScope {
         users: Array<interfaces.IUserDTO>;
         openDetails(user: interfaces.IUserDTO);
+        dtOptionsBuilder: any
     }
 
     class AccountListController {
@@ -16,16 +17,30 @@ module dockyard.controllers {
         public static $inject = [
             '$scope',
             'UserService',
-            '$state'
+            '$state',
+            'DTOptionsBuilder'
         ];
 
         constructor(
             private $scope: IAccountListScope,
             private UserService: services.IUserService,
-            private $state: ng.ui.IStateService) {
+            private $state: ng.ui.IStateService,
+            private DTOptionsBuilder) {
             
+            $scope.dtOptionsBuilder = DTOptionsBuilder.newOptions().withOption('language', {
+                'sEmptyTable': '',
+                'zeroRecords': ''
+            });
+
             UserService.getAll().$promise.then(function (data) {
                 $scope.users = data;
+
+                // reconfigure the message 
+                    
+                $scope.dtOptionsBuilder = DTOptionsBuilder.newOptions().withOption('language', {
+                    'sEmptyTable': 'No data available in table',
+                    'zeroRecords': 'No matching records found'
+                });
             });
 
             $scope.openDetails = function (user) {

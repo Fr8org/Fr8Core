@@ -10,19 +10,19 @@ module dockyard {
             switch (input) {
                 case model.ContainerState.Unstarted:
                     return "Unstarted";
-                    break;
+                    
                 case model.ContainerState.Executing:
                     return "Executing";
-                    break;
+                    
                 case model.ContainerState.WaitingForTerminal:
                     return "WaitingForTerminal";
-                    break;
+                    
                 case model.ContainerState.Completed:
                     return "Completed";
-                    break;
+                    
                 case model.ContainerState.Failed:
                     return "Failed";
-                    break;
+                    
                 default:
                     return "";
             }

@@ -88,6 +88,7 @@ namespace terminalFr8Core.Actions
 
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
+        
             //build a controls crate to render the pane
             var configurationControlsCrate = CreateControlsCrate();
 
@@ -106,7 +107,6 @@ namespace terminalFr8Core.Actions
                 Label = "Please enter delay duration",
                 Name = "Delay_Duration"
             };
-
 
             return PackControlsCrate(duration);
         }

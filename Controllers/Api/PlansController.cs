@@ -39,7 +39,7 @@ namespace HubWeb.Controllers
         private const string PUSHER_EVENT_GENERIC_FAILURE = "fr8pusher_generic_failure";
 
         private readonly Hub.Interfaces.IPlan _plan;
-        private readonly IFindObjectsRoute _findObjectsRoute;
+        private readonly IFindObjectsPlan _findObjectsPlan;
         private readonly ISecurityServices _security;
         private readonly ICrateManager _crate;
         private readonly IPusherNotifier _pusherNotifier;
@@ -48,19 +48,19 @@ namespace HubWeb.Controllers
         {
             _plan = ObjectFactory.GetInstance<IPlan>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
-            _findObjectsRoute = ObjectFactory.GetInstance<IFindObjectsRoute>();
+            _findObjectsPlan = ObjectFactory.GetInstance<IFindObjectsPlan>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
             _pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
         }
         /*
-        //[Route("~/routes")]
+        //[Route("~/plans")]
         [Fr8ApiAuthorize]
         [Fr8HubWebHMACAuthenticate]
-        public IHttpActionResult Post(RouteEmptyDTO routeDto, bool updateRegistrations = false)
+        public IHttpActionResult Post(PlanEmptyDTO planDto, bool updateRegistrations = false)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                if (string.IsNullOrEmpty(routeDto.Name))
+                if (string.IsNullOrEmpty(planDto.Name))
                 {
                     ModelState.AddModelError("Name", "Name cannot be null");
                 }
@@ -70,28 +70,28 @@ namespace HubWeb.Controllers
                     return BadRequest("Some of the request data is invalid");
                 }
 
-                var curPlanDO = Mapper.Map<RouteEmptyDTO, RouteDO>(routeDto, opts => opts.Items.Add("ptid", routeDto.Id));
+                var curPlanDO = Mapper.Map<RouteEmptyDTO, RouteDO>(planDto, opts => opts.Items.Add("ptid", planDto.Id));
                 curPlanDO.Fr8Account = _security.GetCurrentAccount(uow);
 
                 //this will return 0 on create operation because of not saved changes
                 _plan.CreateOrUpdate(uow, curPlanDO, updateRegistrations);
                 uow.SaveChanges();
-                routeDto.Id = curPlanDO.Id;
+                planDto.Id = curPlanDO.Id;
                 //what a mess lets try this
-                /*curPlanDO.StartingSubroute.Route = curPlanDO;
+                /*curPlanDO.StartingSubPlan.Plan = curPlanDO;
                 uow.SaveChanges();
                 processTemplateDto.Id = curPlanDO.Id;
-                return Ok(routeDto);
+                return Ok(planDto);
             }
         }
         */
         [Fr8HubWebHMACAuthenticate]
-        [ResponseType(typeof(RouteFullDTO))]
-        public IHttpActionResult Post(RouteEmptyDTO routeDto, bool updateRegistrations = false)
+        [ResponseType(typeof(PlanDTO))]
+        public IHttpActionResult Post(PlanEmptyDTO planDto, bool updateRegistrations = false)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                if (string.IsNullOrEmpty(routeDto.Name))
+                if (string.IsNullOrEmpty(planDto.Name))
                 {
                     ModelState.AddModelError("Name", "Name cannot be null");
                 }
@@ -100,12 +100,12 @@ namespace HubWeb.Controllers
                 {
                     return BadRequest("Some of the request data is invalid");
                 }
-                var curPlanDO = Mapper.Map<RouteEmptyDTO, PlanDO>(routeDto, opts => opts.Items.Add("ptid", routeDto.Id));
+                var curPlanDO = Mapper.Map<PlanEmptyDTO, PlanDO>(planDto, opts => opts.Items.Add("ptid", planDto.Id));
 
                 _plan.CreateOrUpdate(uow, curPlanDO, updateRegistrations);
 
                 uow.SaveChanges();
-                var result = RouteMappingHelper.MapRouteToDto(uow, uow.PlanRepository.GetById<PlanDO>(curPlanDO.Id));
+                var result = PlanMappingHelper.MapPlanToDto(uow, uow.PlanRepository.GetById<PlanDO>(curPlanDO.Id));
                 return Ok(result);
             }
         }
@@ -113,14 +113,14 @@ namespace HubWeb.Controllers
         [Fr8ApiAuthorize]
         //[Route("full/{id:guid}")]
         [ActionName("full")]
-        [ResponseType(typeof(RouteFullDTO))]
+        [ResponseType(typeof(PlanDTO))]
         [HttpGet]
-        public IHttpActionResult GetFullRoute(Guid id)
+        public IHttpActionResult GetFullPlan(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var plan = uow.PlanRepository.GetById<PlanDO>(id);
-                var result = RouteMappingHelper.MapRouteToDto(uow, plan);
+                var result = PlanMappingHelper.MapPlanToDto(uow, plan);
 
                 return Ok(result);
             };
@@ -128,14 +128,14 @@ namespace HubWeb.Controllers
 
         //[Route("getByAction/{id:guid}")]
         [Fr8HubWebHMACAuthenticate]
-        [ResponseType(typeof(RouteFullDTO))]
+        [ResponseType(typeof(PlanDTO))]
         [HttpGet]
         public IHttpActionResult GetByActivity(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var plan = _plan.GetPlanByActivityId(uow, id);
-                var result = RouteMappingHelper.MapRouteToDto(uow, plan);
+                var result = PlanMappingHelper.MapPlanToDto(uow, plan);
 
                 return Ok(result);
             };
@@ -160,7 +160,7 @@ namespace HubWeb.Controllers
                 if (curPlans.Any())
                 {
                     var queryableRepoOrdered = curPlans.OrderByDescending(x => x.LastUpdated);
-                    return Ok(queryableRepoOrdered.Select(Mapper.Map<RouteEmptyDTO>).ToArray());
+                    return Ok(queryableRepoOrdered.Select(Mapper.Map<PlanEmptyDTO>).ToArray());
                 }
             }
 
@@ -170,14 +170,14 @@ namespace HubWeb.Controllers
         [Fr8ApiAuthorize]
         [Fr8HubWebHMACAuthenticate]
         [HttpGet]
-        [ResponseType(typeof(IEnumerable<RouteFullDTO>))]
+        [ResponseType(typeof(IEnumerable<PlanDTO>))]
         public IHttpActionResult GetByName(string name)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curPlans = _plan.GetByName(uow, _security.GetCurrentAccount(uow), name);
-                var fullRoutes = curPlans.Select(curPlan => RouteMappingHelper.MapRouteToDto(uow, curPlan)).ToList();
-                return Ok(fullRoutes);
+                var fullPlans = curPlans.Select(curPlan => PlanMappingHelper.MapPlanToDto(uow, curPlan)).ToList();
+                return Ok(fullPlans);
 
             }
 
@@ -222,11 +222,11 @@ namespace HubWeb.Controllers
                     // User intentionally wants to receive a single JSON object in response.
                     if (id.HasValue)
                     {
-                        return Ok(Mapper.Map<RouteEmptyDTO>(curPlans.First()));
+                        return Ok(Mapper.Map<PlanEmptyDTO>(curPlans.First()));
                     }
 
                     // Return JSON array of objects, in case no id parameter was provided.
-                    return Ok(curPlans.Select(Mapper.Map<RouteEmptyDTO>).ToArray());
+                    return Ok(curPlans.Select(Mapper.Map<PlanEmptyDTO>).ToArray());
                 }
             }
 
@@ -270,13 +270,13 @@ namespace HubWeb.Controllers
         [HttpPost]
         [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
         [Fr8HubWebHMACAuthenticate]
-        public async Task<IHttpActionResult> Activate(Guid planId, bool routeBuilderActivate = false)
+        public async Task<IHttpActionResult> Activate(Guid planId, bool planBuilderActivate = false)
         {
             string pusherChannel = String.Format("fr8pusher_{0}", User.Identity.Name);
 
             try
             {
-                var activateDTO = await _plan.Activate(planId, routeBuilderActivate);
+                var activateDTO = await _plan.Activate(planId, planBuilderActivate);
 
                 //check if the response contains any error message and show it to the user 
                 if (activateDTO != null && activateDTO.ErrorMessage != string.Empty)
@@ -310,12 +310,12 @@ namespace HubWeb.Controllers
 
         [HttpPost]
         [Fr8ApiAuthorize]
-        public IHttpActionResult CreateFindObjectsRoute()
+        public IHttpActionResult CreateFindObjectsPlan()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var account = uow.UserRepository.GetByKey(User.Identity.GetUserId());
-                var plan = _findObjectsRoute.CreatePlan(uow, account);
+                var plan = _findObjectsPlan.CreatePlan(uow, account);
 
                 uow.SaveChanges();
 
@@ -334,9 +334,9 @@ namespace HubWeb.Controllers
             bool inActive = false;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var routeDO = uow.PlanRepository.GetById<PlanDO>(planId);
+                var planDO = uow.PlanRepository.GetById<PlanDO>(planId);
 
-                if (routeDO.RouteState == RouteState.Inactive)
+                if (planDO.PlanState == PlanState.Inactive)
                     inActive = true;
             }
 
@@ -352,7 +352,7 @@ namespace HubWeb.Controllers
                     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
                         var routeDO = uow.PlanRepository.GetById<PlanDO>(planId);
-                        activateDTO.Container.CurrentPlanType = routeDO.IsOngoingPlan() ? PlanType.Ongoing : PlanType.RunOnce;
+                        activateDTO.Container.CurrentPlanType = routeDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
                     }
 
                     return Ok(activateDTO.Container);
@@ -362,23 +362,23 @@ namespace HubWeb.Controllers
 
             //RUN
             CrateDTO curCrateDto;
-            Crate curCrate = null;
+            Crate curPayload = null;
 
             if (model != null)
             {
                 try
                 {
                     curCrateDto = JsonConvert.DeserializeObject<CrateDTO>(model.Payload);
-                    curCrate = _crate.FromDto(curCrateDto);
+                    curPayload = _crate.FromDto(curCrateDto);
                 }
                 catch (Exception ex)
                 {
-                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, "You payload is invalid. Make sure that it represents a valid crate object JSON.");
+                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, "Your payload is invalid. Make sure that it represents a valid crate object JSON.");
 
                     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
                         var planDO = uow.PlanRepository.GetById<PlanDO>(planId);
-                        currentPlanType = planDO.IsOngoingPlan() ? PlanType.Ongoing.ToString() : PlanType.RunOnce.ToString();
+                        currentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing.ToString() : Data.Constants.PlanType.RunOnce.ToString();
                     }
                     return BadRequest(currentPlanType);
                 }
@@ -392,66 +392,61 @@ namespace HubWeb.Controllers
                 {
                     if (planDO != null)
                     {
-                        _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS,
-                            string.Format("Launching a new Container for Plan \"{0}\"", planDO.Name));
+                        _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, $"Launching a new Container for Plan \"{planDO.Name}\"");
 
-                        var containerDO = await _plan.Run(planDO, curCrate);
+                        var containerDO = await _plan.Run(planDO, curPayload);
                         if (!planDO.IsOngoingPlan())
                         {
-                            var deactivateDTO = await _plan.Deactivate(planId);
+                            await _plan.Deactivate(planId);
                         }
 
                         var response = _crate.GetContentType<OperationalStateCM>(containerDO.CrateStorage);
 
-                        string responseMsg = "";
+                        var responseMsg = "";
 
                         ResponseMessageDTO responseMessage;
-                        if (response != null && response.CurrentActivityResponse != null && response.CurrentActivityResponse.TryParseResponseMessageDTO(out responseMessage))
+                        if (response?.CurrentActivityResponse != null 
+                            && response.CurrentActivityResponse.TryParseResponseMessageDTO(out responseMessage) 
+                            && !string.IsNullOrEmpty(responseMessage?.Message))
                         {
-                            if (responseMessage != null && !string.IsNullOrEmpty(responseMessage.Message))
-                            {
-                                responseMsg = "\n" + responseMessage.Message;
-                            }
+                            responseMsg = "\n" + responseMessage.Message;
                         }
 
-                        string message = String.Format("Complete processing for Plan \"{0}\".{1}", planDO.Name, responseMsg);
+                        var message = $"Complete processing for Plan \"{planDO.Name}\".{responseMsg}";
 
                         _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, message);
                         EventManager.ContainerLaunched(containerDO);
 
                         var containerDTO = Mapper.Map<ContainerDTO>(containerDO);
-                        containerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? PlanType.Ongoing : PlanType.RunOnce;
+                        containerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
 
                         EventManager.ContainerExecutionCompleted(containerDO);
 
                         return Ok(containerDTO);
                     }
 
-                    currentPlanType = planDO.IsOngoingPlan() ? PlanType.Ongoing.ToString() : PlanType.RunOnce.ToString();
+                    currentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing.ToString() : Data.Constants.PlanType.RunOnce.ToString();
                     return BadRequest(currentPlanType);
                 }
-                catch (ErrorResponseException exception)
+                catch (ErrorResponseException ex)
                 {
-                    //this response contains details about the error that happened on some terminal and need to be shown to client
-                    exception.ContainerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? PlanType.Ongoing : PlanType.RunOnce;
-                    return Ok(exception.ContainerDTO);
+                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, $"Plan \"{planDO.Name}\" failed");
+                    ex.ContainerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
+                    
+                    throw;
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    string message = String.Format("Plan \"{0}\" failed", planDO.Name);
-
-                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, message);
+                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, $"Plan \"{planDO.Name}\" failed");
+                    throw;
                 }
                 finally
                 {
                     if (!planDO.IsOngoingPlan())
                     {
-                        var deactivateDTO = await _plan.Deactivate(planId);
+                        await _plan.Deactivate(planId);
                     }
                 }
-                var containerDefaultDTO = new ContainerDTO();
-                containerDefaultDTO.CurrentPlanType = planDO.IsOngoingPlan() ? PlanType.Ongoing : PlanType.RunOnce;
-                return Ok(containerDefaultDTO);
             }
         }
     }

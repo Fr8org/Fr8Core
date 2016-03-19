@@ -41,14 +41,15 @@ namespace Data.Control
         public const string TextSource = "TextSource";
         public const string TextArea = "TextArea";
         public const string QueryBuilder = "QueryBuilder";
-        public const string ManageRoute = "ManageRoute";
+        public const string ManagePlan = "ManagePlan";
         public const string Duration = "Duration";
-        public const string RunRouteButton = "RunRouteButton";
+        public const string RunPlanButton = "RunPlanButton";
         public const string UpstreamDataChooser = "UpstreamDataChooser";
         public const string UpstreamFieldChooser = "UpstreamFieldChooser";
         public const string UpstreamCrateChooser = "UpstreamCrateChooser";
         public const string DatePicker = "DatePicker";
         public const string CrateChooser = "CrateChooser";
+        public const string ContainerTransition = "ContainerTransition";
     }
 
     public class CheckBox : ControlDefinitionDTO
@@ -59,11 +60,11 @@ namespace Data.Control
         }
     }
 
-    public class RunRouteButton : ControlDefinitionDTO
+    public class RunPlanButton : ControlDefinitionDTO
     {
-        public RunRouteButton()
+        public RunPlanButton()
         {
-            Type = ControlTypes.RunRouteButton;
+            Type = ControlTypes.RunPlanButton;
         }
     }
 
@@ -118,6 +119,17 @@ namespace Data.Control
         public QueryBuilder()
         {
             Type = ControlTypes.QueryBuilder;
+        }
+    }
+
+    public class ContainerTransition : ControlDefinitionDTO
+    {
+        [JsonProperty("transitions")]
+        public List<ContainerTransitionField> Transitions { get; set; } 
+        public ContainerTransition()
+        {
+            Type = ControlTypes.ContainerTransition;
+            this.Transitions = new List<ContainerTransitionField>();
         }
     }
 
@@ -478,6 +490,28 @@ namespace Data.Control
 
         [JsonProperty("controls")]
         public IList<ControlDefinitionDTO> Controls { get; set; }
+    }
+
+    public enum ContainerTransitions
+    {
+        JumpToActivity = 0,
+        JumpToPlan,
+        JumpToSubplan,
+        StopProcessing,
+        SuspendProcessing,
+        ProceedToNextActivity
+    }
+
+    public class ContainerTransitionField
+    {
+        [JsonProperty("conditions")]
+        public List<FilterConditionDTO> Conditions { get; set; }
+
+        [JsonProperty("transition")]
+        public ContainerTransitions Transition { get; set; }
+
+        [JsonProperty("targetNodeId")]
+        public Guid? TargetNodeId;
     }
 
     public class FilterPaneField

@@ -34,7 +34,8 @@ module dockyard.directives.paneConfigureAction {
         public controller: ($scope: IConfigurationControlScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
         public scope = {
             currentAction: '=',
-            field: '='
+            field: '=',
+            plan: '='
         };
         public templateUrl = '/AngularTemplate/ConfigurationControl';
         public restrict = 'E';

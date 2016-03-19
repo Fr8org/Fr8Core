@@ -20,7 +20,7 @@ namespace terminalSendGrid.Controllers
             {
                 Name = "terminalSendGrid",
                 TerminalStatus = TerminalStatus.Active,
-                Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
+                Endpoint = CloudConfigurationManager.GetSetting("terminalSendGrid.TerminalEndpoint"),
                 Version = "1"
             };
 

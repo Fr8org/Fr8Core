@@ -31,7 +31,7 @@ namespace terminalGoogle.Controllers
 
             var terminal = new TerminalDTO()
             {
-                Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
+                Endpoint = CloudConfigurationManager.GetSetting("terminalGoogle.TerminalEndpoint"),
                 TerminalStatus = TerminalStatus.Active,
                 Name = "terminalGoogle",
                 Version = "1",
@@ -54,8 +54,8 @@ namespace terminalGoogle.Controllers
 
             var receiveGoogleForm = new ActivityTemplateDTO
             {
-                Name = "Receive_Google_Form",
-                Label = "Receive Google Form Response",
+                Name = "Monitor_Form_Responses",
+                Label = "Monitor Form Responses",
                 Version = "1",
                 Category = ActivityCategory.Receivers,
                 Terminal = terminal,
@@ -66,8 +66,8 @@ namespace terminalGoogle.Controllers
 
             var saveDataAction = new ActivityTemplateDTO
             {
-                Name = "Save_In_Google_Sheet",
-                Label = "Save In Google Sheet",
+                Name = "Save_To_Google_Sheet",
+                Label = "Save To Google Sheet",
                 Version = "1",
                 Description = "Save crates into google spreadsheet",
                 Category = ActivityCategory.Forwarders,

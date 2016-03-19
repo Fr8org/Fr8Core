@@ -22,19 +22,19 @@ namespace terminalDocuSign.Tests.Fixtures
                        UserName = " DocuSignTestAccount1@Dockyard.company"
                    };
         }
-        public static DocuSignEnvelope TestEnvelope2(Account account)
-        {
-            // create envelope object and assign login info
-            return new DocuSignEnvelope
-            {
-                // assign account info from above
-                Login = account,
-                // "sent" to send immediately, "created" to save envelope as draft
-                Status = "created",
-                Created = DateTime.UtcNow,
-                Recipients = TestRecipients1()
-            };
-        }
+        //public static DocuSignEnvelope TestEnvelope2(Account account)
+        //{
+        //    // create envelope object and assign login info
+        //    return new DocuSignEnvelope
+        //    {
+        //        // assign account info from above
+        //        Login = account,
+        //        // "sent" to send immediately, "created" to save envelope as draft
+        //        Status = "created",
+        //        Created = DateTime.UtcNow,
+        //        Recipients = TestRecipients1()
+        //    };
+        //}
 
         public static DocuSignAuthTokenDTO TestDocuSignAuthDTO1()
         {

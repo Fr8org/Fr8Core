@@ -10,7 +10,7 @@ namespace Hub.Interfaces
 {
     public interface IReport
     {
-        List<FactDO> GetAllFacts(IUnitOfWork uow);
+        IList<FactDO> GetAllFacts(IUnitOfWork uow);
         List<IncidentDO> GetAllIncidents(IUnitOfWork uow);
         List<IncidentDO> GetIncidents(IUnitOfWork uow, int page, int pageSize, bool getCurrentUserIncidents);
     }

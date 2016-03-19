@@ -21,13 +21,13 @@ namespace HubWeb.Controllers
     {
         private readonly IActivity _activity;
         private readonly IActivityTemplate _activityTemplate;
-        private readonly ISubroute _subRoute;
+        private readonly ISubPlan _subPlan;
 
         public ActivitiesController()
         {
             _activity = ObjectFactory.GetInstance<IActivity>();
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
-            _subRoute = ObjectFactory.GetInstance<ISubroute>();
+            _subPlan = ObjectFactory.GetInstance<ISubPlan>();
         }
 
         public ActivitiesController(IActivity service)
@@ -35,21 +35,21 @@ namespace HubWeb.Controllers
             _activity = service;
         }
 
-        public ActivitiesController(ISubroute service)
+        public ActivitiesController(ISubPlan service)
         {
-            _subRoute = service;
+            _subPlan = service;
         }
 
 
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
-        public async Task<IHttpActionResult> Create(int actionTemplateId, string label = null, int? order = null, Guid? parentNodeId = null, bool createRoute = false, Guid? authorizationTokenId = null)
+        public async Task<IHttpActionResult> Create(int actionTemplateId, string label = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var userId = User.Identity.GetUserId();
 
-                var result = await _activity.CreateAndConfigure(uow, userId, actionTemplateId, label, order, parentNodeId, createRoute, authorizationTokenId);
+                var result = await _activity.CreateAndConfigure(uow, userId, actionTemplateId, label, order, parentNodeId, createPlan, authorizationTokenId);
 
                 if (result is ActivityDO)
                 {
@@ -58,7 +58,7 @@ namespace HubWeb.Controllers
 
                 if (result is PlanDO)
                 {
-                    return Ok(RouteMappingHelper.MapRouteToDto(uow, (PlanDO)result));
+                    return Ok(PlanMappingHelper.MapPlanToDto(uow, (PlanDO)result));
                 }
 
                 throw new Exception("Unsupported type " + result.GetType());
@@ -72,7 +72,7 @@ namespace HubWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var activityTemplate = _activityTemplate.GetQuery().FirstOrDefault(at => at.Name == solutionName);
-                
+
                 if (activityTemplate == null)
                 {
                     throw new ArgumentException(String.Format("actionTemplate (solution) name {0} is not found in the database.", solutionName));
@@ -80,7 +80,7 @@ namespace HubWeb.Controllers
 
                 var result = await _activity.CreateAndConfigure(uow, userId,
                     activityTemplate.Id, activityTemplate.Label, null, null, true, null);
-                return Ok(RouteMappingHelper.MapRouteToDto(uow, (PlanDO)result));
+                return Ok(PlanMappingHelper.MapPlanToDto(uow, (PlanDO)result));
             }
         }
 
@@ -121,7 +121,7 @@ namespace HubWeb.Controllers
         //[Route("{id:guid}")]
         public async Task<IHttpActionResult> Delete(Guid id, bool confirmed = false)
         {
-            var isDeleted = await _subRoute.DeleteActivity(User.Identity.GetUserId(), id, confirmed);
+            var isDeleted = await _subPlan.DeleteActivity(User.Identity.GetUserId(), id, confirmed);
             if (!isDeleted)
             {
                 return ResponseMessage(new HttpResponseMessage(HttpStatusCode.PreconditionFailed));
@@ -133,7 +133,7 @@ namespace HubWeb.Controllers
         [Fr8HubWebHMACAuthenticate]
         public async Task<IHttpActionResult> DeleteActivity(Guid id)
         {
-            await _subRoute.DeleteActivity(User.Identity.GetUserId(), id, true);
+            await _subPlan.DeleteActivity(User.Identity.GetUserId(), id, true);
             return Ok();
         }
 
@@ -144,7 +144,7 @@ namespace HubWeb.Controllers
         [Fr8HubWebHMACAuthenticate]
         public async Task<IHttpActionResult> DeleteChildNodes(Guid activityId)
         {
-            var isDeleted = await _subRoute.DeleteAllChildNodes(activityId);
+            var isDeleted = await _subPlan.DeleteAllChildNodes(activityId);
             if (!isDeleted)
             {
                 return ResponseMessage(new HttpResponseMessage(HttpStatusCode.PreconditionFailed));
@@ -156,36 +156,35 @@ namespace HubWeb.Controllers
         /// POST : Saves or updates the given action
         /// </summary>
         [HttpPost]
-        public IHttpActionResult Save(ActivityDTO curActionDTO)
+        public async Task<IHttpActionResult> Save(ActivityDTO curActionDTO)
         {
             ActivityDO submittedActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var resultActionDO = _activity.SaveOrUpdateActivity(uow, submittedActivityDO);
-                var resultActionDTO = Mapper.Map<ActivityDTO>(resultActionDO);
-                return Ok(resultActionDTO);
-            }
+
+            var resultActionDTO = await _activity.SaveOrUpdateActivity(submittedActivityDO);
+
+            return Ok(resultActionDTO);
         }
-[HttpPost]
-[AllowAnonymous]
-public async Task<IHttpActionResult> Documentation([FromBody] ActivityDTO curActivityDTO)
-{
-    var curDocSupport = curActivityDTO.Documentation;
-    //check if the DocumentationSupport comma separated string has the correct form
-    if (!ValidateDocumentationSupport(curDocSupport))
-        return BadRequest();
-    if (curDocSupport.Contains("MainPage"))
-    {
-        var solutionPageDTO = await _activity.GetActivityDocumentation<SolutionPageDTO>(curActivityDTO, true);
-        return Ok(solutionPageDTO);
-    }
-    if (curDocSupport.Contains("HelpMenu"))
-    {
-        var activityRepsonceDTO = await _activity.GetActivityDocumentation<ActivityResponseDTO>(curActivityDTO);
-        return Ok(activityRepsonceDTO);
-    }
-    return BadRequest();
-}
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IHttpActionResult> Documentation([FromBody] ActivityDTO curActivityDTO)
+        {
+            var curDocSupport = curActivityDTO.Documentation;
+            //check if the DocumentationSupport comma separated string has the correct form
+            if (!ValidateDocumentationSupport(curDocSupport))
+                return BadRequest();
+            if (curDocSupport.Contains("MainPage"))
+            {
+                var solutionPageDTO = await _activity.GetActivityDocumentation<SolutionPageDTO>(curActivityDTO, true);
+                return Ok(solutionPageDTO);
+            }
+            if (curDocSupport.Contains("HelpMenu"))
+            {
+                var activityRepsonceDTO = await _activity.GetActivityDocumentation<ActivityResponseDTO>(curActivityDTO);
+                return Ok(activityRepsonceDTO);
+            }
+            return BadRequest();
+        }
         private bool ValidateDocumentationSupport(string docSupport)
         {
             var curStringArray = docSupport.Split(',');
@@ -198,28 +197,19 @@ public async Task<IHttpActionResult> Documentation([FromBody] ActivityDTO curAct
 
         [HttpGet]
         [AllowAnonymous]
+        public IHttpActionResult GetTerminalSolutionList(string terminalName)
+        {
+            var solutionNameList = _activity.GetSolutionList(terminalName);
+            return Json(solutionNameList);
+        }
+        [HttpGet]
+        [AllowAnonymous]
         public IHttpActionResult GetDocuSignSolutionList()
         {
             var terminalName = "terminalDocuSign";
             var solutionNameList = _activity.GetSolutionList(terminalName);
             return Json(solutionNameList);
         }
-        //        /// <summary>
-        //        /// POST : updates the given action
-        //        /// </summary>
-        //        [HttpPost]
-        //        [Route("update")]
-        //        public IHttpActionResult Update(ActionDTO curActionDTO)
-        //        {
-        //            ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);
-        //
-        //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //            {
-        //                await _action.SaveUpdateAndConfigure(uow, submittedActionDO);
-        //            }
-        //
-        //            return Ok();
-        //        }      
-	}
+    }
 
 }

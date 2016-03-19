@@ -50,8 +50,6 @@ namespace HubWeb.Controllers
 
                 curPayloadDTO.CrateStorage = JsonConvert.DeserializeObject<CrateStorageDTO>(curContainerDO.CrateStorage);
 
-                EventManager.ProcessRequestReceived(curContainerDO);
-
                 return Ok(curPayloadDTO);
             }
         }
@@ -168,7 +166,7 @@ namespace HubWeb.Controllers
         //    db.Processes.Add(processDO);
         //    db.SaveChanges();
 
-        //    return CreatedAtRoute("DefaultApi", new { id = processDO.Id }, processDO);
+        //    return CreatedAtPlan("DefaultApi", new { id = processDO.Id }, processDO);
         //}
 
         //// DELETE: api/Process/5
