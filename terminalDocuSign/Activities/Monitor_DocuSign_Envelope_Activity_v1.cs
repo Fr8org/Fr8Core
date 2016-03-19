@@ -16,6 +16,7 @@ using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Services;
 using Data.States;
+using Data.Validations;
 using DocuSign.Integrations.Client;
 
 namespace terminalDocuSign.Actions
@@ -133,7 +134,7 @@ namespace terminalDocuSign.Actions
                 errorMessages.Add(activityUi.Recipient.ErrorMessage
                     = RecipientIsRequired(activityUi)
                         ? DocuSignValidationUtils.ValueIsSet(activityUi.Recipient)
-                            ? DocuSignValidationUtils.EmailIsValid(activityUi.Recipient.Value)
+                            ? activityUi.Recipient.Value.IsValidEmailAddress()
                                 ? string.Empty
                                 : DocuSignValidationUtils.RecipientIsNotValidErrorMessage
                             : DocuSignValidationUtils.RecipientIsNotSpecifiedErrorMessage

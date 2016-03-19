@@ -463,20 +463,10 @@ namespace Hub.Services
                 await _container.Run(uow, curContainerDO);
                 return curContainerDO;
             }
-            catch (RestfulServiceException rse)
-            {
-                curContainerDO.ContainerState = ContainerState.Failed;
-                throw new TerminalProcessingException(rse.UserErrorMessage, rse.Message, rse);
-            }
-            catch (ApplicationException e)
-            {
-                curContainerDO.ContainerState = ContainerState.Failed;
-                throw new TerminalProcessingException(e.Message, e.Message, e);
-            }
             catch (Exception e)
             {
                 curContainerDO.ContainerState = ContainerState.Failed;
-                throw new TerminalProcessingException(string.Empty, e.Message, e);
+                throw e;
             }
             finally
             {

@@ -274,9 +274,7 @@ namespace TerminalBase.BaseClasses
                 var endpoint = (curActivityDO.ActivityTemplate != null && curActivityDO.ActivityTemplate.Terminal != null && curActivityDO.ActivityTemplate.Terminal.Endpoint != null) ? curActivityDO.ActivityTemplate.Terminal.Endpoint : "<no terminal url>";
                 EventManager.TerminalInternalFailureOccurred(endpoint, JsonConvert.SerializeObject(curActivityDO, settings), e, curActivityDO.Id.ToString());
 
-                var action = curActionPath.ToLower();
-                var userErrorMessage = String.Format("Failed to {0} activity \"{1}\". Please, make sure it is set up correctly. ", action, curActivityDO.Label);
-                throw new TerminalProcessingException(userErrorMessage, e.Message, e.InnerException);
+                throw e;                
             }
         }
         private void OnStartActivity(string terminalName, string actionName, bool isTestActivityTemplate)

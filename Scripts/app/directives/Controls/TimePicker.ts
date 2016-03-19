@@ -36,7 +36,7 @@ module dockyard.directives.timePicker {
                 var containerEle = angular.element($element).clone();
                 var mainInputReplacer = containerEle.children('.bdp-input');
                 var picker = containerEle.children("#picker");
-                
+
                 $scope.pickerChanged = function () {
                     if (isNaN($scope.duration.minutes) || isNaN($scope.duration.hours) || isNaN($scope.duration.days))
                         return;
@@ -66,14 +66,43 @@ module dockyard.directives.timePicker {
 
                 init();
 
+                var isPopoverVisible = false;
+
+                var showPopover = function (event) {
+                    angular.element(this).popover("show");
+                    angular.element(this).siblings(".popover").on("mouseleave", function () {
+                        isPopoverVisible = false;
+                    });
+                    angular.element(this).siblings(".popover").on("mouseenter", function () {
+                        isPopoverVisible = true;
+                    });
+                }
+
+                var hidePopover = function (event) {
+                    var _this = this ? this : angular.element($element).find('.popover');
+                    if (isPopoverVisible === false) {
+                        angular.element(_this).popover('hide');
+                    } else {
+                        angular.element(_this).focus();
+                    }
+                };
+
                 angular.element('.bdp-input').popover({
                     placement: 'bottom',
-                    trigger: 'click', 
+                    trigger: 'manual',
                     html: true,
-                    content: $compile(picker.html())($scope)
-                });
+                    content: $compile(picker.html())($scope),
+                }).click(showPopover).blur(hidePopover);
 
+                $scope.$watch(function () {
+                    return $element.offset().top
+                }, function (outOfBorder) {
+                    if (outOfBorder) {
+                        hidePopover(null);
+                    }
+                });
             }
+
             TimePicker.prototype.controller['$inject'] = ['$scope', '$element', '$attrs', '$compile'];
         };
 

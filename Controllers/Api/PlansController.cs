@@ -428,17 +428,9 @@ namespace HubWeb.Controllers
 
                     return Ok(exception.ContainerDTO);
                 }
-                catch (TerminalProcessingException e)
-                {
-                    NotifyWithErrorMessage(e, planDO, pusherChannel, e.UserErrorMessage);
-                }
-                catch (ApplicationException e)
-                {
-                    NotifyWithErrorMessage(e, planDO, pusherChannel, e.Message);
-                }
                 catch (Exception e)
                 {
-                    NotifyWithErrorMessage(e, planDO, pusherChannel, string.Empty);
+                    NotifyWithErrorMessage(e, planDO, pusherChannel);
                 }
                 finally
                 {
@@ -468,7 +460,7 @@ namespace HubWeb.Controllers
             return responseMsg;
         }
 
-        private void NotifyWithErrorMessage(Exception exception, PlanDO planDO, string pusherChannel, string errorMessage)
+        private void NotifyWithErrorMessage(Exception exception, PlanDO planDO, string pusherChannel, string errorMessage = "")
         {
             var message = String.Format("Plan \"{0}\" failed. {1}", planDO.Name, errorMessage);
             _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, message);
