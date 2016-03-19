@@ -30,19 +30,5 @@ namespace terminalDocuSign
         {
             return !string.IsNullOrWhiteSpace(text?.Value);
         }
-
-        public static bool EmailIsValid(string email)
-        {
-            email = email ?? string.Empty;
-            try
-            {
-                var mailAddress = new MailAddress(email.Trim());
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
     }
 }

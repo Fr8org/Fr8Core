@@ -122,7 +122,8 @@ namespace terminalDocuSign.Controllers
                 Category = ActivityCategory.Solution,
                 Terminal = terminal,
                 WebService = webService,
-                MinPaneWidth = 380
+                MinPaneWidth = 380,
+                NeedsAuthentication = true
             };
 
             var trackDocuSignRecipientsSolution = new ActivityTemplateDTO

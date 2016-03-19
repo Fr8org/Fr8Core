@@ -902,6 +902,7 @@
     <Compile Include="Validations\OutboundTemplatedEmailValidator.cs" />
     <Compile Include="Validations\TerminalValidator.cs" />
     <Compile Include="Validations\UserValidator.cs" />
+    <Compile Include="Validations\ValidationUtils.cs" />
     <Compile Include="Validations\Validators.cs" />
   </ItemGroup>
   <ItemGroup>
