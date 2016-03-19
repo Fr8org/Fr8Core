@@ -23,14 +23,7 @@ namespace terminalDocuSign.Services
                 return new List<FieldDTO>();
         }
 
-        #region GenerateDocuSignReport methods
-
-        public static int CountEnvelopes(DocuSignApiConfiguration config, DocusignQuery docusignQuery)
-        {
-            throw new NotImplementedException();
-        }
-
-        public static void SearchDocuSign(DocuSignApiConfiguration config, DocusignQuery docusignQuery, StandardPayloadDataCM search_result)
+        public static IEnumerable<FolderItem> GetFolderItems(DocuSignApiConfiguration config, DocusignQuery docusignQuery)
         {
             var resultItems = new List<DocuSign.eSign.Model.FolderItem>();
 
@@ -44,7 +37,7 @@ namespace terminalDocuSign.Services
                 {
                     foreach (var item in folders.Folders)
                     {
-                        var envelopesResponse = api.ListItems(config.AccountId, item.FolderId, 
+                        var envelopesResponse = api.ListItems(config.AccountId, item.FolderId,
                             new FoldersApi.SearchOptions()
                             {
                                 status = docusignQuery.Status,
@@ -65,71 +58,23 @@ namespace terminalDocuSign.Services
                 resultItems.AddRange(envelopesResponse.FolderItems);
             }
 
-            //prepare search result
-            foreach (var envelope in resultItems)
-            {
-                var row = new PayloadObjectDTO();
-
-                row.PayloadObject.Add(new FieldDTO("Id", envelope.EnvelopeId));
-                row.PayloadObject.Add(new FieldDTO("Name", envelope.Name));
-                row.PayloadObject.Add(new FieldDTO("Subject", envelope.Subject));
-                row.PayloadObject.Add(new FieldDTO("Status", envelope.Status));
-                row.PayloadObject.Add(new FieldDTO("OwnerName", envelope.OwnerName));
-                row.PayloadObject.Add(new FieldDTO("SenderName", envelope.SenderName));
-                row.PayloadObject.Add(new FieldDTO("SenderEmail", envelope.SenderEmail));
-                row.PayloadObject.Add(new FieldDTO("Shared", envelope.Shared));
-                row.PayloadObject.Add(new FieldDTO("CompletedDate", envelope.CompletedDateTime?.ToString(CultureInfo.InvariantCulture)));
-                row.PayloadObject.Add(new FieldDTO("CreatedDateTime", envelope.CreatedDateTime?.ToString(CultureInfo.InvariantCulture)));
-
-                search_result.PayloadObjects.Add(row);
-            }
+            return resultItems;
         }
 
+        #region GenerateDocuSignReport methods
 
-        //    public string BuildSearchRequestUrl(
-        //        string searchText,
-        //        string folderId,
-        //        string status = null,
-        //        DateTime? fromDate = null,
-        //        DateTime? toDate = null)
-        //    {
-        //        if (string.IsNullOrWhiteSpace(folderId)) throw new ArgumentNullException("folderId");
+        public static int CountEnvelopes(DocuSignApiConfiguration config, DocusignQuery docusignQuery)
+        {
+            throw new NotImplementedException();
+        }
 
-        //        var queryBuilder = new StringBuilder("/folders/");
-
-        //        queryBuilder.Append(folderId);
-
-        //        queryBuilder.Append("?searchText=");
-        //        if (string.IsNullOrWhiteSpace(searchText))
-        //        {
-        //            queryBuilder.Append(HttpUtility.UrlEncode(searchText));
-        //        }
-
-        //        if (!string.IsNullOrWhiteSpace(status))
-        //        {
-        //            queryBuilder.Append("&status=");
-        //            queryBuilder.Append(HttpUtility.UrlEncode(status));
-        //        }
-
-        //        if (fromDate != null)
-        //        {
-        //            queryBuilder.Append("&from_date=");
-        //            // queryBuilder.Append(HttpUtility.UrlEncode(fromDate.Value.ToString("dd-MM-yyyy | HH:mm")));
-        //            queryBuilder.Append(fromDate.Value.ToString("MM-dd-yyyy"));
-        //        }
-
-        //        if (toDate != null)
-        //        {
-        //            queryBuilder.Append("&to_date=");
-        //            // queryBuilder.Append(HttpUtility.UrlEncode(toDate.Value.ToString("dd-MM-yyyy | HH:mm")));
-        //            queryBuilder.Append(toDate.Value.ToString("MM-dd-yyyy"));
-        //        }
-
-        //        queryBuilder.Append("&start_position=");
-
-        //        return queryBuilder.ToString();
-        //    }
+        public static object SearchDocuSign(DocuSignApiConfiguration config, List<FilterConditionDTO> conditions, HashSet<string> existing_envelopes, StandardPayloadDataCM search_result)
+        {
+            throw new NotImplementedException();
+        }
 
         #endregion
+
+
     }
 }
