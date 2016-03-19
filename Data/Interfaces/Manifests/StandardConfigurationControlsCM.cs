@@ -5,6 +5,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Constants;
 using System.Linq;
 using System.Reflection;
+using Data.Control;
 using Data.Crates;
 
 namespace Data.Interfaces.Manifests
@@ -113,6 +114,11 @@ namespace Data.Interfaces.Manifests
         {
         }
 
+        public void Add(ControlDefinitionDTO control)
+        {
+            Controls.Add(control);
+        }
+
         // Find control by its name. Note, that this methods is no recursive
         public ControlDefinitionDTO FindByName(string name)
         {
@@ -139,6 +145,65 @@ namespace Data.Interfaces.Manifests
             return default(T);
         }
 
+        public object FindByNameNested(string name)
+        {
+            foreach (var controlDefinitionDto in Controls)
+            {
+                var result = FindByNameRecurisve(controlDefinitionDto, name);
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+
+            return null;
+        }
+
+        public List<IControlDefinition> EnumerateControlsDefinitions()
+        {
+            var namedControls = new List<IControlDefinition>();
+
+            foreach (var controlDefinitionDto in Controls)
+            {
+                EnumerateNamedControls(controlDefinitionDto, namedControls);
+            }
+
+            return namedControls;
+        }
+
+        private void EnumerateNamedControls(object obj, List<IControlDefinition> controls)
+        {
+            if (obj is IControlDefinition)
+            {
+                controls.Add((IControlDefinition)obj);
+            }
+
+            if (obj is IContainerControl)
+            {
+                foreach (var child in ((IContainerControl)obj).EnumerateChildren())
+                {
+                    EnumerateNamedControls(child, controls);
+                }
+            }
+        }
+        
+        public void SyncWith(StandardConfigurationControlsCM configurationControls)
+        {
+            var namedControls = EnumerateControlsDefinitions();
+
+            foreach (var namedControl in namedControls)
+            {
+                var source = configurationControls.FindByNameNested(namedControl.Name);
+
+                if (source == null)
+                {
+                    continue;
+                }
+
+                ClonePrimitiveProperties(namedControl, source);
+            }
+        }
+        
         // Sync controls properties from configuration controls crate with the current instance of StandardConfigurationControlsCM
         public void ClonePropertiesFrom(StandardConfigurationControlsCM configurationControls)
         {
@@ -184,11 +249,16 @@ namespace Data.Interfaces.Manifests
             }
         }
 
+        private static bool CanSyncProperty(PropertyInfo propertyInfo)
+        {
+            return propertyInfo.PropertyType.IsValueType || propertyInfo.PropertyType == typeof (string) || propertyInfo.GetCustomAttribute<ForcePropertySyncAttribute>() != null;
+        }
+
         // Clone properties from object 'source' to object 'target'
         private static void ClonePrimitiveProperties(object target, object source)
         {
-            var properties = target.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => (x.PropertyType.IsValueType || x.PropertyType == typeof (string)) && x.CanWrite);
-            var sourceTypeProp = source.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => (x.PropertyType.IsValueType || x.PropertyType == typeof (string)) && x.CanRead).ToDictionary(x => x.Name, x => x);
+            var properties = target.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(CanSyncProperty);
+            var sourceTypeProp = source.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x=>CanSyncProperty(x) && x.CanRead).ToDictionary(x => x.Name, x => x);
 
             foreach (var prop in properties)
             {
@@ -196,6 +266,30 @@ namespace Data.Interfaces.Manifests
 
                 if (sourceTypeProp.TryGetValue(prop.Name, out sourceProp) && prop.PropertyType.IsAssignableFrom(sourceProp.PropertyType))
                 {
+                    if (typeof (IList).IsAssignableFrom(sourceProp.PropertyType))
+                    {
+                        if (!prop.CanWrite)
+                        {
+                            var targetList = (IList)prop.GetMethod.Invoke(target, null);
+                            var sourceList = (IList)sourceProp.GetMethod.Invoke(source, null);
+
+                            if (targetList != null)
+                            {
+                                targetList.Clear();
+
+                                if (sourceList != null)
+                                {
+                                    foreach (var item in sourceList)
+                                    {
+                                        targetList.Add(item);
+                                    }
+                                }
+                            }
+
+                            return;
+                        }
+                    }
+
                     try
                     {
                         prop.SetMethod.Invoke(target, new[] {sourceProp.GetMethod.Invoke(source, null)});
@@ -210,17 +304,18 @@ namespace Data.Interfaces.Manifests
         // Check if the give instance of an object has apropriate name
         private bool CheckName(object control, string name)
         {
-            // if control is ControlDefinitionDTO then just check Name property.
-            var controlDef = control as ControlDefinitionDTO;
+            var namedControl = control as IControlDefinition;
 
-            if (controlDef != null && controlDef.Name == name)
+            if (namedControl != null)
             {
-                return true;
+                return namedControl.Name == name;
             }
+
+            return false;
 
             // Not all our controls are derived from ControlDefinitionDTO. But these controls still has propery Name. Get it using the reflection.
             //TODO: much better solution is to introduce comonnd base class for every control, or indroduce interface, thaw will have property Name. Reflection shoudn't be used if there is a way to avoid it.
-            var nameProp = control.GetType().GetProperty("Name", BindingFlags.Instance | BindingFlags.Public);
+            /* var nameProp = control.GetType().GetProperty("Name", BindingFlags.Instance | BindingFlags.Public);
 
             if (nameProp == null || !nameProp.CanRead)
             {
@@ -234,7 +329,7 @@ namespace Data.Interfaces.Manifests
             catch
             {
                 return false;
-            }
+            }*/
         }
 
         // Check if the given type is an either instance of IList or generic IList<>.
@@ -257,8 +352,23 @@ namespace Data.Interfaces.Manifests
                 return cd;
             }
 
+            var conatinerControl = cd as IContainerControl;
+
+            if (conatinerControl != null)
+            {
+                foreach (var child in conatinerControl.EnumerateChildren())
+                {
+                    var result = FindByNameRecurisve(child, name);
+
+                    if (result != null)
+                    {
+                        return result;
+                    }
+                }
+            }
+
             // if not, find all collection properties in the current control. Only properties of type IList or IList<> are supported. 
-            var collectionGetters = cd.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => x.CanRead && IsCompatibleCollectionType(x.PropertyType)).ToArray();
+          /*  var collectionGetters = cd.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => x.CanRead && IsCompatibleCollectionType(x.PropertyType)).ToArray();
 
             foreach (var collectionGetter in collectionGetters)
             {
@@ -283,7 +393,7 @@ namespace Data.Interfaces.Manifests
                 {
                 }
             }
-
+            */
             return null;
         }
     }
