@@ -24,7 +24,7 @@ namespace terminalFr8Core.Actions
     public class CreateLauncher_v1 : BaseTerminalActivity
     {
 
-        protected virtual async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             //build a controls crate to render the pane
             var configurationControlsCrate = CreateControlsCrate();
@@ -34,10 +34,10 @@ namespace terminalFr8Core.Actions
                 crateStorage.Replace(AssembleCrateStorage(configurationControlsCrate));
             }
 
-            return curActivityDO;
+            return Task.FromResult(curActivityDO);
         }
 
-        protected virtual async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             
             return await Task.FromResult<ActivityDO>(curActivityDO);

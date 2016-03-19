@@ -5,7 +5,7 @@ module dockyard.directives.controlContainer {
 
     interface IControlContainerScope extends ng.IScope {
         plan: model.PlanDTO;
-        field: model.ContainerTransition;
+        field: model.ControlContainer;
         addTransition: () => void;
         getOperationField: (transition: model.ContainerTransitionField) => model.DropDownList;
         onOperationChange: (transition: model.ContainerTransitionField) => void;
@@ -47,5 +47,5 @@ module dockyard.directives.controlContainer {
         };
     }
 
-    app.directive('containerTransition', ControlContainer);
+    app.directive('controlContainer', ControlContainer);
 }

@@ -114,6 +114,17 @@
         value: string;
     }
 
+    export class ControlMetaDescriptionDTO extends ControlDefinitionDTO {
+        controls: Array<ControlDefinitionDTO>;
+    }
+
+    export class ControlContainer extends ControlDefinitionDTO {
+        metaDescriptions: Array<ControlMetaDescriptionDTO>;
+
+
+
+    }
+
     export class ContainerTransitionField {
         conditions: Array<FilterConditionDTO>;
         transition: number;

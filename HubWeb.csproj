@@ -861,6 +861,7 @@
     <Content Include="Content\videos\motion.webm" />
     <Content Include="Views\AngularTemplate\ContainerTransition.cshtml" />
     <Content Include="Views\AngularTemplate\SubplanHeader.cshtml" />
+    <Content Include="Views\AngularTemplate\ControlContainer.cshtml" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
     <Content Include="Scripts\templateCache.js" />
