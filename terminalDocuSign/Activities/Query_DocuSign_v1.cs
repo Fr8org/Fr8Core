@@ -3,22 +3,27 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Constants;
 using Data.Control;
 using Data.Crates;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using Data.States;
 using Hub.Managers;
 using Newtonsoft.Json;
 using StructureMap;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services;
 using TerminalBase.Infrastructure;
+using Utilities;
 
 namespace terminalDocuSign.Actions
 {
     public class Query_DocuSign_v1 : BaseDocuSignActivity
     {
+        private const string RunTimeCrateLabel = "Envelope Data From Query DocuSign";
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             [JsonIgnore]
@@ -84,7 +89,7 @@ namespace terminalDocuSign.Actions
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
-                crateStorage.Add(Data.Crates.Crate.FromContent("Sql Query Result", payloadCm));
+                crateStorage.Add(Data.Crates.Crate.FromContent(RunTimeCrateLabel, payloadCm));
             }
 
             return Success(payload);
@@ -104,11 +109,26 @@ namespace terminalDocuSign.Actions
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                crateStorage.Add(configurationCrate);
+                crateStorage.Replace(AssembleCrateStorage(configurationCrate));
+                crateStorage.Add(GetAvailableRunTimeTableCrate(RunTimeCrateLabel));
             }
 
             return Task.FromResult(curActivityDO);
         }
+
+        private Crate GetAvailableRunTimeTableCrate(string descriptionLabel)
+        {
+            var availableRunTimeCrates = Data.Crates.Crate.FromContent("Available Run Time Crates", new CrateDescriptionCM(
+                    new CrateDescriptionDTO
+                    {
+                        ManifestType = MT.StandardPayloadData.GetEnumDisplayName(),
+                        Label = descriptionLabel,
+                        ManifestId = (int)MT.StandardPayloadData,
+                        ProducedBy = "Query_DocuSign_v1"
+                    }), AvailabilityType.RunTime);
+            return availableRunTimeCrates;
+        }
+
 
         private void FillFolderSource(Crate configurationCrate, string controlName, AuthorizationTokenDO authTokenDO)
         {

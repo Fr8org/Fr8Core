@@ -1,10 +1,12 @@
 ﻿using Data.Entities;
 using Newtonsoft.Json;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using Data.Constants;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using terminalGoogle.DataTransferObjects;
@@ -16,6 +18,9 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Crates;
 using Data.States;
 using Data.Control;
+using Newtonsoft.Json.Linq;
+using TerminalBase;
+
 namespace terminalGoogle.Actions
 {
     public class Save_To_Google_Sheet_v1 : BaseTerminalActivity
@@ -76,14 +81,22 @@ namespace terminalGoogle.Actions
         {
             var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
             var payloadCrates = await GetPayload(curActivityDO, containerId);
-
+            var payloadStorage = CrateManager.GetStorage(payloadCrates);
             if (NeedsAuthentication(authTokenDO))
             {
                 return NeedsAuthenticationError(payloadCrates);
             }
 
+            var crateToProcess = FindCrateToProcess(curActivityDO, payloadStorage);
+
+            if (crateToProcess == null)
+            {
+                Error(payloadCrates, "This Action can't run without Payload Data Crate ", ActivityErrorCode.PAYLOAD_DATA_MISSING);
+                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Unable to find any payload crate with any Manifest Type.");
+            }
+            var crateDTO = CrateManager.ToDto(crateToProcess);
             //get payload crates for data
-            StandardTableDataCM standardTableCM = await ExtractDataFromUpstreamCrates("UpstreamCrateChooser", curActivityDO);
+            StandardTableDataCM standardTableCM = ExtractPayloadCrateDataToStandardTableData(crateToProcess);
 
             if(standardTableCM.Table.Count > 0)
             {
@@ -111,6 +124,73 @@ namespace terminalGoogle.Actions
 
             return Success(payloadCrates);
         }
+
+        private StandardTableDataCM ExtractPayloadCrateDataToStandardTableData(Crate crate)
+        {
+            var crateDTO = CrateManager.ToDto(crate);
+            //var deserializedObject = JsonConvert.DeserializeObject<List<object>>(crate.GetRaw().ToString());
+            //if (IsList(deserializedObject))
+            //{
+                
+            //}
+
+            //dynamic dynObject = serializer.
+            throw new NotImplementedException();
+        }
+
+        public class ListJsonConverter : JsonConverter
+        {
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
+                JsonSerializer serializer)
+            {
+                dynamic dynamicObject = serializer.Deserialize(reader);
+
+                if (dynamicObject.any.GetType() == typeof(JArray))
+                {
+                    var items = new List<object>();
+
+                    foreach (var item in dynamicObject.any)
+                    {
+                        items.Add(item);
+                    }
+
+                    return items;
+                }
+                else
+                {
+                    return dynamicObject.any.Value;
+                }
+            }
+
+            public override bool CanConvert(Type objectType)
+            {
+                return true;
+            }
+
+            public override bool CanRead
+            {
+                get { return true; }
+            }
+
+            public override bool CanWrite
+            {
+                get { return false; }
+            }
+        }
+
+        public bool IsList(object o)
+        {
+            if (o == null) return false;
+            return o is IList &&
+                   o.GetType().IsGenericType &&
+                   o.GetType().GetGenericTypeDefinition().IsAssignableFrom(typeof(List<>));
+        }
+
 
         private Crate FindCrateToProcess(ActivityDO curActivityDO, ICrateStorage payloadStorage)
         {
