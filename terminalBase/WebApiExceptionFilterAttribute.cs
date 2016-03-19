@@ -76,16 +76,16 @@ namespace TerminalBase
                 //if terminal error is terminal Coded Exception, place the error code description in message
                 var terminalEx = (TerminalCodedException)curTerminalError;
                 var terminalError =
-                    JsonConvert.SerializeObject(new { status = "terminal_error", message = terminalEx.ErrorCode.GetEnumDescription(), userMessage = terminalEx.ErrorCode.GetEnumDescription() });
+                    JsonConvert.SerializeObject(new { status = "terminal_error", message = terminalEx.ErrorCode.GetEnumDescription() });
                 actionExecutedContext.Response.Content = new StringContent(terminalError, Encoding.UTF8, "application/json");
             }
             else
             {
                 var detailedMessage = string.Empty;
                 //if terminal error is general exception, place exception message
-                if (curTerminalError is TerminalProcessingException)
+                if (curTerminalError is ActivityExecutionException)
                 {
-                    var userError = (curTerminalError as TerminalProcessingException)?.UserErrorMessage;
+                    var userError = (curTerminalError as ActivityExecutionException)?.UserErrorMessage;
                     detailedMessage =
                         JsonConvert.SerializeObject(new { status = "terminal_error", message = curTerminalError.Message, userMessage = userError });
                 }
