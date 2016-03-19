@@ -85,51 +85,6 @@ namespace terminalDocuSign.Services
             }
         }
 
-
-        //    public string BuildSearchRequestUrl(
-        //        string searchText,
-        //        string folderId,
-        //        string status = null,
-        //        DateTime? fromDate = null,
-        //        DateTime? toDate = null)
-        //    {
-        //        if (string.IsNullOrWhiteSpace(folderId)) throw new ArgumentNullException("folderId");
-
-        //        var queryBuilder = new StringBuilder("/folders/");
-
-        //        queryBuilder.Append(folderId);
-
-        //        queryBuilder.Append("?searchText=");
-        //        if (string.IsNullOrWhiteSpace(searchText))
-        //        {
-        //            queryBuilder.Append(HttpUtility.UrlEncode(searchText));
-        //        }
-
-        //        if (!string.IsNullOrWhiteSpace(status))
-        //        {
-        //            queryBuilder.Append("&status=");
-        //            queryBuilder.Append(HttpUtility.UrlEncode(status));
-        //        }
-
-        //        if (fromDate != null)
-        //        {
-        //            queryBuilder.Append("&from_date=");
-        //            // queryBuilder.Append(HttpUtility.UrlEncode(fromDate.Value.ToString("dd-MM-yyyy | HH:mm")));
-        //            queryBuilder.Append(fromDate.Value.ToString("MM-dd-yyyy"));
-        //        }
-
-        //        if (toDate != null)
-        //        {
-        //            queryBuilder.Append("&to_date=");
-        //            // queryBuilder.Append(HttpUtility.UrlEncode(toDate.Value.ToString("dd-MM-yyyy | HH:mm")));
-        //            queryBuilder.Append(toDate.Value.ToString("MM-dd-yyyy"));
-        //        }
-
-        //        queryBuilder.Append("&start_position=");
-
-        //        return queryBuilder.ToString();
-        //    }
-
         #endregion
     }
 }
