@@ -3,16 +3,16 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "angular": "~1.5.1",
+    "angular": "~1.4.9",
     "angular-applicationinsights": "~0.2.6",
     "angular-bootstrap": "~0.13.0",
     "angular-bootstrap-switch": "~0.4.1",
     "angular-datatables": "~0.4.3",
     "angular-messages": "~1.5.0",
-    "angular-mocks": "~1.5.0",
-    "angular-resource": "~1.5.0",
-    "angular-sanitize": "~1.5.0",
-    "angular-touch": "~1.5.1",
+    "angular-mocks": "~1.4.3",
+    "angular-resource": "1.4.9",
+    "angular-sanitize": "1.4.9",
+    "angular-touch": "~1.4.3",
     "angular-typescript": "latest",
     "angular-ui-router": "~0.2.15",
     "angular-ui-select": "~0.14.1",
@@ -54,8 +54,7 @@
     "waypoints": "2.0.5"
   },
   "resolutions": {
-    "angular": "~1.5.1",
-    "angular-sanitize": "~1.5.1"
+    "angular": "1.4.9"
   },
   "devDependencies": {
     "angular-ivh-treeview": "~1.0.3",
