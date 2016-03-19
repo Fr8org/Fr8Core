@@ -12,8 +12,11 @@ using Hub.Managers;
 using Newtonsoft.Json;
 using StructureMap;
 using terminalDocuSign.DataTransferObjects;
+using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Services;
 using TerminalBase.Infrastructure;
+using FolderItem = DocuSign.eSign.Model.FolderItem;
+using ListItem = Data.Control.ListItem;
 
 namespace terminalDocuSign.Actions
 {
@@ -75,19 +78,39 @@ namespace terminalDocuSign.Actions
                 return Error(payload, "Action was not configured correctly");
             }
             
-            var settings = GetDocusignQuery(configurationControls);
-
-            var payloadCm = new StandardPayloadDataCM();
-
             var configuration = DocuSignManager.SetUp(authTokenDO);
-            DocuSignFolders.SearchDocuSign(configuration, settings, payloadCm);
+
+            var settings = GetDocusignQuery(configurationControls);
+            var folderItems = DocuSignFolders.GetFolderItems(configuration, settings);
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
-                crateStorage.Add(Data.Crates.Crate.FromContent("Sql Query Result", payloadCm));
+                foreach (var item in folderItems)
+                {
+                    crateStorage.Add(Data.Crates.Crate.FromContent("Sql Query Result", MapFolderItemToDocuSignEnvelopeCM(item)));
+                }
             }
 
             return Success(payload);
+        }
+
+        private DocuSignEnvelopeCM MapFolderItemToDocuSignEnvelopeCM(FolderItem folderItem)
+        {
+            return new DocuSignEnvelopeCM()
+            {
+                EnvelopeId = folderItem.EnvelopeId,
+
+                Name = folderItem.Name,
+                Subject = folderItem.Subject,
+                OwnerName = folderItem.OwnerName,
+                SenderName = folderItem.SenderName,
+                SenderEmail = folderItem.SenderEmail,
+                Shared = folderItem.Shared,
+                Status = folderItem.Status,
+                CompletedDate = DateTimeHelper.Parse(folderItem.CompletedDateTime),
+                CreateDate = DateTimeHelper.Parse(folderItem.CreatedDateTime),
+                SentDate = DateTimeHelper.Parse(folderItem.SentDateTime)
+            };
         }
 
         protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
