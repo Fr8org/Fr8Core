@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Web;
 using Data.Constants;
@@ -34,6 +35,7 @@ namespace terminalGoogle.Actions
         }
 
         #region Overriden Methods
+
         protected new bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
         {
             if (authTokenDO == null) return true;
@@ -87,16 +89,16 @@ namespace terminalGoogle.Actions
                 return NeedsAuthenticationError(payloadCrates);
             }
 
-            var crateToProcess = FindCrateToProcess(curActivityDO, payloadStorage);
+            var cratesToProcess = FindCratesToProcess(curActivityDO, payloadStorage);
 
-            if (crateToProcess == null)
+            if (!cratesToProcess.Any())
             {
                 Error(payloadCrates, "This Action can't run without Payload Data Crate ", ActivityErrorCode.PAYLOAD_DATA_MISSING);
                 throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Unable to find any payload crate with any Manifest Type.");
             }
-            var crateDTO = CrateManager.ToDto(crateToProcess);
+
             //get payload crates for data
-            StandardTableDataCM standardTableCM = ExtractPayloadCrateDataToStandardTableData(crateToProcess);
+            StandardTableDataCM standardTableCM = ExtractPayloadCrateDataToStandardTableData(cratesToProcess);
 
             if(standardTableCM.Table.Count > 0)
             {
@@ -125,62 +127,72 @@ namespace terminalGoogle.Actions
             return Success(payloadCrates);
         }
 
-        private StandardTableDataCM ExtractPayloadCrateDataToStandardTableData(Crate crate)
+        private StandardTableDataCM ExtractPayloadCrateDataToStandardTableData(IEnumerable<Crate> crates)
         {
-            var crateDTO = CrateManager.ToDto(crate);
-            //var deserializedObject = JsonConvert.DeserializeObject<List<object>>(crate.GetRaw().ToString());
-            //if (IsList(deserializedObject))
-            //{
-                
-            //}
-
-            //dynamic dynObject = serializer.
-            throw new NotImplementedException();
-        }
-
-        public class ListJsonConverter : JsonConverter
-        {
-            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            var tableData = new StandardTableDataCM()
             {
-                throw new NotImplementedException();
-            }
-
-            public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
-                JsonSerializer serializer)
+                FirstRowHeaders = true,
+                Table = new List<TableRowDTO>()
+            };
+            var headerIsAdded = false;
+            foreach (var crate in crates)
             {
-                dynamic dynamicObject = serializer.Deserialize(reader);
+                Type crateManifestType;
+                ManifestDiscovery.Default.TryResolveType(crate.ManifestType, out crateManifestType);
 
-                if (dynamicObject.any.GetType() == typeof(JArray))
+                if (crateManifestType == typeof(StandardTableDataCM))
                 {
-                    var items = new List<object>();
+                    //add to the table data this existing standard table data
+                    //check if column headers are the same
+                    tableData = crate.Get<StandardTableDataCM>();
+                    continue;
+                }
 
-                    foreach (var item in dynamicObject.any)
-                    {
-                        items.Add(item);
-                    }
+                var item = CrateManager.ToDto(crate);
 
-                    return items;
+                //try to deserialize content from crate
+                var dynamicObject = JsonConvert.DeserializeObject(item.Contents.ToString(), crateManifestType);
+                
+                //deserialize this to a List or deserialize to a object
+                if (IsList(dynamicObject))
+                {
+                                               
                 }
                 else
                 {
-                    return dynamicObject.any.Value;
+                    var headerRow = new TableRowDTO();
+                    var dataRow = new TableRowDTO();
+
+                    PropertyInfo[] props = dynamicObject.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+                    foreach (var property in props)
+                    {
+                        var propertyAttributes = property.GetCustomAttributes(typeof (JsonIgnoreAttribute), true);
+                        if (!propertyAttributes.Any())
+                        {
+                            headerRow.Row.Add(new TableCellDTO() { Cell = new FieldDTO(property.Name, property.Name) });
+                            var propertyValue = property.GetValue(dynamicObject, null);
+                            dataRow.Row.Add(new TableCellDTO() { Cell = new FieldDTO(property.Name, propertyValue?.ToString() ?? string.Empty) });
+                        }
+                    }
+
+                    if (!headerIsAdded)
+                    {
+                        tableData.Table.Add(headerRow);
+                        headerIsAdded = true;
+                    }
+                    tableData.Table.Add(dataRow);
                 }
+
+                //add additional check for FieldDTO to extract the keys as a header
             }
 
-            public override bool CanConvert(Type objectType)
-            {
-                return true;
-            }
+            //var deserializedObject = JsonConvert.DeserializeObject<List<object>>(crate.GetRaw().ToString());
+            //if (IsList(deserializedObject))
+            //{
 
-            public override bool CanRead
-            {
-                get { return true; }
-            }
+            //}
 
-            public override bool CanWrite
-            {
-                get { return false; }
-            }
+            return tableData;
         }
 
         public bool IsList(object o)
@@ -192,14 +204,14 @@ namespace terminalGoogle.Actions
         }
 
 
-        private Crate FindCrateToProcess(ActivityDO curActivityDO, ICrateStorage payloadStorage)
+        private IEnumerable<Crate> FindCratesToProcess(ActivityDO curActivityDO, ICrateStorage payloadStorage)
         {
             var configControls = GetConfigurationControls(curActivityDO);
             var crateChooser = (CrateChooser)configControls.Controls.Single(c => c.Name == "UpstreamCrateChooser");
             var selectedCrateDescription = crateChooser.CrateDescriptions.Single(c => c.Selected);
 
             //find crate by user selected values
-            return payloadStorage.FirstOrDefault(c => c.ManifestType.Type == selectedCrateDescription.ManifestType && c.Label == selectedCrateDescription.Label);
+            return payloadStorage.Where(c => c.ManifestType.Type == selectedCrateDescription.ManifestType && c.Label == selectedCrateDescription.Label);
         }
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
