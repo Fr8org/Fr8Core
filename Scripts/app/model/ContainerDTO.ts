@@ -19,7 +19,9 @@
         Executing = 2,
         WaitingForTerminal = 3,
         Completed = 4,
-        Failed = 5
+        Failed = 5,
+        Suspended = 6,
+        Deleted = 7
     }
 
     export enum ActivityResponse {

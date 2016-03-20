@@ -22,7 +22,10 @@ module dockyard {
                     
                 case model.State.Failed:
                     return "Failed";
-                    
+                case model.State.Suspended:
+                    return "Suspended";
+                case model.State.Deleted:
+                    return "Deleted";
                 default:
                     return "";
             }
