@@ -14,7 +14,7 @@ namespace Data.Constants
         RequestTerminate,
         RequestSuspend,
         SkipChildren,
-        ReProcessChildren,
+        ReprocessChildren,
         ExecuteClientActivity,
         ShowDocumentation,
         JumpToActivity,

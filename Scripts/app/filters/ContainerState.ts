@@ -5,22 +5,22 @@
 */
 module dockyard {
     'use strict';
-    app.filter('ContainerState', () =>
+    app.filter('State', () =>
         function (input: number): string {
             switch (input) {
-                case model.ContainerState.Unstarted:
+                case model.State.Unstarted:
                     return "Unstarted";
                     
-                case model.ContainerState.Executing:
+                case model.State.Executing:
                     return "Executing";
                     
-                case model.ContainerState.WaitingForTerminal:
+                case model.State.WaitingForTerminal:
                     return "WaitingForTerminal";
                     
-                case model.ContainerState.Completed:
+                case model.State.Completed:
                     return "Completed";
                     
-                case model.ContainerState.Failed:
+                case model.State.Failed:
                     return "Failed";
                     
                 default:

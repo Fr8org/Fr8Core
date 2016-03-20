@@ -137,7 +137,7 @@ namespace Hub.Services
             //Plan deletion will only update its PlanState = Deleted
             foreach (var container in _container.LoadContainers(uow, plan))
             {
-                container.ContainerState = ContainerState.Deleted;
+                container.State = State.Deleted;
             }
         }
 
@@ -418,7 +418,7 @@ namespace Hub.Services
 
             containerDO.PlanId = curPlan.Id;
             containerDO.Name = curPlan.Name;
-            containerDO.ContainerState = ContainerState.Unstarted;
+            containerDO.State = State.Unstarted;
 
             if (curPayload.Length > 0)
             {
@@ -428,7 +428,7 @@ namespace Hub.Services
                 }
             }
 
-            containerDO.CurrentPlanNodeId = curPlan.StartingSubPlanId;
+            containerDO.CurrentActivityId = curPlan.StartingSubPlanId;
 
             uow.ContainerRepository.Add(containerDO);
 
@@ -451,8 +451,8 @@ namespace Hub.Services
                 throw new ApplicationException("Cannot run plan that is in deleted state.");
             }
 
-            if (curContainerDO.ContainerState == ContainerState.Failed
-                || curContainerDO.ContainerState == ContainerState.Completed)
+            if (curContainerDO.State == State.Failed
+                || curContainerDO.State == State.Completed)
             {
                 throw new ApplicationException("Attempted to Launch a Process that was Failed or Completed");
             }
@@ -464,7 +464,7 @@ namespace Hub.Services
             }
             catch(Exception e)
             {
-                curContainerDO.ContainerState = ContainerState.Failed;
+                curContainerDO.State = State.Failed;
                 throw e;
             }
             finally
@@ -498,7 +498,7 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curContainerDO = uow.ContainerRepository.GetByKey(containerId);
-                if (curContainerDO.ContainerState != ContainerState.Pending)
+                if (curContainerDO.State != State.Suspended)
                 {
                     throw new ApplicationException("Attempted to Continue a Process that wasn't pending");
                 }

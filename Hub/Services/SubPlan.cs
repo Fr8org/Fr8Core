@@ -309,18 +309,18 @@ namespace Hub.Services
                     // Detach containers from action, where CurrentPlanNodeId == id.
                     var containersWithCurrentPlanNode = uow.ContainerRepository
                         .GetQuery()
-                        .Where(x => x.CurrentPlanNodeId == downStreamActivity.Id)
+                        .Where(x => x.CurrentActivityId == downStreamActivity.Id)
                         .ToList();
 
-                    containersWithCurrentPlanNode.ForEach(x => x.CurrentPlanNodeId = null);
+                    containersWithCurrentPlanNode.ForEach(x => x.CurrentActivityId = null);
 
                     // Detach containers from action, where NextRouteNodeId == id.
                     var containersWithNextPlanNode = uow.ContainerRepository
                         .GetQuery()
-                        .Where(x => x.NextRouteNodeId == downStreamActivity.Id)
+                        .Where(x => x.NextActivityId == downStreamActivity.Id)
                         .ToList();
 
-                    containersWithNextPlanNode.ForEach(x => x.NextRouteNodeId = null);
+                    containersWithNextPlanNode.ForEach(x => x.NextActivityId = null);
                 }
 
                 uow.SaveChanges();
@@ -345,18 +345,18 @@ namespace Hub.Services
                 // Detach containers from action, where CurrentPlanNodeId == id.
                 var containersWithCurrentPlanNode = uow.ContainerRepository
                     .GetQuery()
-                    .Where(x => x.CurrentPlanNodeId == id)
+                    .Where(x => x.CurrentActivityId == id)
                     .ToList();
 
-                containersWithCurrentPlanNode.ForEach(x => x.CurrentPlanNodeId = null);
+                containersWithCurrentPlanNode.ForEach(x => x.CurrentActivityId = null);
 
                 // Detach containers from action, where NextRouteNodeId == id.
                 var containersWithNextPlanNode = uow.ContainerRepository
                     .GetQuery()
-                    .Where(x => x.NextRouteNodeId == id)
+                    .Where(x => x.NextActivityId == id)
                     .ToList();
 
-                containersWithNextPlanNode.ForEach(x => x.NextRouteNodeId = null);
+                containersWithNextPlanNode.ForEach(x => x.NextActivityId = null);
 
                 uow.SaveChanges();
 

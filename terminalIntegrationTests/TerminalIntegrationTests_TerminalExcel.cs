@@ -43,7 +43,7 @@ namespace terminalIntegrationTests
                     Id = UtilitiesTesting.Fixtures.FixtureData.TestContainer_Id_1(),
                     Plan = plan,
                     CrateStorage = _crateManager.EmptyStorageAsStr(),
-                    ContainerState = ContainerState.Executing
+                    State = State.Executing
                 });
 
                 uow.SaveChanges();

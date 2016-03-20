@@ -163,7 +163,7 @@ namespace DockyardTest.Services
                 uow.SaveChanges();
             }
 
-            var originalCurrentActivityId = containerDO.CurrentPlanNodeId;
+            var originalCurrentActivityId = containerDO.CurrentActivityId;
             _activity
                 .Setup(c => c.GetNextSibling(It.Is<PlanNodeDO>((r) => r.Id == originalCurrentActivityId)))
                 .Returns(FixtureData.TestActivity10());
@@ -177,8 +177,8 @@ namespace DockyardTest.Services
                 await _container.Run(uow, containerDO);
             }
 
-            Assert.AreNotEqual(originalCurrentActivityId, containerDO.CurrentPlanNodeId);
-            Assert.IsNull(containerDO.CurrentPlanNodeId);
+            Assert.AreNotEqual(originalCurrentActivityId, containerDO.CurrentActivityId);
+            Assert.IsNull(containerDO.CurrentActivityId);
             _activity.Verify(p => p.Process(It.IsAny<Guid>(), It.IsAny<ActivityState>(), It.IsAny<ContainerDO>()));
         }
 

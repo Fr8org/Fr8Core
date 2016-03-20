@@ -88,7 +88,7 @@ namespace Data.Migrations
             {
                 container.Name = _name;
                 container.PlanId = _ptId;
-                container.ContainerState = ContainerState.Executing;
+                container.State = State.Executing;
                 
                 container.CrateStorage = JsonConvert.SerializeObject(CrateStorageSerializer.Default.ConvertToDto(new CrateStorage(_crates)));
             }
