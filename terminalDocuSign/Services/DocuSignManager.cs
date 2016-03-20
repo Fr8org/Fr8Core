@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Data.Validations;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services.NewApi;
 using Utilities.Configuration.Azure;
@@ -130,6 +131,10 @@ namespace terminalDocuSign.Services.New_Api
                 var related_fields = rolesList.Where(a => a.Tags.Contains("recipientId:" + corresponding_template_recipient.RecipientId));
                 recepient.Name = related_fields.Where(a => a.Key.Contains("role name")).FirstOrDefault().Value;
                 recepient.Email = related_fields.Where(a => a.Key.Contains("role email")).FirstOrDefault().Value;
+                if (!recepient.Email.IsValidEmailAddress())
+                {
+                    throw new ApplicationException($"'{recepient.Email}' is not a valid email address");
+                }
 
                 //updating tabs
                 var tabs = envelopesApi.ListTabs(loginInfo.AccountId, envelopeSummary.EnvelopeId, recepient.RecipientId);
