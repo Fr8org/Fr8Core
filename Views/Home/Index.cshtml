@@ -119,9 +119,6 @@
 @if (!Request.IsAuthenticated)
 {
     <li>
-        <button onclick="document.location = '#contact';" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect"><a class="try-now-btn" href="/Welcome">TRY IT NOW</a></button>
-    </li>
-    <li>
         <button onclick="document.location = '/DockyardAccount';" class="mdl-button mdl-js-button mdl-button--login mdl-js-ripple-effect"><span class="try-now-btn">Login/Register</span></button>
     </li>
 }
@@ -147,7 +144,7 @@ else
             </div>
             <div class="hero-buttons">
                 <a href="#about" id="btn-about" class="btn btn-outline btn-lg"><i class="fa fa-arrow-circle-o-down"></i> READ MORE</a>
-                <a href="#contact" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-arrow-circle-o-right"></i> TRY IT NOW</a>
+                <a href="/Welcome" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-arrow-circle-o-right"></i> TRY IT NOW</a>
             </div>
         </div>
         <div class="hero-bg-pattern"></div>
@@ -211,7 +208,7 @@ else
         <div id="social-network" class="section full-width-parallax parallax">
             <div class="container">
                 <h2 class="section-heading">Automate Your Work. Connect Your Cloud Services.</h2>
-                <a href="#contact" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-arrow-circle-o-right"></i> TRY IT FREE</a>
+                <a href="/Welcome" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-arrow-circle-o-right"></i> TRY IT FREE</a>
                 <p style="color:#F2F4F5;padding-top:10px;">Try Fr8 now.</p>
             </div>
         </div>
