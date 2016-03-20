@@ -81,8 +81,8 @@ namespace terminalSalesforce.Actions
 
             //get selected chatter object id and feed text
             var selectedChatterObjectId = ((DropDownList)GetControl(curActivityDO, "WhatKindOfChatterObject", ControlTypes.DropDownList)).Value;
-            var feedText = ExtractSpecificOrUpstreamValue(curActivityDO, payloadCrates, "FeedTextItem");
-
+            var textSource = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().Single().FindByName<TextSource>("FeedTextItem");
+            var feedText = textSource.GetValue(CrateManager.GetStorage(payloadCrates));
             var result = await _salesforce.PostFeedTextToChatterObject(feedText, selectedChatterObjectId, authTokenDO);
 
             if (!string.IsNullOrEmpty(result))

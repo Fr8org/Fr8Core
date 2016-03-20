@@ -157,7 +157,7 @@ namespace terminalFr8Core.Actions
             return curActivityDO;
         }
 
-        private async Task<Crate<FieldDescriptionsCM>>
+        /*private async Task<Crate<FieldDescriptionsCM>>
             ExtractUpstreamQueryCrates(ActivityDO activityDO)
         {
             var upstreamCrates = await GetCratesByDirection<StandardQueryCM>(
@@ -172,7 +172,7 @@ namespace terminalFr8Core.Actions
             var crate = CrateManager.CreateDesignTimeFieldsCrate("Upstream Crate Label List", fields);
 
             return crate;
-        }
+        }*/
 
         protected override Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
