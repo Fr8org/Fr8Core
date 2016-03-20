@@ -30,8 +30,8 @@ module dockyard.directives.dropDownListBox {
 
                
 
-                $scope.setSelectedItem = (item: model.FieldDTO) => {
-                    $scope.field.value = item.value || (<any>item).Value;
+                $scope.setSelectedItem = (item: model.DropDownListItem) => {
+                    $scope.field.value = item.value;
                     $scope.field.selectedKey = item.key;
                     $scope.selectedItem = item;
 
