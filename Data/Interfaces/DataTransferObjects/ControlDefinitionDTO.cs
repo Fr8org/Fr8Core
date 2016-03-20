@@ -19,7 +19,7 @@ namespace Data.Interfaces.DataTransferObjects
 
     public interface IControlDefinition
     {
-        string Name { get; }
+        string Name { get; set; }
     }
 
     public interface IContainerControl

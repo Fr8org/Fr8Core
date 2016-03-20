@@ -280,23 +280,41 @@ namespace TerminalBase.BaseClasses
         
         /**********************************************************************************/
 
+        protected T AssignNamesForUnnamedControls(T configurationControls)
+        {
+            int controlId = 0;
+            var controls = configurationControls.EnumerateControlsDefinitions();
+
+            foreach (var controlDefinition in controls)
+            {
+                if (string.IsNullOrWhiteSpace(controlDefinition.Name))
+                {
+                    controlDefinition.Name = controlDefinition.GetType().Name + controlId++;
+                }
+            }
+
+            return configurationControls;
+        }
+        
+        /**********************************************************************************/
+
         protected virtual T CrateConfigurationControls()
         {
             var uiBuilderConstructor = typeof (T).GetConstructor(new [] {typeof (UiBuilder)});
 
             if (uiBuilderConstructor != null)
             {
-                return (T) uiBuilderConstructor.Invoke(new object[] {UiBuilder});
+                return AssignNamesForUnnamedControls((T) uiBuilderConstructor.Invoke(new object[] {UiBuilder}));
             }
 
             var defaultConstructor = typeof (T).GetConstructor(new Type[0]);
 
             if (defaultConstructor == null)
             {
-                throw new InvalidOperationException($"Unablerhen to find default constructor or constructor accepting UiBuilder for type {typeof(T).FullName}");
+                throw new InvalidOperationException($"Unable to find default constructor or constructor accepting UiBuilder for type {typeof(T).FullName}");
             }
 
-            return (T)defaultConstructor.Invoke(null);
+            return AssignNamesForUnnamedControls((T)defaultConstructor.Invoke(null));
         }
 
         /**********************************************************************************/

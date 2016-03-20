@@ -159,6 +159,18 @@ namespace Data.Interfaces.Manifests
             return null;
         }
 
+        public List<IControlDefinition> EnumerateControlsDefinitions()
+        {
+            var namedControls = new List<IControlDefinition>();
+
+            foreach (var controlDefinitionDto in Controls)
+            {
+                EnumerateNamedControls(controlDefinitionDto, namedControls);
+            }
+
+            return namedControls;
+        }
+
         private void EnumerateNamedControls(object obj, List<IControlDefinition> controls)
         {
             if (obj is IControlDefinition)
@@ -177,12 +189,7 @@ namespace Data.Interfaces.Manifests
         
         public void SyncWith(StandardConfigurationControlsCM configurationControls)
         {
-            var namedControls = new List<IControlDefinition>();
-
-            foreach (var controlDefinitionDto in Controls)
-            {
-                EnumerateNamedControls(controlDefinitionDto, namedControls);
-            }
+            var namedControls = EnumerateControlsDefinitions();
 
             foreach (var namedControl in namedControls)
             {
