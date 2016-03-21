@@ -142,37 +142,78 @@ namespace Data.Control
 
     public class TextBoxMetaDescriptionDTO : ControlMetaDescriptionDTO
     {
-        public TextBoxMetaDescriptionDTO() : base(ControlTypes.TextBox)
+        public TextBoxMetaDescriptionDTO() : base("TextBoxMetaDescriptionDTO", "TextBox")
         {
-            this.Controls.Add(new TextBox { });
+           // this.Controls.Add(new TextBox { });
+        }
+
+        public override ControlDefinitionDTO CreateControl()
+        {
+            return new TextBox()
+            {
+                Label = this.Controls.First().Value
+            };
         }
     }
 
     public class TextBlockMetaDescriptionDTO : ControlMetaDescriptionDTO
     {
-        public TextBlockMetaDescriptionDTO() : base(ControlTypes.TextBlock)
+        public TextBlockMetaDescriptionDTO() : base("TextBlockMetaDescriptionDTO", "TextBlock")
         {
-            this.Controls.Add(new TextArea());
+           // this.Controls.Add(new TextArea());
+        }
+
+        public override ControlDefinitionDTO CreateControl()
+        {
+            return new TextBlock()
+            {
+                Value = this.Controls.First().Value
+            };
         }
     }
 
     public class FilePickerMetaDescriptionDTO : ControlMetaDescriptionDTO
     {
         public static string[] FileExtensions = {"xlsx"};
-        public FilePickerMetaDescriptionDTO() : base(ControlTypes.FilePicker)
+        public FilePickerMetaDescriptionDTO() : base("FilePickerMetaDescriptionDTO", "File Picker")
         {
+            /*
             this.Controls.Add(new TextBox());
             this.Controls.Add(new DropDownList() { ListItems = FileExtensions.Select(x => new ListItem { Key = x, Value = x}).ToList()});
+            */
+        }
+
+        public override ControlDefinitionDTO CreateControl()
+        {
+            return new FilePicker
+            {
+                Label = this.Controls.First().Value
+            };
         }
     }
 
-    public class ControlMetaDescriptionDTO : ControlDefinitionDTO
+    [JsonConverter(typeof(ControlMetaDescriptionDTOConverter))]
+    public class ControlMetaDescriptionDTO 
     {
         [JsonProperty("controls")]
-        public List<ControlDefinitionDTO> Controls { get; set; } 
-        public ControlMetaDescriptionDTO(string type) : base(type)
-        {
+        public List<ControlDefinitionDTO> Controls { get; set; }
 
+        [JsonProperty("description")]
+        public string Description { get; set; }
+
+        [JsonProperty("type")]
+        public string Type { get; set; }
+
+        public ControlMetaDescriptionDTO(string type, string description)
+        {
+            this.Type = type;
+            this.Description = description;
+            Controls = new List<ControlDefinitionDTO>();
+        }
+
+        public virtual ControlDefinitionDTO CreateControl()
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -183,7 +224,12 @@ namespace Data.Control
 
         public ControlContainer() : base(ControlTypes.ControlContainer)
         {
+            MetaDescriptions = new List<ControlMetaDescriptionDTO>();
+        }
 
+        public List<ControlDefinitionDTO> CreateControls()
+        {
+            return MetaDescriptions.Select(m => m.CreateControl()).ToList();
         }
     }
 
