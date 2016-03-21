@@ -12,6 +12,12 @@ namespace Data.Interfaces.Manifests
         [MtPrimaryKey]
         public string EnvelopeId { get; set; }
         public string ExternalAccountId { get; set; }
+        public string Name { get; set; }
+        public string Subject { get; set; }
+        public string OwnerName { get; set; }
+        public string SenderName { get; set; }
+        public string SenderEmail { get; set; }
+        public string Shared { get; set; }
 
         public DateTime? StatusChangedDateTime { get; set; }
 

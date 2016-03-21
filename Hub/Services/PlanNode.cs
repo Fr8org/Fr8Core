@@ -85,32 +85,18 @@ namespace Hub.Services
             }
         }
 
-        public List<T> GetCrateManifestsByDirection<T>(
-            Guid activityId,
-            CrateDirection direction,
-            AvailabilityType availability) where T : Data.Interfaces.Manifests.Manifest
+        public List<T> GetCrateManifestsByDirection<T>(Guid activityId, CrateDirection direction, AvailabilityType availability) 
+            where T : Data.Interfaces.Manifests.Manifest
         {
-            Func<FieldDTO, bool> fieldPredicate;
-            if (availability == AvailabilityType.NotSet)
-            {
-                fieldPredicate = (FieldDTO f) => true;
-            }
-            else
-            {
-                fieldPredicate = (FieldDTO f) => f.Availability == availability;
-            }
-
             Func<Crate<T>, bool> cratePredicate;
+
             if (availability == AvailabilityType.NotSet)
             {
-                cratePredicate = (Crate<T> f) => true;
+                cratePredicate = f => true;
             }
             else
             {
-                cratePredicate = (Crate<T> f) =>
-                {
-                    return f.Availability == availability;
-                };
+                cratePredicate = f => (f.Availability & availability) != 0;
             }
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -128,42 +114,20 @@ namespace Hub.Services
 
         public FieldDescriptionsCM GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability)
         {
-            FieldDescriptionsCM mergedFields = new FieldDescriptionsCM();
-
             Func<FieldDTO, bool> fieldPredicate;
+
             if (availability == AvailabilityType.NotSet)
             {
-                fieldPredicate = (FieldDTO f) => true;
+                fieldPredicate = f => true;
             }
             else
             {
-                fieldPredicate = (FieldDTO f) => f.Availability == availability;
+                fieldPredicate = f => (f.Availability & availability) != 0;
             }
 
-            Func<Crate<FieldDescriptionsCM>, bool> cratePredicate;
-            if (availability == AvailabilityType.NotSet)
-            {
-                cratePredicate = (Crate<FieldDescriptionsCM> f) => true;
-            }
-            else
-            {
-                cratePredicate = (Crate<FieldDescriptionsCM> f) =>
-                {
-                    return f.Availability == availability;
-                };
-            }
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                ActivityDO activityDO = uow.PlanRepository.GetById<ActivityDO>(activityId);
-                var curCrates = GetActivitiesByDirection(uow, direction, activityDO)
-                    .OfType<ActivityDO>()
-                    .SelectMany(x => _crate.GetStorage(x).CratesOfType<FieldDescriptionsCM>().Where(cratePredicate))
-                    .ToList();
-
-                mergedFields.Fields.AddRange(_crate.MergeContentFields(curCrates).Fields.Where(fieldPredicate));
-                return mergedFields;
-            }
+            var manifests = GetCrateManifestsByDirection<FieldDescriptionsCM>(activityId, direction, availability);
+          
+            return new FieldDescriptionsCM(manifests.SelectMany(x => x.Fields).Where(fieldPredicate));
         }
 
         private List<PlanNodeDO> GetActivitiesByDirection(IUnitOfWork uow, CrateDirection direction, PlanNodeDO curActivityDO)
@@ -172,9 +136,10 @@ namespace Hub.Services
             {
                 case CrateDirection.Downstream:
                     return GetDownstreamActivities(uow, curActivityDO);
+
                 case CrateDirection.Upstream:
                     return GetUpstreamActivities(uow, curActivityDO);
-                case CrateDirection.Both:
+
                 default:
                     return GetDownstreamActivities(uow, curActivityDO).Concat(GetUpstreamActivities(uow, curActivityDO)).ToList();
             }
