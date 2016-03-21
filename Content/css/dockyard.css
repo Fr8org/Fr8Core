@@ -1044,3 +1044,12 @@ div.activity-list::after {
     background-color: #428bca;
     border-color: #357ebd;
 }
+
+.query-builder-value-row {
+    padding-left: 15px; 
+    overflow: auto;
+}
+.query-builder-operator-row {
+    float:left; 
+    width: 70px;
+}
