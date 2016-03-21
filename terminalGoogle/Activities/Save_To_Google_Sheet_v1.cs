@@ -150,47 +150,82 @@ namespace terminalGoogle.Actions
 
                 var item = CrateManager.ToDto(crate);
 
-                //try to deserialize content from crate
-                var dynamicObject = JsonConvert.DeserializeObject(item.Contents.ToString(), crateManifestType);
-                
-                //deserialize this to a List or deserialize to a object
-                if (IsList(dynamicObject))
-                {
-                                               
-                }
-                else
-                {
-                    var headerRow = new TableRowDTO();
-                    var dataRow = new TableRowDTO();
+                var token = JToken.Parse(item.Contents.ToString());
 
-                    PropertyInfo[] props = dynamicObject.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
-                    foreach (var property in props)
+                var jObject = token as JObject;
+                if (jObject != null)
+                {
+                    //check if jObject has some JArray properties
+                    var arrayProperty = jObject.Properties().FirstOrDefault(x => x.Value is JArray);
+
+                    //check how StandardPayloadDataCM is structured
+                    if (arrayProperty != null)
                     {
-                        var propertyAttributes = property.GetCustomAttributes(typeof (JsonIgnoreAttribute), true);
-                        if (!propertyAttributes.Any())
+                        foreach (var arrayItem in arrayProperty.Value)
                         {
-                            headerRow.Row.Add(new TableCellDTO() { Cell = new FieldDTO(property.Name, property.Name) });
-                            var propertyValue = property.GetValue(dynamicObject, null);
-                            dataRow.Row.Add(new TableCellDTO() { Cell = new FieldDTO(property.Name, propertyValue?.ToString() ?? string.Empty) });
+                            //arrayItem is PayloadObjectDTO which on has an List<FieldDTO>
+                            var innerArrayProperty = ((JObject)arrayItem).Properties().FirstOrDefault(x => x.Value is JArray);
+                            if (innerArrayProperty != null)
+                            {
+                                var headerRow = new TableRowDTO();
+                                var dataRow = new TableRowDTO();
+
+                                foreach (var innerArrayItem in innerArrayProperty.Value)
+                                {
+                                    //try to parse the property as FieldDTO
+                                    if (innerArrayItem is JObject)
+                                    {
+                                        var fieldObj = (JObject)innerArrayItem;
+                                        if (fieldObj.Property("key") != null && fieldObj.Property("value") != null)
+                                        {
+                                            headerRow.Row.Add(new TableCellDTO() { Cell = new FieldDTO(fieldObj["key"].ToString(), fieldObj["key"].ToString()) });
+                                            dataRow.Row.Add(new TableCellDTO() { Cell = new FieldDTO(fieldObj["key"].ToString(), fieldObj["value"].ToString()) });
+                                        }
+                                    }
+                                }
+
+                                if (!headerIsAdded)
+                                {
+                                    tableData.Table.Add(headerRow);
+                                    headerIsAdded = true;
+                                }
+                                tableData.Table.Add(dataRow);
+                            }
                         }
                     }
-
-                    if (!headerIsAdded)
+                    else
                     {
-                        tableData.Table.Add(headerRow);
-                        headerIsAdded = true;
+                        var headerRow = new TableRowDTO();
+                        var dataRow = new TableRowDTO();
+
+                        foreach (JProperty property in jObject.Properties())
+                        {
+                            //try to parse the property as FieldDTO
+                            if (property.Value is JObject)
+                            {
+                                var fieldObj = (JObject) property.Value;
+                                if (fieldObj.Property("key") != null && fieldObj.Property("value") != null)
+                                {
+                                    headerRow.Row.Add(new TableCellDTO() { Cell = new FieldDTO(fieldObj["key"].ToString(), fieldObj["key"].ToString()) });
+                                    dataRow.Row.Add(new TableCellDTO() { Cell = new FieldDTO(fieldObj["key"].ToString(), fieldObj["value"].ToString()) });
+                                }
+                            }
+                            else
+                            {
+                                headerRow.Row.Add(new TableCellDTO() { Cell = new FieldDTO(property.Name, property.Name) });
+                                dataRow.Row.Add(new TableCellDTO() { Cell = new FieldDTO(property.Name, property.Value.ToString()) });
+                            }
+                        }
+
+                        if (!headerIsAdded)
+                        {
+                            tableData.Table.Add(headerRow);
+                            headerIsAdded = true;
+                        }
+                        tableData.Table.Add(dataRow);
                     }
-                    tableData.Table.Add(dataRow);
                 }
-
-                //add additional check for FieldDTO to extract the keys as a header
             }
-
-            //var deserializedObject = JsonConvert.DeserializeObject<List<object>>(crate.GetRaw().ToString());
-            //if (IsList(deserializedObject))
-            //{
-
-            //}
 
             return tableData;
         }
@@ -211,7 +246,11 @@ namespace terminalGoogle.Actions
             var selectedCrateDescription = crateChooser.CrateDescriptions.Single(c => c.Selected);
 
             //find crate by user selected values
-            return payloadStorage.Where(c => c.ManifestType.Type == selectedCrateDescription.ManifestType && c.Label == selectedCrateDescription.Label);
+            //return payloadStorage.Where(c => c.ManifestType.Type == selectedCrateDescription.ManifestType && c.Label == selectedCrateDescription.Label);
+            var item = payloadStorage.ToList()[1];
+            var newlist = new List<Crate>();
+            newlist.Add(item);
+            return newlist;
         }
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
