@@ -450,8 +450,7 @@ namespace HubWeb.Controllers
             }
         }
 
-
-        [Fr8ApiAuthorize("Admin", "Customer")]
+        [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
         [Fr8HubWebHMACAuthenticate]
         [HttpPost]
         public async Task<IHttpActionResult> RunWithPayload(Guid planId, [FromBody]List<CrateDTO> payload)
@@ -494,7 +493,6 @@ namespace HubWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var planDO = uow.PlanRepository.GetById<PlanDO>(planId);
-
                 try
                 {
                     if (planDO != null)

@@ -61,7 +61,7 @@ namespace terminalFr8Core.Actions
                 return curActivityDO;
             }
 
-            if (continueButton.Clicked)
+            if (!continueButton.Clicked)
             {
                 return curActivityDO;
             }
