@@ -21,7 +21,7 @@ namespace terminalDocuSign.Actions
 {
     public class Mail_Merge_Into_DocuSign_v1 : BaseDocuSignActivity
     {
-      
+
         private string _dataSourceValue;
 
         private DropDownList _docuSignTemplate;
@@ -60,7 +60,7 @@ namespace terminalDocuSign.Actions
             {
                 Label = "1. Where is your Source Data?",
                 Name = "DataSource",
-                ListItems = await GetDataSourceListItems(activityDO, "Table Data Generator"),
+                ListItems = await GetDataSourceListItems("Table Data Generator"),
                 Required = true
             });
 
@@ -78,10 +78,9 @@ namespace terminalDocuSign.Actions
             return PackControlsCrate(controlList.ToArray());
         }
 
-        private async Task<List<ListItem>> GetDataSourceListItems(ActivityDO activityDO, string tag)
+        private async Task<List<ListItem>> GetDataSourceListItems(string tag)
         {
-            var curActivityTemplates = await HubCommunicator.GetActivityTemplates(tag)
-                .ContinueWith(x => x.Result.Where(y => y.Name.StartsWith("Get", StringComparison.InvariantCultureIgnoreCase) && y.Category == Data.States.ActivityCategory.Receivers));
+            var curActivityTemplates = await HubCommunicator.GetActivityTemplates(tag, CurrentFr8UserId);
             return curActivityTemplates.Select(at => new ListItem() { Key = at.Label, Value = at.Name }).ToList();
         }
 
@@ -136,7 +135,7 @@ namespace terminalDocuSign.Actions
             var control = (T)controls.FindByName(name);
             return control;
         }
-        
+
         protected internal override ValidationResult ValidateActivityInternal(ActivityDO curActivityDO)
         {
             var errorMessages = new List<string>();
@@ -193,7 +192,7 @@ namespace terminalDocuSign.Actions
             // If no values selected in textboxes, remain on initial phase
             DropDownList dataSource = GetStdConfigurationControl<DropDownList>(storage, "DataSource");
             if (dataSource.Value != null)
-            _dataSourceValue = dataSource.Value;
+                _dataSourceValue = dataSource.Value;
 
             _docuSignTemplate = GetStdConfigurationControl<DropDownList>(storage, "DocuSignTemplate");
 
@@ -211,16 +210,16 @@ namespace terminalDocuSign.Actions
         }
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-            {
+        {
             using (var updater = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 // extract fields in docusign form
-                    AddOrUpdateUserDefinedFields(
-                    curActivityDO,
-                    authTokenDO,
-                    updater,
-                    _docuSignTemplate.Value
-                );
+                AddOrUpdateUserDefinedFields(
+                curActivityDO,
+                authTokenDO,
+                updater,
+                _docuSignTemplate.Value
+            );
             }
 
             var reconfigList = new List<ConfigurationRequest>()
@@ -241,7 +240,7 @@ namespace terminalDocuSign.Actions
                 }
             };
 
-                curActivityDO.ChildNodes = new List<PlanNodeDO>();
+            curActivityDO.ChildNodes = new List<PlanNodeDO>();
             var behavior = new ReconfigurationListBehavior(this);
             await behavior.ReconfigureActivities(curActivityDO, authTokenDO, reconfigList);
             return await Task.FromResult(curActivityDO);
@@ -269,7 +268,7 @@ namespace terminalDocuSign.Actions
             var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null))
                 .Select(Mapper.Map<ActivityTemplateDO>)
                 .ToList();
-            
+
             // Let's check if activity template generates table data
             var selectedReceiver = curActivityTemplates.Single(x => x.Name == _dataSourceValue);
             var dataSourceActivity = await AddAndConfigureChildActivity(
@@ -387,7 +386,7 @@ namespace terminalDocuSign.Actions
                 _docuSignTemplate.ListItems
                     .FirstOrDefault(a => a.Key == _docuSignTemplate.selectedKey)
             );
-            
+
             await ConfigureChildActivity(parentActivity, sendDocuSignActivity);
 
             return activityIndex == 1 ? sendDocuSignActivity : parentActivity;
@@ -471,7 +470,7 @@ namespace terminalDocuSign.Actions
             {
                 var curSolutionPage = GetDefaultDocumentation(SolutionName, SolutionVersion, TerminalName, SolutionBody);
                 return Task.FromResult(curSolutionPage);
-              
+
             }
             if (curDocumentation.Contains("HelpMenu"))
             {
