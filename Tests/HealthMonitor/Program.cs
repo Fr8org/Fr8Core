@@ -127,7 +127,7 @@ namespace HealthMonitor
                 throw;
             }
             finally
-            {
+                {
                 if (selfHosting)
                 {
                     selfHostInitializer.Dispose();

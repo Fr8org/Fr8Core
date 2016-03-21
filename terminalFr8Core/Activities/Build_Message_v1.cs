@@ -170,7 +170,7 @@ namespace terminalFr8Core.Actions
 
         private async Task<List<ListItem>> GetAvailableFields(ActivityDO curActivityDO)
         {
-            var upstreamFieldsAddress = await MergeUpstreamFields<FieldDescriptionsCM>(curActivityDO, "Available Fields");
+            var upstreamFieldsAddress = await CreateDesignTimeFieldsCrate(curActivityDO, "Available Fields");
             if (upstreamFieldsAddress != null)
             {
                 FieldDescriptionsCM curFieldDescriptionsCrate = ((Crate<FieldDescriptionsCM>)upstreamFieldsAddress).Content;

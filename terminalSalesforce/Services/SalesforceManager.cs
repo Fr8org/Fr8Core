@@ -2,16 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Control;
+using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Salesforce.Force;
 using terminalSalesforce.Infrastructure;
 using Data.Entities;
+using Hub.Managers;
 using Salesforce.Common.Models;
 using Salesforce.Common;
 using Salesforce.Chatter;
 using Newtonsoft.Json.Linq;
 using Salesforce.Chatter.Models;
+using StructureMap;
 
 namespace terminalSalesforce.Services
 {
@@ -20,6 +24,12 @@ namespace terminalSalesforce.Services
         private Authentication _authentication = new Authentication();
         private SalesforceObjectFactory salesforceObjectFactory = new SalesforceObjectFactory();
         private SalesforceObject _salesforceObject;
+        private ICrateManager _crateManager;
+        
+        public SalesforceManager()
+        {
+            _crateManager = ObjectFactory.GetInstance<ICrateManager>();
+        }
 
         /// <summary>
         /// Creates Salesforce object
@@ -170,18 +180,33 @@ namespace terminalSalesforce.Services
             }
         }
 
-        public T CreateSalesforceDTO<T>(ActivityDO curActivity, PayloadDTO curPayload,
-                                        Func<ActivityDO, PayloadDTO, string, string> extractControlValue)
+        public T CreateSalesforceDTO<T>(ActivityDO curActivity, PayloadDTO curPayload)
         {
             var requiredType = typeof (T);
             var requiredObject = (T)Activator.CreateInstance(requiredType);
             var requiredProperties = requiredType.GetProperties().Where(p => !p.Name.Equals("Id"));
 
+            var designTimeCrateStorage = _crateManager.GetStorage(curActivity.CrateStorage);
+            var runTimeCrateStorage = _crateManager.FromDto(curPayload.CrateStorage);
+            var controls = designTimeCrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+
+            if (controls == null)
+            {
+                throw new InvalidOperationException("Failed to find configuration controls crate");
+            }
+
             requiredProperties.ToList().ForEach(prop =>
             {
                 try
                 {
-                    var propValue = extractControlValue(curActivity, curPayload, prop.Name);
+                    var textSourceControl = controls.Controls.SingleOrDefault(c => c.Name == prop.Name) as TextSource;
+
+                    if (textSourceControl == null)
+                    {
+                        throw new InvalidOperationException($"Unable to find TextSource control with name '{prop.Name}'");
+                    }
+
+                    var propValue = textSourceControl.GetValue(runTimeCrateStorage);
                     prop.SetValue(requiredObject, propValue);
                 }
                 catch (ApplicationException applicationException)

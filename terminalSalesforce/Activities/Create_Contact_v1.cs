@@ -99,7 +99,7 @@ namespace terminalSalesforce.Actions
                 return NeedsAuthenticationError(payloadCrates);
             }
 
-            var contact = _salesforce.CreateSalesforceDTO<ContactDTO>(curActivityDO, payloadCrates, ExtractSpecificOrUpstreamValue);
+            var contact = _salesforce.CreateSalesforceDTO<ContactDTO>(curActivityDO, payloadCrates);
             var result = await _salesforce.CreateObject(contact, "Contact", authTokenDO);
 
             if (!string.IsNullOrEmpty(result))
