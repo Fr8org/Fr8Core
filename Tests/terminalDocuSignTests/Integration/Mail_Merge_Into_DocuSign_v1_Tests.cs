@@ -83,8 +83,7 @@ namespace terminalDocuSignTests.Integration
 
             // Assert that DataSource dropdown contains sources and it should be only "Get"
             var dataSourceDropdown = (DropDownList)controls.Controls[0];
-            Assert.AreEqual(1, dataSourceDropdown.ListItems.Count());
-            Assert.IsFalse(dataSourceDropdown.ListItems.Any(x => !x.Key.StartsWith("Get", StringComparison.InvariantCultureIgnoreCase)));
+            Assert.AreEqual(3, dataSourceDropdown.ListItems.Count());
 
             // Assert that Dropdownlist  source is null.
             var templateDropdown = (DropDownList)controls.Controls[1];
