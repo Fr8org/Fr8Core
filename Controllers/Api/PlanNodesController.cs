@@ -134,7 +134,7 @@ namespace HubWeb.Controllers
                 .GetMethod("GetCrateManifestsByDirection")
                 .MakeGenericMethod(type);
 
-            var data = method.Invoke(_activity, new object[] { id, CrateDirection.Upstream, availability });
+            var data = method.Invoke(_activity, new object[] { id, CrateDirection.Upstream, availability, false });
 
             return Ok(data);
         }
