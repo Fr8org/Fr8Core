@@ -463,10 +463,10 @@ namespace Hub.Services
                 await _container.Run(uow, curContainerDO);
                 return curContainerDO;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 curContainerDO.ContainerState = ContainerState.Failed;
-                throw e;
+                throw;
             }
             finally
             {

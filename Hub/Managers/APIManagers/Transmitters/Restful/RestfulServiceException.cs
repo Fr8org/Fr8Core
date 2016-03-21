@@ -10,29 +10,21 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             private set;
         }
 
-        public string UserErrorMessage
-        {
-            get;
-            private set;
-        }
-
         public RestfulServiceException(int statusCode)
         {
             StatusCode = statusCode;
         }
 
-        public RestfulServiceException(int statusCode, string message, string userErrorMessage)
+        public RestfulServiceException(int statusCode, string message)
             : base(message)
         {
-            StatusCode = statusCode;
-            UserErrorMessage = userErrorMessage;
+            StatusCode = statusCode;            
         }
 
-        public RestfulServiceException(int statusCode, string message, string userErrorMessage, Exception innerException)
+        public RestfulServiceException(int statusCode, string message, Exception innerException)
             : base(message, innerException)
         {
             StatusCode = statusCode;
-            UserErrorMessage = userErrorMessage;
         }
     }
 }

@@ -81,20 +81,9 @@ namespace TerminalBase
             }
             else
             {
-                var detailedMessage = string.Empty;
                 //if terminal error is general exception, place exception message
-                if (curTerminalError is ActivityExecutionException)
-                {
-                    var userError = (curTerminalError as ActivityExecutionException)?.UserErrorMessage;
-                    detailedMessage =
-                        JsonConvert.SerializeObject(new { status = "terminal_error", message = curTerminalError.Message, userMessage = userError });
-                }
-                else
-                {
-                    detailedMessage =
-                    JsonConvert.SerializeObject(new { status = "terminal_error", message = curTerminalError.Message, userMessage = curTerminalError.Message });
-                }
-                
+                var detailedMessage =
+                    JsonConvert.SerializeObject(new { status = "terminal_error", message = curTerminalError.Message });
                 actionExecutedContext.Response.Content = new StringContent(detailedMessage, Encoding.UTF8, "application/json");
             }
         }

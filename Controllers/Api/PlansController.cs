@@ -462,7 +462,18 @@ namespace HubWeb.Controllers
 
         private void NotifyWithErrorMessage(Exception exception, PlanDO planDO, string pusherChannel, string errorMessage = "")
         {
-            var message = String.Format("Plan \"{0}\" failed. {1}", planDO.Name, errorMessage);
+            var messageToNotify = string.Empty;
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                messageToNotify = errorMessage;
+            }
+            else
+            {
+                var position = exception.Message.IndexOf(" | ") + 2;
+                messageToNotify = exception.Message.Substring(position);
+            }
+            
+            var message = String.Format("Plan \"{0}\" failed. {1}", planDO.Name, messageToNotify);
             _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, message);
             
         }

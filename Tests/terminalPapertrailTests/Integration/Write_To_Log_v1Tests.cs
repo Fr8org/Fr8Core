@@ -193,7 +193,7 @@ namespace terminalPapertrailTests.Integration
         [Test]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""Sequence contains no elements"",""userMessage"":""Failed to run activity \""Write To Log\"". Please, make sure it is set up correctly. ""}",
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""Sequence contains no elements""}",
             MatchType = MessageMatch.Contains
             )]
         public async Task Write_To_Log_Run_WithoutLogMessageInUpstreamActivity_ShouldThrowException()

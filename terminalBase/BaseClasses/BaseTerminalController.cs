@@ -21,6 +21,7 @@ using System.Net;
 using System.Net.Http.Formatting;
 using System.Net.Http.Headers;
 using Hub.Exceptions;
+using System.Runtime.ExceptionServices;
 
 namespace TerminalBase.BaseClasses
 {
@@ -274,7 +275,15 @@ namespace TerminalBase.BaseClasses
                 var endpoint = (curActivityDO.ActivityTemplate != null && curActivityDO.ActivityTemplate.Terminal != null && curActivityDO.ActivityTemplate.Terminal.Endpoint != null) ? curActivityDO.ActivityTemplate.Terminal.Endpoint : "<no terminal url>";
                 EventManager.TerminalInternalFailureOccurred(endpoint, JsonConvert.SerializeObject(curActivityDO, settings), e, curActivityDO.Id.ToString());
 
-                throw e;                
+                var action = curActionPath.ToLower();
+                var errorMessage = String.Format("Failed to {0} activity \"{1}\". Please, make sure it is set up correctly. ", action, curActivityDO.Label);
+
+                var message = e.Message + " | " + errorMessage;
+
+                var exception = (Exception)Activator.CreateInstance(e.GetType(), message, e.InnerException);
+                ExceptionDispatchInfo.Capture(exception).Throw();
+
+                throw;              
             }
         }
         private void OnStartActivity(string terminalName, string actionName, bool isTestActivityTemplate)
