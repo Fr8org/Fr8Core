@@ -85,8 +85,12 @@ namespace Hub.Services
             }
         }
 
-        public List<T> GetCrateManifestsByDirection<T>(Guid activityId, CrateDirection direction, AvailabilityType availability) 
-            where T : Data.Interfaces.Manifests.Manifest
+        public List<T> GetCrateManifestsByDirection<T>(
+            Guid activityId,
+            CrateDirection direction,
+            AvailabilityType availability,
+            bool includeCratesFromActivity = true
+                ) where T : Data.Interfaces.Manifests.Manifest
         {
             Func<Crate<T>, bool> cratePredicate;
 
@@ -102,8 +106,15 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var activityDO = uow.PlanRepository.GetById<ActivityDO>(activityId);
-                var result = GetActivitiesByDirection(uow, direction, activityDO)
-                    .OfType<ActivityDO>()
+                var activities = GetActivitiesByDirection(uow, direction, activityDO)
+                    .OfType<ActivityDO>();
+
+                if (!includeCratesFromActivity)
+                {
+                    activities = activities.Where(x => x.Id != activityId);
+                }
+
+                var result = activities
                     .SelectMany(x => _crate.GetStorage(x).CratesOfType<T>().Where(cratePredicate))
                     .Select(x => x.Content)
                     .ToList();
