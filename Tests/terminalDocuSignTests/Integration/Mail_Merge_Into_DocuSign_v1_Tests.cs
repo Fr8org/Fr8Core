@@ -77,7 +77,7 @@ namespace terminalDocuSignTests.Integration
         {
             // Assert that DataSource ,  DocuSignTemplate and Button control are present
             Assert.AreEqual(3, controls.Controls.Count());
-            Assert.AreEqual(1, controls.Controls.Count(x => x.Name == "DataSource"));
+            Assert.AreEqual(3, controls.Controls.Count(x => x.Name == "DataSource"));
             Assert.AreEqual(1, controls.Controls.Count(x => x.Name == "DocuSignTemplate"));
             Assert.AreEqual(1, controls.Controls.Count(x => x.Type == "Button"));
 
