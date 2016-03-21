@@ -95,7 +95,7 @@ namespace DockyardTest.Services
         }
 
         public List<T> GetCrateManifestsByDirection<T>(Guid activityId, CrateDirection direction,
-            AvailabilityType availability) where T : Manifest
+            AvailabilityType availability, bool includeCratesFromActivity = true) where T : Manifest
         {
             throw new NotImplementedException();
         }
