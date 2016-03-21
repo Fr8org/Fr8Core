@@ -8,7 +8,7 @@ namespace terminalDocuSign.Services
     {
         public static readonly FieldDTO[] Statuses =
         {
-            new FieldDTO("Any status", "<any>"),
+            new FieldDTO("Any status", null), //should be an null value so the DocuSignAPI can include all
             new FieldDTO("Sent", "sent"),
             new FieldDTO("Delivered", "delivered"),
             new FieldDTO("Signed", "signed"),
