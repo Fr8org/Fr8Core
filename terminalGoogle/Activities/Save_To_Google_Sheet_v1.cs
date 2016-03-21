@@ -73,8 +73,6 @@ namespace terminalGoogle.Actions
             }
             await AddCrateDesignTimeFieldsSource(curActivityDO);
             await AddSpreadsheetDesignTimeFieldsSource(curActivityDO, authTokenDO);
-            await AddUpstreamManifestSource(curActivityDO);
-            await AddUpstreamLabelSource(curActivityDO);
 
             return curActivityDO;
         }
@@ -437,32 +435,6 @@ namespace terminalGoogle.Actions
             return await Task.FromResult<ActivityDO>(curActivityDO);
         }
 
-        private async Task<ActivityDO> AddUpstreamManifestSource(ActivityDO curActivityDO)
-        {
-            //add upstream crates 
-            var manifest = await GetUpstreamManifestListCrate(curActivityDO);
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.RemoveByLabel("AvailableUpstreamManifests");
-
-                crateStorage.Add(manifest);
-            }
-
-            return curActivityDO;
-        }
-
-        private async Task<ActivityDO> AddUpstreamLabelSource(ActivityDO curActivityDO)
-        {
-            var labels = await GetUpstreamCrateLabelListCrate(curActivityDO);
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.RemoveByLabel("AvailableUpstreamLabels");
-
-                crateStorage.Add(labels);
-            }
-
-            return curActivityDO;
-        }
         #endregion
 
         #region Helper Methods
