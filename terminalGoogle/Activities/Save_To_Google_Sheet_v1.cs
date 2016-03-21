@@ -246,11 +246,7 @@ namespace terminalGoogle.Actions
             var selectedCrateDescription = crateChooser.CrateDescriptions.Single(c => c.Selected);
 
             //find crate by user selected values
-            //return payloadStorage.Where(c => c.ManifestType.Type == selectedCrateDescription.ManifestType && c.Label == selectedCrateDescription.Label);
-            var item = payloadStorage.ToList()[1];
-            var newlist = new List<Crate>();
-            newlist.Add(item);
-            return newlist;
+            return payloadStorage.Where(c => c.ManifestType.Type == selectedCrateDescription.ManifestType && c.Label == selectedCrateDescription.Label);
         }
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
