@@ -25,12 +25,12 @@ namespace terminalDocuSign.Infrastructure
             return _docuSignConnect.Get();
         }
 
-        public DocuSign.Integrations.Client.Configuration CreateDocuSignConnectProfile(DocuSign.Integrations.Client.Configuration configuration)
+		public DocuSign.Integrations.Client.Configuration CreateDocuSignConnectProfile(DocuSign.Integrations.Client.Configuration configuration)
         {
             DocuSignLogin();
             return _docuSignConnect.Create(configuration);
         }
-        public DocuSign.Integrations.Client.Configuration UpdateDocuSignConnectProfile(DocuSign.Integrations.Client.Configuration configuration)
+		  public DocuSign.Integrations.Client.Configuration UpdateDocuSignConnectProfile(DocuSign.Integrations.Client.Configuration configuration)
         {
             DocuSignLogin();
             return _docuSignConnect.Update(configuration);
@@ -45,12 +45,7 @@ namespace terminalDocuSign.Infrastructure
         public static void CreateOrUpdateDefaultDocuSignConnectConfiguration(string envelopeEvents = "Sent, Delivered, Completed")
         {
             var account = new DocuSignAccount();
-#if DEBUG && !DEV
-            var publishUrl = "http://" 
-#elif DEV || RELEASE 
-            var publishUrl = "https://" 
-#endif
-            + CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint") + "/terminals/terminalDocuSign/events";
+            var publishUrl = "http://" + CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint") + "/terminals/terminalDocuSign/events";
 
             //get existing connect configuration
             var existingDocuSignConnectConfiguration = GetDocuSignConnectConfiguration(account);
