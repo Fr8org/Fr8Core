@@ -155,7 +155,7 @@ namespace terminalExcel.Actions
                 {
                     //activityStorage.Add(Crate.FromContent(GenerateRuntimeCrateLabel(fileName), ExcelUtils.GetTableData(uploadFilePath), AvailabilityType.RunTime));
                     activityStorage.Add(Crate.FromContent(RuntimeCrateLabel, ExcelUtils.GetTableData(uploadFilePath), AvailabilityType.RunTime));
-                    activityStorage.Add(Crate.FromContent(ColumnHeadersCrateLabel, ExcelUtils.GetColumnHeadersData(uploadFilePath), AvailabilityType.RunTime));
+                    activityStorage.Add(Crate.FromContent(ColumnHeadersCrateLabel, ExcelUtils.GetColumnHeadersData(uploadFilePath)));
                 }
             }
             return Task.FromResult(curActivityDO);
