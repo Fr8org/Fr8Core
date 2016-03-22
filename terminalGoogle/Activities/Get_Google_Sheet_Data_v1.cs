@@ -8,6 +8,7 @@ using Data.Crates;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using Data.States;
 using Hub.Managers;
 using Newtonsoft.Json;
 using terminalGoogle.DataTransferObjects;
@@ -22,7 +23,8 @@ namespace terminalGoogle.Actions
     public class Get_Google_Sheet_Data_v1 : BaseTerminalActivity
     {
         private readonly IGoogleSheet _google;
-        private const string TableCrateLabelPrefix = "Data from ";
+
+        private const string RunTimeCrateLabel = "Table Generated From Google Sheet Data";
         public Get_Google_Sheet_Data_v1()
         {
             _google = new GoogleSheet();
@@ -69,7 +71,7 @@ namespace terminalGoogle.Actions
             var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
             //get the data
             var data = _google.EnumerateDataRows(spreadsheetsFromUserSelection, authDTO);
-            var crate = CrateManager.CreateStandardTableDataCrate(TableCrateLabelPrefix + spreadsheetName, true, data.ToArray());
+            var crate = CrateManager.CreateStandardTableDataCrate(RunTimeCrateLabel, true, data.ToArray());
             using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
             {
                 crateStorage.Add(crate);
@@ -130,15 +132,29 @@ namespace terminalGoogle.Actions
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Replace(AssembleCrateStorage(configurationControlsCrate));
+                crateStorage.Add(GetAvailableRunTimeTableCrate(RunTimeCrateLabel));
             }
 
             return Task.FromResult(curActivityDO);
         }
 
-        /// <summary>
-        /// If there's a value in select_file field of the crate, then it is a followup call.
-        /// </summary>
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        private Crate GetAvailableRunTimeTableCrate(string descriptionLabel)
+        {
+            var availableRunTimeCrates = Crate.FromContent("Available Run Time Crates", new CrateDescriptionCM(
+                    new CrateDescriptionDTO
+                    {
+                        ManifestType = MT.StandardTableData.GetEnumDisplayName(),
+                        Label = descriptionLabel,
+                        ManifestId = (int)MT.StandardTableData,
+                        ProducedBy = "Get_Google_Sheet_Data_v1"
+                    }), AvailabilityType.RunTime);
+            return availableRunTimeCrates;
+        }
+
+/// <summary>
+/// If there's a value in select_file field of the crate, then it is a followup call.
+/// </summary>
+public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
             var spreadsheetsFromUserSelectionControl = FindControl(CrateManager.GetStorage(curActivityDO.CrateStorage), "select_spreadsheet");
 
@@ -153,16 +169,16 @@ namespace terminalGoogle.Actions
             return ConfigurationRequestType.Initial;
         }
 
-        protected override IEnumerable<CrateDescriptionDTO> GetRuntimeAvailableCrateDescriptions(ActivityDO curActivityDO)
-        {
-            yield return new CrateDescriptionDTO
-                         {
-                             ManifestType = MT.StandardTableData.GetEnumDisplayName(),
-                             Label = TableCrateLabelPrefix + GetSelectSpreadsheetName(curActivityDO),
-                             ManifestId = (int)MT.StandardTableData,
-                             ProducedBy = nameof(Get_Google_Sheet_Data_v1)
-                         };
-        }
+        //protected override IEnumerable<CrateDescriptionDTO> GetRuntimeAvailableCrateDescriptions(ActivityDO curActivityDO)
+        //{
+        //    yield return new CrateDescriptionDTO
+        //                 {
+        //                     ManifestType = MT.StandardTableData.GetEnumDisplayName(),
+        //                     Label = TableCrateLabelPrefix + GetSelectSpreadsheetName(curActivityDO),
+        //                     ManifestId = (int)MT.StandardTableData,
+        //                     ProducedBy = nameof(Get_Google_Sheet_Data_v1)
+        //                 };
+        //}
 
         //if the user provides a file name, this action attempts to load the excel file and extracts the column headers from the first sheet in the file.
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
@@ -230,12 +246,12 @@ namespace terminalGoogle.Actions
 
             rows.Add(headerTableRowDTO);
 
-            var selectedSpreadsheetName = GetSelectSpreadsheetName(curActivityDO);
+            //var selectedSpreadsheetName = GetSelectSpreadsheetName(curActivityDO);
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                crateStorage.RemoveByLabelPrefix(TableCrateLabelPrefix);
-                crateStorage.Add(CrateManager.CreateStandardTableDataCrate(TableCrateLabelPrefix + selectedSpreadsheetName, false, rows.ToArray()));
+                //crateStorage.RemoveByLabelPrefix(TableCrateLabelPrefix);
+                crateStorage.Add(CrateManager.CreateStandardTableDataCrate(RunTimeCrateLabel, false, rows.ToArray()));
             }
         }
 

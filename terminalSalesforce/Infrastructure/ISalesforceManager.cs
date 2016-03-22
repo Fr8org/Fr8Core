@@ -18,7 +18,7 @@ namespace terminalSalesforce.Infrastructure
 
         Task<StandardPayloadDataCM> GetObjectByQuery(string salesforceObjectName, IEnumerable<string> fields, string conditionQuery, AuthorizationTokenDO authTokenDO);
 
-        T CreateSalesforceDTO<T>(ActivityDO curActivity, PayloadDTO curPayload, Func<ActivityDO, PayloadDTO, string, string> extractControlValue);
+        T CreateSalesforceDTO<T>(ActivityDO curActivity, PayloadDTO curPayload);
 
         Task<IList<FieldDTO>> GetChatters(AuthorizationTokenDO authTokenDO);
 

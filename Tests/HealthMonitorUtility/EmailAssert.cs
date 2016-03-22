@@ -76,13 +76,10 @@ namespace HealthMonitor.Utility
         private static bool CheckEmail(Pop3Client client, string expectedFromAddr, string expectedSubject, DateTime startTime, bool deleteMailOnSuccess = false)
         {
             MessageHeader msg = null;
-            Debug.WriteLine("=== Checking email ===");
-            Debug.WriteLine("Start time: " + startTime.ToLongTimeString());
             int messageCount = client.GetMessageCount();
             for (int i = messageCount; i > 0; i--)
             {
                 msg = client.GetMessageHeaders(i);
-                Debug.WriteLine(msg.DateSent.ToLongTimeString() + "  " + msg.From.Address + "  " + msg.Subject);
                 if (ValidateTime(RecentMsgThreshold, startTime, msg.DateSent))
                 {
                     if (ValidateConditions(expectedFromAddr, expectedSubject, msg))

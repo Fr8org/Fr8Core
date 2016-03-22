@@ -392,29 +392,27 @@ namespace HubWeb.Controllers
                 {
                     if (planDO != null)
                     {
-                        _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS,
-                            string.Format("Launching a new Container for Plan \"{0}\"", planDO.Name));
+                        _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, $"Launching a new Container for Plan \"{planDO.Name}\"");
 
                         var containerDO = await _plan.Run(planDO, curPayload);
                         if (!planDO.IsOngoingPlan())
                         {
-                            var deactivateDTO = await _plan.Deactivate(planId);
+                            await _plan.Deactivate(planId);
                         }
 
                         var response = _crate.GetContentType<OperationalStateCM>(containerDO.CrateStorage);
 
-                        string responseMsg = "";
+                        var responseMsg = "";
 
                         ResponseMessageDTO responseMessage;
-                        if (response != null && response.CurrentActivityResponse != null && response.CurrentActivityResponse.TryParseResponseMessageDTO(out responseMessage))
+                        if (response?.CurrentActivityResponse != null 
+                            && response.CurrentActivityResponse.TryParseResponseMessageDTO(out responseMessage) 
+                            && !string.IsNullOrEmpty(responseMessage?.Message))
                         {
-                            if (responseMessage != null && !string.IsNullOrEmpty(responseMessage.Message))
-                            {
-                                responseMsg = "\n" + responseMessage.Message;
-                            }
+                            responseMsg = "\n" + responseMessage.Message;
                         }
 
-                        string message = String.Format("Complete processing for Plan \"{0}\".{1}", planDO.Name, responseMsg);
+                        var message = $"Complete processing for Plan \"{planDO.Name}\".{responseMsg}";
 
                         _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, message);
                         EventManager.ContainerLaunched(containerDO);
@@ -434,6 +432,7 @@ namespace HubWeb.Controllers
                 {
                     _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, $"Plan \"{planDO.Name}\" failed");
                     ex.ContainerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
+                    
                     throw;
                 }
                 catch (Exception ex)
@@ -445,13 +444,117 @@ namespace HubWeb.Controllers
                 {
                     if (!planDO.IsOngoingPlan())
                     {
-                        var deactivateDTO = await _plan.Deactivate(planId);
+                        await _plan.Deactivate(planId);
                     }
                 }
-                var containerDefaultDTO = new ContainerDTO();
-                containerDefaultDTO.CurrentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
-                return Ok(containerDefaultDTO);
             }
         }
+
+        [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
+        [Fr8HubWebHMACAuthenticate]
+        [HttpPost]
+        public async Task<IHttpActionResult> RunWithPayload(Guid planId, [FromBody]List<CrateDTO> payload)
+        {
+            string currentPlanType = string.Empty;
+
+            //ACTIVATE - activate route if its inactive
+
+            bool inActive = false;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var planDO = uow.PlanRepository.GetById<PlanDO>(planId);
+
+                if (planDO.PlanState == PlanState.Inactive)
+                    inActive = true;
+            }
+
+            string pusherChannel = String.Format("fr8pusher_{0}", User.Identity.Name);
+
+            if (inActive)
+            {
+                var activateDTO = await _plan.Activate(planId, false);
+
+                if (activateDTO != null && activateDTO.Status == "validation_error")
+                {
+                    //this container holds wrapped inside the ErrorDTO
+                    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                    {
+                        var routeDO = uow.PlanRepository.GetById<PlanDO>(planId);
+                        activateDTO.Container.CurrentPlanType = routeDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
+                    }
+
+                    return Ok(activateDTO.Container);
+                }
+
+            }
+
+            //RUN
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var planDO = uow.PlanRepository.GetById<PlanDO>(planId);
+                try
+                {
+                    if (planDO != null)
+                    {
+                        _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, $"Launching a new Container for Plan \"{planDO.Name}\"");
+
+                        var crates = payload.Select(c => _crate.FromDto(c)).ToArray();
+                        var containerDO = await _plan.Run(uow , planDO, crates);
+                        if (!planDO.IsOngoingPlan())
+                        {
+                            await _plan.Deactivate(planId);
+                        }
+
+                        var response = _crate.GetContentType<OperationalStateCM>(containerDO.CrateStorage);
+
+                        var responseMsg = "";
+
+                        ResponseMessageDTO responseMessage;
+                        if (response?.CurrentActivityResponse != null
+                            && response.CurrentActivityResponse.TryParseResponseMessageDTO(out responseMessage)
+                            && !string.IsNullOrEmpty(responseMessage?.Message))
+                        {
+                            responseMsg = "\n" + responseMessage.Message;
+                        }
+
+                        var message = $"Complete processing for Plan \"{planDO.Name}\".{responseMsg}";
+
+                        _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, message);
+                        EventManager.ContainerLaunched(containerDO);
+
+                        var containerDTO = Mapper.Map<ContainerDTO>(containerDO);
+                        containerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
+
+                        EventManager.ContainerExecutionCompleted(containerDO);
+
+                        return Ok(containerDTO);
+                    }
+
+                    currentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing.ToString() : Data.Constants.PlanType.RunOnce.ToString();
+                    return BadRequest(currentPlanType);
+                }
+                catch (ErrorResponseException ex)
+                {
+                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, $"Plan \"{planDO.Name}\" failed");
+                    ex.ContainerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
+
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, $"Plan \"{planDO.Name}\" failed");
+                    throw;
+                }
+                finally
+                {
+                    if (!planDO.IsOngoingPlan())
+                    {
+                        await _plan.Deactivate(planId);
+                    }
+                }
+            }
+        }
+
     }
 }

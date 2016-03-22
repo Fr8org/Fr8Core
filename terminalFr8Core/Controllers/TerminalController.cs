@@ -289,6 +289,40 @@ namespace terminalFr8Core.Controllers
                 MinPaneWidth = 350
             });
 
+            result.Add(new ActivityTemplateDTO
+            {
+                Name = "ExtractTableField",
+                Label = "Extract Table Field",
+                Version = "1",
+                Category = ActivityCategory.Processors,
+                NeedsAuthentication = false,
+                Terminal = terminal,
+                WebService = webService
+            });
+
+            result.Add(new ActivityTemplateDTO
+            {
+                Name = "CreateLauncher",
+                Label = "Create Launcher",
+                Version = "1",
+                Category = ActivityCategory.Processors,
+                NeedsAuthentication = false,
+                Terminal = terminal,
+                WebService = webService
+            });
+
+
+            result.Add(new ActivityTemplateDTO
+            {
+                Name = "LaunchAPlan",
+                Label = "Launch A Plan",
+                Version = "1",
+                Category = ActivityCategory.Processors,
+                NeedsAuthentication = false,
+                Terminal = terminal,
+                WebService = webService
+            });
+
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
                 Definition = terminal,

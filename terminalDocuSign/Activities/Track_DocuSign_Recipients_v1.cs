@@ -173,15 +173,14 @@ namespace terminalDocuSign.Actions
             var filterActionTask = AddAndConfigureChildActivity(activityDO, "TestIncomingData", "Test Incoming Data", "Test Incoming Data", 4);
 
             var buildMessageActivityTask = AddAndConfigureChildActivity((Guid)activityDO.ParentPlanNodeId, "Build_Message", "Build a Message", "Build a Message", 2);
-            var notifierActivityTask = AddAndConfigureChildActivity((Guid)activityDO.ParentPlanNodeId, howToBeNotifiedDdl.Value, howToBeNotifiedDdl.selectedKey, howToBeNotifiedDdl.selectedKey, 3);
 
-            await Task.WhenAll(monitorDocuSignActionTask, setDelayActionTask, queryFr8WarehouseActionTask, filterActionTask, notifierActivityTask, buildMessageActivityTask);
+            await Task.WhenAll(monitorDocuSignActionTask, setDelayActionTask, queryFr8WarehouseActionTask, filterActionTask, buildMessageActivityTask);
 
             var monitorDocuSignAction = monitorDocuSignActionTask.Result;
             var setDelayAction = setDelayActionTask.Result;
             var queryFr8WarehouseAction = queryFr8WarehouseActionTask.Result;
             var filterAction = filterActionTask.Result;
-            var notifierActivity = notifierActivityTask.Result;
+            // var notifierActivity = notifierActivityTask.Result;
             var buildMessageActivity = buildMessageActivityTask.Result;
 
             if (specificRecipientOption.Selected)
@@ -195,14 +194,15 @@ namespace terminalDocuSign.Actions
                    ddlbTemplate.ListItems.Single(a => a.Key == ddlbTemplate.selectedKey));
             }
 
-            SetControlValue(monitorDocuSignAction, "Event_Envelope_Sent", "true");
-
             SetControlValue(buildMessageActivity, "Body", MessageBody);
             SetControlValue(buildMessageActivity, "Name", "NotificationMessage");
 
             buildMessageActivity = await HubCommunicator.ConfigureActivity(buildMessageActivity, CurrentFr8UserId);
 
+            var notifierActivity = await AddAndConfigureChildActivity((Guid)activityDO.ParentPlanNodeId, howToBeNotifiedDdl.Value, howToBeNotifiedDdl.selectedKey, howToBeNotifiedDdl.selectedKey, 3);
             SetNotifierActivityBody(notifierActivity);
+
+            SetControlValue(monitorDocuSignAction, "EnvelopeSent", "true");
 
             var configureNotifierTask = HubCommunicator.ConfigureActivity(notifierActivity, CurrentFr8UserId);
 
@@ -498,17 +498,17 @@ namespace terminalDocuSign.Actions
             {
                 if (curDocumentation.Contains("TrackDocuSignRecipients"))
                 {
-                    return Task.FromResult(GenerateDocumentationRepsonce(@"This solution work with notifications"));
+                    return Task.FromResult(GenerateDocumentationRepsonse(@"This solution work with notifications"));
                 }
                 if (curDocumentation.Contains("ExplainService"))
                 {
-                    return Task.FromResult(GenerateDocumentationRepsonce(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
+                    return Task.FromResult(GenerateDocumentationRepsonse(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
                 }
-                return Task.FromResult(GenerateErrorRepsonce("Unknown contentPath"));
+                return Task.FromResult(GenerateErrorRepsonse("Unknown contentPath"));
             }
             return
                 Task.FromResult(
-                    GenerateErrorRepsonce("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
+                    GenerateErrorRepsonse("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
         }
     }
 }

@@ -1011,6 +1011,7 @@ div.activity-list::after {
     padding: 0 3px;
     border: 1px solid rgba(34, 36, 38, .15);
     cursor: pointer;
+    outline: none;
 }
 
     .bdp-input.disabled {
@@ -1042,4 +1043,12 @@ div.activity-list::after {
 .inactive {
     background-color: #428bca;
     border-color: #357ebd;
+}
+
+.mt30 {
+    margin-top: 30px;
+}
+
+.float-right {
+    float: right;
 }

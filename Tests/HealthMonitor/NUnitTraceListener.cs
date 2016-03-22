@@ -57,7 +57,7 @@ namespace HealthMonitor
 
             if (result.IsError)
             {
-                Trace.Write("Failed");
+                Trace.TraceWarning("***Failed***");
                 Trace.Write(Environment.NewLine);
                 if (result.Message != null) { Debug.WriteLine(result.Message); }
                 if (result.StackTrace != null) { Debug.WriteLine(result.StackTrace); };
@@ -65,7 +65,7 @@ namespace HealthMonitor
 
             if (result.IsFailure)
             {
-                Trace.Write("Failed");
+                Trace.TraceWarning("***Failed***");
                 Trace.Write(Environment.NewLine);
                 if (result.Message != null) { Debug.WriteLine(result.Message); }
                 if (result.StackTrace != null) { Debug.WriteLine(result.StackTrace); };

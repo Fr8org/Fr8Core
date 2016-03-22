@@ -11,6 +11,10 @@ param(
 
     [Parameter(Mandatory = $true)]
 	[string]$connectionString,
+
+	[Parameter(Mandatory = $true)]
+	[ValidateSet("db", "txt", "both")]
+	[string]$update,
 	
 	[Parameter(Mandatory = $false)]
 	[string]$overrideDbName
@@ -22,10 +26,14 @@ $deployment = Get-AzureDeployment -ServiceName $serviceName -Slot Staging
 $hostName = $deployment.Url.Host
 Write-Host $hostName
 
-$commandLine = "$rootDir\UpdateTerminalHostnameInDb.ps1 -connectionString '$connectionString' -newHostname $hostName"
-if ([String]::IsNullOrEmpty($overrideDbName) -eq $false) {
-	$commandLine +=  " -overrideDbName $overrideDbName"
+if (($update.ToLowerInvariant() -eq 'db') -or ($update.ToLowerInvariant() -eq 'both')) {
+	$commandLine = "$rootDir\UpdateTerminalHostnameInDb.ps1 -connectionString '$connectionString' -newHostname $hostName"
+	if ([String]::IsNullOrEmpty($overrideDbName) -eq $false) {
+		$commandLine +=  " -overrideDbName $overrideDbName"
+	}
+	Invoke-Expression $commandLine
 }
-Invoke-Expression $commandLine
 
-Invoke-Expression "$rootDir\UpdateTerminalUrl.ps1 $hostName"
+if (($update.ToLowerInvariant() -eq 'txt') -or ($update.ToLowerInvariant() -eq 'both')) {
+	Invoke-Expression "$rootDir\UpdateTerminalUrl.ps1 $hostName"
+}

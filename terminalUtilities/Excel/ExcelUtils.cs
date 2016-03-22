@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Data.Crates;
 using Excel;
-using Newtonsoft.Json;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
@@ -16,7 +15,7 @@ using Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
 
-namespace terminalExcel.Infrastructure
+namespace terminalUtilities.Excel
 {
     public static class ExcelUtils
     {
@@ -118,7 +117,7 @@ namespace terminalExcel.Infrastructure
         /// <param name="fileBytes">Byte rray representing Excel data.</param>
         /// <param name="extension">Excel file extension.</param>
         /// <returns>Dictionary<string, List<Tuple<string, string>>> => Dictionary<"Row Number", List<Tuple<"Column Number", "Cell Value">>></returns>
-        public static Dictionary<string, List<Tuple<string, string>>> GetTabularData(byte[] fileBytes, string extension)
+        public static Dictionary<string, List<Tuple<string, string>>> GetTabularData(byte[] fileBytes, string extension, bool isFirstRowAsColumnNames = true)
         {
             Dictionary<string, List<Tuple<string, string>>> excelRows = new Dictionary<string, List<Tuple<string, string>>>();
             IExcelDataReader excelReader = null;
@@ -132,7 +131,7 @@ namespace terminalExcel.Infrastructure
 
                 using (excelReader)
                 {
-                    excelReader.IsFirstRowAsColumnNames = true;
+                    excelReader.IsFirstRowAsColumnNames = isFirstRowAsColumnNames;
                     var dataSet = excelReader.AsDataSet();
                     var table = dataSet.Tables[0];
 
@@ -150,7 +149,7 @@ namespace terminalExcel.Infrastructure
             return excelRows;
         }
 
-        public static StandardTableDataCM GetTableData(string selectedFilePath)
+        public static StandardTableDataCM GetTableData(string selectedFilePath, bool isFirstRowAsColumnNames = true)
         {
             var ext = Path.GetExtension(selectedFilePath);
             var crateManager = ObjectFactory.GetInstance<ICrateManager>();
@@ -161,7 +160,7 @@ namespace terminalExcel.Infrastructure
             var headersArray = GetColumnHeaders(fileAsByteArray, ext);
 
             // Fetch rows in Excel file
-            var rowsDictionary = GetTabularData(fileAsByteArray, ext);
+            var rowsDictionary = GetTabularData(fileAsByteArray, ext, isFirstRowAsColumnNames);
 
             Crate curExcelPayloadRowsCrateDTO = null;
 
@@ -193,7 +192,7 @@ namespace terminalExcel.Infrastructure
             return file.Retrieve(curFileDO);
         }
 
-        public static List<TableRowDTO> CreateTableCellPayloadObjects(Dictionary<string, List<Tuple<string, string>>> rowsDictionary, string[] headersArray)
+        public static List<TableRowDTO> CreateTableCellPayloadObjects(Dictionary<string, List<Tuple<string, string>>> rowsDictionary, string[] headersArray = null)
         {
             var listOfRows = new List<TableRowDTO>();
             // Process each item in the dictionary and add it as an item in List<TableRowDTO>
@@ -204,7 +203,7 @@ namespace terminalExcel.Infrastructure
                     Cell = new FieldDTO
                     {
 
-                        Key = headersArray[int.Parse(x.Item1) - 1], // Column header
+                        Key = headersArray != null ? headersArray[int.Parse(x.Item1) - 1] : x.Item1, // Column header
                         Value = x.Item2 // Column/cell value
                     }
                 }).ToList();
