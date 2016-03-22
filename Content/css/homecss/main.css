@@ -5619,6 +5619,7 @@ img.mfp-img {
   position: relative;
   top: 3px;
   font-size: 1em;
+  margin-left: 7px;
 }
 .service-item .service-text a.read-more:hover {
   text-decoration: none;
