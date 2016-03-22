@@ -84,7 +84,12 @@ namespace terminalSlack.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            return CrateManager.IsStorageEmpty(curActivityDO) ? ConfigurationRequestType.Initial : ConfigurationRequestType.Followup;
+            if (CrateManager.IsStorageEmpty(curActivityDO))
+            {
+                return ConfigurationRequestType.Initial;
+            }
+
+            return ConfigurationRequestType.Followup;
         }
 
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
@@ -97,19 +102,19 @@ namespace terminalSlack.Actions
             {
                 crateStorage.Clear();
                 crateStorage.Add(configurationCrate);             
-                crateStorage.Add(await CreateAvailableFieldsCrate(curActivityDO, "Available Fields"));
+                //crateStorage.Add(await CreateAvailableFieldsCrate(curActivityDO, "Available Fields"));
             }
             return curActivityDO;
         }
 
         protected async override Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.ReplaceByLabel(await CreateAvailableFieldsCrate(curActivityDO, "Available Fields"));
-            }
+            //using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            //{
+            //    crateStorage.ReplaceByLabel(await CreateAvailableFieldsCrate(curActivityDO, "Available Fields"));
+            //}
 
-            return curActivityDO;
+            return await Task.FromResult(curActivityDO);
         }
 
         private Crate PackCrate_ConfigurationControls()
@@ -122,8 +127,13 @@ namespace terminalSlack.Actions
                 Source = null
             };
 
-            var fieldSelect = new TextSource("Select Message Field", "Available Fields", "Select_Message_Field");
-            fieldSelect.Events.Add(new ControlEvent("onChange", "requestConfig"));
+            var fieldSelect = CreateSpecificOrUpstreamValueChooser(
+                "Select Message Field",
+                "Select_Message_Field",
+                addRequestConfigEvent: true,
+                requestUpstream: true
+            );
+
             var fieldsDTO = new List<ControlDefinitionDTO>()
             {
                 fieldSelectChannel,
