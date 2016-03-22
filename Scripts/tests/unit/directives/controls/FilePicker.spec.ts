@@ -19,7 +19,7 @@ module dockyard.tests.unit.directives.controls {
             fileService,
             element,
             scope,
-            directive = '<file-picker field="field" />';
+            directive = '<file-picker change="onChange" field="field" />';
 
         beforeEach(module('app', 'templates'));
 
@@ -39,6 +39,7 @@ module dockyard.tests.unit.directives.controls {
                 fileService = _FileService_;
 
                 scope = $rootScope.$new();
+                scope.onChange = jasmine.createSpy("onChange function");
                 scope.field = angular.copy(fx.FieldDTO.filePickerField);
                 element = compileTemplate(scope, directive, $compile);
                 
