@@ -56,10 +56,11 @@ module dockyard.tests.unit.directives.controls {
             expect(fileService.uploadFile).toHaveBeenCalled();
         });
 
-        it('Should broadcast on upload success', () => {
+        it('Should broadcast and call onChange on upload success', () => {
             var deferred = $q.defer();
             spyOn(fileService, 'uploadFile').and.returnValue(deferred.promise);
             spyOn(scope.$root, '$broadcast');
+            spyOn(scope, 'change');
 
             element.isolateScope().OnFileSelect({});
             var uploadedFile: interfaces.IFileDescriptionDTO = {
@@ -70,9 +71,10 @@ module dockyard.tests.unit.directives.controls {
             (<dockyard.model.FileDTO>uploadedFile).cloudStorageUrl = 'testStorageURL';
             //resolve promise
             scope.$digest();
-            expect(scope.$root.$broadcast.calls.count()).toBe(2);
+            expect(scope.$root.$broadcast.calls.count()).toBe(1);
+            expect(scope.change.calls.count()).toBe(1);
             expect(scope.$root.$broadcast.calls.argsFor(0)).toEqual(['fp-success', uploadedFile]);
-            expect(scope.$root.$broadcast.calls.argsFor(1)).toEqual(['onChange', jasmine.any(Object)]);
+            expect(scope.change.calls.argsFor(1)).toEqual(['onChange', jasmine.any(Object)]);
         });
 
         it('Should set selected file on upload success', () => {
