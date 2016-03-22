@@ -66,7 +66,7 @@ namespace terminalSalesforceTests.Intergration
                 var emailBodyControl = (TextSource)configControls.Content.Controls.Single(c => c.Name.Equals("EmailBody"));
 
                 emailAddressControl.ValueSource = "specific";
-                emailAddressControl.TextValue = "fr8.sendemail.integration@gmail.com";
+                emailAddressControl.TextValue = "fr8.testing@yahoo.com";
 
                 emailSubjectControl.ValueSource = emailBodyControl.ValueSource = "upstream";
                 emailSubjectControl.selectedKey = "Name";
@@ -77,8 +77,7 @@ namespace terminalSalesforceTests.Intergration
             //Run the plan
             await HttpPostAsync<string, string>(_baseUrl + "plans/run?planId=" + plan.Plan.Id, null);
 
-            //Verify the email fr8.sendemail.integration@gmail.com
-            EmailAssert.InitEmailAssert(string.Empty, "pop.gmail.com", 995, true, "fr8.sendemail.integration@gmail.com", "thales@123");
+            //Verify the email fr8.testing@yahoo.com
             EmailAssert.EmailReceived("fr8ops@fr8.company", "Marty McSorely", true);
         }
 
