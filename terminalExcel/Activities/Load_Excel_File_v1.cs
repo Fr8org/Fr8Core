@@ -12,7 +12,7 @@ using Data.States;
 using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using terminalExcel.Infrastructure;
+using terminalUtilities.Excel;
 using Utilities;
 
 namespace terminalExcel.Actions
@@ -46,7 +46,7 @@ namespace terminalExcel.Actions
                 });
                 if (!string.IsNullOrEmpty(uploadedFileName))
                 {
-                    Controls.Add(UploadedFileTextBlock =  new TextBlock
+                    Controls.Add(UploadedFileTextBlock = new TextBlock
                     {
                         Label = string.Empty,
                         Value = UploadedFileLabel + Uri.UnescapeDataString(uploadedFileName),
@@ -87,7 +87,7 @@ namespace terminalExcel.Actions
             using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
             {
                 //crateStorage.Add(Crate.FromContent(GenerateRuntimeCrateLabel(ExtractFileName(GetUploadFilePath(curActivityDO))), tableData, AvailabilityType.RunTime));
-                crateStorage.Add(Crate.FromContent(RuntimeCrateLabelPrefix, tableData, AvailabilityType.RunTime));
+                crateStorage.Add(Crate.FromContent(RuntimeCrateLabel, tableData, AvailabilityType.RunTime));
             }
             return Success(payloadCrates);
         }
@@ -100,13 +100,27 @@ namespace terminalExcel.Actions
             {
                 throw new ArgumentException("Configuration requires the submission of an Action that has a real ActionId");
             }
-                using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-                {
-                    crateStorage.Clear();
-                    crateStorage.Add(PackControls(new ActivityUi()));
-                }
-            return Task.FromResult(curActivityDO);
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            {
+                crateStorage.Clear();
+                crateStorage.Add(PackControls(new ActivityUi()));
+                crateStorage.Add(GetAvailableRunTimeTableCrate());
             }
+            return Task.FromResult(curActivityDO);
+        }
+
+        private Crate GetAvailableRunTimeTableCrate()
+        {
+            var availableRunTimeCrates = Crate.FromContent("Available Run Time Crates", new CrateDescriptionCM(
+                    new CrateDescriptionDTO
+                    {
+                        ManifestType = MT.StandardTableData.GetEnumDisplayName(),
+                        Label = RuntimeCrateLabel,
+                        ManifestId = (int)MT.StandardTableData,
+                        ProducedBy = ActivityName
+                    }), AvailabilityType.RunTime);
+            return availableRunTimeCrates;
+        }
 
         /// <summary>
         /// If there's a value in select_file field of the crate, then it is a followup call.
@@ -114,7 +128,7 @@ namespace terminalExcel.Actions
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
             return CrateManager.IsStorageEmpty(curActivityDO) ? ConfigurationRequestType.Initial : ConfigurationRequestType.Followup;
-            }
+        }
 
         //if the user provides a file name, this action attempts to load the excel file and extracts the column headers from the first sheet in the file.
         protected override Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
@@ -140,8 +154,8 @@ namespace terminalExcel.Actions
                 if (!string.IsNullOrEmpty(uploadFilePath))
                 {
                     //activityStorage.Add(Crate.FromContent(GenerateRuntimeCrateLabel(fileName), ExcelUtils.GetTableData(uploadFilePath), AvailabilityType.RunTime));
-                    activityStorage.Add(Crate.FromContent(RuntimeCrateLabelPrefix, ExcelUtils.GetTableData(uploadFilePath), AvailabilityType.RunTime));
-                    activityStorage.Add(Crate.FromContent(ColumnHeadersCrateLabel, ExcelUtils.GetColumnHeadersData(uploadFilePath), AvailabilityType.RunTime));
+                    activityStorage.Add(Crate.FromContent(RuntimeCrateLabel, ExcelUtils.GetTableData(uploadFilePath), AvailabilityType.RunTime));
+                    activityStorage.Add(Crate.FromContent(ColumnHeadersCrateLabel, ExcelUtils.GetColumnHeadersData(uploadFilePath)));
                 }
             }
             return Task.FromResult(curActivityDO);
@@ -182,20 +196,9 @@ namespace terminalExcel.Actions
             */
         }
 
-        private const string RuntimeCrateLabelPrefix = "Standard Data Table";
+        private const string RuntimeCrateLabel = "Table Generated From Excel File";
 
-        protected override IEnumerable<CrateDescriptionDTO> GetRuntimeAvailableCrateDescriptions(ActivityDO curActivityDO)
-        {
-            yield return new CrateDescriptionDTO
-                {
-                    Label = RuntimeCrateLabelPrefix,//GenerateRuntimeCrateLabel(ExtractFileName(GetUploadFilePath(curActivityDO))),
-                    ManifestId = (int)MT.StandardTableData,
-                    ManifestType = MT.StandardTableData.GetEnumDisplayName(),
-                    ProducedBy = ActivityName
-                };
-        }
-
-        //private string GenerateRuntimeCrateLabel(string fileName) => $"{RuntimeCrateLabelPrefix}";
+        //private string GenerateRuntimeCrateLabel(string fileName) => $"{RuntimeCrateLabel}";
 
         private string ExtractFileName(string uploadFilePath)
         {
@@ -261,7 +264,7 @@ namespace terminalExcel.Actions
 
         private void CreatePayloadCrate_ExcelRows(ICrateStorage storage, byte[] fileAsByteArray, string extension)
         {
-            
+
             var headersArray = ExcelUtils.GetColumnHeaders(fileAsByteArray, extension);
 
             // Fetch rows in Excel file and assign them to the action's crate storage as Standard Table Data crate

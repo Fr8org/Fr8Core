@@ -18,8 +18,8 @@ using Hub.Interfaces;
 using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using terminalExcel.Infrastructure;
 using Data.States;
+using terminalUtilities.Excel;
 using Utilities;
 
 namespace terminalExcel.Actions

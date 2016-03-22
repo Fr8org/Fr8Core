@@ -1044,3 +1044,11 @@ div.activity-list::after {
     background-color: #428bca;
     border-color: #357ebd;
 }
+
+.mt30 {
+    margin-top: 30px;
+}
+
+.float-right {
+    float: right;
+}
