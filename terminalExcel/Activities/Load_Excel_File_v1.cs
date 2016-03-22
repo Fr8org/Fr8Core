@@ -12,7 +12,7 @@ using Data.States;
 using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using terminalExcel.Infrastructure;
+using terminalUtilities.Excel;
 using Utilities;
 
 namespace terminalExcel.Actions
