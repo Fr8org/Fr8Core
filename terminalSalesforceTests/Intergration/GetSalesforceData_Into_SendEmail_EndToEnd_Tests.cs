@@ -9,6 +9,11 @@ using Data.Interfaces;
 using System.Linq;
 using Data.Entities;
 using System.Collections.Generic;
+using Hub.Managers;
+using Data.Interfaces.Manifests;
+using Data.Crates;
+using Data.Control;
+using Newtonsoft.Json;
 
 namespace terminalSalesforceTests.Intergration
 {
@@ -22,10 +27,63 @@ namespace terminalSalesforceTests.Intergration
         }
 
         [Test]
-        public async Task SomeTest()
+        public async Task GetSalesforceData_Into_SendEmail_EndToEnd()
         {
-            System.Diagnostics.Debugger.Launch();
+            //Create the required plan
+            var planId = await CreatePlan_GetSalesforceDataIntoSendEmail();
 
+            //get the full plan which is created
+            var plan = await HttpGetAsync<PlanDTO>(_baseUrl + "Plans/full?id=" + planId.ToString());
+
+            //make get salesforce data to get Lead
+            var getData = plan.Plan.SubPlans.First().Activities.First();
+            using (var updatableStorage = Crate.GetUpdatableStorage(getData))
+            {
+                //select Lead
+                var configControls = updatableStorage.CratesOfType<StandardConfigurationControlsCM>().Single();
+                (configControls.Content.Controls.Single(c => c.Name.Equals("WhatKindOfData")) as DropDownList).selectedKey = "Lead";
+
+                //give condition
+                var conditionQuery = new List<FilterConditionDTO>() { new FilterConditionDTO { Field = "Name", Operator = "eq", Value = "Marty McSorely" } };
+                (configControls.Content.Controls.Single(c => c.Name.Equals("SelectedQuery")) as QueryBuilder).Value = JsonConvert.SerializeObject(conditionQuery);
+            }
+
+            var authToken = (await HttpGetAsync<List<ManageAuthToken_Terminal>>(_baseUrl + "ManageAuthToken")).Single(a => a.Name.Equals("terminalSalesforce"));
+            getData.AuthToken = new AuthorizationTokenDTO { Id = authToken.AuthTokens[0].Id.ToString() };
+            getData = await ConfigureActivity(getData);
+
+            Assert.IsTrue(getData.CrateStorage.Crates.Any(c => c.Label.Equals("Salesforce Object Fields")), 
+                          "Follow up configuration is not getting any Salesforce Object Fields");
+
+            //prepare the send email activity controls
+            var sendEmail = plan.Plan.SubPlans.First().Activities.Last();
+            using (var updatableStorage = Crate.GetUpdatableStorage(sendEmail))
+            {
+                var configControls = updatableStorage.CratesOfType<StandardConfigurationControlsCM>().Single();
+
+                var emailAddressControl = (TextSource)configControls.Content.Controls.Single(c => c.Name.Equals("EmailAddress"));
+                var emailSubjectControl = (TextSource)configControls.Content.Controls.Single(c => c.Name.Equals("EmailSubject"));
+                var emailBodyControl = (TextSource)configControls.Content.Controls.Single(c => c.Name.Equals("EmailBody"));
+
+                emailAddressControl.ValueSource = "specific";
+                emailAddressControl.TextValue = "fr8.sendemail.integration@gmail.com";
+
+                emailSubjectControl.ValueSource = emailBodyControl.ValueSource = "upstream";
+                emailSubjectControl.selectedKey = "Name";
+                emailBodyControl.selectedKey = "Phone";
+            }
+            sendEmail = await ConfigureActivity(sendEmail);
+
+            //Run the plan
+            await HttpPostAsync<string, string>(_baseUrl + "plans/run?planId=" + plan.Plan.Id, null);
+
+            //Verify the email fr8.sendemail.integration@gmail.com
+            EmailAssert.InitEmailAssert(string.Empty, "pop.gmail.com", 995, true, "fr8.sendemail.integration@gmail.com", "thales@123");
+            EmailAssert.EmailReceived("fr8ops@fr8.company", "Marty McSorely", true);
+        }
+
+        private async Task<Guid> CreatePlan_GetSalesforceDataIntoSendEmail()
+        {
             //get required activity templates
             var activityTemplates = await HttpGetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(_baseUrl + "plannodes/available");
             var getData = activityTemplates.Single(at => at.Name.Equals("Receivers")).Activities.Single(a => a.Name.Equals("Get_Data"));
@@ -34,12 +92,7 @@ namespace terminalSalesforceTests.Intergration
             Assert.IsNotNull(sendEmail, "Send Email activity is not available");
 
             //get salesforce auth token
-            AuthorizationTokenDO salesforceAuth;
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                salesforceAuth = uow.AuthorizationTokenRepository.GetPublicDataQuery().Single(t => t.AdditionalAttributes.StartsWith("refresh_token="));
-            }
-            Assert.IsNotNull(salesforceAuth, "Salesforce Auth is not available in the database");
+            var authToken = (await HttpGetAsync<List<ManageAuthToken_Terminal>>(_baseUrl + "ManageAuthToken")).Single(a => a.Name.Equals("terminalSalesforce"));
 
             //create initial plan
             var initialPlan = await HttpPostAsync<PlanEmptyDTO, PlanDTO>(_baseUrl + "plans", new PlanEmptyDTO()
@@ -51,7 +104,7 @@ namespace terminalSalesforceTests.Intergration
             var postUrl = "?actionTemplateId={0}&createPlan=false";
             var formattedPostUrl = string.Format(postUrl, getData.Id);
             formattedPostUrl += "&parentNodeId=" + initialPlan.Plan.StartingSubPlanId;
-            formattedPostUrl += "&authorizationTokenId=" + salesforceAuth.Id;
+            formattedPostUrl += "&authorizationTokenId=" + authToken.AuthTokens[0].Id;
             formattedPostUrl += "&order=" + 1;
             formattedPostUrl = mainUrl + formattedPostUrl;
             var getDataActivity = await HttpPostAsync<ActivityDTO>(formattedPostUrl, null);
@@ -61,6 +114,8 @@ namespace terminalSalesforceTests.Intergration
             formattedPostUrl += "&order=" + 2;
             formattedPostUrl = mainUrl + formattedPostUrl;
             var sendEmailActivity = await HttpPostAsync<ActivityDTO>(formattedPostUrl, null);
+
+            return initialPlan.Plan.Id;
         }
     }
 }
