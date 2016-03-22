@@ -54,7 +54,7 @@ namespace terminalSalesforce.Actions
 
                 AddTextSourceControlForDTO<LeadDTO>(
                     crateStorage,
-                    "Upstream Terminal-Provided Fields",
+                    "",
                     addRequestConfigEvent: true,
                     requestUpstream: true
                 );
