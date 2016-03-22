@@ -97,9 +97,9 @@ namespace HubWeb.App_Start
                 "~/Content/css/additionalcss/colorbox/colorbox.css", new CssRewriteUrlTransform()
                 ));
 
-            bundles.Add(new StyleBundle("~/bundles/css/frontpage").Include(
-                "~/Content/css/frontcss/main.css", new CssRewriteUrlTransform()
-                ));
+            bundles.Add(new StyleBundle("~/bundles/css/frontpage")
+                .Include("~/Content/css/frontcss/main.css", new CssRewriteUrlTransform())
+                .Include("~/Content/css/shared/navbar.css", new CssRewriteUrlTransform()));
 
             bundles.Add(new StyleBundle("~/bundles/css/backendcss")
                 .Include("~/Content/css/backendcss/default.css", new CssRewriteUrlTransform())
