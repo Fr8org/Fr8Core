@@ -163,14 +163,20 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
     // Plan Builder framework
         .state('planBuilder', {
             url: "/plans/{id}/builder",
-            templateUrl: "/AngularTemplate/PlanBuilder",
-            data: { pageTitle: '' },
+            //templateUrl: "/AngularTemplate/PlanBuilder",
+            templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
+                if ($stateParams['read-only']) {
+                    return "/AngularTemplate/PlanBuilder_ReadOnly";
+                }
+                return "/AngularTemplate/PlanBuilder";
+            },
+            data: { pageTitle: '' }
         })
 
         .state('showIncidents', {
             url: "/showIncidents",
             templateUrl: "/AngularTemplate/ShowIncidents",
-            data: { pageTitle: 'Incidents', pageSubTitle: 'This page displays all incidents' },
+            data: { pageTitle: 'Incidents', pageSubTitle: 'This page displays all incidents' }
         })
 
         .state('showFacts', {
