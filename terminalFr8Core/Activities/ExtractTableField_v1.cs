@@ -101,8 +101,10 @@ namespace terminalFr8Core.Actions
             RemoveErrorText(curActivityDO);
 
             var table = selectedCrate.Content;
-
-            var tableFields = table.Table.SelectMany(c => c.Row).Select(r => r.Cell).Select(c => new FieldDTO(c.Value, c.Value)).Where(c => !string.IsNullOrEmpty(c.Value));
+            double temp;
+            var tableFields = table.Table.SelectMany(c => c.Row).Select(r => r.Cell)
+                .Select(c => new FieldDTO(c.Value, c.Value))
+                .Where(c => !string.IsNullOrEmpty(c.Value) && !double.TryParse(c.Value, out temp));
             
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
