@@ -98,6 +98,7 @@ namespace HubWeb.App_Start
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/frontpage")
+                .Include("~/Content/css/homecss/bootstrap.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/frontcss/main.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/shared/navbar.css", new CssRewriteUrlTransform()));
 
