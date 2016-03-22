@@ -103,11 +103,11 @@ namespace terminalFr8Core.Actions
             var table = selectedCrate.Content;
 
             var tableFields = table.Table.SelectMany(c => c.Row).Select(r => r.Cell).Select(c => new FieldDTO(c.Value, c.Value)).Where(c => !string.IsNullOrEmpty(c.Value));
-            var cellChooserSource = CrateManager.CreateDesignTimeFieldsCrate("Table Fields", tableFields.ToArray());
-
+            
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                crateStorage.Add(cellChooserSource);
+                var cellChooser = GetConfigurationControls(crateStorage).FindByName<DropDownList>("cellChooser");
+                cellChooser.ListItems = tableFields.Select(c => new ListItem { Key = c.Key, Value = c.Value}).ToList();
             }
 
 
@@ -310,12 +310,7 @@ namespace terminalFr8Core.Actions
                 Label = "Find the cell labelled",
                 Name = "cellChooser",
                 Required = true,
-                Source = new FieldSourceDTO
-                {
-                    RequestUpstream = false,
-                    ManifestType = CrateManifestTypes.StandardDesignTimeFields,
-                    Label = "Table Fields"
-                },
+                ListItems = new List<ListItem>(),
                 Events = new List<ControlEvent>() { ControlEvent.RequestConfig  }
             };
             var extractValueFromDd = new DropDownList()

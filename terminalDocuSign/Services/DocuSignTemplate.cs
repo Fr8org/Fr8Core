@@ -114,7 +114,7 @@ namespace terminalDocuSign.Services
         //TODO: merge these
         /*public IEnumerable<string> GetMappableSourceFields(string templateId)
         {
-            return _docusignEnvelope.GetEnvelopeDataByTemplate(templateId).Select(r => r.Name);
+            return _docusignEnvelope.GetTemplateTabs(templateId).Select(r => r.Name);
         }
 
         public List<string> GetMappableSourceFields(DocuSignEnvelope envelope)

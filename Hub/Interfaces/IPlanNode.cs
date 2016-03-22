@@ -19,7 +19,7 @@ namespace Hub.Interfaces
 
         FieldDescriptionsCM GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability);
         List<T> GetCrateManifestsByDirection<T>(Guid activityId, CrateDirection direction,
-            AvailabilityType availability) where T: Manifest;
+            AvailabilityType availability, bool includeCratesFromActivity = true) where T: Manifest;
 
         Task Process(Guid curActivityId, ActivityState curActionState, ContainerDO curContainerDO);
 

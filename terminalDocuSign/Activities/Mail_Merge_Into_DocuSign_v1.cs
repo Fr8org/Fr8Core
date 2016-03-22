@@ -60,7 +60,7 @@ namespace terminalDocuSign.Actions
             {
                 Label = "1. Where is your Source Data?",
                 Name = "DataSource",
-                ListItems = await GetDataSourceListItems(activityDO, "Table Data Generator"),
+                ListItems = await GetDataSourceListItems("Table Data Generator"),
                 Required = true
             });
 
@@ -78,10 +78,9 @@ namespace terminalDocuSign.Actions
             return PackControlsCrate(controlList.ToArray());
         }
 
-        private async Task<List<ListItem>> GetDataSourceListItems(ActivityDO activityDO, string tag)
+        private async Task<List<ListItem>> GetDataSourceListItems(string tag)
         {
-            var curActivityTemplates = await HubCommunicator.GetActivityTemplates(tag)
-                .ContinueWith(x => x.Result.Where(y => y.Name.StartsWith("Get", StringComparison.InvariantCultureIgnoreCase) && y.Category == Data.States.ActivityCategory.Receivers));
+            var curActivityTemplates = await HubCommunicator.GetActivityTemplates(tag, CurrentFr8UserId);
             return curActivityTemplates.Select(at => new ListItem() { Key = at.Label, Value = at.Name }).ToList();
         }
 
@@ -212,16 +211,17 @@ namespace terminalDocuSign.Actions
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
             {
-            using (var updater = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                // extract fields in docusign form
-                    AddOrUpdateUserDefinedFields(
-                    curActivityDO,
-                    authTokenDO,
-                    updater,
-                    _docuSignTemplate.Value
-                );
-            }
+            // TODO: remove, FR-2691
+            // using (var updater = CrateManager.GetUpdatableStorage(curActivityDO))
+            // {
+            //     // extract fields in docusign form
+            //         AddOrUpdateUserDefinedFields(
+            //         curActivityDO,
+            //         authTokenDO,
+            //         updater,
+            //         _docuSignTemplate.Value
+            //     );
+            // }
 
             var reconfigList = new List<ConfigurationRequest>()
             {
@@ -477,17 +477,17 @@ namespace terminalDocuSign.Actions
             {
                 if (curDocumentation.Contains("ExplainMailMerge"))
                 {
-                    return Task.FromResult(GenerateDocumentationRepsonce(@"This solution helps you to work with email and move data from them to DocuSign service"));
+                    return Task.FromResult(GenerateDocumentationRepsonse(@"This solution helps you to work with email and move data from them to DocuSign service"));
                 }
                 if (curDocumentation.Contains("ExplainService"))
                 {
-                    return Task.FromResult(GenerateDocumentationRepsonce(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
+                    return Task.FromResult(GenerateDocumentationRepsonse(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
                 }
-                return Task.FromResult(GenerateErrorRepsonce("Unknown contentPath"));
+                return Task.FromResult(GenerateErrorRepsonse("Unknown contentPath"));
             }
             return
                 Task.FromResult(
-                    GenerateErrorRepsonce("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
+                    GenerateErrorRepsonse("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
         }
     }
 }
