@@ -76,6 +76,7 @@ module dockyard.tests.unit.directives.controls {
             expect(scope.$root.$broadcast.calls.argsFor(0)).toEqual(['fp-success', uploadedFile]);
         });
 
+
         it('Should set selected file on upload success', () => {
             expect(element.isolateScope().selectedFile).toEqual(null);
             var deferred = $q.defer();
