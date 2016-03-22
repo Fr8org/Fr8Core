@@ -278,10 +278,8 @@ namespace TerminalBase.BaseClasses
                 var action = curActionPath.ToLower();
                 var errorMessage = String.Format("Failed to {0} activity \"{1}\". Please, make sure it is set up correctly. ", action, curActivityDO.Label);
 
-                var message = e.Message + " | " + errorMessage;
-
-                var exception = (Exception)Activator.CreateInstance(e.GetType(), message, e.InnerException);
-                ExceptionDispatchInfo.Capture(exception).Throw();
+                e.Data.Add("UserErrorMessage", errorMessage);
+                ExceptionDispatchInfo.Capture(e).Throw();
 
                 throw;              
             }

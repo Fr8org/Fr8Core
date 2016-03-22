@@ -82,8 +82,16 @@ namespace TerminalBase
             else
             {
                 //if terminal error is general exception, place exception message
+                var userMessage = string.Empty;
+                if (curTerminalError.Data.Contains("UserErrorMessage"))
+                {
+                    userMessage = Convert.ToString(curTerminalError.Data["UserErrorMessage"]);
+                }
+
+                var responseMessage = curTerminalError.Message + " | " + userMessage;
+
                 var detailedMessage =
-                    JsonConvert.SerializeObject(new { status = "terminal_error", message = curTerminalError.Message });
+                    JsonConvert.SerializeObject(new { status = "terminal_error", message = responseMessage });
                 actionExecutedContext.Response.Content = new StringContent(detailedMessage, Encoding.UTF8, "application/json");
             }
         }
