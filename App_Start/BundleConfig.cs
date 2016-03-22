@@ -184,6 +184,7 @@ namespace HubWeb.App_Start
                 .Include("~/Content/css/homecss/bootstrap.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/homecss/font-awesome.min.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/homecss/main.css", new CssRewriteUrlTransform())
+                .Include("~/Content/css/shared/navbar.css", new CssRewriteUrlTransform())
             );
 
             bundles.Add(new StyleBundle("~/bundles/css/homeie")
