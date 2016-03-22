@@ -74,7 +74,6 @@ module dockyard.tests.unit.directives.controls {
             expect(scope.$root.$broadcast.calls.count()).toBe(1);
             expect(scope.onChange.calls.count()).toBe(1);
             expect(scope.$root.$broadcast.calls.argsFor(0)).toEqual(['fp-success', uploadedFile]);
-            expect(scope.onChange.calls.argsFor(1)).toEqual(['onChange', jasmine.any(Object)]);
         });
 
         it('Should set selected file on upload success', () => {
