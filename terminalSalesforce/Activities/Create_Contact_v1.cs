@@ -61,8 +61,7 @@ namespace terminalSalesforce.Actions
 
             return await Task.FromResult(curActivityDO);
         }
-
-
+        
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
