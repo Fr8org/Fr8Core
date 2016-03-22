@@ -123,7 +123,7 @@
 
             <header id="site-header" class="container-fluid">
 
-                @Html.Partial("_HomeNav")
+                @Html.Partial("_HomeNav", new HubWeb.ViewModels.NavLinksShared())
 
             </header>
             @RenderBody()

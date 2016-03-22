@@ -465,6 +465,8 @@
     <Compile Include="ViewModels\ExternalLoginConfirmationVM.cs" />
     <Compile Include="ViewModels\LoginVM.cs" />
     <Compile Include="ViewModels\ManageUserVM.cs" />
+    <Compile Include="ViewModels\NavLinksHome.cs" />
+    <Compile Include="ViewModels\NavLinksShared.cs" />
     <Compile Include="ViewModels\PayloadVM.cs" />
     <Compile Include="ViewModels\ProcessCreateEventVM.cs" />
     <Compile Include="ViewModels\RegisterVM.cs" />
