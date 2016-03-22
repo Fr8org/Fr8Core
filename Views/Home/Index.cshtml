@@ -29,7 +29,7 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-    <!-- google material design -->
+    <!-- Google Material Design -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://code.getmdl.io/1.1.1/material.indigo-pink.min.css">
     <script defer src="https://code.getmdl.io/1.1.1/material.min.js"></script>
@@ -38,26 +38,8 @@
     @Styles.Render("~/bundles/css/home")
 
     <!-- Google Fonts -->
-    <link href='https://fonts.googleapis.com/css?family=Dosis:300,400,500,600,700' rel='stylesheet' type='text/css'>
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400italic,300,400,700' rel='stylesheet' type='text/css'>
-
-    <link href='https://fonts.googleapis.com/css?family=Francois+One' rel='stylesheet' type='text/css'>
-    <link href='https://fonts.googleapis.com/css?family=Didact+Gothic' rel='stylesheet' type='text/css'>
-
-
-    <link href='https://fonts.googleapis.com/css?family=Droid+Sans' rel='stylesheet' type='text/css'>
-    <link href='https://fonts.googleapis.com/css?family=Cabin' rel='stylesheet' type='text/css'>
-
-    <link href='https://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
-    <link href='https://fonts.googleapis.com/css?family=Cantarell' rel='stylesheet' type='text/css'>
-
-
-    <link href='https://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css'>
-    <link href='https://fonts.googleapis.com/css?family=Hind' rel='stylesheet' type='text/css'>
-
-
-    <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
-    <link href='https://fonts.googleapis.com/css?family=Nunito' rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/css?family=Dosis:300,400,500,600,700|Open+Sans:300,400,400italic,600,700,800|Francois+One|Didact+Gothic|Droid+Sans|CabinFjalla+One|Cantarell|Ubuntu|Hind|Roboto|Nunito&subset=latin,cyrillic"
+        rel="stylesheet" type="text/css">
 
     <!-- IE 9 Fallback-->
     <!--[if IE 9]>
@@ -76,63 +58,9 @@
 
 </head>
 <body id="top">
+    
+    @Html.Partial("_HomeNavNew", new HubWeb.ViewModels.NavLinksHome())
 
-    <!-- NAVBAR -->
-    <div class="navbar navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-nav">
-                    <span class="sr-only">Menu</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a href="index.html" class="navbar-brand">
-                    <img src="/Content/img/logo-fr8.svg" alt="FR8" />
-                    <h1 class="hide">FR8 Company</h1>
-                </a>
-            </div>
-            <nav class="navbar-collapse collapse" id="main-nav" role="navigation">
-                <ul class="nav navbar-nav navbar-right nav-text-light">
-                    <li><a href="#about">How it Works</a></li>
-                    <li data-scroll="scrolling" class="dropdown">
-                        <a data-target="#" href="#services" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Services">Services <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="/Services/DocuSign">DocuSign</a></li>
-                            <li><a href="/Services/Salesforce">Salesforce.com</a></li>
-                            <li><a href="/Services/GoogleApps">Google Apps</a></li>
-                        </ul>
-                    </li>
-                    <li><a href="http://fr8-documentation.azurewebsites.net">Developers</a></li>
-                    <li data-scroll="scrolling" class="dropdown">
-                        <a href="/Company/#team" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Company">Company <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li data-scroll="scrolling"><a href="/Company/#vision">Vision</a></li>
-                            <li data-scroll="scrolling"><a href="/Company/#team">Team</a></li>
-                            <li data-scroll="scrolling"><a href="/Company/#location">Location</a></li>
-                            <li data-scroll="scrolling"><a href="/Company/#company">Jobs</a></li>
-                            <li data-scroll="scrolling"><a href="/Company/#team">About Us</a></li>
-                            <li data-scroll="scrolling"><a href="/Support">Support</a></li>
-                        </ul>
-                    </li>
-                    <li><a href="#contact">Contact</a></li>
-@if (!Request.IsAuthenticated)
-{
-    <li>
-        <button onclick="document.location = '/DockyardAccount';" class="mdl-button mdl-js-button mdl-button--login mdl-js-ripple-effect"><span class="try-now-btn">Login/Register</span></button>
-    </li>
-}
-else
-{
-    <li>
-        <button onclick="document.location = '/dashboard#/myaccount';" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect"><span class="try-now-btn">My Account</span></button>
-    </li>
-}
-                </ul>
-            </nav>
-        </div>
-    </div>
-    <!-- END NAVBAR -->
     <!-- HERO UNIT -->
     <div id="hero-unit" class="hero-unit hero-light hero-video" data-vide-bg="mp4: Content/videos/motion.mp4, webm: Content/videos/motion.webm, ogv: Content/videos/motion.ogv, poster: Content/videos/motion.png" data-vide-options="loop: true, posterType: png">
         <div class="hero-content text-center">
