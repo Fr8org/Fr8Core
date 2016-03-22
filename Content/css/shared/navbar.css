@@ -6,8 +6,11 @@
   height: auto;
 }
 
-.navbar,
-.navbar.navbar-light {
+.navbar {
+  font-family: 'Didact Gothic', sans-serif;
+  font-size: 16px;
+  color: #444C58;
+  line-height: 1.6;
   -moz-transition-property: all;
   -o-transition-property: all;
   -webkit-transition-property: all;
@@ -122,4 +125,9 @@
   .navbar-collapse {
     background-color: #646464;
   }
+}
+
+.mdl-button--login {
+    color: #fff;
+    background-color: #EA3C53;
 }
