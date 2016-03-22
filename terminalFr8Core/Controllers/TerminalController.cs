@@ -311,6 +311,7 @@ namespace terminalFr8Core.Controllers
                 WebService = webService
             });
 
+
             result.Add(new ActivityTemplateDTO
             {
                 Name = "LaunchAPlan",
