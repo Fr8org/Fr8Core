@@ -42,7 +42,7 @@ module dockyard.directives.dropDownListBox {
                 };
 
                 var loadUpstreamFields = () => {
-                    UpstreamExtractor
+                    return UpstreamExtractor
                         .extractUpstreamData($scope.currentAction.id, 'Field Description', 'NotSet')
                         .then((data: any) => {
                             var listItems: Array<model.DropDownListItem> = [];
@@ -79,9 +79,6 @@ module dockyard.directives.dropDownListBox {
 
                             $scope.field.listItems = listItems;
 
-                            
-                            $scope.toggle = !$scope.toggle;
-
                             triggerNoRecords();
 
                         });
@@ -103,9 +100,10 @@ module dockyard.directives.dropDownListBox {
                         // Only "Field Description" manifestType currently supported for DDLs.
                         && $scope.field.source.manifestType === 'Field Description') {
 
-                        loadUpstreamFields();
-                        $select.open = !$scope.toggle;
-                        
+                        loadUpstreamFields().then(() => {
+                            $select.open = !$scope.toggle;   
+                            $scope.toggle = !$scope.toggle;
+                        });
                     }
                     else {
                         $select.open = !$scope.toggle;
