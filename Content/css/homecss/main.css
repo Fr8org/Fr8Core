@@ -1,4 +1,4 @@
-/* ------------------ BASE STYLES ------------------ */
+﻿/* ------------------ BASE STYLES ------------------ */
 html, body {
   height: 100%;
   width: 100%;
@@ -6079,11 +6079,6 @@ img.mfp-img {
   background-color: #444C58;
 }
 
-.mdl-button--raised {
-  color: #fff;
-  background-color: #26A599;
-}
-
 .mdl-card__supporting-text {
 
   font-size: 1.4rem;
@@ -6159,12 +6154,6 @@ img.mfp-img {
 .try-now-btn {
   color: inherit;
 }
-
-.nav .open > a,
-.nav .open > a:hover,
-.nav .open > a:focus {
-  background-color: initial;
-  border-color: initial;
 }
 
 .demo-card-big-square.mdl-card {

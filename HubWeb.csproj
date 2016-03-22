@@ -483,6 +483,7 @@
     <Content Include="Api\GetEmailHTML.aspx" />
     <Content Include="Content\css\fonts\brankic.svg" />
     <Content Include="Content\css\fonts\fontawesome-webfont.svg" />
+    <Content Include="Content\css\frontcss\main_new.css" />
     <Content Include="Content\css\homecss\bootstrap.css" />
     <Content Include="Content\css\homecss\font-awesome.min.css" />
     <Content Include="Content\css\homecss\ie.css" />
@@ -1025,6 +1026,7 @@
     <Content Include="Views\AngularTemplate\_PlanReportList.cshtml" />
     <Content Include="Views\AngularTemplate\PlanReportList.cshtml" />
     <Content Include="Views\AngularTemplate\TimePicker.cshtml" />
+    <Content Include="Views\Shared\_HomeNavNew.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

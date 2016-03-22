@@ -131,3 +131,15 @@
     color: #fff;
     background-color: #EA3C53;
 }
+
+.mdl-button--raised {
+  color: #fff;
+  background-color: #26A599;
+}
+
+.nav .open > a,
+.nav .open > a:hover,
+.nav .open > a:focus {
+  background-color: initial;
+  border-color: initial;
+}
