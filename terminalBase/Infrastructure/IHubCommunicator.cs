@@ -34,6 +34,7 @@ namespace TerminalBase.Infrastructure
         Task<ActivityDO> ConfigureActivity(ActivityDO activityDO, string userId);
         Task<ActivityDTO> CreateAndConfigureActivity(int templateId, string userId, string label = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null);
         Task<PlanDTO> CreatePlan(PlanEmptyDTO planDTO, string userId);
+        Task RunPlan(Guid planId, List<CrateDTO> payload, string userId);
         Task<PlanDO> ActivatePlan(PlanDO planDO, string userId);
         Task<IEnumerable<PlanDTO>> GetPlansByName(string name, string userId);
         Task<FileDO> SaveFile(string name, Stream stream, string userId);

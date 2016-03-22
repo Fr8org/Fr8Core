@@ -38,7 +38,12 @@
     }
 
     export class TextBox extends ControlDefinitionDTO {
-        required: boolean;        
+        required: boolean;
+
+        constructor() {
+            super();
+            this.type = "TextBox";
+        }
     }
 
     export class File extends ControlDefinitionDTO {
@@ -106,12 +111,76 @@
         listItems: Array<DropDownListItem>;
         source: FieldSource;
         selectedKey: string;
+
+        constructor() {
+            super();
+            this.type = "DropDownList";
+        }
     }
 
     export class FilterConditionDTO {
         field: string;
         operator: string;
         value: string;
+    }
+
+    export class ControlMetaDescriptionDTO {
+        public controls: Array<ControlDefinitionDTO> = [];
+        public type: string;
+        public description: string;
+        
+        constructor(type: string, description: string) {
+            this.type = type;
+            this.description = description;
+        }
+    }
+    
+    export class TextBoxMetaDescriptionDTO extends ControlMetaDescriptionDTO
+    {
+        constructor() {
+            super("TextBoxMetaDescriptionDTO", "TextBox");
+            var tb = new model.TextBox();
+            tb.label = "Label :";
+            this.controls.push(tb);
+        }
+    }
+    
+    export class TextBlockMetaDescriptionDTO extends ControlMetaDescriptionDTO
+    {
+        constructor() {
+            super("TextBlockMetaDescriptionDTO", "TextBlock");
+            var tb = new model.TextBox();
+            tb.label = "Label :";
+            this.controls.push(tb);
+        }
+    }
+    
+    export class FilePickerMetaDescriptionDTO extends ControlMetaDescriptionDTO
+    {
+        static fileExtensions: Array<string> = ["xlsx"];
+        constructor() {
+            super("FilePickerMetaDescriptionDTO", "File Picker");
+            var tb = new model.TextBox();
+            tb.label = "Label :";
+            this.controls.push(tb);
+
+            var listItems: Array<DropDownListItem> = [];
+            for (var i = 0; i < FilePickerMetaDescriptionDTO.fileExtensions.length; i++) {
+                var extensionValue = FilePickerMetaDescriptionDTO.fileExtensions[i];
+                listItems.push(new DropDownListItem(extensionValue, extensionValue));
+            }
+            var allowedExtensions = new model.DropDownList();
+            allowedExtensions.listItems = listItems;
+            allowedExtensions.label = "File Type:";
+            this.controls.push(allowedExtensions);
+        }
+
+    }
+    
+    
+
+    export class ControlContainer extends ControlDefinitionDTO {
+        metaDescriptions: Array<ControlMetaDescriptionDTO>;
     }
 
     export class ContainerTransitionField {
