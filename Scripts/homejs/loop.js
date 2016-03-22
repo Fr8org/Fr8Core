@@ -62,12 +62,14 @@ jQuery( function($){
 
 	$('#main-nav').localScroll({
 		duration: 1000,
-		easing: 'easeInOutExpo'
+		easing: 'easeInOutExpo',
+        offset: -96
 	});
 
 	$('.hero-buttons').localScroll({
 		duration: 1000,
-		easing: 'easeInOutExpo'
+		easing: 'easeInOutExpo',
+        offset: -96
 	});
 
 

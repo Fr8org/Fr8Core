@@ -30,6 +30,8 @@ namespace terminalDocuSignTests.Integration
         [Test]
         public async Task Extract_Data_From_Envelopes_EndToEnd()
         {
+            await RevokeTokens();
+
             string baseUrl = GetHubApiBaseUrl();
 
             var solutionCreateUrl = baseUrl + "activities/create?solutionName=Extract_Data_From_Envelopes";
@@ -81,17 +83,20 @@ namespace terminalDocuSignTests.Integration
             //
             // Apply auth-token to child MonitorDocuSignEvnelope activity.
             //
-            var applyToken = new ManageAuthToken_Apply()
+            if (monitorDocuSignEnvelopeActivity.ActivityTemplate.NeedsAuthentication)
             {
-                ActivityId = monitorDocuSignEnvelopeActivity.Id,
-                AuthTokenId = authTokenId,
-                IsMain = false
-            };
+                var applyToken = new ManageAuthToken_Apply()
+                {
+                    ActivityId = monitorDocuSignEnvelopeActivity.Id,
+                    AuthTokenId = authTokenId,
+                    IsMain = false
+                };
 
-            await HttpPostAsync<ManageAuthToken_Apply[], string>(
-                _baseUrl + "ManageAuthToken/apply",
-                new ManageAuthToken_Apply[] { applyToken }
-            );
+                await HttpPostAsync<ManageAuthToken_Apply[], string>(
+                    _baseUrl + "ManageAuthToken/apply",
+                    new ManageAuthToken_Apply[] { applyToken }
+                );
+            }
 
             monitorDocuSignEnvelopeActivity = await HttpPostAsync<ActivityDTO, ActivityDTO>(
                 _baseUrl + "activities/configure?id=" + monitorDocuSignEnvelopeActivity.Id,
@@ -156,17 +161,20 @@ namespace terminalDocuSignTests.Integration
             //
             var sendEnvelopeAction = _solution.ChildrenActivities.Single(a => a.Label == "Send DocuSign Envelope");
 
-            applyToken = new ManageAuthToken_Apply()
+            if (sendEnvelopeAction.ActivityTemplate.NeedsAuthentication)
             {
-                ActivityId = sendEnvelopeAction.Id,
-                AuthTokenId = authTokenId,
-                IsMain = false
-            };
+                var applyToken = new ManageAuthToken_Apply()
+                {
+                    ActivityId = sendEnvelopeAction.Id,
+                    AuthTokenId = authTokenId,
+                    IsMain = false
+                };
 
-            await HttpPostAsync<ManageAuthToken_Apply[], string>(
-                _baseUrl + "ManageAuthToken/apply",
-                new ManageAuthToken_Apply[] { applyToken }
-            );
+                await HttpPostAsync<ManageAuthToken_Apply[], string>(
+                    _baseUrl + "ManageAuthToken/apply",
+                    new ManageAuthToken_Apply[] { applyToken }
+                );
+            }
 
             sendEnvelopeAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(
                 _baseUrl + "activities/configure?id=" + sendEnvelopeAction.Id,
@@ -267,7 +275,7 @@ namespace terminalDocuSignTests.Integration
             //
             // Activate and run plan
             //
-            await HttpPostAsync<string, string>(_baseUrl + "plans/run?planId=" + plan.Plan.Id, null);
+            await HttpPostAsync<string, ContainerDTO>(_baseUrl + "plans/run?planId=" + plan.Plan.Id, null);
 
             //
             // Deactivate plan
@@ -282,42 +290,65 @@ namespace terminalDocuSignTests.Integration
 
         private async Task<Guid> ResolveAuth(ActivityDTO solution, ICrateStorage crateStorage)
         {
+            Guid? tokenGuid = null;
+
             var stAuthCrate = crateStorage
                 .CratesOfType<StandardAuthenticationCM>()
                 .FirstOrDefault();
 
-            var defaultDocuSignAuthTokenExists = stAuthCrate != null;
-            if (!defaultDocuSignAuthTokenExists)
+            if (stAuthCrate != null)
             {
-                //
-                // Authenticate with DocuSign
-                //
-                var creds = new CredentialsDTO()
+                var terminalsAndTokens =
+                    await HttpGetAsync<ManageAuthToken_Terminal[]>(
+                        _baseUrl + "manageauthtoken/"
+                    );
+
+                var terminalDocuSign = terminalsAndTokens
+                    .SingleOrDefault(x => x.Name == "terminalDocuSign");
+
+                if (terminalDocuSign != null)
                 {
-                    Username = "freight.testing@gmail.com",
-                    Password = "I6HmXEbCxN",
-                    IsDemoAccount = true,
-                    TerminalId = solution.ActivityTemplate.TerminalId
-                };
-                var token = await HttpPostAsync<CredentialsDTO, JObject>(
-                    _baseUrl + "authentication/token",
-                    creds
-                );
-                Assert.AreEqual(
-                    false,
-                    string.IsNullOrEmpty(token["authTokenId"].Value<string>()),
-                    "AuthTokenId is missing in API response."
-                );
+                    var token = terminalDocuSign.AuthTokens.FirstOrDefault(x => x.IsMain);
+                    if (token == null)
+                    {
+                        token = terminalDocuSign.AuthTokens.FirstOrDefault();
+                    }
 
-                Guid tokenGuid = Guid.Parse(token["authTokenId"].Value<string>());
+                    Assert.NotNull(token);
+                    tokenGuid = token.Id;
+                }
 
-                //
-                // Asociate token with action
-                //
+                if (!tokenGuid.HasValue)
+                {
+                    var creds = new CredentialsDTO()
+                    {
+                        Username = "freight.testing@gmail.com",
+                        Password = "I6HmXEbCxN",
+                        IsDemoAccount = true,
+                        TerminalId = solution.ActivityTemplate.TerminalId
+                    };
+
+                    var token = await HttpPostAsync<CredentialsDTO, JObject>(
+                        _baseUrl + "authentication/token",
+                        creds
+                    );
+
+                    Assert.AreEqual(
+                        false,
+                        string.IsNullOrEmpty(token["authTokenId"].Value<string>()),
+                        "AuthTokenId is missing in API response."
+                    );
+
+                    tokenGuid = Guid.Parse(token["authTokenId"].Value<string>());
+                }
+            }
+
+            if (solution.ActivityTemplate.NeedsAuthentication)
+            {
                 var applyToken = new ManageAuthToken_Apply()
                 {
                     ActivityId = solution.Id,
-                    AuthTokenId = tokenGuid,
+                    AuthTokenId = tokenGuid.Value,
                     IsMain = false
                 };
 
@@ -325,28 +356,9 @@ namespace terminalDocuSignTests.Integration
                     _baseUrl + "ManageAuthToken/apply",
                     new ManageAuthToken_Apply[] { applyToken }
                 );
-
-                return tokenGuid;
             }
-            else
-            {
-                var terminalsAndTokens =
-                    await HttpGetAsync<ManageAuthToken_Terminal[]>(
-                        _baseUrl + "manageauthtoken/"
-                    );
 
-                var terminalDocuSign = terminalsAndTokens.Single(x => x.Name == "terminalDocuSign");
-
-                var token = terminalDocuSign.AuthTokens.FirstOrDefault(x => x.IsMain);
-                if (token == null)
-                {
-                    token = terminalDocuSign.AuthTokens.FirstOrDefault();
-                }
-
-                Assert.NotNull(token);
-
-                return token.Id;
-            }
+            return tokenGuid.Value;
         }
     }
 }
