@@ -186,13 +186,29 @@ namespace terminalDocuSignTests.Integration
 
             var fr8CoreLoop = this.solution.ChildrenActivities.Single(a => a.Label.Equals("loop", StringComparison.InvariantCultureIgnoreCase));
 
+            using (var updatableStorage = Crate.UpdateStorage(() => fr8CoreLoop.CrateStorage))
+            {
+                var chooser = (CrateChooser)updatableStorage.CrateContentsOfType<StandardConfigurationControlsCM>().First().Controls.FirstOrDefault(c => c.Name == "Available_Crates");
+
+                if (chooser?.CrateDescriptions != null)
+                {
+                    chooser.CrateDescriptions = new List<CrateDescriptionDTO>();
+                }
+            }
+            
             fr8CoreLoop = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure", fr8CoreLoop);
             //we should update fr8Core loop to loop through manually added payload
             var fr8CoreLoopCrateStorage = Crate.FromDto(fr8CoreLoop.CrateStorage);
             var loopConfigCrate = fr8CoreLoopCrateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
             var loopConfigControls = loopConfigCrate.Content.Controls;
-            var crateChooser = (CrateChooser)loopConfigControls.Single(c => c.Name == "Available_Crates");
-            var payloadDataCrate = crateChooser.CrateDescriptions.Single(c => c.ManifestId == (int)MT.StandardPayloadData);
+            var crateChooser = (CrateChooser)loopConfigControls.FirstOrDefault(c => c.Name == "Available_Crates");
+
+            Assert.NotNull(crateChooser, "Crate chooser was not found");
+
+            var payloadDataCrate = crateChooser.CrateDescriptions.SingleOrDefault(c => c.ManifestId == (int)MT.StandardPayloadData);
+
+            Assert.NotNull(payloadDataCrate, "StandardPayloadData was not found in rateChooser.CrateDescriptions. Available crate descriptions are: " + string.Join("\n", crateChooser.CrateDescriptions.Select(x=> $"{x.Label} of type {x.ManifestType}")));
+
             payloadDataCrate.Selected = true;
             using (var updatableStorage = Crate.GetUpdatableStorage(fr8CoreLoop))
             {
