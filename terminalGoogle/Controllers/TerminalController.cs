@@ -54,10 +54,10 @@ namespace terminalGoogle.Controllers
 
             var receiveGoogleForm = new ActivityTemplateDTO
             {
-                Name = "Receive_Google_Form",
-                Label = "Receive Google Form Response",
+                Name = "Monitor_Form_Responses",
+                Label = "Monitor Form Responses",
                 Version = "1",
-                Category = ActivityCategory.Receivers,
+                Category = ActivityCategory.Monitors,
                 Terminal = terminal,
                 NeedsAuthentication = true,
                 WebService = webService,
