@@ -1029,6 +1029,7 @@
     <Content Include="Views\AngularTemplate\PlanReportList.cshtml" />
     <Content Include="Views\AngularTemplate\TimePicker.cshtml" />
     <Content Include="Views\Shared\_HomeNavNew.cshtml" />
+    <Content Include="Views\Shared\_HomePageNew.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

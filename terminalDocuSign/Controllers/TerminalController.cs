@@ -160,7 +160,7 @@ namespace terminalDocuSign.Controllers
                 NeedsAuthentication = true,
                 Terminal = terminal,
                 WebService = webService,
-                MinPaneWidth = 550,
+                MinPaneWidth = 500,
                 Tags = "HideChildren"
             };
 
