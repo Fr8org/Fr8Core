@@ -98,7 +98,7 @@ namespace terminalFr8Core.Actions
                 currentConfControls.Controls.RemoveAll(c => c.Name == "url_text");
                 currentConfControls.Controls.Add(new TextBlock
                 {
-                    CssClass = "well well-lg",
+                    CssClass = "well",
                     Value = "New plan is generated for this operation, you can check this plan at: "+
 #if DEBUG
                     "http://localhost:30643" +
