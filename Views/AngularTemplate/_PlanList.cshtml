@@ -29,7 +29,7 @@
                                 <tr ng-repeat="plan in activePlans | filter: {planState:2}">
                                     <td ng-click="goToPlanDetailsPage(plan.id)">{{ plan.name }}</td>
                                     <td ng-click="goToPlanDetailsPage(plan.id)">{{ plan.description }}</td>
-                                    <td ng-click="goToPlanDetailsPage(plan.id)">{{ plan.lastUpdated }}</td>
+                                    <td ng-click="goToPlanDetailsPage(plan.id)"></td>
                                     <td ng-click="goToPlanDetailsPage(plan.id)">
                                         <span class="bold font-green-haze">{{plan.planState == 2 ? 'Active' : 'Inactive' }}</span>
                                     </td>
@@ -77,7 +77,7 @@
                                     <tr ng-repeat="plan in inActivePlans | filter: {planState:1}">
                                         <td ng-click="goToPlanDetailsPage(plan.id)">{{ plan.name }}</td>
                                         <td ng-click="goToPlanDetailsPage(plan.id)">{{ plan.description }}</td>
-                                        <td ng-click="goToPlanDetailsPage(plan.id)">{{ plan.lastUpdated }}</td>
+                                        <td ng-click="goToPlanDetailsPage(plan.id)"></td>
                                         <td ng-click="goToPlanDetailsPage(plan.id)">
                                             <span class="bold font-green-haze">{{plan.planState == 2 ? 'Active' : 'Inactive' }}</span>
                                         <td>

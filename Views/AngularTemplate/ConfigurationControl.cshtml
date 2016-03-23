@@ -34,7 +34,7 @@
         -->
     <div ng-if='field.type == "FilePicker"'>
         <label class='control-label'>{{::field.label}}</label>
-        <file-picker field='field'></file-picker>
+        <file-picker field='field' change="onChange"></file-picker>
     </div>
 
     <!--
