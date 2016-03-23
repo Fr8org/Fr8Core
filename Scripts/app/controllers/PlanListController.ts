@@ -99,16 +99,16 @@ module dockyard.controllers {
             return [
                 this.DTColumnDefBuilder.newColumnDef(0),
                 this.DTColumnDefBuilder.newColumnDef(1),
-                this.DTColumnDefBuilder.newColumnDef(2)
-                    .renderWith(function (data, type, full, meta) {
-                        if (data != null || data != undefined) {
-                            var dateValue = new Date(data);
-                            if (dateValue.getFullYear() == 1)
-                                return "";
-                            var date = dateValue.toLocaleDateString() + ' ' + dateValue.toLocaleTimeString();
-                            return date;
-                        }
-                    }),
+                this.DTColumnDefBuilder.newColumnDef(2),
+                    // .renderWith(function (data, type, full, meta) {
+                    //     if (data != null || data != undefined) {
+                    //         var dateValue = new Date(data);
+                    //         if (dateValue.getFullYear() == 1)
+                    //             return "";
+                    //         var date = dateValue.toLocaleDateString() + ' ' + dateValue.toLocaleTimeString();
+                    //         return date;
+                    //     }
+                    // }),
                 this.DTColumnDefBuilder.newColumnDef(3).notSortable(),
                 this.DTColumnDefBuilder.newColumnDef(4).notSortable()
             ];
