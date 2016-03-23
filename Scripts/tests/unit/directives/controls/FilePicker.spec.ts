@@ -19,7 +19,7 @@ module dockyard.tests.unit.directives.controls {
             fileService,
             element,
             scope,
-            directive = '<file-picker field="field" />';
+            directive = '<file-picker change="onChange" field="field" />';
 
         beforeEach(module('app', 'templates'));
 
@@ -39,6 +39,7 @@ module dockyard.tests.unit.directives.controls {
                 fileService = _FileService_;
 
                 scope = $rootScope.$new();
+                scope.onChange = jasmine.createSpy("onChange function");
                 scope.field = angular.copy(fx.FieldDTO.filePickerField);
                 element = compileTemplate(scope, directive, $compile);
                 
@@ -56,7 +57,7 @@ module dockyard.tests.unit.directives.controls {
             expect(fileService.uploadFile).toHaveBeenCalled();
         });
 
-        it('Should broadcast on upload success', () => {
+        it('Should broadcast and call onChange on upload success', () => {
             var deferred = $q.defer();
             spyOn(fileService, 'uploadFile').and.returnValue(deferred.promise);
             spyOn(scope.$root, '$broadcast');
@@ -70,10 +71,11 @@ module dockyard.tests.unit.directives.controls {
             (<dockyard.model.FileDTO>uploadedFile).cloudStorageUrl = 'testStorageURL';
             //resolve promise
             scope.$digest();
-            expect(scope.$root.$broadcast.calls.count()).toBe(2);
+            expect(scope.$root.$broadcast.calls.count()).toBe(1);
+            expect(scope.onChange.calls.count()).toBe(1);
             expect(scope.$root.$broadcast.calls.argsFor(0)).toEqual(['fp-success', uploadedFile]);
-            expect(scope.$root.$broadcast.calls.argsFor(1)).toEqual(['onChange', jasmine.any(Object)]);
         });
+
 
         it('Should set selected file on upload success', () => {
             expect(element.isolateScope().selectedFile).toEqual(null);
@@ -107,8 +109,8 @@ module dockyard.tests.unit.directives.controls {
             element1,
             element2,
             scope,
-            directive1 = '<file-picker field="field1" />',
-            directive2 = '<file-picker field="field2" />';
+            directive1 = '<file-picker field="field1" change="onChange" />',
+            directive2 = '<file-picker field="field2" change="onChange" />';
 
         beforeEach(module('app', 'templates'));
 
@@ -128,6 +130,7 @@ module dockyard.tests.unit.directives.controls {
                 fileService = _FileService_;
 
                 scope = $rootScope.$new();
+                scope.onChange = jasmine.createSpy("onChange function");
                 scope.field1 = angular.copy(fx.FieldDTO.filePickerField);
                 scope.field2 = angular.copy(fx.FieldDTO.filePickerField);
                 element1 = compileTemplate(scope, directive1, $compile);

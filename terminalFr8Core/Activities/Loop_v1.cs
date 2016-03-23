@@ -243,7 +243,9 @@ namespace terminalFr8Core.Actions
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Replace(AssembleCrateStorage(configurationControlsCrate));
-                crateStorage.Add(await GetUpstreamManifestTypes(curActivityDO));
+
+                // TODO: remove, FR-2691.
+                // crateStorage.Add(await GetUpstreamManifestTypes(curActivityDO));
             }
 
             return curActivityDO;
@@ -264,11 +266,13 @@ namespace terminalFr8Core.Actions
             var crateChooser = (CrateChooser)controlsMS.Controls.Single(x => x.Type == ControlTypes.CrateChooser && x.Name == "Available_Crates");
 
             //refresh upstream manifest types
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.RemoveByLabel("Available Manifests");
-                crateStorage.Add(await GetUpstreamManifestTypes(curActivityDO));
-            }
+
+            // TODO: remove, FR-2691.
+            // using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            // {
+            //     crateStorage.RemoveByLabel("Available Manifests");
+            //     crateStorage.Add(await GetUpstreamManifestTypes(curActivityDO));
+            // }
 
             
 

@@ -8,8 +8,8 @@ using Data.Interfaces;
 using Data.Interfaces.Manifests;
 using Data.Repositories;
 using Hub.Interfaces;
+using terminalUtilities.Excel;
 using Utilities;
-using terminalExcel.Infrastructure;
 
 namespace terminalExcel.Fixtures
 {

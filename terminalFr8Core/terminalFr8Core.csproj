@@ -52,6 +52,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Utilities\DocuSign.Integration.Client.dll</HintPath>
     </Reference>
+	<Reference Include="Excel, Version=2.1.2.3, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\ExcelDataReader.2.1.2.3\lib\net45\Excel.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
     <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
       <Private>True</Private>
@@ -196,6 +203,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Activities\LaunchAPlan_v1.cs" />
     <Compile Include="Activities\Monitor_Fr8_Events_v1.cs" />
     <Compile Include="Activities\QueryFr8Warehouse_v1.cs" />
     <Compile Include="Activities\AddPayloadManually_v1.cs" />
@@ -205,6 +213,7 @@
     <Compile Include="Activities\GetFileFromFr8Store_v1.cs" />
     <Compile Include="Activities\SearchFr8Warehouse_v1.cs" />
     <Compile Include="Activities\ExtractTableField_v1.cs" />
+    <Compile Include="Activities\CreateLauncher_v1.cs" />
     <Compile Include="Activities\TestAndBranch_v1.cs" />
     <Compile Include="Activities\StoreFile_v1.cs" />
     <Compile Include="Activities\ConvertCrates_v1.cs" />
@@ -251,6 +260,10 @@
     <ProjectReference Include="..\TerminalSqlUtilities\TerminalSqlUtilities.csproj">
       <Project>{fa105e66-8756-4f57-8230-2a52bfebddc6}</Project>
       <Name>TerminalSqlUtilities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\terminalUtilities\terminalUtilities.csproj">
+      <Project>{e46b602a-287b-450f-b455-5eed20c93eb7}</Project>
+      <Name>terminalUtilities</Name>
     </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
