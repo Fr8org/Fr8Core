@@ -572,6 +572,38 @@ namespace Data.Control
         }
     }
 
+    public class ControlList : ControlDefinitionDTO, IContainerControl
+    {
+        public IList<IList<ControlDefinitionDTO>> Controls { get; }
+        public ListTemplate Template { get; set; }
+
+        public ControlList()
+        {
+            Controls = new List<IList<ControlDefinitionDTO>>();
+        }
+
+        public ControlList(ListTemplate Template) : this()
+        {
+            this.Template = Template;
+        }
+    }
+
+    public class ListTemplate : IContainerControl, IControlDefinition
+    {
+        public IList<ControlDefinitionDTO> Template { get; }
+        public string Name { get; set; }
+
+        public ListTemplate()
+        {
+            Template = new List<ControlDefinitionDTO>();
+        }
+
+        public IEnumerable<IControlDefinition> EnumerateChildren()
+        {
+            return Template;
+        }
+    }
+
     public class RadioButtonOption : ISupportsNestedFields, IContainerControl, IControlDefinition
     {
         public RadioButtonOption()
