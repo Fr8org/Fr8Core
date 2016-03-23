@@ -14,7 +14,7 @@ using Newtonsoft.Json.Linq;
 namespace terminalGoogleTests.Unit
 {
     [Explicit]
-    public class Receive_Google_Form_v1_Tests : BaseTerminalIntegrationTest
+    public class Monitor_Form_Responses_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
         {
@@ -25,12 +25,12 @@ namespace terminalGoogleTests.Unit
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
         [Test, Category("Integration.terminalGoogle")]
-        public async Task Receive_Google_Form_Initial_Configuration_Check_Crate_Structure()
+        public async Task Monitor_Form_Responses_Initial_Configuration_Check_Crate_Structure()
         {
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Receive_Google_Form_v1_InitialConfiguration_Fr8DataDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Monitor_Form_Responses_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
@@ -55,12 +55,12 @@ namespace terminalGoogleTests.Unit
         /// Validate correct crate-storage CM structure.
         /// </summary>
         [Test, Category("Integration.terminalGoogle")]
-        public async Task Receive_Google_Form_Initial_Configuration_Check_CM_Structure()
+        public async Task Monitor_Form_Responses_Initial_Configuration_Check_CM_Structure()
         {
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Receive_Google_Form_v1_InitialConfiguration_Fr8DataDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Monitor_Form_Responses_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
@@ -94,12 +94,12 @@ namespace terminalGoogleTests.Unit
         /// Validate dropdownlist source contains google forms(pre-installed in users google drive)
         /// </summary>
         [Test, Category("Integration.terminalGoogle")]
-        public async Task Receive_Google_Form_Initial_Configuration_Check_Source_Fields()
+        public async Task Monitor_Form_Responses_Initial_Configuration_Check_Source_Fields()
         {
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Receive_Google_Form_v1_InitialConfiguration_Fr8DataDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Monitor_Form_Responses_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
@@ -125,11 +125,11 @@ namespace terminalGoogleTests.Unit
             ExpectedException = typeof(RestfulServiceException),
             ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}"
         )]
-        public async Task Receive_Google_Form_Initial_Configuration_NoAuth()
+        public async Task Monitor_Form_Responses_Initial_Configuration_NoAuth()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var dataDTO = HealthMonitor_FixtureData.Receive_Google_Form_v1_InitialConfiguration_Fr8DataDTO();
+            var dataDTO = HealthMonitor_FixtureData.Monitor_Form_Responses_v1_InitialConfiguration_Fr8DataDTO();
             dataDTO.ActivityDTO.AuthToken = null;
 
             await HttpPostAsync<Fr8DataDTO, JToken>(
@@ -142,13 +142,13 @@ namespace terminalGoogleTests.Unit
         /// Validate google app script is uploaded in users google drive
         /// </summary>
         [Test, Category("Integration.terminalGoogle")]
-        public async Task Receive_Google_Form_Activate_Check_Script_Exist()
+        public async Task Monitor_Form_Responses_Activate_Check_Script_Exist()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = fixture.Receive_Google_Form_v1_ActivateDeactivate_Fr8DataDTO();
+            var requestActionDTO = fixture.Monitor_Form_Responses_v1_ActivateDeactivate_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
@@ -167,13 +167,13 @@ namespace terminalGoogleTests.Unit
         }
 
         [Test, Category("Integration.terminalGoogle")]
-        public async Task Receive_Google_Form_Activate_Returns_ActivityDTO()
+        public async Task Monitor_Form_Responses_Activate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalActivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = fixture.Receive_Google_Form_v1_ActivateDeactivate_Fr8DataDTO();
+            var requestActionDTO = fixture.Monitor_Form_Responses_v1_ActivateDeactivate_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
@@ -188,13 +188,13 @@ namespace terminalGoogleTests.Unit
         }
 
         [Test, Category("Integration.terminalGoogle")]
-        public async Task Receive_Google_Form_Deactivate_Returns_ActivityDTO()
+        public async Task Monitor_Form_Responses_Deactivate_Returns_ActivityDTO()
         {
             //Arrange
             var configureUrl = GetTerminalDeactivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = fixture.Receive_Google_Form_v1_ActivateDeactivate_Fr8DataDTO();
+            var requestActionDTO = fixture.Monitor_Form_Responses_v1_ActivateDeactivate_Fr8DataDTO();
 
             //Act
             var responseActionDTO =
@@ -216,14 +216,14 @@ namespace terminalGoogleTests.Unit
             ExpectedException = typeof(RestfulServiceException),
             ExpectedMessage = @"{""status"":""terminal_error"",""message"":""EventReportCrate is empty.""}"
             )]
-        public async Task Receive_Google_Form_Run_WithInvalidPapertrailUrl_ShouldThrowException()
+        public async Task Monitor_Form_Responses_Run_WithInvalidPapertrailUrl_ShouldThrowException()
         {
             //Arrange
             var runUrl = GetTerminalRunUrl();
 
             //prepare the action DTO with valid target URL
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var activityDTO = fixture.Receive_Google_Form_v1_Run_EmptyPayload();
+            var activityDTO = fixture.Monitor_Form_Responses_v1_Run_EmptyPayload();
             var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
             //Act
             await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
@@ -233,13 +233,13 @@ namespace terminalGoogleTests.Unit
         /// Should return more than one payload fielddto for the response
         /// </summary>
         [Test, Category("Integration.terminalGoogle")]
-        public async Task Receive_Google_Form_Run_Returns_Payload()
+        public async Task Monitor_Form_Responses_Run_Returns_Payload()
         {
             //Arrange
             var runUrl = GetTerminalRunUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var activityDTO = fixture.Receive_Google_Form_v1_Run_ActivityDTO();
+            var activityDTO = fixture.Monitor_Form_Responses_v1_Run_ActivityDTO();
 
             var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
 
