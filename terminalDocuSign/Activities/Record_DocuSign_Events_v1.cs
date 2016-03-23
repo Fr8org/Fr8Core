@@ -88,7 +88,7 @@ namespace terminalDocuSign.Actions
                         recipientEvents = string.Join(",", DocuSignEventNames.GetEventsFor("Recipient")),
                         name = "MonitorAllDocuSignEvents",
                         urlToPublishTo =
-                            Regex.Match(CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint"), @"(\w+://\w+:\d+)").Value +
+                            Regex.Match(CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint"), @"(\w+://\w+)").Value +
                             "/terminals/terminalDocuSign/events"
                     };
 

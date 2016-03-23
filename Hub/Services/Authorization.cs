@@ -128,7 +128,7 @@ namespace Hub.Services
             };
 
             var terminalResponse = await restClient.PostAsync<CredentialsDTO>(
-                new Uri("http://" + terminal.Endpoint + "/authentication/internal"),
+                new Uri(terminal.Endpoint + "/authentication/internal"),
                 credentialsDTO
             );
 
@@ -223,7 +223,7 @@ namespace Hub.Services
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
 
             var response = await restClient.PostAsync<ExternalAuthenticationDTO>(
-                new Uri("http://" + terminal.Endpoint + "/authentication/token"),
+                new Uri(terminal.Endpoint + "/authentication/token"),
                 externalAuthDTO
                 );
 
@@ -297,7 +297,7 @@ namespace Hub.Services
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
 
             var response = await restClient.PostAsync(
-                new Uri("http://" + terminal.Endpoint + "/authentication/initial_url")
+                new Uri(terminal.Endpoint + "/authentication/initial_url")
             );
 
             var externalAuthUrlDTO = JsonConvert.DeserializeObject<ExternalAuthUrlDTO>(response);
