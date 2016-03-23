@@ -94,7 +94,12 @@ namespace HealthMonitor.Utility
             }
         }
 
-        protected async Task RevokeTokens()
+        protected Task RevokeTokens()
+        {
+            return RevokeTokens(TerminalName);
+        }
+
+        protected async Task RevokeTokens(string terminalName)
         {
             var tokens = await HttpGetAsync<IEnumerable<ManageAuthToken_Terminal>>(
                 _baseUrl + "manageauthtoken/"
@@ -102,7 +107,7 @@ namespace HealthMonitor.Utility
 
             if (tokens != null)
             {
-                var docusignTokens = tokens.FirstOrDefault(x => x.Name == TerminalName);
+                var docusignTokens = tokens.FirstOrDefault(x => x.Name == terminalName);
                 if (docusignTokens != null)
                 {
                     foreach (var token in docusignTokens.AuthTokens)
