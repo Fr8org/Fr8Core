@@ -465,6 +465,8 @@
     <Compile Include="ViewModels\ExternalLoginConfirmationVM.cs" />
     <Compile Include="ViewModels\LoginVM.cs" />
     <Compile Include="ViewModels\ManageUserVM.cs" />
+    <Compile Include="ViewModels\NavLinksHome.cs" />
+    <Compile Include="ViewModels\NavLinksShared.cs" />
     <Compile Include="ViewModels\PayloadVM.cs" />
     <Compile Include="ViewModels\ProcessCreateEventVM.cs" />
     <Compile Include="ViewModels\RegisterVM.cs" />
@@ -481,10 +483,12 @@
     <Content Include="Api\GetEmailHTML.aspx" />
     <Content Include="Content\css\fonts\brankic.svg" />
     <Content Include="Content\css\fonts\fontawesome-webfont.svg" />
+    <Content Include="Content\css\frontcss\main_new.css" />
     <Content Include="Content\css\homecss\bootstrap.css" />
     <Content Include="Content\css\homecss\font-awesome.min.css" />
     <Content Include="Content\css\homecss\ie.css" />
     <Content Include="Content\css\homecss\main.css" />
+    <Content Include="Content\css\shared\navbar.css" />
     <Content Include="Content\img\background-7.png" />
     <Content Include="Content\img\background-cta-3.png" />
     <Content Include="Content\img\docusign-logo.png" />
@@ -1024,6 +1028,7 @@
     <Content Include="Views\AngularTemplate\_PlanReportList.cshtml" />
     <Content Include="Views\AngularTemplate\PlanReportList.cshtml" />
     <Content Include="Views\AngularTemplate\TimePicker.cshtml" />
+    <Content Include="Views\Shared\_HomeNavNew.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -14,9 +14,12 @@ module dockyard.directives {
                     .css({
                         'display': 'inline-block',
                         'overflow': 'hidden',
-                        'width': function () { return $(elem, this).width(); },
-                        'height': function () { return $(elem, this).height(); },
-                        'min-width': function () { return $(elem, this).width(); },
+                        'min-width': function () {
+                            if (angular.isNumber(parseInt(attrs.minwidth)) && !isNaN(parseInt(attrs.minwidth))) {
+                                return parseInt(attrs.minwidth);
+                            }
+                            return $(elem, this).width();
+                        },
                         'min-height': function () { return $(elem, this).height() + 20; },
                     }).resizable()
                     .find(elem)
