@@ -167,6 +167,8 @@ namespace Hub.Services
                         );
                 }
 
+
+                var created = false;
                 if (authToken == null)
                 {
                     authToken = new AuthorizationTokenDO()
@@ -180,8 +182,7 @@ namespace Hub.Services
                     };
 
                     uow.AuthorizationTokenRepository.Add(authToken);
-
-                    EventManager.AuthTokenCreated(authToken);
+                    created = true;
                 }
                 else
                 {
@@ -191,6 +192,10 @@ namespace Hub.Services
 
                 uow.SaveChanges();
 
+                if (created)
+                {
+                    EventManager.AuthTokenCreated(authToken);
+                }
 
                 //if terminal requires Authentication Completed Notification, follow the existing terminal event notification protocol 
                 //to notify the terminal about authentication completed event

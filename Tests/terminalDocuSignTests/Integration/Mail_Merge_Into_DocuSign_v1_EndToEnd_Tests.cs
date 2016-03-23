@@ -55,6 +55,8 @@ namespace terminalDocuSignTests.Integration
         {
             await RevokeTokens();
 
+            var googleAuthTokenId = await ExtractGoogleDefaultToken();
+
             var solutionCreateUrl = _baseUrl + "activities/create?solutionName=Mail_Merge_Into_DocuSign";
 
             //
@@ -141,6 +143,25 @@ namespace terminalDocuSignTests.Integration
             this.solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure?id=" + this.solution.Id, this.solution);
             crateStorage = Crate.FromDto(this.solution.CrateStorage);
             Assert.AreEqual(2, this.solution.ChildrenActivities.Count(), "Solution child actions failed to create.");
+
+            // Assert Loop activity has CrateChooser with assigned manifest types.
+            var loopActivity = this.solution.ChildrenActivities[1];
+            using (var loopCrateStorage = Crate.GetUpdatableStorage(loopActivity))
+            {
+                var loopControlsCrate = loopCrateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
+                var loopControls = loopControlsCrate.Content.Controls;
+
+                var loopCrateChooser = loopControls
+                    .Where(x => x.Type == ControlTypes.CrateChooser && x.Name == "Available_Crates")
+                    .SingleOrDefault() as CrateChooser;
+
+                Assert.NotNull(loopCrateChooser);
+                Assert.AreEqual(1, loopCrateChooser.CrateDescriptions.Count);
+                Assert.AreEqual("Standard Table Data", loopCrateChooser.CrateDescriptions[0].ManifestType);
+                Assert.AreEqual("Table Generated From Google Sheet Data", loopCrateChooser.CrateDescriptions[0].Label);
+
+                loopCrateChooser.CrateDescriptions = new List<CrateDescriptionDTO>();
+            }
 
             // Delete Google action 
             await HttpDeleteAsync(_baseUrl + "activities?id=" + this.solution.ChildrenActivities[0].Id);
@@ -330,7 +351,23 @@ namespace terminalDocuSignTests.Integration
             // Delete plan
             //
             await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Plan.Id);
+        }
 
+        private async Task<Guid> ExtractGoogleDefaultToken()
+        {
+            var tokens = await HttpGetAsync<IEnumerable<ManageAuthToken_Terminal>>(
+                _baseUrl + "manageauthtoken/"
+            );
+
+            Assert.NotNull(tokens);
+
+            var terminal = tokens.FirstOrDefault(x => x.Name == "terminalGoogle");
+            Assert.NotNull(terminal);
+
+            var token = terminal.AuthTokens.FirstOrDefault(x => x.IsMain);
+            Assert.NotNull(token);
+
+            return token.Id;
         }
     }
 }
