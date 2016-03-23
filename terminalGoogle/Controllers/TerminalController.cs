@@ -57,7 +57,7 @@ namespace terminalGoogle.Controllers
                 Name = "Monitor_Form_Responses",
                 Label = "Monitor Form Responses",
                 Version = "1",
-                Category = ActivityCategory.Receivers,
+                Category = ActivityCategory.Monitors,
                 Terminal = terminal,
                 NeedsAuthentication = true,
                 WebService = webService,
