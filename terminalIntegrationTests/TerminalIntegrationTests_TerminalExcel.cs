@@ -18,7 +18,7 @@ using Moq;
 using terminalIntegrationTests.Fixtures;
 using terminalExcel.Actions;
 using terminalExcel.Fixtures;
-using terminalExcel.Infrastructure;
+using terminalUtilities.Excel;
 
 namespace terminalIntegrationTests
 {

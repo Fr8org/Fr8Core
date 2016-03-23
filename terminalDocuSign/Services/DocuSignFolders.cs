@@ -3,8 +3,10 @@ using Data.Interfaces.Manifests;
 using DocuSign.eSign.Api;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Web;
+using DocuSign.eSign.Model;
 using terminalDocuSign.Services.New_Api;
 
 namespace terminalDocuSign.Services
@@ -21,6 +23,44 @@ namespace terminalDocuSign.Services
                 return new List<FieldDTO>();
         }
 
+        public static IEnumerable<FolderItem> GetFolderItems(DocuSignApiConfiguration config, DocusignQuery docusignQuery)
+        {
+            var resultItems = new List<DocuSign.eSign.Model.FolderItem>();
+
+            FoldersApi api = new FoldersApi(config.Configuration);
+
+            if (string.IsNullOrEmpty(docusignQuery.Folder))
+            {
+                //return all envelopes from all folders
+                var folders = api.List(config.AccountId);
+                if (folders.Folders != null)
+                {
+                    foreach (var item in folders.Folders)
+                    {
+                        var envelopesResponse = api.ListItems(config.AccountId, item.FolderId,
+                            new FoldersApi.SearchOptions()
+                            {
+                                status = docusignQuery.Status,
+                                searchText = docusignQuery.SearchText
+                            });
+                        resultItems.AddRange(envelopesResponse.FolderItems);
+                    }
+                }
+            }
+            else
+            {
+                var envelopesResponse = api.ListItems(config.AccountId, docusignQuery.Folder,
+                    new FoldersApi.SearchOptions()
+                    {
+                        status = docusignQuery.Status,
+                        searchText = docusignQuery.SearchText
+                    });
+                resultItems.AddRange(envelopesResponse.FolderItems);
+            }
+
+            return resultItems;
+        }
+
         #region GenerateDocuSignReport methods
 
         public static int CountEnvelopes(DocuSignApiConfiguration config, DocusignQuery docusignQuery)
@@ -34,5 +74,7 @@ namespace terminalDocuSign.Services
         }
 
         #endregion
+
+
     }
 }

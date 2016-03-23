@@ -314,6 +314,7 @@ module dockyard.directives.paneConfigureAction {
                     this.$scope.currentAction.crateStorage
                 );
                 this.$scope.currentAction.crateStorage.crateDTO = this.$scope.currentAction.crateStorage.crates; //backend expects crates on CrateDTO field
+
                 this.ActionService.save({ id: this.$scope.currentAction.id }, this.$scope.currentAction, null, null)
                     .$promise
                     .then(() => {
@@ -368,7 +369,12 @@ module dockyard.directives.paneConfigureAction {
                         scope.currentAction.crateStorage
                     );
                     scope.currentAction.crateStorage.crateDTO = scope.currentAction.crateStorage.crates; //backend expects crates on CrateDTO field
+
                     this.loadConfiguration();
+
+                    // FR-2488, added by yakov.gnusin.
+                    // Fixing save/ configure race condition on Continue button click (reproduced in MM solution).
+                    this.ignoreConfigurationChange = true;
                 }
             }
 
