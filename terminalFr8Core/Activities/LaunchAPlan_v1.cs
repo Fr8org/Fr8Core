@@ -83,9 +83,43 @@ namespace terminalFr8Core.Actions
             var crateDTOs = payloadCrates.Select(c => CrateManager.ToDto(c)).ToList();
 
             var targetPlan = crateStorage.CrateContentsOfType<FieldDescriptionsCM>().Single().Fields.Single();
-            await HubCommunicator.RunPlan(Guid.Parse(targetPlan.Value), crateDTOs, CurrentFr8UserId);
+            try
+            {
+                await HubCommunicator.RunPlan(Guid.Parse(targetPlan.Value), crateDTOs, CurrentFr8UserId);
+                AddInfoText(curActivityDO, "Your request was processed succesfully", false);
+            }
+            catch
+            {
+                AddInfoText(curActivityDO, "There has been an error while processing your request", true);
+            }
+
+
 
             return curActivityDO;
+        }
+
+        private void AddInfoText(ActivityDO curActivityDO, string message, bool isError)
+        {
+            using (var storage = CrateManager.GetUpdatableStorage(curActivityDO))
+            {
+                var confControls = GetConfigurationControls(storage);
+                var errorText = (TextBlock)confControls.Controls.FirstOrDefault(c => c.Name == "error_text");
+                
+                if (errorText != null)
+                {
+                    confControls.Controls.Remove(errorText);
+                    
+                }
+
+                errorText = new TextBlock
+                {
+                    CssClass = "well well-lg",
+                    Name = "error_text",
+                    Value = message,
+                    ErrorMessage = isError ? message : ""
+                };
+                confControls.Controls.Add(errorText);
+            }
         }
 
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
