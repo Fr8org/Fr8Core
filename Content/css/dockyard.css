@@ -1052,3 +1052,13 @@ div.activity-list::after {
 .float-right {
     float: right;
 }
+
+
+.dndDraggingSource + div {
+    opacity: 0.3;
+}
+
+div.ap-resize div.dndDraggingSource {
+    opacity: 0.3;
+    display: block !important;
+}

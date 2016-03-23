@@ -18,6 +18,17 @@ app.directive('autoFocus', ['$timeout',function ($timeout) {
     };
 }]);
 
+app.filter('parseUrl', () => {
+    var urls = /(\b(https?|ftp):\/\/[A-Z0-9+&@#\/%?=~_|!:,.;-]*[-A-Z0-9+&@#\/%=~_|])/gim;
+
+    return (text: string) => {
+        if (text.match(urls)) {
+            text = text.replace(urls, "<a href=\"$1\" target=\"_blank\">$1</a>");
+        }
+        return text;
+    }
+});
+
 app.directive('blockIf', function () {
     return {
         restrict: 'A',
