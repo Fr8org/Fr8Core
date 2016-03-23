@@ -1045,6 +1045,14 @@ div.activity-list::after {
     border-color: #357ebd;
 }
 
+.mt30 {
+    margin-top: 30px;
+}
+
+.float-right {
+    float: right;
+}
+
 .query-builder-value-row {
     padding-left: 15px; 
     overflow: auto;

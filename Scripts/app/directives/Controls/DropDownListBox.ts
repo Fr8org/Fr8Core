@@ -41,6 +41,49 @@ module dockyard.directives.dropDownListBox {
                     }
                 };
 
+                var loadUpstreamFields = () => {
+                    return UpstreamExtractor
+                        .extractUpstreamData($scope.currentAction.id, 'Field Description', 'NotSet')
+                        .then((data: any) => {
+                            var listItems: Array<model.DropDownListItem> = [];
+
+                            angular.forEach(<Array<any>>data, cm => {
+                                var fields = <Array<model.FieldDTO>>cm.fields;
+
+                                angular.forEach(fields, (it) => {
+                                    var i, j;
+                                    var found = false;
+                                    for (i = 0; i < listItems.length; ++i) {
+                                        if (listItems[i].key === it.key) {
+                                            found = true;
+                                            break;
+                                        }
+                                    }
+                                    if (!found) {
+                                        listItems.push(<model.DropDownListItem>it);
+                                    }
+                                });
+                            });
+
+                            listItems.sort((x, y) => {
+                                if (x.key < y.key) {
+                                    return -1;
+                                }
+                                else if (x.key > y.key) {
+                                    return 1;
+                                }
+                                else {
+                                    return 0;
+                                }
+                            });
+
+                            $scope.field.listItems = listItems;
+
+                            triggerNoRecords();
+
+                        });
+                };
+
                 $scope.toggle = false;
 
                 $scope.toggleDropDown = $select => {
@@ -57,49 +100,10 @@ module dockyard.directives.dropDownListBox {
                         // Only "Field Description" manifestType currently supported for DDLs.
                         && $scope.field.source.manifestType === 'Field Description') {
 
-                        UpstreamExtractor
-                            .extractUpstreamData($scope.currentAction.id, 'Field Description', 'NotSet')
-                            .then((data: any) => {
-                                var listItems: Array<model.DropDownListItem> = []; 
-
-                                angular.forEach(<Array<any>>data, cm => {
-                                    var fields = <Array<model.FieldDTO>>cm.fields;
-
-                                    angular.forEach(fields, (it) => {
-                                        var i, j;
-                                        var found = false;
-                                        for (i = 0; i < listItems.length; ++i) {
-                                            if (listItems[i].key === it.key) {
-                                                found = true;
-                                                break;
-                                            }
-                                        }
-                                        if (!found) {
-                                            listItems.push(<model.DropDownListItem>it);
-                                        }
-                                    });
-                                });
-
-                                listItems.sort((x, y) => {
-                                    if (x.key < y.key) {
-                                        return -1;
-                                    }
-                                    else if (x.key > y.key) {
-                                        return 1;
-                                    }
-                                    else {
-                                        return 0;
-                                    }
-                                });
-                                
-                                $scope.field.listItems = listItems;
-
-                                $select.open = !$scope.toggle;
-                                $scope.toggle = !$scope.toggle;
-
-                                triggerNoRecords();
-
-                            });
+                        loadUpstreamFields().then(() => {
+                            $select.open = !$scope.toggle;   
+                            $scope.toggle = !$scope.toggle;
+                        });
                     }
                     else {
                         $select.open = !$scope.toggle;
@@ -117,6 +121,8 @@ module dockyard.directives.dropDownListBox {
                 var triggerNoRecords = () => {
                     if ($scope.field.listItems.length === 0) {
                         $scope.$emit(MessageType[MessageType.DropDownListBox_NoRecords], new AlertEventArgs());
+                    } else {
+                        findAndSetSelectedItem();
                     }
                 }
 
@@ -143,6 +149,15 @@ module dockyard.directives.dropDownListBox {
                 $scope.$watch('field', () => {
                     findAndSetSelectedItem();
                 });
+
+                if (!$scope.toggle
+                    && $scope.field.source
+                    && $scope.field.source.requestUpstream
+                // Only "Field Description" manifestType currently supported for DDLs.
+                    && $scope.field.source.manifestType === 'Field Description') {
+                    loadUpstreamFields();
+                }
+
             }
         ];
 

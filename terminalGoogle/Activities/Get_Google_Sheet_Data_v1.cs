@@ -251,7 +251,6 @@ public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curAc
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 //crateStorage.RemoveByLabelPrefix(TableCrateLabelPrefix);
-                crateStorage.RemoveByLabel("Available Run Time Crates");
                 crateStorage.Add(CrateManager.CreateStandardTableDataCrate(RunTimeCrateLabel, false, rows.ToArray()));
             }
         }

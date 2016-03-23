@@ -70,9 +70,18 @@ namespace Hub.Services
 
         public IList<PlanDO> GetByName(IUnitOfWork uow, Fr8AccountDO account, string name)
         {
+            if(name != null) { 
             return
                 uow.PlanRepository.GetPlanQueryUncached()
                     .Where(r => r.Fr8Account.Id == account.Id && r.Name == name)
+                    .Where(p => p.PlanState != PlanState.Deleted && p.Visibility == PlanVisibility.Standard)
+                    .ToList();
+            }
+
+            return
+                uow.PlanRepository.GetPlanQueryUncached()
+                    .Where(r => r.Fr8Account.Id == account.Id)
+                    .Where(p => p.PlanState != PlanState.Deleted && p.Visibility == PlanVisibility.Standard)
                     .ToList();
         }
 

@@ -97,9 +97,14 @@ namespace HubWeb.App_Start
                 "~/Content/css/additionalcss/colorbox/colorbox.css", new CssRewriteUrlTransform()
                 ));
 
-            bundles.Add(new StyleBundle("~/bundles/css/frontpage").Include(
-                "~/Content/css/frontcss/main.css", new CssRewriteUrlTransform()
-                ));
+            bundles.Add(new StyleBundle("~/bundles/css/frontpage")
+                .Include("~/Content/css/homecss/bootstrap.css", new CssRewriteUrlTransform())
+                .Include("~/Content/css/frontcss/main.css", new CssRewriteUrlTransform()));
+            
+            bundles.Add(new StyleBundle("~/bundles/css/frontpage-new")
+                .Include("~/Content/css/homecss/bootstrap.css", new CssRewriteUrlTransform())
+                .Include("~/Content/css/frontcss/main_new.css", new CssRewriteUrlTransform())
+                .Include("~/Content/css/shared/navbar.css", new CssRewriteUrlTransform()));
 
             bundles.Add(new StyleBundle("~/bundles/css/backendcss")
                 .Include("~/Content/css/backendcss/default.css", new CssRewriteUrlTransform())
@@ -184,6 +189,7 @@ namespace HubWeb.App_Start
                 .Include("~/Content/css/homecss/bootstrap.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/homecss/font-awesome.min.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/homecss/main.css", new CssRewriteUrlTransform())
+                .Include("~/Content/css/shared/navbar.css", new CssRewriteUrlTransform())
             );
 
             bundles.Add(new StyleBundle("~/bundles/css/homeie")
