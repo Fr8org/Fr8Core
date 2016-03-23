@@ -871,12 +871,9 @@
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
     <Content Include="Scripts\templateCache.js" />
-    <Content Include="_PowerShellScripts\DeployAzureWebJob-HealthMonitor-DEV.ps1" />
-    <Content Include="_PowerShellScripts\DEV-job-run.cmd" />
-    <Content Include="_PowerShellScripts\DEV-settings.job" />
-    <Content Include="_PowerShellScripts\MASTER-job-run.cmd" />
-    <Content Include="_PowerShellScripts\MASTER-settings.job" />
-    <Content Include="_PowerShellScripts\DeployAzureWebJob-HealthMonitor-MASTER-Staging.ps1" />
+    <Content Include="_PowerShellScripts\HM-job-run.cmd" />
+    <Content Include="_PowerShellScripts\HM-job-settings.job" />
+    <Content Include="_PowerShellScripts\Deploy-HMAsWebJob.ps1" />
     <Content Include="_PowerShellScripts\KillProcess.ps1" />
     <Content Include="_PowerShellScripts\SetCloudServiceSize.ps1" />
     <Content Include="_PowerShellScripts\CloneDatabase.ps1" />
