@@ -300,6 +300,11 @@ namespace Hub.Services
             }
             catch(Exception e)
             {
+                if (curContainerDO == null || curContainerDO.CurrentPlanNode == null)
+                {
+                    throw;
+                }
+
                 var curActivityId = curContainerDO.CurrentPlanNodeId.Value;
                 var curPlanNodeDO = uow.PlanRepository.GetById<PlanNodeDO>(curActivityId);
                 var curActivityDO = curPlanNodeDO as ActivityDO;
