@@ -257,7 +257,7 @@
     margin-bottom: 5px;
     vertical-align: top;
     white-space: initial;
-    min-width: 330px;
+    /*min-width: 330px;*/
 }
 
     .action .pane-configure-action {
@@ -1051,4 +1051,14 @@ div.activity-list::after {
 
 .float-right {
     float: right;
+}
+
+
+.dndDraggingSource + div {
+    opacity: 0.3;
+}
+
+div.ap-resize div.dndDraggingSource {
+    opacity: 0.3;
+    display: block !important;
 }

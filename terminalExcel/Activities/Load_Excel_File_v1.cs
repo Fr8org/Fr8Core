@@ -19,6 +19,8 @@ namespace terminalExcel.Actions
 {
     public class Load_Excel_File_v1 : BaseTerminalActivity
     {
+
+        private const string RuntimeCrateLabel = "Standard Data Table";
         private class ActivityUi : StandardConfigurationControlsCM
         {
             public const string UploadedFileLabel = "Uploaded file: ";
@@ -196,7 +198,7 @@ namespace terminalExcel.Actions
             */
         }
 
-        private const string RuntimeCrateLabel = "Table Generated From Excel File";
+        
 
         //private string GenerateRuntimeCrateLabel(string fileName) => $"{RuntimeCrateLabel}";
 

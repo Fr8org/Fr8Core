@@ -1,7 +1,15 @@
+param(
+    [Parameter(Mandatory = $true)]
+	[string]$slot,
+
+    [Parameter(Mandatory = $true)]
+	[string]$buildConfiguration
+)
+
 $rootDir = Split-Path -parent $PSCommandPath
 
-$archiveFolderName = "$rootDir\Master-WebJob-Archive"
-$outputArchiveFile = "$rootDir\master-azurewebsitejob.zip"
+$archiveFolderName = "$rootDir\HM-WebJob-Archive"
+$outputArchiveFile = "$rootDir\HM-azurewebsitejob.zip"
 
 # Check if archive folder exists, remove if it does.
 If (Test-Path $archiveFolderName){
@@ -16,53 +24,41 @@ If (Test-Path $outputArchiveFile){
 }
 
 # Create archive folder.
-Write-Host "Creating current $archiveFolderName folder"
 New-Item -ItemType Directory -Force -Path $archiveFolderName | Out-Null
 
 # Copy HealthMonitor DLLs to archive folder.
-Write-Host "Copying HealthMonitor executable & DLLs"
-$srcFiles = "$rootDir\..\Tests\HealthMonitor\bin\Release\*"
+$srcFiles = "$rootDir\..\Tests\HealthMonitor\bin\$($buildConfiguration)\*"
 $exclude = @("HealthMonitor.vshost.exe", "HealthMonitor.vshost.exe.config", "HealthMonitor.vshost.exe.manifest")
 Copy-Item $srcFiles -Destination $archiveFolderName -Exclude $exclude -Force -Recurse
 
 # Copy settings.job to archive folder.
-Write-Host "Copying HealthMonitor settings.job file"
-$srcSettingsFile = "$rootDir\MASTER-settings.job"
+$srcSettingsFile = "$rootDir\HM-job-settings.job"
 $dstSettingsFile = "$archiveFolderName\settings.job"
 Copy-Item $srcSettingsFile -Destination $dstSettingsFile -Force
 
 # Copy run.cmd to archive folder
-Write-Host "Copying run.cmd file"
-$srcRunFile = "$rootDir\MASTER-job-run.cmd"
+$srcRunFile = "$rootDir\HM-job-run.cmd"
 $dstRunFile = "$archiveFolderName\run.cmd"
 Copy-Item $srcRunFile -Destination $dstRunFile -Force
 
 # Create zip archive.
-Write-Host "Creating Job ZIP-archive"
 $archiveFiles = "$archiveFolderName\*"
 Compress-Archive -Path $archiveFiles -DestinationPath $outputArchiveFile -Force
 
 # Deploy AzureWebsiteJob.
-Write-Host "Deploying AzureWebsiteJob"
-$site = Get-AzureWebsite -Name "fr8" -Slot "production"
+Write-Host "Deploying Azure WebJob"
+$site = Get-AzureWebsite -Name "fr8" -Slot $slot
 # $site = Get-AzureWebsite -Name "fr8dev"
 
 New-AzureWebsiteJob -Name $site[0].Name `
-  -JobName "HealthMonitor-Master" `
+  -JobName "HealthMonitor-$($buildConfiguration.ToUpper())" `
   -JobType Triggered `
   -JobFile $outputArchiveFile `
-  -Slot Staging;
-
-# New-AzureWebsiteJob -Name $site.Name `
-#   -JobName "HealthMonitor-Continuous" `
-#   -JobType triggered `
-#   -JobFile $outputArchiveFile;
-
+  -Slot $slot;
 
 # Remove zip archive.
 # Write-Host "Removing current deployment zip archive"
 # Remove-Item $outputArchiveFile -Force -Recurse
 
 # Remove current archive folder.
-Write-Host "Removing current Master-WebJob-Archive folder"
 Remove-Item $archiveFolderName -Force -Recurse
