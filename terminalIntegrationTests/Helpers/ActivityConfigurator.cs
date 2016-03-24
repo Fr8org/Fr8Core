@@ -136,15 +136,15 @@ namespace terminalIntegrationTests.Helpers
 
             if (!defaultDocuSignAuthTokenExists)
             {
-                saveToGoogleActivity.ActivityDTO.AuthToken = /*HealthMonitor_FixtureData.Google_AuthToken();//*/await Google_AuthToken(saveToGoogleActivity.ActivityDTO.ActivityTemplate.TerminalId);
+                saveToGoogleActivity.ActivityDTO.AuthToken = await Google_AuthToken(saveToGoogleActivity.ActivityDTO.ActivityTemplate.TerminalId);
 
-                //var applyToken = new ManageAuthToken_Apply()
-                //{
-                //    ActivityId = saveToGoogleActivity.Id,
-                //    AuthTokenId = Guid.Parse(saveToGoogleActivity.AuthToken.Id),
-                //    IsMain = true
-                //};
-                //await HttpPostAsync<ManageAuthToken_Apply[], string>(_baseUrl + "ManageAuthToken/apply", new ManageAuthToken_Apply[] { applyToken });
+                var applyToken = new ManageAuthToken_Apply()
+                {
+                    ActivityId = saveToGoogleActivity.ActivityDTO.Id,
+                    AuthTokenId = Guid.Parse(saveToGoogleActivity.ActivityDTO.AuthToken.Id),
+                    IsMain = true
+                };
+                await baseHubIntTest.HttpPostAsync<ManageAuthToken_Apply[], string>(baseHubIntTest.GetHubApiBaseUrl() + "ManageAuthToken/apply", new ManageAuthToken_Apply[] { applyToken });
             }
 
             saveToGoogleActivity.ActivityDTO =
