@@ -9,6 +9,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using Data.States;
 using HealthMonitor.Utility;
 using HealthMonitorUtility;
 using Hub.Services;
@@ -159,7 +160,9 @@ namespace terminalDocuSignTests.Integration
         private void AssignAuthTokens(IUnitOfWork uow, Fr8AccountDO account, Guid tokenId)
         {
             var plan = uow.PlanRepository.GetPlanQueryUncached()
-                .SingleOrDefault(x => x.Fr8AccountId == account.Id && x.Name == "MonitorAllDocuSignEvents");
+                .SingleOrDefault(x => x.Fr8AccountId == account.Id
+                    && x.Name == "MonitorAllDocuSignEvents"
+                    && x.PlanState == PlanState.Active);
             if (plan == null)
             {
                 throw new ApplicationException("Could not find MonitorAllDocuSignEvents plan.");
