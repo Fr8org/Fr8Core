@@ -2,7 +2,7 @@
 
 module dockyard.controllers {
     'use strict';
-
+    declare var PusherActivityStreamer: any;
     class NotifierController {
         // $inject annotation.
         // It provides $injector with information about dependencies to be injected into constructor
@@ -20,24 +20,27 @@ module dockyard.controllers {
             private ngToast: any) {
 
             UserService.getCurrentUser().$promise.then(data => {
+                var pusher = new Pusher('123dd339500fed0ddd78');
+                var channel = pusher.subscribe('fr8pusher_' + data.emailAddress);
+                var streamer = new PusherActivityStreamer(channel, '#activity_stream_example');
                 
-                PusherNotifierService.bindEventToChannel('fr8pusher_' + data.emailAddress, 'fr8pusher_generic_success', (data: any) => {
-                    ngToast.create(data);
-                });
+                //PusherNotifierService.bindEventToChannel('fr8pusher_' + data.emailAddress, 'fr8pusher_generic_success', (data: any) => {
+                //    ngToast.create(data);
+                //});
 
-                PusherNotifierService.bindEventToChannel('fr8pusher_' + data.emailAddress, 'fr8pusher_activity_execution_info', (data: any) => {
+                //PusherNotifierService.bindEventToChannel('fr8pusher_' + data.emailAddress, 'fr8pusher_activity_execution_info', (data: any) => {
 
-                    var contentTemplate = "<label class='toast-activity-info'>Executing Activity: " + data.ActivityName + "</label><label class='toast-activity-info'>For Plan: " + data.PlanName + "</label> <label class='toast-activity-info'>Container: " + data.ContainerId +"</label>";
+                //    var contentTemplate = "<label class='toast-activity-info'>Executing Activity: " + data.ActivityName + "</label><label class='toast-activity-info'>For Plan: " + data.PlanName + "</label> <label class='toast-activity-info'>Container: " + data.ContainerId +"</label>";
 
-                    ngToast.create({
-                        className : "success",
-                        content : contentTemplate
-                    });
-                });
+                //    ngToast.create({
+                //        className : "success",
+                //        content : contentTemplate
+                //    });
+                //});
 
-                PusherNotifierService.bindEventToChannel('fr8pusher_' + data.emailAddress, 'fr8pusher_generic_failure', (data: any) => {
-                    ngToast.danger(data);
-                });
+                //PusherNotifierService.bindEventToChannel('fr8pusher_' + data.emailAddress, 'fr8pusher_generic_failure', (data: any) => {
+                //    ngToast.danger(data);
+                //});
             });
         }
     }
