@@ -8029,7 +8029,7 @@
             </summary>
             <value>Specifies whether the recipient is embedded or remote. \n\nIf the `clientUserId` property is not null then the recipient is embedded. Note that if the `ClientUserId` property is set and either `SignerMustHaveAccount` or `SignerMustLoginToSign` property of the account settings is set to  **true**, an error is generated on sending.ng. \n\nMaximum length: 100 characters.</value>
         </member>
-        <!-- Badly formed XML comment ignored for member "P:DocuSign.eSign.Model.Agent.EmbeddedRecipientStartURL" -->
+        <!-- Некорректный комментарий в формате XML для члена "P:DocuSign.eSign.Model.Agent.EmbeddedRecipientStartURL" проигнорирован -->
         <member name="P:DocuSign.eSign.Model.Agent.CustomFields">
             <summary>
             An optional array of strings that allows the sender to provide custom data about the recipient. This information is returned in the envelope status but otherwise not used by DocuSign. Each customField string can be a maximum of 100 characters.
@@ -9062,7 +9062,7 @@
             </summary>
             <value>Specifies whether the recipient is embedded or remote. \n\nIf the `clientUserId` property is not null then the recipient is embedded. Note that if the `ClientUserId` property is set and either `SignerMustHaveAccount` or `SignerMustLoginToSign` property of the account settings is set to  **true**, an error is generated on sending.ng. \n\nMaximum length: 100 characters.</value>
         </member>
-        <!-- Badly formed XML comment ignored for member "P:DocuSign.eSign.Model.CarbonCopy.EmbeddedRecipientStartURL" -->
+        <!-- Некорректный комментарий в формате XML для члена "P:DocuSign.eSign.Model.CarbonCopy.EmbeddedRecipientStartURL" проигнорирован -->
         <member name="P:DocuSign.eSign.Model.CarbonCopy.CustomFields">
             <summary>
             An optional array of strings that allows the sender to provide custom data about the recipient. This information is returned in the envelope status but otherwise not used by DocuSign. Each customField string can be a maximum of 100 characters.
@@ -9333,7 +9333,7 @@
             </summary>
             <value>Specifies whether the recipient is embedded or remote. \n\nIf the `clientUserId` property is not null then the recipient is embedded. Note that if the `ClientUserId` property is set and either `SignerMustHaveAccount` or `SignerMustLoginToSign` property of the account settings is set to  **true**, an error is generated on sending.ng. \n\nMaximum length: 100 characters.</value>
         </member>
-        <!-- Badly formed XML comment ignored for member "P:DocuSign.eSign.Model.CertifiedDelivery.EmbeddedRecipientStartURL" -->
+        <!-- Некорректный комментарий в формате XML для члена "P:DocuSign.eSign.Model.CertifiedDelivery.EmbeddedRecipientStartURL" проигнорирован -->
         <member name="P:DocuSign.eSign.Model.CertifiedDelivery.CustomFields">
             <summary>
             An optional array of strings that allows the sender to provide custom data about the recipient. This information is returned in the envelope status but otherwise not used by DocuSign. Each customField string can be a maximum of 100 characters.
@@ -11546,7 +11546,7 @@
             </summary>
             <value>Specifies whether the recipient is embedded or remote. \n\nIf the `clientUserId` property is not null then the recipient is embedded. Note that if the `ClientUserId` property is set and either `SignerMustHaveAccount` or `SignerMustLoginToSign` property of the account settings is set to  **true**, an error is generated on sending.ng. \n\nMaximum length: 100 characters.</value>
         </member>
-        <!-- Badly formed XML comment ignored for member "P:DocuSign.eSign.Model.Editor.EmbeddedRecipientStartURL" -->
+        <!-- Некорректный комментарий в формате XML для члена "P:DocuSign.eSign.Model.Editor.EmbeddedRecipientStartURL" проигнорирован -->
         <member name="P:DocuSign.eSign.Model.Editor.CustomFields">
             <summary>
             An optional array of strings that allows the sender to provide custom data about the recipient. This information is returned in the envelope status but otherwise not used by DocuSign. Each customField string can be a maximum of 100 characters.
@@ -17036,7 +17036,7 @@
             </summary>
             <value>Specifies whether the recipient is embedded or remote. \n\nIf the `clientUserId` property is not null then the recipient is embedded. Note that if the `ClientUserId` property is set and either `SignerMustHaveAccount` or `SignerMustLoginToSign` property of the account settings is set to  **true**, an error is generated on sending.ng. \n\nMaximum length: 100 characters.</value>
         </member>
-        <!-- Badly formed XML comment ignored for member "P:DocuSign.eSign.Model.InPersonSigner.EmbeddedRecipientStartURL" -->
+        <!-- Некорректный комментарий в формате XML для члена "P:DocuSign.eSign.Model.InPersonSigner.EmbeddedRecipientStartURL" проигнорирован -->
         <member name="P:DocuSign.eSign.Model.InPersonSigner.CustomFields">
             <summary>
             An optional array of strings that allows the sender to provide custom data about the recipient. This information is returned in the envelope status but otherwise not used by DocuSign. Each customField string can be a maximum of 100 characters.
@@ -17307,7 +17307,7 @@
             </summary>
             <value>Specifies whether the recipient is embedded or remote. \n\nIf the `clientUserId` property is not null then the recipient is embedded. Note that if the `ClientUserId` property is set and either `SignerMustHaveAccount` or `SignerMustLoginToSign` property of the account settings is set to  **true**, an error is generated on sending.ng. \n\nMaximum length: 100 characters.</value>
         </member>
-        <!-- Badly formed XML comment ignored for member "P:DocuSign.eSign.Model.Intermediary.EmbeddedRecipientStartURL" -->
+        <!-- Некорректный комментарий в формате XML для члена "P:DocuSign.eSign.Model.Intermediary.EmbeddedRecipientStartURL" проигнорирован -->
         <member name="P:DocuSign.eSign.Model.Intermediary.CustomFields">
             <summary>
             An optional array of strings that allows the sender to provide custom data about the recipient. This information is returned in the envelope status but otherwise not used by DocuSign. Each customField string can be a maximum of 100 characters.
@@ -20854,7 +20854,7 @@
             </summary>
             <value>Specifies whether the recipient is embedded or remote. \n\nIf the `clientUserId` property is not null then the recipient is embedded. Note that if the `ClientUserId` property is set and either `SignerMustHaveAccount` or `SignerMustLoginToSign` property of the account settings is set to  **true**, an error is generated on sending.ng. \n\nMaximum length: 100 characters.</value>
         </member>
-        <!-- Badly formed XML comment ignored for member "P:DocuSign.eSign.Model.Signer.EmbeddedRecipientStartURL" -->
+        <!-- Некорректный комментарий в формате XML для члена "P:DocuSign.eSign.Model.Signer.EmbeddedRecipientStartURL" проигнорирован -->
         <member name="P:DocuSign.eSign.Model.Signer.CustomFields">
             <summary>
             An optional array of strings that allows the sender to provide custom data about the recipient. This information is returned in the envelope status but otherwise not used by DocuSign. Each customField string can be a maximum of 100 characters.
@@ -22832,7 +22832,7 @@
             </summary>
             <value>Specifies whether the recipient is embedded or remote. \n\nIf the `clientUserId` property is not null then the recipient is embedded. Note that if the `ClientUserId` property is set and either `SignerMustHaveAccount` or `SignerMustLoginToSign` property of the account settings is set to  **true**, an error is generated on sending.ng. \n\nMaximum length: 100 characters.</value>
         </member>
-        <!-- Badly formed XML comment ignored for member "P:DocuSign.eSign.Model.TemplateRole.EmbeddedRecipientStartURL" -->
+        <!-- Некорректный комментарий в формате XML для члена "P:DocuSign.eSign.Model.TemplateRole.EmbeddedRecipientStartURL" проигнорирован -->
         <member name="P:DocuSign.eSign.Model.TemplateRole.DefaultRecipient">
             <summary>
             When set to **true**, this recipient is the default recipient and any tabs generated by the transformPdfFields option are mapped to this recipient.
