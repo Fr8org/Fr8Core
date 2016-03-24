@@ -942,9 +942,7 @@
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\UpstreamDataChooser.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\directives\controls\fixture_UpstreamDataChooser.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\jpattern.ts" />
-    <TypeScriptCompile Include="Scripts\tests\integration\ContainerControllerTests.ts" />
     <TypeScriptCompile Include="Scripts\lib\jpattern.d.ts" />
-    <TypeScriptCompile Include="Scripts\tests\integration\ContainerControllerTests.ts" />
     <Content Include="Views\AngularTemplate\AccountDetails.cshtml" />
     <Content Include="Views\AngularTemplate\AccountList.cshtml" />
     <Content Include="Views\AngularTemplate\ConfigurationControl.cshtml" />
@@ -1106,13 +1104,10 @@
     <TypeScriptCompile Include="Scripts\app\services\UIHelperService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\UserService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\WebServiceService.ts" />
-    <TypeScriptCompile Include="Scripts\tests\integration\ActionControllerTests.ts" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.matchmedia.addListener.js" />
     <Content Include="Scripts\respond.matchmedia.addListener.min.js" />
     <Content Include="Scripts\respond.min.js" />
-    <TypeScriptCompile Include="Scripts\tests\integration\DockyardAccountControllerTests\DockyardAccountControllerTests.ts" />
-    <TypeScriptCompile Include="Scripts\tests\integration\TerminalDocuSignTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\integration\PlanControllerTests.ts" />
     <Content Include="Scripts\tests\.gitignore" />
     <Content Include="Views\Shared\_AngularAppScripts.cshtml" />
