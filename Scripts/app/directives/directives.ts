@@ -190,6 +190,18 @@ app.directive('transferClickConfigurePane', () => {
     };
 });
 
+app.directive('delayedControl', ['$compile', ($compile: ng.ICompileService) => ({
+    scope: {
+        currentAction: '=',
+        field: '=',
+        plan: '='
+    },
+    template: '',
+    link: (scope: ng.IScope, elem: ng.IAugmentedJQuery, attr: ng.IAttributes) => {
+        elem.append("<configuration-control plan='plan' current-action='currentAction' field='field'></configuration-control>");
+        $compile(elem.contents())(scope);
+    }
+})]);
 
 interface IInputFocusAttributes extends ng.IAttributes {
     inputFocus: string;
