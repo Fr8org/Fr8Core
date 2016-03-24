@@ -140,7 +140,19 @@ namespace terminalIntegrationTests.Helpers
                 //};
                 //await HttpPostAsync<ManageAuthToken_Apply[], string>(_baseUrl + "ManageAuthToken/apply", new ManageAuthToken_Apply[] { applyToken });
             }
-            saveToGoogleActivity.ActivityDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(HealthMonitor_FixtureData.GoogleTerminalUrl() + "/activities/configure", saveToGoogleActivity);
+            try
+            {
+                saveToGoogleActivity.ActivityDTO =
+                    await
+                        HttpPostAsync<Fr8DataDTO, ActivityDTO>(
+                            NormalizeSchema(saveToGoogleActivity.ActivityDTO.ActivityTemplate.Terminal.Endpoint) +
+                            "/activities/configure", saveToGoogleActivity);
+
+            }
+            catch (Exception ex)
+            {
+                
+            }
             //saveToGoogleActivity = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure?", saveToGoogleActivity);
             initialcrateStorage = Crate.FromDto(saveToGoogleActivity.ActivityDTO.CrateStorage);
             Assert.True(initialcrateStorage.CratesOfType<StandardConfigurationControlsCM>().Any(), "Crate StandardConfigurationControlsCM is missing in API response.");
@@ -233,6 +245,22 @@ namespace terminalIntegrationTests.Helpers
                         String.Format("Terminal with name {0} and version {1} not found", terminalName, currentTerminalVersion));
                 }
                 return Mapper.Map<TerminalDO, TerminalDTO>(terminal);
+            }
+        }
+
+        public static string NormalizeSchema(string endpoint)
+        {
+            if (endpoint.StartsWith("http://"))
+            {
+                return endpoint;
+            }
+            else if (endpoint.StartsWith("https://"))
+            {
+                return endpoint.Replace("https://", "http://");
+            }
+            else
+            {
+                return "http://" + endpoint;
             }
         }
 

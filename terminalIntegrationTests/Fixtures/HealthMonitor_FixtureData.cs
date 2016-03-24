@@ -129,16 +129,12 @@ namespace terminalIntegrationTests.Fixtures
 
         public static AuthorizationTokenDTO Google_AuthToken()
         {
-            //return new AuthorizationTokenDTO
-            //{
-            //    Token =
-            //        @"{""AccessToken"":""ya29.qgKKAej9ABzUTVL9y04nEtlo0_Qlpk_dqIBLmg1k7tBo__Dgab0TWvSf-ZgjrjRmUA"",""RefreshToken"":""1/x3T7UajSlqgYQa2BeBozc_49Sa29zCqe-EEvi5eBfFF90RDknAdJa_sgfheVM0XT"",""Expires"":""2016-03-19T13:24:33.2805735+01:00""}"
-            //};
-
-            return new AuthorizationTokenDTO()
+            return new AuthorizationTokenDTO
             {
-                Token = @"{""AccessToken"":""ya29.OgLf-SvZTHJcdN9tIeNEjsuhIPR4b7KBoxNOuELd0T4qFYEa001kslf31Lme9OQCl6S5"",""RefreshToken"":""1/04H9hNCEo4vfX0nHHEdViZKz1CtesK8ByZ_TOikwVDc"",""Expires"":""2015-11-28T13:29:12.653075+05:00""}"
+                Token =
+                    @"{""AccessToken"":""ya29.qgKKAej9ABzUTVL9y04nEtlo0_Qlpk_dqIBLmg1k7tBo__Dgab0TWvSf-ZgjrjRmUA"",""RefreshToken"":""1/x3T7UajSlqgYQa2BeBozc_49Sa29zCqe-EEvi5eBfFF90RDknAdJa_sgfheVM0XT"",""Expires"":""2016-03-19T13:24:33.2805735+01:00""}"
             };
         }
+
     }
 }
