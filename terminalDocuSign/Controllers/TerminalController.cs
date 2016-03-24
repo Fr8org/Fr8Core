@@ -160,32 +160,34 @@ namespace terminalDocuSign.Controllers
                 NeedsAuthentication = true,
                 Terminal = terminal,
                 WebService = webService,
-                MinPaneWidth = 550,
+                MinPaneWidth = 500,
                 Tags = "HideChildren"
             };
 
-            //var searchDocusignHistory = new ActivityTemplateDTO
-            //{
-            //    Name = "Search_DocuSign_History",
-            //    Label = "Search DocuSign History",
-            //    Version = "1",
-            //    Category = ActivityCategory.Receivers,
-            //    NeedsAuthentication = true,
-            //    Terminal = terminal,
-            //    WebService = webService,
-            //    MinPaneWidth = 380
-            //};
+            var searchDocusignHistory = new ActivityTemplateDTO
+            {
+                Name = "Search_DocuSign_History",
+                Label = "Search DocuSign History",
+                Version = "1",
+                Category = ActivityCategory.Receivers,
+                NeedsAuthentication = true,
+                Terminal = terminal,
+                WebService = webService,
+                MinPaneWidth = 380,
+                Tags = "internal"
+            };
 
-            //var archiveDocusignTemplate = new ActivityTemplateDTO
-            //{
-            //    Name = "Archive_DocuSign_Template",
-            //    Label = "Archive DocuSign Template",
-            //    Version = "1",
-            //    NeedsAuthentication = true,
-            //    Category = ActivityCategory.Solution,
-            //    WebService = webService,
-            //    Terminal = terminal
-            //};
+            var archiveDocusignTemplate = new ActivityTemplateDTO
+            {
+                Name = "Archive_DocuSign_Template",
+                Label = "Archive DocuSign Template",
+                Version = "1",
+                NeedsAuthentication = true,
+                Category = ActivityCategory.Solution,
+                WebService = webService,
+                Terminal = terminal,
+                Tags = "internal"
+            };
 
 
             var actionList = new List<ActivityTemplateDTO>()

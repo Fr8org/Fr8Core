@@ -36,6 +36,8 @@ namespace terminalFr8Core.Actions
         private const string ImmediatelyBelowValue = "immediately_below";
 
         private const string ExtractedFieldsCrateLabel = "ExtractedFields";
+
+        private const string AvailableCellsCrateLabel = "AvailableCells";
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
             if (CrateManager.IsStorageEmpty(curActivityDO))
@@ -100,49 +102,80 @@ namespace terminalFr8Core.Actions
 
             RemoveErrorText(curActivityDO);
 
+            
+
             var table = selectedCrate.Content;
-
-            var tableFields = table.Table.SelectMany(c => c.Row).Select(r => r.Cell).Select(c => new FieldDTO(c.Value, c.Value)).Where(c => !string.IsNullOrEmpty(c.Value));
-            var cellChooserSource = CrateManager.CreateDesignTimeFieldsCrate("Table Fields", tableFields.ToArray());
-
+            double temp;
+            var tableFields = table.Table.SelectMany(c => c.Row).Select(r => r.Cell)
+                .Select(c => new FieldDTO(c.Value, c.Value))
+                .Where(c => !string.IsNullOrEmpty(c.Value) && !double.TryParse(c.Value, out temp));
+            
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                crateStorage.Add(cellChooserSource);
-            }
-
-
-            var chosenCell = configControls.FindByName<DropDownList>("cellChooser");
-            var position = configControls.FindByName<DropDownList>("extractValueFrom");
-
-            if (
-                !string.IsNullOrEmpty(chosenCell.selectedKey) && !string.IsNullOrEmpty(chosenCell.Value)
-                &&
-                !string.IsNullOrEmpty(position.selectedKey) && !string.IsNullOrEmpty(position.Value)
-                )
-            {
-                //let's publish our data - that this will be available during runtime
-                using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+                var tempChosenCellList = GetConfigurationControls(crateStorage).FindByName<ControlList>("extractor_list");
+                //TODO do this with a more efficient way
+                //all dropdowns should use same data
+                var listItems = tableFields.Select(c => new ListItem { Key = c.Key, Value = c.Value }).ToList();
+                foreach (var cGroup in tempChosenCellList.ControlGroups)
                 {
-                    var extractedFields = new List<FieldDTO>();
-                    var key = "";
-                    if (position.Value == ImmediatelyBelowValue)
-                    {
-                        key = "Value " + ImmediatelyBelowKey + " of " + chosenCell.selectedKey;
-                    }
-                    else
-                    {
-                        key = "Value " + ImmediatelyToRightKey + " of " + chosenCell.selectedKey;
-                    }
-
-                    extractedFields.Add(new FieldDTO(key, chosenCell.selectedKey));
-                    crateStorage.RemoveByLabel(ExtractedFieldsCrateLabel);
-                    var crate = Crate.FromContent(ExtractedFieldsCrateLabel, new FieldDescriptionsCM() { Fields = extractedFields });
-                    crate.Availability = AvailabilityType.RunTime;
-                    crateStorage.Add(crate);
+                    var chosenCellDd = (DropDownList)cGroup.First();
+                    chosenCellDd.ListItems = listItems;
                 }
+                ((DropDownList) tempChosenCellList.TemplateContainer.Template.First()).ListItems = listItems;
+                /*
+                crateStorage.RemoveByLabel(AvailableCellsCrateLabel);
+                crateStorage.Add(CrateManager.CreateDesignTimeFieldsCrate(AvailableCellsCrateLabel, AvailabilityType.Configuration, tableFields.ToArray()));
+                */
             }
+
+
+            var chosenCellList = configControls.FindByName<ControlList>("extractor_list");
+
+
+            //let's publish our data - that this will be available during runtime
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            {
+                var extractedFields = new List<FieldDTO>();
+                foreach (var cGroup in chosenCellList.ControlGroups)
+                {
+                    var chosenCell = (DropDownList)cGroup.FirstOrDefault(c => c.Name=="cellChooser");
+                    var position = (DropDownList)cGroup.FirstOrDefault(c => c.Name == "extractValueFrom");
+                    if (AreValuesSelected(chosenCell, position))
+                    {
+                        extractedFields.Add(GetChosenField(chosenCell, position));
+                    }
+                }
+
+            crateStorage.RemoveByLabel(ExtractedFieldsCrateLabel);
+                var crate = Crate.FromContent(ExtractedFieldsCrateLabel, new FieldDescriptionsCM() { Fields = extractedFields });
+                crate.Availability = AvailabilityType.RunTime;
+                crateStorage.Add(crate);
+            }
+            
 
             return curActivityDO;
+        }
+
+        private bool AreValuesSelected(DropDownList chosenCell, DropDownList position)
+        {
+            return !string.IsNullOrEmpty(chosenCell.selectedKey) && !string.IsNullOrEmpty(chosenCell.Value)
+                   &&
+                   !string.IsNullOrEmpty(position.selectedKey) && !string.IsNullOrEmpty(position.Value);
+        }
+
+        private FieldDTO GetChosenField(DropDownList chosenCell, DropDownList position)
+        {
+            var key = "";
+            if (position.Value == ImmediatelyBelowValue)
+            {
+                key = "Value " + ImmediatelyBelowKey + " of " + chosenCell.selectedKey;
+            }
+            else
+            {
+                key = "Value " + ImmediatelyToRightKey + " of " + chosenCell.selectedKey;
+            }
+
+            return new FieldDTO(key, chosenCell.selectedKey);
         }
 
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
@@ -165,27 +198,53 @@ namespace terminalFr8Core.Actions
                 return Error(curPayloadDTO, $"Selected crate with Manifest {selectedCrateDescription.ManifestType} and label {selectedCrateDescription.Label} was not found on payload", ActivityErrorCode.PAYLOAD_DATA_MISSING);
             }
 
-            var chosenCell = configControls.FindByName<DropDownList>("cellChooser");
-            if (string.IsNullOrEmpty(chosenCell.selectedKey) || string.IsNullOrEmpty(chosenCell.Value))
+            
+            using (var updater = CrateManager.GetUpdatableStorage(curPayloadDTO))
             {
-                return Error(curPayloadDTO, "No cell was selected on design time", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                var extractedFieldList = new List<FieldDTO>();
+                var chosenCellList = configControls.FindByName<ControlList>("extractor_list");
+                foreach (var cGroup in chosenCellList.ControlGroups)
+                {
+                    var chosenCell = (DropDownList)cGroup.FirstOrDefault(c => c.Name == "cellChooser");
+                    var position = (DropDownList)cGroup.FirstOrDefault(c => c.Name == "extractValueFrom");
+
+                    if (!AreValuesSelected(chosenCell, position))
+                    {
+                        return Error(curPayloadDTO, "No position was selected on design time", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                    }
+
+                    var table = crateToProcess.Get<StandardTableDataCM>();
+
+                    FieldDTO field = ExtractFieldFromTable(table, chosenCell, position);
+                    if (field == null)
+                    {
+                        //hmm we couldn't find what we were looking for
+                        return Error(curPayloadDTO, "Unable to find specified cell in StandardTableCM", ActivityErrorCode.PAYLOAD_DATA_INVALID);
+                    }
+                    extractedFieldList.Add(field);
+                }
+
+
+                updater.Add(Crate.FromContent("Extracted Field From Table", new StandardPayloadDataCM
+                {
+                    PayloadObjects = new List<PayloadObjectDTO>() { new PayloadObjectDTO()
+                    {
+                        PayloadObject = extractedFieldList
+                    } }
+                }));
             }
 
-            var position = configControls.FindByName<DropDownList>("extractValueFrom");
-            if (string.IsNullOrEmpty(position.selectedKey) || string.IsNullOrEmpty(position.Value))
-            {
-                return Error(curPayloadDTO, "No position was selected on design time", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
-            }
+            return Success(curPayloadDTO);
+        }
 
-            var table = crateToProcess.Get<StandardTableDataCM>();
-
-            FieldDTO field = position.Value == ImmediatelyBelowValue ? 
+        private FieldDTO ExtractFieldFromTable(StandardTableDataCM table, DropDownList chosenCell, DropDownList position)
+        {
+            FieldDTO field = position.Value == ImmediatelyBelowValue ?
                 GetValueBelowSelectedCell(table, chosenCell.Value) : GetValueRightToSelectedCell(table, chosenCell.Value);
 
             if (field == null)
             {
-                //hmm we couldn't find what we were looking for
-                return Error(curPayloadDTO, "Unable to find specified cell in StandardTableCM", ActivityErrorCode.PAYLOAD_DATA_INVALID);
+                return null;
             }
 
             if (position.Value == ImmediatelyBelowValue)
@@ -197,19 +256,7 @@ namespace terminalFr8Core.Actions
                 field.Key = "Value " + ImmediatelyToRightKey + " of " + chosenCell.Value;
             }
 
-
-            using (var updater = CrateManager.GetUpdatableStorage(curPayloadDTO))
-            {
-                updater.Add(Crate.FromContent("Extracted Field From Table", new StandardPayloadDataCM
-                {
-                    PayloadObjects = new List<PayloadObjectDTO>() { new PayloadObjectDTO()
-                    {
-                        PayloadObject = new List<FieldDTO>() { field }
-                    } }
-                }));
-            }
-
-            return Success(curPayloadDTO);
+            return field;
         }
 
         private FieldDTO GetValueBelowSelectedCell(StandardTableDataCM table, string selectedCellValue)
@@ -305,20 +352,21 @@ namespace terminalFr8Core.Actions
         {
             var crateChooser = await GenerateCrateChooser(curActivityDO, "TableChooser", "Select Upstream Data", true, true, true);
             //this cell's list items will be filled on followup configuration
-            var cellDd = new DropDownList()
+            var cellDdTemplate =  new DropDownList()
             {
                 Label = "Find the cell labelled",
                 Name = "cellChooser",
                 Required = true,
-                Source = new FieldSourceDTO
+                Source = new FieldSourceDTO()
                 {
                     RequestUpstream = false,
                     ManifestType = CrateManifestTypes.StandardDesignTimeFields,
-                    Label = "Table Fields"
+                    Label = AvailableCellsCrateLabel
                 },
-                Events = new List<ControlEvent>() { ControlEvent.RequestConfig  }
+                Events = new List<ControlEvent> { ControlEvent.RequestConfig }
             };
-            var extractValueFromDd = new DropDownList()
+
+            var extractValueFromDdTemplate = new DropDownList()
             {
                 Label = "and extract the value",
                 Name = "extractValueFrom",
@@ -328,9 +376,19 @@ namespace terminalFr8Core.Actions
                     new ListItem { Key = ImmediatelyToRightKey, Value = ImmediatelyToRightValue},
                     new ListItem { Key = ImmediatelyBelowKey, Value = ImmediatelyBelowValue }
                 },
-                Events = new List<ControlEvent>() { ControlEvent.RequestConfig }
+                Events = new List<ControlEvent> { ControlEvent.RequestConfig }
             };
-            return PackControlsCrate(crateChooser, cellDd, extractValueFromDd);
+
+            var controlList = new ControlList(new ListTemplate() { Name = "ddlb_pair", Template = { cellDdTemplate, extractValueFromDdTemplate } })
+            {
+                AddControlGroupButtonText = "Add Cell Extractor",
+                Name = "extractor_list",
+                Label = "Select fields to extract",
+                NoDataMessage = "No field is selected",
+                Events = new List<ControlEvent> { ControlEvent.RequestConfig }
+            };
+
+            return PackControlsCrate(crateChooser, controlList);
         }
     }
 }

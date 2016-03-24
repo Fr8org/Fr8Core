@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Data.Crates;
 using Excel;
-using Newtonsoft.Json;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
@@ -16,7 +15,7 @@ using Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
 
-namespace terminalExcel.Infrastructure
+namespace terminalUtilities.Excel
 {
     public static class ExcelUtils
     {
@@ -150,7 +149,7 @@ namespace terminalExcel.Infrastructure
             return excelRows;
         }
 
-        public static StandardTableDataCM GetTableData(string selectedFilePath)
+        public static StandardTableDataCM GetTableData(string selectedFilePath, bool isFirstRowAsColumnNames = true)
         {
             var ext = Path.GetExtension(selectedFilePath);
             var crateManager = ObjectFactory.GetInstance<ICrateManager>();
@@ -161,7 +160,7 @@ namespace terminalExcel.Infrastructure
             var headersArray = GetColumnHeaders(fileAsByteArray, ext);
 
             // Fetch rows in Excel file
-            var rowsDictionary = GetTabularData(fileAsByteArray, ext);
+            var rowsDictionary = GetTabularData(fileAsByteArray, ext, isFirstRowAsColumnNames);
 
             Crate curExcelPayloadRowsCrateDTO = null;
 

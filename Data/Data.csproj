@@ -343,12 +343,15 @@
     <Compile Include="Interfaces\DataTransferObjects\ControlDefinitionDTOConverter.cs" />
     <Compile Include="Interfaces\ITrackingChangesRepository.cs" />
     <Compile Include="Interfaces\Manifests\CrateDescriptionCM.cs" />
+    <Compile Include="Helpers\FieldMemberAccessor.cs" />
+    <Compile Include="Helpers\IMemberAccessor.cs" />
     <Compile Include="Interfaces\Manifests\ManifestDescriptionCM.cs" />
     <Compile Include="Interfaces\Manifests\ChartOfAccountsCM.cs" />
     <Compile Include="Interfaces\Manifests\CrateManifestTypes.cs" />
     <Compile Include="Interfaces\Manifests\DocuSignTemplateCM.cs" />
     <Compile Include="Interfaces\Manifests\DocuSignRecipientCM.cs" />
     <Compile Include="Interfaces\Manifests\MtPrimaryKeyAttribute.cs" />
+    <Compile Include="Helpers\PropertyMemberAccessor.cs" />
     <Compile Include="Interfaces\Manifests\StandardAccountingTransactionCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFileListCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFr8PlansCM .cs" />
@@ -647,6 +650,10 @@
     <Compile Include="Migrations\201603170621005_ChangeRouteToPlan.cs" />
     <Compile Include="Migrations\201603170621005_ChangeRouteToPlan.Designer.cs">
       <DependentUpon>201603170621005_ChangeRouteToPlan.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201603191417514_Renamed_ReceiveGoogleForm_To_MonitorFormResponses.cs" />
+    <Compile Include="Migrations\201603191417514_Renamed_ReceiveGoogleForm_To_MonitorFormResponses.Designer.cs">
+      <DependentUpon>201603191417514_Renamed_ReceiveGoogleForm_To_MonitorFormResponses.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -1132,6 +1139,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201603170621005_ChangeRouteToPlan.resx">
       <DependentUpon>201603170621005_ChangeRouteToPlan.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201603191417514_Renamed_ReceiveGoogleForm_To_MonitorFormResponses.resx">
+      <DependentUpon>201603191417514_Renamed_ReceiveGoogleForm_To_MonitorFormResponses.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

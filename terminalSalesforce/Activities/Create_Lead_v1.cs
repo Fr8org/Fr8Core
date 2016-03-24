@@ -54,7 +54,7 @@ namespace terminalSalesforce.Actions
 
                 AddTextSourceControlForDTO<LeadDTO>(
                     crateStorage,
-                    "Upstream Terminal-Provided Fields",
+                    "",
                     addRequestConfigEvent: true,
                     requestUpstream: true
                 );
@@ -108,7 +108,7 @@ namespace terminalSalesforce.Actions
                 return NeedsAuthenticationError(payloadCrates);
             }
 
-            var lead = _salesforce.CreateSalesforceDTO<LeadDTO>(curActivityDO, payloadCrates, ExtractSpecificOrUpstreamValue);
+            var lead = _salesforce.CreateSalesforceDTO<LeadDTO>(curActivityDO, payloadCrates);
             var result = await _salesforce.CreateObject(lead, "Lead", authTokenDO);
 
             if (!string.IsNullOrEmpty(result))
