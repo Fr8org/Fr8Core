@@ -36,7 +36,7 @@ namespace TerminalBase.Infrastructure
         Task<PlanDTO> CreatePlan(PlanEmptyDTO planDTO, string userId);
         Task RunPlan(Guid planId, List<CrateDTO> payload, string userId);
         Task<PlanDO> ActivatePlan(PlanDO planDO, string userId);
-        Task<IEnumerable<PlanDTO>> GetPlansByName(string name, string userId);
+        Task<IEnumerable<PlanDTO>> GetPlansByName(string name, string userId, PlanVisibility visibility = PlanVisibility.Standard);
         Task<FileDO> SaveFile(string name, Stream stream, string userId);
         Task<Stream> DownloadFile(int fileId, string userId);
         Task<IEnumerable<FileDTO>> GetFiles(string userId);
