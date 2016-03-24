@@ -199,5 +199,12 @@
     <div ng-if='field.type == "ControlContainer"'>
         <control-container field="field" current-action="currentAction" change="onChange" plan="plan"></control-container>
     </div>
-    <!-- Add more configuration field templates below -->
+
+    <!-- ControlList -->
+    <div ng-if='field.type == "ControlList"'>
+        <control-list field="field" current-action="currentAction" change="onChange" plan="plan"></control-list>
+    </div>
+
+
+<!-- Add more configuration field templates below -->
 </div>

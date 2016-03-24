@@ -40,7 +40,7 @@ namespace HealthMonitor.Utility
             _initialized = true;
         }
 
-        public static void EmailReceived(string expectedFromAddr, string expectedSubject)
+        public static void EmailReceived(string expectedFromAddr, string expectedSubject, bool deleteMailOnSuccess = false)
         {
             if (!_initialized)
             {
@@ -58,8 +58,9 @@ namespace HealthMonitor.Utility
                 DateTime timeToCompare = methodCalledTime; // First time use method call time to compare time
                 while (DateTime.UtcNow < methodCalledTime + _timeout)
                 {
-                    if (CheckEmail(client, expectedFromAddr, expectedSubject, timeToCompare))
+                    if (CheckEmail(client, expectedFromAddr, expectedSubject, timeToCompare, deleteMailOnSuccess))
                     {
+                        client.Disconnect();
                         return;
                     }
                     System.Threading.Thread.Sleep(5000);
@@ -72,7 +73,7 @@ namespace HealthMonitor.Utility
             }
         }
 
-        private static bool CheckEmail(Pop3Client client, string expectedFromAddr, string expectedSubject, DateTime startTime)
+        private static bool CheckEmail(Pop3Client client, string expectedFromAddr, string expectedSubject, DateTime startTime, bool deleteMailOnSuccess = false)
         {
             MessageHeader msg = null;
             int messageCount = client.GetMessageCount();
@@ -83,6 +84,10 @@ namespace HealthMonitor.Utility
                 {
                     if (ValidateConditions(expectedFromAddr, expectedSubject, msg))
                     {
+                        if(deleteMailOnSuccess)
+                        {
+                            client.DeleteMessage(i);
+                        }
                         return true;
                     }
                 }

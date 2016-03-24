@@ -176,8 +176,18 @@
         }
 
     }
-    
-    
+
+    export class ListTemplate {
+        template: Array<ControlDefinitionDTO>;
+        name: string;
+    }
+
+    export class ControlList extends ControlDefinitionDTO {
+        controlGroups: Array<Array<ControlDefinitionDTO>>;
+        templateContainer: ListTemplate;
+        addControlGroupButtonText: string;
+        noDataMessage: string;
+    }
 
     export class ControlContainer extends ControlDefinitionDTO {
         metaDescriptions: Array<ControlMetaDescriptionDTO>;
