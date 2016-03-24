@@ -115,10 +115,25 @@ namespace TerminalBase.BaseClasses
                     default:
                         throw new ArgumentOutOfRangeException($"Unsupported configuration type: {configurationType}");
                 }
+                PublishRuntimeAvailableCrate(configurationType);
             }
 
             return curActivityDO;
         }
+
+        private const string RuntimeCrateDescriptionsCrateLabel = "Runtime Available Crates";
+
+        private void PublishRuntimeAvailableCrate(ConfigurationRequestType configurationType)
+        {
+            CurrentActivityStorage.RemoveByLabel(RuntimeCrateDescriptionsCrateLabel);
+            var descriptions = GetRuntimeAvailableCrateDescriptions(configurationType)?.ToArray();
+            if (descriptions != null && descriptions.Length > 0)
+            {
+                CurrentActivityStorage.Add(Crate<CrateDescriptionCM>.FromContent(RuntimeCrateDescriptionsCrateLabel, new CrateDescriptionCM(descriptions), AvailabilityType.Always));
+            }
+        }
+
+        protected abstract IEnumerable<CrateDescriptionDTO> GetRuntimeAvailableCrateDescriptions(ConfigurationRequestType configurationType);
 
         /**********************************************************************************/
 
@@ -261,7 +276,7 @@ namespace TerminalBase.BaseClasses
 
                     Success();
                 }
-                catch (ActionExecutionException ex)
+                catch (ActivityExecutionException ex)
                 {
                     Error(ex.Message, ex.ErrorCode);
                 }
