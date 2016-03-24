@@ -122,7 +122,7 @@ namespace terminalGoogleTests.Integration
 
             #region terminalGoogle Activities
 
-            public async Task<ActivityDTO> AddAndConfigure_SaveToGoogleSheet(PlanDTO plan, int ordering, string manufestTypeToAssert, string crateDescriptionLabelToAssert, string newSpeadsheetName)
+            public async Task<ActivityDTO> AddAndConfigure_SaveToGoogleSheet(PlanDTO plan, int ordering, string manufestTypeToAssert, string crateDescriptionLabelToAssert, string newSpeadsheetName, Guid authToken)
             {
                 var saveToGoogleActivity = HealthMonitor_FixtureData.Save_To_Google_Sheet_v1_InitialConfiguration_Fr8DataDTO();
                 saveToGoogleActivity.ActivityDTO.ActivityTemplate.Terminal = GetTerminal("terminalGoogle", 1);
@@ -146,16 +146,17 @@ namespace terminalGoogleTests.Integration
                 {
                     saveToGoogleActivity.ActivityDTO.AuthToken = HealthMonitor_FixtureData.NewGoogle_AuthToken();
 
-                    //var applyToken = new ManageAuthToken_Apply()
-                    //{
-                    //    ActivityId = saveToGoogleActivity.ActivityDTO.Id,
-                    //    AuthTokenId = Guid.Parse(saveToGoogleActivity.ActivityDTO.AuthToken.Id),
-                    //    IsMain = true
-                    //};
-                    //await baseHubIntTest.HttpPostAsync<ManageAuthToken_Apply[], string>(baseHubIntTest.GetHubApiBaseUrl() + "ManageAuthToken/apply", new ManageAuthToken_Apply[] { applyToken });
+                    var applyToken = new ManageAuthToken_Apply()
+                    {
+                        ActivityId = saveToGoogleActivity.ActivityDTO.Id,
+                        AuthTokenId = authToken,
+                        IsMain = true
+                    };
+                    await baseHubIntTest.HttpPostAsync<ManageAuthToken_Apply[], string>(baseHubIntTest.GetHubApiBaseUrl() + "ManageAuthToken/apply", new ManageAuthToken_Apply[] { applyToken });
+                    saveToGoogleActivity.ActivityDTO = await baseHubIntTest.HttpPostAsync<ActivityDTO, ActivityDTO>(baseHubIntTest.GetHubApiBaseUrl() + "activities/configure?", saveToGoogleActivity.ActivityDTO);
                 }
 
-            initialcrateStorage = baseHubIntTest.Crate.FromDto(saveToGoogleActivity.ActivityDTO.CrateStorage);
+                initialcrateStorage = baseHubIntTest.Crate.FromDto(saveToGoogleActivity.ActivityDTO.CrateStorage);
                 Assert.True(initialcrateStorage.CratesOfType<StandardConfigurationControlsCM>().Any(), "Crate StandardConfigurationControlsCM is missing in API response.");
 
                 var controlsCrate = initialcrateStorage.CratesOfType<StandardConfigurationControlsCM>().First();

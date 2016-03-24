@@ -51,10 +51,12 @@ namespace terminalGoogleTests.Unit
         {
             return new GoogleAuthDTO
             {
-                AccessToken = "ya29.qgKKAej9ABzUTVL9y04nEtlo0_Qlpk_dqIBLmg1k7tBo__Dgab0TWvSf-ZgjrjRmUA",
+                //AccessToken = "ya29.qgKKAej9ABzUTVL9y04nEtlo0_Qlpk_dqIBLmg1k7tBo__Dgab0TWvSf-ZgjrjRmUA",
+                //Expires = new DateTime(2017,03,19,0,0,0),
+                //RefreshToken = "1/x3T7UajSlqgYQa2BeBozc_49Sa29zCqe-EEvi5eBfFF90RDknAdJa_sgfheVM0XT"
+                AccessToken = "ya29.OgLf-SvZTHJcdN9tIeNEjsuhIPR4b7KBoxNOuELd0T4qFYEa001kslf31Lme9OQCl6S5",
                 Expires = new DateTime(2017,03,19,0,0,0),
-                RefreshToken = "1/x3T7UajSlqgYQa2BeBozc_49Sa29zCqe-EEvi5eBfFF90RDknAdJa_sgfheVM0XT"
-
+                RefreshToken = "1/04H9hNCEo4vfX0nHHEdViZKz1CtesK8ByZ_TOikwVDc"
             };
         }
 
@@ -396,7 +398,7 @@ namespace terminalGoogleTests.Unit
             {
                 Id = Guid.NewGuid(),
                 Label = "Save To Google Sheet",
-                AuthToken = NewGoogle_AuthToken(),
+                AuthToken = Google_AuthToken1(),
                 ActivityTemplate = activityTemplate
             };
 

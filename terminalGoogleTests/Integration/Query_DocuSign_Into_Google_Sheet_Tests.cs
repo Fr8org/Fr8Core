@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Interfaces.DataTransferObjects;
 using HealthMonitor.Utility;
 using NUnit.Framework;
 using StructureMap;
@@ -23,11 +25,11 @@ namespace terminalGoogleTests.Integration
         [Test, Category("Integration.terminalGoogle")]
         public async Task Query_DocuSign_Into_Google_Sheet_End_To_End()
         {
-            //Debugger.Launch();
+            Debugger.Launch();
 
             var activityConfigurator = new ActivityConfigurator(this);
             await RevokeTokens();
-
+            var googleAuthTokenId = await ExtractGoogleDefaultToken();
             //create a new envelope that will be put into drafts.
 
             //create a new plan
@@ -39,7 +41,7 @@ namespace terminalGoogleTests.Integration
             //login to google
             //configure a save_to google activity
             var newSpeadsheetName = Guid.NewGuid().ToString();
-            await activityConfigurator.AddAndConfigure_SaveToGoogleSheet(thePlan, 2, "Docusign Envelope", "DocuSign Envelope Data", newSpeadsheetName);
+            await activityConfigurator.AddAndConfigure_SaveToGoogleSheet(thePlan, 2, "Docusign Envelope", "DocuSign Envelope Data", newSpeadsheetName, googleAuthTokenId);
 
             //run the plan
             await HttpPostAsync<string, string>(_baseUrl + "plans/run?planId=" + thePlan.Plan.Id, null);
@@ -58,6 +60,23 @@ namespace terminalGoogleTests.Integration
 
             //cleanup. erase the sheet
             Assert.Equals(12, dataRows.Count());
+        }
+
+        private async Task<Guid> ExtractGoogleDefaultToken()
+        {
+            var tokens = await HttpGetAsync<IEnumerable<ManageAuthToken_Terminal>>(
+                _baseUrl + "manageauthtoken/"
+            );
+
+            Assert.NotNull(tokens);
+
+            var terminal = tokens.FirstOrDefault(x => x.Name == "terminalGoogle");
+            Assert.NotNull(terminal);
+
+            var token = terminal.AuthTokens.FirstOrDefault(x => x.IsMain);
+            Assert.NotNull(token);
+
+            return token.Id;
         }
 
     }
