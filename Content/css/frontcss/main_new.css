@@ -325,13 +325,44 @@ header#site-header:after {
         padding-bottom: 0.5rem;
         border-bottom-color: #697882;
     }
+
 /*Company Page Style*/
-.company-h1 {
-    padding: 0 0 1rem;
-    margin: 0;
-    font-size: 1.8rem;
-    color: #4db3a4;
+
+.company {
+    font-family: 'Didact Gothic', sans-serif;
+    font-size: 16px;
+    color: #444C58;
+    line-height: 1.6;
 }
+
+.company h2 {
+    font-family: 'Francois One', sans-serif;
+    font-weight: 200;
+    text-transform: uppercase;
+}
+
+/* Counteracts Material styles */
+.company p {
+    letter-spacing: inherit;
+    line-height: inherit;
+    font-weight: inherit;
+    padding: inherit;
+}
+
+.company .base-block-white {
+    padding: 2em;
+}
+
+.company h2 {
+  font-size: 3em;
+  color: #26A599;
+}
+
+.company .base-block-white p {
+  font-size: 1.7em;
+  color: #444C58;
+}
+
 /*Vision Section*/
 #vision .inner-bg {
     background-image: url('/Content/img/backgrounds/contact-bg.jpg');
@@ -343,15 +374,6 @@ header#site-header:after {
     text-align: center;
 }
 
-#vision .base-block-white {
-    padding: 2rem;
-    font-size: 1.25rem;
-}
-
-    #vision .base-block-white .title-block {
-        margin-bottom: 2rem;
-        font-size: 1.5rem;
-    }
 /*Team Section*/
 .bio {
     font-size: 0.75em;
@@ -409,15 +431,6 @@ header#site-header:after {
     text-align: center;
 }
 
-#location .base-block-white {
-    padding: 2rem;
-    font-size: 1.25rem;
-}
-
-    #location .base-block-white.title-block {
-        margin-bottom: 2rem;
-        font-size: 1.5rem;
-    }
 /*Hiring Section*/
 #hiring .inner-bg {
     background-image: url('/Content/img/backgrounds/contact-bg.jpg');
@@ -438,6 +451,7 @@ header#site-header:after {
         margin-bottom: 2rem;
         font-size: 1.5rem;
     }
+
 /* Contact Page Styles*/
 #contacts .inner-bg {
     background-image: url('/Content/img/backgrounds/contact-bg.jpg');
