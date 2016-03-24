@@ -46,9 +46,6 @@ namespace terminalIntegrationTests
         [Test]
         public async Task Query_DocuSign_Into_Google_Sheet_End_To_End()
         {
-            //
-            // SetUp
-            //
             var activityConfigurator = new ActivityConfigurator();
             await RevokeTokens();
             
@@ -64,7 +61,7 @@ namespace terminalIntegrationTests
             
             //login to google
             //configure a save_to google activity
-            await activityConfigurator.AddAndConfigure_SaveToGoogleSheet(thePlan,2, "DocuSign Envelope", "DocuSign Envelope Data");
+            await activityConfigurator.AddAndConfigure_SaveToGoogleSheet(thePlan,2, "Docusign Envelope", "DocuSign Envelope Data");
 
             //create a new empty sheet inside google
             //create an new envelope with statuts draft /use handle template data inside the Send DocuSign Envelope activity
