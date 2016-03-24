@@ -54,7 +54,7 @@ namespace terminalGoogle.Services
 
         public Task<IEnumerable<TableRowDTO>> GetDataAsync(string spreadsheetUri, string worksheetUri, GoogleAuthDTO authDTO)
         {
-            return Task.Run(() => EnumerateDataRows(spreadsheetUri, worksheetUri, authDTO));
+            return Task.Run(() => EnumerateDataRows(spreadsheetUri, worksheetUri, authDTO).ToArray() as IEnumerable<TableRowDTO>);
         }
 
         public Dictionary<string, string> EnumerateSpreadsheetsUris(GoogleAuthDTO authDTO)

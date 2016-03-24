@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Constants;
 using Data.Control;
 using Data.Crates;
 using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
@@ -39,6 +41,11 @@ namespace terminaBaselTests.BaseClasses
         public ActivityOverrideCheckMock(bool isAuthenticationRequired)
             : base(isAuthenticationRequired)
         {
+        }
+
+        protected override IEnumerable<CrateDescriptionDTO> GetRuntimeAvailableCrateDescriptions(ConfigurationRequestType configurationType)
+        {
+            yield break;
         }
 
         protected override StandardConfigurationControlsCM CrateConfigurationControls()
@@ -158,6 +165,11 @@ namespace terminaBaselTests.BaseClasses
             }
         }
 
+        protected override IEnumerable<CrateDescriptionDTO> GetRuntimeAvailableCrateDescriptions(ConfigurationRequestType configurationType)
+        {
+            yield break;
+        }
+
         public Action<ActivityUi> OnConfigure;
         public Action<ActivityUi> OnInitialize;
 
@@ -197,6 +209,11 @@ namespace terminaBaselTests.BaseClasses
         public ActivityWithUiBuilder()
             :base(false)
         {
+        }
+        
+        protected override IEnumerable<CrateDescriptionDTO> GetRuntimeAvailableCrateDescriptions(ConfigurationRequestType configurationType)
+        {
+            yield break;
         }
 
         protected override Task Initialize()

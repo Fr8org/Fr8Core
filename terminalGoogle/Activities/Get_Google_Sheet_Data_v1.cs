@@ -50,7 +50,6 @@ namespace terminalGoogle.Actions
                 ActivityDescription = new TextBlock
                 {
                     Name = nameof(ActivityDescription),
-                    CssClass = "well well-lg TextBlockClass"
                 };
                 Controls.Add(ActivityDescription);
                 UpdateDescription();
@@ -86,6 +85,22 @@ namespace terminalGoogle.Actions
             private void UpdateDescription()
             {
                 ActivityDescription.Value = $"This action will try to extract a table of rows from the {(WorksheetList == null ? "first" : "specified")} worksheet of the selected spreadsheet. The rows should have a header row";
+            }
+
+            public override void SyncWith(StandardConfigurationControlsCM configurationControls)
+            {
+                var worksheetList = (DropDownList)configurationControls.Controls.FirstOrDefault(x => x.Name == nameof(WorksheetList));
+                if (worksheetList != null)
+                {
+                    AddWorksheetList();
+                    WorksheetList.ListItems = worksheetList.ListItems.ToList();
+                    WorksheetList.SelectByKey(worksheetList.selectedKey);
+                }
+                else
+                {
+                    RemoveWorksheetList();
+                }
+                base.SyncWith(configurationControls);
             }
         }
 
@@ -141,13 +156,14 @@ namespace terminalGoogle.Actions
             {
                 var previousValues = SelectedSpreadsheet;
                 //Spreadsheet was changed - populate the list of worksheets and select first one
-                if (previousValues == null || previousValues.Key != ConfigurationControls.SpreadsheetList.selectedKey)
+                if (previousValues == null || previousValues.Key != ConfigurationControls.SpreadsheetList.Value)
                 {
                     var worksheets = await _googleApi.GetWorksheetsAsync(ConfigurationControls.SpreadsheetList.Value, googleAuth);
                     //We show worksheet list only if there is more than one worksheet
                     if (worksheets.Count > 1)
                     {
                         ConfigurationControls.AddWorksheetList();
+                        ConfigurationControls.WorksheetList.ListItems = worksheets.Select(x => new ListItem { Key = x.Value, Value = x.Key }).ToList();
                         var firstWorksheet = ConfigurationControls.WorksheetList.ListItems.First();
                         ConfigurationControls.WorksheetList.selectedKey = firstWorksheet.Key;
                         ConfigurationControls.WorksheetList.Value = firstWorksheet.Value;
