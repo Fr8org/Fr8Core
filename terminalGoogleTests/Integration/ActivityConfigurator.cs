@@ -146,17 +146,16 @@ namespace terminalGoogleTests.Integration
                 {
                     saveToGoogleActivity.ActivityDTO.AuthToken = HealthMonitor_FixtureData.NewGoogle_AuthToken();
 
-                    var applyToken = new ManageAuthToken_Apply()
-                    {
-                        ActivityId = saveToGoogleActivity.ActivityDTO.Id,
-                        AuthTokenId = Guid.Parse(saveToGoogleActivity.ActivityDTO.AuthToken.Id),
-                        IsMain = true
-                    };
-                    await baseHubIntTest.HttpPostAsync<ManageAuthToken_Apply[], string>(baseHubIntTest.GetHubApiBaseUrl() + "ManageAuthToken/apply", new ManageAuthToken_Apply[] { applyToken });
+                    //var applyToken = new ManageAuthToken_Apply()
+                    //{
+                    //    ActivityId = saveToGoogleActivity.ActivityDTO.Id,
+                    //    AuthTokenId = Guid.Parse(saveToGoogleActivity.ActivityDTO.AuthToken.Id),
+                    //    IsMain = true
+                    //};
+                    //await baseHubIntTest.HttpPostAsync<ManageAuthToken_Apply[], string>(baseHubIntTest.GetHubApiBaseUrl() + "ManageAuthToken/apply", new ManageAuthToken_Apply[] { applyToken });
                 }
 
-                //saveToGoogleActivity = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure?", saveToGoogleActivity);
-                initialcrateStorage = baseHubIntTest.Crate.FromDto(saveToGoogleActivity.ActivityDTO.CrateStorage);
+            initialcrateStorage = baseHubIntTest.Crate.FromDto(saveToGoogleActivity.ActivityDTO.CrateStorage);
                 Assert.True(initialcrateStorage.CratesOfType<StandardConfigurationControlsCM>().Any(), "Crate StandardConfigurationControlsCM is missing in API response.");
 
                 var controlsCrate = initialcrateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
