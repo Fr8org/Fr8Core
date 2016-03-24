@@ -171,11 +171,11 @@ namespace HubWeb.Controllers
         [Fr8HubWebHMACAuthenticate]
         [HttpGet]
         [ResponseType(typeof(IEnumerable<PlanDTO>))]
-        public IHttpActionResult GetByName(string name)
+        public IHttpActionResult GetByName(string name, PlanVisibility visibility = PlanVisibility.Standard)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curPlans = _plan.GetByName(uow, _security.GetCurrentAccount(uow), name);
+                var curPlans = _plan.GetByName(uow, _security.GetCurrentAccount(uow), name, visibility);
                 var fullPlans = curPlans.Select(curPlan => PlanMappingHelper.MapPlanToDto(uow, curPlan)).ToList();
                 return Ok(fullPlans);
 
