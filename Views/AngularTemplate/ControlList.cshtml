@@ -1,0 +1,16 @@
+﻿<div class='form-group'>
+    <label style="font-weight: bold;">{{::field.label}}</label>
+    <div ng-repeat="controlGroup in field.controlGroups track by $index">
+        <div ng-repeat="control in controlGroup" style="margin-top: 5px;">
+            <delayed-control plan="plan" current-action="currentAction" field="control"/>
+        </div>
+
+        <hr class="transition-seperator"/>
+    </div>
+    <div ng-if="field.controlGroups.length < 1">
+        <span>{{::field.noDataMessage || 'No data was selected'}}</span>
+    </div>
+
+    <span ng-if="field.templateContainer.template.length < 1" class="btn btn-error">THIS CONTROL REQUIRES A TEMPLATE!</span>
+    <button style="margin-top: 15px; margin-left: 0px;" class="btn btn-primary query-builder-add-button" ng-click="addControlGroup()" stop-click-propagation>{{ field.addControlGroupButtonText || 'Add Control Group'}}</button>
+</div>

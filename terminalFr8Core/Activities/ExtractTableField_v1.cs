@@ -432,7 +432,37 @@ namespace terminalFr8Core.Actions
                 Events = new List<ControlEvent>() { ControlEvent.RequestConfig }
             };
 
-            return PackControlsCrate(crateChooser, cellDd, extractValueFromDd, cellDd1, extractValueFromDd1, cellDd2, extractValueFromDd2);
+            var cellDdTemplate =  new DropDownList()
+            {
+                Label = "Find the cell labelled",
+                Name = "cellChooser",
+                Required = true,
+                ListItems = new List<ListItem>(),
+                Events = new List<ControlEvent>() { ControlEvent.RequestConfig }
+            };
+
+            var extractValueFromDdTemplate = new DropDownList()
+            {
+                Label = "and extract the value",
+                Name = "extractValueFrom",
+                Required = true,
+                ListItems = new List<ListItem>
+                {
+                    new ListItem { Key = ImmediatelyToRightKey, Value = ImmediatelyToRightValue},
+                    new ListItem { Key = ImmediatelyBelowKey, Value = ImmediatelyBelowValue }
+                },
+                Events = new List<ControlEvent>() { ControlEvent.RequestConfig }
+            };
+
+            var controlList = new ControlList(new ListTemplate() { Name = "ddlb_pair", Template = { cellDdTemplate, extractValueFromDdTemplate } })
+            {
+                AddControlGroupButtonText = "Add Cell Extractor",
+                Name = "extractor_list",
+                Label = "Select fields to extract",
+                NoDataMessage = "No field is selected"
+            };
+
+            return PackControlsCrate(crateChooser, cellDd, extractValueFromDd, cellDd1, extractValueFromDd1, cellDd2, extractValueFromDd2, controlList);
         }
     }
 }

@@ -51,6 +51,7 @@ namespace Data.Control
         public const string CrateChooser = "CrateChooser";
         public const string ContainerTransition = "ContainerTransition";
         public const string ControlContainer = "ControlContainer";
+        public const string ControlList = "ControlList";
     }
 
     public class CheckBox : ControlDefinitionDTO
@@ -572,25 +573,36 @@ namespace Data.Control
         }
     }
 
-    public class ControlList : ControlDefinitionDTO, IContainerControl
+    public class ControlList : ControlDefinitionDTO
     {
-        public IList<IList<ControlDefinitionDTO>> Controls { get; }
-        public ListTemplate Template { get; set; }
+        [JsonProperty("controlGroups")]
+        public IList<IList<ControlDefinitionDTO>> ControlGroups { get; }
+
+        [JsonProperty("templateContainer")]
+        public ListTemplate TemplateContainer { get; set; }
+
+        [JsonProperty("addControlGroupButtonText")]
+        public string AddControlGroupButtonText { get; set; }
+        [JsonProperty("noDataMessage")]
+        public string NoDataMessage { get; set; }
 
         public ControlList()
         {
-            Controls = new List<IList<ControlDefinitionDTO>>();
+            ControlGroups = new List<IList<ControlDefinitionDTO>>();
+            Type = ControlTypes.ControlList;
         }
 
         public ControlList(ListTemplate Template) : this()
         {
-            this.Template = Template;
+            this.TemplateContainer = Template;
         }
     }
 
     public class ListTemplate : IContainerControl, IControlDefinition
     {
+        [JsonProperty("template")]
         public IList<ControlDefinitionDTO> Template { get; }
+        [JsonProperty("name")]
         public string Name { get; set; }
 
         public ListTemplate()
