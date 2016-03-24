@@ -177,7 +177,8 @@ namespace terminalIntegrationTests.Helpers
             }
 
             saveToGoogleActivity.ActivityDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", saveToGoogleActivity.ActivityDTO);
-            saveToGoogleActivity.ActivityDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(HealthMonitor_FixtureData.GoogleTerminalUrl() + "/activities/configure", saveToGoogleActivity);
+            saveToGoogleActivity.ActivityDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(NormalizeSchema(saveToGoogleActivity.ActivityDTO.ActivityTemplate.Terminal.Endpoint) +
+                       "/activities/configure", saveToGoogleActivity);
 
             return await Task.FromResult(saveToGoogleActivity.ActivityDTO);
         }
