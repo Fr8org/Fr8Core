@@ -136,7 +136,7 @@ namespace terminalIntegrationTests.Helpers
 
             if (!defaultDocuSignAuthTokenExists)
             {
-                saveToGoogleActivity.ActivityDTO.AuthToken = HealthMonitor_FixtureData.Google_AuthToken();//await Google_AuthToken(saveToGoogleActivity.ActivityTemplate.TerminalId);
+                saveToGoogleActivity.ActivityDTO.AuthToken = /*HealthMonitor_FixtureData.Google_AuthToken();//*/await Google_AuthToken(saveToGoogleActivity.ActivityDTO.ActivityTemplate.TerminalId);
 
                 //var applyToken = new ManageAuthToken_Apply()
                 //{
@@ -210,23 +210,23 @@ namespace terminalIntegrationTests.Helpers
             //var endPoint = GetHubBaseUrl() + "authenticationCallback/ProcessSuccessfulOAuthResponse?terminalName=terminalGoogle&terminalVersion=1&state=67be8cd5-532a-4241-b6a3-77e2eecd7ff6&code=4/qHIUiVkyT4JvkxKQgptcnSGF2iCPGF0BDnJGi4g7u28";
             //await HttpGetAsync<ActionResult>(endPoint);
 
-            TerminalDO terminal = ObjectFactory.GetInstance<ITerminal>().GetAll().FirstOrDefault(x => x.Id == terminalId);
+            //TerminalDO terminal = ObjectFactory.GetInstance<ITerminal>().GetAll().FirstOrDefault(x => x.Id == terminalId);
 
-            if (terminal == null)
-            {
-                throw new ApplicationException("Could not find terminal.");
-            }
+            //if (terminal == null)
+            //{
+            //    throw new ApplicationException("Could not find terminal.");
+            //}
 
-            var externalAuthenticationDTO = new ExternalAuthenticationDTO()
-            {
-                RequestQueryString = "terminalName=terminalGoogle&terminalVersion=1&state=b31cc220-9cb8-4bba-9b31-3c8ecf246a9d&code=4/PAUy56kfwQ3BQV1ZHm_h-FDyR9n0QTPAYLbBSmszCwc"
-            };
+            //var externalAuthenticationDTO = new ExternalAuthenticationDTO()
+            //{
+            //    RequestQueryString = "terminalName=terminalGoogle&terminalVersion=1&state=b31cc220-9cb8-4bba-9b31-3c8ecf246a9d&code=4/PAUy56kfwQ3BQV1ZHm_h-FDyR9n0QTPAYLbBSmszCwc"
+            //};
 
-            var response = await ObjectFactory.GetInstance<IAuthorization>().GetOAuthToken(terminal, externalAuthenticationDTO);
+            //var response = await ObjectFactory.GetInstance<IAuthorization>().GetOAuthToken(terminal, externalAuthenticationDTO);
 
             var authTokens = await baseHubIntTest.HttpGetAsync<List<ManageAuthToken_Terminal>>(baseHubIntTest.GetHubApiBaseUrl() + "ManageAuthToken");
             var authToken = authTokens.FirstOrDefault(a => a.Name.Equals("terminalGoogle"));
-            var mainAuthToken = new AuthorizationTokenDTO { Id = authToken.AuthTokens.FirstOrDefault(x => x.ExternalAccountName == "fr8test@gmail.com").Id.ToString() };
+            var mainAuthToken = new AuthorizationTokenDTO { Id = authToken.AuthTokens.FirstOrDefault().Id.ToString() };
 
             return await Task.FromResult(mainAuthToken);
         }
