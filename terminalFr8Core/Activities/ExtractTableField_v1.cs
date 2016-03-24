@@ -102,6 +102,8 @@ namespace terminalFr8Core.Actions
 
             RemoveErrorText(curActivityDO);
 
+            
+
             var table = selectedCrate.Content;
             double temp;
             var tableFields = table.Table.SelectMany(c => c.Row).Select(r => r.Cell)
@@ -110,11 +112,25 @@ namespace terminalFr8Core.Actions
             
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
+                var tempChosenCellList = GetConfigurationControls(crateStorage).FindByName<ControlList>("extractor_list");
+                //TODO do this with a more efficient way
+                //all dropdowns should use same data
+                var listItems = tableFields.Select(c => new ListItem { Key = c.Key, Value = c.Value }).ToList();
+                foreach (var cGroup in tempChosenCellList.ControlGroups)
+                {
+                    var chosenCellDd = (DropDownList)cGroup.First();
+                    chosenCellDd.ListItems = listItems;
+                }
+                ((DropDownList) tempChosenCellList.TemplateContainer.Template.First()).ListItems = listItems;
+                /*
                 crateStorage.RemoveByLabel(AvailableCellsCrateLabel);
                 crateStorage.Add(CrateManager.CreateDesignTimeFieldsCrate(AvailableCellsCrateLabel, AvailabilityType.Configuration, tableFields.ToArray()));
+                */
             }
 
+
             var chosenCellList = configControls.FindByName<ControlList>("extractor_list");
+
 
             //let's publish our data - that this will be available during runtime
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
