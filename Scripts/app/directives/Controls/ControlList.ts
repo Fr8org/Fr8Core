@@ -31,9 +31,10 @@ module dockyard.directives.controlList {
                 triggerChange();
             };
 
-            //TODO throw an exception if template seems to be empty
-
-
+            $scope.removeControlGroup = (index: number) => {
+                $scope.field.controlGroups.splice(index, 1);
+                triggerChange();
+            };
         }];
 
         return {

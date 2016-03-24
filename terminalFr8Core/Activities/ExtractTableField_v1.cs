@@ -36,6 +36,8 @@ namespace terminalFr8Core.Actions
         private const string ImmediatelyBelowValue = "immediately_below";
 
         private const string ExtractedFieldsCrateLabel = "ExtractedFields";
+
+        private const string AvailableCellsCrateLabel = "AvailableCells";
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
             if (CrateManager.IsStorageEmpty(curActivityDO))
@@ -108,40 +110,24 @@ namespace terminalFr8Core.Actions
             
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                var listItems = tableFields.Select(c => new ListItem { Key = c.Key, Value = c.Value }).ToList();
-                var cellChooser = GetConfigurationControls(crateStorage).FindByName<DropDownList>("cellChooser");
-                var cellChooser1 = GetConfigurationControls(crateStorage).FindByName<DropDownList>("cellChooser1");
-                var cellChooser2 = GetConfigurationControls(crateStorage).FindByName<DropDownList>("cellChooser2");
-                cellChooser.ListItems = listItems;
-                cellChooser1.ListItems = listItems;
-                cellChooser2.ListItems = listItems;
+                crateStorage.RemoveByLabel(AvailableCellsCrateLabel);
+                crateStorage.Add(CrateManager.CreateDesignTimeFieldsCrate(AvailableCellsCrateLabel, AvailabilityType.Configuration, tableFields.ToArray()));
             }
 
-
-            var chosenCell = configControls.FindByName<DropDownList>("cellChooser");
-            var position = configControls.FindByName<DropDownList>("extractValueFrom");
-
-            var chosenCell1 = configControls.FindByName<DropDownList>("cellChooser1");
-            var position1 = configControls.FindByName<DropDownList>("extractValueFrom1");
-            var chosenCell2 = configControls.FindByName<DropDownList>("cellChooser2");
-            var position2 = configControls.FindByName<DropDownList>("extractValueFrom2");
-
+            var chosenCellList = configControls.FindByName<ControlList>("extractor_list");
 
             //let's publish our data - that this will be available during runtime
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 var extractedFields = new List<FieldDTO>();
-                if (AreValuesSelected(chosenCell, position))
+                foreach (var cGroup in chosenCellList.ControlGroups)
                 {
-                    extractedFields.Add(GetChosenField(chosenCell, position));
-                }
-                if (AreValuesSelected(chosenCell1, position1))
-                {
-                    extractedFields.Add(GetChosenField(chosenCell1, position1));
-                }
-                if (AreValuesSelected(chosenCell2, position2))
-                {
-                    extractedFields.Add(GetChosenField(chosenCell2, position2));
+                    var chosenCell = (DropDownList)cGroup.FirstOrDefault(c => c.Name=="cellChooser");
+                    var position = (DropDownList)cGroup.FirstOrDefault(c => c.Name == "extractValueFrom");
+                    if (AreValuesSelected(chosenCell, position))
+                    {
+                        extractedFields.Add(GetChosenField(chosenCell, position));
+                    }
                 }
 
             crateStorage.RemoveByLabel(ExtractedFieldsCrateLabel);
@@ -196,54 +182,38 @@ namespace terminalFr8Core.Actions
                 return Error(curPayloadDTO, $"Selected crate with Manifest {selectedCrateDescription.ManifestType} and label {selectedCrateDescription.Label} was not found on payload", ActivityErrorCode.PAYLOAD_DATA_MISSING);
             }
 
-            var chosenCell = configControls.FindByName<DropDownList>("cellChooser");
-            var position = configControls.FindByName<DropDownList>("extractValueFrom");
-            if (!AreValuesSelected(chosenCell, position))
-            {
-                return Error(curPayloadDTO, "No position was selected on design time", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
-            }
-            var chosenCell1 = configControls.FindByName<DropDownList>("cellChooser1");
-            var position1 = configControls.FindByName<DropDownList>("extractValueFrom1");
-            if (!AreValuesSelected(chosenCell1, position1))
-            {
-                return Error(curPayloadDTO, "No position was selected on design time", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
-            }
-            var chosenCell2 = configControls.FindByName<DropDownList>("cellChooser2");
-            var position2 = configControls.FindByName<DropDownList>("extractValueFrom2");
-            if (!AreValuesSelected(chosenCell2, position2))
-            {
-                return Error(curPayloadDTO, "No position was selected on design time", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
-            }
-
-            var table = crateToProcess.Get<StandardTableDataCM>();
-
-            FieldDTO field = ExtractFieldFromTable(table, chosenCell, position);
-            if (field == null)
-            {
-                //hmm we couldn't find what we were looking for
-                return Error(curPayloadDTO, "Unable to find specified cell in StandardTableCM", ActivityErrorCode.PAYLOAD_DATA_INVALID);
-            }
-            FieldDTO field1 = ExtractFieldFromTable(table, chosenCell1, position1);
-            if (field1 == null)
-            {
-                //hmm we couldn't find what we were looking for
-                return Error(curPayloadDTO, "Unable to find specified cell in StandardTableCM", ActivityErrorCode.PAYLOAD_DATA_INVALID);
-            }
-            FieldDTO field2 = ExtractFieldFromTable(table, chosenCell2, position2);
-            if (field2 == null)
-            {
-                //hmm we couldn't find what we were looking for
-                return Error(curPayloadDTO, "Unable to find specified cell in StandardTableCM", ActivityErrorCode.PAYLOAD_DATA_INVALID);
-            }
-
-
+            
             using (var updater = CrateManager.GetUpdatableStorage(curPayloadDTO))
             {
+                var extractedFieldList = new List<FieldDTO>();
+                var chosenCellList = configControls.FindByName<ControlList>("extractor_list");
+                foreach (var cGroup in chosenCellList.ControlGroups)
+                {
+                    var chosenCell = (DropDownList)cGroup.FirstOrDefault(c => c.Name == "cellChooser");
+                    var position = (DropDownList)cGroup.FirstOrDefault(c => c.Name == "extractValueFrom");
+
+                    if (!AreValuesSelected(chosenCell, position))
+                    {
+                        return Error(curPayloadDTO, "No position was selected on design time", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                    }
+
+                    var table = crateToProcess.Get<StandardTableDataCM>();
+
+                    FieldDTO field = ExtractFieldFromTable(table, chosenCell, position);
+                    if (field == null)
+                    {
+                        //hmm we couldn't find what we were looking for
+                        return Error(curPayloadDTO, "Unable to find specified cell in StandardTableCM", ActivityErrorCode.PAYLOAD_DATA_INVALID);
+                    }
+                    extractedFieldList.Add(field);
+                }
+
+
                 updater.Add(Crate.FromContent("Extracted Field From Table", new StandardPayloadDataCM
                 {
                     PayloadObjects = new List<PayloadObjectDTO>() { new PayloadObjectDTO()
                     {
-                        PayloadObject = new List<FieldDTO>() { field, field1, field2 }
+                        PayloadObject = extractedFieldList
                     } }
                 }));
             }
@@ -366,79 +336,17 @@ namespace terminalFr8Core.Actions
         {
             var crateChooser = await GenerateCrateChooser(curActivityDO, "TableChooser", "Select Upstream Data", true, true, true);
             //this cell's list items will be filled on followup configuration
-            var cellDd = new DropDownList()
-            {
-                Label = "Find the cell labelled",
-                Name = "cellChooser",
-                Required = true,
-                ListItems = new List<ListItem>(),
-                Events = new List<ControlEvent>() { ControlEvent.RequestConfig  }
-            };
-            var extractValueFromDd = new DropDownList()
-            {
-                Label = "and extract the value",
-                Name = "extractValueFrom",
-                Required = true,
-                ListItems = new List<ListItem>
-                {
-                    new ListItem { Key = ImmediatelyToRightKey, Value = ImmediatelyToRightValue},
-                    new ListItem { Key = ImmediatelyBelowKey, Value = ImmediatelyBelowValue }
-                },
-                Events = new List<ControlEvent>() { ControlEvent.RequestConfig }
-            };
-
-
-            //this cell's list items will be filled on followup configuration
-            var cellDd1 = new DropDownList()
-            {
-                Label = "Find the cell labelled",
-                Name = "cellChooser1",
-                Required = true,
-                ListItems = new List<ListItem>(),
-                Events = new List<ControlEvent>() { ControlEvent.RequestConfig }
-            };
-            var extractValueFromDd1 = new DropDownList()
-            {
-                Label = "and extract the value",
-                Name = "extractValueFrom1",
-                Required = true,
-                ListItems = new List<ListItem>
-                {
-                    new ListItem { Key = ImmediatelyToRightKey, Value = ImmediatelyToRightValue},
-                    new ListItem { Key = ImmediatelyBelowKey, Value = ImmediatelyBelowValue }
-                },
-                Events = new List<ControlEvent>() { ControlEvent.RequestConfig }
-            };
-
-            //this cell's list items will be filled on followup configuration
-            var cellDd2 = new DropDownList()
-            {
-                Label = "Find the cell labelled",
-                Name = "cellChooser2",
-                Required = true,
-                ListItems = new List<ListItem>(),
-                Events = new List<ControlEvent>() { ControlEvent.RequestConfig }
-            };
-            var extractValueFromDd2 = new DropDownList()
-            {
-                Label = "and extract the value",
-                Name = "extractValueFrom2",
-                Required = true,
-                ListItems = new List<ListItem>
-                {
-                    new ListItem { Key = ImmediatelyToRightKey, Value = ImmediatelyToRightValue},
-                    new ListItem { Key = ImmediatelyBelowKey, Value = ImmediatelyBelowValue }
-                },
-                Events = new List<ControlEvent>() { ControlEvent.RequestConfig }
-            };
-
             var cellDdTemplate =  new DropDownList()
             {
                 Label = "Find the cell labelled",
                 Name = "cellChooser",
                 Required = true,
-                ListItems = new List<ListItem>(),
-                Events = new List<ControlEvent>() { ControlEvent.RequestConfig }
+                Source = new FieldSourceDTO()
+                {
+                    RequestUpstream = false,
+                    ManifestType = CrateManifestTypes.StandardDesignTimeFields,
+                    Label = AvailableCellsCrateLabel
+                }
             };
 
             var extractValueFromDdTemplate = new DropDownList()
@@ -450,8 +358,7 @@ namespace terminalFr8Core.Actions
                 {
                     new ListItem { Key = ImmediatelyToRightKey, Value = ImmediatelyToRightValue},
                     new ListItem { Key = ImmediatelyBelowKey, Value = ImmediatelyBelowValue }
-                },
-                Events = new List<ControlEvent>() { ControlEvent.RequestConfig }
+                }
             };
 
             var controlList = new ControlList(new ListTemplate() { Name = "ddlb_pair", Template = { cellDdTemplate, extractValueFromDdTemplate } })
@@ -462,7 +369,7 @@ namespace terminalFr8Core.Actions
                 NoDataMessage = "No field is selected"
             };
 
-            return PackControlsCrate(crateChooser, cellDd, extractValueFromDd, cellDd1, extractValueFromDd1, cellDd2, extractValueFromDd2, controlList);
+            return PackControlsCrate(crateChooser, controlList);
         }
     }
 }

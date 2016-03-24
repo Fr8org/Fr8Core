@@ -1,12 +1,21 @@
 ﻿<div class='form-group'>
     <label style="font-weight: bold;">{{::field.label}}</label>
     <div ng-repeat="controlGroup in field.controlGroups track by $index">
-        <div ng-repeat="control in controlGroup" style="margin-top: 5px;">
-            <delayed-control plan="plan" current-action="currentAction" field="control"/>
+        <div class="col-md-10">
+            Group {{$index}}
         </div>
-
-        <hr class="transition-seperator"/>
+        <div class="col-md-2" ng-if="field.controlGroups.length > 1">
+            <img style="float: right;" src="/Content/img/PlanBuilder/delete-icon.png" width="15" height="15"
+                 ng-click="removeControlGroup($index)"
+                 class="query-builder-delete-button"/>
+        </div>
+        <div class="col-md-12 transition-seperator" style="margin-top: 5px;">
+            <div ng-repeat="control in controlGroup" style="margin-top: 5px;">
+                <delayed-control plan="plan" current-action="currentAction" field="control"/>
+            </div>
+        </div>
     </div>
+    
     <div ng-if="field.controlGroups.length < 1">
         <span>{{::field.noDataMessage || 'No data was selected'}}</span>
     </div>
