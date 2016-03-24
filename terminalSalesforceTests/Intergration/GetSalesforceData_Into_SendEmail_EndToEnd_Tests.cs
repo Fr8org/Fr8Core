@@ -55,7 +55,7 @@ namespace terminalSalesforceTests.Intergration
             Assert.IsTrue(getData.CrateStorage.Crates.Any(c => c.Label.Equals("Salesforce Object Fields")), 
                           "Follow up configuration is not getting any Salesforce Object Fields");
 
-            //prepare the send email activity controls
+            //prepare the send email activity controls.
             var sendEmail = plan.Plan.SubPlans.First().Activities.Last();
             using (var updatableStorage = Crate.GetUpdatableStorage(sendEmail))
             {
