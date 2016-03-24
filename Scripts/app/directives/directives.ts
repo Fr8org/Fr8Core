@@ -18,25 +18,31 @@ app.directive('autoFocus', ['$timeout',function ($timeout) {
     };
 }]);
 
+app.filter('parseUrl', () => {
+    var urls = /(\b(https?|ftp):\/\/[A-Z0-9+&@#\/%?=~_|!:,.;-]*[-A-Z0-9+&@#\/%=~_|])/gim;
+
+    return (text: string) => {
+        if (text.match(urls)) {
+            text = text.replace(urls, "<a href=\"$1\" target=\"_blank\">$1</a>");
+        }
+        return text;
+    }
+});
+
 app.directive('blockIf', function () {
     return {
         restrict: 'A',
         link: function (_scope, _element, attrs) {
             var expr = attrs['blockIf'];
             _scope.$watch(expr, function (value) {
-                if (_scope.$eval(expr) === true) {
-                    if (attrs['class'] === "plan-loading-message" && _scope.$eval(expr) == null) {
-                        Metronic.blockUI({ target: _element, textOnly: true });
-                    }
-                    else if (_scope.$eval(expr) === true) {
-                        Metronic.blockUI({ target: _element, animate: true });
-                    }
-                    if (_scope.$eval(expr) === true) {
-                        Metronic.blockUI({ target: _element, animate: true });
-                    }
-                    else {
-                        Metronic.unblockUI(_element);
-                    }
+                if (attrs['class'] === "plan-loading-message" && _scope.$eval(expr) == null) {
+                    Metronic.blockUI({ target: _element, textOnly: true });
+                }
+                else if (_scope.$eval(expr) === true) {
+                    Metronic.blockUI({ target: _element, animate: true });
+                }
+                else {
+                    Metronic.unblockUI(_element);
                 }
             });
         }

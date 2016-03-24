@@ -20,10 +20,10 @@
                 <div ng-if="mode !== 'solution' || $index === 0">
                     <div class="action-arrow-bottom" ng-style="{top: -group.arrowLength - 60, height: group.arrowLength + 35, left: group.arrowOffsetLeft}"></div>
                     <div dnd-list="group.envelopes" dnd-external-sources="true" dnd-drop="onActionDrop(group, item, index)" style="display: inline-block;">
-                        <div dnd-draggable="envelope.activity.id" dnd-effect-allowed="move" ng-repeat="envelope in group.envelopes track by $index">
+                        <div ng-repeat="envelope in group.envelopes track by $index">
                             <div class="action" ng-class="{'solution-action': envelope.activity.activityTemplate.category==='Solution'  && mode !== 'solution'}" layout-action>
                                 <div resizable minwidth = "{{envelope.activity.activityTemplate.minPaneWidth}}" class="ap-resize">
-                                    <div class="action-header solution-action-header handle" dropdown transfer-click-configure-pane>
+                                    <div dnd-draggable="envelope.activity.id" class="action-header solution-action-header handle" dropdown transfer-click-configure-pane>
                                         <div class="action-header-icon">
                                             <img ng-src="{{envelope.activity.activityTemplate.webService.iconPath}}" ng-if="envelope.activity.activityTemplate.webService.iconPath"/>
                                         </div>
@@ -54,7 +54,7 @@
                                             </li>
                                         </ul>
                                     </div>
-                                    <div dnd-nodrag>
+                                    <div>
                                         <pane-configure-action plan="current.plan" id="paneConfigureAction" current-action="envelope.activity" mode="mode"></pane-configure-action>
                                     </div>
                                 </div>
