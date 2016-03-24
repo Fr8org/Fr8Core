@@ -25,7 +25,7 @@ namespace terminalGoogleTests.Integration
         [Test, Category("Integration.terminalGoogle")]
         public async Task Query_DocuSign_Into_Google_Sheet_End_To_End()
         {
-            Debugger.Launch();
+            //Debugger.Launch();
 
             var activityConfigurator = new ActivityConfigurator(this);
             await RevokeTokens();
@@ -58,8 +58,11 @@ namespace terminalGoogleTests.Integration
             //find spreadsheet
             var dataRows = googleSheetApi.EnumerateDataRows(spreadSheeturl, HealthMonitor_FixtureData.NewGoogle_AuthToken_As_GoogleAuthDTO());
 
+            //file should contain 11 envelopes saved plus one row for the headers
+            Assert.Equals(11, dataRows.Count());
+            
             //cleanup. erase the sheet
-            Assert.Equals(12, dataRows.Count());
+            await googleSheetApi.DeleteSpreadSheet(newSpeadsheetName, HealthMonitor_FixtureData.NewGoogle_AuthToken_As_GoogleAuthDTO());
         }
 
         private async Task<Guid> ExtractGoogleDefaultToken()

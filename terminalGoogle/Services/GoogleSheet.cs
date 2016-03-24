@@ -108,6 +108,16 @@ namespace terminalGoogle.Services
             return newWorksheet.Id.AbsoluteUri;
         }
 
+        public async Task DeleteSpreadSheet(string spreadsheetname, GoogleAuthDTO authDTO)
+        {
+            var spreadSheets = EnumerateSpreadsheetsUris(authDTO);
+            var spreadSheetKey = spreadSheets.FirstOrDefault(x => x.Value == spreadsheetname).Key;
+
+            GoogleDrive googleDrive = new GoogleDrive();
+            var driveService = await googleDrive.CreateDriveService(authDTO);
+            driveService.Files.Delete(spreadSheetKey);
+        }
+
         public async Task<string> CreateSpreadsheet(string spreadsheetname, GoogleAuthDTO authDTO)
         {
             GoogleDrive googleDrive = new GoogleDrive();
