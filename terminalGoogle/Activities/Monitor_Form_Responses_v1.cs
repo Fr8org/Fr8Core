@@ -16,10 +16,10 @@ using Data.Control;
 
 namespace terminalGoogle.Actions
 {
-    public class Receive_Google_Form_v1 : BaseTerminalActivity
+    public class Monitor_Form_Responses_v1 : BaseTerminalActivity
     {
         GoogleDrive _googleDrive;
-        public Receive_Google_Form_v1()
+        public Monitor_Form_Responses_v1()
         {
             _googleDrive = new GoogleDrive();
         }
