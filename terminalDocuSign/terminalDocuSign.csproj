@@ -245,7 +245,7 @@
     <Compile Include="Activities\Query_DocuSign_v1.cs" />
     <Compile Include="Activities\Get_DocuSign_Envelope_v1.cs" />
     <Compile Include="Activities\Monitor_DocuSign_Envelope_Activity_v1.cs" />
-    <Compile Include="Activities\Record_DocuSign_Events_v1.cs" />
+    <Compile Include="Activities\Prepare_DocuSign_Events_For_Storage_v1.cs" />
     <Compile Include="Activities\Track_DocuSign_Recipients_v1.cs" />
     <Compile Include="Activities\Send_DocuSign_Envelope_v1.cs" />
     <Compile Include="App_Start\RoutesConfig.cs" />
@@ -279,10 +279,12 @@
     <Compile Include="Infrastructure\DocuSignEventNames.cs" />
     <Compile Include="Infrastructure\TerminalDataAutoMapperBootStrapper.cs" />
     <Compile Include="Infrastructure\TerminalDocuSignMapBootstrapper.cs" />
-    <Compile Include="Interfaces\IDocuSignRoute.cs" />
+    <Compile Include="Interfaces\IDocuSignConnect.cs" />
+    <Compile Include="Interfaces\IDocuSignPlan.cs" />
+    <Compile Include="Services\DocuSignConnect.cs" />
     <Compile Include="Services\DocuSignFolders.cs" />
     <Compile Include="Services\DocuSignQuery.cs" />
-    <Compile Include="Services\DocuSignRoute.cs" />
+    <Compile Include="Services\DocuSignPlan.cs" />
     <Compile Include="Services\Event.cs" />
     <Compile Include="Interfaces\IEvent.cs" />
     <Compile Include="SelfHostFactory.cs" />

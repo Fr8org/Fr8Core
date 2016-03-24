@@ -16,6 +16,8 @@ using StructureMap;
 using terminalDocuSign.Interfaces;
 using TerminalBase.Infrastructure;
 using Data.Constants;
+using terminalDocuSign.Services.New_Api;
+using Utilities.Configuration.Azure;
 
 namespace terminalDocuSign.Services
 {
@@ -26,53 +28,96 @@ namespace terminalDocuSign.Services
     {
         private readonly IHubCommunicator _hubCommunicator;
         private readonly ICrateManager _crateManager;
+        private readonly IDocuSignManager _docuSignManager;
+        private readonly IDocuSignConnect _docuSignConnect;
+
+        private readonly string DevConnectName = "(dev) Fr8 Company DocuSign integration";
+        private readonly string ProdConnectName = "Fr8 Company DocuSign integration";
 
         public DocuSignPlan()
         {
             _hubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
+            _docuSignManager = ObjectFactory.GetInstance<IDocuSignManager>();
+            _docuSignConnect = ObjectFactory.GetInstance<IDocuSignConnect>();
             _hubCommunicator.Configure("terminalDocuSign");
         }
 
         /// <summary>
         /// Creates Monitor All DocuSign Events plan with Record DocuSign Events and Store MT Data actions.
+        /// 
+        /// https://maginot.atlassian.net/wiki/display/DDW/Rework+of+DocuSign+connect+management
         /// </summary>
         public async Task CreatePlan_MonitorAllDocuSignEvents(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
         {
-            var existingPlans = (await _hubCommunicator.GetPlansByName("MonitorAllDocuSignEvents", curFr8UserId)).ToList();
-
-            existingPlans = existingPlans.Where(r => r.Plan.Tag == ("docusign-auto-monitor-plan-" + curFr8UserId)).ToList();
-
-            if (existingPlans.Any(x => x.Plan.PlanState != PlanState.Deleted))
+            if (CreateConnect(curFr8UserId, authTokenDTO))
             {
-                //hmmmm which one belongs to us?
-                //lets assume there will be only single plan
-                var existingPlan = existingPlans.First(x => x.Plan.PlanState != PlanState.Deleted);
-
-                if (existingPlan.Plan.PlanState == PlanState.Inactive)
-                {
-                    var existingPlanDO = Mapper.Map<PlanDO>(existingPlan.Plan);
-                    await _hubCommunicator.ActivatePlan(existingPlanDO, curFr8UserId);
-                }
-
-                return;
+                await DeleteExistingPlan(curFr8UserId, authTokenDTO);
+                await CreateAndActivateNewPlan(curFr8UserId, authTokenDTO);
             }
-            //first check if this exists
+        }
+
+
+        //only create a connect when running on dev/production
+        private bool CreateConnect(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
+        {
+            var authTokenDO = new AuthorizationTokenDO() { Token = authTokenDTO.Token, ExternalAccountId = authTokenDTO.ExternalAccountId };
+            var config = _docuSignManager.SetUp(authTokenDO);
+
+            string terminalUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint");
+            string prodUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.DefaultProductionUrl");
+            string devUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.DefaultDevUrl");
+            string publishUrl = "http://" + terminalUrl + "/terminals/terminalDocuSign/events";
+
+            if (terminalUrl.Contains(devUrl))
+                _docuSignConnect.CreateOrActivateConnect(config, DevConnectName, publishUrl);
+            else
+                if (terminalUrl.Contains(prodUrl))
+                _docuSignConnect.CreateOrActivateConnect(config, ProdConnectName, publishUrl);
+            else
+                return false;
+
+            return true;
+        }
+
+        private async Task DeleteExistingPlan(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
+        {
+            var existingPlans = (await _hubCommunicator.GetPlansByName("MonitorAllDocuSignEvents", curFr8UserId)).ToList();
+            if (existingPlans.Count > 0)
+            {
+                try
+                {
+                    //search for existing MADSE plan for this DS account and deleting it
+
+                    var plan = existingPlans.Where(
+                          a => a.Plan.SubPlans.Any(b =>
+                              _crateManager.GetStorage(b.Activities[0]).Where(t => t.Label == "DocuSignUserCrate")
+                              .FirstOrDefault().Get<StandardPayloadDataCM>().GetValues("DocuSignUserEmail").FirstOrDefault() == authTokenDTO.ExternalAccountId)).FirstOrDefault();
+
+                    if (plan != null)
+                        await _hubCommunicator.DeletePlan(plan.Plan.Id, curFr8UserId);
+                }
+                catch { };
+            }
+        }
+
+        private async Task CreateAndActivateNewPlan(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
+        {
             var emptyMonitorPlan = new PlanEmptyDTO
             {
                 Name = "MonitorAllDocuSignEvents",
                 Description = "MonitorAllDocuSignEvents",
                 PlanState = PlanState.Active,
-                Tag = "docusign-auto-monitor-plan-" + curFr8UserId,
                 Visibility = PlanVisibility.Internal
             };
+
             var monitorDocusignPlan = await _hubCommunicator.CreatePlan(emptyMonitorPlan, curFr8UserId);
             var activityTemplates = await _hubCommunicator.GetActivityTemplates(null, curFr8UserId);
-            var recordDocusignEventsTemplate = GetActivityTemplate(activityTemplates, "Record_DocuSign_Events");
+            var recordDocusignEventsTemplate = GetActivityTemplate(activityTemplates, "Prep DocuSign Events For Storage");
             var storeMTDataTemplate = GetActivityTemplate(activityTemplates, "SaveToFr8Warehouse");
-            await _hubCommunicator.CreateAndConfigureActivity(recordDocusignEventsTemplate.Id, 
+            await _hubCommunicator.CreateAndConfigureActivity(recordDocusignEventsTemplate.Id,
                 curFr8UserId, "Record DocuSign Events", 1, monitorDocusignPlan.Plan.StartingSubPlanId, false, new Guid(authTokenDTO.Id));
-            var storeMTDataActivity = await _hubCommunicator.CreateAndConfigureActivity(storeMTDataTemplate.Id, 
+            var storeMTDataActivity = await _hubCommunicator.CreateAndConfigureActivity(storeMTDataTemplate.Id,
                 curFr8UserId, "Save To Fr8 Warehouse", 2, monitorDocusignPlan.Plan.StartingSubPlanId);
             SetSelectedCrates(storeMTDataActivity);
             //save this
@@ -80,6 +125,7 @@ namespace terminalDocuSign.Services
             var planDO = Mapper.Map<PlanDO>(monitorDocusignPlan.Plan);
             await _hubCommunicator.ActivatePlan(planDO, curFr8UserId);
         }
+
 
         private void SetSelectedCrates(ActivityDTO storeMTDataActivity)
         {

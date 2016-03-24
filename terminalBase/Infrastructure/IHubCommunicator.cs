@@ -42,7 +42,7 @@ namespace TerminalBase.Infrastructure
         Task<IEnumerable<FileDTO>> GetFiles(string userId);
         Task Configure(string terminalName);
         bool IsConfigured { get; set; }
-
+        Task DeletePlan(Guid planId, string userId);
         Task DeleteActivity(Guid curActivityId, string userId);
         Task DeleteExistingChildNodesFromActivity(Guid curActivityId, string userId);
         Task<PlanDTO> GetPlansByActivity(string activityId, string userId);

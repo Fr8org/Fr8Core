@@ -340,6 +340,16 @@ namespace TerminalBase.Infrastructure
             return await _restfulServiceClient.PostAsync<PlanDTO>(uri, jsonContent, null, await GetHMACHeader(uri, userId, jsonContent));
         }
 
+        public async Task DeletePlan(Guid planId, string userId)
+        {
+            var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+               + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/plans/";
+
+            var uri = new Uri(hubUrl);
+
+            await _restfulServiceClient.DeleteAsync(uri, null, await GetHMACHeader(uri, userId));
+        }
+
         public async Task DeleteExistingChildNodesFromActivity(Guid curActivityId, string userId)
         {
             var hubAlarmsUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
