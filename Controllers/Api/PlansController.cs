@@ -428,6 +428,11 @@ namespace HubWeb.Controllers
 
                     return Ok(exception.ContainerDTO);
                 }
+                catch (ActivityExecutionException aee)
+                {
+                    var errorMessage = String.Format("Failed to run activity \"{0}\". Please, make sure it is set up correctly. ", aee.FailedActivity.Label);
+                    NotifyWithErrorMessage(aee, planDO, pusherChannel, errorMessage);
+                }
                 catch (Exception e)
                 {
                     NotifyWithErrorMessage(e, planDO, pusherChannel);
@@ -467,12 +472,7 @@ namespace HubWeb.Controllers
             {
                 messageToNotify = errorMessage;
             }
-            else
-            {
-                var position = exception.Message.IndexOf(" | ") + 2;
-                messageToNotify = exception.Message.Substring(position);
-            }
-            
+                       
             var message = String.Format("Plan \"{0}\" failed. {1}", planDO.Name, messageToNotify);
             _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, message);
             

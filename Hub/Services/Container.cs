@@ -210,93 +210,112 @@ namespace Hub.Services
 
         public async Task Run(IUnitOfWork uow, ContainerDO curContainerDO)
         {
-            if (curContainerDO == null)
-                throw new ArgumentNullException("ContainerDO is null");
-
-            //if payload already has operational state create we shouldn't create another
-            if (!HasOperationalStateCrate(curContainerDO))
+            try
             {
-                AddOperationalStateCrate(uow, curContainerDO);
-            }
+                if (curContainerDO == null)
+                    throw new ArgumentNullException("ContainerDO is null");
 
-            curContainerDO.ContainerState = ContainerState.Executing;
-            uow.SaveChanges();
-
-            if (curContainerDO.CurrentPlanNodeId == null)
-            {
-                throw new ArgumentNullException("CurrentActivity is null. Cannot execute CurrentActivity");
-            }
-
-            var actionState = ActivityState.InitialRun;
-            while (curContainerDO.CurrentPlanNodeId != null)
-            {
-                var activityResponseDTO = await ProcessActivity(uow, curContainerDO, actionState);
-
-                //extract ActivityResponse type from result
-                ActivityResponse activityResponse = ActivityResponse.Null;
-                if (activityResponseDTO != null)
-                    Enum.TryParse(activityResponseDTO.Type, out activityResponse);
-
-                ResponseMessageDTO responseMessage;
-
-                switch (activityResponse)
+                //if payload already has operational state create we shouldn't create another
+                if (!HasOperationalStateCrate(curContainerDO))
                 {
-                    case ActivityResponse.ExecuteClientActivity:
-                    case ActivityResponse.Success:
-                    case ActivityResponse.ReProcessChildren:
-                    case ActivityResponse.Null://let's assume this is success for now
-
-                        
-
-                        break;
-                    case ActivityResponse.RequestSuspend:
-                        curContainerDO.ContainerState = ContainerState.Pending;
-                        return;
-
-                    case ActivityResponse.Error:
-                        //TODO retry activity execution until 3 errors??
-                        //so we are able to show the specific error that is embedded inside the container we are sending back that container to client
-                        ErrorDTO error = activityResponseDTO.TryParseErrorDTO(out error) ? error : null;
-                        throw new ErrorResponseException(Mapper.Map<ContainerDO, ContainerDTO>(curContainerDO), error?.Message);
-                    case ActivityResponse.RequestTerminate:
-                        //FR-2163 - If action response requests for termination, we make the container as Completed to avoid unwanted errors.
-                        curContainerDO.ContainerState = ContainerState.Completed;
-                        EventManager.ProcessingTerminatedPerActivityResponse(curContainerDO, ActivityResponse.RequestTerminate);
-
-                    return;
-
-                    case ActivityResponse.JumpToActivity:
-                        actionState = ActivityState.InitialRun;
-                        activityResponseDTO.TryParseResponseMessageDTO(out responseMessage);
-                        curContainerDO.CurrentPlanNodeId = Guid.Parse((string)responseMessage.Details);
-                        continue;
-
-                    case ActivityResponse.JumpToSubplan:
-                        actionState = ActivityState.InitialRun;
-                        activityResponseDTO.TryParseResponseMessageDTO(out responseMessage);
-                        var subplanId = Guid.Parse((string) responseMessage.Details);
-                        curContainerDO.CurrentPlanNodeId = GetFirstActivityOfSubplan(uow, curContainerDO ,subplanId);
-                        continue;
-
-                    case ActivityResponse.RequestLaunch:
-                        activityResponseDTO.TryParseResponseMessageDTO(out responseMessage);
-                        var planId = Guid.Parse((string)responseMessage.Details);
-                        //hmm what to do now
-                        await LoadAndRunPlan(uow, curContainerDO, planId);
-                        break;
-
-                    default:
-                        throw new Exception("Unknown activity state on activity with id " + curContainerDO.CurrentPlanNodeId);
+                    AddOperationalStateCrate(uow, curContainerDO);
                 }
 
-                var shouldSkipChildren = ShouldSkipChildren(curContainerDO, actionState, activityResponse);
-                actionState = MoveToNextPlan(uow, curContainerDO, shouldSkipChildren);
-            }
-
-            if(curContainerDO.ContainerState == ContainerState.Executing)
-            {
-                curContainerDO.ContainerState = ContainerState.Completed;
+                curContainerDO.ContainerState = ContainerState.Executing;
                 uow.SaveChanges();
+
+                if (curContainerDO.CurrentPlanNodeId == null)
+                {
+                    throw new ArgumentNullException("CurrentActivity is null. Cannot execute CurrentActivity");
+                }
+
+                var actionState = ActivityState.InitialRun;
+                while (curContainerDO.CurrentPlanNodeId != null)
+                {
+                    var activityResponseDTO = await ProcessActivity(uow, curContainerDO, actionState);
+
+                    //extract ActivityResponse type from result
+                    ActivityResponse activityResponse = ActivityResponse.Null;
+                    if (activityResponseDTO != null)
+                        Enum.TryParse(activityResponseDTO.Type, out activityResponse);
+
+                    ResponseMessageDTO responseMessage;
+
+                    switch (activityResponse)
+                    {
+                        case ActivityResponse.ExecuteClientActivity:
+                        case ActivityResponse.Success:
+                        case ActivityResponse.ReProcessChildren:
+                        case ActivityResponse.Null://let's assume this is success for now
+
+
+
+                            break;
+                        case ActivityResponse.RequestSuspend:
+                            curContainerDO.ContainerState = ContainerState.Pending;
+                            return;
+
+                        case ActivityResponse.Error:
+                            //TODO retry activity execution until 3 errors??
+                            //so we are able to show the specific error that is embedded inside the container we are sending back that container to client
+                            ErrorDTO error = activityResponseDTO.TryParseErrorDTO(out error) ? error : null;
+                            throw new ErrorResponseException(Mapper.Map<ContainerDO, ContainerDTO>(curContainerDO), error?.Message);
+                        case ActivityResponse.RequestTerminate:
+                            //FR-2163 - If action response requests for termination, we make the container as Completed to avoid unwanted errors.
+                            curContainerDO.ContainerState = ContainerState.Completed;
+                            EventManager.ProcessingTerminatedPerActivityResponse(curContainerDO, ActivityResponse.RequestTerminate);
+
+                            return;
+
+                        case ActivityResponse.JumpToActivity:
+                            actionState = ActivityState.InitialRun;
+                            activityResponseDTO.TryParseResponseMessageDTO(out responseMessage);
+                            curContainerDO.CurrentPlanNodeId = Guid.Parse((string)responseMessage.Details);
+                            continue;
+
+                        case ActivityResponse.JumpToSubplan:
+                            actionState = ActivityState.InitialRun;
+                            activityResponseDTO.TryParseResponseMessageDTO(out responseMessage);
+                            var subplanId = Guid.Parse((string)responseMessage.Details);
+                            curContainerDO.CurrentPlanNodeId = GetFirstActivityOfSubplan(uow, curContainerDO, subplanId);
+                            continue;
+
+                        case ActivityResponse.RequestLaunch:
+                            activityResponseDTO.TryParseResponseMessageDTO(out responseMessage);
+                            var planId = Guid.Parse((string)responseMessage.Details);
+                            //hmm what to do now
+                            await LoadAndRunPlan(uow, curContainerDO, planId);
+                            break;
+
+                        default:
+                            throw new Exception("Unknown activity state on activity with id " + curContainerDO.CurrentPlanNodeId);
+                    }
+
+                    var shouldSkipChildren = ShouldSkipChildren(curContainerDO, actionState, activityResponse);
+                    actionState = MoveToNextPlan(uow, curContainerDO, shouldSkipChildren);
+                }
+
+                if (curContainerDO.ContainerState == ContainerState.Executing)
+                {
+                    curContainerDO.ContainerState = ContainerState.Completed;
+                    uow.SaveChanges();
+
+                }
+            }
+            catch(Exception e)
+            {
+                var curActivityId = curContainerDO.CurrentPlanNodeId.Value;
+                var curPlanNodeDO = uow.PlanRepository.GetById<PlanNodeDO>(curActivityId);
+                var curActivityDO = curPlanNodeDO as ActivityDO;
+
+                if (curActivityDO != null)
+                {
+                    throw new ActivityExecutionException(curActivityDO, e.Message, e);
+                }
+                else
+                {
+                    throw;
+                }
             }
         }
 

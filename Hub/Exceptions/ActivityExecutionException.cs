@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Data.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -9,22 +10,22 @@ namespace Hub.Exceptions
 {
     public class ActivityExecutionException : Exception
     {
-        public string UserErrorMessage { get; private set; }
+        public ActivityDO FailedActivity { get; private set; }
 
         public ActivityExecutionException()
         {
         }
 
-        public ActivityExecutionException(string userErrorMessage, string errorMessage = "")
+        public ActivityExecutionException(ActivityDO failedActivity, string errorMessage = "")
             : base(errorMessage ?? string.Empty)
         {
-            UserErrorMessage = userErrorMessage;
+            FailedActivity = failedActivity;
         }
 
-        public ActivityExecutionException(string userErrorMessage, string message, Exception innerException)
+        public ActivityExecutionException(ActivityDO failedActivity, string message, Exception innerException)
             : base(message, innerException)
         {
-            UserErrorMessage = userErrorMessage;
+            FailedActivity = failedActivity;
         }
 
         protected ActivityExecutionException(SerializationInfo info, StreamingContext context)
