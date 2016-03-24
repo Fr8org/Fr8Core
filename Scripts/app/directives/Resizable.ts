@@ -15,19 +15,28 @@ module dockyard.directives {
                         'display': 'inline-block',
                         'overflow': 'hidden',
                         'min-width': function () {
-                            if (angular.isNumber(parseInt(attrs.minwidth)) && !isNaN(parseInt(attrs.minwidth))) {
-                                return parseInt(attrs.minwidth);
+                            var minWidth = parseInt(attrs.minwidth);
+                            if (angular.isNumber(minWidth) && !isNaN(minWidth) && minWidth != 0) {
+                                return minWidth;
+                            }
+                            return $(elem, this).width();
+                        },
+                        'width': function () {
+                            var minWidth = parseInt(attrs.minwidth);
+                            if (angular.isNumber(minWidth) && !isNaN(minWidth) && minWidth != 0) {
+                                return minWidth;
                             }
                             return $(elem, this).width();
                         },
                         'min-height': function () { return $(elem, this).height() + 20; },
                     }).resizable()
                     .find(elem)
-                    .css({
-                        overflow: 'auto',
-                        width: '100%',
-                        height: '96%'
-                    });
+                    //.css({
+                    //    overflow: 'auto',
+                    //    width: '100%',
+                    //    height: '96%'
+                    //})
+                    ;
             }
         }
     }

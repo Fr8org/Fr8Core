@@ -257,7 +257,7 @@
     margin-bottom: 5px;
     vertical-align: top;
     white-space: initial;
-    min-width: 330px;
+    /*min-width: 330px;*/
 }
 
     .action .pane-configure-action {
