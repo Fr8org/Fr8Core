@@ -362,7 +362,8 @@ namespace terminalFr8Core.Actions
                     RequestUpstream = false,
                     ManifestType = CrateManifestTypes.StandardDesignTimeFields,
                     Label = AvailableCellsCrateLabel
-                }
+                },
+                Events = new List<ControlEvent> { ControlEvent.RequestConfig }
             };
 
             var extractValueFromDdTemplate = new DropDownList()
@@ -374,7 +375,8 @@ namespace terminalFr8Core.Actions
                 {
                     new ListItem { Key = ImmediatelyToRightKey, Value = ImmediatelyToRightValue},
                     new ListItem { Key = ImmediatelyBelowKey, Value = ImmediatelyBelowValue }
-                }
+                },
+                Events = new List<ControlEvent> { ControlEvent.RequestConfig }
             };
 
             var controlList = new ControlList(new ListTemplate() { Name = "ddlb_pair", Template = { cellDdTemplate, extractValueFromDdTemplate } })
@@ -382,7 +384,8 @@ namespace terminalFr8Core.Actions
                 AddControlGroupButtonText = "Add Cell Extractor",
                 Name = "extractor_list",
                 Label = "Select fields to extract",
-                NoDataMessage = "No field is selected"
+                NoDataMessage = "No field is selected",
+                Events = new List<ControlEvent> { ControlEvent.RequestConfig }
             };
 
             return PackControlsCrate(crateChooser, controlList);
