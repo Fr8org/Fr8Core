@@ -23,14 +23,20 @@ using terminalIntegrationTests.Fixtures;
 
 namespace terminalIntegrationTests.Helpers
 {
-    public class ActivityConfigurator : BaseHubIntegrationTest
+    public class ActivityConfigurator
     {
+        private BaseHubIntegrationTest baseHubIntTest;
+        public ActivityConfigurator(BaseHubIntegrationTest baseIntTest)
+        {
+            baseHubIntTest = baseIntTest;
+        }
+
         #region Plan Methods
         public async Task<PlanDTO> CreateNewPlan()
         {
             var newPlan = HealthMonitor_FixtureData.TestPlanEmptyDTO();
 
-            var planDTO = await HttpPostAsync<PlanEmptyDTO, PlanDTO>(_baseUrl + "plans", newPlan);
+            var planDTO = await baseHubIntTest.HttpPostAsync<PlanEmptyDTO, PlanDTO>(baseHubIntTest.GetHubApiBaseUrl() + "plans", newPlan);
 
             Assert.True(planDTO.Plan.SubPlans.Any(), "New created Plan doesn't have an existing sub plan.");
 
@@ -44,7 +50,7 @@ namespace terminalIntegrationTests.Helpers
         public async Task<ActivityDTO> AddAndConfigure_QueryDocuSign(PlanDTO plan, int ordering)
         {
             var queryDocuSignActivity = HealthMonitor_FixtureData.Query_DocuSign_v1_InitialConfiguration_Fr8DataDTO().ActivityDTO;
-            queryDocuSignActivity.ActivityTemplate.Terminal = GetTerminal("terminalDocuSign");
+            queryDocuSignActivity.ActivityTemplate.Terminal = GetTerminal("terminalDocuSign",1);
             queryDocuSignActivity.ActivityTemplate.TerminalId = queryDocuSignActivity.ActivityTemplate.Terminal.Id;
 
             //connect current activity with a plan
@@ -54,11 +60,11 @@ namespace terminalIntegrationTests.Helpers
             queryDocuSignActivity.Ordering = ordering;
 
             //call initial configuration to server
-            queryDocuSignActivity = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", queryDocuSignActivity);
+            queryDocuSignActivity = await baseHubIntTest.HttpPostAsync<ActivityDTO, ActivityDTO>(baseHubIntTest.GetHubApiBaseUrl() + "activities/save", queryDocuSignActivity);
             //this call is without authtoken
-            queryDocuSignActivity = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure?", queryDocuSignActivity);
+            queryDocuSignActivity = await baseHubIntTest.HttpPostAsync<ActivityDTO, ActivityDTO>(baseHubIntTest.GetHubApiBaseUrl() + "activities/configure?", queryDocuSignActivity);
 
-            var initialcrateStorage = Crate.FromDto(queryDocuSignActivity.CrateStorage);
+            var initialcrateStorage = baseHubIntTest.Crate.FromDto(queryDocuSignActivity.CrateStorage);
 
             var stAuthCrate = initialcrateStorage.CratesOfType<StandardAuthenticationCM>().FirstOrDefault();
             bool defaultDocuSignAuthTokenExists = stAuthCrate == null;
@@ -73,12 +79,12 @@ namespace terminalIntegrationTests.Helpers
                     AuthTokenId = Guid.Parse(queryDocuSignActivity.AuthToken.Token),
                     IsMain = true
                 };
-                await HttpPostAsync<ManageAuthToken_Apply[], string>(_baseUrl + "ManageAuthToken/apply", new ManageAuthToken_Apply[] { applyToken });
+                await baseHubIntTest.HttpPostAsync<ManageAuthToken_Apply[], string>(baseHubIntTest.GetHubApiBaseUrl() + "ManageAuthToken/apply", new ManageAuthToken_Apply[] { applyToken });
             }
 
             //send configure with the auth token
-            queryDocuSignActivity = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure?", queryDocuSignActivity);
-            initialcrateStorage = Crate.FromDto(queryDocuSignActivity.CrateStorage);
+            queryDocuSignActivity = await baseHubIntTest.HttpPostAsync<ActivityDTO, ActivityDTO>(baseHubIntTest.GetHubApiBaseUrl() + "activities/configure?", queryDocuSignActivity);
+            initialcrateStorage = baseHubIntTest.Crate.FromDto(queryDocuSignActivity.CrateStorage);
             Assert.True(initialcrateStorage.CratesOfType<StandardConfigurationControlsCM>().Any(), "Crate StandardConfigurationControlsCM is missing in API response.");
 
             var controlsCrate = initialcrateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
@@ -93,13 +99,13 @@ namespace terminalIntegrationTests.Helpers
             statusControl.selectedKey = null;
 
             //call followup configuration
-            using (var crateStorage = Crate.GetUpdatableStorage(queryDocuSignActivity))
+            using (var crateStorage = baseHubIntTest.Crate.GetUpdatableStorage(queryDocuSignActivity))
             {
                 crateStorage.Remove<StandardConfigurationControlsCM>();
                 crateStorage.Add(controlsCrate);
             }
-            queryDocuSignActivity = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", queryDocuSignActivity);
-            queryDocuSignActivity = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure", queryDocuSignActivity);
+            queryDocuSignActivity = await baseHubIntTest.HttpPostAsync<ActivityDTO, ActivityDTO>(baseHubIntTest.GetHubApiBaseUrl() + "activities/save", queryDocuSignActivity);
+            queryDocuSignActivity = await baseHubIntTest.HttpPostAsync<ActivityDTO, ActivityDTO>(baseHubIntTest.GetHubApiBaseUrl() + "activities/configure", queryDocuSignActivity);
 
             return await Task.FromResult(queryDocuSignActivity);
         }
@@ -111,7 +117,7 @@ namespace terminalIntegrationTests.Helpers
         public async Task<ActivityDTO> AddAndConfigure_SaveToGoogleSheet(PlanDTO plan, int ordering, string manufestTypeToAssert, string crateDescriptionLabelToAssert)
         {
             var saveToGoogleActivity = HealthMonitor_FixtureData.Save_To_Google_Sheet_v1_InitialConfiguration_Fr8DataDTO();
-            saveToGoogleActivity.ActivityDTO.ActivityTemplate.Terminal = GetTerminal("terminalGoogle");
+            saveToGoogleActivity.ActivityDTO.ActivityTemplate.Terminal = GetTerminal("terminalGoogle",1);
             saveToGoogleActivity.ActivityDTO.ActivityTemplate.TerminalId = saveToGoogleActivity.ActivityDTO.ActivityTemplate.Terminal.Id;
 
             //connect current activity with a plan
@@ -121,9 +127,9 @@ namespace terminalIntegrationTests.Helpers
             saveToGoogleActivity.ActivityDTO.Ordering = ordering;
 
             //call initial configuration to server
-            saveToGoogleActivity.ActivityDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", saveToGoogleActivity.ActivityDTO);
-            saveToGoogleActivity.ActivityDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure?", saveToGoogleActivity.ActivityDTO);
-            var initialcrateStorage = Crate.FromDto(saveToGoogleActivity.ActivityDTO.CrateStorage);
+            saveToGoogleActivity.ActivityDTO = await baseHubIntTest.HttpPostAsync<ActivityDTO, ActivityDTO>(baseHubIntTest.GetHubApiBaseUrl() + "activities/save", saveToGoogleActivity.ActivityDTO);
+            saveToGoogleActivity.ActivityDTO = await baseHubIntTest.HttpPostAsync<ActivityDTO, ActivityDTO>(baseHubIntTest.GetHubApiBaseUrl() + "activities/configure?", saveToGoogleActivity.ActivityDTO);
+            var initialcrateStorage = baseHubIntTest.Crate.FromDto(saveToGoogleActivity.ActivityDTO.CrateStorage);
 
             var stAuthCrate = initialcrateStorage.CratesOfType<StandardAuthenticationCM>().FirstOrDefault();
             bool defaultDocuSignAuthTokenExists = stAuthCrate == null;
@@ -140,21 +146,16 @@ namespace terminalIntegrationTests.Helpers
                 //};
                 //await HttpPostAsync<ManageAuthToken_Apply[], string>(_baseUrl + "ManageAuthToken/apply", new ManageAuthToken_Apply[] { applyToken });
             }
-            try
-            {
-                saveToGoogleActivity.ActivityDTO =
-                    await
-                        HttpPostAsync<Fr8DataDTO, ActivityDTO>(
-                            NormalizeSchema(saveToGoogleActivity.ActivityDTO.ActivityTemplate.Terminal.Endpoint) +
-                            "/activities/configure", saveToGoogleActivity);
 
-            }
-            catch (Exception ex)
-            {
-                
-            }
+            saveToGoogleActivity.ActivityDTO =
+                await
+                    baseHubIntTest.HttpPostAsync<Fr8DataDTO, ActivityDTO>(
+                        NormalizeSchema(saveToGoogleActivity.ActivityDTO.ActivityTemplate.Terminal.Endpoint) +
+                        "/activities/configure", saveToGoogleActivity);
+
+
             //saveToGoogleActivity = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure?", saveToGoogleActivity);
-            initialcrateStorage = Crate.FromDto(saveToGoogleActivity.ActivityDTO.CrateStorage);
+            initialcrateStorage = baseHubIntTest.Crate.FromDto(saveToGoogleActivity.ActivityDTO.CrateStorage);
             Assert.True(initialcrateStorage.CratesOfType<StandardConfigurationControlsCM>().Any(), "Crate StandardConfigurationControlsCM is missing in API response.");
 
             var controlsCrate = initialcrateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
@@ -171,13 +172,13 @@ namespace terminalIntegrationTests.Helpers
             Assert.AreEqual(crateDescriptionLabelToAssert, crateChooser.CrateDescriptions[0].Label);
 
             //select the first crate description
-            using (var crateStorage = Crate.GetUpdatableStorage(saveToGoogleActivity.ActivityDTO))
+            using (var crateStorage = baseHubIntTest.Crate.GetUpdatableStorage(saveToGoogleActivity.ActivityDTO))
             {
                 crateChooser.CrateDescriptions.First().Selected = true;
             }
 
-            saveToGoogleActivity.ActivityDTO = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", saveToGoogleActivity.ActivityDTO);
-            saveToGoogleActivity.ActivityDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(NormalizeSchema(saveToGoogleActivity.ActivityDTO.ActivityTemplate.Terminal.Endpoint) +
+            saveToGoogleActivity.ActivityDTO = await baseHubIntTest.HttpPostAsync<ActivityDTO, ActivityDTO>(baseHubIntTest.GetHubApiBaseUrl() + "activities/save", saveToGoogleActivity.ActivityDTO);
+            saveToGoogleActivity.ActivityDTO = await baseHubIntTest.HttpPostAsync<Fr8DataDTO, ActivityDTO>(NormalizeSchema(saveToGoogleActivity.ActivityDTO.ActivityTemplate.Terminal.Endpoint) +
                        "/activities/configure", saveToGoogleActivity);
 
             return await Task.FromResult(saveToGoogleActivity.ActivityDTO);
@@ -196,7 +197,7 @@ namespace terminalIntegrationTests.Helpers
                 IsDemoAccount = true,
                 TerminalId = terminalId
             };
-            var token = await HttpPostAsync<CredentialsDTO, JObject>(_baseUrl + "authentication/token", creds);
+            var token = await baseHubIntTest.HttpPostAsync<CredentialsDTO, JObject>(baseHubIntTest.GetHubApiBaseUrl()+ "authentication/token", creds);
             Assert.AreNotEqual(token["error"].ToString(), "Unable to authenticate in DocuSign service, invalid login name or password.", "DocuSign auth error. Perhaps max number of tokens is exceeded.");
             Assert.AreEqual(false, String.IsNullOrEmpty(token["authTokenId"].Value<string>()), "AuthTokenId is missing in API response.");
             Guid tokenGuid = Guid.Parse(token["authTokenId"].Value<string>());
@@ -223,7 +224,7 @@ namespace terminalIntegrationTests.Helpers
 
             var response = await ObjectFactory.GetInstance<IAuthorization>().GetOAuthToken(terminal, externalAuthenticationDTO);
 
-            var authTokens = await HttpGetAsync<List<ManageAuthToken_Terminal>>(_baseUrl + "ManageAuthToken");
+            var authTokens = await baseHubIntTest.HttpGetAsync<List<ManageAuthToken_Terminal>>(baseHubIntTest.GetHubApiBaseUrl() + "ManageAuthToken");
             var authToken = authTokens.FirstOrDefault(a => a.Name.Equals("terminalGoogle"));
             var mainAuthToken = new AuthorizationTokenDTO { Id = authToken.AuthTokens.FirstOrDefault(x => x.ExternalAccountName == "fr8test@gmail.com").Id.ToString() };
 
@@ -234,16 +235,16 @@ namespace terminalIntegrationTests.Helpers
 
         #region Private Methods 
 
-        public TerminalDTO GetTerminal(string terminalName)
+        public TerminalDTO GetTerminal(string terminalName, int terminalversion)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var terminal = uow.TerminalRepository.GetQuery()
-                    .FirstOrDefault(t => t.Version == currentTerminalVersion.ToString() && t.Name == terminalName);
+                    .FirstOrDefault(t => t.Version == terminalversion.ToString() && t.Name == terminalName);
                 if (null == terminal)
                 {
                     throw new Exception(
-                        String.Format("Terminal with name {0} and version {1} not found", terminalName, currentTerminalVersion));
+                        String.Format("Terminal with name {0} and version {1} not found", terminalName, terminalversion));
                 }
                 return Mapper.Map<TerminalDO, TerminalDTO>(terminal);
             }
@@ -280,7 +281,5 @@ namespace terminalIntegrationTests.Helpers
         }
 
         #endregion
-
-        public override string TerminalName { get; }
     }
 }

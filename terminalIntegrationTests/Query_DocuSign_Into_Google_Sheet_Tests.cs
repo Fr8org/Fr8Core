@@ -1,34 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Http.Routing.Constraints;
-using System.Web.Mvc;
-using AutoMapper;
-using Data.Control;
-using Data.Crates;
-using Data.Entities;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using DocuSign.eSign.Api;
-using DocuSign.eSign.Model;
+﻿using System.Threading.Tasks;
 using HealthMonitor.Utility;
-using Hub.Interfaces;
-using Hub.Managers;
-using Hub.StructureMap;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using StructureMap;
-using terminalDocuSign.Infrastructure.AutoMapper;
-using terminalDocuSign.Infrastructure.StructureMap;
-using terminalDocuSign.Services.New_Api;
-using terminalIntegrationTests.Fixtures;
 using terminalIntegrationTests.Helpers;
-using TerminalBase.Infrastructure;
-using UtilitiesTesting;
 
 namespace terminalIntegrationTests
 {
@@ -39,14 +12,13 @@ namespace terminalIntegrationTests
         #region Properties
 
         public override string TerminalName { get; }
-        private AuthorizationTokenDTO DocuSignToken;
 
         #endregion
 
         [Test]
         public async Task Query_DocuSign_Into_Google_Sheet_End_To_End()
         {
-            var activityConfigurator = new ActivityConfigurator();
+            var activityConfigurator = new ActivityConfigurator(this);
             await RevokeTokens();
             
             //create a new envelope that will be put into drafts.
