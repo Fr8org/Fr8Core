@@ -187,6 +187,7 @@
   <ItemGroup>
     <Compile Include="Fixtures\FixtureData - CoreSelfHostFactory.cs" />
     <Compile Include="Fixtures\HealthMonitor_FixtureData.cs" />
+    <Compile Include="Helpers\ActivityConfigurator.cs" />
     <Compile Include="Query_DocuSign_Into_Google_Sheet_Tests.cs" />
     <Compile Include="TerminalIntegrationTests_SendDocuSignEnvelopeV1.cs" />
     <Compile Include="TerminalIntegrationTests.cs" />
