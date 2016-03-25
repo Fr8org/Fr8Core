@@ -69,11 +69,13 @@ namespace TerminalBase.BaseClasses
         // Functions
         /**********************************************************************************/
 
+
         protected EnhancedTerminalActivity(bool isAuthenticationRequired)
         {
             IsAuthenticationRequired = isAuthenticationRequired;
             UiBuilder = new UiBuilder();
-        }
+            ActivityName = GetType().Name;
+        } 
 
         /**********************************************************************************/
 
@@ -116,25 +118,10 @@ namespace TerminalBase.BaseClasses
                     default:
                         throw new ArgumentOutOfRangeException($"Unsupported configuration type: {configurationType}");
                 }
-                PublishRuntimeAvailableCrate(configurationType);
             }
 
             return curActivityDO;
         }
-
-        private const string RuntimeCrateDescriptionsCrateLabel = "Runtime Available Crates";
-
-        private void PublishRuntimeAvailableCrate(ConfigurationRequestType configurationType)
-        {
-            CurrentActivityStorage.RemoveByLabel(RuntimeCrateDescriptionsCrateLabel);
-            var descriptions = GetRuntimeAvailableCrateDescriptions(configurationType)?.ToArray();
-            if (descriptions != null && descriptions.Length > 0)
-            {
-                CurrentActivityStorage.Add(Crate<CrateDescriptionCM>.FromContent(RuntimeCrateDescriptionsCrateLabel, new CrateDescriptionCM(descriptions), AvailabilityType.Always));
-            }
-        }
-
-        protected abstract IEnumerable<CrateDescriptionDTO> GetRuntimeAvailableCrateDescriptions(ConfigurationRequestType configurationType);
 
         /**********************************************************************************/
 

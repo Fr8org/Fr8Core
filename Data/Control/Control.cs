@@ -98,17 +98,8 @@ namespace Data.Control
 
         private void SelectItem(ListItem newItem)
         {
-            var currentSelectedItem = ListItems?.FirstOrDefault(x => x.Selected);
-            if (currentSelectedItem != null)
-            {
-                currentSelectedItem.Selected = false;
-            }
             selectedKey = newItem?.Key;
             Value = newItem?.Value;
-            if (newItem != null)
-            {
-                newItem.Selected = true;
-            }
         }
     }
 

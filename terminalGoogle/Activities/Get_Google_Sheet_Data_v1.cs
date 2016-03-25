@@ -14,8 +14,6 @@ using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
 using terminalGoogle.Services;
 using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
-using Utilities;
 
 namespace terminalGoogle.Actions
 {
@@ -40,7 +38,7 @@ namespace terminalGoogle.Actions
                 Controls.Add(SpreadsheetList);
                 WorksheetList = new DropDownList
                 {
-                    Label = "(Optional) Select worksheet",
+                    Label = "Select worksheet",
                     Name = nameof(WorksheetList),
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 };
@@ -71,93 +69,19 @@ namespace terminalGoogle.Actions
             }
         }
 
-        private readonly IGoogleSheet _googleApi;
-
         private const string RunTimeCrateLabel = "Table Generated From Google Sheet Data";
+
+        private const string ConfigurationCrateLabel = "Selected Spreadsheet & Worksheet";
+
+        private const string ColumnHeadersCrateLabel = "Spreadsheet Column Headers";
+
+        private readonly IGoogleSheet _googleApi;
 
         public Get_Google_Sheet_Data_v1()
            : base(true)
         {
             _googleApi = new GoogleSheet();
         }
-
-        protected override bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
-        {
-            if (base.NeedsAuthentication(authTokenDO))
-            {
-                return true;
-            }
-            var token = GetGoogleAuthToken(authTokenDO);
-            // we may also post token to google api to check its validity
-            return token.Expires - DateTime.Now < TimeSpan.FromMinutes(5) && string.IsNullOrEmpty(token.RefreshToken);
-        }
-
-        protected override IEnumerable<CrateDescriptionDTO> GetRuntimeAvailableCrateDescriptions(ConfigurationRequestType configurationType)
-        {
-            yield return new CrateDescriptionDTO
-            {
-                Label = RunTimeCrateLabel,
-                ManifestId = (int)MT.StandardTableData,
-                ManifestType = MT.StandardTableData.GetEnumDisplayName(),
-                ProducedBy = "Load data from Google spreadsheet"
-            };
-        }
-
-        protected override async Task Initialize()
-        {
-            var spreadsheets = await _googleApi.GetSpreadsheetsAsync(GetGoogleAuthToken());
-            ConfigurationControls.SpreadsheetList.ListItems = spreadsheets.Select(x => new ListItem { Key = x.Value, Value = x.Key }).ToList();
-        }
-
-        protected override async Task Configure()
-        {
-            CurrentActivityStorage.RemoveByLabel(ColumnHeadersCrateLabel);
-            var googleAuth = GetGoogleAuthToken();
-            //If spreadsheet selection is cleared we remove worksheet DDLB from the controls
-            if (string.IsNullOrEmpty(ConfigurationControls.SpreadsheetList.selectedKey))
-            {
-                ConfigurationControls.HideWorksheetList();
-                SelectedSpreadsheet = null;
-            }
-            else
-            {
-                var previousValues = SelectedSpreadsheet;
-                //Spreadsheet was changed - populate the list of worksheets and select first one
-                if (previousValues == null || previousValues.Key != ConfigurationControls.SpreadsheetList.Value)
-                {
-                    var worksheets = await _googleApi.GetWorksheetsAsync(ConfigurationControls.SpreadsheetList.Value, googleAuth);
-                    //We show worksheet list only if there is more than one worksheet
-                    if (worksheets.Count > 1)
-                    {
-                        ConfigurationControls.ShowWorksheetList();
-                        ConfigurationControls.WorksheetList.ListItems = worksheets.Select(x => new ListItem { Key = x.Value, Value = x.Key }).ToList();
-                        var firstWorksheet = ConfigurationControls.WorksheetList.ListItems.First();
-                        ConfigurationControls.WorksheetList.selectedKey = firstWorksheet.Key;
-                        ConfigurationControls.WorksheetList.Value = firstWorksheet.Value;
-                        firstWorksheet.Selected = true;
-                    }
-                    else
-                    {
-                        ConfigurationControls.HideWorksheetList();
-                    }
-                }
-                //Retrieving worksheet headers to make them avaialble for downstream activities
-                var selectedSpreasheetWorksheet = new FieldDTO(ConfigurationControls.SpreadsheetList.Value,
-                                                               ConfigurationControls.WorksheetList == null
-                                                                   ? string.Empty
-                                                                   : ConfigurationControls.WorksheetList.Value);
-                var columnHeaders = await _googleApi.GetWorksheetHeadersAsync(selectedSpreasheetWorksheet.Key, selectedSpreasheetWorksheet.Value, googleAuth);
-                var columnHeadersCrate = Crate.FromContent(ColumnHeadersCrateLabel,
-                                                           new FieldDescriptionsCM(columnHeaders.Select(x => new FieldDTO(x.Key, x.Key, AvailabilityType.Always))),
-                                                           AvailabilityType.Always);
-                CurrentActivityStorage.ReplaceByLabel(columnHeadersCrate);
-                SelectedSpreadsheet = selectedSpreasheetWorksheet;
-            }
-        }
-
-        private const string ConfigurationCrateLabel = "Selected Spreadsheet & Worksheet";
-
-        private const string ColumnHeadersCrateLabel = "Spreadsheet Column Headers";
         //This property is used to store and retrieve user-selected spreadsheet and worksheet between configuration responses 
         //to avoid extra fetch from Google
         private FieldDTO SelectedSpreadsheet
@@ -180,6 +104,73 @@ namespace terminalGoogle.Actions
             }
         }
 
+        private GoogleAuthDTO GetGoogleAuthToken(AuthorizationTokenDO authTokenDO = null)
+        {
+            return JsonConvert.DeserializeObject<GoogleAuthDTO>((authTokenDO ?? AuthorizationToken).Token);
+        }
+
+        protected override bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
+        {
+            if (base.NeedsAuthentication(authTokenDO))
+            {
+                return true;
+            }
+            var token = GetGoogleAuthToken(authTokenDO);
+            // we may also post token to google api to check its validity
+            return token.Expires - DateTime.Now < TimeSpan.FromMinutes(5) && string.IsNullOrEmpty(token.RefreshToken);
+        }
+
+        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        {
+            var spreadsheets = await _googleApi.GetSpreadsheetsAsync(GetGoogleAuthToken());
+            ConfigurationControls.SpreadsheetList.ListItems = spreadsheets.Select(x => new ListItem { Key = x.Value, Value = x.Key }).ToList();
+            runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
+        }
+
+        protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
+        {
+            CurrentActivityStorage.RemoveByLabel(ColumnHeadersCrateLabel);
+            var googleAuth = GetGoogleAuthToken();
+            //If spreadsheet selection is cleared we remove worksheet DDLB from the controls
+            if (string.IsNullOrEmpty(ConfigurationControls.SpreadsheetList.selectedKey))
+            {
+                ConfigurationControls.HideWorksheetList();
+                SelectedSpreadsheet = null;
+            }
+            else
+            {
+                var previousValues = SelectedSpreadsheet;
+                //Spreadsheet was changed - populate the list of worksheets and select first one
+                if (previousValues == null || previousValues.Key != ConfigurationControls.SpreadsheetList.Value)
+                {
+                    var worksheets = await _googleApi.GetWorksheetsAsync(ConfigurationControls.SpreadsheetList.Value, googleAuth);
+                    //We show worksheet list only if there is more than one worksheet
+                    if (worksheets.Count > 1)
+                    {
+                        ConfigurationControls.ShowWorksheetList();
+                        ConfigurationControls.WorksheetList.ListItems = worksheets.Select(x => new ListItem { Key = x.Value, Value = x.Key }).ToList();
+                        var firstWorksheet = ConfigurationControls.WorksheetList.ListItems.First();
+                        ConfigurationControls.WorksheetList.SelectByKey(firstWorksheet.Key);
+                    }
+                    else
+                    {
+                        ConfigurationControls.HideWorksheetList();
+                    }
+                }
+                //Retrieving worksheet headers to make them avaialble for downstream activities
+                var selectedSpreasheetWorksheet = new FieldDTO(ConfigurationControls.SpreadsheetList.Value,
+                                                               ConfigurationControls.WorksheetList == null
+                                                                   ? string.Empty
+                                                                   : ConfigurationControls.WorksheetList.Value);
+                var columnHeaders = await _googleApi.GetWorksheetHeadersAsync(selectedSpreasheetWorksheet.Key, selectedSpreasheetWorksheet.Value, googleAuth);
+                var columnHeadersCrate = Crate.FromContent(ColumnHeadersCrateLabel,
+                                                           new FieldDescriptionsCM(columnHeaders.Select(x => new FieldDTO(x.Key, x.Key, AvailabilityType.Always))),
+                                                           AvailabilityType.Always);
+                CurrentActivityStorage.ReplaceByLabel(columnHeadersCrate);
+                SelectedSpreadsheet = selectedSpreasheetWorksheet;
+            }
+        }
+
         protected override async Task RunCurrentActivity()
         {
             var selectedSpreadsheet = ConfigurationControls.SpreadsheetList.Value;
@@ -190,11 +181,6 @@ namespace terminalGoogle.Actions
             var selectedWorksheet = ConfigurationControls.WorksheetList == null ? string.Empty : ConfigurationControls.WorksheetList.Value;
             var data = await _googleApi.GetDataAsync(selectedSpreadsheet, selectedWorksheet, GetGoogleAuthToken());
             CurrentPayloadStorage.Add(Crate.FromContent(RunTimeCrateLabel, new StandardTableDataCM { Table = data.ToList() }));
-        }
-
-        private GoogleAuthDTO GetGoogleAuthToken(AuthorizationTokenDO authTokenDO = null)
-        {
-            return JsonConvert.DeserializeObject<GoogleAuthDTO>((authTokenDO ?? AuthorizationToken).Token);
         }
     }
 }

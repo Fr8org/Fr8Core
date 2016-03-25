@@ -43,11 +43,6 @@ namespace terminaBaselTests.BaseClasses
         {
         }
 
-        protected override IEnumerable<CrateDescriptionDTO> GetRuntimeAvailableCrateDescriptions(ConfigurationRequestType configurationType)
-        {
-            yield break;
-        }
-
         protected override StandardConfigurationControlsCM CrateConfigurationControls()
         {
             return new StandardConfigurationControlsCM();
@@ -165,11 +160,6 @@ namespace terminaBaselTests.BaseClasses
             }
         }
 
-        protected override IEnumerable<CrateDescriptionDTO> GetRuntimeAvailableCrateDescriptions(ConfigurationRequestType configurationType)
-        {
-            yield break;
-        }
-
         public Action<ActivityUi> OnConfigure;
         public Action<ActivityUi> OnInitialize;
 
@@ -209,11 +199,6 @@ namespace terminaBaselTests.BaseClasses
         public ActivityWithUiBuilder()
             :base(false)
         {
-        }
-        
-        protected override IEnumerable<CrateDescriptionDTO> GetRuntimeAvailableCrateDescriptions(ConfigurationRequestType configurationType)
-        {
-            yield break;
         }
 
         protected override Task Initialize(RuntimeCrateManager runtimeCrateManager)
