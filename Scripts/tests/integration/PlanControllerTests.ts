@@ -3,7 +3,9 @@
 /// <reference path="../../typings/jquery/jquery.d.ts" />
 /// <reference path="../utils/fixture_planbuilder.ts" />
 
-
+// **************************************************************************************************
+// NOTE: The tests below are only for example. They are not run in the current version of the system. 
+// **************************************************************************************************
 module dockyard.tests.controller {
     import fx = utils.fixtures.PlanBuilder; // just an alias
 

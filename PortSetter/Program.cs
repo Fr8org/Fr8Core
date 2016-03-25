@@ -86,7 +86,7 @@ namespace PortSetter
             string port = "";
             if (terminalname != "HubWeb")
             {
-                var terminalEndpoint = xWeb.Descendants("appSettings").FirstOrDefault().Descendants().Where(a => a.Attribute("key").Value == "TerminalEndpoint");
+                var terminalEndpoint = xWeb.Descendants("appSettings").FirstOrDefault().Descendants().Where(a => a.Attribute("key").Value == (terminalname + "." + "TerminalEndpoint"));
                 var port_value = terminalEndpoint.Attributes("value").FirstOrDefault().Value;
                 port = port_value.Substring(port_value.IndexOf(":") + 1);
             }

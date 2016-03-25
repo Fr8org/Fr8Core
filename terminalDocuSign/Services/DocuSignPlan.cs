@@ -60,7 +60,7 @@ namespace terminalDocuSign.Services
 
         //only create a connect when running on dev/production
         private bool CreateConnect(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
-        {
+            {
             var authTokenDO = new AuthorizationTokenDO() { Token = authTokenDTO.Token, ExternalAccountId = authTokenDTO.ExternalAccountId };
             var config = _docuSignManager.SetUp(authTokenDO);
 
@@ -99,7 +99,7 @@ namespace terminalDocuSign.Services
                 }
                 catch { };
             }
-        }
+                }
 
         private async Task CreateAndActivateNewPlan(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
         {
@@ -115,9 +115,9 @@ namespace terminalDocuSign.Services
             var activityTemplates = await _hubCommunicator.GetActivityTemplates(null, curFr8UserId);
             var recordDocusignEventsTemplate = GetActivityTemplate(activityTemplates, "Prep DocuSign Events For Storage");
             var storeMTDataTemplate = GetActivityTemplate(activityTemplates, "SaveToFr8Warehouse");
-            await _hubCommunicator.CreateAndConfigureActivity(recordDocusignEventsTemplate.Id,
+            await _hubCommunicator.CreateAndConfigureActivity(recordDocusignEventsTemplate.Id, 
                 curFr8UserId, "Record DocuSign Events", 1, monitorDocusignPlan.Plan.StartingSubPlanId, false, new Guid(authTokenDTO.Id));
-            var storeMTDataActivity = await _hubCommunicator.CreateAndConfigureActivity(storeMTDataTemplate.Id,
+            var storeMTDataActivity = await _hubCommunicator.CreateAndConfigureActivity(storeMTDataTemplate.Id, 
                 curFr8UserId, "Save To Fr8 Warehouse", 2, monitorDocusignPlan.Plan.StartingSubPlanId);
             SetSelectedCrates(storeMTDataActivity);
             //save this
