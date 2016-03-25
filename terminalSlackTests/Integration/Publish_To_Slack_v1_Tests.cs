@@ -1,4 +1,4 @@
-﻿using System.Linq;
+﻿    using System.Linq;
 using System.Threading.Tasks;
 using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
@@ -58,7 +58,7 @@ namespace terminalSlackTests.Integration
         [Test]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}"
+            ExpectedMessage = @"An error has ocurred while sending a http://localhost:39504/activities/configure request to POST. Response message: {""status"":""terminal_error"",""message"":""No AuthToken provided.""}"
         )]
         public async Task Publish_To_Slack_v1_Initial_Configuration_Check_Crate_Structure_NoAuth()
         {
@@ -93,7 +93,7 @@ namespace terminalSlackTests.Integration
 
         private void AssertCrateTypes(ICrateStorage crateStorage)
         {
-            Assert.AreEqual(4, crateStorage.Count);
+            Assert.AreEqual(3, crateStorage.Count);
 
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(x => x.Label == "Configuration_Controls"));
             Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Available Fields"));

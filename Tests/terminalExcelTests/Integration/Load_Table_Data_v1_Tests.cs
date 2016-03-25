@@ -31,7 +31,6 @@ namespace terminalExcelTests.Integration
         [SetUp]
         public void SetUp()
         {
-            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
         }
 
