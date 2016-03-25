@@ -87,8 +87,8 @@ namespace terminalGoogleTests.Integration
             var stAuthCrate = initialcrateStorage.CratesOfType<StandardAuthenticationCM>().FirstOrDefault();
             bool defaultDocuSignAuthTokenExists = stAuthCrate == null;
 
-            if (!defaultDocuSignAuthTokenExists)
-            {
+            //if (!defaultDocuSignAuthTokenExists)
+            //{
                 queryDocuSignActivity.AuthToken =
                     await DocuSign_AuthToken(queryDocuSignActivity.ActivityTemplate.TerminalId);
 
@@ -102,7 +102,7 @@ namespace terminalGoogleTests.Integration
                     baseHubIntTest.HttpPostAsync<ManageAuthToken_Apply[], string>(
                         baseHubIntTest.GetHubApiBaseUrl() + "ManageAuthToken/apply",
                         new ManageAuthToken_Apply[] {applyToken});
-            }
+            //}
 
             //send configure with the auth token
             queryDocuSignActivity =
@@ -233,7 +233,7 @@ namespace terminalGoogleTests.Integration
 
                 //set the name of new spreadheet that need to be created
                 var radiobtnGroup = contrls.First(x => x.Type == ControlTypes.RadioButtonGroup) as RadioButtonGroup;
-                var radioOption = radiobtnGroup.Radios.First(x => x.Name == "newSpreadsheet") as RadioButtonOption;
+                var radioOption = radiobtnGroup.Radios.First(x => x.Name == "newSpreadsheet");
                 radioOption.Controls.First(x => x.Name == "NewSpreadsheetText").Value = newSpeadsheetName;
 
                 crateStorage.Add(contrCrate);
