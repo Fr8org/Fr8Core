@@ -6,8 +6,7 @@ namespace Data.Repositories.Plan
 {
     public interface IPlanStorageProvider
     {
-        PlanNodeDO LoadPlanByMemberId(Guid planMemberId);
-        PlanNodeDO LoadPlanByPlanId(Guid planId);
+        PlanNodeDO LoadPlan(Guid planMemberId);
 
         void Update(PlanSnapshot.Changes changes);
 

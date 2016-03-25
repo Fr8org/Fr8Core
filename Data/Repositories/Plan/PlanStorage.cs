@@ -19,7 +19,7 @@ namespace Data.Repositories.Plan
         {
             lock (_cache)
             {
-                return _cache.Get(planMemberId, _storageProvider.LoadPlanByMemberId);
+                return _cache.Get(planMemberId, _storageProvider.LoadPlan);
             }
         }
         

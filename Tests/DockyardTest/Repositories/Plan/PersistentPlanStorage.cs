@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Data.Entities;
 using Data.Repositories.Plan;
 
@@ -25,7 +23,7 @@ namespace DockyardTest.Repositories.Plan
             }
         }
 
-        public PlanNodeDO LoadPlanByMemberId(Guid planMemberId)
+        public PlanNodeDO LoadPlan(Guid planMemberId)
         {
             PlanNodeDO root = null;
 
@@ -51,12 +49,7 @@ namespace DockyardTest.Repositories.Plan
 
             return root;
         }
-
-        public PlanNodeDO LoadPlanByPlanId(Guid planId)
-        {
-            return LoadPlanByMemberId(planId);
-        }
-
+        
         public void Update(PlanSnapshot.Changes changes)
         {
             foreach (var change in changes.Delete)

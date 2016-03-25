@@ -27,7 +27,7 @@ namespace Data.Repositories.Plan
             Plans = new PlansRepository(uow);
         }
 
-        public PlanNodeDO LoadPlanByPlanId(Guid planId)
+        private PlanNodeDO LoadPlanByPlanId(Guid planId)
         {
             var lookup = new Dictionary<Guid, PlanNodeDO>();
 
@@ -123,7 +123,7 @@ namespace Data.Repositories.Plan
             return root;
         }
 
-        public PlanNodeDO LoadPlanByMemberId(Guid planMemberId)
+        public PlanNodeDO LoadPlan(Guid planMemberId)
         {
             var seed = PlanNodes.GetQuery().FirstOrDefault(x => x.Id == planMemberId);
 
