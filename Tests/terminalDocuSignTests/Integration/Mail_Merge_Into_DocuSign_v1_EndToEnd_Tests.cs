@@ -55,7 +55,7 @@ namespace terminalDocuSignTests.Integration
         {
             await RevokeTokens();
 
-            var googleAuthTokenId = await ExtractGoogleDefaultToken();
+           // var googleAuthTokenId = await ExtractGoogleDefaultToken();
 
             var solutionCreateUrl = _baseUrl + "activities/create?solutionName=Mail_Merge_Into_DocuSign";
 
@@ -353,7 +353,7 @@ namespace terminalDocuSignTests.Integration
             await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Plan.Id);
         }
 
-        private async Task<Guid> ExtractGoogleDefaultToken()
+        /*private async Task<Guid> ExtractGoogleDefaultToken()
         {
             var tokens = await HttpGetAsync<IEnumerable<ManageAuthToken_Terminal>>(
                 _baseUrl + "manageauthtoken/"
@@ -368,6 +368,6 @@ namespace terminalDocuSignTests.Integration
             Assert.NotNull(token);
 
             return token.Id;
-        }
+        }*/
     }
 }
