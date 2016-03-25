@@ -16,6 +16,7 @@
         events: Array<ControlEvent>;
         value: string;
         isFocused: boolean;
+        isHidden: boolean;
     }
 
     export class ControlEvent {
