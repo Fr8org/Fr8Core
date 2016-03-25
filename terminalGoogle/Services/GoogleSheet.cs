@@ -84,6 +84,7 @@ namespace terminalGoogle.Services
             // Get the first worksheet of the spreadsheet.
             var wsFeed = spreadsheet.Worksheets;
             var worksheet = string.IsNullOrEmpty(worksheetUri) ? (WorksheetEntry)wsFeed.Entries[0] : (WorksheetEntry)wsFeed.Entries.FindById(new AtomId(worksheetUri));
+            worksheet = worksheet ?? (WorksheetEntry)wsFeed.Entries[0];
 
             // Define the URL to request the list feed of the worksheet.
             AtomLink listFeedLink = worksheet.Links.FindService(GDataSpreadsheetsNameTable.ListRel, null);

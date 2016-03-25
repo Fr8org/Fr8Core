@@ -28,12 +28,7 @@ namespace terminalGoogle.Actions
             public DropDownList WorksheetList { get; set; }
 
             public TextBlock ActivityDescription { get; set; }
-
-            public ActivityUi() : this(false)
-            {
-            }
-
-            public ActivityUi(bool includeWorksheetList)
+            public ActivityUi()
             {
                 SpreadsheetList = new DropDownList
                 {
@@ -43,64 +38,36 @@ namespace terminalGoogle.Actions
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 };
                 Controls.Add(SpreadsheetList);
-                if (includeWorksheetList)
-                {
-                    AddWorksheetList();
-                }
-                ActivityDescription = new TextBlock
-                {
-                    Name = nameof(ActivityDescription),
-                };
-                Controls.Add(ActivityDescription);
-                UpdateDescription();
-            }
-
-            public void AddWorksheetList()
-            {
-                if (WorksheetList != null)
-                {
-                    return;
-                }
                 WorksheetList = new DropDownList
                 {
                     Label = "(Optional) Select worksheet",
                     Name = nameof(WorksheetList),
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 };
-                Controls.Insert(1, WorksheetList);
+                Controls.Add(WorksheetList);
+                ActivityDescription = new TextBlock
+                {
+                    Name = nameof(ActivityDescription),
+                };
+                Controls.Add(ActivityDescription);
+                HideWorksheetList();
+            }
+
+            public void ShowWorksheetList()
+            {
+                WorksheetList.IsHidden = false;
                 UpdateDescription();
             }
 
-            public void RemoveWorksheetList()
+            public void HideWorksheetList()
             {
-                if (WorksheetList == null)
-                {
-                    return;
-                }
-                Controls.Remove(WorksheetList);
-                WorksheetList = null;
+                WorksheetList.IsHidden = true;
                 UpdateDescription();
             }
 
             private void UpdateDescription()
             {
-                ActivityDescription.Value = $"This action will try to extract a table of rows from the {(WorksheetList == null ? "first" : "specified")} worksheet of the selected spreadsheet. The rows should have a header row";
-            }
-
-            public override void SyncWith(StandardConfigurationControlsCM configurationControls)
-            {
-                var worksheetList = (DropDownList)configurationControls.Controls.FirstOrDefault(x => x.Name == nameof(WorksheetList));
-                if (worksheetList != null)
-                {
-                    AddWorksheetList();
-                    WorksheetList.ListItems = worksheetList.ListItems.ToList();
-                    WorksheetList.SelectByKey(worksheetList.selectedKey);
-                }
-                else
-                {
-                    RemoveWorksheetList();
-                }
-                base.SyncWith(configurationControls);
+                ActivityDescription.Value = $"This action will try to extract a table of rows from the {(WorksheetList.IsHidden ? "first" : "specified")} worksheet of the selected spreadsheet. The rows should have a header row";
             }
         }
 
@@ -149,7 +116,7 @@ namespace terminalGoogle.Actions
             //If spreadsheet selection is cleared we remove worksheet DDLB from the controls
             if (string.IsNullOrEmpty(ConfigurationControls.SpreadsheetList.selectedKey))
             {
-                ConfigurationControls.RemoveWorksheetList();
+                ConfigurationControls.HideWorksheetList();
                 SelectedSpreadsheet = null;
             }
             else
@@ -162,7 +129,7 @@ namespace terminalGoogle.Actions
                     //We show worksheet list only if there is more than one worksheet
                     if (worksheets.Count > 1)
                     {
-                        ConfigurationControls.AddWorksheetList();
+                        ConfigurationControls.ShowWorksheetList();
                         ConfigurationControls.WorksheetList.ListItems = worksheets.Select(x => new ListItem { Key = x.Value, Value = x.Key }).ToList();
                         var firstWorksheet = ConfigurationControls.WorksheetList.ListItems.First();
                         ConfigurationControls.WorksheetList.selectedKey = firstWorksheet.Key;
@@ -171,16 +138,18 @@ namespace terminalGoogle.Actions
                     }
                     else
                     {
-                        ConfigurationControls.RemoveWorksheetList();
+                        ConfigurationControls.HideWorksheetList();
                     }
                 }
                 //Retrieving worksheet headers to make them avaialble for downstream activities
-                var selectedSpreasheetWorksheet = new FieldDTO(ConfigurationControls.SpreadsheetList.Value, ConfigurationControls.WorksheetList == null
-                                                                                                                ? string.Empty
-                                                                                                                : ConfigurationControls.WorksheetList.Value);
+                var selectedSpreasheetWorksheet = new FieldDTO(ConfigurationControls.SpreadsheetList.Value,
+                                                               ConfigurationControls.WorksheetList == null
+                                                                   ? string.Empty
+                                                                   : ConfigurationControls.WorksheetList.Value);
                 var columnHeaders = await _googleApi.GetWorksheetHeadersAsync(selectedSpreasheetWorksheet.Key, selectedSpreasheetWorksheet.Value, googleAuth);
                 var columnHeadersCrate = Crate.FromContent(ColumnHeadersCrateLabel,
-                                                           new FieldDescriptionsCM(columnHeaders.Select(x => new FieldDTO(x.Key, x.Key, AvailabilityType.RunTime))));
+                                                           new FieldDescriptionsCM(columnHeaders.Select(x => new FieldDTO(x.Key, x.Key, AvailabilityType.Always))),
+                                                           AvailabilityType.Always);
                 CurrentActivityStorage.ReplaceByLabel(columnHeadersCrate);
                 SelectedSpreadsheet = selectedSpreasheetWorksheet;
             }
@@ -205,6 +174,7 @@ namespace terminalGoogle.Actions
                     CurrentActivityStorage.RemoveByLabel(ConfigurationCrateLabel);
                     return;
                 }
+                value.Availability = AvailabilityType.Configuration;
                 var newValues = Crate.FromContent(ConfigurationCrateLabel, new FieldDescriptionsCM(value), AvailabilityType.Configuration);
                 CurrentActivityStorage.ReplaceByLabel(newValues);
             }

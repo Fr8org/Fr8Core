@@ -188,7 +188,7 @@ namespace Data.Interfaces.Manifests
             }
         }
         
-        public virtual void SyncWith(StandardConfigurationControlsCM configurationControls)
+        public void SyncWith(StandardConfigurationControlsCM configurationControls)
         {
             var targetNamedControls = EnumerateControlsDefinitions();
             foreach (var targetControl in targetNamedControls)
