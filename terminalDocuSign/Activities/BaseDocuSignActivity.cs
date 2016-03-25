@@ -129,8 +129,6 @@ namespace terminalDocuSign.Actions
 
         public virtual async System.Threading.Tasks.Task<Data.Entities.ActivityDO> Activate(Data.Entities.ActivityDO curActivityDO, Data.Entities.AuthorizationTokenDO authTokenDO)
         {
-            //create DocuSign account if there is no existing connect profile
-            DocuSignAccount.CreateOrUpdateDefaultDocuSignConnectConfiguration(null);
             return await base.Activate(curActivityDO, authTokenDO);
         }
 
