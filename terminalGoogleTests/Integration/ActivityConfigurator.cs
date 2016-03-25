@@ -136,6 +136,7 @@ namespace terminalGoogleTests.Integration
 
                 //call initial configuration to server
                 saveToGoogleActivity.ActivityDTO = await baseHubIntTest.HttpPostAsync<ActivityDTO, ActivityDTO>(baseHubIntTest.GetHubApiBaseUrl() + "activities/save", saveToGoogleActivity.ActivityDTO);
+                saveToGoogleActivity.ActivityDTO.AuthToken = HealthMonitor_FixtureData.NewGoogle_AuthToken();
                 saveToGoogleActivity.ActivityDTO = await baseHubIntTest.HttpPostAsync<ActivityDTO, ActivityDTO>(baseHubIntTest.GetHubApiBaseUrl() + "activities/configure?", saveToGoogleActivity.ActivityDTO);
                 var initialcrateStorage = baseHubIntTest.Crate.FromDto(saveToGoogleActivity.ActivityDTO.CrateStorage);
 
@@ -189,9 +190,9 @@ namespace terminalGoogleTests.Integration
                 }
 
                 saveToGoogleActivity.ActivityDTO = await baseHubIntTest.HttpPostAsync<ActivityDTO, ActivityDTO>(baseHubIntTest.GetHubApiBaseUrl() + "activities/save", saveToGoogleActivity.ActivityDTO);
+                saveToGoogleActivity.ActivityDTO.AuthToken = HealthMonitor_FixtureData.NewGoogle_AuthToken();
                 saveToGoogleActivity.ActivityDTO = await baseHubIntTest.HttpPostAsync<ActivityDTO, ActivityDTO>(baseHubIntTest.GetHubApiBaseUrl() + "activities/configure?", saveToGoogleActivity.ActivityDTO);
-
-
+                
                 return await Task.FromResult(saveToGoogleActivity.ActivityDTO);
             }
 

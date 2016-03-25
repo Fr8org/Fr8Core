@@ -10,7 +10,7 @@ namespace terminalGoogle.Interfaces
     {
         Dictionary<string, string> EnumerateSpreadsheetsUris(GoogleAuthDTO authDTO);
         IDictionary<string, string> EnumerateColumnHeaders(string spreadsheetUri, GoogleAuthDTO authDTO);
-        IEnumerable<TableRowDTO> EnumerateDataRows(string spreadsheetUri, GoogleAuthDTO authDTO);
+        IEnumerable<TableRowDTO> EnumerateDataRows(string spreadsheetUri, GoogleAuthDTO authDTO, string worksheetName = null);
 
         /// <summary>
         /// Exports Google Spreadsheet data to CSV file and save it on storage
