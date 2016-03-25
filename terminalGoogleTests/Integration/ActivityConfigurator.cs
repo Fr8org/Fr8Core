@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Data.States;
 using terminalGoogleTests.Unit;
 
 namespace terminalGoogleTests.Integration
@@ -58,8 +59,12 @@ namespace terminalGoogleTests.Integration
             public async Task<ActivityDTO> AddAndConfigure_QueryDocuSign(PlanDTO plan, int ordering)
             {
                 var queryDocuSignActivity = HealthMonitor_FixtureData.Query_DocuSign_v1_InitialConfiguration_Fr8DataDTO().ActivityDTO;
-                queryDocuSignActivity.ActivityTemplate.Terminal = GetTerminal("terminalDocuSign", 1);
-                queryDocuSignActivity.ActivityTemplate.TerminalId = queryDocuSignActivity.ActivityTemplate.Terminal.Id;
+
+                var activityCategoryParam = new ActivityCategory[] { ActivityCategory.Receivers };
+                var activityTemplates = await baseHubIntTest.HttpPostAsync<ActivityCategory[], List<WebServiceActivitySetDTO>>(baseHubIntTest.GetHubApiBaseUrl() + "webservices/activities", activityCategoryParam);
+                var apmActivityTemplate = activityTemplates.SelectMany(a => a.Activities).Single(a => a.Name == "Query_DocuSign");
+
+                queryDocuSignActivity.ActivityTemplate = apmActivityTemplate;
 
                 //connect current activity with a plan
                 var subPlan = plan.Plan.SubPlans.FirstOrDefault();
@@ -91,6 +96,7 @@ namespace terminalGoogleTests.Integration
                 }
 
                 //send configure with the auth token
+                queryDocuSignActivity = await baseHubIntTest.HttpPostAsync<ActivityDTO, ActivityDTO>(baseHubIntTest.GetHubApiBaseUrl() + "activities/save", queryDocuSignActivity);
                 queryDocuSignActivity = await baseHubIntTest.HttpPostAsync<ActivityDTO, ActivityDTO>(baseHubIntTest.GetHubApiBaseUrl() + "activities/configure?", queryDocuSignActivity);
                 initialcrateStorage = baseHubIntTest.Crate.FromDto(queryDocuSignActivity.CrateStorage);
                 Assert.True(initialcrateStorage.CratesOfType<StandardConfigurationControlsCM>().Any(), "Crate StandardConfigurationControlsCM is missing in API response.");

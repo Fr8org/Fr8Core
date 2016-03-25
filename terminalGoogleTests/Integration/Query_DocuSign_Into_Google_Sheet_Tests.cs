@@ -37,7 +37,7 @@ namespace terminalGoogleTests.Integration
             var thePlan = await activityConfigurator.CreateNewPlan();
             
             //configure an query_DocuSign activity
-            //await activityConfigurator.AddAndConfigure_QueryDocuSign(thePlan, 1);
+            await activityConfigurator.AddAndConfigure_QueryDocuSign(thePlan, 1);
 
             Hub.StructureMap.StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE).ConfigureGoogleDependencies(StructureMapBootStrapper.DependencyType.LIVE);
 
