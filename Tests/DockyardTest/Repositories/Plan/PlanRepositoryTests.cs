@@ -32,9 +32,13 @@ namespace DockyardTest.Repositories.Plan
             _planNode = planNode;
         }
 
-        public PlanNodeDO LoadPlan(Guid planMemberId)
+        public PlanNodeDO LoadPlanByMemberId(Guid planMemberId)
         {
+            return _planNode;
+        }
 
+        public PlanNodeDO LoadPlanByPlanId(Guid planId)
+        {
             return _planNode;
         }
 
@@ -316,7 +320,7 @@ namespace DockyardTest.Repositories.Plan
 
             repository.SaveChanges();
 
-            var loadedPlan = provider.LoadPlan(Guid.Empty);
+            var loadedPlan = provider.LoadPlanByMemberId(Guid.Empty);
 
             Assert.IsTrue(AreEquals(GenerateTestPlan(), loadedPlan));
             Assert.IsTrue(AreEquals(repository.GetById<PlanDO>(NewGuid(13)), GenerateTestPlan()));
@@ -338,7 +342,7 @@ namespace DockyardTest.Repositories.Plan
 
             PlanTreeHelper.Visit(refPlan, x => Assert.IsTrue(x.Id != Guid.Empty));
 
-            var loadedPlan = provider.LoadPlan(Guid.Empty);
+            var loadedPlan = provider.LoadPlanByMemberId(Guid.Empty);
 
             Assert.IsTrue(AreEquals(refPlan, loadedPlan));
         }

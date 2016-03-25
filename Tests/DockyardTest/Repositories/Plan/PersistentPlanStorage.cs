@@ -25,7 +25,7 @@ namespace DockyardTest.Repositories.Plan
             }
         }
 
-        public PlanNodeDO LoadPlan(Guid planMemberId)
+        public PlanNodeDO LoadPlanByMemberId(Guid planMemberId)
         {
             PlanNodeDO root = null;
 
@@ -50,6 +50,11 @@ namespace DockyardTest.Repositories.Plan
             }
 
             return root;
+        }
+
+        public PlanNodeDO LoadPlanByPlanId(Guid planId)
+        {
+            return LoadPlanByMemberId(planId);
         }
 
         public void Update(PlanSnapshot.Changes changes)
