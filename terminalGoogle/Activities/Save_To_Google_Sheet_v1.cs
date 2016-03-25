@@ -20,6 +20,7 @@ using Data.Crates;
 using Data.States;
 using Data.Control;
 using Newtonsoft.Json.Linq;
+using StructureMap;
 using TerminalBase;
 
 namespace terminalGoogle.Actions
@@ -29,9 +30,9 @@ namespace terminalGoogle.Actions
         private readonly IGoogleSheet _googleSheet;
         private string _spreedsheetUri = "";
 
-        public Save_To_Google_Sheet_v1(IGoogleSheet googleSheet)
+        public Save_To_Google_Sheet_v1()
         {
-            _googleSheet = googleSheet;
+            _googleSheet = ObjectFactory.GetInstance<IGoogleSheet>();
         }
 
         #region Overriden Methods

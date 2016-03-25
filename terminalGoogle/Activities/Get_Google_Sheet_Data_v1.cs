@@ -11,6 +11,7 @@ using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Managers;
 using Newtonsoft.Json;
+using StructureMap;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
 using terminalGoogle.Services;
@@ -25,9 +26,9 @@ namespace terminalGoogle.Actions
         private readonly IGoogleSheet _google;
 
         private const string RunTimeCrateLabel = "Table Generated From Google Sheet Data";
-        public Get_Google_Sheet_Data_v1(IGoogleSheet googleSheet)
+        public Get_Google_Sheet_Data_v1()
         {
-            _google = googleSheet;
+            _google = ObjectFactory.GetInstance<IGoogleSheet>();
         }
 
         protected override bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
