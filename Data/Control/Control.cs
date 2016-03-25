@@ -7,6 +7,7 @@ using Data.Crates;
 using Data.Helpers;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using Data.States;
 using Newtonsoft.Json;
 
 namespace Data.Control
@@ -51,6 +52,7 @@ namespace Data.Control
         public const string CrateChooser = "CrateChooser";
         public const string ContainerTransition = "ContainerTransition";
         public const string ControlContainer = "ControlContainer";
+        public const string ControlList = "ControlList";
     }
 
     public class CheckBox : ControlDefinitionDTO
@@ -527,6 +529,9 @@ namespace Data.Control
         [JsonProperty("requestUpstream")]
         public bool RequestUpstream { get; set; }
 
+        [JsonProperty("availabilityType")]
+        public AvailabilityType AvailabilityType { get; set; }
+
         public FieldSourceDTO()
         {
         }
@@ -569,6 +574,49 @@ namespace Data.Control
 
         public ControlEvent()
         {
+        }
+    }
+
+    public class ControlList : ControlDefinitionDTO
+    {
+        [JsonProperty("controlGroups")]
+        public IList<IList<ControlDefinitionDTO>> ControlGroups { get; }
+
+        [JsonProperty("templateContainer")]
+        public ListTemplate TemplateContainer { get; set; }
+
+        [JsonProperty("addControlGroupButtonText")]
+        public string AddControlGroupButtonText { get; set; }
+        [JsonProperty("noDataMessage")]
+        public string NoDataMessage { get; set; }
+
+        public ControlList()
+        {
+            ControlGroups = new List<IList<ControlDefinitionDTO>>();
+            Type = ControlTypes.ControlList;
+        }
+
+        public ControlList(ListTemplate Template) : this()
+        {
+            this.TemplateContainer = Template;
+        }
+    }
+
+    public class ListTemplate : IContainerControl, IControlDefinition
+    {
+        [JsonProperty("template")]
+        public IList<ControlDefinitionDTO> Template { get; }
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        public ListTemplate()
+        {
+            Template = new List<ControlDefinitionDTO>();
+        }
+
+        public IEnumerable<IControlDefinition> EnumerateChildren()
+        {
+            return Template;
         }
     }
 

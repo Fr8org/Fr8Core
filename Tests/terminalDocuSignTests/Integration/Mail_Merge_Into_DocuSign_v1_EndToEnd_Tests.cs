@@ -55,6 +55,8 @@ namespace terminalDocuSignTests.Integration
         {
             await RevokeTokens();
 
+            var googleAuthTokenId = await ExtractGoogleDefaultToken();
+
             var solutionCreateUrl = _baseUrl + "activities/create?solutionName=Mail_Merge_Into_DocuSign";
 
             //
@@ -142,6 +144,25 @@ namespace terminalDocuSignTests.Integration
             crateStorage = Crate.FromDto(this.solution.CrateStorage);
             Assert.AreEqual(2, this.solution.ChildrenActivities.Count(), "Solution child actions failed to create.");
 
+            // Assert Loop activity has CrateChooser with assigned manifest types.
+            var loopActivity = this.solution.ChildrenActivities[1];
+            using (var loopCrateStorage = Crate.GetUpdatableStorage(loopActivity))
+            {
+                var loopControlsCrate = loopCrateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
+                var loopControls = loopControlsCrate.Content.Controls;
+
+                var loopCrateChooser = loopControls
+                    .Where(x => x.Type == ControlTypes.CrateChooser && x.Name == "Available_Crates")
+                    .SingleOrDefault() as CrateChooser;
+
+                Assert.NotNull(loopCrateChooser);
+                Assert.AreEqual(1, loopCrateChooser.CrateDescriptions.Count);
+                Assert.AreEqual("Standard Table Data", loopCrateChooser.CrateDescriptions[0].ManifestType);
+                Assert.AreEqual("Table Generated From Google Sheet Data", loopCrateChooser.CrateDescriptions[0].Label);
+
+                loopCrateChooser.CrateDescriptions = new List<CrateDescriptionDTO>();
+            }
+
             // Delete Google action 
             await HttpDeleteAsync(_baseUrl + "activities?id=" + this.solution.ChildrenActivities[0].Id);
 
@@ -186,13 +207,29 @@ namespace terminalDocuSignTests.Integration
 
             var fr8CoreLoop = this.solution.ChildrenActivities.Single(a => a.Label.Equals("loop", StringComparison.InvariantCultureIgnoreCase));
 
+            using (var updatableStorage = Crate.UpdateStorage(() => fr8CoreLoop.CrateStorage))
+            {
+                var chooser = (CrateChooser)updatableStorage.CrateContentsOfType<StandardConfigurationControlsCM>().First().Controls.FirstOrDefault(c => c.Name == "Available_Crates");
+
+                if (chooser?.CrateDescriptions != null)
+                {
+                    chooser.CrateDescriptions = new List<CrateDescriptionDTO>();
+                }
+            }
+            
             fr8CoreLoop = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure", fr8CoreLoop);
             //we should update fr8Core loop to loop through manually added payload
             var fr8CoreLoopCrateStorage = Crate.FromDto(fr8CoreLoop.CrateStorage);
             var loopConfigCrate = fr8CoreLoopCrateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
             var loopConfigControls = loopConfigCrate.Content.Controls;
-            var crateChooser = (CrateChooser)loopConfigControls.Single(c => c.Name == "Available_Crates");
-            var payloadDataCrate = crateChooser.CrateDescriptions.Single(c => c.ManifestId == (int)MT.StandardPayloadData);
+            var crateChooser = (CrateChooser)loopConfigControls.FirstOrDefault(c => c.Name == "Available_Crates");
+
+            Assert.NotNull(crateChooser, "Crate chooser was not found");
+
+            var payloadDataCrate = crateChooser.CrateDescriptions.SingleOrDefault(c => c.ManifestId == (int)MT.StandardPayloadData);
+
+            Assert.NotNull(payloadDataCrate, "StandardPayloadData was not found in rateChooser.CrateDescriptions. Available crate descriptions are: " + string.Join("\n", crateChooser.CrateDescriptions.Select(x=> $"{x.Label} of type {x.ManifestType}")));
+
             payloadDataCrate.Selected = true;
             using (var updatableStorage = Crate.GetUpdatableStorage(fr8CoreLoop))
             {
@@ -262,50 +299,17 @@ namespace terminalDocuSignTests.Integration
             emailNameField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingfreight testing role name");
             Assert.AreEqual(TestEmailName, emailNameField.Value, "Email Name did not save on Send DocuSign Envelope action.");
             Assert.AreEqual(TestEmailName, emailNameField.TextValue, "Email Name did not save on Send DocuSign Envelope action.");
-            //
-            // Configure Map Fields action
-            //
-
-            //// Reconfigure Map Fields to have it pick up upstream fields
-            //var mapFieldsAction = this.solution.ChildrenActions.Single(a => a.Name == "Map Fields");
-            //mapFieldsAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "actions/configure", mapFieldsAction);
-
-            //// Configure mappings
-            //crateStorage = _crateManager.FromDto(mapFieldsAction.CrateStorage);
-            //controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
-            //var mapping = controlsCrate.Content.Controls.OfType<MappingPane>().First();
-            //mapping.Value = @"[{""Key"":""Doctor"",""Value"":""Doctor""},{""Key"":""Condition"",""Value"":""Condition""}]";
-
-            //using (var crateStorage = _crateManager.GetUpdatableStorage(mapFieldsAction))
-            //{
-            //    crateStorage.Remove<StandardConfigurationControlsCM>();
-            //    crateStorage.Add(controlsCrate);
-            //}
-            //sendEnvelopeAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "actions/save", mapFieldsAction);
 
             //
             // Activate and run plan
             //
-            await HttpPostAsync<string, string>(_baseUrl + "plans/run?planId=" + plan.Plan.Id, null);
-
-            ////check if container state == completed
-            //var containerIds = await HttpGetAsync<IEnumerable<string>>(_baseUrl + "containers/GetIdsByName?name=" + newName);
-            //var containerState = 0; 
-            //foreach (var containerId in containerIds)
-            //{
-            //    var container = await HttpGetAsync<ContainerDTO>(_baseUrl + "containers/?id=" + containerId);
-            //    if (container.PlanId == plan.Id)
-            //    {
-            //        containerState = container.ContainerState;
-            //        break;
-            //    }
-            //}
-            //Assert.AreEqual(containerState, ContainerState.Completed);
+            var container = await HttpPostAsync<string, ContainerDTO>(_baseUrl + "plans/run?planId=" + plan.Plan.Id, null);
+            Assert.AreEqual(container.ContainerState, ContainerState.Completed);
 
             //
             // Deactivate plan
             //
-            //await HttpPostAsync<string, string>(_baseUrl + "plans/deactivate?planId=" + plan.Id, null);
+            await HttpPostAsync<string, string>(_baseUrl + "plans/deactivate?planId=" + plan.Plan.Id, null);
 
             // Verify that test email has been received
             EmailAssert.EmailReceived("dse_demo@docusign.net", "Test Message from Fr8");
@@ -314,7 +318,23 @@ namespace terminalDocuSignTests.Integration
             // Delete plan
             //
             await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Plan.Id);
+        }
 
+        private async Task<Guid> ExtractGoogleDefaultToken()
+        {
+            var tokens = await HttpGetAsync<IEnumerable<ManageAuthToken_Terminal>>(
+                _baseUrl + "manageauthtoken/"
+            );
+
+            Assert.NotNull(tokens);
+
+            var terminal = tokens.FirstOrDefault(x => x.Name == "terminalGoogle");
+            Assert.NotNull(terminal);
+
+            var token = terminal.AuthTokens.FirstOrDefault(x => x.IsMain);
+            Assert.NotNull(token);
+
+            return token.Id;
         }
     }
 }

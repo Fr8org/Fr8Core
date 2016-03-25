@@ -42,8 +42,27 @@ module dockyard.directives.dropDownListBox {
                 };
 
                 var loadUpstreamFields = () => {
-                    UpstreamExtractor
-                        .extractUpstreamData($scope.currentAction.id, 'Field Description', 'NotSet')
+
+                    var availabilityType = 'NotSet';
+                    if ($scope.field.source) {
+                        switch ($scope.field.source.availabilityType)
+                        {
+                            case model.AvailabilityType.Configuration:
+                                availabilityType = 'Configuration';
+                                break;
+                            case model.AvailabilityType.RunTime:
+                                availabilityType = 'RunTime';
+                                break;
+                            case model.AvailabilityType.Always:
+                                availabilityType = 'Always';
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+
+                    return UpstreamExtractor
+                        .extractUpstreamData($scope.currentAction.id, 'Field Description', availabilityType)
                         .then((data: any) => {
                             var listItems: Array<model.DropDownListItem> = [];
 
@@ -79,9 +98,6 @@ module dockyard.directives.dropDownListBox {
 
                             $scope.field.listItems = listItems;
 
-                            
-                            $scope.toggle = !$scope.toggle;
-
                             triggerNoRecords();
 
                         });
@@ -103,9 +119,10 @@ module dockyard.directives.dropDownListBox {
                         // Only "Field Description" manifestType currently supported for DDLs.
                         && $scope.field.source.manifestType === 'Field Description') {
 
-                        loadUpstreamFields();
-                        $select.open = !$scope.toggle;
-                        
+                        loadUpstreamFields().then(() => {
+                            $select.open = !$scope.toggle;   
+                            $scope.toggle = !$scope.toggle;
+                        });
                     }
                     else {
                         $select.open = !$scope.toggle;

@@ -14,17 +14,29 @@ module dockyard.directives {
                     .css({
                         'display': 'inline-block',
                         'overflow': 'hidden',
-                        'width': function () { return $(elem, this).width(); },
-                        'height': function () { return $(elem, this).height(); },
-                        'min-width': function () { return $(elem, this).width(); },
+                        'min-width': function () {
+                            var minWidth = parseInt(attrs.minwidth);
+                            if (angular.isNumber(minWidth) && !isNaN(minWidth) && minWidth != 0) {
+                                return minWidth;
+                            }
+                            return $(elem, this).width();
+                        },
+                        'width': function () {
+                            var minWidth = parseInt(attrs.minwidth);
+                            if (angular.isNumber(minWidth) && !isNaN(minWidth) && minWidth != 0) {
+                                return minWidth;
+                            }
+                            return $(elem, this).width();
+                        },
                         'min-height': function () { return $(elem, this).height() + 20; },
                     }).resizable()
                     .find(elem)
-                    .css({
-                        overflow: 'auto',
-                        width: '100%',
-                        height: '96%'
-                    });
+                    //.css({
+                    //    overflow: 'auto',
+                    //    width: '100%',
+                    //    height: '96%'
+                    //})
+                    ;
             }
         }
     }

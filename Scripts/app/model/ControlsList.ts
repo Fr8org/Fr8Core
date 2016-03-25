@@ -84,6 +84,7 @@
     }
 
     export enum AvailabilityType {
+        NotSet = 0,
         Configuration = 1,
         RunTime = 2,
         Always = 3
@@ -105,12 +106,14 @@
         public label: string;
         public filterByTag: string;
         public requestUpstream: boolean;
+        public availabilityType: AvailabilityType;
     }
 
     export class DropDownList extends ControlDefinitionDTO {
         listItems: Array<DropDownListItem>;
         source: FieldSource;
         selectedKey: string;
+        
 
         constructor() {
             super();
@@ -176,8 +179,18 @@
         }
 
     }
-    
-    
+
+    export class ListTemplate {
+        template: Array<ControlDefinitionDTO>;
+        name: string;
+    }
+
+    export class ControlList extends ControlDefinitionDTO {
+        controlGroups: Array<Array<ControlDefinitionDTO>>;
+        templateContainer: ListTemplate;
+        addControlGroupButtonText: string;
+        noDataMessage: string;
+    }
 
     export class ControlContainer extends ControlDefinitionDTO {
         metaDescriptions: Array<ControlMetaDescriptionDTO>;

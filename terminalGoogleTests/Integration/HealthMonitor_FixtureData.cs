@@ -68,12 +68,12 @@ namespace terminalGoogleTests.Unit
                 );
         }
 
-        public static ActivityTemplateDTO Receive_Google_Form_v1_ActivityTemplate()
+        public static ActivityTemplateDTO Monitor_Form_Responses_v1_ActivityTemplate()
         {
             return new ActivityTemplateDTO()
             {
                 Id = 1,
-                Name = "Receive_Google_Form_TEST",
+                Name = "Monitor_Form_Responses_TEST",
                 Version = "1"
             };
         }
@@ -112,28 +112,28 @@ namespace terminalGoogleTests.Unit
             }
         }
 
-        public static Fr8DataDTO Receive_Google_Form_v1_InitialConfiguration_Fr8DataDTO()
+        public static Fr8DataDTO Monitor_Form_Responses_v1_InitialConfiguration_Fr8DataDTO()
         {
-            var activityTemplate = Receive_Google_Form_v1_ActivityTemplate();
+            var activityTemplate = Monitor_Form_Responses_v1_ActivityTemplate();
 
             var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Label = "Receive Google Form Response",
+                Label = "Monitor Form Responses",
                 AuthToken = Google_AuthToken(),
                 ActivityTemplate = activityTemplate
             };
             return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
 
-        public Fr8DataDTO Receive_Google_Form_v1_ActivateDeactivate_Fr8DataDTO()
+        public Fr8DataDTO Monitor_Form_Responses_v1_ActivateDeactivate_Fr8DataDTO()
         {
-            var activityTemplate = Receive_Google_Form_v1_ActivityTemplate();
+            var activityTemplate = Monitor_Form_Responses_v1_ActivityTemplate();
 
             var activity = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Label = "Receive Google Form Response",
+                Label = "Monitor Form Responses",
                 AuthToken = Google_AuthToken(),
                 ActivityTemplate = activityTemplate,
                 ParentPlanNodeId = Guid.NewGuid()
@@ -184,14 +184,14 @@ namespace terminalGoogleTests.Unit
             return curEventReport;
         }
 
-        public ActivityDTO Receive_Google_Form_v1_Run_ActivityDTO()
+        public ActivityDTO Monitor_Form_Responses_v1_Run_ActivityDTO()
         {
-            var activityTemplate = Receive_Google_Form_v1_ActivityTemplate();
+            var activityTemplate = Monitor_Form_Responses_v1_ActivityTemplate();
 
             var activity = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Label = "Receive Google Form Response",
+                Label = "Monitor Form Responses",
                 AuthToken = Google_AuthToken(),
                 ActivityTemplate = activityTemplate
             };
@@ -202,14 +202,14 @@ namespace terminalGoogleTests.Unit
             return activity;
         }
 
-        public ActivityDTO Receive_Google_Form_v1_Run_EmptyPayload()
+        public ActivityDTO Monitor_Form_Responses_v1_Run_EmptyPayload()
         {
-            var activityTemplate = Receive_Google_Form_v1_ActivityTemplate();
+            var activityTemplate = Monitor_Form_Responses_v1_ActivityTemplate();
 
             var activity = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Label = "Receive Google Form Response",
+                Label = "Monitor Form Responses",
                 AuthToken = Google_AuthToken(),
                 ActivityTemplate = activityTemplate
             };

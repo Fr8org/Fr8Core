@@ -210,19 +210,7 @@ namespace terminalDocuSign.Actions
         }
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-            {
-            // TODO: remove, FR-2691
-            // using (var updater = CrateManager.GetUpdatableStorage(curActivityDO))
-            // {
-            //     // extract fields in docusign form
-            //         AddOrUpdateUserDefinedFields(
-            //         curActivityDO,
-            //         authTokenDO,
-            //         updater,
-            //         _docuSignTemplate.Value
-            //     );
-            // }
-
+        {
             var reconfigList = new List<ConfigurationRequest>()
             {
                 new ConfigurationRequest()
@@ -241,7 +229,6 @@ namespace terminalDocuSign.Actions
                 }
             };
 
-                curActivityDO.ChildNodes = new List<PlanNodeDO>();
             var behavior = new ReconfigurationListBehavior(this);
             await behavior.ReconfigureActivities(curActivityDO, authTokenDO, reconfigList);
             return await Task.FromResult(curActivityDO);
