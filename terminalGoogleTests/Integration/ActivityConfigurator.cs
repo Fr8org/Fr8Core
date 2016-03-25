@@ -81,7 +81,7 @@ namespace terminalGoogleTests.Integration
             queryDocuSignActivity =
                 await
                     baseHubIntTest.HttpPostAsync<ActivityDTO, ActivityDTO>(
-                        baseHubIntTest.GetHubApiBaseUrl() + "activities/configure?", queryDocuSignActivity);
+                        baseHubIntTest.GetHubApiBaseUrl() + "activities/configure", queryDocuSignActivity);
 
             var initialcrateStorage = baseHubIntTest.Crate.FromDto(queryDocuSignActivity.CrateStorage);
 
@@ -113,7 +113,7 @@ namespace terminalGoogleTests.Integration
             queryDocuSignActivity =
                 await
                     baseHubIntTest.HttpPostAsync<ActivityDTO, ActivityDTO>(
-                        baseHubIntTest.GetHubApiBaseUrl() + "activities/configure?", queryDocuSignActivity);
+                        baseHubIntTest.GetHubApiBaseUrl() + "activities/configure", queryDocuSignActivity);
             initialcrateStorage = baseHubIntTest.Crate.FromDto(queryDocuSignActivity.CrateStorage);
             Assert.True(initialcrateStorage.CratesOfType<StandardConfigurationControlsCM>().Any(),
                 "Crate StandardConfigurationControlsCM is missing in API response.");
@@ -175,7 +175,7 @@ namespace terminalGoogleTests.Integration
             saveToGoogleActivity.ActivityDTO =
                 await
                     baseHubIntTest.HttpPostAsync<ActivityDTO, ActivityDTO>(
-                        baseHubIntTest.GetHubApiBaseUrl() + "activities/configure?", saveToGoogleActivity.ActivityDTO);
+                        baseHubIntTest.GetHubApiBaseUrl() + "activities/configure", saveToGoogleActivity.ActivityDTO);
             var initialcrateStorage = baseHubIntTest.Crate.FromDto(saveToGoogleActivity.ActivityDTO.CrateStorage);
 
             var stAuthCrate = initialcrateStorage.CratesOfType<StandardAuthenticationCM>().FirstOrDefault();
@@ -198,7 +198,7 @@ namespace terminalGoogleTests.Integration
                 saveToGoogleActivity.ActivityDTO =
                     await
                         baseHubIntTest.HttpPostAsync<ActivityDTO, ActivityDTO>(
-                            baseHubIntTest.GetHubApiBaseUrl() + "activities/configure?",
+                            baseHubIntTest.GetHubApiBaseUrl() + "activities/configure",
                             saveToGoogleActivity.ActivityDTO);
             }
 
@@ -244,7 +244,7 @@ namespace terminalGoogleTests.Integration
             saveToGoogleActivity.ActivityDTO =
                 await
                     baseHubIntTest.HttpPostAsync<ActivityDTO, ActivityDTO>(
-                        baseHubIntTest.GetHubApiBaseUrl() + "activities/configure?", saveToGoogleActivity.ActivityDTO);
+                        baseHubIntTest.GetHubApiBaseUrl() + "activities/configure", saveToGoogleActivity.ActivityDTO);
 
             return await Task.FromResult(saveToGoogleActivity.ActivityDTO);
         }
