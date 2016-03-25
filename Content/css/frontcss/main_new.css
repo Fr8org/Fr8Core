@@ -353,6 +353,10 @@ header#site-header:after {
     padding: 2em;
 }
 
+.company .inner-bg {
+    background-image: url('/Content/img/backgrounds/welocome-bg.jpg');
+}
+
 .company h2 {
   font-size: 3em;
   color: #26A599;
@@ -364,9 +368,6 @@ header#site-header:after {
 }
 
 /*Vision Section*/
-#vision .inner-bg {
-    background-image: url('/Content/img/backgrounds/contact-bg.jpg');
-}
 
 #vision .container {
     position: relative;
@@ -421,9 +422,6 @@ header#site-header:after {
     }
 
 /*Location Section*/
-#location .inner-bg {
-    background-image: url('/Content/img/backgrounds/contact-bg.jpg');
-}
 
 #location .container {
     position: relative;
