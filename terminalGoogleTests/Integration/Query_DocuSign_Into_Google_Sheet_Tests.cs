@@ -11,7 +11,6 @@ using StructureMap;
 using terminalGoogle;
 using terminalGoogle.Interfaces;
 using terminalGoogle.Services;
-using terminalGoogleTests.Integration.terminalIntegrationTests.Helpers;
 using terminalGoogleTests.Unit;
 
 namespace terminalGoogleTests.Integration
