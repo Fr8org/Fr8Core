@@ -40,7 +40,8 @@ module dockyard.tests.utils.fixtures {
                 manifestType: 'testManifest',
                 label: 'testLabel',
                 filterByTag: null,
-                requestUpstream: false
+                requestUpstream: false,
+                availabilityType: model.AvailabilityType.NotSet
             },
             type: 'DropDownList',
             fieldLabel: 'DropDownList Test',
@@ -138,7 +139,8 @@ module dockyard.tests.utils.fixtures {
                 manifestType: 'testManifest',
                 label: 'testLabel',
                 filterByTag: null,
-                requestUpstream: false
+                requestUpstream: false,
+                availabilityType: model.AvailabilityType.NotSet
             },
             valueSource: 'test',
             listItems: [{
