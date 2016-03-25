@@ -7,7 +7,11 @@ namespace Data.Infrastructure
     {
         public Fr8DbConfiguration()
         {
+#if DEBUG
+            SetExecutionStrategy("System.Data.SqlClient", () => new SqlAzureExecutionStrategy(10, System.TimeSpan.FromSeconds(60)));
+#else
             SetExecutionStrategy("System.Data.SqlClient", () => new SqlAzureExecutionStrategy());
+#endif
         }
     }
 }
