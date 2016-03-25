@@ -28,17 +28,18 @@ namespace terminalGoogleTests.Integration
         [Test, Category("Integration.terminalGoogle")]
         public async Task Query_DocuSign_Into_Google_Sheet_End_To_End()
         {
-            Hub.StructureMap.StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE).ConfigureGoogleDependencies(StructureMapBootStrapper.DependencyType.LIVE);
-
+            Debugger.Launch();
             var activityConfigurator = new ActivityConfigurator(this);
             //await RevokeTokens();
            // var googleAuthTokenId = await ExtractGoogleDefaultToken();
 
             //create a new plan
             var thePlan = await activityConfigurator.CreateNewPlan();
-
+            
             //configure an query_DocuSign activity
-            await activityConfigurator.AddAndConfigure_QueryDocuSign(thePlan, 1);
+            //await activityConfigurator.AddAndConfigure_QueryDocuSign(thePlan, 1);
+
+            Hub.StructureMap.StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE).ConfigureGoogleDependencies(StructureMapBootStrapper.DependencyType.LIVE);
 
             //login to google
             //configure a save_to google activity
