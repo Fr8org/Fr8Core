@@ -29,9 +29,9 @@ namespace terminalGoogle.Actions
         private readonly IGoogleSheet _googleSheet;
         private string _spreedsheetUri = "";
 
-        public Save_To_Google_Sheet_v1()
+        public Save_To_Google_Sheet_v1(IGoogleSheet googleSheet)
         {
-            _googleSheet = new GoogleSheet();
+            _googleSheet = googleSheet;
         }
 
         #region Overriden Methods

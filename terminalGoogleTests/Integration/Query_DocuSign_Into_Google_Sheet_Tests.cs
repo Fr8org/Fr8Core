@@ -28,23 +28,21 @@ namespace terminalGoogleTests.Integration
         public async Task Query_DocuSign_Into_Google_Sheet_End_To_End()
         {
             var activityConfigurator = new ActivityConfigurator(this);
-            //await RevokeTokens();
-           // var googleAuthTokenId = await ExtractGoogleDefaultToken();
 
             //create a new plan
             var thePlan = await activityConfigurator.CreateNewPlan();
             
             //configure an query_DocuSign activity
             await activityConfigurator.AddAndConfigure_QueryDocuSign(thePlan, 1);
-
-            Hub.StructureMap.StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE).ConfigureGoogleDependencies(StructureMapBootStrapper.DependencyType.LIVE);
-
-            //login to google
+           //login to google
             //configure a save_to google activity
             var newSpeadsheetName = Guid.NewGuid().ToString();
-            var googleSheetApi = new GoogleSheet();
-            var spreadsheetId = await googleSheetApi.CreateSpreadsheet(newSpeadsheetName, HealthMonitor_FixtureData.NewGoogle_AuthToken_As_GoogleAuthDTO());
             await activityConfigurator.AddAndConfigure_SaveToGoogleSheet(thePlan, 2, "Docusign Envelope", "DocuSign Envelope Data", newSpeadsheetName, Guid.Empty);
+            
+            //Hub.StructureMap.StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE).ConfigureGoogleDependencies(StructureMapBootStrapper.DependencyType.LIVE);
+
+            var googleSheetApi = new GoogleSheet(new GoogleIntegration());
+            var spreadsheetId = await googleSheetApi.CreateSpreadsheet(newSpeadsheetName, HealthMonitor_FixtureData.NewGoogle_AuthToken_As_GoogleAuthDTO());
 
             //run the plan
             await HttpPostAsync<string, string>(_baseUrl + "plans/run?planId=" + thePlan.Plan.Id, null);

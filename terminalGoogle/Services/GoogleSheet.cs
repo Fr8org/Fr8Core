@@ -21,9 +21,9 @@ namespace terminalGoogle.Services
     public class GoogleSheet : IGoogleSheet
     {
         private readonly IGoogleIntegration _googleIntegration;
-        public GoogleSheet()
+        public GoogleSheet(IGoogleIntegration googleIntegration)
         {
-            _googleIntegration = ObjectFactory.GetInstance<IGoogleIntegration>();
+            _googleIntegration = googleIntegration;
         }
 
         private IEnumerable<SpreadsheetEntry> EnumerateSpreadsheets(GoogleAuthDTO authDTO)

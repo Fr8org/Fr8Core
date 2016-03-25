@@ -57,8 +57,7 @@ namespace terminalGoogleTests.Integration
                 HealthMonitor_FixtureData.Query_DocuSign_v1_InitialConfiguration_Fr8DataDTO().ActivityDTO;
 
             var activityCategoryParam = new ActivityCategory[] {ActivityCategory.Receivers};
-            var activityTemplates =
-                await
+            var activityTemplates = await
                     baseHubIntTest.HttpPostAsync<ActivityCategory[], List<WebServiceActivitySetDTO>>(
                         baseHubIntTest.GetHubApiBaseUrl() + "webservices/activities", activityCategoryParam);
             var apmActivityTemplate =
@@ -156,9 +155,11 @@ namespace terminalGoogleTests.Integration
         {
             var saveToGoogleActivity =
                 HealthMonitor_FixtureData.Save_To_Google_Sheet_v1_InitialConfiguration_Fr8DataDTO();
-            saveToGoogleActivity.ActivityDTO.ActivityTemplate.Terminal = GetTerminal("terminalGoogle", 1);
-            saveToGoogleActivity.ActivityDTO.ActivityTemplate.TerminalId =
-                saveToGoogleActivity.ActivityDTO.ActivityTemplate.Terminal.Id;
+            var activityCategoryParam = new ActivityCategory[] { ActivityCategory.Forwarders };
+            var activityTemplates = await baseHubIntTest.HttpPostAsync<ActivityCategory[], List<WebServiceActivitySetDTO>>(
+                        baseHubIntTest.GetHubApiBaseUrl() + "webservices/activities", activityCategoryParam);
+            var apmActivityTemplate = activityTemplates.SelectMany(a => a.Activities).Single(a => a.Name == "Save_To_Google_Sheet");
+            saveToGoogleActivity.ActivityDTO.ActivityTemplate = apmActivityTemplate;
 
             //connect current activity with a plan
             var subPlan = plan.Plan.SubPlans.FirstOrDefault();

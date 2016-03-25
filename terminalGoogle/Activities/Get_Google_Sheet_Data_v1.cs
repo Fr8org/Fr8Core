@@ -25,9 +25,9 @@ namespace terminalGoogle.Actions
         private readonly IGoogleSheet _google;
 
         private const string RunTimeCrateLabel = "Table Generated From Google Sheet Data";
-        public Get_Google_Sheet_Data_v1()
+        public Get_Google_Sheet_Data_v1(IGoogleSheet googleSheet)
         {
-            _google = new GoogleSheet();
+            _google = googleSheet;
         }
 
         protected override bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
