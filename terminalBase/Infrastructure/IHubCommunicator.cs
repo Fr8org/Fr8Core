@@ -40,6 +40,7 @@ namespace TerminalBase.Infrastructure
         Task<FileDO> SaveFile(string name, Stream stream, string userId);
         Task<Stream> DownloadFile(int fileId, string userId);
         Task<IEnumerable<FileDTO>> GetFiles(string userId);
+        Task ApplyNewToken(Guid activityId, Guid authTokenId, string userId);
         Task Configure(string terminalName);
         bool IsConfigured { get; set; }
         Task DeletePlan(Guid planId, string userId);
