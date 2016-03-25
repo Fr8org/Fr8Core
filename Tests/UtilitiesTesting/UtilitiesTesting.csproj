@@ -174,7 +174,6 @@
     <Compile Include="Fixtures\FixtureData - DocusignEvent.cs" />
     <Compile Include="Fixtures\FixtureData - Email.cs" />
     <Compile Include="Fixtures\FixtureData - EmailAddress.cs" />
-    <Compile Include="Fixtures\FixtureData - Envelope.cs" />
     <Compile Include="Fixtures\FixtureData - EnvelopeData.cs" />
     <Compile Include="Fixtures\FixtureData - Event.cs" />
     <Compile Include="Fixtures\FixtureData - FactDO.cs" />
