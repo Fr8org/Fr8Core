@@ -28,7 +28,6 @@ namespace terminalGoogleTests.Integration
         [Test, Category("Integration.terminalGoogle")]
         public async Task Query_DocuSign_Into_Google_Sheet_End_To_End()
         {
-            Debugger.Launch();
             var activityConfigurator = new ActivityConfigurator(this);
             //await RevokeTokens();
            // var googleAuthTokenId = await ExtractGoogleDefaultToken();
