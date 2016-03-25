@@ -232,7 +232,9 @@ namespace terminalGoogleTests.Integration
                 crateChoose.CrateDescriptions.First().Selected = true;
 
                 //set the name of new spreadheet that need to be created
-                contrls.First(x => x.Name == "NewSpreadsheetText").Value = newSpeadsheetName;
+                var radiobtnGroup = contrls.First(x => x.Type == ControlTypes.RadioButtonGroup) as RadioButtonGroup;
+                var radioOption = radiobtnGroup.Radios.First(x => x.Name == "newSpreadsheet") as RadioButtonOption;
+                radioOption.Controls.First(x => x.Name == "NewSpreadsheetText").Value = newSpeadsheetName;
 
                 crateStorage.Add(contrCrate);
             }
