@@ -22,8 +22,6 @@ namespace terminalGoogle.Actions
     {
         public class ActivityUi : StandardConfigurationControlsCM
         {
-            _google = ObjectFactory.GetInstance<IGoogleSheet>();
-        }
             public DropDownList SpreadsheetList { get; set; }
 
             public DropDownList WorksheetList { get; set; }
@@ -83,7 +81,7 @@ namespace terminalGoogle.Actions
         public Get_Google_Sheet_Data_v1()
            : base(true)
         {
-            _googleApi = new GoogleSheet();
+            _googleApi = ObjectFactory.GetInstance<IGoogleSheet>();
         }
         //This property is used to store and retrieve user-selected spreadsheet and worksheet between configuration responses 
         //to avoid extra fetch from Google
