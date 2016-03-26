@@ -20,7 +20,8 @@ namespace Data.Entities
             typeof(PlanDO).GetProperty("Tag"),
             typeof(PlanDO).GetProperty("Description"),
             typeof(PlanDO).GetProperty("PlanState"),
-            typeof(PlanDO).GetProperty("Category")
+            typeof(PlanDO).GetProperty("Category"),
+            typeof(PlanDO).GetProperty("Visibility")
         };
      
         public PlanDO()

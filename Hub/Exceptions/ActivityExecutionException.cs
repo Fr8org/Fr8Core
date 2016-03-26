@@ -34,11 +34,11 @@ namespace Hub.Exceptions
         }
 
         public ActivityExecutionException(ContainerDTO containerDTO, ActivityDTO activityDTO, string errorMessage, Exception innerException)
-            : base(string.IsNullOrEmpty(errorMessage)? innerException.Message: errorMessage, innerException)
+            : base(string.IsNullOrEmpty(errorMessage) ? innerException.Message: errorMessage, innerException)
         {
             ContainerDTO = containerDTO;
             FailedActivityDTO = activityDTO;
-            message = errorMessage
+            message = errorMessage;
         }
 
         protected ActivityExecutionException(SerializationInfo info, StreamingContext context)

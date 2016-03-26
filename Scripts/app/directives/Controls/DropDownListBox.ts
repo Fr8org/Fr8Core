@@ -42,8 +42,27 @@ module dockyard.directives.dropDownListBox {
                 };
 
                 var loadUpstreamFields = () => {
+
+                    var availabilityType = 'NotSet';
+                    if ($scope.field.source) {
+                        switch ($scope.field.source.availabilityType)
+                        {
+                            case model.AvailabilityType.Configuration:
+                                availabilityType = 'Configuration';
+                                break;
+                            case model.AvailabilityType.RunTime:
+                                availabilityType = 'RunTime';
+                                break;
+                            case model.AvailabilityType.Always:
+                                availabilityType = 'Always';
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+
                     return UpstreamExtractor
-                        .extractUpstreamData($scope.currentAction.id, 'Field Description', 'NotSet')
+                        .extractUpstreamData($scope.currentAction.id, 'Field Description', availabilityType)
                         .then((data: any) => {
                             var listItems: Array<model.DropDownListItem> = [];
 

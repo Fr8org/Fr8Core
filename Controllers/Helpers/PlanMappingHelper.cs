@@ -34,6 +34,7 @@ namespace HubWeb.Controllers.Helpers
                     Id = curPlanDO.Id,
                     Name = curPlanDO.Name,
                     PlanState = curPlanDO.PlanState,
+                    Visibility = curPlanDO.Visibility,
                     StartingSubPlanId = curPlanDO.StartingSubPlanId,
                     SubPlans = subPlanDTOList,
                     Fr8UserId = curPlanDO.Fr8AccountId,
