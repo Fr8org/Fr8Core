@@ -39,30 +39,15 @@ namespace terminalGoogleTests.Unit
             };
         }
 
-        public static AuthorizationTokenDTO NewGoogle_AuthToken()
-        {
-            return new AuthorizationTokenDTO
-            {
-                Token =
-                    //@"{""AccessToken"":""ya29.qgKKAej9ABzUTVL9y04nEtlo0_Qlpk_dqIBLmg1k7tBo__Dgab0TWvSf-ZgjrjRmUA"",""RefreshToken"":""1/x3T7UajSlqgYQa2BeBozc_49Sa29zCqe-EEvi5eBfFF90RDknAdJa_sgfheVM0XT"",""Expires"":""2017-03-19T13:24:33.2805735+01:00""}"
-                      @"{""AccessToken"":""ya29.sAIlmsk843IiMs54TCbaN6XitYsrFa00XcuKvtV75lWuKIWSglzWv_F1MCLHWyuNRg"",""RefreshToken"":""1/3DJhIxl_HceJmyZaWwI_O9MRdHyDGCtWo-69dZRbgBQ"",""Expires"":""2017-03-25T17:21:49.6958377+01:00""}"
-
-            };
-        }
-
         public static GoogleAuthDTO NewGoogle_AuthToken_As_GoogleAuthDTO()
         {
             return new GoogleAuthDTO
             {
-                //AccessToken = "ya29.qgKKAej9ABzUTVL9y04nEtlo0_Qlpk_dqIBLmg1k7tBo__Dgab0TWvSf-ZgjrjRmUA",
-                //Expires = new DateTime(2017, 03, 19, 0, 0, 0),
-                //RefreshToken = "1/x3T7UajSlqgYQa2BeBozc_49Sa29zCqe-EEvi5eBfFF90RDknAdJa_sgfheVM0XT"
                 AccessToken = "ya29.sAIlmsk843IiMs54TCbaN6XitYsrFa00XcuKvtV75lWuKIWSglzWv_F1MCLHWyuNRg",
                 Expires = new DateTime(2017, 03, 19, 0, 0, 0),
                 RefreshToken = "1/3DJhIxl_HceJmyZaWwI_O9MRdHyDGCtWo-69dZRbgBQ"
             };
         }
-
 
         protected Crate PackControls(StandardConfigurationControlsCM page)
         {
@@ -343,98 +328,6 @@ namespace terminalGoogleTests.Unit
                 crateStorage.Add(configurationControlsCrate);
                 crateStorage.Add(crateDesignTimeFields);
             }
-        }
-
-        public static PlanEmptyDTO TestPlanEmptyDTO()
-        {
-            return new PlanEmptyDTO()
-            {
-                Name = "Integratin Test Plan",
-                Description = "Create a new Integration test Plan and configure with custom activities"
-            };
-        }
-
-        public static PlanDO TestPlan_CanCreate(string name)
-        {
-            var curPlanDO = new PlanDO
-            {
-                Id = Guid.NewGuid(),
-                Description = name,
-                Name = name,
-                PlanState = PlanState.Active,
-            };
-            return curPlanDO;
-        }
-
-        public static SubPlanDO TestSubPlanHealthDemo(Guid parentNodeId)
-        {
-            var SubPlanDO = new SubPlanDO
-            {
-                Id = Guid.NewGuid(),
-                ParentPlanNodeId = parentNodeId,
-                RootPlanNodeId = parentNodeId,
-                NodeTransitions = "[{'TransitionKey':'true','ProcessNodeId':'2'}]"
-            };
-            return SubPlanDO;
-        }
-
-        public static Fr8DataDTO Query_DocuSign_v1_InitialConfiguration_Fr8DataDTO()
-        {
-            var activityTemplate = Query_DocuSign_v1_ActivityTemplate();
-
-            var activityDTO = new ActivityDTO()
-            {
-                Id = Guid.NewGuid(),
-                Label = "Query DocuSign",
-                ActivityTemplate = activityTemplate
-            };
-
-            return ConvertToFr8Data(activityDTO);
-        }
-
-
-        public static Fr8DataDTO Save_To_Google_Sheet_v1_InitialConfiguration_Fr8DataDTO()
-        {
-            var activityTemplate = Save_To_Google_Sheet_v1_ActivityTemplate();
-
-            var activityDTO = new ActivityDTO()
-            {
-                Id = Guid.NewGuid(),
-                Label = "Save To Google Sheet",
-                AuthToken = Google_AuthToken1(),
-                ActivityTemplate = activityTemplate
-            };
-
-            return ConvertToFr8Data(activityDTO);
-        }
-
-        public static ActivityTemplateDTO Query_DocuSign_v1_ActivityTemplate()
-        {
-            return new ActivityTemplateDTO()
-            {
-                Id = 1,
-                Name = "Query_DocuSign",
-                Version = "1",
-                Terminal = new TerminalDTO()
-                {
-
-                }
-            };
-        }
-
-        public static ActivityTemplateDTO Save_To_Google_Sheet_v1_ActivityTemplate()
-        {
-            return new ActivityTemplateDTO()
-            {
-                Id = 1,
-                Name = "Save_To_Google_Sheet",
-                Version = "1"
-            };
-        }
-
-        private static Fr8DataDTO ConvertToFr8Data(ActivityDTO activityDTO)
-        {
-            return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
 
         public Tuple<string, string> CaseTuple(string spreadsheet)

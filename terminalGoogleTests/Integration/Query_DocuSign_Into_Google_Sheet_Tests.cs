@@ -8,6 +8,8 @@ using HealthMonitor.Utility;
 using Hub.StructureMap;
 using NUnit.Framework;
 using StructureMap;
+using terminaBaselTests.Tools.Activities;
+using terminaBaselTests.Tools.Plans;
 using terminalGoogle;
 using terminalGoogle.Interfaces;
 using terminalGoogle.Services;
@@ -20,66 +22,55 @@ namespace terminalGoogleTests.Integration
     {
         #region Properties
 
+        private readonly IntegrationTestTools plansHelper;
+        private readonly IntegrationTestTools_terminalDocuSign docuSignActivityConfigurator;
+        private readonly IntegrationTestTools_terminalGoogle googleActivityConfigurator;
         public override string TerminalName { get { return "terminalGoogle"; } }
 
         #endregion
 
+        public Query_DocuSign_Into_Google_Sheet_Tests()
+        {
+            plansHelper = new IntegrationTestTools(this);
+            docuSignActivityConfigurator = new IntegrationTestTools_terminalDocuSign(this);
+            googleActivityConfigurator = new IntegrationTestTools_terminalGoogle(this);
+        }
+        
         [Test, Category("Integration.terminalGoogle")]
         public async Task Query_DocuSign_Into_Google_Sheet_End_To_End()
         {
-            var activityConfigurator = new ActivityConfigurator(this);
-
             //create a new plan
-            var thePlan = await activityConfigurator.CreateNewPlan();
+            var thePlan = await plansHelper.CreateNewPlan();
             
             //configure an query_DocuSign activity
-            await activityConfigurator.AddAndConfigure_QueryDocuSign(thePlan, 1);
-           //login to google
+            await docuSignActivityConfigurator.AddAndConfigure_QueryDocuSign(thePlan, 1);
+          
             //configure a save_to google activity
             var newSpeadsheetName = Guid.NewGuid().ToString();
-            await activityConfigurator.AddAndConfigure_SaveToGoogleSheet(thePlan, 2, "Docusign Envelope", "DocuSign Envelope Data", newSpeadsheetName, Guid.Empty);
-            
-            //Hub.StructureMap.StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE).ConfigureGoogleDependencies(StructureMapBootStrapper.DependencyType.LIVE);
+            await googleActivityConfigurator.AddAndConfigure_SaveToGoogleSheet(thePlan, 2, "Docusign Envelope", "DocuSign Envelope Data", newSpeadsheetName);
 
             var googleSheetApi = new GoogleSheet(new GoogleIntegration());
             var spreadsheetId = await googleSheetApi.CreateSpreadsheet(newSpeadsheetName, HealthMonitor_FixtureData.NewGoogle_AuthToken_As_GoogleAuthDTO());
 
             //run the plan
-            await HttpPostAsync<string, string>(_baseUrl + "plans/run?planId=" + thePlan.Plan.Id, null);
-
+            await plansHelper.RunPlan(thePlan.Plan.Id);
+                
             //add asserts here
             var googleSheets = googleSheetApi.EnumerateSpreadsheetsUris(HealthMonitor_FixtureData.NewGoogle_AuthToken_As_GoogleAuthDTO());
 
-            Assert.IsNotNull(googleSheets.FirstOrDefault(x => x.Value == newSpeadsheetName));
+            Assert.IsNotNull(googleSheets.FirstOrDefault(x => x.Value == newSpeadsheetName),"New created spreadsheet was not found into existing google files.");
             var spreadSheeturl = googleSheets.FirstOrDefault(x => x.Value == newSpeadsheetName).Key;
             
             //find spreadsheet
             var dataRows = googleSheetApi.EnumerateDataRows(spreadSheeturl, HealthMonitor_FixtureData.NewGoogle_AuthToken_As_GoogleAuthDTO(), "Sheet1");
 
             //file should contain 11 envelopes saved
-            var numberOfEvelopes = dataRows.ToList().Count();
-            Assert.AreEqual(11, numberOfEvelopes);
+            var numberOfEnvelopes = dataRows.ToList().Count();
+            Assert.AreNotEqual(0, numberOfEnvelopes, "Failed to read any envelope data from excel rows. Run method may failed to write data into excel file");
+            Assert.AreEqual(11, numberOfEnvelopes, "Number of readed rows/envelopes was not in the correct count");
             
             //cleanup. erase the sheet
             await googleSheetApi.DeleteSpreadSheet(spreadsheetId, HealthMonitor_FixtureData.NewGoogle_AuthToken_As_GoogleAuthDTO());
         }
-
-        private async Task<Guid> ExtractGoogleDefaultToken()
-        {
-            var tokens = await HttpGetAsync<IEnumerable<ManageAuthToken_Terminal>>(
-                _baseUrl + "manageauthtoken/"
-            );
-
-            Assert.NotNull(tokens);
-
-            var terminal = tokens.FirstOrDefault(x => x.Name == "terminalGoogle");
-            Assert.NotNull(terminal);
-
-            var token = terminal.AuthTokens.FirstOrDefault(x => x.IsMain);
-            Assert.NotNull(token);
-
-            return token.Id;
-        }
-
     }
 }

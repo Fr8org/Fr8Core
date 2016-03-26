@@ -73,7 +73,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Integration\ActivityConfigurator.cs" />
     <Compile Include="Integration\HealthMonitor_FixtureData.cs" />
     <Compile Include="Integration\Query_DocuSign_Into_Google_Sheet_Tests.cs" />
     <Compile Include="Integration\Terminal_Authentication_v1_Tests.cs" />
@@ -94,6 +93,10 @@
     <ProjectReference Include="..\Hub\Hub.csproj">
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Hub</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\terminalBaseTests\terminalBaseTests.csproj">
+      <Project>{40625AD3-D5D2-4CF0-8E3E-FD232A54A808}</Project>
+      <Name>terminalBaseTests</Name>
     </ProjectReference>
     <ProjectReference Include="..\terminalDocuSign\terminalDocuSign.csproj">
       <Project>{4E04FEB2-B452-4739-8336-EA2CEFB18D87}</Project>

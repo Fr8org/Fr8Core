@@ -1,4 +1,5 @@
 ﻿using Data.Entities;
+using Data.Interfaces;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
@@ -19,6 +20,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Crates;
 using Data.States;
 using Data.Control;
+using Data.Interfaces.Manifests.Helpers;
 using Newtonsoft.Json.Linq;
 using StructureMap;
 using TerminalBase;
@@ -95,9 +97,9 @@ namespace terminalGoogle.Actions
                 Error(payloadCrates, "This Action can't run without Payload Data Crate ", ActivityErrorCode.PAYLOAD_DATA_MISSING);
                 throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Unable to find any payload crate with any Manifest Type.");
             }
-
+            var crateStorageSerializer = ObjectFactory.GetInstance<ICrateStorageSerializer>();
             //get payload crates for data
-            StandardTableDataCM standardTableCM = ExtractPayloadCrateDataToStandardTableData(cratesToProcess);
+            StandardTableDataCM standardTableCM = StandardTableDataCMTools.ExtractPayloadCrateDataToStandardTableData(crateStorageSerializer, cratesToProcess);
 
             if(standardTableCM.Table.Count > 0)
             {
@@ -125,110 +127,7 @@ namespace terminalGoogle.Actions
 
             return Success(payloadCrates);
         }
-
-        private StandardTableDataCM ExtractPayloadCrateDataToStandardTableData(IEnumerable<Crate> crates)
-        {
-            var tableData = new StandardTableDataCM()
-            {
-                FirstRowHeaders = true,
-                Table = new List<TableRowDTO>()
-            };
-            var headerIsAdded = false;
-            foreach (var crate in crates)
-            {
-                Type crateManifestType;
-                ManifestDiscovery.Default.TryResolveType(crate.ManifestType, out crateManifestType);
-
-                if (crateManifestType == typeof(StandardTableDataCM))
-                {
-                    //add to the table data this existing standard table data
-                    //check if column headers are the same
-                    tableData = crate.Get<StandardTableDataCM>();
-                    continue;
-                }
-
-                var item = CrateManager.ToDto(crate);
-
-                var token = JToken.Parse(item.Contents.ToString());
-
-                var jObject = token as JObject;
-                if (jObject != null)
-                {
-                    //check if jObject has some JArray properties
-                    var arrayProperty = jObject.Properties().FirstOrDefault(x => x.Value is JArray);
-
-                    //check how StandardPayloadDataCM is structured
-                    if (arrayProperty != null)
-                    {
-                        foreach (var arrayItem in arrayProperty.Value)
-                        {
-                            //arrayItem is PayloadObjectDTO which on has an List<FieldDTO>
-                            var innerArrayProperty = ((JObject)arrayItem).Properties().FirstOrDefault(x => x.Value is JArray);
-                            if (innerArrayProperty != null)
-                            {
-                                var headerRow = new TableRowDTO();
-                                var dataRow = new TableRowDTO();
-
-                                foreach (var innerArrayItem in innerArrayProperty.Value)
-                                {
-                                    //try to parse the property as FieldDTO
-                                    if (innerArrayItem is JObject)
-                                    {
-                                        var fieldObj = (JObject)innerArrayItem;
-                                        if (fieldObj.Property("key") != null && fieldObj.Property("value") != null)
-                                        {
-                                            headerRow.Row.Add(new TableCellDTO() { Cell = new FieldDTO(fieldObj["key"].ToString(), fieldObj["key"].ToString()) });
-                                            dataRow.Row.Add(new TableCellDTO() { Cell = new FieldDTO(fieldObj["key"].ToString(), fieldObj["value"].ToString()) });
-                                        }
-                                    }
-                                }
-
-                                if (!headerIsAdded)
-                                {
-                                    tableData.Table.Add(headerRow);
-                                    headerIsAdded = true;
-                                }
-                                tableData.Table.Add(dataRow);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        var headerRow = new TableRowDTO();
-                        var dataRow = new TableRowDTO();
-
-                        foreach (JProperty property in jObject.Properties())
-                        {
-                            //try to parse the property as FieldDTO
-                            if (property.Value is JObject)
-                            {
-                                var fieldObj = (JObject) property.Value;
-                                if (fieldObj.Property("key") != null && fieldObj.Property("value") != null)
-                                {
-                                    headerRow.Row.Add(new TableCellDTO() { Cell = new FieldDTO(fieldObj["key"].ToString(), fieldObj["key"].ToString()) });
-                                    dataRow.Row.Add(new TableCellDTO() { Cell = new FieldDTO(fieldObj["key"].ToString(), fieldObj["value"].ToString()) });
-                                }
-                            }
-                            else
-                            {
-                                headerRow.Row.Add(new TableCellDTO() { Cell = new FieldDTO(property.Name, property.Name) });
-                                dataRow.Row.Add(new TableCellDTO() { Cell = new FieldDTO(property.Name, property.Value.ToString()) });
-                            }
-                        }
-
-                        if (!headerIsAdded)
-                        {
-                            tableData.Table.Add(headerRow);
-                            headerIsAdded = true;
-                        }
-                        tableData.Table.Add(dataRow);
-                    }
-                }
-            }
-
-            return tableData;
-        }
-
+        
         public bool IsList(object o)
         {
             if (o == null) return false;
