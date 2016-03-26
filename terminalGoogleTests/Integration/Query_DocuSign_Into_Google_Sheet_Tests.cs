@@ -1,17 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Interfaces.DataTransferObjects;
 using HealthMonitor.Utility;
-using Hub.StructureMap;
 using NUnit.Framework;
-using StructureMap;
 using terminaBaselTests.Tools.Activities;
 using terminaBaselTests.Tools.Plans;
-using terminalGoogle;
-using terminalGoogle.Interfaces;
 using terminalGoogle.Services;
 using terminalGoogleTests.Unit;
 
@@ -25,7 +18,7 @@ namespace terminalGoogleTests.Integration
         private readonly IntegrationTestTools plansHelper;
         private readonly IntegrationTestTools_terminalDocuSign docuSignActivityConfigurator;
         private readonly IntegrationTestTools_terminalGoogle googleActivityConfigurator;
-        public override string TerminalName { get { return "terminalGoogle"; } }
+        public override string TerminalName => "terminalGoogle";
 
         #endregion
 
@@ -62,7 +55,7 @@ namespace terminalGoogleTests.Integration
             var spreadSheeturl = googleSheets.FirstOrDefault(x => x.Value == newSpeadsheetName).Key;
             
             //find spreadsheet
-            var dataRows = googleSheetApi.EnumerateDataRows(spreadSheeturl, HealthMonitor_FixtureData.NewGoogle_AuthToken_As_GoogleAuthDTO(), "Sheet1");
+            var dataRows = googleSheetApi.EnumerateDataRows(spreadSheeturl, "Sheet1", HealthMonitor_FixtureData.NewGoogle_AuthToken_As_GoogleAuthDTO());
 
             //file should contain 11 envelopes saved
             var numberOfEnvelopes = dataRows.ToList().Count();

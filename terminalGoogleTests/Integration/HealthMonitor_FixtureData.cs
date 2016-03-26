@@ -8,8 +8,9 @@ using System.Collections.Generic;
 using Hub.Managers;
 using System.Linq;
 using System.Runtime.InteropServices;
-using Data.States;
+using terminalGoogle.Actions;
 using terminalGoogle.DataTransferObjects;
+using terminalGoogleTests.Integration;
 
 namespace terminalGoogleTests.Unit
 {
@@ -300,33 +301,20 @@ namespace terminalGoogleTests.Unit
         }
         private Crate Get_Google_Sheet_Data_v1_PackCrate_ConfigurationControls(Tuple<string, string> spreadsheetTuple)
         {
-            var controlList = new List<ControlDefinitionDTO>();
-            var spreadsheetControl = new DropDownList()
-            {
-                Label = "Select a Google Spreadsheet",
-                Name = "select_spreadsheet",
-                selectedKey = spreadsheetTuple.Item1,
-                Value = spreadsheetTuple.Item2,
-                Selected = true,
-                Source = new FieldSourceDTO
-                {
-                    Label = "Select a Google Spreadsheet",
-                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                },
-            };
-            controlList.Add(spreadsheetControl);
-            return PackControlsCrate(controlList.ToArray());
+            var activityUi = new Get_Google_Sheet_Data_v1.ActivityUi();
+            activityUi.SpreadsheetList.ListItems = new[] { new ListItem { Key = spreadsheetTuple.Item1, Value = spreadsheetTuple.Item2 } }.ToList();
+            activityUi.SpreadsheetList.selectedKey = spreadsheetTuple.Item1;
+            activityUi.SpreadsheetList.Value = spreadsheetTuple.Item2;
+            return PackControlsCrate(activityUi.Controls.ToArray());
         }
 
         public void Get_Google_Sheet_Data_v1_AddPayload(ActivityDTO activityDTO, string spreadsheet)
         {
             var caseTuple = CaseTuple(spreadsheet);
             var configurationControlsCrate = Get_Google_Sheet_Data_v1_PackCrate_ConfigurationControls(caseTuple);
-            var crateDesignTimeFields = PackCrate_GoogleSpreadsheets();
             using (var crateStorage = CrateManager.GetUpdatableStorage(activityDTO))
             {
                 crateStorage.Add(configurationControlsCrate);
-                crateStorage.Add(crateDesignTimeFields);
             }
         }
 

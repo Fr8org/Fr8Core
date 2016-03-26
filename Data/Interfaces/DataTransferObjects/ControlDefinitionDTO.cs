@@ -71,6 +71,9 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("errorMessage")]
         public string ErrorMessage { get; set; }
 
+        [JsonProperty("isHidden")]
+        public bool IsHidden { get; set; }
+
         public virtual void Reset(List<string> fieldNames)
         {
             //This is here to prevent development bugs

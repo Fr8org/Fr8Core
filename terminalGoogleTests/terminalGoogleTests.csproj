@@ -98,9 +98,9 @@
       <Project>{40625AD3-D5D2-4CF0-8E3E-FD232A54A808}</Project>
       <Name>terminalBaseTests</Name>
     </ProjectReference>
-    <ProjectReference Include="..\terminalDocuSign\terminalDocuSign.csproj">
-      <Project>{4E04FEB2-B452-4739-8336-EA2CEFB18D87}</Project>
-      <Name>terminalDocuSign</Name>
+    <ProjectReference Include="..\terminalBase\TerminalBase.csproj">
+      <Project>{D6A0A493-E926-439A-9CE2-E093E75132CD}</Project>
+      <Name>TerminalBase</Name>
     </ProjectReference>
     <ProjectReference Include="..\terminalGoogle\terminalGoogle.csproj">
       <Project>{CDDCCFAB-28B8-446C-8585-72D2BB78F2DC}</Project>
