@@ -8,6 +8,7 @@ module dockyard.directives.filePicker {
         Save: () => void;
         field: model.File;
         selectedFile: interfaces.IFileDescriptionDTO;
+        change: () => (field: model.ControlDefinitionDTO) => void;
     }
 
     import pca = dockyard.directives.paneConfigureAction;
@@ -24,7 +25,10 @@ module dockyard.directives.filePicker {
                 $scope.selectedFile = fileDTO;
                 $scope.$root.$broadcast("fp-success", fileDTO);
                 $scope.field.value = (<dockyard.model.FileDTO>fileDTO).cloudStorageUrl;
-                $scope.$root.$broadcast("onChange", new pca.ChangeEventArgs($scope.field));
+                if ($scope.change != null && angular.isFunction($scope.change)) {
+                    $scope.change()($scope.field);
+                }
+                //$scope.$root.$broadcast("onChange", new pca.ChangeEventArgs($scope.field));
             };
             var OnFileUploadFail = function(status: any) {
                 alert('sorry file upload failed with status: ' + status);
@@ -71,7 +75,8 @@ module dockyard.directives.filePicker {
             templateUrl: '/AngularTemplate/FilePicker',
             controller: controller,
             scope: {
-                field: '='
+                field: '=',
+                change: '&'
             }
         };
     }

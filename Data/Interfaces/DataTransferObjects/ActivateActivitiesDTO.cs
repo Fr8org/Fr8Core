@@ -13,8 +13,8 @@ namespace Data.Interfaces.DataTransferObjects
 
         public ContainerDTO Container { get; set; }
 
-        [JsonProperty("redirectToRoute")]
-        public bool RedirectToRouteBuilder { get; set; }
+        [JsonProperty("redirectToPlan")]
+        public bool RedirectToPlanBuilder { get; set; }
     
         [JsonProperty("activitiesCollection")]
         public List<ActivityDTO> ActivitiesCollections { get; set; } 

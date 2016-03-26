@@ -7,6 +7,7 @@ using Data.Crates;
 using Data.Helpers;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using Data.States;
 using Newtonsoft.Json;
 
 namespace Data.Control
@@ -41,14 +42,17 @@ namespace Data.Control
         public const string TextSource = "TextSource";
         public const string TextArea = "TextArea";
         public const string QueryBuilder = "QueryBuilder";
-        public const string ManageRoute = "ManageRoute";
+        public const string ManagePlan = "ManagePlan";
         public const string Duration = "Duration";
-        public const string RunRouteButton = "RunRouteButton";
+        public const string RunPlanButton = "RunPlanButton";
         public const string UpstreamDataChooser = "UpstreamDataChooser";
         public const string UpstreamFieldChooser = "UpstreamFieldChooser";
         public const string UpstreamCrateChooser = "UpstreamCrateChooser";
         public const string DatePicker = "DatePicker";
         public const string CrateChooser = "CrateChooser";
+        public const string ContainerTransition = "ContainerTransition";
+        public const string ControlContainer = "ControlContainer";
+        public const string ControlList = "ControlList";
     }
 
     public class CheckBox : ControlDefinitionDTO
@@ -59,17 +63,18 @@ namespace Data.Control
         }
     }
 
-    public class RunRouteButton : ControlDefinitionDTO
+    public class RunPlanButton : ControlDefinitionDTO
     {
-        public RunRouteButton()
+        public RunPlanButton()
         {
-            Type = ControlTypes.RunRouteButton;
+            Type = ControlTypes.RunPlanButton;
         }
     }
 
     public class DropDownList : ControlDefinitionDTO
     {
         [JsonProperty("listItems")]
+        [ForcePropertySync]
         public List<ListItem> ListItems { get; set; }
 
         [JsonProperty("selectedKey")]
@@ -80,9 +85,25 @@ namespace Data.Control
             ListItems = new List<ListItem>();
             Type = "DropDownList";
         }
+
+        public void SelectByKey(string key)
+        {
+            SelectItem(ListItems?.FirstOrDefault(x => x.Key == key));
+        }
+
+        public void SelectByValue(string value)
+        {
+            SelectItem(ListItems?.FirstOrDefault(x => x.Value == value));
+        }
+
+        private void SelectItem(ListItem newItem)
+        {
+            selectedKey = newItem?.Key;
+            Value = newItem?.Value;
+        }
     }
 
-    public class RadioButtonGroup : ControlDefinitionDTO
+    public class RadioButtonGroup : ControlDefinitionDTO, IContainerControl
     {
         [JsonProperty("groupName")]
         public string GroupName { get; set; }
@@ -94,6 +115,11 @@ namespace Data.Control
         {
             Radios = new List<RadioButtonOption>();
             Type = ControlTypes.RadioButtonGroup;
+        }
+
+        public IEnumerable<IControlDefinition> EnumerateChildren()
+        {
+            return Radios;
         }
     }
 
@@ -118,6 +144,110 @@ namespace Data.Control
         public QueryBuilder()
         {
             Type = ControlTypes.QueryBuilder;
+        }
+    }
+
+    public class ContainerTransition : ControlDefinitionDTO
+    {
+        [JsonProperty("transitions")]
+        public List<ContainerTransitionField> Transitions { get; set; } 
+        public ContainerTransition()
+        {
+            Type = ControlTypes.ContainerTransition;
+            this.Transitions = new List<ContainerTransitionField>();
+        }
+    }
+
+    public class TextBoxMetaDescriptionDTO : ControlMetaDescriptionDTO
+    {
+        public TextBoxMetaDescriptionDTO() : base("TextBoxMetaDescriptionDTO", "TextBox")
+        {
+           // this.Controls.Add(new TextBox { });
+        }
+
+        public override ControlDefinitionDTO CreateControl()
+        {
+            return new TextBox()
+            {
+                Label = this.Controls.First().Value
+            };
+        }
+    }
+
+    public class TextBlockMetaDescriptionDTO : ControlMetaDescriptionDTO
+    {
+        public TextBlockMetaDescriptionDTO() : base("TextBlockMetaDescriptionDTO", "TextBlock")
+        {
+           // this.Controls.Add(new TextArea());
+        }
+
+        public override ControlDefinitionDTO CreateControl()
+        {
+            return new TextBlock()
+            {
+                Value = this.Controls.First().Value
+            };
+        }
+    }
+
+    public class FilePickerMetaDescriptionDTO : ControlMetaDescriptionDTO
+    {
+        public static string[] FileExtensions = {"xlsx"};
+        public FilePickerMetaDescriptionDTO() : base("FilePickerMetaDescriptionDTO", "File Picker")
+        {
+            /*
+            this.Controls.Add(new TextBox());
+            this.Controls.Add(new DropDownList() { ListItems = FileExtensions.Select(x => new ListItem { Key = x, Value = x}).ToList()});
+            */
+        }
+
+        public override ControlDefinitionDTO CreateControl()
+        {
+            return new FilePicker
+            {
+                Label = this.Controls.First().Value
+            };
+        }
+    }
+
+    [JsonConverter(typeof(ControlMetaDescriptionDTOConverter))]
+    public class ControlMetaDescriptionDTO 
+    {
+        [JsonProperty("controls")]
+        public List<ControlDefinitionDTO> Controls { get; set; }
+
+        [JsonProperty("description")]
+        public string Description { get; set; }
+
+        [JsonProperty("type")]
+        public string Type { get; set; }
+
+        public ControlMetaDescriptionDTO(string type, string description)
+        {
+            this.Type = type;
+            this.Description = description;
+            Controls = new List<ControlDefinitionDTO>();
+        }
+
+        public virtual ControlDefinitionDTO CreateControl()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class ControlContainer : ControlDefinitionDTO
+    {
+        [JsonProperty("metaDescriptions")]
+        public List<ControlMetaDescriptionDTO> MetaDescriptions { get; set; }
+
+        public ControlContainer() : base(ControlTypes.ControlContainer)
+        {
+            MetaDescriptions = new List<ControlMetaDescriptionDTO>();
+        }
+
+        public List<ControlDefinitionDTO> CreateControls()
+        {
+            return MetaDescriptions.Select(m => m.CreateControl()).ToList();
         }
     }
 
@@ -412,6 +542,12 @@ namespace Data.Control
         [JsonProperty("filterByTag")]
         public string FilterByTag { get; set; }
 
+        [JsonProperty("requestUpstream")]
+        public bool RequestUpstream { get; set; }
+
+        [JsonProperty("availabilityType")]
+        public AvailabilityType AvailabilityType { get; set; }
+
         public FieldSourceDTO()
         {
         }
@@ -457,7 +593,50 @@ namespace Data.Control
         }
     }
 
-    public class RadioButtonOption : ISupportsNestedFields
+    public class ControlList : ControlDefinitionDTO
+    {
+        [JsonProperty("controlGroups")]
+        public IList<IList<ControlDefinitionDTO>> ControlGroups { get; }
+
+        [JsonProperty("templateContainer")]
+        public ListTemplate TemplateContainer { get; set; }
+
+        [JsonProperty("addControlGroupButtonText")]
+        public string AddControlGroupButtonText { get; set; }
+        [JsonProperty("noDataMessage")]
+        public string NoDataMessage { get; set; }
+
+        public ControlList()
+        {
+            ControlGroups = new List<IList<ControlDefinitionDTO>>();
+            Type = ControlTypes.ControlList;
+        }
+
+        public ControlList(ListTemplate Template) : this()
+        {
+            this.TemplateContainer = Template;
+        }
+    }
+
+    public class ListTemplate : IContainerControl, IControlDefinition
+    {
+        [JsonProperty("template")]
+        public IList<ControlDefinitionDTO> Template { get; }
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        public ListTemplate()
+        {
+            Template = new List<ControlDefinitionDTO>();
+        }
+
+        public IEnumerable<IControlDefinition> EnumerateChildren()
+        {
+            return Template;
+        }
+    }
+
+    public class RadioButtonOption : ISupportsNestedFields, IContainerControl, IControlDefinition
     {
         public RadioButtonOption()
         {
@@ -475,6 +654,33 @@ namespace Data.Control
 
         [JsonProperty("controls")]
         public IList<ControlDefinitionDTO> Controls { get; set; }
+
+        public IEnumerable<IControlDefinition> EnumerateChildren()
+        {
+            return Controls;
+        }
+    }
+
+    public enum ContainerTransitions
+    {
+        JumpToActivity = 0,
+        JumpToPlan,
+        JumpToSubplan,
+        StopProcessing,
+        SuspendProcessing,
+        ProceedToNextActivity
+    }
+
+    public class ContainerTransitionField
+    {
+        [JsonProperty("conditions")]
+        public List<FilterConditionDTO> Conditions { get; set; }
+
+        [JsonProperty("transition")]
+        public ContainerTransitions Transition { get; set; }
+
+        [JsonProperty("targetNodeId")]
+        public Guid? TargetNodeId;
     }
 
     public class FilterPaneField
@@ -532,7 +738,8 @@ namespace Data.Control
         }
 
         [JsonProperty("selectedCrates")]
-        public List<CrateDetails> SelectedCrates { get; set; }
+        [ForcePropertySync]
+        public List<CrateDetails> SelectedCrates { get; set; } = new List<CrateDetails>();
 
         [JsonProperty("multiSelection")]
         public bool MultiSelection { get; set; }
@@ -547,11 +754,14 @@ namespace Data.Control
         }
 
         [JsonProperty("crateDescriptions")]
+        [ForcePropertySync]
         public List<CrateDescriptionDTO> CrateDescriptions { get; set; }
 
         [JsonProperty("singleManifestOnly")]
         public bool SingleManifestOnly { get; set; }
-        
+
+        [JsonProperty("requestUpstream")]
+        public bool RequestUpstream { get; set; }
     }
 
     public class UpstreamFieldChooser : ControlDefinitionDTO

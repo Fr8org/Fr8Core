@@ -33,7 +33,7 @@ namespace terminalDocuSignTests.Integration
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
 
-            var dataDTO = HealthMonitor_FixtureData.Receive_DocuSign_Envelope_v1_Example_Fr8DataDTO();
+            var dataDTO = await HealthMonitor_FixtureData.Receive_DocuSign_Envelope_v1_Example_Fr8DataDTO(this);
             var uri = new Uri(configureUrl);
             var hmacHeader = new Dictionary<string, string>()
             {

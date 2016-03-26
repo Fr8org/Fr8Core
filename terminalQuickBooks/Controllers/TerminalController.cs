@@ -26,7 +26,7 @@ namespace terminalQuickBooks.Controllers
             {
                 Name = "terminalQuickBooks",
                 TerminalStatus = TerminalStatus.Active,
-                Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
+                Endpoint = CloudConfigurationManager.GetSetting("terminalQuickBooks.TerminalEndpoint"),
                 Version = "1",
                 AuthenticationType = AuthenticationType.External
             };

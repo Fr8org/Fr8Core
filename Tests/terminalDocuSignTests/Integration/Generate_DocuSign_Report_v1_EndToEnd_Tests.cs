@@ -13,6 +13,7 @@ using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
+using Data.Interfaces;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -30,16 +31,18 @@ namespace terminalDocuSignTests.Integration
         {
             try
             {
+                await RevokeTokens();
+
                 // Create Solution plan & initial configuration.
                 var plan = await CreateSolution();
-                var solution = ExtractSolution(plan);
+                var solution = ExtractSolution(plan.Plan);
                 solution = await EnsureSolutionAuthenticated(solution);
 
                 var crateStorage = Crate.FromDto(solution.CrateStorage);
                 ValidateCrateStructure(crateStorage);
                 ValidateConfigurationControls(crateStorage);
                 var planConfigure = await GetPlanByActivity(solution.Id);
-                ValidatePlanCategory(planConfigure);
+                ValidatePlanCategory(planConfigure.Plan);
                 await SaveActivity(solution);
 
                 // FollowUp configuration.
@@ -52,12 +55,11 @@ namespace terminalDocuSignTests.Integration
                 ValidateChildrenActivities(solution);
                 ValidateSolutionOperationalState(crateStorage);
                 var planFollowup = await GetPlanByActivity(solution.Id);
-                ValidatePlanName(planFollowup, crateStorage);
+                ValidatePlanName(planFollowup.Plan, crateStorage);
                 await SaveActivity(solution);
 
-
                 // Execute plan.
-                var container = await ExecutePlan(plan);
+                var container = await ExecutePlan(plan.Plan);
                 ValidateContainer(container);
 
 
@@ -71,17 +73,18 @@ namespace terminalDocuSignTests.Integration
             }
         }
 
-        private async Task<RouteFullDTO> CreateSolution()
+        private async Task<PlanDTO> CreateSolution()
         {
             var solutionCreateUrl = _baseUrl + "activities/create?solutionName=Generate_DocuSign_Report";
-            var plan = await HttpPostAsync<string, RouteFullDTO>(solutionCreateUrl, null);
+            
+            var plan = await HttpPostAsync<string, PlanDTO>(solutionCreateUrl, null);
 
             return plan;
         }
 
-        private ActivityDTO ExtractSolution(RouteFullDTO plan)
+        private ActivityDTO ExtractSolution(PlanFullDTO plan)
         {
-            var solution = plan.Subroutes
+            var solution = plan.SubPlans
                 .FirstOrDefault()
                 .Activities
                 .FirstOrDefault();
@@ -107,7 +110,7 @@ namespace terminalDocuSignTests.Integration
 
                 var token = await HttpPostAsync<CredentialsDTO, JObject>(
                     _baseUrl + "authentication/token", creds
-                );
+                );      
 
                 Assert.AreNotEqual(
                     token["error"].ToString(),
@@ -226,7 +229,8 @@ namespace terminalDocuSignTests.Integration
 
         private void ValidateContainer(ContainerDTO container)
         {
-            Assert.AreEqual(ActivityResponse.ExecuteClientActivity, container.CurrentActivityResponse);
+            //Activity Responses should be resetted
+            Assert.AreEqual(ActivityResponse.Null, container.CurrentActivityResponse);
             Assert.AreEqual("ShowTableReport", container.CurrentClientActivityName);
         }
 
@@ -236,25 +240,25 @@ namespace terminalDocuSignTests.Integration
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardPayloadDataCM>().Count(x => x.Label == "Sql Query Result"));
         }
 
-        private async Task<RouteFullDTO> GetPlanByActivity(Guid id)
+        private async Task<PlanDTO> GetPlanByActivity(Guid id)
         {
             var solutionCreateUrl = _baseUrl + "/plans/getByActivity?id=" + id.ToString();
-            var plan = await HttpGetAsync<RouteFullDTO>(solutionCreateUrl);
+            var plan = await HttpGetAsync<PlanDTO>(solutionCreateUrl);
 
             return plan;
         }
 
-        private void ValidatePlanCategory(RouteFullDTO plan)
+        private void ValidatePlanCategory(PlanFullDTO plan)
         {
             Assert.AreEqual(plan.Category.Trim().ToLower(), "report");
         }
 
-        private void ValidatePlanName(RouteFullDTO plan, ICrateStorage crateStorage)
+        private void ValidatePlanName(PlanFullDTO plan, ICrateStorage crateStorage)
         {
             var configurationControls = crateStorage
             .CrateContentsOfType<StandardConfigurationControlsCM>()
             .SingleOrDefault();
-            
+
             var actionUi = new ActivityUi();
             actionUi.ClonePropertiesFrom(configurationControls);
 

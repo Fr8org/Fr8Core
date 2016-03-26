@@ -10,11 +10,13 @@
     export class ControlDefinitionDTO {
         type: string;
         fieldLabel: string;
+        label: string;
         name: string;
         errorMessage : string;
         events: Array<ControlEvent>;
         value: string;
         isFocused: boolean;
+        isHidden: boolean;
     }
 
     export class ControlEvent {
@@ -37,7 +39,12 @@
     }
 
     export class TextBox extends ControlDefinitionDTO {
-        required: boolean;        
+        required: boolean;
+
+        constructor() {
+            super();
+            this.type = "TextBox";
+        }
     }
 
     export class File extends ControlDefinitionDTO {
@@ -78,6 +85,7 @@
     }
 
     export enum AvailabilityType {
+        NotSet = 0,
         Configuration = 1,
         RunTime = 2,
         Always = 3
@@ -85,18 +93,124 @@
 
     export class DropDownListItem extends FieldDTO {
         selected: boolean;
+
+        constructor(key: string, value: string) {
+            super();
+            this.key = key;
+            this.value = value;
+            
+        }
     }
 
     export class FieldSource {
         public manifestType: string;
         public label: string;
         public filterByTag: string;
+        public requestUpstream: boolean;
+        public availabilityType: AvailabilityType;
     }
 
     export class DropDownList extends ControlDefinitionDTO {
         listItems: Array<DropDownListItem>;
         source: FieldSource;
         selectedKey: string;
+        
+
+        constructor() {
+            super();
+            this.type = "DropDownList";
+        }
+    }
+
+    export class FilterConditionDTO {
+        field: string;
+        operator: string;
+        value: string;
+    }
+
+    export class ControlMetaDescriptionDTO {
+        public controls: Array<ControlDefinitionDTO> = [];
+        public type: string;
+        public description: string;
+        
+        constructor(type: string, description: string) {
+            this.type = type;
+            this.description = description;
+        }
+    }
+    
+    export class TextBoxMetaDescriptionDTO extends ControlMetaDescriptionDTO
+    {
+        constructor() {
+            super("TextBoxMetaDescriptionDTO", "TextBox");
+            var tb = new model.TextBox();
+            tb.label = "Label :";
+            this.controls.push(tb);
+        }
+    }
+    
+    export class TextBlockMetaDescriptionDTO extends ControlMetaDescriptionDTO
+    {
+        constructor() {
+            super("TextBlockMetaDescriptionDTO", "TextBlock");
+            var tb = new model.TextBox();
+            tb.label = "Label :";
+            this.controls.push(tb);
+        }
+    }
+    
+    export class FilePickerMetaDescriptionDTO extends ControlMetaDescriptionDTO
+    {
+        static fileExtensions: Array<string> = ["xlsx"];
+        constructor() {
+            super("FilePickerMetaDescriptionDTO", "File Picker");
+            var tb = new model.TextBox();
+            tb.label = "Label :";
+            this.controls.push(tb);
+
+            var listItems: Array<DropDownListItem> = [];
+            for (var i = 0; i < FilePickerMetaDescriptionDTO.fileExtensions.length; i++) {
+                var extensionValue = FilePickerMetaDescriptionDTO.fileExtensions[i];
+                listItems.push(new DropDownListItem(extensionValue, extensionValue));
+            }
+            var allowedExtensions = new model.DropDownList();
+            allowedExtensions.listItems = listItems;
+            allowedExtensions.label = "File Type:";
+            this.controls.push(allowedExtensions);
+        }
+
+    }
+
+    export class ListTemplate {
+        template: Array<ControlDefinitionDTO>;
+        name: string;
+    }
+
+    export class ControlList extends ControlDefinitionDTO {
+        controlGroups: Array<Array<ControlDefinitionDTO>>;
+        templateContainer: ListTemplate;
+        addControlGroupButtonText: string;
+        noDataMessage: string;
+    }
+
+    export class ControlContainer extends ControlDefinitionDTO {
+        metaDescriptions: Array<ControlMetaDescriptionDTO>;
+    }
+
+    export class ContainerTransitionField {
+        conditions: Array<FilterConditionDTO>;
+        transition: number;
+        targetNodeId: string;
+
+        constructor() {
+            this.conditions = [];
+            this.transition = 0;
+            this.targetNodeId = null;
+        }
+    }
+
+    export class ContainerTransition extends ControlDefinitionDTO {
+        transitions: Array<ContainerTransitionField>;
     }
 
     export class CrateDetails {
@@ -112,6 +226,7 @@
     export class CrateChooser extends ControlDefinitionDTO {
         crateDescriptions: Array<CrateDescriptionDTO>;
         singleManifestOnly: boolean;
+        requestUpstream: boolean;
     }
 
     export class TextSource extends DropDownList {
@@ -133,18 +248,18 @@
 
     export class RoutingControlGroup extends ControlDefinitionDTO {
         sourceField: string;
-        routes: Array<Route>;
+        plans: Array<Plan>;
     }
 
-    export class Route extends ControlDefinitionDTO {
+    export class Plan extends ControlDefinitionDTO {
         measurementValue: string;
         selection: string;
-        previousActionList: RouteActionList;
+        previousActionList: PlanActionList;
         previousActionSelectedId: string;
         availableProcessNode: string;
     }
 
-    export class RouteActionList extends ControlDefinitionDTO {
+    export class PlanActionList extends ControlDefinitionDTO {
         choices: Array<Choice>;
         selectionId: string;
     }

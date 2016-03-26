@@ -2,7 +2,7 @@
     export class AuthService {
         private _pendingActionIds: any;
         private _authDialogDisplayed: boolean;
-        private _currentPlan: interfaces.IRouteVM;
+        private _currentPlan: interfaces.IPlanVM;
 
         constructor(
             private $rootScope: ng.IScope,
@@ -38,7 +38,7 @@
             }
         }
 
-        public setCurrentPlan(plan: interfaces.IRouteVM) {
+        public setCurrentPlan(plan: interfaces.IPlanVM) {
             this._currentPlan = plan;
         }
 
@@ -53,16 +53,16 @@
         }
 
         public isSolutionBasedPlan() {
-            if (!this._currentPlan.subroutes) {
+            if (!this._currentPlan.subPlans) {
                 return false;
             }
 
-            var subroute = this._currentPlan.subroutes[0];
-            if (!subroute || !subroute.activities) {
+            var subPlan = this._currentPlan.subPlans[0];
+            if (!subPlan || !subPlan.activities) {
                 return false;
             }
 
-            var activity = subroute.activities[0];
+            var activity = subPlan.activities[0];
             if (!activity || !activity.activityTemplate) {
                 return false;
             }
@@ -104,13 +104,13 @@
                 else {
                     self.$rootScope.$broadcast(
                         dockyard.directives.paneConfigureAction.MessageType[dockyard.directives.paneConfigureAction.MessageType.PaneConfigureAction_AuthCompleted],
-                        new dockyard.directives.paneConfigureAction.AuthenticationCompletedEventArgs(this._currentPlan.subroutes[0].activities[0])
+                        new dockyard.directives.paneConfigureAction.AuthenticationCompletedEventArgs(this._currentPlan.subPlans[0].activities[0])
                     );
 
                     console.log(
                         'AuthService.ts',
                         'Configuring root solution activity with ID = '
-                            + this._currentPlan.subroutes[0].activities[0].id
+                            + this._currentPlan.subPlans[0].activities[0].id
                     );
                 }
             })

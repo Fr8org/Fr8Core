@@ -25,7 +25,8 @@ module dockyard.controllers {
             'DTOptionsBuilder',
             'DTColumnBuilder',
             '$state',
-            '$timeout'
+            '$timeout',
+            'UIHelperService'
         ];
 
         private _manageFiles: Array<interfaces.IFileVM>;
@@ -40,7 +41,8 @@ module dockyard.controllers {
             private DTOptionsBuilder,
             private DTColumnBuilder,
             private $state,
-            private $timeout: ng.ITimeoutService) {
+            private $timeout: ng.ITimeoutService,
+            private uiHelperService: services.IUIHelperService) {
 
             this._manageFiles = ManageFileService.query();
 
@@ -102,7 +104,7 @@ module dockyard.controllers {
         }
 
         //this function will be called on every reloadData call to data-table
-        //angular removes $promise property of _routes after successful load
+        //angular removes $promise property of _plans after successful load
         //so we need to manage promises manually
         private ResolveFilesPromise() {
             if (this._manageFiles.$promise) {
@@ -139,35 +141,28 @@ module dockyard.controllers {
             $event.stopPropagation();
 
             var me = this;
-            this.$modal.open({
-                animation: true,
-                templateUrl: 'modalDeleteConfirmation',
-                controller: 'ManageFileListController__DeleteConfirmation',
 
-            }).result.then(function () {
-                //Deletion confirmed
-                me.ManageFileService.delete({ id: fileId}).$promise.then(function () {
-                    me.$rootScope.lastResult = "success";
-                    //now loop through our existing templates and remove from local memory
-                    for (var i = 0; i < me._manageFiles.length; i++) {
-                        if (me._manageFiles[i].id === fileId) {
-                            me._manageFiles.splice(i, 1);
-                            me.$scope.dtInstance.reloadData();
-                            break;
+            var alertMessage = new model.AlertDTO();
+            alertMessage.title = "Delete Confirmation";
+            alertMessage.body = "Are you sure that you wish to delete this file?";
+
+            this.uiHelperService
+                .openConfirmationModal(alertMessage).then(function () {
+
+                    //Deletion confirmed
+                    me.ManageFileService.delete({ id: fileId }).$promise.then(function () {
+                        me.$rootScope.lastResult = "success";
+                        //now loop through our existing templates and remove from local memory
+                        for (var i = 0; i < me._manageFiles.length; i++) {
+                            if (me._manageFiles[i].id === fileId) {
+                                me._manageFiles.splice(i, 1);
+                                me.$scope.dtInstance.reloadData();
+                                break;
+                            }
                         }
-                    }
+                    });
                 });
-            });
         }
     }
     app.controller('ManageFileListController', ManageFileListController);
-
-    app.controller('ManageFileListController__DeleteConfirmation', ($scope: any, $modalInstance: any): void => {
-        $scope.ok = () => {
-            $modalInstance.close();
-        };
-        $scope.cancel = () => {
-            $modalInstance.dismiss('cancel');
-        };
-    });
 }

@@ -39,7 +39,7 @@ namespace terminaBaselTests.Infrastructure
             AvailabilityType availability = AvailabilityType.RunTime;
 
             string resultUrl = String.Format(
-                "http://localhost:30643/api/v1/routenodes/designtime_fields_dir?id={0}&direction={1}&availability={2}",
+                "http://localhost:30643/api/v1/plannodes/designtime_fields_dir?id={0}&direction={1}&availability={2}",
                 id.ToString(),
                 ((int)direction).ToString(),
                 ((int)availability).ToString());

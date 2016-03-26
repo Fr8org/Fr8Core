@@ -34,7 +34,7 @@
         -->
     <div ng-if='field.type == "FilePicker"'>
         <label class='control-label'>{{::field.label}}</label>
-        <file-picker field='field'></file-picker>
+        <file-picker field='field' change="onChange"></file-picker>
     </div>
 
     <!--
@@ -53,7 +53,7 @@
         -->
     <div ng-if='field.type == "DropDownList"'>
         <label ng-if="field.label !== null && field.label.length > 0" class='control-label' ng-bind-html="field.label"></label>
-        <drop-down-list-box field='field' click='onClick' change='onChange' data-field-name='{{::field.name}}'></drop-down-list-box>
+        <drop-down-list-box current-action="currentAction" field='field' click='onClick' change='onChange' data-field-name='{{::field.name}}'></drop-down-list-box>
         <div data-ng-if="field.errorMessage != null && field.errorMessage !==''" class="validationWraper">
             <span class="validation-Icon"></span><div class="validation-message">{{field.errorMessage}}</div>
         </div>
@@ -93,8 +93,8 @@
         Routing control group template
         -->
     <div ng-if='field.type == "Routing"'>
-        <div class="container_box" ng-repeat="route in field.routes">
-            <routing-control route="route" />
+        <div class="container_box" ng-repeat="plan in field.plans">
+            <routing-control plan="plan" />
         </div>
     </div>
 
@@ -117,7 +117,7 @@
     TextSource template
         -->
     <div ng-if='field.type == "TextSource"'>
-        <text-source change="onChange" data-field-name='{{::field.name}}' field="field"></text-source>
+        <text-source current-action="currentAction" change="onChange" data-field-name='{{::field.name}}' field="field"></text-source>
     </div>
 
     <!--
@@ -129,10 +129,10 @@
     </div>
 
     <!--
-        ManageRoute template
+        ManagePlan template
     -->
-    <div ng-if='field.type == "ManageRoute"'>
-        <manage-route current-action='currentAction'></manage-route>
+    <div ng-if='field.type == "ManagePlan"'>
+        <manage-plan current-action='currentAction'></manage-plan>
     </div>
 
     <!--
@@ -144,10 +144,10 @@
     </div>
 
     <!--
-        RunRoute button
+        RunPlan button
     -->
-    <div ng-if='field.type == "RunRouteButton"'>
-        <run-route-button current-action='currentAction' field="field"></run-route-button>
+    <div ng-if='field.type == "RunPlanButton"'>
+        <run-plan-button current-action='currentAction' field="field"></run-plan-button>
     </div>
 
     <!--
@@ -180,7 +180,7 @@
 
     <!-- DatePicker -->
     <div ng-if='field.type == "DatePicker"'>
-        <date-picker field="field"/>
+        <date-picker field="field" />
     </div>
 
     <!-- CrateChooser -->
@@ -188,5 +188,23 @@
         <crate-chooser field="field" current-action="currentAction" change="onChange"></crate-chooser>
     </div>
 
-    <!-- Add more configuration field templates below -->
+
+    <!-- ContainerTransition -->
+    <div ng-if='field.type == "ContainerTransition"'>
+        <container-transition field="field" current-action="currentAction" change="onChange" plan="plan"></container-transition>
+    </div>
+
+
+    <!-- ControlContainer -->
+    <div ng-if='field.type == "ControlContainer"'>
+        <control-container field="field" current-action="currentAction" change="onChange" plan="plan"></control-container>
+    </div>
+
+    <!-- ControlList -->
+    <div ng-if='field.type == "ControlList"'>
+        <control-list field="field" current-action="currentAction" change="onChange" plan="plan"></control-list>
+    </div>
+
+
+<!-- Add more configuration field templates below -->
 </div>

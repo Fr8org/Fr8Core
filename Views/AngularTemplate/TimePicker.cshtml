@@ -1,0 +1,22 @@
+﻿<div class="bdp-input" data-original-title="" title="" tabindex="-1">
+    <div class="bdp-block ">
+        <span id="bdp-days" ng-model="duration.days">{{duration.days}}</span><br>
+        <span class="bdp-label" id="days_label">days</span>
+    </div>
+    <div class="bdp-block ">
+        <span id="bdp-hours" ng-model="duration.hours">{{duration.hours}}</span><br>
+        <span class="bdp-label" id="hours_label">hours</span>
+    </div>
+    <div class="bdp-block ">
+        <span id="bdp-minutes" ng-model="duration.minutes">{{duration.minutes}}</span><br>
+        <span class="bdp-label" id="minutes_label">minutes</span>
+    </div>
+</div>
+
+<script type="text/ng-template" id="picker">
+    <div class="bdp-popover">
+        <div><input class="form-control input-sm" type="number" min="0" value="0" ng-model="duration.days" ng-change="pickerChanged()"> days</div>
+        <div><input class="form-control input-sm" type="number" min="0" value="0" ng-model="duration.hours" ng-change="pickerChanged()"> hours</div>
+        <div><input class="form-control input-sm" type="number" min="0" value="0" ng-model="duration.minutes" ng-change="pickerChanged()"> minutes</div>
+    </div>
+ </script>

@@ -61,8 +61,9 @@
       <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="FluentValidation">
-      <HintPath>..\packages\FluentValidation.5.1.0.0\lib\Net40\FluentValidation.dll</HintPath>
+    <Reference Include="FluentValidation, Version=5.6.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentValidation.5.6.2.0\lib\Net45\FluentValidation.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Google.Apis.Core, Version=1.8.2.23761, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Apis.Core.1.8.2\lib\portable-net4+sl4+wp71+win8\Google.Apis.Core.dll</HintPath>
@@ -258,7 +259,7 @@
     <Compile Include="Entities\AspNetUserClaimDO.cs" />
     <Compile Include="Entities\EncryptedAuthorizationData.cs" />
     <Compile Include="Entities\OrganizationDO.cs" />
-    <Compile Include="Entities\RouteNodeDO.cs" />
+    <Compile Include="Entities\PlanNodeDO.cs" />
     <Compile Include="Entities\FileDO.cs" />
     <Compile Include="Entities\TerminalSubscriptionDO.cs" />
     <Compile Include="Entities\WebServiceDO.cs" />
@@ -269,10 +270,11 @@
     <Compile Include="Helpers\Fr8ReflectionHelper.cs" />
     <Compile Include="Infrastructure\AutoMapper\JSONToStringConverter.cs" />
     <Compile Include="Infrastructure\AutoMapper\DataAutoMapperBootstrapper.cs" />
-    <Compile Include="Infrastructure\AutoMapper\RouteDOFullConverter.cs" />
+    <Compile Include="Infrastructure\AutoMapper\PlanDOFullConverter.cs" />
     <Compile Include="Entities\ActivityTemplateDO.cs" />
     <Compile Include="Infrastructure\AutoMapper\StringToJSONConverter.cs" />
     <Compile Include="Infrastructure\CloudFileManager.cs" />
+    <Compile Include="Infrastructure\Fr8DbConfiguration.cs" />
     <Compile Include="Infrastructure\JsonNet\ActivityTemplateActivityConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\AvailabilityConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\CreateTimeConverter.cs" />
@@ -327,14 +329,14 @@
     <Compile Include="Interfaces\DataTransferObjects\ControlDefinitionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FileDescriptionDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\RouteFullDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\PlanFullDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ManufacturerDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\PayloadDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ContainerDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\QueryDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\SubrouteDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\SubPlanDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\SolutionPageDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\RouteEmptyDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\PlanEmptyDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\SlackPayloadDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\TerminalDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\UserDTO.cs" />
@@ -345,15 +347,19 @@
     <Compile Include="Interfaces\DataTransferObjects\ControlDefinitionDTOConverter.cs" />
     <Compile Include="Interfaces\ITrackingChangesRepository.cs" />
     <Compile Include="Interfaces\Manifests\CrateDescriptionCM.cs" />
+    <Compile Include="Helpers\FieldMemberAccessor.cs" />
+    <Compile Include="Helpers\IMemberAccessor.cs" />
+    <Compile Include="Interfaces\Manifests\Helpers\StandardTableDataCMTools.cs" />
     <Compile Include="Interfaces\Manifests\ManifestDescriptionCM.cs" />
     <Compile Include="Interfaces\Manifests\ChartOfAccountsCM.cs" />
     <Compile Include="Interfaces\Manifests\CrateManifestTypes.cs" />
     <Compile Include="Interfaces\Manifests\DocuSignTemplateCM.cs" />
     <Compile Include="Interfaces\Manifests\DocuSignRecipientCM.cs" />
     <Compile Include="Interfaces\Manifests\MtPrimaryKeyAttribute.cs" />
+    <Compile Include="Helpers\PropertyMemberAccessor.cs" />
     <Compile Include="Interfaces\Manifests\StandardAccountingTransactionCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFileListCM.cs" />
-    <Compile Include="Interfaces\Manifests\StandardFr8RoutesCM .cs" />
+    <Compile Include="Interfaces\Manifests\StandardFr8PlansCM .cs" />
     <Compile Include="Interfaces\Manifests\DocuSignEnvelopeCM.cs" />
     <Compile Include="Interfaces\Manifests\DocuSignEventCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFr8TerminalCM.cs" />
@@ -376,6 +382,7 @@
     <Compile Include="Interfaces\Manifests\FieldDescriptionsCM.cs" />
     <Compile Include="Interfaces\Manifests\EventReportCM.cs" />
     <Compile Include="Interfaces\Manifests\EventSubscriptionCM.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\PlanDTO.cs" />
     <Compile Include="Migrations\201510120408332_InitialMigration.cs" />
     <Compile Include="Migrations\201510120408332_InitialMigration.Designer.cs">
       <DependentUpon>201510120408332_InitialMigration.cs</DependentUpon>
@@ -633,10 +640,6 @@
     <Compile Include="Migrations\201603021529530_MoveToSqlMt.Designer.cs">
       <DependentUpon>201603021529530_MoveToSqlMt.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201603032006159_EmptyMigration1.cs" />
-    <Compile Include="Migrations\201603032006159_EmptyMigration1.Designer.cs">
-      <DependentUpon>201603032006159_EmptyMigration1.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201603041104310_MigrateMTData.cs" />
     <Compile Include="Migrations\201603041104310_MigrateMTData.Designer.cs">
       <DependentUpon>201603041104310_MigrateMTData.cs</DependentUpon>
@@ -644,6 +647,18 @@
     <Compile Include="Migrations\201603051236490_FasterMigrateMTData.cs" />
     <Compile Include="Migrations\201603051236490_FasterMigrateMTData.Designer.cs">
       <DependentUpon>201603051236490_FasterMigrateMTData.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201603152035015_Rename_Save_In_Google_Sheet_Activity.cs" />
+    <Compile Include="Migrations\201603152035015_Rename_Save_In_Google_Sheet_Activity.Designer.cs">
+      <DependentUpon>201603152035015_Rename_Save_In_Google_Sheet_Activity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201603170621005_ChangeRouteToPlan.cs" />
+    <Compile Include="Migrations\201603170621005_ChangeRouteToPlan.Designer.cs">
+      <DependentUpon>201603170621005_ChangeRouteToPlan.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201603191417514_Renamed_ReceiveGoogleForm_To_MonitorFormResponses.cs" />
+    <Compile Include="Migrations\201603191417514_Renamed_ReceiveGoogleForm_To_MonitorFormResponses.Designer.cs">
+      <DependentUpon>201603191417514_Renamed_ReceiveGoogleForm_To_MonitorFormResponses.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201603062121076_Organizations_Table.cs" />
     <Compile Include="Migrations\201603062121076_Organizations_Table.Designer.cs">
@@ -715,9 +730,9 @@
     <Compile Include="Repositories\Plan\PlanRepository.cs" />
     <Compile Include="Repositories\Plan\PlanStorageProviderMockedDb.cs" />
     <Compile Include="Repositories\Plan\PlanStorageProviderEf.cs" />
-    <Compile Include="Repositories\Plan\RouteSnapshot.cs" />
-    <Compile Include="Repositories\Plan\RouteTreeHelper.cs" />
-    <Compile Include="Repositories\Plan\Internal\RouteNodeRepository.cs" />
+    <Compile Include="Repositories\Plan\PlanSnapshot.cs" />
+    <Compile Include="Repositories\Plan\PlanTreeHelper.cs" />
+    <Compile Include="Repositories\Plan\Internal\PlanNodeRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\Plan\SlidingExpirationStrategy.cs" />
     <Compile Include="Repositories\TagRepository.cs" />
@@ -770,8 +785,8 @@
     <Compile Include="Repositories\EmailStatusRepository.cs" />
     <Compile Include="Repositories\EnvelopeRepository.cs" />
     <Compile Include="Repositories\ProcessNodeRepository.cs" />
-    <Compile Include="Repositories\Plan\Internal\SubrouteRepository.cs" />
-    <Compile Include="Repositories\Plan\Internal\RouteRepository.cs" />
+    <Compile Include="Repositories\Plan\Internal\SubPlanRepository.cs" />
+    <Compile Include="Repositories\Plan\Internal\PlansRepository.cs" />
     <Compile Include="Repositories\HistoryRepository.cs" />
     <Compile Include="Repositories\ContainerRepository.cs" />
     <Compile Include="Repositories\MetaflowRepository.cs" />
@@ -800,7 +815,7 @@
     <Compile Include="States\ExpectedResponseStatus.cs" />
     <Compile Include="States\InvitationType.cs" />
     <Compile Include="States\ParticipationStatus.cs" />
-    <Compile Include="States\RouteState.cs" />
+    <Compile Include="States\PlanState.cs" />
     <Compile Include="States\ProcessTemplateType.cs" />
     <Compile Include="States\Roles.cs" />
     <Compile Include="States\Templates\_AccessLevelTemplate.cs" />
@@ -809,7 +824,7 @@
     <Compile Include="States\Templates\_AuthorizationTokenStateTemplate.cs" />
     <Compile Include="States\Templates\_CriteriaExecutionTypeTemplate.cs" />
     <Compile Include="States\Templates\_TerminalStatusTemplate.cs" />
-    <Compile Include="Entities\SubrouteDO.cs" />
+    <Compile Include="Entities\SubPlanDO.cs" />
     <Compile Include="States\Templates\_ProcessNodeStatusTemplate.cs" />
     <Compile Include="States\Templates\_ContainerStateTemplate.cs" />
     <Compile Include="States\Templates\IStateTemplate.cs" />
@@ -910,6 +925,7 @@
     <Compile Include="Validations\OutboundTemplatedEmailValidator.cs" />
     <Compile Include="Validations\TerminalValidator.cs" />
     <Compile Include="Validations\UserValidator.cs" />
+    <Compile Include="Validations\ValidationUtils.cs" />
     <Compile Include="Validations\Validators.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -1128,14 +1144,20 @@
     <EmbeddedResource Include="Migrations\201603021529530_MoveToSqlMt.resx">
       <DependentUpon>201603021529530_MoveToSqlMt.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201603032006159_EmptyMigration1.resx">
-      <DependentUpon>201603032006159_EmptyMigration1.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201603041104310_MigrateMTData.resx">
       <DependentUpon>201603041104310_MigrateMTData.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201603051236490_FasterMigrateMTData.resx">
       <DependentUpon>201603051236490_FasterMigrateMTData.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201603152035015_Rename_Save_In_Google_Sheet_Activity.resx">
+      <DependentUpon>201603152035015_Rename_Save_In_Google_Sheet_Activity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201603170621005_ChangeRouteToPlan.resx">
+      <DependentUpon>201603170621005_ChangeRouteToPlan.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201603191417514_Renamed_ReceiveGoogleForm_To_MonitorFormResponses.resx">
+      <DependentUpon>201603191417514_Renamed_ReceiveGoogleForm_To_MonitorFormResponses.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201603062121076_Organizations_Table.resx">
       <DependentUpon>201603062121076_Organizations_Table.cs</DependentUpon>

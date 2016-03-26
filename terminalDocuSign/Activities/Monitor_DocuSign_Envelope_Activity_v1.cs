@@ -1,10 +1,10 @@
-using System.Web.UI;
-using Data.Constants;
 using Data.Entities;
 using TerminalBase.Infrastructure;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Net.Mail;
 using System.Threading.Tasks;
 using Data.Control;
 using Data.Crates;
@@ -12,32 +12,38 @@ using Hub.Managers;
 using Newtonsoft.Json;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using TerminalBase;
-using DocuSign.Integrations.Client;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Services;
-using TerminalBase.BaseClasses;
-using Utilities.Configuration.Azure;
 using Data.States;
-using Data.Interfaces.DataTransferObjects.Helpers;
+using Data.Validations;
+using DocuSign.Integrations.Client;
 
 namespace terminalDocuSign.Actions
 {
     public class Monitor_DocuSign_Envelope_Activity_v1 : BaseDocuSignActivity
     {
-        readonly DocuSignManager _docuSignManager = new DocuSignManager();
 
         private const string DocuSignConnectName = "fr8DocuSignConnectConfiguration";
 
         private const string DocuSignOnEnvelopeSentEvent = "Sent";
+
         private const string DocuSignOnEnvelopeReceivedEvent = "Delivered";
+
         private const string DocuSignOnEnvelopeSignedEvent = "Completed";
+
+        private const string RecipientSignedEventName = "RecipientSigned";
+
+        private const string RecipientCompletedEventName = "RecipientCompleted";
+
+        private const string EnvelopeSentEventname = "EnvelopeSent";
+
+        private const string EnvelopeRecievedEventName = "EnvelopeReceived";
+
 
         public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             CheckAuthentication(authTokenDO);
-
             return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
         }
 
@@ -48,86 +54,43 @@ namespace terminalDocuSign.Actions
                 : ConfigurationRequestType.Followup;
         }
 
-
-        private void GetTemplateRecipientPickerValue(ActivityDO curActivityDO, out string selectedOption,
-                                                     out string selectedValue, out string selectedTemplate)
+        private void GetTemplateRecipientPickerValue(ActivityDO curActivityDO, out string selectedOption, out string selectedValue, out string selectedTemplate)
         {
-            GetTemplateRecipientPickerValue(CrateManager.GetStorage(curActivityDO), out selectedOption, out selectedValue, out selectedTemplate);
-        }
-
-        private void GetTemplateRecipientPickerValue(ICrateStorage storage, out string selectedOption, out string selectedValue, out string selectedTemplate)
-        {
-            var controls = storage.FirstCrate<StandardConfigurationControlsCM>(x => x.Label == "Configuration_Controls");
+            ActivityUi activityUi = CrateManager.GetStorage(curActivityDO).FirstCrate<StandardConfigurationControlsCM>(x => x.Label == "Configuration_Controls").Content;
+            selectedOption = string.Empty;
+            selectedValue = string.Empty;
             selectedTemplate = string.Empty;
-            var group = controls.Content.Controls.OfType<RadioButtonGroup>().FirstOrDefault();
-            if (group == null)
+            if (activityUi.BasedOnTemplateOption.Selected)
             {
-                selectedOption = "template";
-                selectedValue = controls.Content.Controls.OfType<DropDownList>().First().Value;               
+                selectedOption = activityUi.BasedOnTemplateOption.Name;
+                selectedTemplate = activityUi.TemplateList.selectedKey;
+                selectedValue = activityUi.TemplateList.Value;
             }
-            else
+            else if (activityUi.SentToRecipientOption.Selected)
             {
-                if (group.Radios.Any(x => x.Selected))
-                {
-                    //get the option which is selected from the Template/Recipient picker
-                    var pickedControl = group.Radios.Single(r => r.Selected);
-                    if (pickedControl.Controls[0].Type == ControlTypes.DropDownList)
-                    {
-                        var templateControl = pickedControl.Controls[0] as DropDownList;
-                        var selectedListItem = templateControl
-                            .ListItems
-                            .FirstOrDefault(x => x.Value == templateControl.Value);
-
-                        if (selectedListItem != null)
-                        {
-                            selectedTemplate = selectedListItem.Key;
+                selectedOption = activityUi.SentToRecipientOption.Name;
+                selectedValue = activityUi.Recipient.Value;
                         }
                     }                   
-                    //set the output values
-                    selectedOption = pickedControl.Name;
-                    selectedValue = pickedControl.Controls[0].Value;                   
-                }
-                else
-                {
-                    selectedOption = string.Empty;
-                    selectedValue = string.Empty;
-                    selectedTemplate = string.Empty;
-                }
-            }
-        }
 
-        private void GetUserSelectedEnvelopeEvents(ActivityDO curActivityDO, out bool youSent, out bool someoneReceived, out bool recipientSigned)
+        private DocuSignEvents GetUserSelectedEnvelopeEvents(ActivityDO curActivityDO)
         {
-            var configControls = GetConfigurationControls(curActivityDO);
-            var eventCheckBoxes = configControls.Controls.Where(c => c.Type == ControlTypes.CheckBox).ToList();
-            youSent = eventCheckBoxes.Any(c => c.Name == "Event_Envelope_Sent" && c.Selected);
-            someoneReceived = eventCheckBoxes.Any(c => c.Name == "Event_Envelope_Received" && c.Selected);
-            recipientSigned = eventCheckBoxes.Any(c => c.Name == "Event_Recipient_Signed" && c.Selected);
-        }
-
-        private string GetDocusignPublishUrl()
+            ActivityUi activityUi = GetConfigurationControls(curActivityDO);
+            return new DocuSignEvents
         {
-            var endPoint = CloudConfigurationManager.GetSetting("TerminalEndpoint");
-            return "http://" + endPoint + "/terminals/terminalDocuSign/events";
+                EnvelopeSent = activityUi?.EnvelopeSentOption?.Selected ?? false,
+                EnvelopRecieved = activityUi?.EnvelopeRecievedOption?.Selected ?? false,
+                EnvelopeSigned = activityUi?.EnvelopeSignedOption?.Selected ?? false
+            };
         }
 
         public override Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            ValidateEnvelopeSelectableEvents(curActivityDO);
             //create DocuSign account, publish URL and other user selected options
-            bool youSent, someoneReceived, recipientSigned;
-            GetUserSelectedEnvelopeEvents(curActivityDO, out youSent, out someoneReceived, out recipientSigned);
-
+            var result = GetUserSelectedEnvelopeEvents(curActivityDO);
             //create or update the DocuSign connect profile configuration
-            CreateOrUpdateDocuSignConnectConfiguration(youSent, someoneReceived, recipientSigned);
-
-            return Task.FromResult<ActivityDO>(curActivityDO);
-        }
-
-        protected override async Task<ICrateStorage> ValidateActivity(ActivityDO curActivityDO)
-        {
-            ValidateEnvelopeSelectableEvents(curActivityDO);
-            return await Task.FromResult<ICrateStorage>(null);
+            CreateOrUpdateDocuSignConnectConfiguration(result);
+            return Task.FromResult(curActivityDO);
         }
 
         /// <summary>
@@ -148,69 +111,89 @@ namespace terminalDocuSign.Actions
             return null;
         }
 
-        /// <summary>
-        /// Validate that at least one checkbox has been selected for envelope events
-        /// Validate that at least one radiobutton has been selected for 
-        /// </summary>
-        /// <param name="curActivityDO"></param>
-        /// <returns>True when validation is on/false on problem</returns>
-        private void ValidateEnvelopeSelectableEvents(ActivityDO curActivityDO)
+        protected internal override ValidationResult ValidateActivityInternal(ActivityDO curActivityDO)
         {
+            var errorMessages = new List<string>();
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                var configControls = GetConfigurationControls(crateStorage);
-                if (configControls == null) return;
-                var eventCheckBoxes = configControls.Controls.Where(c => c.Type == ControlTypes.CheckBox).ToList();
-                var anySelectedControl = eventCheckBoxes.Any(c => c.Selected);
-
-                var checkBoxControl = eventCheckBoxes.FirstOrDefault(x => x.Name == "Event_Recipient_Signed");
-                if (checkBoxControl != null) checkBoxControl.ErrorMessage = string.Empty;
-                if (!anySelectedControl && checkBoxControl != null)
+                ActivityUi activityUi = GetConfigurationControls(crateStorage);
+                if (activityUi == null)
                 {
-                    //show the error under the third checkbox because checkboxes are rendered like separate controls
-                    checkBoxControl.ErrorMessage = "At least one notification checkbox must be checked.";
+                    return new ValidationResult(DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage);
                 }
+                errorMessages.Add(activityUi.EnvelopeSignedOption.ErrorMessage
+                                  = AtLeastOneNotificationIsSelected(activityUi)
+                                        ? string.Empty
+                                        : "At least one notification option must be selected");
 
-                var groupControl = configControls.Controls.OfType<RadioButtonGroup>().FirstOrDefault();
-                if (groupControl == null) return;
+                errorMessages.Add(activityUi.TemplateRecipientOptionSelector.ErrorMessage
+                                  = EnvelopeConditionIsSelected(activityUi)
+                                        ? string.Empty
+                                        : "At least one envelope option must be selected");
 
-                groupControl.ErrorMessage = !groupControl.Radios.Any(x => x.Selected) ?
-                    "One option from the radio buttons must be selected." : string.Empty;
+                errorMessages.Add(activityUi.Recipient.ErrorMessage
+                    = RecipientIsRequired(activityUi)
+                        ? DocuSignValidationUtils.ValueIsSet(activityUi.Recipient)
+                            ? activityUi.Recipient.Value.IsValidEmailAddress()
+                                ? string.Empty
+                                : DocuSignValidationUtils.RecipientIsNotValidErrorMessage
+                            : DocuSignValidationUtils.RecipientIsNotSpecifiedErrorMessage
+                        : string.Empty);
+
+                errorMessages.Add(activityUi.TemplateList.ErrorMessage
+                                  = TemplateIsRequired(activityUi)
+                                        ? DocuSignValidationUtils.AtLeastOneItemExists(activityUi.TemplateList)
+                                              ? DocuSignValidationUtils.ItemIsSelected(activityUi.TemplateList)
+                                                    ? string.Empty
+                                                    : DocuSignValidationUtils.TemplateIsNotSelectedErrorMessage
+                                              : DocuSignValidationUtils.NoTemplateExistsErrorMessage
+                                        : string.Empty);
             }
+            errorMessages.RemoveAll(string.IsNullOrEmpty);
+            return errorMessages.Count == 0 ? ValidationResult.Success : new ValidationResult(string.Join(Environment.NewLine, errorMessages));
         }
 
+        protected override string ActivityUserFriendlyName => "Monitor DocuSign Envelope Activity";
 
+        private bool TemplateIsRequired(ActivityUi activityUi)
+        {
+            return activityUi.BasedOnTemplateOption.Selected;
+        }
+        private bool RecipientIsRequired(ActivityUi activityUi)
+        {
+            return activityUi.SentToRecipientOption.Selected;
+        }
+        private bool AtLeastOneNotificationIsSelected(ActivityUi activityUi)
+        {
+            return activityUi.EnvelopeRecievedOption.Selected
+                   || activityUi.EnvelopeSentOption.Selected
+                   || activityUi.EnvelopeSignedOption.Selected;
+        }
+        private bool EnvelopeConditionIsSelected(ActivityUi activityUi)
+        {
+            return activityUi.SentToRecipientOption.Selected || activityUi.BasedOnTemplateOption.Selected;
+        }
         /// <summary>
         /// Creates or Updates a Docusign connect configuration named "DocuSignConnectName" for current user
         /// </summary>
-        private void CreateOrUpdateDocuSignConnectConfiguration(bool youSent,
-                                                                bool someoneReceived, bool recipientSigned)
+        private void CreateOrUpdateDocuSignConnectConfiguration(DocuSignEvents events)
         {
             //prepare envelope events based on the input parameters
-            var envelopeEvents = "";
-            if (youSent)
+            var envelopeEvents = new List<string>(3);
+            if (events.EnvelopeSent)
             {
-                envelopeEvents = DocuSignOnEnvelopeSentEvent;
+                envelopeEvents.Add(DocuSignOnEnvelopeSentEvent);
             }
-            if (someoneReceived)
+            if (events.EnvelopRecieved)
             {
-                if (envelopeEvents.Length > 0)
-                {
-                    envelopeEvents += ",";
+                envelopeEvents.Add(DocuSignOnEnvelopeReceivedEvent);
                 }
-                envelopeEvents += DocuSignOnEnvelopeReceivedEvent;
-            }
-            if (recipientSigned)
+            if (events.EnvelopeSigned)
             {
-                if (envelopeEvents.Length > 0)
-                {
-                    envelopeEvents += ",";
+                envelopeEvents.Add(DocuSignOnEnvelopeSignedEvent);
                 }
-                envelopeEvents += DocuSignOnEnvelopeSignedEvent;
-            }
-
             //get existing connect configuration
-            DocuSignAccount.CreateOrUpdateDefaultDocuSignConnectConfiguration(envelopeEvents);
+            DocuSignAccount.CreateOrUpdateDefaultDocuSignConnectConfiguration(string.Join(",", envelopeEvents));
         }
 
         public override Task<ActivityDO> Deactivate(ActivityDO curActivityDO)
@@ -225,26 +208,16 @@ namespace terminalDocuSign.Actions
                 docuSignAccount.DeleteDocuSignConnectProfile(existingConfig.connectId);
             }
 
-            return Task.FromResult<ActivityDO>(curActivityDO);
+            return Task.FromResult(curActivityDO);
         }
 
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        protected internal override async Task<PayloadDTO> RunInternal(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payloadCrates = await GetPayload(curActivityDO, containerId);
-
-            if (NeedsAuthentication(authTokenDO))
-            {
-                return NeedsAuthenticationError(payloadCrates);
-            }
-
             //get currently selected option and its value
             string curSelectedOption, curSelectedValue, curSelectedTemplate;
             GetTemplateRecipientPickerValue(curActivityDO, out curSelectedOption, out curSelectedValue, out curSelectedTemplate);
-
-            string envelopeId = string.Empty;
-
-
-
+            var envelopeId = string.Empty;
             //retrieve envelope ID based on the selected option and its value
             if (!string.IsNullOrEmpty(curSelectedOption))
             {
@@ -252,12 +225,12 @@ namespace terminalDocuSign.Actions
                 {
                     case "template":
                         //filter the incoming envelope by template value selected by the user                       
-                        var incommingTemplate = GetValueForKey(payloadCrates, "TemplateName");
+                        var incommingTemplate = GetValueForEventKey(payloadCrates, "TemplateName");
                         if (incommingTemplate != null)
                         {
                             if (curSelectedTemplate == incommingTemplate)
                             {
-                                envelopeId = GetValueForKey(payloadCrates, "EnvelopeId");
+                                envelopeId = GetValueForEventKey(payloadCrates, "EnvelopeId");
                             }
                             else
                             {
@@ -268,13 +241,13 @@ namespace terminalDocuSign.Actions
                         break;
                     case "recipient":
                         //filter incoming envelope by recipient email address specified by the user
-                        var curRecipientEmail = GetValueForKey(payloadCrates, "RecipientEmail");
+                        var curRecipientEmail = GetValueForEventKey(payloadCrates, "RecipientEmail");
                         if (curRecipientEmail != null)
                         {
                             //if the incoming envelope's recipient is user specified one, get the envelope ID
                             if (curRecipientEmail.Equals(curSelectedValue))
                             {
-                                envelopeId = GetValueForKey(payloadCrates, "EnvelopeId");
+                                envelopeId = GetValueForEventKey(payloadCrates, "EnvelopeId");
                             }
                             else
                             {
@@ -290,18 +263,18 @@ namespace terminalDocuSign.Actions
             if (string.IsNullOrEmpty(envelopeId))
             {
                 await Activate(curActivityDO, authTokenDO);
-                return Success(payloadCrates, "Route successfully activated. It will wait and respond to specified DocuSign Event messages");
+                return TerminateHubExecution(payloadCrates, "Plan successfully activated. It will wait and respond to specified DocuSign Event messages");
             }
 
             //Create run-time fields
             var fields = CreateDocuSignEventFields();
             foreach (var field in fields)
             {
-                field.Value = GetValueForKey(payloadCrates, field.Key);
+                field.Value = GetValueForEventKey(payloadCrates, field.Key);
             }
 
             //Create log message
-            var logMessages = new StandardLoggingCM()
+            var logMessages = new StandardLoggingCM
             {
                 Item = new List<LogItemDTO>
                 {
@@ -313,15 +286,13 @@ namespace terminalDocuSign.Actions
                 }
             };
 
-
-
             using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
             {
                 crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(fields)));
                 crateStorage.Add(Data.Crates.Crate.FromContent("Log Messages", logMessages));
                 if (curSelectedOption == "template")
                 {
-                    var userDefinedFieldsPayload = _docuSignManager.CreateActivityPayload(curActivityDO, authTokenDO, envelopeId, curSelectedValue);
+                    var userDefinedFieldsPayload = CreateActivityPayload(curActivityDO, authTokenDO, envelopeId);
                     crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Data", userDefinedFieldsPayload));
                 }
             }
@@ -331,38 +302,35 @@ namespace terminalDocuSign.Actions
 
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
-
-            var configurationCrate = PackCrate_ConfigurationControls();
-            _docuSignManager.FillDocuSignTemplateSource(configurationCrate, "UpstreamCrate", docuSignAuthDTO);
+            
+            var controlsCrate = PackControls(CreateActivityUi());
+            FillDocuSignTemplateSource(controlsCrate, "UpstreamCrate", authTokenDO);
             var eventFields = CrateManager.CreateDesignTimeFieldsCrate("DocuSign Event Fields", AvailabilityType.RunTime, CreateDocuSignEventFields().ToArray());
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                crateStorage.Add(configurationCrate);
+                crateStorage.Add(controlsCrate);
                 crateStorage.Add(eventFields);
 
                 // Remove previously added crate of "Standard Event Subscriptions" schema
                 crateStorage.Remove<EventSubscriptionCM>();
-                crateStorage.Add(PackCrate_EventSubscriptions(configurationCrate.Get<StandardConfigurationControlsCM>()));
+                crateStorage.Add(PackEventSubscriptionsCrate(controlsCrate.Get<StandardConfigurationControlsCM>()));
             }
-            return await Task.FromResult<ActivityDO>(curActivityDO);
+            return await Task.FromResult(curActivityDO);
         }
 
-        protected override Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO,
-                                                                        AuthorizationTokenDO authTokenDO)
+        protected override Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             //just update the user selected envelope events in the follow up configuration
-
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 UpdateSelectedEvents(crateStorage);
                 string selectedOption, selectedValue, selectedTemplate;
                 GetTemplateRecipientPickerValue(curActivityDO, out selectedOption, out selectedValue, out selectedTemplate);
-                _docuSignManager.UpdateUserDefinedFields(curActivityDO, authTokenDO, crateStorage, selectedValue);
+                if (selectedOption == "template")
+                    AddOrUpdateUserDefinedFields(curActivityDO, authTokenDO, crateStorage, selectedValue);
             }
-
-            return Task.FromResult<ActivityDO>(curActivityDO);
+            return Task.FromResult(curActivityDO);
         }
 
         /// <summary>
@@ -371,165 +339,184 @@ namespace terminalDocuSign.Actions
         /// <remarks>The configuration controls include check boxes used to get the selected DocuSign event subscriptions</remarks>
         private void UpdateSelectedEvents(ICrateStorage storage)
         {
-            //get the config controls manifest
-
-            var curConfigControlsCrate = storage.CrateContentsOfType<StandardConfigurationControlsCM>().First();
+            ActivityUi activityUi = storage.CrateContentsOfType<StandardConfigurationControlsCM>().First();
 
             //get selected check boxes (i.e. user wanted to subscribe these DocuSign events to monitor for)
-            var curSelectedDocuSignEvents =
-                curConfigControlsCrate.Controls
-                    .Where(configControl => configControl.Type.Equals(ControlTypes.CheckBox) && configControl.Selected && configControl.Name.StartsWith("Event_"))
-                    .Select(checkBox => checkBox.Name.Substring("Event_".Length).Replace("_", "")).ToList();
-
-            if (curSelectedDocuSignEvents.Any(e => e == "RecipientSigned"))
+            var curSelectedDocuSignEvents = new List<string>
+                                            {
+                                                activityUi.EnvelopeSentOption.Selected ? activityUi.EnvelopeSentOption.Name : string.Empty,
+                                                activityUi.EnvelopeRecievedOption.Selected ? activityUi.EnvelopeRecievedOption.Name : string.Empty,
+                                                activityUi.EnvelopeSignedOption.Selected ? activityUi.EnvelopeSignedOption.Name : string.Empty
+                                            };
+            if (curSelectedDocuSignEvents.Contains(RecipientSignedEventName))
             {
-                if (curSelectedDocuSignEvents.Any(e => e != "RecipientCompleted"))
+                if (!curSelectedDocuSignEvents.Contains(RecipientCompletedEventName))
                 {
-                    curSelectedDocuSignEvents.Add("RecipientCompleted");
+                    curSelectedDocuSignEvents.Add(RecipientCompletedEventName);
                 }
             }
             else
-                curSelectedDocuSignEvents.Remove("RecipientCompleted");
+            {
+                curSelectedDocuSignEvents.Remove(RecipientCompletedEventName);
+            }
 
             //create standard event subscription crate with user selected DocuSign events
             var curEventSubscriptionCrate = CrateManager.CreateStandardEventSubscriptionsCrate("Standard Event Subscriptions", "DocuSign",
-                curSelectedDocuSignEvents.ToArray());
+                curSelectedDocuSignEvents.Where(x => !string.IsNullOrEmpty(x)).ToArray());
 
             storage.Remove<EventSubscriptionCM>();
             storage.Add(curEventSubscriptionCrate);
         }
 
-        private Crate PackCrate_EventSubscriptions(StandardConfigurationControlsCM configurationFields)
+        private Crate PackEventSubscriptionsCrate(StandardConfigurationControlsCM configurationFields)
         {
             var subscriptions = new List<string>();
-
-            var eventCheckBoxes = configurationFields.Controls
-                .Where(x => x.Type == "CheckBox" && x.Name.StartsWith("Event_"));
-
-            foreach (var eventCheckBox in eventCheckBoxes)
-            {
-                if (eventCheckBox.Selected)
-                {
-                    subscriptions.Add(eventCheckBox.Name.Substring("Event_".Length).Replace("_", ""));
-                    if (eventCheckBox.Name.Equals("Event_Recipient_Signed", StringComparison.InvariantCultureIgnoreCase))
+            ActivityUi activityUi = configurationFields;
+            if (activityUi.EnvelopeSentOption.Selected)
                     {
-                        subscriptions.Add("RecipientCompleted");
+                subscriptions.Add(EnvelopeSentEventname);
                     }
+            if (activityUi.EnvelopeRecievedOption.Selected)
+            {
+                subscriptions.Add(EnvelopeRecievedEventName);
                 }
+            if (activityUi.EnvelopeSignedOption.Selected)
+            {
+                subscriptions.Add(RecipientSignedEventName);
+                subscriptions.Add(RecipientCompletedEventName);
             }
-
             return CrateManager.CreateStandardEventSubscriptionsCrate(
                 "Standard Event Subscriptions",
                 "DocuSign",
-                subscriptions.ToArray()
-                );
+                subscriptions.ToArray());
         }
 
-        private Crate PackCrate_ConfigurationControls()
+        private ActivityUi CreateActivityUi()
         {
-            var textArea = new TextArea
+            var result = new ActivityUi
+        {
+                ActivityDescription = new TextArea
             {
                 IsReadOnly = true,
                 Label = "",
                 Value = "<p>Process incoming DocuSign Envelope notifications if the following are true:</p>"
-            };
-
-            var fieldEnvelopeSent = new CheckBox()
+                },
+                EnvelopeSentOption = new CheckBox
             {
                 Label = "You sent a DocuSign Envelope",
-                Name = "Event_Envelope_Sent",
-                Events = new List<ControlEvent>()
+                    Name = EnvelopeSentEventname,
+                    Events = new List<ControlEvent> { ControlEvent.RequestConfig },
+                },
+                EnvelopeRecievedOption = new CheckBox
                 {
-                    new ControlEvent("onChange", "requestConfig")
-                }
-            };
-
-            var fieldEnvelopeReceived = new CheckBox()
+                    Label = "Someone received an Envelope you sent",
+                    Name = EnvelopeRecievedEventName,
+                    Events = new List<ControlEvent> { ControlEvent.RequestConfig }
+                },
+                EnvelopeSignedOption = new CheckBox
+                {
+                    Label = "One of your Recipients signed an Envelope",
+                    Name = RecipientSignedEventName,
+                    Events = new List<ControlEvent> { ControlEvent.RequestConfig }
+                },
+                Recipient = new TextBox
+                {
+                    Label = "",
+                    Name = "RecipientValue",
+                    Events = new List<ControlEvent> { ControlEvent.RequestConfig }
+                },
+                SentToRecipientOption = new RadioButtonOption
             {
-                Label = "Someone received an Envelope you sent",
-                Name = "Event_Envelope_Received",
-                Events = new List<ControlEvent>()
+                    Selected = false,
+                    Name = "recipient",
+                    Value = "Was sent to a specific recipient"
+                },
+                TemplateList = new DropDownList
                 {
-                    new ControlEvent("onChange", "requestConfig")
-                }
-            };
-
-            var fieldRecipientSigned = new CheckBox()
+                    Label = "",
+                    Name = "UpstreamCrate",
+                    Events = new List<ControlEvent> { ControlEvent.RequestConfig },
+                    ShowDocumentation = ActivityResponseDTO.CreateDocumentationResponse("Minicon", "ExplainMonitoring")
+                },
+                BasedOnTemplateOption = new RadioButtonOption
             {
-                Label = "One of your Recipients signed an Envelope",
-                Name = "Event_Recipient_Signed",
-                Events = new List<ControlEvent>()
+                    Selected = false,
+                    Name = "template",
+                    Value = "Was based on a specific template"
+                },
+                TemplateRecipientOptionSelector = new RadioButtonGroup
                 {
-                    new ControlEvent("onChange", "requestConfig")
+                    Label = "The envelope:",
+                    GroupName = "TemplateRecipientPicker",
+                    Name = "TemplateRecipientPicker",
+                    Events = new List<ControlEvent> { new ControlEvent("onChange", "requestConfig") }
                 }
             };
-
-            // remove by FR-1766
-            //var fieldEventRecipientSent = new CheckBox()
-            //{
-            //    Label = "Recipient Sent",
-            //    Name = "Event_Recipient_Sent",
-            //    Events = new List<ControlEvent>()
-            //    {
-            //        new ControlEvent("onChange", "requestConfig")
-            //    }
-            //};
-
-            return PackControlsCrate(
-                textArea,
-                fieldEnvelopeSent,
-                fieldEnvelopeReceived,
-                fieldRecipientSigned,
-                PackCrate_TemplateRecipientPicker());
+            result.BasedOnTemplateOption.Controls = new List<ControlDefinitionDTO> { result.TemplateList };
+            result.SentToRecipientOption.Controls = new List<ControlDefinitionDTO> { result.Recipient };
+            result.TemplateRecipientOptionSelector.Radios = new List<RadioButtonOption> { result.SentToRecipientOption, result.BasedOnTemplateOption };
+            return result;
         }
 
-        private ControlDefinitionDTO PackCrate_TemplateRecipientPicker()
+        private struct DocuSignEvents
         {
-            var templateRecipientPicker = new RadioButtonGroup()
-            {
-                Label = "The envelope:",
-                GroupName = "TemplateRecipientPicker",
-                Name = "TemplateRecipientPicker",
-                Events = new List<ControlEvent> { new ControlEvent("onChange", "requestConfig") },
-                Radios = new List<RadioButtonOption>()
-                {
-                    new RadioButtonOption()
-                    {
-                        Selected = false,
-                        Name = "recipient",
-                        Value = "Was sent to a specific recipient",
-                        Controls = new List<ControlDefinitionDTO>
-                        {
-                            new TextBox()
-                            {
-                                Label = "",
-                                Name = "RecipientValue",
-                                Events = new List<ControlEvent> {new ControlEvent("onChange", "requestConfig")}
-                            }
-                        }
-                    },
-
-                    new RadioButtonOption()
-                    {
-                        Selected = false,
-                        Name = "template",
-                        Value = "Was based on a specific template",
-                        Controls = new List<ControlDefinitionDTO>
-                        {
-                            new DropDownList()
-                            {
-                                Label = "",
-                                Name = "UpstreamCrate",
-                                Events = new List<ControlEvent> {new ControlEvent("onChange", "requestConfig")},
-                                ShowDocumentation = ActivityResponseDTO.CreateDocumentationResponse("Minicon", "ExplainMonitoring")
-                            }
-                        }
-                    }
-                }
-            };
-
-            return templateRecipientPicker;
+            public bool EnvelopeSent { get; set; }
+            public bool EnvelopRecieved { get; set; }
+            public bool EnvelopeSigned { get; set; }
         }
 
+        private class ActivityUi
+        {
+            public TextArea ActivityDescription { get; set; }
+            public CheckBox EnvelopeSentOption { get; set; }
+            public CheckBox EnvelopeRecievedOption { get; set; }
+            public CheckBox EnvelopeSignedOption { get; set; }
+            public RadioButtonGroup TemplateRecipientOptionSelector { get; set; }
+            public RadioButtonOption BasedOnTemplateOption { get; set; }
+            public DropDownList TemplateList { get; set; }
+            public RadioButtonOption SentToRecipientOption { get; set; }
+            public TextBox Recipient { get; set; }
+
+            public static implicit operator ActivityUi(StandardConfigurationControlsCM controlsManifest)
+            {
+                if (controlsManifest == null)
+                {
+                    return null;
+                }
+                try
+                    {
+                    var result = new ActivityUi
+                        {
+                                     ActivityDescription = (TextArea)controlsManifest.Controls[0],
+                                     EnvelopeSentOption = (CheckBox)controlsManifest.Controls[1],
+                                     EnvelopeRecievedOption = (CheckBox)controlsManifest.Controls[2],
+                                     EnvelopeSignedOption = (CheckBox)controlsManifest.Controls[3],
+                                     TemplateRecipientOptionSelector = (RadioButtonGroup)controlsManifest.Controls[4]
+                                 };
+                    result.SentToRecipientOption = result.TemplateRecipientOptionSelector.Radios[0];
+                    result.Recipient = (TextBox)result.SentToRecipientOption.Controls[0];
+                    result.BasedOnTemplateOption = result.TemplateRecipientOptionSelector.Radios[1];
+                    result.TemplateList = (DropDownList)result.BasedOnTemplateOption.Controls[0];
+                    return result;
+                }
+                catch
+                            {
+                    return null;
+                            }
+                        }
+
+            public static implicit operator StandardConfigurationControlsCM(ActivityUi activityUi)
+                        {
+                if (activityUi == null)
+                            {
+                    return null;
+                    }
+                return new StandardConfigurationControlsCM(activityUi.ActivityDescription,
+                                                           activityUi.EnvelopeSentOption,
+                                                           activityUi.EnvelopeRecievedOption,
+                                                           activityUi.EnvelopeSignedOption,
+                                                           activityUi.TemplateRecipientOptionSelector);
+                }
+        }
     }
 }

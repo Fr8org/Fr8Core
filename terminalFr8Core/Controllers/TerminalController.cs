@@ -28,7 +28,7 @@ namespace terminalFr8Core.Controllers
 
             var terminal = new TerminalDTO
             {
-                Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
+                Endpoint = CloudConfigurationManager.GetSetting("terminalFr8Core.TerminalEndpoint"),
                 TerminalStatus = TerminalStatus.Active,
                 Name = "terminalFr8Core",
                 Version = "1"
@@ -152,7 +152,7 @@ namespace terminalFr8Core.Controllers
 
             result.Add(new ActivityTemplateDTO
             {
-                Name = "ManageRoute",
+                Name = "ManagePlan",
                 Label = "Manage Plan",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
@@ -275,6 +275,52 @@ namespace terminalFr8Core.Controllers
                 WebService = webService,
                 MinPaneWidth = 400,
                 Tags = "HideChildren"
+            });
+
+            result.Add(new ActivityTemplateDTO
+            {
+                Name = "TestAndBranch",
+                Label = "Test and Branch",
+                Version = "1",
+                Category = ActivityCategory.Processors,
+                NeedsAuthentication = false,
+                Terminal = terminal,
+                WebService = webService,
+                MinPaneWidth = 350
+            });
+
+            result.Add(new ActivityTemplateDTO
+            {
+                Name = "ExtractTableField",
+                Label = "Extract Table Field",
+                Version = "1",
+                Category = ActivityCategory.Processors,
+                NeedsAuthentication = false,
+                Terminal = terminal,
+                WebService = webService
+            });
+
+            result.Add(new ActivityTemplateDTO
+            {
+                Name = "CreateLauncher",
+                Label = "Create Launcher",
+                Version = "1",
+                Category = ActivityCategory.Processors,
+                NeedsAuthentication = false,
+                Terminal = terminal,
+                WebService = webService
+            });
+
+
+            result.Add(new ActivityTemplateDTO
+            {
+                Name = "LaunchAPlan",
+                Label = "Launch A Plan",
+                Version = "1",
+                Category = ActivityCategory.Processors,
+                NeedsAuthentication = false,
+                Terminal = terminal,
+                WebService = webService
             });
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()

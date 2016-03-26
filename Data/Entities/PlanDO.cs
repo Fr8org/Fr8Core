@@ -11,70 +11,72 @@ using Data.States;
 
 namespace Data.Entities
 {
-    public class PlanDO : RouteNodeDO
+    public class PlanDO : PlanNodeDO
     {
+		    
         private static readonly PropertyInfo[] TrackingProperties =
         {
             typeof(PlanDO).GetProperty("Name"),
             typeof(PlanDO).GetProperty("Tag"),
             typeof(PlanDO).GetProperty("Description"),
-            typeof(PlanDO).GetProperty("RouteState"),
-            typeof(PlanDO).GetProperty("Category")
+            typeof(PlanDO).GetProperty("PlanState"),
+            typeof(PlanDO).GetProperty("Category"),
+            typeof(PlanDO).GetProperty("Visibility")
         };
      
         public PlanDO()
         {
             Visibility = PlanVisibility.Standard;
         }
-     
+
         [Required]
         public string Name { get; set; }
 
         public string Description { get; set; }
 
-        /*[ForeignKey("StartingSubroute")]
-        public int StartingSubrouteId { get; set; }
+        /*[ForeignKey("StartingSubPlan")]
+        public int StartingSubPlanId { get; set; }
 
-        public virtual SubrouteDO StartingSubroute { get; set; }*/
+        public virtual SubPlanDO StartingSubPlan { get; set; }*/
 
         [NotMapped]
-        public Guid StartingSubrouteId
+        public Guid StartingSubPlanId
         {
             get
             {
-                var startingSubroute = ChildNodes.OfType<SubrouteDO>()
-                    .SingleOrDefault(pnt => pnt.StartingSubroute == true);
-                if (null != startingSubroute)
+                var startingSubPlan = ChildNodes.OfType<SubPlanDO>()
+                    .SingleOrDefault(pnt => pnt.StartingSubPlan == true);
+                if (null != startingSubPlan)
                 {
-                    return startingSubroute.Id;
+                    return startingSubPlan.Id;
                 }
                 else
                 {
                     return Guid.Empty;
-                    //throw new ApplicationException("Starting Subroute doesn't exist.");
+                    //throw new ApplicationException("Starting SubPlan doesn't exist.");
                 }
             }
         }
 
         [NotMapped]
-        public SubrouteDO StartingSubroute
+        public SubPlanDO StartingSubPlan
         {
             get
             {
-                return Subroutes.SingleOrDefault(pnt => pnt.StartingSubroute == true);
+                return SubPlans.SingleOrDefault(pnt => pnt.StartingSubPlan == true);
             }
 
             set
             {
-                var startingSubroute = Subroutes.SingleOrDefault(pnt => pnt.StartingSubroute == true);
-                if (null != startingSubroute)
-                    startingSubroute = value;
+                var startingSubPlan = SubPlans.SingleOrDefault(pnt => pnt.StartingSubPlan == true);
+                if (null != startingSubPlan)
+                    startingSubPlan = value;
                 else
                 {
-                    Subroutes.ToList().ForEach(pnt => pnt.StartingSubroute = false);
+                    SubPlans.ToList().ForEach(pnt => pnt.StartingSubPlan = false);
                     if (value != null) 
                     { 
-                        value.StartingSubroute = true;
+                        value.StartingSubPlan = true;
                         ChildNodes.Add(value);
                     }
 
@@ -83,10 +85,11 @@ namespace Data.Entities
         }
 
         [Required]
-        [ForeignKey("RouteStateTemplate")]
-        public int RouteState { get; set; }
+        [ForeignKey("PlanStateTemplate")]
+        public int PlanState { get; set; }
 
-        public virtual _RouteStateTemplate RouteStateTemplate { get; set; }
+
+        public virtual _PlanStateTemplate PlanStateTemplate { get; set; }
 
         public string Tag { get; set; }
         
@@ -95,11 +98,11 @@ namespace Data.Entities
         public string Category { get; set; }
 
         [NotMapped]
-        public IEnumerable<SubrouteDO> Subroutes
+        public IEnumerable<SubPlanDO> SubPlans
         {
             get
             {
-                return ChildNodes.OfType<SubrouteDO>();
+                return ChildNodes.OfType<SubPlanDO>();
             }
         }
 
@@ -116,20 +119,20 @@ namespace Data.Entities
             }
         }
 
-        protected override RouteNodeDO CreateNewInstance()
+        protected override PlanNodeDO CreateNewInstance()
         {
             return new PlanDO();
         }
 
 
-        protected override void CopyProperties(RouteNodeDO source)
+        protected override void CopyProperties(PlanNodeDO source)
         {
             var plan = (PlanDO)source;
 
             base.CopyProperties(source);
             Name = plan.Name;
             Tag = plan.Tag;
-            RouteState = plan.RouteState;
+            PlanState = plan.PlanState;
             Description = plan.Description;
             Visibility = plan.Visibility;
             Category = plan.Category;
@@ -138,7 +141,7 @@ namespace Data.Entities
         public bool IsOngoingPlan()
         {
             bool isOngoingPlan = false;
-            var initialActivity = this.StartingSubroute.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault() as ActivityDO;
+            var initialActivity = this.StartingSubPlan.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault() as ActivityDO;
             if (initialActivity != null)
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -166,5 +169,7 @@ namespace Data.Entities
             }
             return isOngoingPlan;
         }
+
+
     }
 }

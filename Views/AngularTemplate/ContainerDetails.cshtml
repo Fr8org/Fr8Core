@@ -1,4 +1,65 @@
 ﻿<div ng-controller="ContainerDetailsController">
-    <pre>{{container | json}}</pre>
-    <pre>{{payload | json}}</pre>
+    <div>
+        <div class="portlet-title">
+            <h3 class="font-green-haze">Container : <span class="label font-green-haze bold">{{::id}}</span></h3>
+        </div>
+        <div class="portlet-title">
+            <button class="btn btn-primary" ng-class="{'active': showContent, 'inactive' : !showContent}" ng-click="loadContent()">Contents</button>
+            <button class="btn btn-primary" ng-class="{'active': !showContent, 'inactive' : showContent}" ng-click="loadHistory()">History</button>
+        </div>
+    </div>
+    <hr />
+    <div ng-show="showContent">
+        <pre>{{container | json}}</pre>
+        <pre>{{payload | json}}</pre>
+    </div>
+    <div ng-show="!showContent">                
+        <div class="row">
+            <div class="col-md-12 col-sm-12">
+                <!-- BEGIN PORTLET-->
+                <div class="portlet light ">
+                    <div class="portlet-title">
+                        <div class="caption caption-md">
+                            <i class="icon-bar-chart font-green-haze hide"></i>
+                            <span class="caption-subject font-green-haze bold uppercase">History</span>
+                        </div>
+                    </div>
+
+                    <div class="portlet-body">
+                        <div ng-show="facts.length === 0">No history exists!</div>
+                        <div class="table-scrollable table-scrollable-borderless">
+                            <!--Note:: reused the class table-process-templates-->
+                            <table datatable="ng" dt-options="dtOptionsBuilder" dt-column-defs="dtColumnDefs" class="row-border hover table table-hover table-light table-linkrows table-routes">
+                                <thead>
+                                    <tr>
+                                        <th>CreatedDate</th>
+                                        <th>Primary Category</th>
+                                        <th>Secondary Category</th>
+                                        <th>Activity</th>
+                                        <th>Status</th>
+                                        <th>Object Id</th>
+                                        <th>Customer Id</th>
+                                        <th>Data</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="fact in facts">
+                                        <td>{{ fact.createDate | datetime }}</td>
+                                        <td>{{ fact.primaryCategory }}</td>
+                                        <td>{{ fact.secondaryCategory }}</td>
+                                        <td>{{ fact.activity }}</td>
+                                        <td>{{ fact.status }}</td>
+                                        <td>{{ fact.objectId }}</td>
+                                        <td>{{ fact.customerId }}</td>
+                                        <td>{{ fact.data }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- END PORTLET-->
+            </div>
+        </div>
+    </div>
 </div>

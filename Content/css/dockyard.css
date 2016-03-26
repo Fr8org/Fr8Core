@@ -66,7 +66,7 @@
 
 /* Added for Showing Steps in Activity Pane*/
 .processActionStep {
-    background-image: URL("/Content/img/RouteBuilder/circle.png");
+    background-image: URL("/Content/img/PlanBuilder/circle.png");
     display: inline-flex;
     width: 80px;
     height: 50px;
@@ -79,7 +79,7 @@
 }
 
 .processActionStepSelected {
-    background-image: URL("/Content/img/RouteBuilder/circle-selected.png");
+    background-image: URL("/Content/img/PlanBuilder/circle-selected.png");
     display: inline-flex;
     width: 75px;
     height: 50px;
@@ -177,6 +177,62 @@
     width: 50px;
 }
 
+.action-arrow-right-0 {
+    background-image: url('/Content/img/site/arrow_blue_gray_ic_arrow_forward_48px-512.png');
+    background-size: contain;
+    display: inline-block;
+    height: 50px;
+    width: 50px;
+    float: left;
+}
+
+
+.action-arrow-right-1 {
+    background-image: url('/Content/img/site/arrow_blue_gray_ic_arrow_forward_48px-512.png');
+    background-size: contain;
+    display: inline-block;
+    height: 50px;
+    width: 50px;
+    float: left;
+}
+
+.action-arrow-right-2 {
+    background-image: url('/Content/img/site/arrow_blue_gray_ic_arrow_forward_48px-512.png');
+    background-size: contain;
+    display: inline-block;
+    height: 50px;
+    width: 50px;
+    float: left;
+}
+
+.action-arrow-right-3 {
+    background-image: url('/Content/img/site/arrow_blue_gray_ic_arrow_forward_48px-512.png');
+    background-size: contain;
+    display: inline-block;
+    height: 50px;
+    width: 50px;
+    float: left;
+}
+
+.action-arrow-right-5 {
+    background-image: url('/Content/img/site/arrow_blue_gray_ic_arrow_forward_48px-512.png');
+    background-size: contain;
+    display: inline-block;
+    height: 50px;
+    width: 50px;
+    float: left;
+}
+
+.jump-target-text {
+    padding-top: 15px; 
+    margin-left: 60px;
+}
+
+.transition-seperator {
+    border-top: 2px solid #bbb;
+}
+
+
 .action-arrow-bottom {
     background-color: #58B8A9;
     position: absolute;
@@ -201,7 +257,7 @@
     margin-bottom: 5px;
     vertical-align: top;
     white-space: initial;
-    min-width: 330px;
+    /*min-width: 330px;*/
 }
 
     .action .pane-configure-action {
@@ -211,7 +267,7 @@
     }
 
     .action .ap-resize {
-        min-height: 420px;
+        min-height: 380px;
         overflow: hidden;
         min-width: 380px;
         overflow: auto;
@@ -941,4 +997,68 @@ div.activity-list::after {
     left: 25%;
     border-top: 1px solid #e5e5e5;
     margin-top: 10px;
+}
+
+.toast-activity-info {
+    display: block;
+    min-width: 200px;
+    text-align: left;
+    font-size: 13px;
+}
+
+.bdp-input {
+    border-radius: 2px;
+    padding: 0 3px;
+    border: 1px solid rgba(34, 36, 38, .15);
+    cursor: pointer;
+    outline: none;
+}
+
+    .bdp-input.disabled {
+        color: #AAA;
+        cursor: default;
+    }
+
+.bdp-popover {
+    min-width: 110px;
+}
+
+    .bdp-popover input {
+        display: inline;
+        margin-bottom: 3px;
+        width: 60px;
+    }
+
+.bdp-block {
+    display: inline-block;
+    line-height: 1;
+    text-align: center;
+    padding: 3% 11%;
+}
+
+.bdp-label {
+    font-size: 70%;
+}
+
+.inactive {
+    background-color: #428bca;
+    border-color: #357ebd;
+}
+
+.mt30 {
+    margin-top: 30px;
+}
+
+.float-right {
+    float: right;
+}
+
+
+.dndDraggingSource + div {
+    opacity: 0.3;
+}
+
+div.ap-resize div.dndDraggingSource {
+    opacity: 0.3;
+    display: block !important;
 }

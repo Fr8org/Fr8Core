@@ -83,8 +83,7 @@ namespace terminalDocuSignTests.Integration
 
             // Assert that DataSource dropdown contains sources and it should be only "Get"
             var dataSourceDropdown = (DropDownList)controls.Controls[0];
-            Assert.AreEqual(1, dataSourceDropdown.ListItems.Count());
-            Assert.IsFalse(dataSourceDropdown.ListItems.Any(x => !x.Key.StartsWith("Get", StringComparison.InvariantCultureIgnoreCase)));
+            Assert.AreEqual(3, dataSourceDropdown.ListItems.Count());
 
             // Assert that Dropdownlist  source is null.
             var templateDropdown = (DropDownList)controls.Controls[1];
@@ -95,7 +94,7 @@ namespace terminalDocuSignTests.Integration
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestDataDTO = HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_Fr8DataDTO();
+            var requestDataDTO = await HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_Fr8DataDTO(this);
 
             AddHubActivityTemplate(requestDataDTO);
             
@@ -104,8 +103,8 @@ namespace terminalDocuSignTests.Integration
                     configureUrl,
                     requestDataDTO
                 );
-            
-            responseActionDTO.AuthToken = HealthMonitor_FixtureData.DocuSign_AuthToken();
+
+            responseActionDTO.AuthToken = requestDataDTO.ActivityDTO.AuthToken;
 
             using (var crateStorage = Crate.GetUpdatableStorage(responseActionDTO))
             {
@@ -136,7 +135,7 @@ namespace terminalDocuSignTests.Integration
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestDataDTO = HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_Fr8DataDTO();
+            var requestDataDTO = await HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_Fr8DataDTO(this);
 
             AddHubActivityTemplate(requestDataDTO);
 
@@ -208,7 +207,7 @@ namespace terminalDocuSignTests.Integration
             var configureUrl = GetTerminalActivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_Fr8DataDTO();
+            var requestActionDTO = await HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_Fr8DataDTO(this);
 
             //Act
             var responseActionDTO =
@@ -229,7 +228,7 @@ namespace terminalDocuSignTests.Integration
             var configureUrl = GetTerminalDeactivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_Fr8DataDTO();
+            var requestActionDTO = await HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_Fr8DataDTO(this);
 
             //Act
             var responseActionDTO =

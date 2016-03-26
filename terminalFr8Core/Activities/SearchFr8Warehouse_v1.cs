@@ -23,7 +23,6 @@ using Utilities;
 using terminalFr8Core;
 using terminalFr8Core.Infrastructure;
 using terminalFr8Core.Interfaces;
-using terminalFr8Core.Services;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using TerminalBase.Services;
@@ -202,7 +201,7 @@ namespace terminalFr8Core.Actions
             }
             return
                 Task.FromResult(
-                    GenerateErrorRepsonce("Unknown displayMechanism: we currently support MainPage cases"));
+                    GenerateErrorRepsonse("Unknown displayMechanism: we currently support MainPage cases"));
         }
 
         protected async Task<ActivityDO> GenerateSolutionActivities(ActivityDO activityDO, string fr8ObjectID)

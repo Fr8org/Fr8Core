@@ -13,7 +13,7 @@ module dockyard.interfaces {
 
     export interface IActivityDTO {
         id: string;
-        parentRouteNodeId: string;
+        parentPlanNodeId: string;
         label?: string;
         crateStorage: model.CrateStorage;
         configurationControls: model.ControlsList;

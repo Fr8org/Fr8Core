@@ -1,7 +1,7 @@
 ﻿@if (User.IsInRole("Admin"))
 {
     <div ng-controller="AccountListController">
-        <table datatable="ng" class="row-border hover">
+        <table datatable="ng" class="row-border hover" dt-options="dtOptionsBuilder">
             <thead>
                 <tr>
                     <th>ID</th>

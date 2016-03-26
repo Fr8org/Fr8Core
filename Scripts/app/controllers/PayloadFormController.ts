@@ -7,14 +7,14 @@ module dockyard.controllers {
 
 		public static $inject = [
 			'$scope',
-			'RouteService',
+			'PlanService',
 			'planId',
 			'$modalInstance'
 		];
 
 		constructor(
 			private $scope: any,
-			private RouteService: services.IRouteService,
+			private PlanService: services.IPlanService,
 			private planId: any,
 			private $modalInstance: any) {
 
@@ -25,7 +25,7 @@ module dockyard.controllers {
 		}
 
 		private submit(form) {
-            this.RouteService
+            this.PlanService
                 .runAndProcessClientAction(this.planId)
                 .then((successResponse) => {
                     this.$modalInstance.close();

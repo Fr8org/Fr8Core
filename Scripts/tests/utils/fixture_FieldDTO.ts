@@ -3,20 +3,22 @@ module dockyard.tests.utils.fixtures {
 
     export class FieldDTO {
 
-        public static newRoute = <interfaces.IRouteVM>{
+        public static newPlan = <interfaces.IPlanVM>{
             name: 'Test',
             description: 'Description',
-            routeState: 1
+            planState: 1
         };
 
         public static filePickerField: model.File = {
             type: 'FilePicker',
             fieldLabel: 'FilePicker Test',
+            label: 'FilePicker Test',
             name: 'FilePickerTest',
             events: [],
             value: null,
             errorMessage: null,
-            isFocused: false
+            isFocused: false,
+            isHidden:false
         };
 
         public static textField: model.TextBox = {
@@ -27,26 +29,32 @@ module dockyard.tests.utils.fixtures {
             events: [],
             errorMessage: null,
             isFocused: false,
-            value: 'test'
+            value: 'test',
+            label: 'test',
+            isHidden: false
         };
 
-        public static textBlock: model.TextBlock = new model.TextBlock('<span>teststs</span>', 'well well-lg');
+        public static textBlock: model.TextBlock = new model.TextBlock('<p>teststs</p>', 'well well-lg');
 
         public static dropDownListBox: model.DropDownList = {
             listItems: [{ key: 'test1', selected: false, value: 'value1', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null }, { key: 'test2', selected: false, value: 'value2', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null }, { key: 'test3', selected: false, value: 'value3', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null }],
             source: {
                 manifestType: 'testManifest',
                 label: 'testLabel',
-                filterByTag: null
+                filterByTag: null,
+                requestUpstream: false,
+                availabilityType: model.AvailabilityType.NotSet
             },
             type: 'DropDownList',
             fieldLabel: 'DropDownList Test',
+            label: 'DropDownList Test',
             name: 'DropDownList',
             isFocused: false,
             events: [],
             value: 'value3',
             errorMessage: null,
-            selectedKey: 'test3'
+            selectedKey: 'test3',
+            isHidden: false
         };
 
         public static radioButtonGroupField: model.RadioButtonGroup = {
@@ -58,18 +66,22 @@ module dockyard.tests.utils.fixtures {
                     value: 'SMS Number',
                     type: "RadioButtonGroup",
                     fieldLabel: null,
+                    label: null,
                     events: null,
                     errorMessage: null,
                     isFocused: false,
+                    isHidden: false,
                     controls: [
                         {
                             name: 'SMS_Number',
                             value: null,
                             fieldLabel: null,
+                            label: null,
                             type: "TextBox",
                             events: null,
                             errorMessage: null,
-                            isFocused: false
+                            isFocused: false,
+                            isHidden: false
                         }
                     ]
                 },
@@ -79,18 +91,22 @@ module dockyard.tests.utils.fixtures {
                     value: 'A value from Upstream Crate',
                     type: "RadioButtonGroup",
                     fieldLabel: null,
+                    label: null,
                     events: null,
                     errorMessage: null,
                     isFocused: false,
+                    isHidden: false,
                     controls: [
                         {
                             name: 'SMS_Number2',
                             value: null,
                             fieldLabel: null,
+                            label: null,
                             type: "TextBox",
                             events: null,
                             isFocused: false,
                             errorMessage: null,
+                            isHidden: false
                         }
                     ]
                 }
@@ -98,9 +114,11 @@ module dockyard.tests.utils.fixtures {
             name: '',
             value: null,
             fieldLabel: "For the SMS Number use:",
+            label: "For the SMS Number use:",
             type: "RadioButtonGroup",
             errorMessage: null,
             isFocused: false,
+            isHidden: false,
             events: null
         };
 
@@ -120,14 +138,18 @@ module dockyard.tests.utils.fixtures {
             type: "TextSource",
             events: [],
             initialLabel: 'test label',
+            label: null,
             value: null,
             textValue: null,
             errorMessage: null,
             isFocused: false,
+            isHidden: false,
             source: {
                 manifestType: 'testManifest',
                 label: 'testLabel',
-                filterByTag: null
+                filterByTag: null,
+                requestUpstream: false,
+                availabilityType: model.AvailabilityType.NotSet
             },
             valueSource: 'test',
             listItems: [{

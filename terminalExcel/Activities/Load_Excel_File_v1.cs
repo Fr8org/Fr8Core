@@ -1,78 +1,74 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
+using Data.Constants;
 using Data.Control;
 using Data.Crates;
 using Newtonsoft.Json;
-using StructureMap;
-using Data.Interfaces;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Hub.Exceptions;
-using Hub.Interfaces;
+using Data.States;
 using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using terminalExcel.Infrastructure;
-using Data.States;
+using terminalUtilities.Excel;
+using Utilities;
 
 namespace terminalExcel.Actions
 {
     public class Load_Excel_File_v1 : BaseTerminalActivity
     {
+
+        private const string RuntimeCrateLabel = "Standard Data Table";
         private class ActivityUi : StandardConfigurationControlsCM
         {
+            public const string UploadedFileLabel = "Uploaded file: ";
             [JsonIgnore]
             public readonly ControlDefinitionDTO select_file;
+
+            [JsonIgnore]
+            public TextBlock UploadedFileTextBlock { get; set; }
 
             public ActivityUi(string uploadedFileName = null, string uploadedFilePath = null)
             {
                 Controls = new List<ControlDefinitionDTO>();
-
-                Controls.Add((select_file = new ControlDefinitionDTO(ControlTypes.FilePicker)
+                Controls.Add(select_file = new ControlDefinitionDTO(ControlTypes.FilePicker)
                 {
                     Label = "Select an Excel file",
-                    Name = "select_file",
+                    Name = nameof(select_file),
                     Required = true,
-                    Events = new List<ControlEvent>()
-                    {
-                        new ControlEvent("onChange", "requestConfig")
-                    },
+                    Events = new List<ControlEvent> { ControlEvent.RequestConfig },
                     Source = new FieldSourceDTO
                     {
                         Label = "Select an Excel file",
                         ManifestType = CrateManifestTypes.StandardConfigurationControls
                     },
                     Value = uploadedFilePath,
-                }));
-
+                });
                 if (!string.IsNullOrEmpty(uploadedFileName))
                 {
-                    Controls.Add(new TextBlock
+                    Controls.Add(UploadedFileTextBlock = new TextBlock
                     {
-                        Label = "",
-                        Value = "Uploaded file: " + Uri.UnescapeDataString(uploadedFileName),
-                        CssClass = "well well-lg"
+                        Label = string.Empty,
+                        Value = UploadedFileLabel + Uri.UnescapeDataString(uploadedFileName),
+                        CssClass = "well well-lg",
+                        Name = nameof(UploadedFileTextBlock)
                     });
                 }
-
                 Controls.Add(new TextBlock
                 {
-                    Label = "",
+                    Label = string.Empty,
                     Value = "This Action will try to extract a table of rows from the first spreadsheet in the file. The rows should have a header row.",
                     CssClass = "well well-lg TextBlockClass"
                 });
             }
         }
 
+        private const string ColumnHeadersCrateLabel = "Spreadsheet Column Headers";
 
-        /// <summary>
-        /// Action processing infrastructure.
-        /// </summary>
+        public Load_Excel_File_v1() : base("Load Excel File") { }
+
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             return await CreateStandardPayloadDataFromStandardTableData(curActivityDO, containerId);
@@ -80,112 +76,52 @@ namespace terminalExcel.Actions
 
         private async Task<PayloadDTO> CreateStandardPayloadDataFromStandardTableData(ActivityDO curActivityDO, Guid containerId)
         {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                CreatePayloadCrate_ExcelRows(crateStorage);
-            }
-
             var payloadCrates = await GetPayload(curActivityDO, containerId);
-
-            var tableDataMS = await GetTargetTableData(
-                curActivityDO,
-                CrateManager.GetStorage(curActivityDO)
-            );
-
-            if (!tableDataMS.FirstRowHeaders)
+            var tableData = CrateManager.GetStorage(curActivityDO)
+                                        .FirstCrateOrDefault<StandardTableDataCM>()
+                                        ?.Content;
+            if (tableData == null)
             {
-                return Error(payloadCrates, "No headers found in the Standard Table Data Manifest.");
+                return Error(payloadCrates, "No Standard Table Data Manifest exists in activity storage. Probably Excel file is not uploaded or is empty", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
             }
-
             // Create a crate of payload data by using Standard Table Data manifest and use its contents to tranform into a Payload Data manifest.
             // Add a crate of PayloadData to action's crate storage
-            
             using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
             {
-                crateStorage.Add(CrateManager.CreatePayloadDataCrate("ExcelTableRow", "Excel Data", tableDataMS));
+                //crateStorage.Add(Crate.FromContent(GenerateRuntimeCrateLabel(ExtractFileName(GetUploadFilePath(curActivityDO))), tableData, AvailabilityType.RunTime));
+                crateStorage.Add(Crate.FromContent(RuntimeCrateLabel, tableData, AvailabilityType.RunTime));
             }
             return Success(payloadCrates);
         }
-
-        private async Task<StandardTableDataCM> GetTargetTableData(ActivityDO activityDO, ICrateStorage curCrateStorageDTO)
-        {
-            // Find crates of manifest type Standard Table Data
-            var standardTableDataCrates = curCrateStorageDTO.CratesOfType<StandardTableDataCM>();
-
-            // If no crate of manifest type "Standard Table Data" found, try to find upstream for a crate of type "Standard File Handle"
-            if (!standardTableDataCrates.Any())
-            {
-                return await GetUpstreamTableData(activityDO);
-            }
-
-            return standardTableDataCrates.First().Content;
-        }
-
-        private async Task<StandardTableDataCM> GetUpstreamTableData(ActivityDO activityDO)
-        {
-            var upstreamFileHandleCrates = await GetUpstreamFileHandleCrates(activityDO);
-
-            //if no "Standard File Handle" crate found then return
-            if (!upstreamFileHandleCrates.Any())
-                return null;
-
-            //if more than one "Standard File Handle" crates found then throw an exception
-            if (upstreamFileHandleCrates.Count > 1)
-                throw new Exception("More than one Standard File Handle crates found upstream.");
-
-            // Deserialize the Standard File Handle crate to StandardFileHandleMS object
-            StandardFileDescriptionCM fileHandleMS = upstreamFileHandleCrates.First().Get<StandardFileDescriptionCM>();
-
-            // Use the url for file from StandardFileHandleMS and read from the file and transform the data into StandardTableData and assign it to Action's crate storage
-            StandardTableDataCM tableDataMS = ExcelUtils.GetTableData(fileHandleMS.DockyardStorageUrl);
-
-            return tableDataMS;
-        }
-
-        //private async Task<FileDO> ProcessFile(string dockyardStorageUrl, string fileName)
-        //{
-        //    using (var client = new HttpxcsClient())
-        //    {
-        //        var values = new Dictionary<string, string>
-        //                {
-        //                    { "DockyardStorageURL", dockyardStorageUrl },
-        //                    { "Filename", fileName },
-        //                    //{ "AuthorizationToken", curFileDO.DockyardAccountID } //ignoring for now
-        //                };
-
-        //        var content = new FormUrlEncodedContent(values);
-
-        //        var response = await client.PostAsync(ConfigurationManager.AppSettings["FileServerApiUrl"], content);
-
-        //        var curFileDOTask = await response.Content.ReadAsAsync<FileDO>();
-
-        //        return curFileDOTask;
-        //    }
-        //}
-
-
         /// <summary>
         /// Looks for upstream and downstream Creates.
         /// </summary>
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            if (curActivityDO.Id != Guid.Empty)
-            {
-                //Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
-                Crate upstreamFieldsCrate = await MergeUpstreamFields(curActivityDO, "Select Excel File");
-
-                using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-                {
-                    crateStorage.Clear();
-                    crateStorage.Add(upstreamFieldsCrate);
-                    crateStorage.Add(PackControls(new ActivityUi()));
-                }
-            }
-            else
+            if (curActivityDO.Id == Guid.Empty)
             {
                 throw new ArgumentException("Configuration requires the submission of an Action that has a real ActionId");
             }
-            return curActivityDO;
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            {
+                crateStorage.Clear();
+                crateStorage.Add(PackControls(new ActivityUi()));
+                crateStorage.Add(GetAvailableRunTimeTableCrate());
+            }
+            return Task.FromResult(curActivityDO);
+        }
+
+        private Crate GetAvailableRunTimeTableCrate()
+        {
+            var availableRunTimeCrates = Crate.FromContent("Available Run Time Crates", new CrateDescriptionCM(
+                    new CrateDescriptionDTO
+                    {
+                        ManifestType = MT.StandardTableData.GetEnumDisplayName(),
+                        Label = RuntimeCrateLabel,
+                        ManifestId = (int)MT.StandardTableData,
+                        ProducedBy = ActivityName
+                    }), AvailabilityType.RunTime);
+            return availableRunTimeCrates;
         }
 
         /// <summary>
@@ -193,22 +129,41 @@ namespace terminalExcel.Actions
         /// </summary>
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
-            if (CrateManager.IsStorageEmpty(curActivityDO))
-            {
-                return ConfigurationRequestType.Initial;
-            }
-
-            return ConfigurationRequestType.Followup;
+            return CrateManager.IsStorageEmpty(curActivityDO) ? ConfigurationRequestType.Initial : ConfigurationRequestType.Followup;
         }
 
         //if the user provides a file name, this action attempts to load the excel file and extracts the column headers from the first sheet in the file.
-        protected override Task<ActivityDO> FollowupConfigurationResponse(
-            ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            var storage = CrateManager.GetStorage(curActivityDO);
-            var uploadFilePath = GetUploadFilePath(storage);
-
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            var uploadFilePath = GetUploadFilePath(curActivityDO);
+            using (var activityStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            {
+                string fileName = null;
+                if (!string.IsNullOrEmpty(uploadFilePath))
+                {
+                    fileName = ExtractFileName(uploadFilePath);
+                }
+                else
+                {
+                    var activityUi = new ActivityUi();
+                    activityUi.ClonePropertiesFrom(activityStorage.FirstCrate<StandardConfigurationControlsCM>().Content);
+                    fileName = activityUi.UploadedFileTextBlock.Value?.Substring(ActivityUi.UploadedFileLabel.Length);
+                }
+                activityStorage.Remove<StandardConfigurationControlsCM>();
+                activityStorage.Add(PackControls(new ActivityUi(fileName, uploadFilePath)));
+                activityStorage.Remove<StandardTableDataCM>();
+                activityStorage.RemoveByLabel(ColumnHeadersCrateLabel);
+                if (!string.IsNullOrEmpty(uploadFilePath))
+                {
+                    //activityStorage.Add(Crate.FromContent(GenerateRuntimeCrateLabel(fileName), ExcelUtils.GetTableData(uploadFilePath), AvailabilityType.RunTime));
+                    activityStorage.Add(Crate.FromContent(RuntimeCrateLabel, ExcelUtils.GetTableData(uploadFilePath), AvailabilityType.Configuration));
+                    activityStorage.Add(Crate.FromContent(ColumnHeadersCrateLabel, ExcelUtils.GetColumnHeadersData(uploadFilePath), AvailabilityType.Always));
+                }
+            }
+            return Task.FromResult(curActivityDO);
+            /*
+            var uploadFilePath = GetUploadFilePath(curActivityDO);
+            using (var activityStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 string fileName = null;
                 if (!string.IsNullOrEmpty(uploadFilePath))
@@ -220,26 +175,32 @@ namespace terminalExcel.Actions
                     var labelControl = storage.CrateContentsOfType<StandardConfigurationControlsCM>()
                         .First()
                         .Controls
-                        .Where(x => x.Value != null && x.Value.StartsWith("Uploaded file: "))
-                        .FirstOrDefault();
+                        .FirstOrDefault(x => x.Value != null && x.Value.StartsWith("Uploaded file: "));
 
                     if (labelControl != null)
-                    {
-                        fileName = labelControl.Value.Substring("Uploaded file: ".Length);
-                    }
+
+                        --------------------------------------------------
+                    var activityUi = new ActivityUi();
+                    activityUi.ClonePropertiesFrom(activityStorage.FirstCrate<StandardConfigurationControlsCM>().Content);
+                    fileName = activityUi.UploadedFileTextBlock.Value?.Substring(ActivityUi.UploadedFileLabel.Length);
                 }
-
-                crateStorage.Remove<StandardConfigurationControlsCM>();
-                crateStorage.Add(PackControls(new ActivityUi(fileName, uploadFilePath)));
-
+                activityStorage.Remove<StandardConfigurationControlsCM>();
+                activityStorage.Add(PackControls(new ActivityUi(fileName, uploadFilePath)));
+                activityStorage.Remove<StandardTableDataCM>();
+                activityStorage.RemoveByLabel(ColumnHeadersCrateLabel);
                 if (!string.IsNullOrEmpty(uploadFilePath))
-                {
-                    TransformExcelFileHeadersToStandardTableDataCrate(crateStorage, uploadFilePath);
+                    {
+                    activityStorage.Add(Crate.FromContent(GenerateRuntimeCrateLabel(fileName), ExcelUtils.GetTableData(uploadFilePath), AvailabilityType.RunTime));
+                    activityStorage.Add(Crate.FromContent(ColumnHeadersCrateLabel, ExcelUtils.GetColumnHeadersData(uploadFilePath), AvailabilityType.RunTime));
                 }
-            }
-
+                    }
             return Task.FromResult(curActivityDO);
+            */
         }
+
+        
+
+        //private string GenerateRuntimeCrateLabel(string fileName) => $"{RuntimeCrateLabel}";
 
         private string ExtractFileName(string uploadFilePath)
         {
@@ -247,16 +208,14 @@ namespace terminalExcel.Actions
             {
                 return null;
             }
-
             var index = uploadFilePath.LastIndexOf('/');
             if (index >= 0 && (uploadFilePath.Length > index + 1))
             {
                 return uploadFilePath.Substring(index + 1);
             }
-
             return uploadFilePath;
         }
-
+        /*
         private void TransformExcelFileHeadersToStandardTableDataCrate(ICrateStorage storage, string selectedFilePath)
         {
             // Check if the file is an Excel file.
@@ -303,32 +262,11 @@ namespace terminalExcel.Actions
                 storage.RemoveByLabel("Spreadsheet Rows");
                 storage.Add(curRowsCrateDTO);
             }                                
-        }
+        }*/
 
-        private void CreatePayloadCrate_ExcelRows(ICrateStorage storage)
+        private void CreatePayloadCrate_ExcelRows(ICrateStorage storage, byte[] fileAsByteArray, string extension)
         {
-            var uploadFilePath = GetUploadFilePath(storage);
 
-            string fileName = null;
-            if (!string.IsNullOrEmpty(uploadFilePath))
-            {
-                fileName = ExtractFileName(uploadFilePath);
-            }
-            else
-            {
-                return;
-            }
-
-            string extension = Path.GetExtension(uploadFilePath);
-
-            FileDO curFileDO = new FileDO()
-            {
-                CloudStorageUrl = uploadFilePath,
-            };
-
-            IFile file = ObjectFactory.GetInstance<IFile>();
-            // Read file from repository
-            var fileAsByteArray = file.Retrieve(curFileDO);
             var headersArray = ExcelUtils.GetColumnHeaders(fileAsByteArray, extension);
 
             // Fetch rows in Excel file and assign them to the action's crate storage as Standard Table Data crate
@@ -338,35 +276,17 @@ namespace terminalExcel.Actions
                 var rows = ExcelUtils.CreateTableCellPayloadObjects(rowsDictionary, headersArray);
                 if (rows != null && rows.Count > 0)
                 {
-                    storage.Add(CrateManager.CreateStandardTableDataCrate("Excel Payload Rows", true, rows.ToArray()));
+                    storage.Add(CrateManager.CreateStandardTableDataCrate("Standard Data Table", true, rows.ToArray()));
                 }
             }
         }
 
-        private string GetUploadFilePath(ICrateStorage storage)
+        private string GetUploadFilePath(ActivityDO activityDO)
         {
-
-            var filePathsFromUserSelection = storage.CrateContentsOfType<StandardConfigurationControlsCM>()
-                .Select(x =>
-                {
-                    var actionUi = new ActivityUi();
-                    actionUi.ClonePropertiesFrom(x);
-                    return actionUi;
-                })
-                 .Where(x => !string.IsNullOrEmpty(x.select_file.Value)).ToArray();
-
-            if (filePathsFromUserSelection.Length > 1)
-            {
-                throw new AmbiguityException();
-            }
-
-            string uploadFilePath = null;
-            if (filePathsFromUserSelection.Length > 0)
-            {
-                uploadFilePath = filePathsFromUserSelection[0].select_file.Value;
-            }
-
-            return uploadFilePath;
+            var storage = CrateManager.GetStorage(activityDO);
+            var activityUi = new ActivityUi();
+            activityUi.ClonePropertiesFrom(storage.FirstCrate<StandardConfigurationControlsCM>().Content);
+            return activityUi.select_file.Value;
         }
     }
 

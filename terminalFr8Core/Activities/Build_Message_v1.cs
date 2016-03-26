@@ -33,14 +33,16 @@ namespace terminalFr8Core.Actions
 
         protected async override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
+            var configurationCrate = CreateControlsCrate();
+            await FillAvailableFieldsSource(configurationCrate, "AvailableFields", curActivityDO);
+
             using (var updater = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 updater.Clear();
-                updater.Add(CreateControlsCrate());
+                updater.Add(configurationCrate);
             }
-
             AddNameDesignTimeField(curActivityDO);
-            return await AddDesignTimeFieldsSource(curActivityDO);
+            return curActivityDO;
         }
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
@@ -75,30 +77,12 @@ namespace terminalFr8Core.Actions
                 {
                     Name = "AvailableFields",
                     Required = true,
-					Label = "Available Fields",
-                    Source = new FieldSourceDTO
-                    {
-                        Label = "Available Fields",
-                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                    }
+                    Label = "Available Fields",
+                    Source = null
                 }
             };
 
             return CrateManager.CreateStandardConfigurationControlsCrate("Craft a Message", controls.ToArray());
-        }
-
-        private async Task<ActivityDO> AddDesignTimeFieldsSource(ActivityDO curActivityDO)
-        {
-            using (var updater = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                updater.RemoveByLabel("Available Fields");
-
-                var upstreamFieldsAddress = await MergeUpstreamFields<FieldDescriptionsCM>(curActivityDO, "Available Fields");
-                if (upstreamFieldsAddress != null)
-                    updater.Add(upstreamFieldsAddress);
-            }
-
-            return curActivityDO;
         }
 
         private void AddNameDesignTimeField(ActivityDO curActivityDO)
@@ -110,7 +94,7 @@ namespace terminalFr8Core.Actions
             {
                 updater.RemoveByLabel("Build Message");
 
-                var bodyFieldDTO = new List<FieldDTO> { new FieldDTO() { Key = key, Value = key, Availability = AvailabilityType.RunTime} };
+                var bodyFieldDTO = new List<FieldDTO> { new FieldDTO() { Key = key, Value = key, Availability = AvailabilityType.RunTime } };
                 updater.Add(CrateManager.CreateDesignTimeFieldsCrate("Build Message", bodyFieldDTO, AvailabilityType.RunTime));
             }
         }
@@ -139,9 +123,9 @@ namespace terminalFr8Core.Actions
                         //search for placeholders ^\[.*?\]$
                         Regex regexPattern = new Regex(@"\[.*?\]");
                         var resultMatch = regexPattern.Matches(bodyMsg);
-                        
+
                         //if found placeholders
-                        if(resultMatch.Count > 0)
+                        if (resultMatch.Count > 0)
                         {
                             //match payloadFieldsDTO and get its value
                             foreach (var placeholder in resultMatch.Cast<Match>().Select(match => match.Value).ToList())
@@ -172,5 +156,28 @@ namespace terminalFr8Core.Actions
 
             return Success(payloadCrates);
         }
+
+        #region Fill Source
+        private async Task FillAvailableFieldsSource(Crate configurationCrate, string controlName, ActivityDO curActivityDO)
+        {
+            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
+            var control = configurationControl.FindByNameNested<DropDownList>(controlName);
+            if (control != null)
+            {
+                control.ListItems = await GetAvailableFields(curActivityDO);
+            }
+        }
+
+        private async Task<List<ListItem>> GetAvailableFields(ActivityDO curActivityDO)
+        {
+            var upstreamFieldsAddress = await CreateDesignTimeFieldsCrate(curActivityDO, "Available Fields");
+            if (upstreamFieldsAddress != null)
+            {
+                FieldDescriptionsCM curFieldDescriptionsCrate = ((Crate<FieldDescriptionsCM>)upstreamFieldsAddress).Content;
+                return curFieldDescriptionsCrate.Fields.Select(x => new ListItem() { Key = x.Key, Value = x.Value }).ToList();
+            }
+            return null;
+        }
+        #endregion
     }
 }

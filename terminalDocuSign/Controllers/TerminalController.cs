@@ -27,7 +27,7 @@ namespace terminalDocuSign.Controllers
             {
                 Name = "terminalDocuSign",
                 TerminalStatus = TerminalStatus.Active,
-                Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
+                Endpoint = CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint"),
                 Version = "1",
                 AuthenticationType = AuthenticationType.Internal
             };
@@ -116,13 +116,14 @@ namespace terminalDocuSign.Controllers
 
             var collectFormDataSolution = new ActivityTemplateDTO
             {
-				Name = "Extract_Data_From_Envelopes",
-				Label = "Extract Data From Envelopes",
+                Name = "Extract_Data_From_Envelopes",
+                Label = "Extract Data From Envelopes",
                 Version = "1",
                 Category = ActivityCategory.Solution,
                 Terminal = terminal,
                 WebService = webService,
-                MinPaneWidth = 380
+                MinPaneWidth = 380,
+                NeedsAuthentication = true
             };
 
             var trackDocuSignRecipientsSolution = new ActivityTemplateDTO
@@ -136,8 +137,8 @@ namespace terminalDocuSign.Controllers
                 WebService = webService,
                 MinPaneWidth = 380
             };
-            
-            
+
+
             var queryDocusign = new ActivityTemplateDTO
             {
                 Name = "Query_DocuSign",
@@ -159,7 +160,7 @@ namespace terminalDocuSign.Controllers
                 NeedsAuthentication = true,
                 Terminal = terminal,
                 WebService = webService,
-                MinPaneWidth = 550,
+                MinPaneWidth = 500,
                 Tags = "HideChildren"
             };
 
@@ -172,7 +173,8 @@ namespace terminalDocuSign.Controllers
                 NeedsAuthentication = true,
                 Terminal = terminal,
                 WebService = webService,
-                MinPaneWidth = 380
+                MinPaneWidth = 380,
+                Tags = "internal"
             };
 
             var archiveDocusignTemplate = new ActivityTemplateDTO
@@ -183,7 +185,8 @@ namespace terminalDocuSign.Controllers
                 NeedsAuthentication = true,
                 Category = ActivityCategory.Solution,
                 WebService = webService,
-                Terminal = terminal
+                Terminal = terminal,
+                Tags = "internal"
             };
 
 
@@ -198,9 +201,9 @@ namespace terminalDocuSign.Controllers
                 trackDocuSignRecipientsSolution,
                 queryDocusign,
                 generateDocusignReport,
-                searchDocusignHistory,
-                getDocuSignTemplateActionTemplate,
-                archiveDocusignTemplate
+                //searchDocusignHistory,
+                //archiveDocusignTemplate,
+                getDocuSignTemplateActionTemplate
             };
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()

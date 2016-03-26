@@ -49,13 +49,13 @@ namespace terminalSendGrid.Tests.Actions
 
             _crate = ObjectFactory.GetInstance<ICrateManager>();
             /*
-            var routeNode = new Mock<IRouteNode>();
+            var planNode = new Mock<IPlanNode>();
             
-            routeNode.Setup(c => c.GetCratesByDirection<FieldDescriptionsCM>(It.IsAny<Guid>(), It.IsAny<CrateDirection>()))
+            planNode.Setup(c => c.GetCratesByDirection<FieldDescriptionsCM>(It.IsAny<Guid>(), It.IsAny<CrateDirection>()))
                     .Returns(Task.FromResult(new List<Crate<FieldDescriptionsCM>>()));
-            routeNode.Setup(c => c.GetDesignTimeFieldsByDirectionTerminal(It.IsAny<Guid>(), It.IsAny<CrateDirection>(), It.IsAny<AvailabilityType>()))
+            planNode.Setup(c => c.GetDesignTimeFieldsByDirectionTerminal(It.IsAny<Guid>(), It.IsAny<CrateDirection>(), It.IsAny<AvailabilityType>()))
                     .Returns(Task.FromResult(new FieldDescriptionsCM()));
-            ObjectFactory.Configure(cfg => cfg.For<IRouteNode>().Use(routeNode.Object));
+            ObjectFactory.Configure(cfg => cfg.For<IPlanNode>().Use(routeNode.Object));
             */
             activityDto = GetActivityResult();
             var payLoadDto = FixtureData.CratePayloadDTOForSendEmailViaSendGridConfiguration;

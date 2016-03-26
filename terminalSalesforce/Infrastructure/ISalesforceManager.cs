@@ -12,12 +12,16 @@ namespace terminalSalesforce.Infrastructure
 {
     public interface ISalesforceManager
     {
-        Task<bool> CreateObject<T>(T salesforceObject, string salesforceObjectType, AuthorizationTokenDO authTokenDO);
+        Task<string> CreateObject<T>(T salesforceObject, string salesforceObjectType, AuthorizationTokenDO authTokenDO);
 
         Task<IList<FieldDTO>> GetFields(string salesforceObjectName, AuthorizationTokenDO authTokenDO);
 
-        Task<StandardPayloadDataCM> GetObjectByQuery(string salesforceObjectName, string conditionQuery, AuthorizationTokenDO authTokenDO);
+        Task<StandardPayloadDataCM> GetObjectByQuery(string salesforceObjectName, IEnumerable<string> fields, string conditionQuery, AuthorizationTokenDO authTokenDO);
 
-        T CreateSalesforceDTO<T>(ActivityDO curActivity, PayloadDTO curPayload, Func<ActivityDO, PayloadDTO, string, string> extractControlValue);
+        T CreateSalesforceDTO<T>(ActivityDO curActivity, PayloadDTO curPayload);
+
+        Task<IList<FieldDTO>> GetChatters(AuthorizationTokenDO authTokenDO);
+
+        Task<string> PostFeedTextToChatterObject(string feedText, string parentObjectId, AuthorizationTokenDO authTokenDO);
     }
 }

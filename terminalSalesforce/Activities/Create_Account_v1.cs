@@ -11,6 +11,7 @@ using TerminalBase.Infrastructure;
 using terminalSalesforce.Infrastructure;
 using terminalSalesforce.Services;
 using Data.Interfaces.Manifests;
+using System.Collections.Generic;
 
 namespace terminalSalesforce.Actions
 {
@@ -51,7 +52,11 @@ namespace terminalSalesforce.Actions
             {
                 crateStorage.Clear();
 
-                AddTextSourceControlForDTO<Infrastructure.AccountDTO>(crateStorage, "Upstream Terminal-Provided Fields");
+                AddTextSourceControlForDTO<Infrastructure.AccountDTO>(
+                    crateStorage,
+                    "",
+                    requestUpstream: true
+                );
             }
 
             return await Task.FromResult(curActivityDO);
@@ -94,11 +99,17 @@ namespace terminalSalesforce.Actions
                 return NeedsAuthenticationError(payloadCrates);
             }
 
-            var account = _salesforce.CreateSalesforceDTO<Infrastructure.AccountDTO>(curActivityDO, payloadCrates, ExtractSpecificOrUpstreamValue);
+            var account = _salesforce.CreateSalesforceDTO<Infrastructure.AccountDTO>(curActivityDO, payloadCrates);
             var result = await _salesforce.CreateObject(account, "Account", authTokenDO);
 
-            if (result)
+            if (!string.IsNullOrEmpty(result))
             {
+                using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
+                {
+                    var accountIdFields = new List<FieldDTO> { new FieldDTO("AccountID", result) };
+                    crateStorage.Add(Crate.FromContent("Newly Created Salesforce Account", new StandardPayloadDataCM(accountIdFields)));
+                }
+
                 return Success(payloadCrates);
             }
 

@@ -6,11 +6,12 @@ namespace Data.Repositories.Plan
 {
     public interface IPlanStorageProvider
     {
-        RouteNodeDO LoadPlan(Guid planMemberId);
-        void Update(RouteSnapshot.Changes changes);
+        PlanNodeDO LoadPlan(Guid planMemberId);
+
+        void Update(PlanSnapshot.Changes changes);
 
         IQueryable<PlanDO> GetPlanQuery();
         IQueryable<ActivityDO> GetActivityQuery();
-        IQueryable<RouteNodeDO> GetNodesQuery();
+        IQueryable<PlanNodeDO> GetNodesQuery();
     }
 }

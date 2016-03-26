@@ -50,10 +50,8 @@ namespace Data.Interfaces
         SlipRepository SlipRepository { get; }
         //ActivityRepository ActivityRepository { get; }
         ActivityTemplateRepository ActivityTemplateRepository { get; }
-		//RouteNodeRepository RouteNodeRepository { get; }
         ProcessNodeRepository ProcessNodeRepository { get; }
 
-       // ISubrouteRepository SubrouteRepository { get; }
         ICriteriaRepository CriteriaRepository { get; }
 
         IFileRepository FileRepository { get; }

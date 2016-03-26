@@ -148,10 +148,6 @@ namespace DockyardTest.Services
         {
             string crateStorage = GetCrateStorageAsString();
 
-            Mock<Hub.Managers.Event> eventMock = new Mock<Hub.Managers.Event>(MockBehavior.Default);
-            eventMock.Setup(ev => ev.Publish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
-                It.IsAny<string>(), It.IsAny<string>())).Returns(Task.Delay(1));
-            ObjectFactory.Container.Inject(typeof(Hub.Managers.Event), eventMock.Object);
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -163,7 +159,7 @@ namespace DockyardTest.Services
                 var nextAction = FixtureData.TestActivity5();
                 nextAction.CrateStorage = crateStorage;
                 
-                containerDO.CurrentRouteNodeId = currAction.Id;
+                containerDO.CurrentPlanNodeId = currAction.Id;
                 containerDO.NextRouteNodeId = nextAction.Id;
 
                 uow.UserRepository.Add(FixtureData.TestDeveloperAccount());
@@ -175,7 +171,7 @@ namespace DockyardTest.Services
                 {
                     Fr8Account = FixtureData.TestDeveloperAccount(),
                     Name = "name",
-                    RouteState = RouteState.Active,
+                    PlanState = PlanState.Active,
                     ChildNodes = { currAction, nextAction }
                 });
 
@@ -188,7 +184,7 @@ namespace DockyardTest.Services
                 var containerDO = uow.ContainerRepository.GetByKey(FixtureData.TestContainer_Id_49());
                 await _container.Run(uow, containerDO);
 
-                Assert.IsNull(containerDO.CurrentRouteNodeId);
+                Assert.IsNull(containerDO.CurrentPlanNodeId);
                // Assert.IsNull(containerDO.NextActivity);
             }
         }
@@ -196,10 +192,6 @@ namespace DockyardTest.Services
         public async Task Execute_ManyActivities_ShouldBeOk()
         {
             string crateStorage = GetCrateStorageAsString();
-            Mock<Hub.Managers.Event> eventMock = new Mock<Hub.Managers.Event>(MockBehavior.Default);
-            eventMock.Setup(ev => ev.Publish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
-                It.IsAny<string>(), It.IsAny<string>())).Returns(Task.Delay(1));
-            ObjectFactory.Container.Inject(typeof(Hub.Managers.Event), eventMock.Object);
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -211,14 +203,14 @@ namespace DockyardTest.Services
                 {
                     Fr8Account = FixtureData.TestDeveloperAccount(),
                     Name = "name",
-                    RouteState = RouteState.Active,
+                    PlanState = PlanState.Active,
                     ChildNodes = { currActivity }
                 });
 
                 uow.UserRepository.Add(FixtureData.TestDeveloperAccount());
                 uow.ActivityTemplateRepository.Add(currActivity.ActivityTemplate);
 
-                containerDO.CurrentRouteNodeId = currActivity.Id;
+                containerDO.CurrentPlanNodeId = currActivity.Id;
                 uow.ContainerRepository.Add(containerDO);
                 
                 uow.SaveChanges();
@@ -228,7 +220,7 @@ namespace DockyardTest.Services
                 var containerDO = uow.ContainerRepository.GetByKey(FixtureData.TestContainer_Id_49());
                 await _container.Run(uow, containerDO);
 
-                Assert.IsNull(containerDO.CurrentRouteNodeId);
+                Assert.IsNull(containerDO.CurrentPlanNodeId);
                // Assert.IsNull(processDO.NextActivity);
             }
         }

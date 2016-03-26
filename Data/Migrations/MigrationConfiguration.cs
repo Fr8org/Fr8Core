@@ -48,10 +48,10 @@ namespace Data.Migrations
 
 
             // Uncomment four following lines to debug Seed method (in case running from NuGet Package Manager Console).
-            // if (System.Diagnostics.Debugger.IsAttached == false)
-            // {
-            //     System.Diagnostics.Debugger.Launch();
-            // }
+           /* if (System.Diagnostics.Debugger.IsAttached == false)
+            {
+                System.Diagnostics.Debugger.Launch();
+            }*/
 
             using (var migrationContainer = new Container())
             {
@@ -59,7 +59,7 @@ namespace Data.Migrations
 
                 var uow = new UnitOfWork(context, migrationContainer);
 
-                UpdateRootRouteNodeId(uow);
+                UpdateRootPlanNodeId(uow);
 
                 SeedIntoMockDb(uow);
 
@@ -107,7 +107,7 @@ namespace Data.Migrations
             SeedInstructions(uow);
         }
 
-        private static void AddRoute(IUnitOfWork uow)
+        private static void AddPlan(IUnitOfWork uow)
         {
         }
 
@@ -144,8 +144,8 @@ namespace Data.Migrations
 
         private static void AddContainerDOForTestingApi(IUnitOfWork uow, Fr8AccountDO fr8AccountDO)
         {
-            new RouteBuilder("TestTemplate{0B6944E1-3CC5-45BA-AF78-728FFBE57358}", fr8AccountDO).AddCrate(GenerateInitialEventCrate()).Store(uow);
-            new RouteBuilder("TestTemplate{77D78B4E-111F-4F62-8AC6-6B77459042CB}", fr8AccountDO)
+            new PlanBuilder("TestTemplate{0B6944E1-3CC5-45BA-AF78-728FFBE57358}", fr8AccountDO).AddCrate(GenerateInitialEventCrate()).Store(uow);
+            new PlanBuilder("TestTemplate{77D78B4E-111F-4F62-8AC6-6B77459042CB}", fr8AccountDO)
                 .AddCrate(GenerateInitialEventCrate())
                 .AddCrate(Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(new FieldDTO("EnvelopeId", "38b8de65-d4c0-435d-ac1b-87d1b2dc5251")))).Store(uow);
 
@@ -365,9 +365,10 @@ namespace Data.Migrations
         {
             CreateAdmin("alex@edelstein.org", "foobar", unitOfWork);
             CreateAdmin("d1984v@gmail.com", "dmitry123", unitOfWork);
-            CreateAdmin("y.gnusin@gmail.com", "123qwe", unitOfWork);
+            CreateAdmin("y.gnusin@gmail.com", "123qwe", unitOfWork);    
             CreateAdmin("alexavrutin@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("bahadir.bb@gmail.com", "123456ab", unitOfWork);
+            CreateAdmin("omer@fr8.co", "123456ab", unitOfWork);
             CreateAdmin("mvcdeveloper@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("fr8system_monitor@fr8.company", "123qwe", unitOfWork);
 
@@ -662,9 +663,9 @@ namespace Data.Migrations
             return newDate;
         }
 
-        private void UpdateRootRouteNodeId(IUnitOfWork uow)
+        private void UpdateRootPlanNodeId(IUnitOfWork uow)
         {
-            var anyRootIdFlag = uow.PlanRepository.GetNodesQueryUncached().Any(x => x.RootRouteNodeId != null);
+            var anyRootIdFlag = uow.PlanRepository.GetNodesQueryUncached().Any(x => x.RootPlanNodeId != null);
 
             if (anyRootIdFlag)
             {
@@ -673,26 +674,26 @@ namespace Data.Migrations
 
             var fullTree = uow.PlanRepository.GetNodesQueryUncached().ToList();
 
-            var parentChildMap = new Dictionary<Guid, List<RouteNodeDO>>();
-            foreach (var routeNode in fullTree.Where(x => x.ParentRouteNodeId.HasValue))
+            var parentChildMap = new Dictionary<Guid, List<PlanNodeDO>>();
+            foreach (var planNode in fullTree.Where(x => x.ParentPlanNodeId.HasValue))
             {
-                List<RouteNodeDO> routeNodes;
-                if (!parentChildMap.TryGetValue(routeNode.ParentRouteNodeId.Value, out routeNodes))
+                List<PlanNodeDO> planNodes;
+                if (!parentChildMap.TryGetValue(planNode.ParentPlanNodeId.Value, out planNodes))
                 {
-                    routeNodes = new List<RouteNodeDO>();
-                    parentChildMap.Add(routeNode.ParentRouteNodeId.Value, routeNodes);
+                    planNodes = new List<PlanNodeDO>();
+                    parentChildMap.Add(planNode.ParentPlanNodeId.Value, planNodes);
                 }
 
-                routeNodes.Add(routeNode);
+                planNodes.Add(planNode);
             }
 
             var roots = fullTree
-                .Where(x => parentChildMap.ContainsKey(x.Id) && !x.ParentRouteNodeId.HasValue);
+                .Where(x => parentChildMap.ContainsKey(x.Id) && !x.ParentPlanNodeId.HasValue);
 
-            var queue = new Queue<RouteNodeDO>();
+            var queue = new Queue<PlanNodeDO>();
             foreach (var root in roots)
             {
-                root.RootRouteNodeId = root.Id;
+                root.RootPlanNodeId = root.Id;
                 queue.Enqueue(root);
             }
 
@@ -708,7 +709,7 @@ namespace Data.Migrations
                 var childNodes = parentChildMap[node.Id];
                 foreach (var childNode in childNodes)
                 {
-                    childNode.RootRouteNodeId = node.RootRouteNodeId;
+                    childNode.RootPlanNodeId = node.RootPlanNodeId;
                     queue.Enqueue(childNode);
                 }
             }

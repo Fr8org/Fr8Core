@@ -32,10 +32,10 @@ namespace terminalAtlassian
         {
             public LiveMode()
             {
-                For<IActivity>().Use<Hub.Services.Activity>();
+                For<IActivity>().Use<Hub.Services.Activity>().Singleton();
                 For<ITerminal>().Use<Terminal>().Singleton();
                 For<ICrateManager>().Use<CrateManager>();
-                For<IRouteNode>().Use<RouteNode>();
+                For<IPlanNode>().Use<PlanNode>();
                 For<IAtlassianService>().Use<AtlassianService>();
                 For<IHubCommunicator>().Use<DefaultHubCommunicator>();
             }

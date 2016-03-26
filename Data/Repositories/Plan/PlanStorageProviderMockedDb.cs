@@ -10,31 +10,31 @@ namespace Data.Repositories.Plan
         {
         }
 
-        public override void Update(RouteSnapshot.Changes changes)
+        public override void Update(PlanSnapshot.Changes changes)
         {
-            foreach (var routeNodeDo in changes.Delete)
+            foreach (var planNodeDo in changes.Delete)
             {
-                RouteNodes.Remove(routeNodeDo);
+                PlanNodes.Remove(planNodeDo);
 
-                if (routeNodeDo is ActivityDO)
+                if (planNodeDo is ActivityDO)
                 {
-                    ActivityRepository.Remove((ActivityDO) routeNodeDo);
+                    ActivityRepository.Remove((ActivityDO) planNodeDo);
                 }
-                else if (routeNodeDo is PlanDO)
+                else if (planNodeDo is PlanDO)
                 {
-                    Routes.Remove((PlanDO) routeNodeDo);
+                    Plans.Remove((PlanDO) planNodeDo);
                 }
-                else if (routeNodeDo is SubrouteDO)
+                else if (planNodeDo is SubPlanDO)
                 {
-                    Subroutes.Remove((SubrouteDO) routeNodeDo);
+                    SubPlans.Remove((SubPlanDO) planNodeDo);
                 }
             }
 
-            foreach (var routeNodeDo in changes.Insert)
+            foreach (var planNodeDo in changes.Insert)
             {
                 //RouteNodes.Add(routeNodeDo);
 
-                var entity = routeNodeDo.Clone();
+                var entity = planNodeDo.Clone();
 
                 ClearNavigationProperties(entity);
                
@@ -44,34 +44,34 @@ namespace Data.Repositories.Plan
                 }
                 else if (entity is PlanDO)
                 {
-                    Routes.Add((PlanDO)entity);
+                    Plans.Add((PlanDO)entity);
                 }
-                else if (entity is SubrouteDO)
+                else if (entity is SubPlanDO)
                 {
-                    Subroutes.Add((SubrouteDO)entity);
+                    SubPlans.Add((SubPlanDO)entity);
                 }
                 else
                 {
-                    RouteNodes.Add(entity);
+                    PlanNodes.Add(entity);
                 }
             }
 
             foreach (var changedObject in changes.Update)
             {
-                var routeNodeDo = changedObject.Node;
+                var planNodeDo = changedObject.Node;
                 object entity = null;
 
-                if (routeNodeDo is ActivityDO)
+                if (planNodeDo is ActivityDO)
                 {
-                    entity = ActivityRepository.GetByKey(routeNodeDo.Id);
+                    entity = ActivityRepository.GetByKey(planNodeDo.Id);
                 }
-                else if (routeNodeDo is PlanDO)
+                else if (planNodeDo is PlanDO)
                 {
-                    entity = Routes.GetByKey(routeNodeDo.Id);
+                    entity = Plans.GetByKey(planNodeDo.Id);
                 }
-                else if (routeNodeDo is SubrouteDO)
+                else if (planNodeDo is SubPlanDO)
                 {
-                    entity = Subroutes.GetByKey(routeNodeDo.Id);
+                    entity = SubPlans.GetByKey(planNodeDo.Id);
                 }
 
                 foreach (var changedProperty in changedObject.ChangedProperties)

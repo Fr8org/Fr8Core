@@ -24,7 +24,7 @@ namespace terminalYammer.Controllers
         {
             var terminal = new TerminalDTO
             {
-                Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
+                Endpoint = CloudConfigurationManager.GetSetting("terminalYammer.TerminalEndpoint"),
                 TerminalStatus = TerminalStatus.Active,
                 Name = "terminalYammer",
                 Version = "1",

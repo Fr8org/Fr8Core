@@ -7,10 +7,10 @@ module dockyard.directives.designerHeader {
         editing: boolean;
         editTitle(): void;
         onTitleChange(): void;
-        runRoute(): void;
+        runPlan(): void;
         deactivatePlan(): void;
         resetPlanStatus(): void;
-        route: model.RouteDTO;
+        plan: model.PlanDTO;
     }
 
     //More detail on creating directives in TypeScript: 
@@ -23,16 +23,16 @@ module dockyard.directives.designerHeader {
             element: ng.IAugmentedJQuery,
             attrs: ng.IAttributes,
             ngToast: any,
-            RouteService: services.IRouteService
+            PlanService: services.IPlanService
         ) => void;
 
         public templateUrl = '/AngularTemplate/DesignerHeader';
         public scope = {
-            route: '='
+            plan: '='
         };
         public restrict = 'E';
 
-        constructor(private RouteService: services.IRouteService) {
+        constructor(private Planervice: services.IPlanService) {
             DesignerHeader.prototype.link = (
                 scope: IDesignerHeaderScope,
                 element: ng.IAugmentedJQuery,
@@ -47,7 +47,7 @@ module dockyard.directives.designerHeader {
                 $element: ng.IAugmentedJQuery,
                 $attrs: ng.IAttributes,
                 ngToast: any,
-                RouteService: services.IRouteService) => {
+                PlanService: services.IPlanService) => {
 
                 $scope.editTitle = () => {
                     $scope.editing = true;
@@ -55,33 +55,33 @@ module dockyard.directives.designerHeader {
 
                 $scope.onTitleChange = () => {
                     $scope.editing = false;
-                    var result = RouteService.update({ id: $scope.route.id, name: $scope.route.name });
+                    var result = PlanService.update({ id: $scope.plan.id, name: $scope.plan.name });
                     result.$promise.then(() => { });
                 };
 
-                $scope.runRoute = () => {
+                $scope.runPlan = () => {
                     // mark plan as Active
-                    $scope.route.routeState = 2;
-                    var promise = RouteService.runAndProcessClientAction($scope.route.id);
+                    $scope.plan.planState = 2;
+                    var promise = PlanService.runAndProcessClientAction($scope.plan.id);
                     promise.finally(() => {
                         $scope.resetPlanStatus();
 
-                        // This is to notify dashboad/view all page to reArrangeRoutes themselves so that plans get rendered in desired sections i.e Running or Plans Library
+                        // This is to notify dashboad/view all page to reArrangePlans themselves so that plans get rendered in desired sections i.e Running or Plans Library
                         // This is required when user Run a plan and immediately navigates(before run completion) to dashboad or view all page in order 
                         // to make sure plans get rendered in desired sections
                         if (location.href.indexOf('/builder') === -1) {
-                            $rootScope.$broadcast("planExecutionCompleted-rearrangePlans", $scope.route);
-                            //$scope.$root.$broadcast("planExecutionCompleted", $scope.route);
+                            $rootScope.$broadcast("planExecutionCompleted-rearrangePlans", $scope.plan);
+                            //$scope.$root.$broadcast("planExecutionCompleted", $scope.plan);
                         }
                     });
                 };
 
                 $scope.resetPlanStatus = () => {
-                    var subRoute = $scope.route.subroutes[0];
-                    var initialActivity: interfaces.IActivityDTO = subRoute ? subRoute.activities[0] : null;
+                    var subPlan = $scope.plan.subPlans[0];
+                    var initialActivity: interfaces.IActivityDTO = subPlan ? subPlan.activities[0] : null;
                     if (initialActivity == null) {
                         // mark plan as Inactive
-                        $scope.route.routeState = 1;
+                        $scope.plan.planState = 1;
                         return;
                     }
 
@@ -89,22 +89,22 @@ module dockyard.directives.designerHeader {
                         initialActivity = initialActivity.childrenActivities[0];
                         if (initialActivity == null) {
                             // mark plan as Inactive
-                            $scope.route.routeState = 1;
+                            $scope.plan.planState = 1;
                             return;
                         }
                     }
 
                     if (initialActivity.activityTemplate.category.toLowerCase() !== "monitors") {
                         // mark plan as Inactive
-                        $scope.route.routeState = 1;
+                        $scope.plan.planState = 1;
                     }
                 };
 
                 $scope.deactivatePlan = () => {
-                    var result = RouteService.deactivate({ planId: $scope.route.id });
+                    var result = PlanService.deactivate({ planId: $scope.plan.id });
                     result.$promise.then((data) => {
                         // mark plan as inactive
-                        $scope.route.routeState = 1;
+                        $scope.plan.planState = 1;
                         var messageToShow = "Plan successfully deactivated";
                         ngToast.success(messageToShow);
                     })
@@ -115,16 +115,16 @@ module dockyard.directives.designerHeader {
                 };
             };
 
-            DesignerHeader.prototype.controller['$inject'] = ['$rootScope', '$scope', '$element', '$attrs', 'ngToast', 'RouteService'];
+            DesignerHeader.prototype.controller['$inject'] = ['$rootScope', '$scope', '$element', '$attrs', 'ngToast', 'PlanService'];
         }
 
         //The factory function returns Directive object as per Angular requirements
         public static Factory() {
-            var directive = (RouteService: services.IRouteService) => {
-                return new DesignerHeader(RouteService);
+            var directive = (PlanService: services.IPlanService) => {
+                return new DesignerHeader(PlanService);
             };
 
-            directive['$inject'] = ['RouteService'];
+            directive['$inject'] = ['PlanService'];
             return directive;
         }
     }

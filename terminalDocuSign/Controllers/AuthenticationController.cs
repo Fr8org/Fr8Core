@@ -10,8 +10,12 @@ using StructureMap;
 using TerminalBase.BaseClasses;
 using terminalDocuSign.Interfaces;
 using Utilities.Configuration.Azure;
-using terminalDocuSign.DataTransferObjects;
 using Hub.Managers.APIManagers.Transmitters.Restful;
+using terminalDocuSign.Services.New_Api;
+using DocuSign.eSign.Client;
+using DocuSign.eSign.Model;
+using DocuSign.eSign.Api;
+using terminalDocuSign.DataTransferObjects;
 
 namespace terminalDocuSign.Controllers
 {
@@ -27,21 +31,10 @@ namespace terminalDocuSign.Controllers
         {
             try
             {
-                // choose configuration either for demo or prod service 
-                string endpoint = string.Empty;
-                if (curCredentials.IsDemoAccount)
-                {
-                    endpoint = CloudConfigurationManager.GetSetting("endpoint");
-                }
-                else
-                {
-                    endpoint = CloudConfigurationManager.GetSetting("endpoint");
-                }
                 
-                // Auth sequence according to https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#OAuth2/OAuth2%20Token%20Request.htm
-                var oauthToken = await ObtainOAuthToken(curCredentials, endpoint);
+                var authToken = await ObtainAuthToken(curCredentials);
 
-                if (string.IsNullOrEmpty(oauthToken))
+                if (authToken == null)
                 {
                     return new AuthorizationTokenDTO()
                     {
@@ -49,15 +42,9 @@ namespace terminalDocuSign.Controllers
                     };
                 }
 
-                var docuSignAuthDTO = new DocuSignAuthTokenDTO()
-                {
-                    Email = curCredentials.Username,
-                    ApiPassword = oauthToken
-                };
-
                 var authorizationTokenDTO = new AuthorizationTokenDTO()
                     {
-                        Token = JsonConvert.SerializeObject(docuSignAuthDTO),
+                    Token = JsonConvert.SerializeObject(authToken),
                         ExternalAccountId = curCredentials.Username,
                         AuthCompletedNotificationRequired = true
                     };
@@ -91,31 +78,40 @@ namespace terminalDocuSign.Controllers
             }
         }
 
-        private async Task<string> ObtainOAuthToken(CredentialsDTO curCredentials, string baseUrl)
+
+
+        private async Task<DocuSignAuthTokenDTO> ObtainAuthToken(CredentialsDTO curCredentials)
         {
-            var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
-            try
+            //TODO:
+            // choose configuration either for demo or prod service 
+            string endpoint = string.Empty;
+            if (curCredentials.IsDemoAccount)
             {
-                var response = await client
-                .PostAsync(new Uri(new Uri(baseUrl), "oauth2/token"),
-                    (HttpContent)new FormUrlEncodedContent(new[]
-                    {
-                        new KeyValuePair<string, string>("grant_type", "password"),
-                        new KeyValuePair<string, string>("client_id", CloudConfigurationManager.GetSetting("DocuSignIntegratorKey")),
-                        new KeyValuePair<string, string>("username", curCredentials.Username),
-                        new KeyValuePair<string, string>("password", curCredentials.Password),
-                        new KeyValuePair<string, string>("scope", "api"),
-                    }));
-
-                var responseObject = JsonConvert.DeserializeAnonymousType(response, new { access_token = "" });
-
-                return responseObject.access_token;
+                endpoint = CloudConfigurationManager.GetSetting("environment") + "/restapi";
             }
-            catch (Exception ex)
+            else
             {
-                ReportTerminalError("terminalDocuSign", ex);
-                return null;
+                endpoint = CloudConfigurationManager.GetSetting("environment") + "/restapi";
             }
+
+            //Here we make a call to API with X-DocuSign-Authentication to retrieve both oAuth token and AccountID
+            string integratorKey = CloudConfigurationManager.GetSetting("DocuSignIntegratorKey");
+            ApiClient apiClient = new ApiClient(endpoint);
+            string authHeader = "{\"Username\":\"" + curCredentials.Username + "\", \"Password\":\"" + curCredentials.Password + "\", \"IntegratorKey\":\"" + integratorKey + "\"}";
+            Configuration conf = new Configuration(apiClient);
+            conf.AddDefaultHeader("X-DocuSign-Authentication", authHeader);
+            AuthenticationApi authApi = new AuthenticationApi(conf);
+            LoginInformation loginInfo = await authApi.LoginAsync(new AuthenticationApi.LoginOptions() { apiPassword = "true" });
+
+            string accountId = loginInfo.LoginAccounts[0].AccountId; //it seems that althought one DocuSign account can have multiple users - only one is returned, the one that credentials were provided for
+            DocuSignAuthTokenDTO result = new DocuSignAuthTokenDTO()
+            {
+                AccountId = accountId,
+                ApiPassword = loginInfo.ApiPassword,
+                Email = curCredentials.Username
+            };
+
+            return result;
         }
     }
 }

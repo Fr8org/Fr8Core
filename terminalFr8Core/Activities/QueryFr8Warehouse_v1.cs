@@ -67,18 +67,12 @@ namespace terminalFr8Core.Actions
                                             ManifestType = new DropDownList()
                                             {
                                                 Name = "UpstreamCrateManifestTypeDdl",
-                                                Source = new FieldSourceDTO(
-                                                    CrateManifestTypes.StandardDesignTimeFields,
-                                                    "Upstream Crate ManifestType List"
-                                                )
+                                                Source = null
                                             },
                                             Label = new DropDownList()
                                             {
                                                 Name = "UpstreamCrateLabelDdl",
-                                                Source = new FieldSourceDTO(
-                                                    CrateManifestTypes.StandardDesignTimeFields,
-                                                    "Upstream Crate Label List"
-                                                )
+                                                Source = null
                                             }
                                         }
                                     },
@@ -100,11 +94,7 @@ namespace terminalFr8Core.Actions
                                     Name = "AvailableObjects",
                                     Value = null,
                                     Events = new List<ControlEvent> { ControlEvent.RequestConfig },
-                                    Source = new FieldSourceDTO
-                                    {
-                                        Label = "Queryable Objects",
-                                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                                    }
+                                    Source = null
                                 }),
                                 (Filter = new FilterPane
                                 {
@@ -141,17 +131,14 @@ namespace terminalFr8Core.Actions
 
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            var objectList = GetObjects();
-
-            var upstreamQueryCrateManifests = GetUpstreamCrateManifestListCrate();
-            var upstreamQueryCrateLabels = await ExtractUpstreamQueryCrates(curActivityDO);
+            var configurationCrate = PackControls(new ActivityUi());
+            FillObjectsSource(configurationCrate, "AvailableObjects");
+            FillUpstreamCrateManifestTypeDDLSource(configurationCrate);
+            await FillUpstreamCrateLabelDDLSource(configurationCrate, curActivityDO);
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                crateStorage.Add(PackControls(new ActivityUi()));
-                crateStorage.Add(upstreamQueryCrateManifests);
-                crateStorage.Add(upstreamQueryCrateLabels);
-                crateStorage.Add(CrateManager.CreateDesignTimeFieldsCrate("Queryable Objects", objectList.ToArray()));
+                crateStorage.Add(configurationCrate);             
                 crateStorage.Add(
                     Data.Crates.Crate.FromContent(
                         "Found MT Objects",
@@ -170,22 +157,7 @@ namespace terminalFr8Core.Actions
             return curActivityDO;
         }
 
-        private Crate<FieldDescriptionsCM> GetUpstreamCrateManifestListCrate()
-        {
-            var fields = new List<FieldDTO>()
-            {
-                new FieldDTO(
-                    MT.StandardQueryCrate.ToString(),
-                    ((int)MT.StandardQueryCrate).ToString(CultureInfo.InvariantCulture)
-                )
-            };
-
-            var crate = CrateManager.CreateDesignTimeFieldsCrate("Upstream Crate ManifestType List", fields);
-
-            return crate;
-        }
-
-        private async Task<Crate<FieldDescriptionsCM>>
+        /*private async Task<Crate<FieldDescriptionsCM>>
             ExtractUpstreamQueryCrates(ActivityDO activityDO)
         {
             var upstreamCrates = await GetCratesByDirection<StandardQueryCM>(
@@ -200,7 +172,7 @@ namespace terminalFr8Core.Actions
             var crate = CrateManager.CreateDesignTimeFieldsCrate("Upstream Crate Label List", fields);
 
             return crate;
-        }
+        }*/
 
         protected override Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
@@ -320,7 +292,7 @@ namespace terminalFr8Core.Actions
                 }
 
                 Type manifestType = mtType.ClrType;
-              
+
                 var queryBuilder = MTSearchHelper.CreateQueryProvider(manifestType);
                 var converter = CrateManifestToRowConverter(manifestType);
                 var foundObjects = queryBuilder.Query(
@@ -455,12 +427,71 @@ namespace terminalFr8Core.Actions
             }
         }
 
-        private IEnumerable<FieldDTO> GetObjects()
+        #region Fill Source
+        private void FillObjectsSource(Crate configurationCrate, string controlName)
+        {
+            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
+            var control = configurationControl.FindByNameNested<DropDownList>(controlName);
+            if (control != null)
+            {
+                control.ListItems = GetObjects();
+            }
+        }
+
+        private List<ListItem> GetObjects()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-               return uow.MultiTenantObjectRepository.ListTypeReferences().Select(c => new FieldDTO(c.Alias, c.Id.ToString("N"))).ToArray();
+                var listTypeReferences = uow.MultiTenantObjectRepository.ListTypeReferences();
+                return listTypeReferences.Select(c => new ListItem() { Key = c.Alias, Value = c.Id.ToString("N") }).ToList();
             }
         }
+
+        private void FillUpstreamCrateManifestTypeDDLSource(Crate configurationCrate)
+        {
+            var selectedCrateDetails = GetSelectedCrateDetails(configurationCrate);
+            var control = selectedCrateDetails.ManifestType;
+            control.ListItems = GetUpstreamCrateManifestList();
+        }
+
+        private CrateDetails GetSelectedCrateDetails(Crate configurationCrate)
+        {
+            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
+            var upstreamCrateChooser = configurationControl.FindByNameNested<UpstreamCrateChooser>("UpstreamCrateChooser");
+            return upstreamCrateChooser.SelectedCrates.First();
+        }
+
+        private List<ListItem> GetUpstreamCrateManifestList()
+        {
+            var fields = new List<FieldDTO>()
+            {
+                new FieldDTO(
+                    MT.StandardQueryCrate.ToString(),
+                    ((int)MT.StandardQueryCrate).ToString(CultureInfo.InvariantCulture)
+                )
+            };
+            return fields.Select(x => new ListItem() { Key = x.Key, Value = x.Value }).ToList();
+        }
+
+        private async Task FillUpstreamCrateLabelDDLSource(Crate configurationCrate, ActivityDO activityDO)
+        {
+            var selectedCrateDetails = GetSelectedCrateDetails(configurationCrate);
+            var control = selectedCrateDetails.Label;
+            control.ListItems = await GetExtractUpstreamQueryList(activityDO);
+        }
+
+        private async Task<List<ListItem>> GetExtractUpstreamQueryList(ActivityDO activityDO)
+        {
+            var upstreamCrates = await GetCratesByDirection<StandardQueryCM>(
+                activityDO,
+                CrateDirection.Upstream
+            );
+
+            return upstreamCrates
+                 .Select(x => new ListItem() { Key = x.Label, Value = x.Label })
+                 .ToList();
+        }
+
+        #endregion
     }
 }

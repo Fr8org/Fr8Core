@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Data.Entities;
 using Data.Repositories.Plan;
 
@@ -10,49 +8,49 @@ namespace DockyardTest.Repositories.Plan
 {
     class PersistentPlanStorage : IPlanStorageProvider
     {
-        private readonly Dictionary<Guid, RouteNodeDO> _storage = new Dictionary<Guid, RouteNodeDO>();
+        private readonly Dictionary<Guid, PlanNodeDO> _storage = new Dictionary<Guid, PlanNodeDO>();
         
-        public PersistentPlanStorage(RouteNodeDO root)
+        public PersistentPlanStorage(PlanNodeDO root)
         {
             if (root == null)
             {
                 return;
             }
 
-            foreach (var node in RouteTreeHelper.Linearize(root))
+            foreach (var node in PlanTreeHelper.Linearize(root))
             {
                 _storage[node.Id] = node;
             }
         }
 
-        public RouteNodeDO LoadPlan(Guid planMemberId)
+        public PlanNodeDO LoadPlan(Guid planMemberId)
         {
-            RouteNodeDO root = null;
+            PlanNodeDO root = null;
 
-            foreach (var routeNodeDo in _storage)
+            foreach (var planNodeDo in _storage)
             {
-                routeNodeDo.Value.ParentRouteNode = null;
-                routeNodeDo.Value.ChildNodes.Clear();
+                planNodeDo.Value.ParentPlanNode = null;
+                planNodeDo.Value.ChildNodes.Clear();
             }
 
-            foreach (var routeNodeDo in _storage)
+            foreach (var planNodeDo in _storage)
             {
-                RouteNodeDO parent;
+                PlanNodeDO parent;
 
-                if (routeNodeDo.Value.ParentRouteNodeId == null || !_storage.TryGetValue(routeNodeDo.Value.ParentRouteNodeId.Value, out parent))
+                if (planNodeDo.Value.ParentPlanNodeId == null || !_storage.TryGetValue(planNodeDo.Value.ParentPlanNodeId.Value, out parent))
                 {
-                    root = routeNodeDo.Value;
+                    root = planNodeDo.Value;
                     continue;
                 }
 
-                routeNodeDo.Value.ParentRouteNode = parent;
-                parent.ChildNodes.Add(routeNodeDo.Value);
+                planNodeDo.Value.ParentPlanNode = parent;
+                parent.ChildNodes.Add(planNodeDo.Value);
             }
 
             return root;
         }
-
-        public void Update(RouteSnapshot.Changes changes)
+        
+        public void Update(PlanSnapshot.Changes changes)
         {
             foreach (var change in changes.Delete)
             {
@@ -84,7 +82,7 @@ namespace DockyardTest.Repositories.Plan
             throw new NotImplementedException();
         }
 
-        public IQueryable<RouteNodeDO> GetNodesQuery()
+        public IQueryable<PlanNodeDO> GetNodesQuery()
         {
             throw new NotImplementedException();
         }

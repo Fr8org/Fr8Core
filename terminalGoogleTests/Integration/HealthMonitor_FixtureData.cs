@@ -8,6 +8,9 @@ using System.Collections.Generic;
 using Hub.Managers;
 using System.Linq;
 using System.Runtime.InteropServices;
+using terminalGoogle.Actions;
+using terminalGoogle.DataTransferObjects;
+using terminalGoogleTests.Integration;
 
 namespace terminalGoogleTests.Unit
 {
@@ -28,13 +31,25 @@ namespace terminalGoogleTests.Unit
                 Token = @"{""AccessToken"":""ya29.PwJez2aHwjGxsxcho6TfaFseWjPbi1ThgINsgiawOKLlzyIgFJHkRdq76YrnuiGT3jhr"",""RefreshToken"":""1/HVhoZXzxFrPyC0JVlbEIF_VOBDm_IhrKoLKnt6QpyFRIgOrJDtdun6zK6XiATCKT"",""Expires"":""2015-12-03T11:12:43.0496208+08:00""}"
             };
         }
+
         public static AuthorizationTokenDTO Google_AuthToken1()
         {
             return new AuthorizationTokenDTO()
             {
-                Token = @"{""AccessToken"":""ya29.OgLf-SvZTHJcdN9tIeNEjsuhIPR4b7KBoxNOuELd0T4qFYEa001kslf31Lme9OQCl6S5"",""RefreshToken"":""1/04H9hNCEo4vfX0nHHEdViZKz1CtesK8ByZ_TOikwVDc"",""Expires"":""2015-11-28T13:29:12.653075+05:00""}"
+                Token = @"{""AccessToken"":""ya29.OgLf-SvZTHJcdN9tIeNEjsuhIPR4b7KBoxNOuELd0T4qFYEa001kslf31Lme9OQCl6S5"",""RefreshToken"":""1/04H9hNCEo4vfX0nHHEdViZKz1CtesK8ByZ_TOikwVDc"",""Expires"":""2017-11-28T13:29:12.653075+05:00""}"
             };
         }
+
+        public static GoogleAuthDTO NewGoogle_AuthToken_As_GoogleAuthDTO()
+        {
+            return new GoogleAuthDTO
+            {
+                AccessToken = "ya29.sAIlmsk843IiMs54TCbaN6XitYsrFa00XcuKvtV75lWuKIWSglzWv_F1MCLHWyuNRg",
+                Expires = new DateTime(2017, 03, 19, 0, 0, 0),
+                RefreshToken = "1/3DJhIxl_HceJmyZaWwI_O9MRdHyDGCtWo-69dZRbgBQ"
+            };
+        }
+
         protected Crate PackControls(StandardConfigurationControlsCM page)
         {
             return PackControlsCrate(page.Controls.ToArray());
@@ -68,12 +83,12 @@ namespace terminalGoogleTests.Unit
                 );
         }
 
-        public static ActivityTemplateDTO Receive_Google_Form_v1_ActivityTemplate()
+        public static ActivityTemplateDTO Monitor_Form_Responses_v1_ActivityTemplate()
         {
             return new ActivityTemplateDTO()
             {
                 Id = 1,
-                Name = "Receive_Google_Form_TEST",
+                Name = "Monitor_Form_Responses_TEST",
                 Version = "1"
             };
         }
@@ -112,31 +127,31 @@ namespace terminalGoogleTests.Unit
             }
         }
 
-        public static Fr8DataDTO Receive_Google_Form_v1_InitialConfiguration_Fr8DataDTO()
+        public static Fr8DataDTO Monitor_Form_Responses_v1_InitialConfiguration_Fr8DataDTO()
         {
-            var activityTemplate = Receive_Google_Form_v1_ActivityTemplate();
+            var activityTemplate = Monitor_Form_Responses_v1_ActivityTemplate();
 
             var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Label = "Receive Google Form Response",
+                Label = "Monitor Form Responses",
                 AuthToken = Google_AuthToken(),
                 ActivityTemplate = activityTemplate
             };
             return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
 
-        public Fr8DataDTO Receive_Google_Form_v1_ActivateDeactivate_Fr8DataDTO()
+        public Fr8DataDTO Monitor_Form_Responses_v1_ActivateDeactivate_Fr8DataDTO()
         {
-            var activityTemplate = Receive_Google_Form_v1_ActivityTemplate();
+            var activityTemplate = Monitor_Form_Responses_v1_ActivityTemplate();
 
             var activity = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Label = "Receive Google Form Response",
+                Label = "Monitor Form Responses",
                 AuthToken = Google_AuthToken(),
                 ActivityTemplate = activityTemplate,
-                ParentRouteNodeId = Guid.NewGuid()
+                ParentPlanNodeId = Guid.NewGuid()
             };
 
             ActivateCrateStorage(activity);
@@ -184,14 +199,14 @@ namespace terminalGoogleTests.Unit
             return curEventReport;
         }
 
-        public ActivityDTO Receive_Google_Form_v1_Run_ActivityDTO()
+        public ActivityDTO Monitor_Form_Responses_v1_Run_ActivityDTO()
         {
-            var activityTemplate = Receive_Google_Form_v1_ActivityTemplate();
+            var activityTemplate = Monitor_Form_Responses_v1_ActivityTemplate();
 
             var activity = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Label = "Receive Google Form Response",
+                Label = "Monitor Form Responses",
                 AuthToken = Google_AuthToken(),
                 ActivityTemplate = activityTemplate
             };
@@ -202,14 +217,14 @@ namespace terminalGoogleTests.Unit
             return activity;
         }
 
-        public ActivityDTO Receive_Google_Form_v1_Run_EmptyPayload()
+        public ActivityDTO Monitor_Form_Responses_v1_Run_EmptyPayload()
         {
-            var activityTemplate = Receive_Google_Form_v1_ActivityTemplate();
+            var activityTemplate = Monitor_Form_Responses_v1_ActivityTemplate();
 
             var activity = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Label = "Receive Google Form Response",
+                Label = "Monitor Form Responses",
                 AuthToken = Google_AuthToken(),
                 ActivityTemplate = activityTemplate
             };
@@ -286,33 +301,20 @@ namespace terminalGoogleTests.Unit
         }
         private Crate Get_Google_Sheet_Data_v1_PackCrate_ConfigurationControls(Tuple<string, string> spreadsheetTuple)
         {
-            var controlList = new List<ControlDefinitionDTO>();
-            var spreadsheetControl = new DropDownList()
-            {
-                Label = "Select a Google Spreadsheet",
-                Name = "select_spreadsheet",
-                selectedKey = spreadsheetTuple.Item1,
-                Value = spreadsheetTuple.Item2,
-                Selected = true,
-                Source = new FieldSourceDTO
-                {
-                    Label = "Select a Google Spreadsheet",
-                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                },
-            };
-            controlList.Add(spreadsheetControl);
-            return PackControlsCrate(controlList.ToArray());
+            var activityUi = new Get_Google_Sheet_Data_v1.ActivityUi();
+            activityUi.SpreadsheetList.ListItems = new[] { new ListItem { Key = spreadsheetTuple.Item1, Value = spreadsheetTuple.Item2 } }.ToList();
+            activityUi.SpreadsheetList.selectedKey = spreadsheetTuple.Item1;
+            activityUi.SpreadsheetList.Value = spreadsheetTuple.Item2;
+            return PackControlsCrate(activityUi.Controls.ToArray());
         }
 
         public void Get_Google_Sheet_Data_v1_AddPayload(ActivityDTO activityDTO, string spreadsheet)
         {
             var caseTuple = CaseTuple(spreadsheet);
             var configurationControlsCrate = Get_Google_Sheet_Data_v1_PackCrate_ConfigurationControls(caseTuple);
-            var crateDesignTimeFields = PackCrate_GoogleSpreadsheets();
             using (var crateStorage = CrateManager.GetUpdatableStorage(activityDTO))
             {
                 crateStorage.Add(configurationControlsCrate);
-                crateStorage.Add(crateDesignTimeFields);
             }
         }
 

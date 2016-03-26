@@ -15,7 +15,7 @@ namespace Data.Repositories.Plan
             _storageProvider = storageProvider;
         }
 
-        public RouteNodeDO LoadPlan( Guid planMemberId)
+        public PlanNodeDO LoadPlan( Guid planMemberId)
         {
             lock (_cache)
             {
@@ -33,22 +33,22 @@ namespace Data.Repositories.Plan
             return _storageProvider.GetActivityQuery();
         }
 
-        public IQueryable<RouteNodeDO> GetNodesQuery()
+        public IQueryable<PlanNodeDO> GetNodesQuery()
         {
             return _storageProvider.GetNodesQuery();
         }
 
-        public void UpdateElement(Guid id, Action<RouteNodeDO> updater)
+        public void UpdateElement(Guid id, Action<PlanNodeDO> updater)
         {
             _cache.UpdateElement(id, updater);
         }
 
-        public void UpdateElements(Action<RouteNodeDO> updater)
+        public void UpdateElements(Action<PlanNodeDO> updater)
         {
             _cache.UpdateElements(updater);
         }
 
-        public void Update(Guid planId, RouteSnapshot.Changes changes)
+        public void Update(Guid planId, PlanSnapshot.Changes changes)
         {
             lock (_cache)
             {

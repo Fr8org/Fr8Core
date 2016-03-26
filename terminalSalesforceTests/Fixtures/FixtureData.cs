@@ -18,7 +18,7 @@ namespace terminalSalesforceTests.Fixtures
                 "3MVG9KI2HHAq33RzZO3sQ8KU8JPwmpiZBpe_fka3XktlR5qbCWstH3vbAG.kLmaldx8L1V9OhqoAYUedWAO_e",
                 "611998545425677937",
                 "alex@dockyard.company",
-                "thales@34");
+                "thales@123");
 
             return new AuthorizationTokenDO()
             {
@@ -38,9 +38,35 @@ namespace terminalSalesforceTests.Fixtures
             };
         }
 
+        public static ActivityTemplateDO PostToChatterActivityTemplateDO()
+        {
+            return new ActivityTemplateDO
+            {
+                Version = "1",
+                Name = "Post_To_Chatter",
+                Label = "Post To Chatter",
+                NeedsAuthentication = true
+            };
+        }
+
         public static ActivityDO GetFileListTestActivityDO1()
         {
             var actionTemplate = GetDataActivityTemplateDO();
+
+            var activityDO = new ActivityDO()
+            {
+                Id = new Guid("8339DC87-F011-4FB1-B47C-FEC406E4100A"),
+                ActivityTemplateId = actionTemplate.Id,
+                ActivityTemplate = actionTemplate,
+                CrateStorage = "",
+
+            };
+            return activityDO;
+        }
+
+        public static ActivityDO PostToChatterTestActivityDO1()
+        {
+            var actionTemplate = PostToChatterActivityTemplateDO();
 
             var activityDO = new ActivityDO()
             {

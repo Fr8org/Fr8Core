@@ -207,6 +207,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Activities\SetExcelTemplate_v1.cs" />
     <Compile Include="Activities\Load_Excel_File_v1.cs" />
     <Compile Include="App_Start\RoutesConfig.cs" />
     <Compile Include="Controllers\ActivityController.cs" />
@@ -215,7 +216,6 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Infrastructure\ExcelUtils.cs" />
     <Compile Include="Services\Event.cs" />
     <Compile Include="Services\IEvent.cs" />
     <Compile Include="StructureMapConfiguration.cs" />
@@ -275,6 +275,10 @@
     <ProjectReference Include="..\terminalBase\TerminalBase.csproj">
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
       <Name>TerminalBase</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\terminalUtilities\terminalUtilities.csproj">
+      <Project>{e46b602a-287b-450f-b455-5eed20c93eb7}</Project>
+      <Name>terminalUtilities</Name>
     </ProjectReference>
     <ProjectReference Include="..\Tests\UtilitiesTesting\UtilitiesTesting.csproj">
       <Project>{6b855c3f-07a9-4787-9fde-29fa567c43e2}</Project>

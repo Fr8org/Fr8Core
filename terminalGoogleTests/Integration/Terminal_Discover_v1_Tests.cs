@@ -4,6 +4,7 @@ using HealthMonitor.Utility;
 using NUnit.Framework;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.States;
 
 namespace terminalGoogleTests.Integration
 {
@@ -36,8 +37,12 @@ namespace terminalGoogleTests.Integration
             Assert.AreEqual(3, googleTerminalDiscoveryResponse.Activities.Count, "Google terminal expected 3 actions.");
             Assert.AreEqual("terminalGoogle", googleTerminalDiscoveryResponse.Definition.Name);
             Assert.AreEqual(googleTerminalDiscoveryResponse.Activities.Any(a => a.Name == "Get_Google_Sheet_Data"), true, "Action Get_Google_Sheet_Data was not loaded");
-            Assert.AreEqual(googleTerminalDiscoveryResponse.Activities.Any(a => a.Name == "Receive_Google_Form"), true, "Action Receive_Google_Form was not loaded");
-            Assert.AreEqual(googleTerminalDiscoveryResponse.Activities.Any(a => a.Name == "Save_In_Google_Sheet"), true, "Action Save_In_Google_Sheet was not loaded");
+            Assert.AreEqual(googleTerminalDiscoveryResponse.Activities.Any(a => a.Name == "Monitor_Form_Responses"), true, "Action Monitor_Form_Responses was not loaded");
+            Assert.AreEqual(googleTerminalDiscoveryResponse.Activities.Any(a => a.Name == "Save_To_Google_Sheet"), true, "Action Save_To_Google_Sheet was not loaded");
+            //Check Activities Categories
+            Assert.AreEqual(googleTerminalDiscoveryResponse.Activities.Single(a => a.Name == "Get_Google_Sheet_Data").Category, ActivityCategory.Receivers, "Activity Get_Google_Sheet_Data is not of Category Receivers");
+            Assert.AreEqual(googleTerminalDiscoveryResponse.Activities.Single(a => a.Name == "Monitor_Form_Responses").Category, ActivityCategory.Monitors, "Activity Monitor_Form_Responses is not of Category Monitors");
+            Assert.AreEqual(googleTerminalDiscoveryResponse.Activities.Single(a => a.Name == "Save_To_Google_Sheet").Category, ActivityCategory.Forwarders, "Activity Save_To_Google_Sheet is not of Category Forwarders");
         }
     }
 }

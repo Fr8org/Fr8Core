@@ -28,6 +28,10 @@
       "Path": "../../bower_components/angular-bootstrap/ui-bootstrap-tpls.js"
     },
     {
+      "Path": "../../bower_components/bootstrap/dist/js/bootstrap.min.js",
+      "IsTestFrameworkFile": true
+    },
+    {
       "Path": "../../bower_components/underscore/underscore.js"
     },
     {
@@ -121,7 +125,7 @@
       "Excludes": [ "*.ts" ]
     },
     {
-      "Path": "../app/RouteBuilder/",
+      "Path": "../app/PlanBuilder/",
       "Includes": [ "*.js" ],
       "Excludes": [ "*.ts" ]
     },
