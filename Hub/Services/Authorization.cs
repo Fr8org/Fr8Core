@@ -380,51 +380,53 @@ namespace Hub.Services
             }
         }
 
-        private void AddAuthenticationLabel(ActivityDTO activityDTO)
-        {
-            using (var crateStorage = _crate.GetUpdatableStorage(activityDTO))
-            {
-                var controlsCrate = crateStorage
-                    .CratesOfType<StandardConfigurationControlsCM>()
-                    .FirstOrDefault();
+        // TODO: FR-2703, remove this.
+        // private void AddAuthenticationLabel(ActivityDTO activityDTO)
+        // {
+        //     using (var crateStorage = _crate.GetUpdatableStorage(activityDTO))
+        //     {
+        //         var controlsCrate = crateStorage
+        //             .CratesOfType<StandardConfigurationControlsCM>()
+        //             .FirstOrDefault();
+        // 
+        //         if (controlsCrate == null)
+        //         {
+        //             controlsCrate = Crate<StandardConfigurationControlsCM>
+        //                 .FromContent("Configuration_Controls", new StandardConfigurationControlsCM());
+        // 
+        //             crateStorage.Add(controlsCrate);
+        //         }
+        // 
+        //         controlsCrate.Content.Controls.Add(
+        //             new TextBlock()
+        //             {
+        //                 Name = "AuthAwaitLabel",
+        //                 Value = "Please provide credentials to access your desired account"
+        //             });
+        //     }
+        // }
 
-                if (controlsCrate == null)
-                {
-                    controlsCrate = Crate<StandardConfigurationControlsCM>
-                        .FromContent("Configuration_Controls", new StandardConfigurationControlsCM());
-
-                    crateStorage.Add(controlsCrate);
-                }
-
-                controlsCrate.Content.Controls.Add(
-                    new TextBlock()
-                    {
-                        Name = "AuthAwaitLabel",
-                        Value = "Please provide credentials to access your desired account"
-                    });
-            }
-        }
-
-        private void RemoveAuthenticationLabel(ActivityDTO activityDTO)
-        {
-            using (var crateStorage = _crate.GetUpdatableStorage(activityDTO))
-            {
-                var controlsCrate = crateStorage
-                    .CratesOfType<StandardConfigurationControlsCM>()
-                    .FirstOrDefault();
-                if (controlsCrate == null) { return; }
-
-                var authAwaitLabel = controlsCrate.Content.FindByName("AuthAwaitLabel");
-                if (authAwaitLabel == null) { return; }
-
-                controlsCrate.Content.Controls.Remove(authAwaitLabel);
-
-                if (controlsCrate.Content.Controls.Count == 0)
-                {
-                    crateStorage.Remove(controlsCrate);
-                }
-            }
-        }
+        // TODO: FR-2703, remove this.
+        // private void RemoveAuthenticationLabel(ActivityDTO activityDTO)
+        // {
+        //     using (var crateStorage = _crate.GetUpdatableStorage(activityDTO))
+        //     {
+        //         var controlsCrate = crateStorage
+        //             .CratesOfType<StandardConfigurationControlsCM>()
+        //             .FirstOrDefault();
+        //         if (controlsCrate == null) { return; }
+        // 
+        //         var authAwaitLabel = controlsCrate.Content.FindByName("AuthAwaitLabel");
+        //         if (authAwaitLabel == null) { return; }
+        // 
+        //         controlsCrate.Content.Controls.Remove(authAwaitLabel);
+        // 
+        //         if (controlsCrate.Content.Controls.Count == 0)
+        //         {
+        //             crateStorage.Remove(controlsCrate);
+        //         }
+        //     }
+        // }
 
         public bool ValidateAuthenticationNeeded(IUnitOfWork uow, string userId, ActivityDTO curActionDTO)
         {
@@ -440,7 +442,8 @@ namespace Hub.Services
                 && activityTemplate.NeedsAuthentication)
             {
                 RemoveAuthenticationCrate(curActionDTO);
-                RemoveAuthenticationLabel(curActionDTO);
+                // TODO: FR-2703, remove this.
+                // RemoveAuthenticationLabel(curActionDTO);
 
                 var activityDO = uow.PlanRepository.GetById<ActivityDO>(curActionDTO.Id);
                 if (activityDO == null)
@@ -489,7 +492,8 @@ namespace Hub.Services
                 if (authToken == null)
                 {
                     AddAuthenticationCrate(curActionDTO, activityTemplate.Terminal.AuthenticationType);
-                    AddAuthenticationLabel(curActionDTO);
+                    // TODO: FR-2703, remove this.
+                    // AddAuthenticationLabel(curActionDTO);
 
                     return true;
                 }
@@ -501,7 +505,6 @@ namespace Hub.Services
 
         public void InvalidateToken(IUnitOfWork uow, string userId, ActivityDTO curActivityDto)
         {
-            
             var activityTemplate = _activityTemplate.GetByNameAndVersion(curActivityDto.ActivityTemplate.Name, curActivityDto.ActivityTemplate.Version);
 
             if (activityTemplate == null)
@@ -520,16 +523,15 @@ namespace Hub.Services
 
                 var token = uow.AuthorizationTokenRepository.FindTokenById(activityDO.AuthorizationTokenId);
 
-                //var token = uow.AuthorizationTokenRepository.FindOne(x => x.Terminal.Id == activityTemplate.Terminal.Id && x.UserDO.Id == account.Id);
-
-                System.Diagnostics.Debug.WriteLine("Token is being invalidated.");
                 RemoveToken(uow, token);
 
                 RemoveAuthenticationCrate(curActivityDto);
-                RemoveAuthenticationLabel(curActivityDto);
+                // TODO: FR-2703, remove this.
+                // RemoveAuthenticationLabel(curActivityDto);
 
                 AddAuthenticationCrate(curActivityDto, activityTemplate.Terminal.AuthenticationType);
-                AddAuthenticationLabel(curActivityDto);
+                // TODO: FR-2703, remove this.
+                // AddAuthenticationLabel(curActivityDto);
             }
         }
 
