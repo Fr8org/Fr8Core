@@ -89,7 +89,6 @@ namespace terminalDocuSign.Actions
                         name = "MonitorAllDocuSignEvents",
                         urlToPublishTo = new Uri(new Uri(CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint")), "/terminals/terminalDocuSign/events").OriginalString                    
                     };
-
                     curDocuSignAccount.CreateDocuSignConnectProfile(monitorConnectConfiguration);
                 }
             }
