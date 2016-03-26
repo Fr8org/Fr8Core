@@ -159,7 +159,7 @@ namespace terminalGoogle.Actions
                 }
                 //Retrieving worksheet headers to make them avaialble for downstream activities
                 var selectedSpreasheetWorksheet = new FieldDTO(ConfigurationControls.SpreadsheetList.Value,
-                                                               ConfigurationControls.WorksheetList == null
+                                                               ConfigurationControls.WorksheetList.IsHidden
                                                                    ? string.Empty
                                                                    : ConfigurationControls.WorksheetList.Value);
                 var columnHeaders = await _googleApi.GetWorksheetHeadersAsync(selectedSpreasheetWorksheet.Key, selectedSpreasheetWorksheet.Value, googleAuth);
@@ -169,6 +169,7 @@ namespace terminalGoogle.Actions
                 CurrentActivityStorage.ReplaceByLabel(columnHeadersCrate);
                 SelectedSpreadsheet = selectedSpreasheetWorksheet;
             }
+            runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
         }
 
         protected override async Task RunCurrentActivity()
