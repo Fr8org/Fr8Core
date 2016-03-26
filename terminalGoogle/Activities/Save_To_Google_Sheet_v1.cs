@@ -97,9 +97,9 @@ namespace terminalGoogle.Actions
                 Error(payloadCrates, "This Action can't run without Payload Data Crate ", ActivityErrorCode.PAYLOAD_DATA_MISSING);
                 throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Unable to find any payload crate with any Manifest Type.");
             }
-            var crateStorageSerializer = ObjectFactory.GetInstance<ICrateStorageSerializer>();
+W
             //get payload crates for data
-            StandardTableDataCM standardTableCM = StandardTableDataCMTools.ExtractPayloadCrateDataToStandardTableData(crateStorageSerializer, cratesToProcess);
+            StandardTableDataCM standardTableCM = StandardTableDataCMTools.ExtractPayloadCrateDataToStandardTableData(cratesToProcess);
 
             if(standardTableCM.Table.Count > 0)
             {

@@ -12,7 +12,7 @@ namespace Data.Interfaces.Manifests.Helpers
 {
     public class StandardTableDataCMTools
     {
-        public static StandardTableDataCM ExtractPayloadCrateDataToStandardTableData(ICrateStorageSerializer storageSerializer, IEnumerable<Crate> crates)
+        public static StandardTableDataCM ExtractPayloadCrateDataToStandardTableData(IEnumerable<Crate> crates)
         {
             var tableData = new StandardTableDataCM()
             {
@@ -33,7 +33,7 @@ namespace Data.Interfaces.Manifests.Helpers
                     continue;
                 }
 
-                var item = storageSerializer.ConvertToDto(crate);
+                var item = CrateStorageSerializer.Default.ConvertToDto(crate);
 
                 var token = JToken.Parse(item.Contents.ToString());
 
