@@ -420,22 +420,22 @@ namespace HubWeb.Controllers
                     currentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing.ToString() : Data.Constants.PlanType.RunOnce.ToString();
                     return BadRequest(currentPlanType);
                 }
-                catch (ErrorResponseException exception)
+                catch (ActivityExecutionException exception)
                 {
                     //this response contains details about the error that happened on some terminal and need to be shown to client
-                    exception.ContainerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
-                    NotifyWithErrorMessage(exception, planDO, pusherChannel, exception.Message);
+                    if (exception.ContainerDTO != null)
+                    {
+                        exception.ContainerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
+                    }
 
-                    return Ok(exception.ContainerDTO);
-                }
-                catch (ActivityExecutionException aee)
-                {
-                    var errorMessage = String.Format("Failed to run activity \"{0}\". Please, make sure it is set up correctly. ", aee.FailedActivity.Label);
-                    NotifyWithErrorMessage(aee, planDO, pusherChannel, errorMessage);
+                    NotifyWithErrorMessage(exception, planDO, pusherChannel, exception.ErrorMessage);
+
+                    throw;
                 }
                 catch (Exception e)
                 {
                     NotifyWithErrorMessage(e, planDO, pusherChannel);
+                    throw;
                 }
                 finally
                 {
@@ -562,16 +562,19 @@ namespace HubWeb.Controllers
                     currentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing.ToString() : Data.Constants.PlanType.RunOnce.ToString();
                     return BadRequest(currentPlanType);
                 }
-                catch (ErrorResponseException ex)
+                catch (ActivityExecutionException exception)
                 {
-                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, $"Plan \"{planDO.Name}\" failed");
-                    ex.ContainerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
+                    if (exception.ContainerDTO != null)
+                    {
+                        exception.ContainerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
+                    }
 
+                    NotifyWithErrorMessage(exception, planDO, pusherChannel, exception.ErrorMessage);
                     throw;
                 }
                 catch (Exception ex)
                 {
-                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, $"Plan \"{planDO.Name}\" failed");
+                    NotifyWithErrorMessage(ex, planDO, pusherChannel);
                     throw;
                 }
                 finally

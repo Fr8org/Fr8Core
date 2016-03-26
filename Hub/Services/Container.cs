@@ -298,25 +298,21 @@ namespace Hub.Services
 
                 }
             }
+            catch (ArgumentNullException ane)
+            {
+                throw new ActivityExecutionException(ane.Message);
+            }
+            catch (ErrorResponseException e)
+            {
+                var curActivityDTO = GetCurrentActivity(uow, curContainerDO);
+                throw new ActivityExecutionException(e.ContainerDTO, curActivityDTO, e.Message, e);
+            }            
             catch(Exception e)
             {
-                if (curContainerDO == null || curContainerDO.CurrentPlanNode == null)
-                {
-                    throw;
-                }
+                var curActivityDTO = GetCurrentActivity(uow, curContainerDO);
+                var curContainerDTO = Mapper.Map<ContainerDO, ContainerDTO>(curContainerDO);
 
-                var curActivityId = curContainerDO.CurrentPlanNodeId.Value;
-                var curPlanNodeDO = uow.PlanRepository.GetById<PlanNodeDO>(curActivityId);
-                var curActivityDO = curPlanNodeDO as ActivityDO;
-
-                if (curActivityDO != null)
-                {
-                    throw new ActivityExecutionException(curActivityDO, e.Message, e);
-                }
-                else
-                {
-                    throw;
-                }
+                throw new ActivityExecutionException(curContainerDTO, curActivityDTO, string.Empty, e);
             }
         }
 
@@ -333,6 +329,27 @@ namespace Hub.Services
                ? containerRepository.Where(container => container.Plan.Fr8Account.Id == account.Id)
                : containerRepository.Where(container => container.Id == id && container.Plan.Fr8Account.Id == account.Id)).ToList();
 
+        }
+
+        private ActivityDTO GetCurrentActivity(IUnitOfWork uow, ContainerDO curContainerDO)
+        {
+            if (curContainerDO == null || curContainerDO.CurrentPlanNodeId == null)
+            {
+                return null;
+            }
+
+            var curActivityId = curContainerDO.CurrentPlanNodeId.Value;
+            var curPlanNodeDO = uow.PlanRepository.GetById<PlanNodeDO>(curActivityId);
+            var curActivityDO = curPlanNodeDO as ActivityDO;
+
+            if (curActivityDO != null)
+            {
+                return Mapper.Map<ActivityDO, ActivityDTO>(curActivityDO);
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }
