@@ -45,28 +45,32 @@ namespace terminalGoogleTests.Integration
             var googleSheetApi = new GoogleSheet(new GoogleIntegration());
             var spreadsheetId = await googleSheetApi.CreateSpreadsheet(newSpeadsheetName, HealthMonitor_FixtureData.NewGoogle_AuthToken_As_GoogleAuthDTO());
 
-            //run the plan
-            await plansHelper.RunPlan(thePlan.Plan.Id);
+            try
+            {
+                //run the plan
+                await plansHelper.RunPlan(thePlan.Plan.Id);
                 
-            //add asserts here
-            var googleSheets = googleSheetApi.EnumerateSpreadsheetsUris(HealthMonitor_FixtureData.NewGoogle_AuthToken_As_GoogleAuthDTO());
+                //add asserts here
+                var googleSheets = googleSheetApi.EnumerateSpreadsheetsUris(HealthMonitor_FixtureData.NewGoogle_AuthToken_As_GoogleAuthDTO());
 
-            Assert.IsNotNull(googleSheets.FirstOrDefault(x => x.Value == newSpeadsheetName),"New created spreadsheet was not found into existing google files.");
-            var spreadSheeturl = googleSheets.FirstOrDefault(x => x.Value == newSpeadsheetName).Key;
+                Assert.IsNotNull(googleSheets.FirstOrDefault(x => x.Value == newSpeadsheetName),"New created spreadsheet was not found into existing google files.");
+                var spreadSheeturl = googleSheets.FirstOrDefault(x => x.Value == newSpeadsheetName).Key;
 
-            //find spreadsheet
-            var worksheets = await googleSheetApi.GetWorksheetsAsync(spreadSheeturl, HealthMonitor_FixtureData.NewGoogle_AuthToken_As_GoogleAuthDTO());
-            Assert.IsNotNull(worksheets.FirstOrDefault(x => x.Value == "Sheet1"), "Worksheet was not found into newly created google excel file.");
-            var worksheetUri = worksheets.FirstOrDefault(x => x.Value == "Sheet1").Key;
-            var dataRows = googleSheetApi.EnumerateDataRows(spreadSheeturl, worksheetUri, HealthMonitor_FixtureData.NewGoogle_AuthToken_As_GoogleAuthDTO());
+                //find spreadsheet
+                var worksheets = await googleSheetApi.GetWorksheetsAsync(spreadSheeturl, HealthMonitor_FixtureData.NewGoogle_AuthToken_As_GoogleAuthDTO());
+                Assert.IsNotNull(worksheets.FirstOrDefault(x => x.Value == "Sheet1"), "Worksheet was not found into newly created google excel file.");
+                var worksheetUri = worksheets.FirstOrDefault(x => x.Value == "Sheet1").Key;
+                var dataRows = googleSheetApi.EnumerateDataRows(spreadSheeturl, worksheetUri, HealthMonitor_FixtureData.NewGoogle_AuthToken_As_GoogleAuthDTO());
 
-            //file should contain 11 envelopes saved
-            var numberOfEnvelopes = dataRows.ToList().Count();
-            Assert.AreNotEqual(0, numberOfEnvelopes, "Failed to read any envelope data from excel rows. Run method may failed to write data into excel file");
-            Assert.AreEqual(11, numberOfEnvelopes, "Number of readed rows/envelopes was not in the correct count");
-            
-            //cleanup. erase the sheet
-            await googleSheetApi.DeleteSpreadSheet(spreadsheetId, HealthMonitor_FixtureData.NewGoogle_AuthToken_As_GoogleAuthDTO());
+                //file should contain 11 envelopes saved
+                var numberOfEnvelopes = dataRows.ToList().Count();
+                Assert.AreNotEqual(0, numberOfEnvelopes, "Failed to read any envelope data from excel rows. Run method may failed to write data into excel file");
+                Assert.AreEqual(11, numberOfEnvelopes, "Number of readed rows/envelopes was not in the correct count");
+            }
+            finally {
+                //cleanup. erase the sheet
+                await googleSheetApi.DeleteSpreadSheet(spreadsheetId, HealthMonitor_FixtureData.NewGoogle_AuthToken_As_GoogleAuthDTO());
+            }
         }
     }
 }
