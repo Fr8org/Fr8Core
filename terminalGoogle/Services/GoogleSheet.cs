@@ -19,9 +19,9 @@ namespace terminalGoogle.Services
     {
         private readonly IGoogleIntegration _googleIntegration;
 
-        public GoogleSheet()
+        public GoogleSheet(IGoogleIntegration googleIntegration)
         {
-            _googleIntegration = ObjectFactory.GetInstance<IGoogleIntegration>();
+            _googleIntegration = googleIntegration;
         }
 
         private IEnumerable<SpreadsheetEntry> EnumerateSpreadsheets(GoogleAuthDTO authDTO)
@@ -127,6 +127,13 @@ namespace terminalGoogle.Services
             newWorksheet = service.Insert(wfeed, newWorksheet);
 
             return newWorksheet.Id.AbsoluteUri;
+        }
+
+        public async Task DeleteSpreadSheet(string spreadSheetId, GoogleAuthDTO authDTO)
+        {
+            GoogleDrive googleDrive = new GoogleDrive();
+            var driveService = await googleDrive.CreateDriveService(authDTO);
+            driveService.Files.Delete(spreadSheetId).Execute();
         }
 
         public async Task<string> CreateSpreadsheet(string spreadsheetname, GoogleAuthDTO authDTO)

@@ -30,5 +30,6 @@ namespace terminalGoogle.Interfaces
         SpreadsheetEntry FindSpreadsheet(string spreadsheetUri, GoogleAuthDTO authDTO);
         Task<string> CreateSpreadsheet(string spreadsheetname, GoogleAuthDTO authDTO);
         bool WriteData(string spreadsheetUri, string worksheetUri, StandardTableDataCM data, GoogleAuthDTO authDTO);
+        Task DeleteSpreadSheet(string spreadsheetname, GoogleAuthDTO authDTO);
     }
 }

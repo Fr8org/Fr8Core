@@ -26,7 +26,6 @@ namespace terminalGoogle.Services
         GoogleAuthorizer _googleAuth;
         public GoogleDrive()
         {
-            _googleIntegration = ObjectFactory.GetInstance<IGoogleIntegration>();
             _googleAuth = new GoogleAuthorizer();
         }
 
