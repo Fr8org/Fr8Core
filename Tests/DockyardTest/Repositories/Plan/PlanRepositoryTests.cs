@@ -34,10 +34,9 @@ namespace DockyardTest.Repositories.Plan
 
         public PlanNodeDO LoadPlan(Guid planMemberId)
         {
-
             return _planNode;
         }
-
+        
         public void Update(PlanSnapshot.Changes changes)
         {
             SubmittedChanges = changes;
