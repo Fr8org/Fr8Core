@@ -298,10 +298,6 @@ namespace Hub.Services
 
                 }
             }
-            catch (ArgumentNullException ane)
-            {
-                throw new ActivityExecutionException(ane.Message, ane);
-            }
             catch (ErrorResponseException e)
             {
                 var curActivityDTO = GetCurrentActivity(uow, curContainerDO);
@@ -312,7 +308,14 @@ namespace Hub.Services
                 var curActivityDTO = GetCurrentActivity(uow, curContainerDO);
                 var curContainerDTO = Mapper.Map<ContainerDO, ContainerDTO>(curContainerDO);
 
-                throw new ActivityExecutionException(curContainerDTO, curActivityDTO, string.Empty, e);
+                if (curActivityDTO != null)
+                {
+                    throw new ActivityExecutionException(curContainerDTO, curActivityDTO, string.Empty, e);
+                }
+                else
+                {
+                    throw;
+                }                
             }
         }
 

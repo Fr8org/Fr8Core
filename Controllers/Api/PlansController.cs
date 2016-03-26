@@ -434,7 +434,8 @@ namespace HubWeb.Controllers
                 }
                 catch (Exception e)
                 {
-                    NotifyWithErrorMessage(e, planDO, pusherChannel);
+                    var errorMessage = "An internal error has occured. Please, contact the administrator.";
+                    NotifyWithErrorMessage(e, planDO, pusherChannel, errorMessage);
                     throw;
                 }
                 finally
@@ -574,7 +575,8 @@ namespace HubWeb.Controllers
                 }
                 catch (Exception ex)
                 {
-                    NotifyWithErrorMessage(ex, planDO, pusherChannel);
+                    var errorMessage = "An internal error has occurred. Please, contact the administrator.";
+                    NotifyWithErrorMessage(ex, planDO, pusherChannel, errorMessage);
                     throw;
                 }
                 finally

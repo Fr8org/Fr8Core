@@ -16,7 +16,8 @@ namespace Hub.Exceptions
 
         private string message;
 
-        public string ErrorMessage {
+        public string ErrorMessage
+        {
             get
             {
                 return GetErrorMessage();
@@ -48,22 +49,14 @@ namespace Hub.Exceptions
 
         private string GetErrorMessage()
         {
-            if (FailedActivityDTO == null && ContainerDTO == null)
-            {
-                return Message;
-            }
-            else if (FailedActivityDTO != null && !string.IsNullOrEmpty(message))
+            if (!string.IsNullOrEmpty(message))
             {
                 return String.Format("Failed to run activity \"{0}\". {1}", FailedActivityDTO.Label, message);
             }
-            else if (FailedActivityDTO != null && string.IsNullOrEmpty(message))
-            {
-                return String.Format("Failed to run activity \"{0}\". Please, make sure it is set up correctly.", FailedActivityDTO.Label);
-            }
             else
             {
-                return string.Empty;
-            }
+                return String.Format("Failed to run activity \"{0}\". Please, make sure it is set up correctly.", FailedActivityDTO.Label);
+            }            
         }
     }
 }
