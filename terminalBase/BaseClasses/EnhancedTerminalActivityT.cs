@@ -69,11 +69,13 @@ namespace TerminalBase.BaseClasses
         // Functions
         /**********************************************************************************/
 
+
         protected EnhancedTerminalActivity(bool isAuthenticationRequired)
         {
             IsAuthenticationRequired = isAuthenticationRequired;
             UiBuilder = new UiBuilder();
-        }
+            ActivityName = GetType().Name;
+        } 
 
         /**********************************************************************************/
 
@@ -262,7 +264,7 @@ namespace TerminalBase.BaseClasses
 
                     Success();
                 }
-                catch (ActionExecutionException ex)
+                catch (ActivityExecutionException ex)
                 {
                     Error(ex.Message, ex.ErrorCode);
                 }
