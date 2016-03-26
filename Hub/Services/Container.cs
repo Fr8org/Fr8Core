@@ -300,7 +300,7 @@ namespace Hub.Services
             }
             catch (ArgumentNullException ane)
             {
-                throw new ActivityExecutionException(ane.Message);
+                throw new ActivityExecutionException(ane.Message, ane);
             }
             catch (ErrorResponseException e)
             {
