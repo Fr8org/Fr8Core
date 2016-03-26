@@ -36,8 +36,20 @@
     <DefineConstants>TRACE;DEBUG</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Moq, Version=4.2.1507.118, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Moq.4.2.1507.0118\lib\net40\Moq.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="StructureMap, Version=3.1.6.186, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\structuremap.3.1.6.186\lib\net40\StructureMap.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -48,6 +60,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Activities\Send_Via_Twilio_v1Tests.cs" />
+    <Compile Include="Fixture\FixtureData.cs" />
     <Compile Include="Fixture\HealthMonitor_FixtureData.cs" />
     <Compile Include="Integration\Send_Via_Twilio_v1Tests.cs" />
     <Compile Include="Integration\Terminal_Authentication_v1_Tests.cs" />
@@ -63,13 +77,27 @@
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Hub</Name>
     </ProjectReference>
+    <ProjectReference Include="..\terminalBase\TerminalBase.csproj">
+      <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
+      <Name>TerminalBase</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\terminalTwilio\terminalTwilio.csproj">
+      <Project>{14404298-4182-4d43-8098-5a199ed2fcaa}</Project>
+      <Name>terminalTwilio</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Tests\HealthMonitorUtility\HealthMonitorUtility.csproj">
       <Project>{459fe39a-a5cc-41d8-b06e-8fae3a1a623b}</Project>
       <Name>HealthMonitorUtility</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Tests\UtilitiesTesting\UtilitiesTesting.csproj">
+      <Project>{6b855c3f-07a9-4787-9fde-29fa567c43e2}</Project>
+      <Name>UtilitiesTesting</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

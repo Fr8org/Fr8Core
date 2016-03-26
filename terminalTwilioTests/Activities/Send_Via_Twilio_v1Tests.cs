@@ -19,8 +19,10 @@ using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using System;
 using Data.Crates;
+using UtilitiesTesting;
+using terminalTwilio;
 
-namespace terminalTwilio.Tests.Actions
+namespace terminalTwilioTests.Activities
 {
     [TestFixture]
     public class Send_Via_Twilio_v1Tests : BaseTest
@@ -59,6 +61,13 @@ namespace terminalTwilio.Tests.Actions
                 .Returns(Task.FromResult(FixtureData.TestFields()));
             ObjectFactory.Configure(cfg => cfg.For<BaseTerminalActivity>().Use(baseTerminalAction.Object));
 
+            var hubCommunicator = new Mock<IHubCommunicator>();
+            hubCommunicator.Setup(hc => hc.GetDesignTimeFieldsByDirection(
+                                                It.IsAny<ActivityDO>(), 
+                                                CrateDirection.Upstream, 
+                                                It.IsAny<AvailabilityType>(), 
+                                                It.IsAny<string>())).Returns(Task.FromResult(new FieldDescriptionsCM()));
+            ObjectFactory.Configure(cfg => cfg.For<IHubCommunicator>().Use(hubCommunicator.Object));
         }
 
         [Test]
@@ -112,10 +121,10 @@ namespace terminalTwilio.Tests.Actions
             _twilioActivity = new Send_Via_Twilio_v1();
             var crateDTO = FixtureData.CrateDTOForTwilioConfiguration();
 
-            var smsINfo = _twilioActivity.ParseSMSNumberAndMsg(crateDTO, null);
+            var smsINfo = _twilioActivity.ParseSMSNumberAndMsg(crateDTO, new PayloadDTO(Guid.Empty));
 
             Assert.AreEqual("+15005550006", smsINfo.Key);
-            Assert.AreEqual("DO-1437 test", smsINfo.Value);
+            Assert.AreEqual("Fr8 Alert: Unit Test Message For more info, visit http://fr8.co/sms", smsINfo.Value);
         }
     }
 }

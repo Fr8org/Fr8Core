@@ -44,7 +44,7 @@ namespace terminalTwilio.Tests.Fixtures
         {
             var confControls =
                 JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(
-                    "{\"Controls\": [{\"initialLabel\": \"For the SMS Number Use:\",\"upstreamSourceLabel\": null,\"valueSource\": \"specific\",\"listItems\": [],\"name\": \"Recipient\",\"required\": false,\"TextValue\": \"+15005550006\",\"label\": null,\"type\": \"TextSource\",\"selected\": false,\"events\": null,\"source\": {\"manifestType\": \"Standard Design-Time Fields\",\"label\": \"Upstream Terminal-Provided Fields\"}},{\"name\": \"SMS_Body\",\"required\": true,\"value\": \"DO-1437 test\",\"label\": \"SMS Body\",\"type\": \"TextBox\",\"selected\": false,\"events\": null,\"source\": null}]}",
+                    "{\"Controls\": [{\"initialLabel\": \"For the SMS Number Use:\",\"upstreamSourceLabel\": null,\"valueSource\": \"specific\",\"listItems\": [],\"name\": \"Recipient\",\"required\": false,\"TextValue\": \"+15005550006\",\"label\": null,\"type\": \"TextSource\",\"selected\": false,\"events\": null,\"source\": {\"manifestType\": \"Standard Design-Time Fields\",\"label\": \"Upstream Terminal-Provided Fields\"}},{\"initialLabel\": \"For the SMS Number Use:\",\"upstreamSourceLabel\": null,\"valueSource\": \"specific\",\"listItems\": [],\"name\": \"SMS_Body\",\"required\": true,\"TextValue\": \"Unit Test Message\",\"label\": \"SMS Body\",\"type\": \"TextSource\",\"selected\": false,\"events\": null,\"source\": {\"manifestType\": \"Standard Design-Time Fields\",\"label\": \"Upstream Terminal-Provided Fields\"}}]}",
                     new ControlDefinitionDTOConverter());
 
             return Crate.FromContent("Configuration_Controls", confControls);
