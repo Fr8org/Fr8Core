@@ -17,6 +17,7 @@ using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Moq;
 using System.Threading.Tasks;
+using Hub.Exceptions;
 
 namespace DockyardTest.Services
 {
@@ -37,7 +38,7 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ActivityExecutionException))]
         public async Task Execute_ContainerDoIsNull_ThrowsArgumentNullException()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -47,7 +48,7 @@ namespace DockyardTest.Services
         }
         
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ActivityExecutionException))]
         public async Task Execute_ContainerDoCurrentActivityIsNull_ThrowsArgumentNullException()
         {
             //Get ProcessDO entity from static partial class FixtureData for already prepared data

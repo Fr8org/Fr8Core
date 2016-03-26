@@ -20,7 +20,7 @@ using System.Collections.Generic;
 using Moq;
 using Newtonsoft.Json;
 using Hub.Managers;
-
+using Hub.Exceptions;
 
 namespace DockyardTest.Services
 {
@@ -226,7 +226,7 @@ namespace DockyardTest.Services
         //        }
         //
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ActivityExecutionException))]
         public async Task Execute_SetCurrentActivityNull_ThrowsException()
         {
             _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();

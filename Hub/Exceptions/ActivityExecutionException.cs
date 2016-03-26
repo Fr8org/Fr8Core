@@ -27,7 +27,7 @@ namespace Hub.Exceptions
         {
         }
 
-        public ActivityExecutionException(string errorMessage = "", Exception innerException)
+        public ActivityExecutionException(string errorMessage, Exception innerException)
             : base(errorMessage ?? string.Empty, innerException)
         {
            
