@@ -85,6 +85,22 @@ namespace Data.Control
             ListItems = new List<ListItem>();
             Type = "DropDownList";
         }
+
+        public void SelectByKey(string key)
+        {
+            SelectItem(ListItems?.FirstOrDefault(x => x.Key == key));
+        }
+
+        public void SelectByValue(string value)
+        {
+            SelectItem(ListItems?.FirstOrDefault(x => x.Value == value));
+        }
+
+        private void SelectItem(ListItem newItem)
+        {
+            selectedKey = newItem?.Key;
+            Value = newItem?.Value;
+        }
     }
 
     public class RadioButtonGroup : ControlDefinitionDTO, IContainerControl
