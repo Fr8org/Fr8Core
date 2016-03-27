@@ -249,7 +249,7 @@
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\ActivityController.cs" />
     <Compile Include="Controllers\TerminalController.cs" />
-    <Compile Include="DataTransferObjects\DocuSignAuthDTO.cs" />
+    <Compile Include="DataTransferObjects\DocuSignAuthTokenDTO.cs" />
     <Compile Include="DataTransferObjects\DocuSignEventDTO.cs" />
     <Compile Include="DataTransferObjects\DocuSignTabDTO.cs" />
     <Compile Include="Infrastructure\DataContracts\CustomField.cs" />

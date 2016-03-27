@@ -30,12 +30,14 @@ namespace terminalDocuSign.Services
         private readonly ICrateManager _crateManager;
         private readonly IDocuSignManager _docuSignManager;
         private readonly IDocuSignConnect _docuSignConnect;
+        private readonly IncidentReporter _alertReporter;
 
         private readonly string DevConnectName = "(dev) Fr8 Company DocuSign integration";
         private readonly string ProdConnectName = "Fr8 Company DocuSign integration";
 
         public DocuSignPlan()
         {
+            _alertReporter = ObjectFactory.GetInstance<IncidentReporter>();
             _hubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
             _docuSignManager = ObjectFactory.GetInstance<IDocuSignManager>();
@@ -83,9 +85,12 @@ namespace terminalDocuSign.Services
                 if (existingPlans.Count > 0)
                 {
 
-                    //search for existing MADSE plan for this DS account and deleting it
+                    //search for existing MADSE plan for this DS account and updating it
 
-                    //1 Split existing plans in obsolete and new
+
+                    // 27 march 2016 (Sergey P.)
+                    // Logic for removing obsolete plans might be removed a few weeks after this code end up in production
+                    //1 Split existing plans in obsolete/malformed and new
                     var plans = existingPlans.GroupBy
                         (val =>
                         //first condition
@@ -96,37 +101,48 @@ namespace terminalDocuSign.Services
                         _crateManager.GetStorage(val.Plan.SubPlans.ElementAt(0).Activities[0]).Where(t => t.Label == "DocuSignUserCrate").FirstOrDefault() != null)
                       .ToDictionary(g => g.Key, g => g.ToList());
 
-                    List<PlanDTO> newPlans = plans[true];
-                    List<PlanDTO> obsoletePlans = plans[false];
-
-                    //Delete obsolete plans
-                    foreach (var obsoletePlan in obsoletePlans)
+                    //removing obsolete/malformed plans
+                    if (plans.ContainsKey(false))
                     {
-                        await _hubCommunicator.DeletePlan(obsoletePlan.Plan.Id, curFr8UserId);
+                        List<PlanDTO> obsoletePlans = plans[false];
+                        foreach (var obsoletePlan in obsoletePlans)
+                        {
+                            await _hubCommunicator.DeletePlan(obsoletePlan.Plan.Id, curFr8UserId);
+                        }
                     }
 
-
-
-                    var existingPlan = newPlans.Where(
-                          a => a.Plan.SubPlans.Any(b =>
-                              _crateManager.GetStorage(b.Activities[0]).Where(t => t.Label == "DocuSignUserCrate")
-                              .FirstOrDefault().Get<StandardPayloadDataCM>().GetValues("DocuSignUserEmail").FirstOrDefault() == authTokenDTO.ExternalAccountId)).FirstOrDefault();
-
-                    if (existingPlan != null)
+                    //trying to find an existing plan for this DS account
+                    if (plans.ContainsKey(true))
                     {
-                        var firstActivity = existingPlan.Plan.SubPlans.Where(a => a.Activities.Count > 0).FirstOrDefault().Activities[0];
+                        List<PlanDTO> newPlans = plans[true];
 
-                        if (firstActivity != null)
+                        existingPlans = newPlans.Where(
+                              a => a.Plan.SubPlans.Any(b =>
+                                  _crateManager.GetStorage(b.Activities[0]).Where(t => t.Label == "DocuSignUserCrate")
+                                  .FirstOrDefault().Get<StandardPayloadDataCM>().GetValues("DocuSignUserEmail").FirstOrDefault() == authTokenDTO.ExternalAccountId)).ToList();
+
+                        if (existingPlans.Count > 1)
+                            _alertReporter.EventManager_EventMultipleMonitorAllDocuSignEventsPlansPerAccountArePresent(authTokenDTO.ExternalAccountId);
+
+                        var existingPlan = existingPlans.FirstOrDefault();
+
+                        if (existingPlan != null)
                         {
-                            await _hubCommunicator.ApplyNewToken(firstActivity.Id, Guid.Parse(authTokenDTO.Id), curFr8UserId);
-                            var existingPlanDO = Mapper.Map<PlanDO>(existingPlan.Plan);
-                            await _hubCommunicator.ActivatePlan(existingPlanDO, curFr8UserId);
-                            return true;
+                            var firstActivity = existingPlan.Plan.SubPlans.Where(a => a.Activities.Count > 0).FirstOrDefault().Activities[0];
+
+                            if (firstActivity != null)
+                            {
+                                await _hubCommunicator.ApplyNewToken(firstActivity.Id, Guid.Parse(authTokenDTO.Id), curFr8UserId);
+                                var existingPlanDO = Mapper.Map<PlanDO>(existingPlan.Plan);
+                                await _hubCommunicator.ActivatePlan(existingPlanDO, curFr8UserId);
+                                return true;
+                            }
                         }
                     }
                 }
             }
-            catch { };
+            // if anything bad happens we would like not to create a new MADSE plan
+            catch { return true; };
 
             return false;
         }

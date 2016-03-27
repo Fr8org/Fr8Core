@@ -14,6 +14,8 @@ using Data.Entities;
 using Utilities.Configuration.Azure;
 using Data.Constants;
 using Data.States;
+using Newtonsoft.Json;
+using terminalDocuSign.DataTransferObjects;
 
 namespace terminalDocuSign.Actions
 {
@@ -49,7 +51,8 @@ namespace terminalDocuSign.Actions
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                var docuSignUserCrate = Crate.FromContent("DocuSignUserCrate", new StandardPayloadDataCM(new FieldDTO("DocuSignUserEmail", authTokenDO.ExternalAccountId)));
+                var authToken = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
+                var docuSignUserCrate = Crate.FromContent("DocuSignUserCrate", new StandardPayloadDataCM(new FieldDTO("DocuSignUserEmail", authToken.Email)));
                 crateStorage.Replace(new CrateStorage(curControlsCrate, curEventSubscriptionsCrate, envelopeCrate, eventCrate, recipientCrate, docuSignUserCrate));
             }
 
