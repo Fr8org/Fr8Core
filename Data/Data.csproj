@@ -660,13 +660,9 @@
     <Compile Include="Migrations\201603191417514_Renamed_ReceiveGoogleForm_To_MonitorFormResponses.Designer.cs">
       <DependentUpon>201603191417514_Renamed_ReceiveGoogleForm_To_MonitorFormResponses.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201603062121076_Organizations_Table.cs" />
-    <Compile Include="Migrations\201603062121076_Organizations_Table.Designer.cs">
-      <DependentUpon>201603062121076_Organizations_Table.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201603071308012_UserClaims_BaseColumns.cs" />
-    <Compile Include="Migrations\201603071308012_UserClaims_BaseColumns.Designer.cs">
-      <DependentUpon>201603071308012_UserClaims_BaseColumns.cs</DependentUpon>
+    <Compile Include="Migrations\201603271818114_Organizations_Table_Check.cs" />
+    <Compile Include="Migrations\201603271818114_Organizations_Table_Check.Designer.cs">
+      <DependentUpon>201603271818114_Organizations_Table_Check.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -1158,11 +1154,8 @@
     <EmbeddedResource Include="Migrations\201603191417514_Renamed_ReceiveGoogleForm_To_MonitorFormResponses.resx">
       <DependentUpon>201603191417514_Renamed_ReceiveGoogleForm_To_MonitorFormResponses.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201603062121076_Organizations_Table.resx">
-      <DependentUpon>201603062121076_Organizations_Table.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201603071308012_UserClaims_BaseColumns.resx">
-      <DependentUpon>201603071308012_UserClaims_BaseColumns.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201603271818114_Organizations_Table_Check.resx">
+      <DependentUpon>201603271818114_Organizations_Table_Check.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

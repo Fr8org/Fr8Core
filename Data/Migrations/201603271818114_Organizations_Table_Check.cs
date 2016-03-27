@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class Organizations_Table : DbMigration
+    public partial class Organizations_Table_Check : DbMigration
     {
         public override void Up()
         {
@@ -19,6 +19,9 @@ namespace Data.Migrations
                 .PrimaryKey(t => t.Id);
             
             AddColumn("dbo.Users", "OrganizationId", c => c.Int());
+            AddColumn("dbo.AspNetUserClaims", "LastUpdated", c => c.DateTimeOffset(precision: 7));
+            AddColumn("dbo.AspNetUserClaims", "CreateDate", c => c.DateTimeOffset(precision: 7));
+            AddColumn("dbo.AspNetUserClaims", "Discriminator", c => c.String(nullable: false, maxLength: 128));
             CreateIndex("dbo.Users", "OrganizationId");
             AddForeignKey("dbo.Users", "OrganizationId", "dbo.Organizations", "Id");
         }
@@ -27,6 +30,9 @@ namespace Data.Migrations
         {
             DropForeignKey("dbo.Users", "OrganizationId", "dbo.Organizations");
             DropIndex("dbo.Users", new[] { "OrganizationId" });
+            DropColumn("dbo.AspNetUserClaims", "Discriminator");
+            DropColumn("dbo.AspNetUserClaims", "CreateDate");
+            DropColumn("dbo.AspNetUserClaims", "LastUpdated");
             DropColumn("dbo.Users", "OrganizationId");
             DropTable("dbo.Organizations");
         }

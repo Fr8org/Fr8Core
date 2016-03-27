@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class UserClaims_BaseColumns : IMigrationMetadata
+    public sealed partial class Organizations_Table_Check : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(UserClaims_BaseColumns));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(Organizations_Table_Check));
         
         string IMigrationMetadata.Id
         {
-            get { return "201603071308012_UserClaims_BaseColumns"; }
+            get { return "201603271818114_Organizations_Table_Check"; }
         }
         
         string IMigrationMetadata.Source
