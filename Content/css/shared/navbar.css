@@ -159,3 +159,14 @@
 .navbar .container {
     position: relative;
 }
+
+.navbar #logo {
+    color: #26A599;
+    font-size: 44px;
+    font-family: 'Roboto Condensed', 'Arial', sans-serif;
+    font-weight: 700;
+}
+
+.navbar #logo-8 {
+    color: dimgray;
+}
