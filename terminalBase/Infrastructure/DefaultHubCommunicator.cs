@@ -247,9 +247,9 @@ namespace TerminalBase.Infrastructure
             };
 
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                    + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "ManageAuthToken/apply";
+                    + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/ManageAuthToken/apply";
             var uri = new Uri(url);
-            await _restfulServiceClient.PostAsync<ManageAuthToken_Apply[]>(uri, new ManageAuthToken_Apply[] { applyToken }, null, await GetHMACHeader(uri, userId));
+            await _restfulServiceClient.PostAsync<ManageAuthToken_Apply[]>(uri, new ManageAuthToken_Apply[] { applyToken }, null, await GetHMACHeader(uri, userId, applyToken));
         }
 
         public async Task<ActivityDTO> ConfigureActivity(ActivityDTO activityDTO, string userId)
