@@ -1,24 +1,18 @@
 
 using System;
 using System.Linq;
-using System.Net.Mail;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.UI.WebControls;
-using Microsoft.AspNet.Identity;
-using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using Data.States;
+using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Services;
+using HubWeb.ViewModels;
+using StructureMap;
 using Utilities;
 using Utilities.Logging;
-using HubWeb.ViewModels;
-using Data.Migrations;
-using Hub.Interfaces;
-using LoginStatus = Utilities.LoginStatus;
 
 namespace HubWeb.Controllers
 {
