@@ -17,7 +17,8 @@ module dockyard.tests.utils.fixtures {
             events: [],
             value: null,
             errorMessage: null,
-            isFocused: false
+            isFocused: false,
+            isHidden:false
         };
 
         public static textField: model.TextBox = {
@@ -29,7 +30,8 @@ module dockyard.tests.utils.fixtures {
             errorMessage: null,
             isFocused: false,
             value: 'test',
-            label: 'test'
+            label: 'test',
+            isHidden: false
         };
 
         public static textBlock: model.TextBlock = new model.TextBlock('<p>teststs</p>', 'well well-lg');
@@ -51,7 +53,8 @@ module dockyard.tests.utils.fixtures {
             events: [],
             value: 'value3',
             errorMessage: null,
-            selectedKey: 'test3'
+            selectedKey: 'test3',
+            isHidden: false
         };
 
         public static radioButtonGroupField: model.RadioButtonGroup = {
@@ -67,6 +70,7 @@ module dockyard.tests.utils.fixtures {
                     events: null,
                     errorMessage: null,
                     isFocused: false,
+                    isHidden: false,
                     controls: [
                         {
                             name: 'SMS_Number',
@@ -76,7 +80,8 @@ module dockyard.tests.utils.fixtures {
                             type: "TextBox",
                             events: null,
                             errorMessage: null,
-                            isFocused: false
+                            isFocused: false,
+                            isHidden: false
                         }
                     ]
                 },
@@ -90,6 +95,7 @@ module dockyard.tests.utils.fixtures {
                     events: null,
                     errorMessage: null,
                     isFocused: false,
+                    isHidden: false,
                     controls: [
                         {
                             name: 'SMS_Number2',
@@ -100,6 +106,7 @@ module dockyard.tests.utils.fixtures {
                             events: null,
                             isFocused: false,
                             errorMessage: null,
+                            isHidden: false
                         }
                     ]
                 }
@@ -111,6 +118,7 @@ module dockyard.tests.utils.fixtures {
             type: "RadioButtonGroup",
             errorMessage: null,
             isFocused: false,
+            isHidden: false,
             events: null
         };
 
@@ -135,6 +143,7 @@ module dockyard.tests.utils.fixtures {
             textValue: null,
             errorMessage: null,
             isFocused: false,
+            isHidden: false,
             source: {
                 manifestType: 'testManifest',
                 label: 'testLabel',

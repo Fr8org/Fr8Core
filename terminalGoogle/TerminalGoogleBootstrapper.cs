@@ -37,6 +37,7 @@ namespace terminalGoogle
         public static void ConfigureLive(ConfigurationExpression configurationExpression)
         {
             configurationExpression.For<IGoogleIntegration>().Use<GoogleIntegration>();
+            configurationExpression.For<IGoogleSheet>().Use<GoogleSheet>();
             configurationExpression.For<ICrateManager>().Use<CrateManager>();
         }
 

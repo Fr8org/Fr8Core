@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Data.Entity.Core;
 using System.Data.Entity.Core.Objects;
-using System.Data.Entity.Core.Objects.DataClasses;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
 
@@ -31,47 +27,93 @@ namespace Data.Repositories.Plan
             Plans = new PlansRepository(uow);
         }
 
-        public PlanNodeDO LoadPlan(Guid planMemberId)
+        private PlanNodeDO LoadPlanByPlanId(Guid planId)
         {
-            var seed = PlanNodes.GetQuery().FirstOrDefault(x => x.Id == planMemberId);
-
-            if (seed == null)
-            {
-                return null;
-                throw new KeyNotFoundException("Unable to find plan not with id = " + planMemberId);
-            }
-
             var lookup = new Dictionary<Guid, PlanNodeDO>();
 
-            var plans = Plans.GetQuery().Where(x => x.Id == seed.RootPlanNodeId).Include(x=>x.Fr8Account).AsEnumerable().Select(x => x.Clone()).ToArray();
-            var actions = ActivityRepository.GetQuery().Where(x => x.RootPlanNodeId == seed.RootPlanNodeId).Include(x => x.Fr8Account).AsEnumerable().Select(x => x.Clone()).ToArray();
-            var subPlans = SubPlans.GetQuery().Where(x => x.RootPlanNodeId == seed.RootPlanNodeId).Include(x => x.Fr8Account).AsEnumerable().Select(x => x.Clone()).ToArray();
+            var plans = Plans.GetQuery().Where(x => x.Id == planId).Include(x => x.Fr8Account).AsEnumerable().Select(x => x.Clone()).ToArray();
+
+            if (plans.Length == 0)
+            {
+                return null;
+                //throw new KeyNotFoundException("Unable to find plan not with id = " + planId);
+            }
+
+            var actions = ActivityRepository.GetQuery().Where(x => x.RootPlanNodeId == planId).Include(x => x.Fr8Account).AsEnumerable().Select(x => x.Clone()).ToArray();
+            var subPlans = SubPlans.GetQuery().Where(x => x.RootPlanNodeId == planId).Include(x => x.Fr8Account).AsEnumerable().Select(x => x.Clone()).ToArray();
+
+            if (actions.Length == 0 && subPlans.Length == 0)
+            {
+                var nodes = PlanNodes.GetQuery().Where(x => x.RootPlanNodeId == planId).Include(x => x.Fr8Account).AsEnumerable().Select(x => x.Clone()).ToArray();
+
+                if (nodes.Length == 0)
+                {
+                    throw new NotSupportedException($"Completely empty plans like {planId} are not supported");
+                }
+
+                foreach (var planNodeDo in nodes)
+                {
+                    lookup[planNodeDo.Id] = planNodeDo;
+                }
+            }
+            else
+            {
+                foreach (var planNodeDo in actions)
+                {
+                    lookup[planNodeDo.Id] = planNodeDo;
+                }
+
+                foreach (var planNodeDo in subPlans)
+                {
+                    lookup[planNodeDo.Id] = planNodeDo;
+                }
+            }
 
             foreach (var planNodeDo in plans)
             {
                 lookup[planNodeDo.Id] = planNodeDo;
             }
-
-            foreach (var planNodeDo in actions)
-            {
-                lookup[planNodeDo.Id] = planNodeDo;
-            }
-
-            foreach (var planNodeDo in subPlans)
-            {
-                lookup[planNodeDo.Id] = planNodeDo;
-            }
-
+            
             PlanNodeDO root = null;
+            var pendingNodes = new Stack<KeyValuePair<Guid, PlanNodeDO>>();
 
             foreach (var planNodeDo in lookup)
             {
+                pendingNodes.Push(planNodeDo);
+            }
+
+            while (pendingNodes.Count > 0)
+            {
+                var planNodeDo = pendingNodes.Pop();
+
                 PlanNodeDO parent;
 
-                if (planNodeDo.Value.ParentPlanNodeId == null || !lookup.TryGetValue(planNodeDo.Value.ParentPlanNodeId.Value, out parent))
+                if (planNodeDo.Value.ParentPlanNodeId == null)
                 {
                     root = planNodeDo.Value;
                     continue;
+                }
+
+                //We are... 
+                //We are...
+                //We are loading the broken plan
+                if (!lookup.TryGetValue(planNodeDo.Value.ParentPlanNodeId.Value, out parent))
+                {
+                    var node = PlanNodes.GetQuery().Include(x => x.Fr8Account).FirstOrDefault(x => x.Id == planNodeDo.Value.ParentPlanNodeId.Value);
+
+                    //This plan... 
+                    //This plan...
+                    //Was broken from the start
+                    if (node == null)
+                    {
+                        throw new Exception($"Plan {planId} is completely broken. It has node {planNodeDo.Key} that references non existing parent {planNodeDo.Value.ParentPlanNodeId.Value}");
+                    }
+
+                    node = node.Clone();
+
+                    lookup[node.Id] = node;
+                    parent = node;
+                    pendingNodes.Push(new KeyValuePair<Guid, PlanNodeDO>(node.Id, node));
                 }
 
                 planNodeDo.Value.ParentPlanNode = parent;
@@ -79,6 +121,24 @@ namespace Data.Repositories.Plan
             }
 
             return root;
+        }
+
+        public PlanNodeDO LoadPlan(Guid planMemberId)
+        {
+            var seed = PlanNodes.GetQuery().FirstOrDefault(x => x.Id == planMemberId);
+
+            if (seed == null)
+            {
+                return null;
+                //throw new KeyNotFoundException("Unable to find plan that has memeber with id = " + planMemberId);
+            }
+
+            if (seed.RootPlanNodeId == null)
+            {
+                throw new InvalidOperationException($"PlanNodes table is unconsistent. Node {planMemberId} doesn't have RootPlanNodeId set.");
+            }
+
+            return LoadPlanByPlanId(seed.RootPlanNodeId.Value);
         }
 
         public virtual void Update(PlanSnapshot.Changes changes)

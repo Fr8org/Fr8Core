@@ -157,6 +157,7 @@
     <Compile Include="Asserts\AssertEx - Payload.cs" />
     <Compile Include="BaseTest.cs" />
     <Compile Include="ClassMethod.cs" />
+    <Compile Include="Fixtures\FixtureData - ActivityDTO.cs" />
     <Compile Include="Fixtures\FixtureData - AuthorizationToken.cs" />
     <Compile Include="Fixtures\FixtureData - Activity2.cs" />
     <Compile Include="Fixtures\FixtureData - ActionDTO.cs" />

@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Constants;
 using Data.Control;
 using Data.Crates;
 using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
@@ -52,7 +54,7 @@ namespace terminaBaselTests.BaseClasses
             return base.GetConfigurationRequestType();
         }
 
-        protected override Task Initialize()
+        protected override Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
             CalledMethods |= CalledMethod.Initialize;
             CheckBasicPropeties();
@@ -60,7 +62,7 @@ namespace terminaBaselTests.BaseClasses
             return Task.FromResult(0);
         }
 
-        protected override Task Configure()
+        protected override Task Configure(RuntimeCrateManager runtimeCrateManager)
         {
             CalledMethods |= CalledMethod.Configure;
             CheckBasicPropeties();
@@ -166,13 +168,13 @@ namespace terminaBaselTests.BaseClasses
         {
         }
 
-        protected override Task Initialize()
+        protected override Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
             OnInitialize?.Invoke(ConfigurationControls);
             return Task.FromResult(0);
         }
 
-        protected override Task Configure()
+        protected override Task Configure(RuntimeCrateManager runtimeCrateManager)
         {
             OnConfigure?.Invoke(ConfigurationControls);
             return Task.FromResult(0);
@@ -199,12 +201,12 @@ namespace terminaBaselTests.BaseClasses
         {
         }
 
-        protected override Task Initialize()
+        protected override Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
             return Task.FromResult(0);
         }
 
-        protected override Task Configure()
+        protected override Task Configure(RuntimeCrateManager runtimeCrateManager)
         {
             return Task.FromResult(0);
         }

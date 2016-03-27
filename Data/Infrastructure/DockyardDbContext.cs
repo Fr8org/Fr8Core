@@ -18,6 +18,7 @@ using Utilities.Configuration.Azure;
 
 namespace Data.Infrastructure
 {
+    [DbConfigurationType(typeof(Fr8DbConfiguration))]
     public class DockyardDbContext : IdentityDbContext<IdentityUser>, IDBContext
     {
         public static string DefaultConnectionStringName
@@ -51,7 +52,6 @@ namespace Data.Infrastructure
         public DockyardDbContext()
             : base(GetEFConnectionDetails())
         {
-            
             Database.SetInitializer(new MigrateDatabaseToLatestVersion<DockyardDbContext, Data.Migrations.MigrationConfiguration>());
         }
 
