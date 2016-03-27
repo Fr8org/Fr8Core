@@ -167,17 +167,6 @@
                     </li>
                 }
 
-                @if (Html.HasUserClaim(CustomClaimTypes.ManageInternalUsers))
-                {
-                    <li class="menu-dropdown classic-menu-dropdown pull-right" style="position: absolute; right:0;">
-                        <a data-toggle="dropdown" href="#" class="dropdown-toggle">Manage Internal Users <i class="fa fa-angle-down"></i></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="#/form-tools">Create Accounts</a></li>
-                            <li><a href="#/accounts">Manage Fr8 Accounts</a></li>
-                        </ul>
-                    </li>
-                }
-
 			    @if (User.IsInRole("Guest"))
                 {
                     <li class="visible-xs">

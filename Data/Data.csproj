@@ -799,7 +799,6 @@
     <Compile Include="Repositories\ProfileNodeRepository.cs" />
     <Compile Include="Repositories\UserStatusRepository.cs" />
     <Compile Include="States\AccessLevel.cs" />
-    <Compile Include="States\CustomClaimTypes.cs" />
     <Compile Include="States\PlanVisibility.cs" />
     <Compile Include="States\SubscriptionState.cs" />
     <Compile Include="States\Templates\_SubscriptionStateTemplate.cs" />

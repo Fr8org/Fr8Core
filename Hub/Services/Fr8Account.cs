@@ -299,12 +299,6 @@ namespace Hub.Services
             uow.UserRepository.UpdateUserCredentials(userDO, userName, password);
             uow.AspNetUserRolesRepository.AssignRoleToUser(roleID, userDO.Id);
 
-            if (organizationDO != null)
-            {
-                //create manage internal users custom claim
-                uow.AspNetUserClaimsRepository.CreateNewClaim(userDO.Id, CustomClaimTypes.ManageInternalUsers ,organizationDO.Id.ToString());
-            }
-            
             return userDO;
         }
 
