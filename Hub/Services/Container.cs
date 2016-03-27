@@ -206,11 +206,13 @@ namespace Hub.Services
 
         public async Task Run(IUnitOfWork uow, ContainerDO curContainerDO)
         {
+            if (curContainerDO == null)
+            {
+                throw new ArgumentNullException("ContainerDO is null");
+            }
+            
             try
             {
-                if (curContainerDO == null)
-                    throw new ArgumentNullException("ContainerDO is null");
-
                 //if payload already has operational state create we shouldn't create another
                 if (!HasOperationalStateCrate(curContainerDO))
                 {
@@ -306,10 +308,10 @@ namespace Hub.Services
             catch(Exception e)
             {
                 var curActivityDTO = GetCurrentActivity(uow, curContainerDO);
-                var curContainerDTO = Mapper.Map<ContainerDO, ContainerDTO>(curContainerDO);
-
+                
                 if (curActivityDTO != null)
                 {
+                    var curContainerDTO = Mapper.Map<ContainerDO, ContainerDTO>(curContainerDO);
                     throw new ActivityExecutionException(curContainerDTO, curActivityDTO, string.Empty, e);
                 }
                 else
@@ -331,7 +333,6 @@ namespace Hub.Services
             return (id == null
                ? containerRepository.Where(container => container.Plan.Fr8Account.Id == account.Id)
                : containerRepository.Where(container => container.Id == id && container.Plan.Fr8Account.Id == account.Id)).ToList();
-
         }
 
         private ActivityDTO GetCurrentActivity(IUnitOfWork uow, ContainerDO curContainerDO)
