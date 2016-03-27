@@ -157,6 +157,7 @@ namespace terminalDocuSign.Actions
             {
                 return NeedsAuthenticationError(payloadCrates);
             }
+
             var result = ValidateActivityInternal(activityDO);
             if (result != ValidationResult.Success)
             {

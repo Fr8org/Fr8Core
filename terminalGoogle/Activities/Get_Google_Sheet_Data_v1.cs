@@ -30,7 +30,7 @@ namespace terminalGoogle.Actions
             _google = new GoogleSheet();
         }
 
-        protected override bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
+        public override bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
         {
             if (authTokenDO == null) return true;
             if (!base.NeedsAuthentication(authTokenDO))
