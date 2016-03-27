@@ -247,7 +247,6 @@ namespace Hub.Services
                         case ActivityResponse.Null://let's assume this is success for now
 
 
-
                             break;
                         case ActivityResponse.RequestSuspend:
                             curContainerDO.ContainerState = ContainerState.Pending;
