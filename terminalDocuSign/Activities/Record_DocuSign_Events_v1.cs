@@ -26,7 +26,10 @@ namespace terminalDocuSign.Actions
         /// <returns></returns>
         public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            CheckAuthentication(authTokenDO);
+            if (CheckAuthentication(curActivityDO, authTokenDO))
+            {
+                return curActivityDO;
+            }
 
             return await ProcessConfigurationRequest(curActivityDO, x => ConfigurationRequestType.Initial,authTokenDO);
         }

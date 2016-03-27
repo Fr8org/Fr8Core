@@ -43,7 +43,10 @@ namespace terminalGoogle.Actions
 
         public override Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            CheckAuthentication(authTokenDO);
+            if (CheckAuthentication(curActivityDO, authTokenDO))
+            {
+                return Task.FromResult(curActivityDO);
+            }
 
             return base.Configure(curActivityDO, authTokenDO);
         }
