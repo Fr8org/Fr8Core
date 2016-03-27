@@ -141,8 +141,8 @@ namespace terminalDocuSign.Services
                     }
                 }
             }
-            // if anything bad happens we would like not to create a new MADSE plan
-            catch { return true; };
+            // if anything bad happens we would like not to create a new MADSE plan and fail loudly
+            catch (Exception exc) { throw new ApplicationException("Couldn't update an existing Monitor_All_DocuSign_Events plan", exc); };
 
             return false;
         }
