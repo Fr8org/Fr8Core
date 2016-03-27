@@ -75,28 +75,28 @@ namespace HealthMonitor.Utility
 
         private static bool CheckEmail(Pop3Client client, string expectedFromAddr, string expectedSubject, DateTime startTime, bool deleteMailOnSuccess = false)
         {
-            Debug.WriteLine("Email Assert: start time: " + startTime.ToLongTimeString());
+            Console.WriteLine("Email Assert: start time: " + startTime.ToLongTimeString());
             MessageHeader msg = null;
             int messageCount = client.GetMessageCount();
             for (int i = messageCount; i > 0; i--)
             {
                 msg = client.GetMessageHeaders(i);
-                Debug.Write($"Message: {msg.DateSent} {msg.Subject} ");
+                Console.Write($"Message: {msg.DateSent} {msg.Subject} ");
                 if (ValidateTime(RecentMsgThreshold, startTime, msg.DateSent))
                 {
                     if (ValidateConditions(expectedFromAddr, expectedSubject, msg))
                     {
-                        Debug.Write("Match" + Environment.NewLine);
+                        Console.Write("Match" + Environment.NewLine);
                         if(deleteMailOnSuccess)
                         {
                             client.DeleteMessage(i);
                         }
                         return true;
                     }
-                }
+                }   
                 else
                 {
-                    Debug.Write("Wrong time" + Environment.NewLine);
+                    Console.Write("Wrong time" + Environment.NewLine);
                     return false;
                 }
             }
