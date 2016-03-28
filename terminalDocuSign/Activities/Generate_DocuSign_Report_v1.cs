@@ -191,7 +191,10 @@ namespace terminalDocuSign.Actions
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payload = await GetPayload(curActivityDO, containerId);
-            CheckAuthentication(authTokenDO);
+            if (NeedsAuthentication(authTokenDO))
+            {
+                return NeedsAuthenticationError(payload);
+            }
 
             return Success(payload);
         }
@@ -421,11 +424,10 @@ namespace terminalDocuSign.Actions
         protected override async Task<ActivityDO> InitialConfigurationResponse(
             ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            if (NeedsAuthentication(authTokenDO))
+            if (CheckAuthentication(curActivityDO, authTokenDO))
             {
-                throw new ApplicationException("No AuthToken provided.");
+                return curActivityDO;
             }
-
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {

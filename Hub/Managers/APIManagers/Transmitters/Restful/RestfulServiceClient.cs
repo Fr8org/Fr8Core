@@ -14,6 +14,8 @@ using System.Net;
 using System.Globalization;
 using System.IO;
 using Data.Interfaces.DataTransferObjects;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Hub.Managers.APIManagers.Transmitters.Restful
 {

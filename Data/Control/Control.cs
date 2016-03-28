@@ -7,6 +7,7 @@ using Data.Crates;
 using Data.Helpers;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using Data.States;
 using Newtonsoft.Json;
 
 namespace Data.Control
@@ -51,6 +52,7 @@ namespace Data.Control
         public const string CrateChooser = "CrateChooser";
         public const string ContainerTransition = "ContainerTransition";
         public const string ControlContainer = "ControlContainer";
+        public const string ControlList = "ControlList";
     }
 
     public class CheckBox : ControlDefinitionDTO
@@ -82,6 +84,22 @@ namespace Data.Control
         {
             ListItems = new List<ListItem>();
             Type = "DropDownList";
+        }
+
+        public void SelectByKey(string key)
+        {
+            SelectItem(ListItems?.FirstOrDefault(x => x.Key == key));
+        }
+
+        public void SelectByValue(string value)
+        {
+            SelectItem(ListItems?.FirstOrDefault(x => x.Value == value));
+        }
+
+        private void SelectItem(ListItem newItem)
+        {
+            selectedKey = newItem?.Key;
+            Value = newItem?.Value;
         }
     }
 
@@ -425,10 +443,8 @@ namespace Data.Control
             var deepestLoop = operationalState.Loops.OrderByDescending(l => l.Level).FirstOrDefault(l => !l.BreakSignalReceived && l.Label == crate.Label && l.CrateManifest == crate.ManifestType.Type);
             if (deepestLoop != null) //this is a loop related data request
             {
-                //find current element
-                var dataList = Fr8ReflectionHelper.FindFirstArray(crate.Get());
                 //we will search requested field in current element
-                searchArea = dataList[deepestLoop.Index];
+                searchArea = GetDataListItem(crate, deepestLoop.Index);
             }
             else
             {
@@ -444,20 +460,14 @@ namespace Data.Control
             return fieldMatch;
         }
 
-        /// <summary>
-        /// Extracts crate with specified label and ManifestType = Standard Design Time,
-        /// then extracts field with specified fieldKey.
-        /// </summary>
-        private string ExtractPayloadFieldValue(ICrateStorage payloadCrateStorage, bool ignoreCase)
+        private object GetDataListItem(Crate crate, int index)
         {
-            var fieldValues = payloadCrateStorage.CratesOfType<StandardPayloadDataCM>().SelectMany(x => x.Content.GetValues(selectedKey, ignoreCase))
-                .Where(s => !string.IsNullOrEmpty(s))
-                .ToArray();
-
-            if (fieldValues.Length > 0)
-                return fieldValues[0];
-
-            throw new ApplicationException(string.Format("No field found with specified key: {0}.", selectedKey));
+            var tableData = crate.ManifestType.Id == (int)MT.StandardTableData ? crate.Get<StandardTableDataCM>() : null;
+            if (tableData != null)
+            {
+                return tableData.FirstRowHeaders ? tableData.Table[index + 1] : tableData.Table[index];
+            }
+            return Fr8ReflectionHelper.FindFirstArray(crate.Get())[index];
         }
     }
 
@@ -527,6 +537,9 @@ namespace Data.Control
         [JsonProperty("requestUpstream")]
         public bool RequestUpstream { get; set; }
 
+        [JsonProperty("availabilityType")]
+        public AvailabilityType AvailabilityType { get; set; }
+
         public FieldSourceDTO()
         {
         }
@@ -569,6 +582,49 @@ namespace Data.Control
 
         public ControlEvent()
         {
+        }
+    }
+
+    public class ControlList : ControlDefinitionDTO
+    {
+        [JsonProperty("controlGroups")]
+        public IList<IList<ControlDefinitionDTO>> ControlGroups { get; }
+
+        [JsonProperty("templateContainer")]
+        public ListTemplate TemplateContainer { get; set; }
+
+        [JsonProperty("addControlGroupButtonText")]
+        public string AddControlGroupButtonText { get; set; }
+        [JsonProperty("noDataMessage")]
+        public string NoDataMessage { get; set; }
+
+        public ControlList()
+        {
+            ControlGroups = new List<IList<ControlDefinitionDTO>>();
+            Type = ControlTypes.ControlList;
+        }
+
+        public ControlList(ListTemplate Template) : this()
+        {
+            this.TemplateContainer = Template;
+        }
+    }
+
+    public class ListTemplate : IContainerControl, IControlDefinition
+    {
+        [JsonProperty("template")]
+        public IList<ControlDefinitionDTO> Template { get; }
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        public ListTemplate()
+        {
+            Template = new List<ControlDefinitionDTO>();
+        }
+
+        public IEnumerable<IControlDefinition> EnumerateChildren()
+        {
+            return Template;
         }
     }
 

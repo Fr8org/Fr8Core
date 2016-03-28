@@ -16,10 +16,7 @@ module dockyard.directives.controlContainer {
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
     export function ControlContainer(): ng.IDirective {
 
-
-        var controller = ['$scope', '$compile', '$element', '$timeout', '$modal', ($scope: IControlContainerScope,
-            $compile: ng.ICompileService, $element: ng.IAugmentedJQuery, $timeout: ng.ITimeoutService, $modal: any) => {
-
+        var controller = ['$scope', '$modal', ($scope: IControlContainerScope, $modal: any) => {
             var triggerChange = () => {
                 if ($scope.change != null && angular.isFunction($scope.change)) {
                     $scope.change()($scope.field);
@@ -61,19 +58,6 @@ module dockyard.directives.controlContainer {
     }
 
     app.directive('controlContainer', ControlContainer);
-
-    app.directive('delayedControl', ['$compile', ($compile: ng.ICompileService) => ({
-        scope: {
-            currentAction: '=',
-            field: '=',
-            plan: '='
-        },
-        template: '',
-        link: (scope: ng.IScope,elem: ng.IAugmentedJQuery,attr: ng.IAttributes) => {
-            elem.append("<configuration-control plan='plan' current-action='currentAction'' field='field'></configuration-control>");
-            $compile(elem.contents())(scope);
-        }
-    })]);
 
     app.controller('ControlContainer__MetaDescSelectionController', ['$scope', '$modalInstance', ($scope: any, $modalInstance: any): void => {
 

@@ -98,7 +98,7 @@ namespace terminalFr8Core.Actions
                 currentConfControls.Controls.RemoveAll(c => c.Name == "url_text");
                 currentConfControls.Controls.Add(new TextBlock
                 {
-                    CssClass = "btn btn-danger",
+                    CssClass = "well",
                     Value = "New plan is generated for this operation, you can check this plan at: "+
 #if DEBUG
                     "http://localhost:30643" +
@@ -107,7 +107,7 @@ namespace terminalFr8Core.Actions
 #elif RELEASE
                     "http://www.fr8.co" +
 #endif
-                    "/dashboard#/plans/" + createdPlan.Plan.Id+ "/builder",
+                    "/dashboard#/plans/" + createdPlan.Plan.Id+ "/builder?kioskMode=true",
                     Name = "url_text"
                 });
             }

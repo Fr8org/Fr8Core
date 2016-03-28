@@ -21,7 +21,6 @@ using Moq;
 using Newtonsoft.Json;
 using Hub.Managers;
 
-
 namespace DockyardTest.Services
 {
     [TestFixture]

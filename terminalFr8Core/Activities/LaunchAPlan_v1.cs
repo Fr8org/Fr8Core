@@ -93,8 +93,6 @@ namespace terminalFr8Core.Actions
                 AddInfoText(curActivityDO, "There has been an error while processing your request", true);
             }
 
-
-
             return curActivityDO;
         }
 

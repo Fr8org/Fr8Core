@@ -69,27 +69,34 @@ namespace TerminalBase.BaseClasses
         // Functions
         /**********************************************************************************/
 
+
         protected EnhancedTerminalActivity(bool isAuthenticationRequired)
         {
             IsAuthenticationRequired = isAuthenticationRequired;
             UiBuilder = new UiBuilder();
-        }
+            ActivityName = GetType().Name;
+        } 
 
         /**********************************************************************************/
 
-        private void AuthorizeIfNecessary(AuthorizationTokenDO authTokenDO)
+        private bool AuthorizeIfNecessary(ActivityDO activityDO, AuthorizationTokenDO authTokenDO)
         {
             if (IsAuthenticationRequired)
             {
-                CheckAuthentication(authTokenDO);
+                return CheckAuthentication(activityDO, authTokenDO);
             }
+
+            return false;
         }
 
         /**********************************************************************************/
 
         public sealed override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            AuthorizeIfNecessary(authTokenDO);            
+            if (AuthorizeIfNecessary(curActivityDO, authTokenDO))
+            {
+                return curActivityDO;
+            }
 
             AuthorizationToken = authTokenDO;
             CurrentActivity = curActivityDO;
@@ -101,15 +108,16 @@ namespace TerminalBase.BaseClasses
                 CurrentActivityStorage = storage;
 
                 var configurationType = GetConfigurationRequestType();
+                var runtimeCrateManager = new RuntimeCrateManager(CurrentActivityStorage, CurrentActivity.Label);
 
                 switch (configurationType)
                 {
                     case ConfigurationRequestType.Initial:
-                        await InitialConfiguration();
+                        await InitialConfiguration(runtimeCrateManager);
                         break;
 
                     case ConfigurationRequestType.Followup:
-                        await FollowupConfiguration();
+                        await FollowupConfiguration(runtimeCrateManager);
                         break;
 
                     default:
@@ -132,27 +140,27 @@ namespace TerminalBase.BaseClasses
         
         /**********************************************************************************/
 
-        private async Task InitialConfiguration()
+        private async Task InitialConfiguration(RuntimeCrateManager runtimeCrateManager)
         {
             ConfigurationControls = CrateConfigurationControls();
             CurrentActivityStorage.Clear();
 
             CurrentActivityStorage.Add(Crate.FromContent(ConfigurationControlsLabel, ConfigurationControls, AvailabilityType.Configuration));
 
-            await Initialize();
+            await Initialize(runtimeCrateManager);
 
             SyncConfControlsBack();
         }
 
         /**********************************************************************************/
 
-        private async Task FollowupConfiguration()
+        private async Task FollowupConfiguration(RuntimeCrateManager runtimeCrateManager)
         {
             SyncConfControls();
 
             if (await Validate())
             {
-                await Configure();
+                await Configure(runtimeCrateManager);
             }
 
             SyncConfControlsBack();
@@ -162,7 +170,10 @@ namespace TerminalBase.BaseClasses
 
         public sealed override async Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            AuthorizeIfNecessary(authTokenDO);
+            if (AuthorizeIfNecessary(curActivityDO, authTokenDO))
+            {
+                return curActivityDO;
+            }
 
             AuthorizationToken = authTokenDO;
             CurrentActivity = curActivityDO;
@@ -261,7 +272,7 @@ namespace TerminalBase.BaseClasses
 
                     Success();
                 }
-                catch (ActionExecutionException ex)
+                catch (ActivityExecutionException ex)
                 {
                     Error(ex.Message, ex.ErrorCode);
                 }
@@ -326,8 +337,8 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        protected abstract Task Initialize();
-        protected abstract Task Configure();
+        protected abstract Task Initialize(RuntimeCrateManager runtimeCrateManager);
+        protected abstract Task Configure(RuntimeCrateManager runtimeCrateManager);
 
         /**********************************************************************************/
 

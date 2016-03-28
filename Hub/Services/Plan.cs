@@ -23,6 +23,7 @@ using Data.Constants;
 using Data.Crates;
 using Data.Infrastructure;
 using Data.Interfaces.DataTransferObjects.Helpers;
+using Hub.Managers.APIManagers.Transmitters.Restful;
 
 namespace Hub.Services
 {
@@ -68,20 +69,20 @@ namespace Hub.Services
 
         }
 
-        public IList<PlanDO> GetByName(IUnitOfWork uow, Fr8AccountDO account, string name)
+        public IList<PlanDO> GetByName(IUnitOfWork uow, Fr8AccountDO account, string name, PlanVisibility visibility)
         {
-            if(name != null) { 
+            if (name != null) { 
             return
                 uow.PlanRepository.GetPlanQueryUncached()
                     .Where(r => r.Fr8Account.Id == account.Id && r.Name == name)
-                    .Where(p => p.PlanState != PlanState.Deleted && p.Visibility == PlanVisibility.Standard)
+                        .Where(p => p.PlanState != PlanState.Deleted && p.Visibility == visibility)
                     .ToList();
             }
 
             return
                 uow.PlanRepository.GetPlanQueryUncached()
                     .Where(r => r.Fr8Account.Id == account.Id)
-                    .Where(p => p.PlanState != PlanState.Deleted && p.Visibility == PlanVisibility.Standard)
+                    .Where(p => p.PlanState != PlanState.Deleted && p.Visibility == visibility)
                     .ToList();
         }
 
@@ -471,10 +472,10 @@ namespace Hub.Services
                 await _container.Run(uow, curContainerDO);
                 return curContainerDO;
             }
-            catch(Exception e)
+            catch (Exception)
             {
                 curContainerDO.State = State.Failed;
-                throw e;
+                throw;
             }
             finally
             {

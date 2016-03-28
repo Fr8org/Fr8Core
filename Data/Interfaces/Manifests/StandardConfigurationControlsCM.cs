@@ -5,8 +5,9 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Constants;
 using System.Linq;
 using System.Reflection;
-using Data.Control;
+using System.Web.UI;
 using Data.Crates;
+using Data.Helpers;
 
 namespace Data.Interfaces.Manifests
 {
@@ -189,51 +190,39 @@ namespace Data.Interfaces.Manifests
         
         public void SyncWith(StandardConfigurationControlsCM configurationControls)
         {
-            var namedControls = EnumerateControlsDefinitions();
-
-            foreach (var namedControl in namedControls)
+            var targetNamedControls = EnumerateControlsDefinitions();
+            foreach (var targetControl in targetNamedControls)
             {
-                var source = configurationControls.FindByNameNested(namedControl.Name);
+                var source = configurationControls.FindByNameNested(targetControl.Name);
 
                 if (source == null)
                 {
                     continue;
                 }
 
-                ClonePrimitiveProperties(namedControl, source);
+                ClonePrimitiveProperties(targetControl, source);
             }
         }
-        
         // Sync controls properties from configuration controls crate with the current instance of StandardConfigurationControlsCM
         public void ClonePropertiesFrom(StandardConfigurationControlsCM configurationControls)
         {
             var type = GetType();
 
-            // Clone properties
-            foreach (var prop in type.GetProperties(BindingFlags.Instance | BindingFlags.Public))
+            foreach (var member in GetMembers(type))
             {
-                if (MembersToIgnore.Contains(prop.Name) || !prop.CanRead)
+                if (MembersToIgnore.Contains(member.Name) || !member.CanRead)
                 {
                     continue;
                 }
 
-                var target = prop.GetValue(this);
+                var target = member.GetValue(this);
+
                 if (target == null)
                 {
-                    prop.SetValue(this, target = Activator.CreateInstance(prop.PropertyType));
-                }
-                ClonePropertiesForObject(target, prop.Name, configurationControls);
-            }
-
-            // Clone fields
-            foreach (var field in type.GetFields(BindingFlags.Instance | BindingFlags.Public))
-            {
-                if (MembersToIgnore.Contains(field.Name))
-                {
-                    continue;
+                    member.SetValue(this, target = Activator.CreateInstance(member.MemberType));
                 }
 
-                ClonePropertiesForObject(field.GetValue(this), field.Name, configurationControls);
+                ClonePropertiesForObject(target, member.Name, configurationControls);
             }
         }
 
@@ -249,29 +238,35 @@ namespace Data.Interfaces.Manifests
             }
         }
 
-        private static bool CanSyncProperty(PropertyInfo propertyInfo)
+        private static bool CanSyncMember(IMemberAccessor propertyInfo)
         {
-            return propertyInfo.PropertyType.IsValueType || propertyInfo.PropertyType == typeof (string) || propertyInfo.GetCustomAttribute<ForcePropertySyncAttribute>() != null;
+            return propertyInfo.MemberType.IsValueType || propertyInfo.MemberType == typeof (string) || propertyInfo.GetCustomAttribute<ForcePropertySyncAttribute>() != null;
+        }
+
+        private static IEnumerable<IMemberAccessor> GetMembers(Type type)
+        {
+            return type.GetProperties(BindingFlags.Instance | BindingFlags.Public).Select(x =>  (IMemberAccessor) new PropertyMemberAccessor(x))
+                .Concat(type.GetFields(BindingFlags.Instance | BindingFlags.Public).Select(x => (IMemberAccessor) new FieldMemberAccessor(x)));
         }
 
         // Clone properties from object 'source' to object 'target'
         private static void ClonePrimitiveProperties(object target, object source)
         {
-            var properties = target.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(CanSyncProperty);
-            var sourceTypeProp = source.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x=>CanSyncProperty(x) && x.CanRead).ToDictionary(x => x.Name, x => x);
+            var members = GetMembers(target.GetType()).Where(CanSyncMember);
+            var sourceTypeProp = GetMembers(target.GetType()).Where(x=>CanSyncMember(x) && x.CanRead).ToDictionary(x => x.Name, x => x);
 
-            foreach (var prop in properties)
+            foreach (var member in members)
             {
-                PropertyInfo sourceProp;
+                IMemberAccessor sourceMember;
 
-                if (sourceTypeProp.TryGetValue(prop.Name, out sourceProp) && prop.PropertyType.IsAssignableFrom(sourceProp.PropertyType))
+                if (sourceTypeProp.TryGetValue(member.Name, out sourceMember) && member.MemberType.IsAssignableFrom(sourceMember.MemberType))
                 {
-                    if (typeof (IList).IsAssignableFrom(sourceProp.PropertyType))
+                    if (typeof (IList).IsAssignableFrom(sourceMember.MemberType))
                     {
-                        if (!prop.CanWrite)
+                        if (!member.CanWrite)
                         {
-                            var targetList = (IList)prop.GetMethod.Invoke(target, null);
-                            var sourceList = (IList)sourceProp.GetMethod.Invoke(source, null);
+                            var targetList = (IList)member.GetValue(target);
+                            var sourceList = (IList)sourceMember.GetValue(source);
 
                             if (targetList != null)
                             {
@@ -292,7 +287,7 @@ namespace Data.Interfaces.Manifests
 
                     try
                     {
-                        prop.SetMethod.Invoke(target, new[] {sourceProp.GetMethod.Invoke(source, null)});
+                        member.SetValue(target, sourceMember.GetValue(source));
                     }
                     catch
                     {
@@ -312,37 +307,8 @@ namespace Data.Interfaces.Manifests
             }
 
             return false;
-
-            // Not all our controls are derived from ControlDefinitionDTO. But these controls still has propery Name. Get it using the reflection.
-            //TODO: much better solution is to introduce comonnd base class for every control, or indroduce interface, thaw will have property Name. Reflection shoudn't be used if there is a way to avoid it.
-            /* var nameProp = control.GetType().GetProperty("Name", BindingFlags.Instance | BindingFlags.Public);
-
-            if (nameProp == null || !nameProp.CanRead)
-            {
-                return false;
-            }
-
-            try
-            {
-                return (string) nameProp.GetMethod.Invoke(control, null) == name;
-            }
-            catch
-            {
-                return false;
-            }*/
         }
-
-        // Check if the given type is an either instance of IList or generic IList<>.
-        private bool IsCompatibleCollectionType(Type type)
-        {
-            if (typeof (IList).IsAssignableFrom(type))
-            {
-                return true;
-            }
-
-            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof (IList<>);
-        }
-
+        
         // Find configuration control by name recursively.
         private object FindByNameRecurisve(object cd, string name)
         {
@@ -367,33 +333,6 @@ namespace Data.Interfaces.Manifests
                 }
             }
 
-            // if not, find all collection properties in the current control. Only properties of type IList or IList<> are supported. 
-          /*  var collectionGetters = cd.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => x.CanRead && IsCompatibleCollectionType(x.PropertyType)).ToArray();
-
-            foreach (var collectionGetter in collectionGetters)
-            {
-                try
-                {
-                    var children = (IEnumerable) collectionGetter.GetMethod.Invoke(cd, null);
-                    if (children == null)
-                    {
-                        continue;
-                    }
-
-                    foreach (var child in children)
-                    {
-                        var result = FindByNameRecurisve(child, name);
-                        if (result != null)
-                        {
-                            return result;
-                        }
-                    }
-                }
-                catch
-                {
-                }
-            }
-            */
             return null;
         }
     }

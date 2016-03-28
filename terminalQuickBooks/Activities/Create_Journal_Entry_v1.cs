@@ -21,11 +21,17 @@ namespace terminalQuickBooks.Actions
         {
             _journalEntry = new JournalEntry();
         }
+
         public async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            CheckAuthentication(authTokenDO);
+            if (CheckAuthentication(curActivityDO, authTokenDO))
+            {
+                return curActivityDO;
+            }
+
             return await ProcessConfigurationRequest(curActivityDO, dto => ConfigurationRequestType.Initial, authTokenDO);
         }
+
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             if (curActivityDO.Id != Guid.Empty)
@@ -66,8 +72,13 @@ namespace terminalQuickBooks.Actions
         //It is assumed that Action is the child of the Loop action.
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            CheckAuthentication(authTokenDO);
             var payloadCrates = await GetPayload(curActivityDO, containerId);
+            
+            if (NeedsAuthentication(authTokenDO))
+            {
+                return NeedsAuthenticationError(payloadCrates);
+            }
+            
             //Obtain the crate of type StandardAccountingTransactionCM that holds the required information
             var curStandardAccountingTransactionCM = CrateManager.GetByManifest<StandardAccountingTransactionCM>(payloadCrates);
             //Obtain the crate of type OperationalStateCM to extract the correct StandardAccountingTransactionDTO

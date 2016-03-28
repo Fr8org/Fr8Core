@@ -25,7 +25,10 @@ namespace terminalDocuSign.Actions
 
         public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            CheckAuthentication(authTokenDO);
+            if (CheckAuthentication(curActivityDO, authTokenDO))
+            {
+                return curActivityDO;
+            }
 
             return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
         }
@@ -259,7 +262,9 @@ namespace terminalDocuSign.Actions
                 var roles = tabsandfields.Item1.Where(a => a.Tags.Contains("DocuSigner"));
                 var crateRolesDTO = CrateManager.CreateDesignTimeFieldsCrate(
                   "DocuSignTemplateRolesFields",
+                  AvailabilityType.Configuration,
                   roles.ToArray()
+                    
               );
 
                 crateStorage.RemoveByLabel("DocuSignTemplateRolesFields");
@@ -272,6 +277,7 @@ namespace terminalDocuSign.Actions
 
                 var crateUserDefinedDTO = CrateManager.CreateDesignTimeFieldsCrate(
                     "DocuSignTemplateUserDefinedFields",
+                    AvailabilityType.Configuration,
                     userDefinedFields.Concat(roles).ToArray()
                 );
 
@@ -281,7 +287,7 @@ namespace terminalDocuSign.Actions
                 //Create TextSource controls for ROLES
                 var rolesMappingBehavior = new TextSourceMappingBehavior(crateStorage, "RolesMapping", true);
                 rolesMappingBehavior.Clear();
-                rolesMappingBehavior.Append(roles.Select(x => x.Key).ToList(), "Upstream Terminal-Provided Fields");
+                rolesMappingBehavior.Append(roles.Select(x => x.Key).ToList(), "Upstream Terminal-Provided Fields", AvailabilityType.RunTime);
 
                 //Create Text Source controls for TABS
                 var textSourceFields = new List<string>();
@@ -292,7 +298,7 @@ namespace terminalDocuSign.Actions
                     true
                 );
                 mappingBehavior.Clear();
-                mappingBehavior.Append(textSourceFields, "Upstream Terminal-Provided Fields");
+                mappingBehavior.Append(textSourceFields, "Upstream Terminal-Provided Fields", AvailabilityType.RunTime);
                 //Create TextSource controls for ROLES
 
                 //Create radio Button Groups

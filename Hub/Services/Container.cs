@@ -207,8 +207,12 @@ namespace Hub.Services
         public async Task Run(IUnitOfWork uow, ContainerDO curContainerDO)
         {
             if (curContainerDO == null)
+            {
                 throw new ArgumentNullException("ContainerDO is null");
+            }
 
+            try
+            {
             //if payload already has operational state create we shouldn't create another
             if (!HasOperationalStateCrate(curContainerDO))
             {
@@ -243,7 +247,6 @@ namespace Hub.Services
                     case ActivityResponse.Null://let's assume this is success for now
 
                         
-
                         break;
                     case ActivityResponse.RequestSuspend:
                         curContainerDO.State = State.Suspended;
@@ -270,8 +273,8 @@ namespace Hub.Services
                     case ActivityResponse.JumpToSubplan:
                         actionState = ActivityState.InitialRun;
                         activityResponseDTO.TryParseResponseMessageDTO(out responseMessage);
-                        var subplanId = Guid.Parse((string) responseMessage.Details);
-                        curContainerDO.CurrentActivityId = GetFirstActivityOfSubplan(uow, curContainerDO ,subplanId);
+                            var subplanId = Guid.Parse((string)responseMessage.Details);
+                            curContainerDO.CurrentActivityId = GetFirstActivityOfSubplan(uow, curContainerDO, subplanId);
                         continue;
 
                     case ActivityResponse.RequestLaunch:
@@ -293,6 +296,27 @@ namespace Hub.Services
             {
                 curContainerDO.State = State.Completed;
                 uow.SaveChanges();
+
+                }
+            }
+            catch (ErrorResponseException e)
+            {
+                var curActivityDTO = GetCurrentActivity(uow, curContainerDO);
+                throw new ActivityExecutionException(e.ContainerDTO, curActivityDTO, e.Message, e);
+            }            
+            catch(Exception e)
+            {
+                var curActivityDTO = GetCurrentActivity(uow, curContainerDO);
+                
+                if (curActivityDTO != null)
+                {
+                    var curContainerDTO = Mapper.Map<ContainerDO, ContainerDTO>(curContainerDO);
+                    throw new ActivityExecutionException(curContainerDTO, curActivityDTO, string.Empty, e);
+            }
+                else
+                {
+                    throw;
+        }
             }
         }
 
@@ -308,7 +332,27 @@ namespace Hub.Services
             return (id == null
                ? containerRepository.Where(container => container.Plan.Fr8Account.Id == account.Id)
                : containerRepository.Where(container => container.Id == id && container.Plan.Fr8Account.Id == account.Id)).ToList();
+        }
 
+        private ActivityDTO GetCurrentActivity(IUnitOfWork uow, ContainerDO curContainerDO)
+        {
+            if (curContainerDO == null || curContainerDO.CurrentPlanNodeId == null)
+            {
+                return null;
+            }
+
+            var curActivityId = curContainerDO.CurrentPlanNodeId.Value;
+            var curPlanNodeDO = uow.PlanRepository.GetById<PlanNodeDO>(curActivityId);
+            var curActivityDO = curPlanNodeDO as ActivityDO;
+
+            if (curActivityDO != null)
+            {
+                return Mapper.Map<ActivityDO, ActivityDTO>(curActivityDO);
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }
