@@ -90,8 +90,8 @@ namespace terminalDocuSign.Controllers
 
             var recordDocuSignEvents = new ActivityTemplateDTO
             {
-                Name = "Record_DocuSign_Events",
-                Label = "Record DocuSign Events",
+                Name = "Prepare_DocuSign_Events_For_Storage",
+                Label = "Prepare DocuSign Events For Storage",
                 Version = "1",
                 Category = ActivityCategory.Forwarders,
                 Terminal = terminal,
@@ -201,8 +201,8 @@ namespace terminalDocuSign.Controllers
                 trackDocuSignRecipientsSolution,
                 queryDocusign,
                 generateDocusignReport,
-                //searchDocusignHistory,
-                //archiveDocusignTemplate,
+                searchDocusignHistory,
+                archiveDocusignTemplate,
                 getDocuSignTemplateActionTemplate
             };
 

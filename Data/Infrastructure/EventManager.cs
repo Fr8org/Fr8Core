@@ -191,7 +191,8 @@ namespace Data.Infrastructure
         public delegate void ProcessingTerminatedPerActivityResponseHandler(ContainerDO containerDO, ActivityResponse resposneType);
         public static event ProcessingTerminatedPerActivityResponseHandler EventProcessingTerminatedPerActivityResponse;
 
-        
+        public delegate void MultipleMonitorAllDocuSignEventsPlansPerAccountArePresentHandler(string external_email);
+        public static event MultipleMonitorAllDocuSignEventsPlansPerAccountArePresentHandler EventMultipleMonitorAllDocuSignEventsPlansPerAccountArePresent;
 
         #region Method
 
@@ -650,6 +651,11 @@ namespace Data.Infrastructure
             if (handler != null) handler(userId, authenticatedTerminal, authToken);
         }
 
+        public static void MultipleMonitorAllDocuSignEventsPlansPerAccountArePresent(AuthorizationTokenDO authtoken, string external_account)
+        {
+            var handler = EventMultipleMonitorAllDocuSignEventsPlansPerAccountArePresent;
+            if (handler != null) handler(external_account);
+        }
 
         #endregion
     }
