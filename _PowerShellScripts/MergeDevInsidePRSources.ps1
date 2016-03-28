@@ -26,7 +26,7 @@ if ($LastExitCode -ne 0)
 }
 
 Write-Host "Getting the latest dev branch from GitHub repo..."
-Invoke-Expression "git pull dev"
+Invoke-Expression "git pull origin dev"
 if ($LastExitCode -ne 0)
 {
 	Write-Host "Failed to get latest dev branch."
@@ -37,7 +37,7 @@ Write-Host "Creating new branch $buildBranchName for build process..."
 Invoke-Expression "git checkout -b $buildBranchName"
 if ($LastExitCode -ne 0)
 {
-	Write-Host "Failed to checkout new branch fro build process."
+	Write-Host "Failed to checkout new branch for build process."
 	return 1;
 }
 
