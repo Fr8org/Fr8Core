@@ -238,6 +238,7 @@ namespace Data.Control
     public class MetaControlContainer : ControlDefinitionDTO
     {
         [JsonProperty("metaDescriptions")]
+        [ForcePropertySync]
         public List<ControlMetaDescriptionDTO> MetaDescriptions { get; set; }
 
         public MetaControlContainer() : base(ControlTypes.MetaControlContainer)
