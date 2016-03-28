@@ -236,6 +236,7 @@
     <Compile Include="Exceptions\AmbiguityException.cs" />
     <Compile Include="Exceptions\AuthenticationExeception.cs" />
     <Compile Include="Exceptions\ErrorResponseException.cs" />
+    <Compile Include="Exceptions\ActivityExecutionException.cs" />
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Helper\LZString.cs" />
     <Compile Include="Infrastructure\AsyncMultiLock.cs" />
@@ -243,6 +244,7 @@
     <Compile Include="Infrastructure\fr8HMACAuthenticateAttribute.cs" />
     <Compile Include="Managers\PlanManager.cs" />
     <Compile Include="Interfaces\IFact.cs" />
+    <Compile Include="Interfaces\IOrganization.cs" />
     <Compile Include="Security\HMACAuthenticator.cs" />
     <Compile Include="Interfaces\IAuthorization.cs" />
     <Compile Include="Interfaces\IFindObjectsPlan.cs" />
@@ -332,6 +334,7 @@
     <Compile Include="Services\FindObjectsPlan.cs" />
     <Compile Include="Services\Manifest.cs" />
     <Compile Include="Services\PlanNode.cs" />
+    <Compile Include="Services\Organization.cs" />
     <Compile Include="Services\Activity.cs" />
     <Compile Include="Services\ActivityTemplate.cs" />
     <Compile Include="Services\AuthData.cs" />

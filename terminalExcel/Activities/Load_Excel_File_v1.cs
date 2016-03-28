@@ -19,6 +19,8 @@ namespace terminalExcel.Actions
 {
     public class Load_Excel_File_v1 : BaseTerminalActivity
     {
+
+        private const string RuntimeCrateLabel = "Standard Data Table";
         private class ActivityUi : StandardConfigurationControlsCM
         {
             public const string UploadedFileLabel = "Uploaded file: ";
@@ -154,8 +156,8 @@ namespace terminalExcel.Actions
                 if (!string.IsNullOrEmpty(uploadFilePath))
                 {
                     //activityStorage.Add(Crate.FromContent(GenerateRuntimeCrateLabel(fileName), ExcelUtils.GetTableData(uploadFilePath), AvailabilityType.RunTime));
-                    activityStorage.Add(Crate.FromContent(RuntimeCrateLabel, ExcelUtils.GetTableData(uploadFilePath), AvailabilityType.RunTime));
-                    activityStorage.Add(Crate.FromContent(ColumnHeadersCrateLabel, ExcelUtils.GetColumnHeadersData(uploadFilePath)));
+                    activityStorage.Add(Crate.FromContent(RuntimeCrateLabel, ExcelUtils.GetTableData(uploadFilePath), AvailabilityType.Configuration));
+                    activityStorage.Add(Crate.FromContent(ColumnHeadersCrateLabel, ExcelUtils.GetColumnHeadersData(uploadFilePath), AvailabilityType.Always));
                 }
             }
             return Task.FromResult(curActivityDO);
@@ -196,7 +198,7 @@ namespace terminalExcel.Actions
             */
         }
 
-        private const string RuntimeCrateLabel = "Table Generated From Excel File";
+        
 
         //private string GenerateRuntimeCrateLabel(string fileName) => $"{RuntimeCrateLabel}";
 

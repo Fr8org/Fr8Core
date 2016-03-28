@@ -1,10 +1,14 @@
 ﻿using Data.Entities;
+using Data.Interfaces;
 using Newtonsoft.Json;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Web;
+using Data.Constants;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using terminalGoogle.DataTransferObjects;
@@ -16,6 +20,11 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Crates;
 using Data.States;
 using Data.Control;
+using Data.Interfaces.Manifests.Helpers;
+using Newtonsoft.Json.Linq;
+using StructureMap;
+using TerminalBase;
+
 namespace terminalGoogle.Actions
 {
     public class Save_To_Google_Sheet_v1 : BaseTerminalActivity
@@ -25,10 +34,11 @@ namespace terminalGoogle.Actions
 
         public Save_To_Google_Sheet_v1()
         {
-            _googleSheet = new GoogleSheet();
+            _googleSheet = ObjectFactory.GetInstance<IGoogleSheet>();
         }
 
         #region Overriden Methods
+
         protected new bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
         {
             if (authTokenDO == null) return true;
@@ -66,8 +76,6 @@ namespace terminalGoogle.Actions
             }
             await AddCrateDesignTimeFieldsSource(curActivityDO);
             await AddSpreadsheetDesignTimeFieldsSource(curActivityDO, authTokenDO);
-            await AddUpstreamManifestSource(curActivityDO);
-            await AddUpstreamLabelSource(curActivityDO);
 
             return curActivityDO;
         }
@@ -76,14 +84,22 @@ namespace terminalGoogle.Actions
         {
             var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
             var payloadCrates = await GetPayload(curActivityDO, containerId);
-
+            var payloadStorage = CrateManager.GetStorage(payloadCrates);
             if (NeedsAuthentication(authTokenDO))
             {
                 return NeedsAuthenticationError(payloadCrates);
             }
 
+            var cratesToProcess = FindCratesToProcess(curActivityDO, payloadStorage);
+
+            if (!cratesToProcess.Any())
+            {
+                Error(payloadCrates, "This Action can't run without Payload Data Crate ", ActivityErrorCode.PAYLOAD_DATA_MISSING);
+                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Unable to find any payload crate with any Manifest Type.");
+            }
+
             //get payload crates for data
-            StandardTableDataCM standardTableCM = await ExtractDataFromUpstreamCrates("UpstreamCrateChooser", curActivityDO);
+            StandardTableDataCM standardTableCM = StandardTableDataCMTools.ExtractPayloadCrateDataToStandardTableData(cratesToProcess);
 
             if(standardTableCM.Table.Count > 0)
             {
@@ -111,15 +127,24 @@ namespace terminalGoogle.Actions
 
             return Success(payloadCrates);
         }
+        
+        public bool IsList(object o)
+        {
+            if (o == null) return false;
+            return o is IList &&
+                   o.GetType().IsGenericType &&
+                   o.GetType().GetGenericTypeDefinition().IsAssignableFrom(typeof(List<>));
+        }
 
-        private Crate FindCrateToProcess(ActivityDO curActivityDO, ICrateStorage payloadStorage)
+
+        private IEnumerable<Crate> FindCratesToProcess(ActivityDO curActivityDO, ICrateStorage payloadStorage)
         {
             var configControls = GetConfigurationControls(curActivityDO);
             var crateChooser = (CrateChooser)configControls.Controls.Single(c => c.Name == "UpstreamCrateChooser");
             var selectedCrateDescription = crateChooser.CrateDescriptions.Single(c => c.Selected);
 
             //find crate by user selected values
-            return payloadStorage.FirstOrDefault(c => c.ManifestType.Type == selectedCrateDescription.ManifestType && c.Label == selectedCrateDescription.Label);
+            return payloadStorage.Where(c => c.ManifestType.Type == selectedCrateDescription.ManifestType && c.Label == selectedCrateDescription.Label);
         }
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
@@ -310,32 +335,6 @@ namespace terminalGoogle.Actions
             return await Task.FromResult<ActivityDO>(curActivityDO);
         }
 
-        private async Task<ActivityDO> AddUpstreamManifestSource(ActivityDO curActivityDO)
-        {
-            //add upstream crates 
-            var manifest = await GetUpstreamManifestListCrate(curActivityDO);
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.RemoveByLabel("AvailableUpstreamManifests");
-
-                crateStorage.Add(manifest);
-            }
-
-            return curActivityDO;
-        }
-
-        private async Task<ActivityDO> AddUpstreamLabelSource(ActivityDO curActivityDO)
-        {
-            var labels = await GetUpstreamCrateLabelListCrate(curActivityDO);
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.RemoveByLabel("AvailableUpstreamLabels");
-
-                crateStorage.Add(labels);
-            }
-
-            return curActivityDO;
-        }
         #endregion
 
         #region Helper Methods
