@@ -11,10 +11,10 @@ $devBranchRef = "refs/heads/dev"
 $buildBranchName = "dev+$sourceBranchName"
 
 Write-Host "Switching to dev branch..."
-Invoke-Expression "git fetch dev"
+Invoke-Expression "git fetch"
 if ($LastExitCode -ne 0)
 {
-	Write-Host "Failed to fetch dev branch."
+	Write-Host "Failed to fetch branches."
 	return 1;
 }
 
