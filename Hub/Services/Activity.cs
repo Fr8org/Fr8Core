@@ -278,6 +278,7 @@ namespace Hub.Services
                 try
                 {
                     tempActionDTO = await CallTerminalActivityAsync<ActivityDTO>(uow, "configure", curActivityDO, Guid.Empty);
+                    _authorizationToken.RevokeTokenIfNeeded(uow, tempActionDTO);
                 }
                 catch (ArgumentException e)
                 {

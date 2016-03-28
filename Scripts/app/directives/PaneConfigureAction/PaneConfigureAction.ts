@@ -192,10 +192,16 @@ module dockyard.directives.paneConfigureAction {
             $scope.$on(MessageType[MessageType.PaneConfigureAction_AuthCompleted], (event: ng.IAngularEvent, authCompletedEventArgs: AuthenticationCompletedEventArgs) => {
                 if (authCompletedEventArgs.action.id === $scope.currentAction.id) {
                     this.loadConfiguration().then(() => {
-                        $scope.$emit(MessageType[MessageType.PaneConfigureAction_DownStreamReconfiguration], new DownStreamReConfigureEventArgs($scope.currentAction));
+                        var authCrate = this.crateHelper.findByManifestType(
+                            this.$scope.currentAction.crateStorage,
+                            'Standard Authentication'
+                        );
+
+                        if (!authCrate || !authCrate.contents || !(<any>authCrate.contents).Revocation) {
+                            $scope.$emit(MessageType[MessageType.PaneConfigureAction_DownStreamReconfiguration], new DownStreamReConfigureEventArgs($scope.currentAction));
+                        }
                     });
                 }
-
             });
 
             $scope.$on(MessageType[MessageType.PaneConfigureAction_ReloadAction], (event: ng.IAngularEvent, reloadActionEventArgs: ReloadActionEventArgs) => {
@@ -223,7 +229,7 @@ module dockyard.directives.paneConfigureAction {
                     onClickEvent.handler = 'requestConfig';
 
                     var button = new model.Button('Authentication unsuccessful, try again');
-                    button.name = 'AuthUnsuccessfulLabel';
+                    button.name = 'AuthUnsuccessfulButton';
                     button.events = [onClickEvent];
 
                     $scope.currentAction.configurationControls = new model.ControlsList();
@@ -528,15 +534,34 @@ module dockyard.directives.paneConfigureAction {
                     var authCrate = this.crateHelper
                         .findByManifestType(this.$scope.currentAction.crateStorage, 'Standard Authentication');
 
-                    // startAuthentication($scope.currentAction.id);
-                    this.AuthService.enqueue(this.$scope.currentAction.id);
-
-                    var errorText = 'Please provide credentials to access your desired account.';
-                    var control = new model.TextBlock(errorText, '');
-                    control.name = 'AuthUnsuccessfulLabel';
-
                     this.$scope.currentAction.configurationControls = new model.ControlsList();
-                    this.$scope.currentAction.configurationControls.fields = [ control ];
+                    // startAuthentication($scope.currentAction.id);
+                    if (!(<any>authCrate.contents).Revocation) {
+                        this.AuthService.enqueue(this.$scope.currentAction.id);
+
+                        var errorText = 'Please provide credentials to access your desired account.';
+                        var control = new model.TextBlock(errorText, '');
+                        control.name = 'AuthUnsuccessfulLabel';
+
+                        this.$scope.currentAction.configurationControls.fields = [control];
+                    }
+                    else {
+                        var errorText = 'Authentication has expired, please try again.';
+                        var label = new model.TextBlock(errorText, '');
+                        label.name = 'AuthUnsuccessfulLabel';
+                        label.class = 'TextBlockClass';
+
+                        var onClickEvent = new model.ControlEvent();
+                        onClickEvent.name = 'onClick';
+                        onClickEvent.handler = 'requestConfig';
+
+                        var button = new model.Button('Try authenticate again');
+                        button.name = 'AuthUnsuccessfulButton';
+                        button.events = [ onClickEvent ];
+
+                        this.$scope.currentAction.configurationControls.fields = [label, button];
+                        this.ignoreConfigurationChange = true;
+                    }
                 }
                 else {
                     this.$scope.currentAction.configurationControls =

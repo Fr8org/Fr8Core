@@ -283,7 +283,7 @@ namespace TerminalBase.BaseClasses
                 }
 
                 crateStorage.Add(
-                    CrateManager.CreateAuthenticationCrate("RequiresAuthentication", mode)
+                    CrateManager.CreateAuthenticationCrate("RequiresAuthentication", mode, revocation)
                 );
             }
         }

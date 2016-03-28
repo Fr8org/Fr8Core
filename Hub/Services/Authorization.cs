@@ -368,7 +368,7 @@ namespace Hub.Services
                         break;
                 }
 
-                crateStorage.Add(_crate.CreateAuthenticationCrate("RequiresAuthentication", mode));
+                crateStorage.Add(_crate.CreateAuthenticationCrate("RequiresAuthentication", mode, false));
             }
         }
 
@@ -377,6 +377,25 @@ namespace Hub.Services
             using (var crateStorage = _crate.GetUpdatableStorage(activityDTO))
             {
                 crateStorage.RemoveByManifestId((int)MT.StandardAuthentication);
+            }
+        }
+
+        public void RevokeTokenIfNeeded(IUnitOfWork uow, ActivityDTO activityDTO)
+        {
+            using (var crateStorage = _crate.GetUpdatableStorage(activityDTO))
+            {
+                var authCM = crateStorage
+                    .CrateContentsOfType<StandardAuthenticationCM>()
+                    .FirstOrDefault();
+                if (authCM != null && authCM.Revocation)
+                {
+                    var activity = uow.PlanRepository.GetById<ActivityDO>(activityDTO.Id);
+
+                    if (activity.AuthorizationTokenId.HasValue)
+                    {
+                        RevokeToken(activity.Fr8AccountId, activity.AuthorizationTokenId.Value);
+                    }
+                }
             }
         }
 
