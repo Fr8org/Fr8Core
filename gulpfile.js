@@ -151,7 +151,8 @@ gulp.task('compile_js', function () {
         'Scripts/app/controllers/ManifestRegistryListController.js',
         'Scripts/app/controllers/ManifestRegistryFormController.js',
         'Scripts/app/controllers/SolutionDocumentationController.js',
-        'Scripts/app/controllers/ManageUserController.js'
+        'Scripts/app/controllers/ManageUserController.js',
+        'Scripts/app/directives/Controls/Fr8Event.js'
     ])
         .pipe(sourcemaps.init())
         .pipe(concat('_compiled.js'))

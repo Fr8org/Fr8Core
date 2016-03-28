@@ -868,6 +868,7 @@
     <Content Include="Views\AngularTemplate\ContainerTransition.cshtml" />
     <Content Include="Views\AngularTemplate\SubplanHeader.cshtml" />
     <Content Include="Views\AngularTemplate\ControlContainer.cshtml" />
+    <Content Include="Views\AngularTemplate\Fr8Event.cshtml" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
     <Content Include="Scripts\templateCache.js" />
@@ -898,6 +899,7 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ControlContainer.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ContainerTransition.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\DatePicker.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\Fr8Event.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\SourceableCriteria.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\CrateChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TimePicker.ts" />

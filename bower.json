@@ -51,7 +51,8 @@
     "ui-bootstrap": "~0.13.0",
     "underscore": "~1.8.3",
     "w2ui": "1.4.3",
-    "waypoints": "2.0.5"
+    "waypoints": "2.0.5",
+    "angular-material": "^1.0.6"
   },
   "resolutions": {
     "angular": "1.4.9"

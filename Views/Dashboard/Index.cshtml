@@ -29,47 +29,75 @@
 <!-- DOC: Apply "page-header-menu-fixed" class to set the mega menu fixed  -->
 <!-- DOC: Apply "page-header-top-fixed" class to set the top menu fixed  -->
 <body ng-controller="AppController" class="page-on-load">
+
     <div ng-controller="NotifierController">
         <toast></toast>
     </div>
-    <ul id="activity_stream_example" class="activity-stream"></ul>
-    <!-- BEGIN PAGE SPINNER -->
-    <div class="main-wrapper">
-        <div ng-spinner-bar class="page-spinner-bar">
-            <div class="bounce1"></div>
-            <div class="bounce2"></div>
-            <div class="bounce3"></div>
-        </div>
-        <!-- END PAGE SPINNER -->
-        <!-- BEGIN HEADER -->
-        <div data-ng-include="'/AngularTemplate/Header'" data-ng-controller="HeaderController" class="page-header">
-        </div>
-        <!-- END HEADER -->
 
-        <div class="clearfix">
-        </div>
+    <div ng-controller="NotifierController" layout="column" style="height:500px;" ng-cloak>
+        <section layout="row" flex>
+            <md-content flex layout-padding>
+                <!-- BEGIN PAGE SPINNER -->
+                <div class="main-wrapper">
+                    <div>
+                        <div ng-spinner-bar class="page-spinner-bar">
+                            <div class="bounce1"></div>
+                            <div class="bounce2"></div>
+                            <div class="bounce3"></div>
+                        </div>
+                        <!-- END PAGE SPINNER -->
+                        <!-- BEGIN HEADER -->
+                        <div data-ng-include="'/AngularTemplate/Header'" data-ng-controller="HeaderController" class="page-header">
+                        </div>
+                        <!-- END HEADER -->
 
-        <!-- BEGIN CONTAINER -->
-        <div class="page-container" long-ajax-cursor>
+                        <div class="clearfix">
+                        </div>
 
-            <!-- BEGIN PAGE CONTENT -->
-            <div class="page-content">
-                <div class="container-fluid">
-                    <!-- BEGIN ACTUAL CONTENT -->
-                    <div ui-view>
+                        <!-- BEGIN CONTAINER -->
+                        <div class="page-container" long-ajax-cursor>
+
+                            <!-- BEGIN PAGE CONTENT -->
+                            <div class="page-content">
+                                <div class="container-fluid">
+                                    <!-- BEGIN ACTUAL CONTENT -->
+                                    <div ui-view>
+                                    </div>
+                                    <!-- END ACTUAL CONTENT -->
+                                </div>
+                            </div>
+                            <!-- END PAGE CONTENT -->
+
+                        </div>
                     </div>
-                    <!-- END ACTUAL CONTENT -->
                 </div>
-            </div>
-            <!-- END PAGE CONTENT -->
+                <!-- END CONTAINER -->
+                <!-- BEGIN FOOTER -->
+                <div data-ng-include="'/AngularTemplate/Footer'" sticky-footer=".main-wrapper" data-ng-controller="FooterController">
+                </div>
+                <!-- END FOOTER -->
+            </md-content>
+            <md-sidenav class="md-sidenav-right md-whiteframe-4dp" md-component-id="right" md-is-locked-open="true" md-disable-backdrop>
+                <md-toolbar style="background-color:rgb(38, 166, 154)" class="md-theme-light">
+                    <h1 class="md-toolbar-tools">Activity</h1>
+                </md-toolbar>
+                <md-content layout-padding>
+                    <md-list flex>
+                        <md-list-item class="secondary-button-padding" ng-repeat="event in eventList">
+                            <fr8-event style="margin-top:10px;margin-bottom:10px;" event="event.data" type="{{event.type}}"></fr8-event>
+                            <md-divider></md-divider>
+                        </md-list-item>
+                    </md-list>
+                </md-content>
+            </md-sidenav>
+            
+        </section>
+    </div>
 
-        </div>
-    </div>
-    <!-- END CONTAINER -->
-    <!-- BEGIN FOOTER -->
-    <div data-ng-include="'/AngularTemplate/Footer'" sticky-footer=".main-wrapper" data-ng-controller="FooterController">
-    </div>
-    <!-- END FOOTER -->
+
+
+    
+
     <!-- BEGIN JAVASCRIPTS(Load javascripts at bottom, this will reduce page load time) -->
     <!-- BEGIN CORE JQUERY PLUGINS -->
     <!--[if lt IE 9]>

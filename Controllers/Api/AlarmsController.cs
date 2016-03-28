@@ -19,18 +19,6 @@ namespace HubWeb.Controllers
 {
     public class AlarmsController : ApiController
     {
-
-        [Fr8ApiAuthorize]
-        [HttpGet]
-        public async Task <IHttpActionResult> Push()
-        {
-            string pusherChannel = String.Format("fr8pusher_{0}", User.Identity.Name);
-            var ps = ObjectFactory.GetInstance<IPusherNotifier>();
-            ps.Notify(pusherChannel, "fr8pusher_generic_success", "test_message"+DateTime.Now);
-            return Ok();
-
-        }
-
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
         [Fr8ApiAuthorize]
