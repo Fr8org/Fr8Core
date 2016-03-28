@@ -114,13 +114,13 @@ namespace terminalGoogle.Actions
                         throw new ArgumentNullException("Please select a spreadsheet to upload.");
 
                     //uploadworksheet
-                    var worksheets = UploadWorksheet(curActivityDO, authTokenDO, uploadedSpreadsheet);
+                    var worksheets = await UploadWorksheet(curActivityDO, authTokenDO, uploadedSpreadsheet);
                     if (String.IsNullOrEmpty(worksheets.Key))
                         throw new ArgumentNullException("Please select a worksheet(pane).");
 
                     //get worksheet
                     //write data into worksheet
-                    _googleSheet.WriteData(uploadedSpreadsheet.Key, worksheets.Key, standardTableCM, authDTO);
+                    await _googleSheet.WriteData(uploadedSpreadsheet.Key, worksheets.Key, standardTableCM, authDTO);
                 }
                 catch (Exception ex)
                 {
@@ -299,7 +299,7 @@ namespace terminalGoogle.Actions
         private async Task<ActivityDO> AddSpreadsheetDesignTimeFieldsSource(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
-            var spreadsheets = _googleSheet.EnumerateSpreadsheetsUris(authDTO);
+            var spreadsheets = await _googleSheet.GetSpreadsheets(authDTO);
 
             var fields = spreadsheets.Select(x => new FieldDTO() { Key = x.Value, Value = x.Key, Availability = AvailabilityType.Configuration }).ToArray();
             var createDesignTimeFields = CrateManager.CreateDesignTimeFieldsCrate(
@@ -320,7 +320,7 @@ namespace terminalGoogle.Actions
         private async Task<ActivityDO> AddWorksheetDesignTimeFieldsSource(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
-            var worksheet = _googleSheet.EnumerateWorksheet(_spreedsheetUri, authDTO);
+            var worksheet = await _googleSheet.GetWorksheets(_spreedsheetUri, authDTO);
 
             var fields = worksheet.Select(x => new FieldDTO() { Key = x.Value, Value = x.Key, Availability = AvailabilityType.Configuration }).ToArray();
             var createDesignTimeFields = CrateManager.CreateDesignTimeFieldsCrate(
@@ -362,7 +362,7 @@ namespace terminalGoogle.Actions
                     var newSpreadSheetTextbox = spreadSheetGroupControl.Where(w => w.Name == "newSpreadsheet").FirstOrDefault().Controls.OfType<TextBox>().FirstOrDefault();
 
                     //get spreadsheets
-                    var existingSpreadSheets = _googleSheet.EnumerateSpreadsheetsUris(authDTO);
+                    var existingSpreadSheets = await _googleSheet.GetSpreadsheets(authDTO);
 
                     //check if spreadsheet name in textbox is present in spreadsheets 
                     //if spreadsheet name already exist do nothing to upload
@@ -403,7 +403,7 @@ namespace terminalGoogle.Actions
             return uploadedSpreadSheet;
         }
 
-        private FieldDTO UploadWorksheet(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO, FieldDTO uploadedSpreadSheet)
+        private async Task<FieldDTO> UploadWorksheet(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO, FieldDTO uploadedSpreadSheet)
         {
             StandardConfigurationControlsCM configurationControls = GetConfigurationControls(curActivityDO);
             FieldDTO uploadedWorksheet = new FieldDTO();
@@ -424,7 +424,7 @@ namespace terminalGoogle.Actions
                     var newWorksheetTextbox = spreadSheetGroupControl.Where(w => w.Name == "newWorksheet").FirstOrDefault().Controls.OfType<TextBox>().FirstOrDefault();
 
                     //get worksheets
-                    var existingWorksheets = _googleSheet.EnumerateWorksheet(uploadedSpreadSheet.Key, authDTO);
+                    var existingWorksheets = await _googleSheet.GetWorksheets(uploadedSpreadSheet.Key, authDTO);
                     
                     //check if worksheet name in textbox is present in worksheets 
                     //if worksheet name already exist do nothing to upload
@@ -436,7 +436,7 @@ namespace terminalGoogle.Actions
                     }
                     else
                     {
-                        uploadedWorksheet.Key = _googleSheet.CreateWorksheet(uploadedSpreadSheet.Key, authDTO, newWorksheetTextbox.Value);
+                        uploadedWorksheet.Key = await _googleSheet.CreateWorksheet(uploadedSpreadSheet.Key, authDTO, newWorksheetTextbox.Value);
                         uploadedWorksheet.Value = newWorksheetTextbox.Value;
                     }
                 }
