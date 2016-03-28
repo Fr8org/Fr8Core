@@ -287,8 +287,12 @@ namespace DockyardTest.Services
             Fr8AccountDO guestUserAccount = FixtureData.TestDockyardAccount6();
             string newEmail="fr8user@test.com";
             string newPassword = "newpassword";
-            RegistrationStatus registrationStatus = await _fr8Account.UpdateGuestUserRegistration(newEmail, newPassword, guestUserAccount.EmailAddress.Address);
-            
+            RegistrationStatus registrationStatus;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                registrationStatus = await _fr8Account.UpdateGuestUserRegistration(uow, newEmail, newPassword, guestUserAccount.EmailAddress.Address);
+            }
+
             // Assert
             Assert.AreEqual(registrationStatus, RegistrationStatus.Successful);
             Assert.AreEqual(guestUserAccount.EmailAddress.Address, newEmail);

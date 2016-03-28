@@ -9,6 +9,7 @@ using Hub.Managers;
 using System.Linq;
 using System.Runtime.InteropServices;
 using terminalGoogle.Actions;
+using terminalGoogle.DataTransferObjects;
 using terminalGoogleTests.Integration;
 
 namespace terminalGoogleTests.Unit
@@ -30,13 +31,25 @@ namespace terminalGoogleTests.Unit
                 Token = @"{""AccessToken"":""ya29.PwJez2aHwjGxsxcho6TfaFseWjPbi1ThgINsgiawOKLlzyIgFJHkRdq76YrnuiGT3jhr"",""RefreshToken"":""1/HVhoZXzxFrPyC0JVlbEIF_VOBDm_IhrKoLKnt6QpyFRIgOrJDtdun6zK6XiATCKT"",""Expires"":""2015-12-03T11:12:43.0496208+08:00""}"
             };
         }
+
         public static AuthorizationTokenDTO Google_AuthToken1()
         {
             return new AuthorizationTokenDTO()
             {
-                Token = @"{""AccessToken"":""ya29.OgLf-SvZTHJcdN9tIeNEjsuhIPR4b7KBoxNOuELd0T4qFYEa001kslf31Lme9OQCl6S5"",""RefreshToken"":""1/04H9hNCEo4vfX0nHHEdViZKz1CtesK8ByZ_TOikwVDc"",""Expires"":""2015-11-28T13:29:12.653075+05:00""}"
+                Token = @"{""AccessToken"":""ya29.OgLf-SvZTHJcdN9tIeNEjsuhIPR4b7KBoxNOuELd0T4qFYEa001kslf31Lme9OQCl6S5"",""RefreshToken"":""1/04H9hNCEo4vfX0nHHEdViZKz1CtesK8ByZ_TOikwVDc"",""Expires"":""2017-11-28T13:29:12.653075+05:00""}"
             };
         }
+
+        public static GoogleAuthDTO NewGoogle_AuthToken_As_GoogleAuthDTO()
+        {
+            return new GoogleAuthDTO
+            {
+                AccessToken = "ya29.sAIlmsk843IiMs54TCbaN6XitYsrFa00XcuKvtV75lWuKIWSglzWv_F1MCLHWyuNRg",
+                Expires = new DateTime(2017, 03, 19, 0, 0, 0),
+                RefreshToken = "1/3DJhIxl_HceJmyZaWwI_O9MRdHyDGCtWo-69dZRbgBQ"
+            };
+        }
+
         protected Crate PackControls(StandardConfigurationControlsCM page)
         {
             return PackControlsCrate(page.Controls.ToArray());

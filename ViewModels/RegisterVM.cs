@@ -25,5 +25,12 @@ namespace HubWeb.ViewModels
         // Based on the value of this property it is identifyed whether the user is registration after trying 
         // the system or the user is directly registering into the system.
         public string GuestUserTempEmail { get; set; }
+
+        [Display(Name = "Organization")]
+        public bool HasOrganization { get; set; }
+
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 3)]
+        [Display(Name = "Organization Name")]
+        public string OrganizationName { get; set; }
     }
 }

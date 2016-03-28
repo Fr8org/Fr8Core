@@ -10,6 +10,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
 using Newtonsoft.Json;
+using StructureMap;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
 using terminalGoogle.Services;
@@ -80,7 +81,7 @@ namespace terminalGoogle.Actions
         public Get_Google_Sheet_Data_v1()
            : base(true)
         {
-            _googleApi = new GoogleSheet();
+            _googleApi = ObjectFactory.GetInstance<IGoogleSheet>();
         }
         //This property is used to store and retrieve user-selected spreadsheet and worksheet between configuration responses 
         //to avoid extra fetch from Google
