@@ -143,9 +143,9 @@
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
+      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Http.Owin, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -197,51 +197,51 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Hub\Hub.csproj">
+    <ProjectReference Include="..\..\Hub\Hub.csproj">
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Hub</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Data\Data.csproj">
+    <ProjectReference Include="..\..\Data\Data.csproj">
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
     </ProjectReference>
-    <ProjectReference Include="..\terminalAzure\terminalAzure.csproj">
+    <ProjectReference Include="..\..\terminalAzure\terminalAzure.csproj">
       <Project>{d019b112-55a8-4661-aff5-329f998d9e28}</Project>
       <Name>terminalAzure</Name>
     </ProjectReference>
-    <ProjectReference Include="..\terminalBase\TerminalBase.csproj">
+    <ProjectReference Include="..\..\terminalBase\TerminalBase.csproj">
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
       <Name>TerminalBase</Name>
     </ProjectReference>
-    <ProjectReference Include="..\terminalDocuSign\terminalDocuSign.csproj">
+    <ProjectReference Include="..\..\terminalDocuSign\terminalDocuSign.csproj">
       <Project>{4e04feb2-b452-4739-8336-ea2cefb18d87}</Project>
       <Name>terminalDocuSign</Name>
     </ProjectReference>
-    <ProjectReference Include="..\terminalFr8Core\terminalFr8Core.csproj">
+    <ProjectReference Include="..\..\terminalFr8Core\terminalFr8Core.csproj">
       <Project>{ad226a7f-0641-4589-93eb-06e5ee7e767b}</Project>
       <Name>terminalFr8Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\terminalExcel\terminalExcel.csproj">
+    <ProjectReference Include="..\..\terminalExcel\terminalExcel.csproj">
       <Project>{57373d06-6b82-4ec6-af62-ed25fe170c61}</Project>
       <Name>terminalExcel</Name>
     </ProjectReference>
-    <ProjectReference Include="..\terminalUtilities\terminalUtilities.csproj">
+    <ProjectReference Include="..\..\terminalUtilities\terminalUtilities.csproj">
       <Project>{e46b602a-287b-450f-b455-5eed20c93eb7}</Project>
       <Name>terminalUtilities</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Tests\HealthMonitorUtility\HealthMonitorUtility.csproj">
+    <ProjectReference Include="..\HealthMonitorUtility\HealthMonitorUtility.csproj">
       <Project>{459FE39A-A5CC-41D8-B06E-8FAE3A1A623B}</Project>
       <Name>HealthMonitorUtility</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Tests\UtilitiesTesting\UtilitiesTesting.csproj">
+    <ProjectReference Include="..\UtilitiesTesting\UtilitiesTesting.csproj">
       <Project>{6b855c3f-07a9-4787-9fde-29fa567c43e2}</Project>
       <Name>UtilitiesTesting</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Utilities\Utilities.csproj">
+    <ProjectReference Include="..\..\Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
       <Name>Utilities</Name>
     </ProjectReference>
-    <ProjectReference Include="..\HubWeb.csproj">
+    <ProjectReference Include="..\..\HubWeb.csproj">
       <Project>{f7bd7117-4f1d-4215-b338-61ebdd0d0bfe}</Project>
       <Name>HubWeb</Name>
     </ProjectReference>

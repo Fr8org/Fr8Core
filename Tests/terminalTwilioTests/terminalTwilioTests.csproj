@@ -42,7 +42,7 @@
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
@@ -69,27 +69,27 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Data\Data.csproj">
+    <ProjectReference Include="..\..\Data\Data.csproj">
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Hub\Hub.csproj">
+    <ProjectReference Include="..\..\Hub\Hub.csproj">
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Hub</Name>
     </ProjectReference>
-    <ProjectReference Include="..\terminalBase\TerminalBase.csproj">
+    <ProjectReference Include="..\..\terminalBase\TerminalBase.csproj">
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
       <Name>TerminalBase</Name>
     </ProjectReference>
-    <ProjectReference Include="..\terminalTwilio\terminalTwilio.csproj">
+    <ProjectReference Include="..\..\terminalTwilio\terminalTwilio.csproj">
       <Project>{14404298-4182-4d43-8098-5a199ed2fcaa}</Project>
       <Name>terminalTwilio</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Tests\HealthMonitorUtility\HealthMonitorUtility.csproj">
+    <ProjectReference Include="..\HealthMonitorUtility\HealthMonitorUtility.csproj">
       <Project>{459fe39a-a5cc-41d8-b06e-8fae3a1a623b}</Project>
       <Name>HealthMonitorUtility</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Tests\UtilitiesTesting\UtilitiesTesting.csproj">
+    <ProjectReference Include="..\UtilitiesTesting\UtilitiesTesting.csproj">
       <Project>{6b855c3f-07a9-4787-9fde-29fa567c43e2}</Project>
       <Name>UtilitiesTesting</Name>
     </ProjectReference>

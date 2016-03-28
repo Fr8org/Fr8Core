@@ -3,11 +3,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F39EA7BE-25C2-45ED-91AC-29647EFFAD2B}</ProjectGuid>
+    <ProjectGuid>{1E8DD13A-846B-4C36-A9C4-5997C5FD74FF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>terminalAtlassianTests</RootNamespace>
-    <AssemblyName>terminalAtlassianTests</AssemblyName>
+    <RootNamespace>HubTests</RootNamespace>
+    <AssemblyName>HubTests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -46,11 +46,25 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AutoMapper, Version=4.0.4.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
-      <HintPath>..\packages\AutoMapper.4.0.4\lib\net45\AutoMapper.dll</HintPath>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FluentValidation">
+      <HintPath>..\packages\FluentValidation.5.6.2.0\lib\Net45\FluentValidation.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.0.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.0.1\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Moq, Version=4.2.1507.118, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
       <HintPath>..\packages\Moq.4.2.1507.0118\lib\net40\Moq.dll</HintPath>
       <Private>True</Private>
@@ -59,28 +73,8 @@
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="nunit.core, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnitTestAdapter.2.0.0\lib\nunit.core.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="nunit.core.interfaces, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnitTestAdapter.2.0.0\lib\nunit.core.interfaces.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="nunit.util, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnitTestAdapter.2.0.0\lib\nunit.util.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="NUnit.VisualStudio.TestAdapter, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4cb40d35494691ac, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnitTestAdapter.2.0.0\lib\NUnit.VisualStudio.TestAdapter.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RestSharp, Version=105.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RestSharp.105.0.1\lib\net4\RestSharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="StructureMap, Version=3.1.6.186, Culture=neutral, processorArchitecture=MSIL">
@@ -92,14 +86,11 @@
       <HintPath>..\packages\structuremap.3.1.6.186\lib\net40\StructureMap.Net4.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Net.Http" />
-    <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
-      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <Choose>
@@ -115,49 +106,44 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Activities\Get_Jira_Issue_v1Tests.cs" />
-    <Compile Include="Fixtures\FixtureData.cs" />
-    <Compile Include="Integration\Terminal_Authentication_v1_Tests.cs" />
+    <Compile Include="Fixtures\ActivityResponseFixtureData.cs" />
+    <Compile Include="Fixtures\ContainerResponseFixtureData.cs" />
+    <Compile Include="Fixtures\WebServicesControllerFixtureData.cs" />
+    <Compile Include="Integration\ReportControllerTest.cs" />
+    <Compile Include="Integration\WebServicesControllerTests.cs" />
+    <Compile Include="Managers\CrateManagerTests.cs" />
+    <Compile Include="Managers\CrateManagerTests.Fixtures.cs" />
+    <Compile Include="Managers\IncidentReporterTests.cs" />
+    <Compile Include="ManifestDiscoveryTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\AuthorizationTests.cs" />
+    <Compile Include="Services\ContainerTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Data\Data.csproj">
+    <ProjectReference Include="..\..\Data\Data.csproj">
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Hub\Hub.csproj">
+    <ProjectReference Include="..\..\Hub\Hub.csproj">
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Hub</Name>
     </ProjectReference>
-    <ProjectReference Include="..\terminalAtlassian\terminalAtlassian.csproj">
-      <Project>{89d763ed-3ea6-4303-ab29-3239095a4b06}</Project>
-      <Name>terminalAtlassian</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\terminalBase\TerminalBase.csproj">
-      <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
-      <Name>TerminalBase</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Tests\HealthMonitorUtility\HealthMonitorUtility.csproj">
-      <Project>{459FE39A-A5CC-41D8-B06E-8FAE3A1A623B}</Project>
+    <ProjectReference Include="..\HealthMonitorUtility\HealthMonitorUtility.csproj">
+      <Project>{459fe39a-a5cc-41d8-b06e-8fae3a1a623b}</Project>
       <Name>HealthMonitorUtility</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Tests\HealthMonitor\HealthMonitor.csproj">
-      <Project>{83231577-13a5-419f-8269-02ae59d8951a}</Project>
-      <Name>HealthMonitor</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Tests\UtilitiesTesting\UtilitiesTesting.csproj">
-      <Project>{6b855c3f-07a9-4787-9fde-29fa567c43e2}</Project>
+    <ProjectReference Include="..\UtilitiesTesting\UtilitiesTesting.csproj">
+      <Project>{6B855C3F-07A9-4787-9FDE-29FA567C43E2}</Project>
       <Name>UtilitiesTesting</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Utilities\Utilities.csproj">
-      <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
-      <Name>Utilities</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

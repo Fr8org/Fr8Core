@@ -3,11 +3,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6C3090FC-50D2-4A7E-9B29-EAB9D8802F42}</ProjectGuid>
+    <ProjectGuid>{42F21CE5-C8D1-4083-937B-951B92C2F93C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>terminalTests</RootNamespace>
-    <AssemblyName>terminalTests</AssemblyName>
+    <RootNamespace>terminalDropboxTests</RootNamespace>
+    <AssemblyName>terminalDropboxTests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -48,7 +48,7 @@
       <HintPath>..\packages\AutoMapper.4.0.4\lib\net45\AutoMapper.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.Owin">
       <HintPath>..\packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -69,9 +69,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Moq.4.2.1507.0118\lib\net40\Moq.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -82,12 +82,12 @@
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
     <Reference Include="StructureMap, Version=3.1.6.186, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\structuremap.3.1.6.186\lib\net40\StructureMap.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="StructureMap.Net4, Version=3.1.6.186, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\structuremap.3.1.6.186\lib\net40\StructureMap.Net4.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -119,6 +119,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
     </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web.Routing" />
     <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -136,51 +140,44 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Integration\ConnectToSql_v1_Tests.cs" />
-    <Compile Include="Integration\SaveToFr8Warehouse_v1_Tests.cs" />
-    <Compile Include="Integration\ExecuteSql_v1_Tests.cs" />
-    <Compile Include="Integration\Monitor_Fr8_Events_v1_Tests.cs" />
-    <Compile Include="Integration\SetDelay_v1_Tests.cs" />
-    <Compile Include="Integration\Terminal_Authentication_v1_Tests.cs" />
-    <Compile Include="Integration\Terminal_Discover_v1Tests.cs" />
+    <Compile Include="Activities\GetFileList_v1Tests.cs" />
+    <Compile Include="Fixtures\FixtureData.cs" />
     <Compile Include="Fixtures\HealthMonitor_FixtureData.cs" />
-    <Compile Include="Integration\MapFields_v1_Tests.cs" />
-    <Compile Include="Integration\Select_Fr8_Object_v1Tests.cs" />
-    <Compile Include="Unit\TestIncomingData_v1Tests.cs" />
-    <Compile Include="Unit\SelectFr8Object_v1Tests.cs" />
-    <Compile Include="Fixtures\FixtureData - CoreSelfHostFactory.cs" />
+    <Compile Include="Integration\Get_File_List_v1_Tests.cs" />
+    <Compile Include="Integration\Terminal_Authentication_v1_Tests.cs" />
+    <Compile Include="Integration\Terminal_Discovery_v1Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Hub\Hub.csproj">
+    <ProjectReference Include="..\..\Hub\Hub.csproj">
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Hub</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Data\Data.csproj">
+    <ProjectReference Include="..\..\Data\Data.csproj">
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
     </ProjectReference>
-    <ProjectReference Include="..\terminalBase\TerminalBase.csproj">
+    <ProjectReference Include="..\..\terminalBase\TerminalBase.csproj">
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
       <Name>TerminalBase</Name>
     </ProjectReference>
-    <ProjectReference Include="..\terminalFr8Core\terminalFr8Core.csproj">
-      <Project>{ad226a7f-0641-4589-93eb-06e5ee7e767b}</Project>
-      <Name>terminalFr8Core</Name>
+    <ProjectReference Include="..\..\terminalDropbox\terminalDropbox.csproj">
+      <Project>{cfba4468-222f-4255-8d94-809acbf7ac47}</Project>
+      <Name>terminalDropbox</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Tests\HealthMonitorUtility\HealthMonitorUtility.csproj">
+    <ProjectReference Include="..\HealthMonitorUtility\HealthMonitorUtility.csproj">
       <Project>{459fe39a-a5cc-41d8-b06e-8fae3a1a623b}</Project>
       <Name>HealthMonitorUtility</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Tests\UtilitiesTesting\UtilitiesTesting.csproj">
+    <ProjectReference Include="..\UtilitiesTesting\UtilitiesTesting.csproj">
       <Project>{6b855c3f-07a9-4787-9fde-29fa567c43e2}</Project>
       <Name>UtilitiesTesting</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Utilities\Utilities.csproj">
+    <ProjectReference Include="..\..\Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
       <Name>Utilities</Name>
     </ProjectReference>
-    <ProjectReference Include="..\HubWeb.csproj">
+    <ProjectReference Include="..\..\HubWeb.csproj">
       <Project>{f7bd7117-4f1d-4215-b338-61ebdd0d0bfe}</Project>
       <Name>HubWeb</Name>
     </ProjectReference>
