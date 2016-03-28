@@ -12,7 +12,15 @@ namespace terminalDocuSignTests.Fixtures
     {
         public static BaseDocuSignActivity BaseDocuSignAcitvity()
         {
-            return new Mock<BaseDocuSignActivity>().Object;
+            var result = new Mock<BaseDocuSignActivity>();
+
+            result.Setup(x => x.NeedsAuthentication(It.IsNotNull<AuthorizationTokenDO>()))
+                .Returns(false);
+
+            result.Setup(x => x.NeedsAuthentication(null))
+                .Returns(true);
+
+            return result.Object;
         }
 
         public static BaseDocuSignActivity FailedBaseDocuSignActivity()
