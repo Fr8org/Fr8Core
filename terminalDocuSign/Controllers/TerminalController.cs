@@ -46,7 +46,7 @@ namespace terminalDocuSign.Controllers
                 Category = ActivityCategory.Monitors,
                 Terminal = terminal,
                 NeedsAuthentication = true,
-                MinPaneWidth = 330,
+                MinPaneWidth = 380,
                 WebService = webService,
                 ShowDocumentation = ActivityResponseDTO.CreateDocumentationResponse("MenuItem", "Monitor_DocuSign_Envelope_Activity_SampleHelp1")
             };

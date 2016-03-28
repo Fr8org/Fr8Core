@@ -91,6 +91,7 @@ namespace Hub.Security
                 var role = uow.AspNetRolesRepository.GetByKey(roleId);
                 identity.AddClaim(new Claim(ClaimTypes.Role, role.Name));
             }
+
             return identity;
         }
     }
