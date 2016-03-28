@@ -239,6 +239,7 @@ namespace TerminalBase.Infrastructure
 
         public async Task ApplyNewToken(Guid activityId, Guid authTokenId, string userId)
         {
+         
             var applyToken = new ManageAuthToken_Apply()
             {
                 ActivityId = activityId,
@@ -246,10 +247,12 @@ namespace TerminalBase.Infrastructure
                 IsMain = false
             };
 
+            var token = new ManageAuthToken_Apply[] { applyToken };
+
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                     + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/ManageAuthToken/apply";
             var uri = new Uri(url);
-            await _restfulServiceClient.PostAsync<ManageAuthToken_Apply[]>(uri, new ManageAuthToken_Apply[] { applyToken }, null, await GetHMACHeader(uri, userId, applyToken));
+            await _restfulServiceClient.PostAsync<ManageAuthToken_Apply[]>(uri, token, null, await GetHMACHeader(uri, userId, token));
         }
 
         public async Task<ActivityDTO> ConfigureActivity(ActivityDTO activityDTO, string userId)
