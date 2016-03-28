@@ -35,12 +35,12 @@ namespace terminalFr8Core.Actions
             public MetaControlContainer ControlContainer;
             public Button CreateButton;
             public TextBlock UrlInfo;
-            
+
 
             public ActivityUi()
-            {
+        {
                 InfoText = new TextBlock()
-                {
+            {
                     Value = "Construct a Launcher that gathers information from users and passes it to another Plan",
                     Name = "info_text"
                 };
@@ -71,7 +71,7 @@ namespace terminalFr8Core.Actions
                     Events = new List<ControlEvent>()
                     {
                         new ControlEvent("onClick", "requestConfig")
-                    }
+            }
                 };
 
                 UrlInfo = new TextBlock
@@ -88,7 +88,7 @@ namespace terminalFr8Core.Actions
                 Controls.Add(ControlContainer);
                 Controls.Add(CreateButton);
                 Controls.Add(UrlInfo);
-            }
+        }
         }
 
         public CreateLauncher_v1() : base(false)
@@ -96,17 +96,17 @@ namespace terminalFr8Core.Actions
         }
 
         protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
-        {
+            {
             ConfigurationControls.TargetPlan.ListItems = await GetUserPlans();
-        }
-
+            }
+            
         protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
-        {
+            {
             if (!ConfigurationControls.CreateButton.Clicked)
             {
                 return;
             }
-            
+
             if (string.IsNullOrEmpty(ConfigurationControls.LauncherName.Value))
             {
                 ConfigurationControls.LauncherName.ErrorMessage = "This field must be filled";

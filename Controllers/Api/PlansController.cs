@@ -246,7 +246,7 @@ namespace HubWeb.Controllers
 
 
         [HttpDelete]
-        //[Route("{id:guid}")]
+        [Fr8HubWebHMACAuthenticate]
         [Fr8ApiAuthorize]
         public IHttpActionResult Delete(Guid id)
         {

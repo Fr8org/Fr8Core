@@ -132,7 +132,7 @@ namespace terminalGoogle.Actions
         {
             CurrentActivityStorage.RemoveByLabel(ColumnHeadersCrateLabel);
             var googleAuth = GetGoogleAuthToken();
-            //If spreadsheet selection is cleared we remove worksheet DDLB from the controls
+            //If spreadsheet selection is cleared we hide worksheet DDLB
             if (string.IsNullOrEmpty(ConfigurationControls.SpreadsheetList.selectedKey))
             {
                 ConfigurationControls.HideWorksheetList();
