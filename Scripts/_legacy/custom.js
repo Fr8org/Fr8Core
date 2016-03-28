@@ -22,7 +22,21 @@ $(document).ready(function () {
     if ($('#emailInfoBox').length > 0) {
         $("body").removeClass('view-popup-window');
     }
+
+
+    toggleOrganizationName($("#HasOrganization"));
+    $('#HasOrganization').change(function () {
+        toggleOrganizationName($(this));
+    });
 });
+
+function toggleOrganizationName($orgNameElement) {
+    if ($orgNameElement.is(":checked")) {
+        $("#register-organization-name").show();
+    } else {
+        $("#register-organization-name").hide();
+    }
+}
 
 function getLogiTop() {
     containerHeight = $(window).height() - $('.site-footer').height() - $('.site-header-wrap').height() - 30;

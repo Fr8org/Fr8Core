@@ -26,7 +26,7 @@ namespace terminalSalesforceTests.Intergration
             get { return "terminalSalesforce"; }
         }
 
-        [Test, Ignore("Vas is currently solving issues with Salesforce authorization")]
+        [Test]
         public async Task GetSalesforceData_Into_SendEmail_EndToEnd()
         {
             //Create the required plan
