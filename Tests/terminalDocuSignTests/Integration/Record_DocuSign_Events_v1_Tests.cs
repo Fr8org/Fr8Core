@@ -83,11 +83,6 @@ namespace terminalDocuSignTests.Integration
         /// Wait for HTTP-500 exception when Auth-Token is not passed to initial configuration.
         /// </summary>
         [Test]
-        [ExpectedException(
-            ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""No AuthToken provided.""}",
-            MatchType = MessageMatch.Contains
-        )]
         public async Task Record_DocuSign_Events_Initial_Configuration_NoAuth()
         {
             var configureUrl = GetTerminalConfigureUrl();
@@ -95,10 +90,15 @@ namespace terminalDocuSignTests.Integration
             var dataDTO = await HealthMonitor_FixtureData.Record_Docusign_v1_InitialConfiguration_Fr8DataDTO(this);
             dataDTO.ActivityDTO.AuthToken = null;
 
-            await HttpPostAsync<Fr8DataDTO, JToken>(
+            var response = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                 configureUrl,
                 dataDTO
             );
+
+            Assert.NotNull(response);
+            Assert.NotNull(response.CrateStorage);
+            Assert.NotNull(response.CrateStorage.Crates);
+            Assert.True(response.CrateStorage.Crates.Any(x => x.ManifestType == "Standard Authentication"));
         }
 
         /// <summary>
