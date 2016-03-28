@@ -107,7 +107,7 @@ namespace terminalFr8Core.Actions
 #elif RELEASE
                     "http://www.fr8.co" +
 #endif
-                    "/dashboard#/plans/" + createdPlan.Plan.Id+ "/builder",
+                    "/dashboard#/plans/" + createdPlan.Plan.Id+ "/builder?kioskMode=true",
                     Name = "url_text"
                 });
             }

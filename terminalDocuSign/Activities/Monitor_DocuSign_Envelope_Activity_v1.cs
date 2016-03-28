@@ -17,7 +17,6 @@ using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Services;
 using Data.States;
 using Data.Validations;
-using DocuSign.Integrations.Client;
 
 namespace terminalDocuSign.Actions
 {
@@ -90,29 +89,7 @@ namespace terminalDocuSign.Actions
 
         public override Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            //create DocuSign account, publish URL and other user selected options
-            var result = GetUserSelectedEnvelopeEvents(curActivityDO);
-            //create or update the DocuSign connect profile configuration
-            CreateOrUpdateDocuSignConnectConfiguration(result);
             return Task.FromResult(curActivityDO);
-        }
-
-        /// <summary>
-        /// Tries to get existing Docusign connect configuration named "DocuSignConnectName" for current user
-        /// </summary>
-        private Configuration GetDocuSignConnectConfiguration(DocuSignAccount account)
-        {
-            //get all connect profiles from DocuSign for the given account
-            var connectProfile = account.GetDocuSignConnectProfiles();
-
-            //if DocuSignConnectName is already present, return the config
-            if (connectProfile.configurations.Any(config => config.name == DocuSignConnectName))
-            {
-                return connectProfile.configurations.First(config => config.name == DocuSignConnectName);
-            }
-
-            //if nothing found, return NULL
-            return null;
         }
 
         protected internal override ValidationResult ValidateActivityInternal(ActivityDO curActivityDO)
@@ -196,22 +173,11 @@ namespace terminalDocuSign.Actions
             {
                 envelopeEvents.Add(DocuSignOnEnvelopeSignedEvent);
                 }
-            //get existing connect configuration
-            DocuSignAccount.CreateOrUpdateDefaultDocuSignConnectConfiguration(string.Join(",", envelopeEvents));
+
         }
 
         public override Task<ActivityDO> Deactivate(ActivityDO curActivityDO)
         {
-            //get existing DocuSign connect profile
-            var docuSignAccount = new DocuSignAccount();
-            var existingConfig = GetDocuSignConnectConfiguration(docuSignAccount);
-
-            //if there is a config existing, delete the connect configuration
-            if (existingConfig != null)
-            {
-                docuSignAccount.DeleteDocuSignConnectProfile(existingConfig.connectId);
-            }
-
             return Task.FromResult(curActivityDO);
         }
 

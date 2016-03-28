@@ -1,5 +1,4 @@
 ﻿using Data.Entities;
-using DocuSign.Integrations.Client;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;

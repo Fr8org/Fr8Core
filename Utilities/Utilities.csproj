@@ -157,7 +157,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="DocuSign.Integration.Client.dll" />
     <Content Include="Fr8.AI.DependencyCollector.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

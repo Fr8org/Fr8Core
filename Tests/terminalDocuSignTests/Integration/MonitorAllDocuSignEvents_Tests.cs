@@ -38,6 +38,9 @@ namespace terminalDocuSignTests.Integration
         private const string DocuSignEmail = "fr8.madse.testing@gmail.com"; // "freight.testing@gmail.com";
         private const string DocuSignApiPassword = "I6HmXEbCxN";
 
+        private string ConnectName = "madse-connect";
+        private string publishUrl;
+
 
         protected override string TestUserEmail
         {
@@ -88,7 +91,20 @@ namespace terminalDocuSignTests.Integration
                     .AsQueryable<DocuSignEnvelopeCM>(testAccount.Id.ToString())
                     .Count();
 
-                await SendDocuSignTestEnvelope();
+                //Set up DS
+                var authToken = await Authenticate();
+                var authTokenDO = new AuthorizationTokenDO() { Token = authToken.Token };
+                var docuSignManager = new DocuSignManager();
+                var loginInfo = docuSignManager.SetUp(authTokenDO);
+
+                //Create connect
+                ConnectName += DateTime.Now.ToShortDateString();
+                publishUrl = "http://" + CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint") + "/terminals/terminalDocuSign/events"; 
+                var docusignConnect = new DocuSignConnect();
+                string connectId = docusignConnect.CreateOrActivateConnect(loginInfo, ConnectName, publishUrl);
+
+                //send envelope
+                await SendDocuSignTestEnvelope(docuSignManager, loginInfo, authTokenDO);
 
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
@@ -107,6 +123,8 @@ namespace terminalDocuSignTests.Integration
                         break;
                     }
                 }
+
+                docusignConnect.DeleteConnect(loginInfo, connectId);
 
                 Assert.IsTrue(mtDataCountBefore < mtDataCountAfter);
             }
@@ -211,15 +229,8 @@ namespace terminalDocuSignTests.Integration
             return docuSignToken;
         }
 
-        private async Task SendDocuSignTestEnvelope()
+        private async Task SendDocuSignTestEnvelope(DocuSignManager docuSignManager, DocuSignApiConfiguration loginInfo, AuthorizationTokenDO authTokenDO)
         {
-            var authToken = await Authenticate();
-            var authTokenDO = new AuthorizationTokenDO() { Token = authToken.Token };
-            var docuSignManager = new DocuSignManager();
-
-            var loginInfo = docuSignManager.SetUp(authTokenDO);
-            var password = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token).ApiPassword;
-
             var rolesList = new List<FieldDTO>()
             {
                 new FieldDTO()
