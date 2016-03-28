@@ -33,41 +33,48 @@
         <toast></toast>
     </div>
     <!-- BEGIN PAGE SPINNER -->
-    <div class="main-wrapper">
-        <div ng-spinner-bar class="page-spinner-bar">
-            <div class="bounce1"></div>
-            <div class="bounce2"></div>
-            <div class="bounce3"></div>
-        </div>
-        <!-- END PAGE SPINNER -->
-        <!-- BEGIN HEADER -->
+<div class="main-wrapper">
+    <div ng-spinner-bar class="page-spinner-bar">
+        <div class="bounce1"></div>
+        <div class="bounce2"></div>
+        <div class="bounce3"></div>
+    </div>
+    <!-- END PAGE SPINNER -->
+    <!-- BEGIN HEADER -->
+    <div ui-view="header">
         <div data-ng-include="'/AngularTemplate/Header'" data-ng-controller="HeaderController" class="page-header">
         </div>
-        <!-- END HEADER -->
+    </div>
 
-        <div class="clearfix">
-        </div>
+    <!-- END HEADER -->
 
-        <!-- BEGIN CONTAINER -->
-        <div class="page-container" long-ajax-cursor>
+    <div class="clearfix">
+    </div>
 
-            <!-- BEGIN PAGE CONTENT -->
-            <div class="page-content">
-                <div class="container-fluid">
-                    <!-- BEGIN ACTUAL CONTENT -->
-                    <div ui-view>
-                    </div>
-                    <!-- END ACTUAL CONTENT -->
+    <!-- BEGIN CONTAINER -->
+    <div class="page-container" long-ajax-cursor>
+
+        <!-- BEGIN PAGE CONTENT -->
+        <div class="page-content">
+            <div class="container-fluid">
+                <!-- BEGIN ACTUAL CONTENT -->
+                <div ui-view>
                 </div>
+                <!-- END ACTUAL CONTENT -->
             </div>
-            <!-- END PAGE CONTENT -->
+        </div>
+        <!-- END PAGE CONTENT -->
 
+    </div>
+</div>
+
+<!-- END CONTAINER -->
+    <div ui-view="footer">
+        <div data-ng-include="'/AngularTemplate/Footer'" sticky-footer=".main-wrapper" data-ng-controller="FooterController">
         </div>
     </div>
-    <!-- END CONTAINER -->
-    <!-- BEGIN FOOTER -->
-    <div data-ng-include="'/AngularTemplate/Footer'" sticky-footer=".main-wrapper" data-ng-controller="FooterController">
-    </div>
+<!-- BEGIN FOOTER -->
+    
     <!-- END FOOTER -->
     <!-- BEGIN JAVASCRIPTS(Load javascripts at bottom, this will reduce page load time) -->
     <!-- BEGIN CORE JQUERY PLUGINS -->

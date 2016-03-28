@@ -865,6 +865,7 @@
     <Content Include="Views\AngularTemplate\SubplanHeader.cshtml" />
     <Content Include="Views\AngularTemplate\ControlContainer.cshtml" />
     <Content Include="Views\AngularTemplate\ControlList.cshtml" />
+    <Content Include="Views\AngularTemplate\Empty.cshtml" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
     <Content Include="Scripts\templateCache.js" />
@@ -1024,6 +1025,7 @@
     <Content Include="Views\AngularTemplate\TimePicker.cshtml" />
     <Content Include="Views\Shared\_HomeNavNew.cshtml" />
     <Content Include="Views\Shared\_HomePageNew.cshtml" />
+    <Content Include="Views\AngularTemplate\PlanBuilder_KioskMode.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
