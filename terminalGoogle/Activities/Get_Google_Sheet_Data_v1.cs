@@ -110,7 +110,7 @@ namespace terminalGoogle.Actions
             return JsonConvert.DeserializeObject<GoogleAuthDTO>((authTokenDO ?? AuthorizationToken).Token);
         }
 
-        protected override bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
+        public override bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
         {
             if (base.NeedsAuthentication(authTokenDO))
             {

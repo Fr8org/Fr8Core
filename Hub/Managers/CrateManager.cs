@@ -80,11 +80,12 @@ namespace Hub.Managers
             return JsonConvert.SerializeObject(CrateStorageSerializer.Default.ConvertToDto(storage));
         }
 
-        public Crate CreateAuthenticationCrate(string label, AuthenticationMode mode)
+        public Crate CreateAuthenticationCrate(string label, AuthenticationMode mode, bool revocation)
         {
             return Crate.FromContent(label, new StandardAuthenticationCM()
             {
-                Mode = mode
+                Mode = mode,
+                Revocation = revocation
             });
         }
 

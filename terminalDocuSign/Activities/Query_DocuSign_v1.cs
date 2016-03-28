@@ -101,9 +101,9 @@ namespace terminalDocuSign.Actions
 
         protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            if (NeedsAuthentication(authTokenDO))
+            if (CheckAuthentication(curActivityDO, authTokenDO))
             {
-                throw new ApplicationException("No AuthToken provided.");
+                return Task.FromResult(curActivityDO);
             }
 
             var configurationCrate = PackControls(new ActivityUi());
