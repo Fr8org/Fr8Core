@@ -1,21 +1,18 @@
 
 using System;
 using System.Linq;
-using System.Net.Mail;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using Microsoft.AspNet.Identity;
-using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using Data.States;
+using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Services;
+using HubWeb.ViewModels;
+using StructureMap;
 using Utilities;
 using Utilities.Logging;
-using HubWeb.ViewModels;
-using Data.Migrations;
 
 namespace HubWeb.Controllers
 {
@@ -23,10 +20,12 @@ namespace HubWeb.Controllers
     public class DockyardAccountController : Controller
     {
         private readonly Fr8Account _account;
+        private readonly IOrganization _organization;
 
         public DockyardAccountController()
         {
             _account = ObjectFactory.GetInstance<Fr8Account>();
+            _organization = ObjectFactory.GetInstance<IOrganization>();
         }
 
         [AllowAnonymous]
@@ -94,17 +93,31 @@ namespace HubWeb.Controllers
                 if (ModelState.IsValid)
                 {
                     RegistrationStatus curRegStatus;
-                    if (!String.IsNullOrWhiteSpace(submittedRegData.GuestUserTempEmail))
+                    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
-                        curRegStatus = await _account.UpdateGuestUserRegistration(submittedRegData.Email.Trim()
-                            , submittedRegData.Password.Trim()
-                            , submittedRegData.GuestUserTempEmail);
+                        OrganizationDO organizationDO = null;
+                        //check for organizations 
+                        if (submittedRegData.HasOrganization && !string.IsNullOrEmpty(submittedRegData.OrganizationName))
+                        {
+                            organizationDO = _organization.GetOrCreateOrganization(uow, submittedRegData.OrganizationName);
+                        }
+                        
+                        if (!String.IsNullOrWhiteSpace(submittedRegData.GuestUserTempEmail))
+                        {
+                            curRegStatus = await _account.UpdateGuestUserRegistration(uow, submittedRegData.Email.Trim()
+                                , submittedRegData.Password.Trim()
+                                , submittedRegData.GuestUserTempEmail, organizationDO);
+                        }
+                        else
+                        {
+                            curRegStatus = _account.ProcessRegistrationRequest(uow,
+                                submittedRegData.Email.Trim(), submittedRegData.Password.Trim(),
+                                organizationDO);
+                        }
+
+                        uow.SaveChanges();
                     }
-                    else
-                    {
-                        curRegStatus = _account.ProcessRegistrationRequest(
-                            submittedRegData.Email.Trim(), submittedRegData.Password.Trim());
-                    }
+
                     if (curRegStatus == RegistrationStatus.UserMustLogIn)
                     {
                         ModelState.AddModelError("", @"You are already registered with us. Please login.");

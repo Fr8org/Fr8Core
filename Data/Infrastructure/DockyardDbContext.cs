@@ -18,6 +18,7 @@ using Utilities.Configuration.Azure;
 
 namespace Data.Infrastructure
 {
+    [DbConfigurationType(typeof(Fr8DbConfiguration))]
     public class DockyardDbContext : IdentityDbContext<IdentityUser>, IDBContext
     {
         public static string DefaultConnectionStringName
@@ -51,7 +52,6 @@ namespace Data.Infrastructure
         public DockyardDbContext()
             : base(GetEFConnectionDetails())
         {
-            
             Database.SetInitializer(new MigrateDatabaseToLatestVersion<DockyardDbContext, Data.Migrations.MigrationConfiguration>());
         }
 
@@ -371,6 +371,11 @@ namespace Data.Infrastructure
                 .HasForeignKey(x => x.WebServiceId)
                 .WillCascadeOnDelete(false);
 
+            modelBuilder.Entity<OrganizationDO>().ToTable("Organizations")
+                .HasMany(x=>x.Fr8Accounts)
+                .WithOptional(x=>x.Organization)
+                .HasForeignKey(x=>x.OrganizationId)
+                .WillCascadeOnDelete(false);
 
             base.OnModelCreating(modelBuilder);
         }

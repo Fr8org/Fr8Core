@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Data.Constants;
 using Data.Control;
@@ -8,6 +9,7 @@ using Data.Crates;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using Data.Repositories.MultiTenant;
 using HealthMonitor.Utility;
 using NUnit.Framework;
 using terminalFr8CoreTests.Fixtures;
@@ -130,11 +132,52 @@ namespace terminalFr8CoreTests.Integration
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var result = uow.MultiTenantObjectRepository.Query<DocuSignEnvelopeCM>("TestUser", x => x.EnvelopeId == envelopeId).FirstOrDefault();
-                Assert.NotNull(result);
-                Assert.AreEqual(time.ToUniversalTime(), result.SentDate.Value.ToUniversalTime(), "Invalid SentDate of stored envelope");
-                Assert.AreEqual(time2.ToUniversalTime(), result.CreateDate.Value.ToUniversalTime(), "Invalid CreateDate of stored envelope");
-                Assert.AreEqual("Sent", result.Status, "Invalid status of stored envelope");
+                Assert.NotNull(result, DumpDebugInfo());
+
+                Assert.NotNull(result.SentDate, "Sent date is null");
+                Assert.NotNull(result.CreateDate, "Sent date is null");
+
+                Assert.AreEqual(time.ToUniversalTime(), result.SentDate.Value.ToUniversalTime(), "Invalid SentDate of stored envelope. " +  DumpDebugInfo());
+                Assert.AreEqual(time2.ToUniversalTime(), result.CreateDate.Value.ToUniversalTime(), "Invalid CreateDate of stored envelope. " + DumpDebugInfo());
+                Assert.AreEqual("Sent", result.Status, "Invalid status of stored envelope. " + DumpDebugInfo());
             }
+        }
+
+        private string DisplayTypeResolution<T>()
+        {
+            try
+            {
+                var type = ObjectFactory.GetInstance<T>();
+                return typeof (T).Name + " is resolved to " + type.GetType().FullName;
+            }
+            catch (Exception)
+            {
+                return $"failed to resolve {typeof (T).Name}";
+            }
+        }
+
+        private string ResolveConnectionString()
+        {
+            try
+            {
+                var provider = ObjectFactory.GetInstance<IMtConnectionProvider>();
+                return provider.ConnectionInfo?.ToString() ?? "No connection info available";
+            }
+            catch
+            {
+                return "Unable to resolve connection string";
+            }
+        }
+
+        private string DumpDebugInfo()
+        {
+            StringBuilder debugInfo = new StringBuilder("\n");
+
+            debugInfo.AppendLine(DisplayTypeResolution<IMtConnectionProvider>());
+            debugInfo.AppendLine(DisplayTypeResolution<IMtTypeStorageProvider>());
+            debugInfo.AppendLine($"Current connection string for MT is: {ResolveConnectionString()}");
+
+            return debugInfo.ToString();
         }
     }
 }

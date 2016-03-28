@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Threading;
+﻿using System.Linq;
 using System.Threading.Tasks;
-using Data.Control;
 using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
 using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using NUnit.Framework;
 using terminalGoogleTests.Unit;
 
@@ -53,7 +47,6 @@ namespace terminalGoogleTests.Integration
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             AssertCrateTypes_OnConfiguration(crateStorage);
-            AssertControls_OnConfiguration(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single());
         }
 
         private void AssertCrateTypes_OnConfiguration(ICrateStorage crateStorage)
@@ -61,23 +54,6 @@ namespace terminalGoogleTests.Integration
             Assert.AreEqual(2, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
         }
-
-        private void AssertControls_OnConfiguration(StandardConfigurationControlsCM controls)
-        {
-            Assert.AreEqual(2, controls.Controls.Count);
-
-            // Assert that first control is a DropDownList 
-            // with Label == "Select a Google Spreadsheet"
-            // and event: onChange => requestConfig.
-            Assert.IsTrue(controls.Controls[0] is DropDownList);
-            Assert.AreEqual("Select a Google Spreadsheet", controls.Controls[0].Label);
-            Assert.AreEqual(1, controls.Controls[0].Events.Count);
-            Assert.AreEqual("onChange", controls.Controls[0].Events[0].Name);
-            Assert.AreEqual("requestConfig", controls.Controls[0].Events[0].Handler);
-            Assert.AreEqual("This Action will try to extract a table of rows from the first worksheet in" +
-                            " the selected spreadsheet. The rows should have a header row.", controls.Controls[1].Value);
-        }
-
         /////////////
         /// Initial Configuration Tests End
         /////////////
@@ -115,9 +91,8 @@ namespace terminalGoogleTests.Integration
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             Assert.AreEqual(4, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardTableDataCM>().Count());
-            Assert.AreEqual(0, crateStorage.CratesOfType<CrateDescriptionCM>().Count());
-            Assert.IsFalse(crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.FirstRowHeaders);
+            Assert.AreEqual(2, crateStorage.CratesOfType<FieldDescriptionsCM>().Count());
+            Assert.AreEqual(1, crateStorage.CratesOfType<CrateDescriptionCM>().Count());
             
             // Due to performance issue, remove functionalilty to load table contents
             //  Assert.AreEqual("(2,1)", crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.Table[0].Row[0].Cell.Value);
@@ -153,9 +128,8 @@ namespace terminalGoogleTests.Integration
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             Assert.AreEqual(4, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardTableDataCM>().Count());
-            Assert.AreEqual(0, crateStorage.CratesOfType<CrateDescriptionCM>().Count());
-            Assert.IsFalse(crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.FirstRowHeaders);
+            Assert.AreEqual(2, crateStorage.CratesOfType<FieldDescriptionsCM>().Count());
+            Assert.AreEqual(1, crateStorage.CratesOfType<CrateDescriptionCM>().Count());
 
             // Due to performance issue, remove functionalilty to load table contents
            // Assert.AreEqual("(2,1)", crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.Table[0].Row[0].Cell.Value);
@@ -188,12 +162,10 @@ namespace terminalGoogleTests.Integration
             Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
-            Assert.AreEqual(3, crateStorage.Count);
+            Assert.AreEqual(4, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
-            Assert.AreEqual(0, crateStorage.CratesOfType<CrateDescriptionCM>().Count());
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardTableDataCM>().Count());
-            Assert.IsFalse(crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.FirstRowHeaders);
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.Table.Count);
+            Assert.AreEqual(1, crateStorage.CratesOfType<CrateDescriptionCM>().Count());
+            Assert.AreEqual(2, crateStorage.CratesOfType<FieldDescriptionsCM>().Count());
         }
         /////////////
         /// Followup Configuration End
@@ -317,21 +289,6 @@ namespace terminalGoogleTests.Integration
         //    //Act
         //    await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
         //}
-        /// <summary>
-        /// Test run-time without Auth-Token.
-        /// </summary>
-        [Test, Category("Integration.terminalGoogle")]
-        public async Task Get_Google_Sheet_Data_v1_Run_NoAuth()
-        {
-
-            var runUrl = GetTerminalRunUrl();
-
-            var dataDTO = HealthMonitor_FixtureData.Get_Google_Sheet_Data_v1_InitialConfiguration_Fr8DataDTO();
-            dataDTO.ActivityDTO.AuthToken = null;
-            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
-            var payload = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
-            CheckIfPayloadHasNeedsAuthenticationError(payload);
-        }
         /// <summary>
         /// This test verifies that the crate label is updated in accord with spreadsheet name
         /// </summary>

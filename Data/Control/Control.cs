@@ -7,6 +7,7 @@ using Data.Crates;
 using Data.Helpers;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using Data.States;
 using Newtonsoft.Json;
 
 namespace Data.Control
@@ -83,6 +84,22 @@ namespace Data.Control
         {
             ListItems = new List<ListItem>();
             Type = "DropDownList";
+        }
+
+        public void SelectByKey(string key)
+        {
+            SelectItem(ListItems?.FirstOrDefault(x => x.Key == key));
+        }
+
+        public void SelectByValue(string value)
+        {
+            SelectItem(ListItems?.FirstOrDefault(x => x.Value == value));
+        }
+
+        private void SelectItem(ListItem newItem)
+        {
+            selectedKey = newItem?.Key;
+            Value = newItem?.Value;
         }
     }
 
@@ -527,6 +544,9 @@ namespace Data.Control
 
         [JsonProperty("requestUpstream")]
         public bool RequestUpstream { get; set; }
+
+        [JsonProperty("availabilityType")]
+        public AvailabilityType AvailabilityType { get; set; }
 
         public FieldSourceDTO()
         {
