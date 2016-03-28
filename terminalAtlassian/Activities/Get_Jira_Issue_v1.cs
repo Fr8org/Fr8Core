@@ -28,7 +28,10 @@ namespace terminalAtlassian.Actions
 
         public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            CheckAuthentication(authTokenDO);
+            if (CheckAuthentication(curActivityDO, authTokenDO))
+            {
+                return curActivityDO;
+            }
 
             return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
         }
@@ -56,9 +59,11 @@ namespace terminalAtlassian.Actions
 
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            CheckAuthentication(authTokenDO);
-
             var payloadCrates = await GetPayload(curActivityDO, containerId);
+            if (NeedsAuthentication(authTokenDO))
+            {
+                return NeedsAuthenticationError(payloadCrates);
+            }
 
             string jiraKey = ExtractJiraKey(curActivityDO);
             var jiraIssue = _atlassianService.GetJiraIssue(jiraKey, authTokenDO);

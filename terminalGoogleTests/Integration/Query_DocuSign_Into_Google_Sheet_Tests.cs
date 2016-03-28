@@ -51,16 +51,16 @@ namespace terminalGoogleTests.Integration
                 await plansHelper.RunPlan(thePlan.Plan.Id);
                 
                 //add asserts here
-                var googleSheets = googleSheetApi.EnumerateSpreadsheetsUris(HealthMonitor_FixtureData.NewGoogle_AuthToken_As_GoogleAuthDTO());
+                var googleSheets = await googleSheetApi.GetSpreadsheets(HealthMonitor_FixtureData.NewGoogle_AuthToken_As_GoogleAuthDTO());
 
                 Assert.IsNotNull(googleSheets.FirstOrDefault(x => x.Value == newSpeadsheetName),"New created spreadsheet was not found into existing google files.");
                 var spreadSheeturl = googleSheets.FirstOrDefault(x => x.Value == newSpeadsheetName).Key;
 
                 //find spreadsheet
-                var worksheets = await googleSheetApi.GetWorksheetsAsync(spreadSheeturl, HealthMonitor_FixtureData.NewGoogle_AuthToken_As_GoogleAuthDTO());
+                var worksheets = await googleSheetApi.GetWorksheets(spreadSheeturl, HealthMonitor_FixtureData.NewGoogle_AuthToken_As_GoogleAuthDTO());
                 Assert.IsNotNull(worksheets.FirstOrDefault(x => x.Value == "Sheet1"), "Worksheet was not found into newly created google excel file.");
                 var worksheetUri = worksheets.FirstOrDefault(x => x.Value == "Sheet1").Key;
-                var dataRows = googleSheetApi.EnumerateDataRows(spreadSheeturl, worksheetUri, HealthMonitor_FixtureData.NewGoogle_AuthToken_As_GoogleAuthDTO());
+                var dataRows = await googleSheetApi.GetData(spreadSheeturl, worksheetUri, HealthMonitor_FixtureData.NewGoogle_AuthToken_As_GoogleAuthDTO());
 
                 //file should contain 11 envelopes saved
                 var numberOfEnvelopes = dataRows.ToList().Count();
