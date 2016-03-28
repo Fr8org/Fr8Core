@@ -14,8 +14,10 @@ namespace terminalDocuSign.Services.New_Api
 
         List<ConnectConfiguration> ListConnects(DocuSignApiConfiguration conf);
 
-        void ActivateConnect(DocuSignApiConfiguration conf, ConnectConfiguration connect);
+        string ActivateConnect(DocuSignApiConfiguration conf, ConnectConfiguration connect);
 
-        void CreateOrActivateConnect(DocuSignApiConfiguration conf, string name, string url);
+        string CreateOrActivateConnect(DocuSignApiConfiguration conf, string name, string url);
+
+        void DeleteConnect(DocuSignApiConfiguration conf, string connectId);
     }
 }

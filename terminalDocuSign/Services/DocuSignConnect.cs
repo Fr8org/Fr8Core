@@ -27,23 +27,30 @@ namespace terminalDocuSign.Services
             else return new List<ConnectConfiguration>();
         }
 
-        public void ActivateConnect(DocuSignApiConfiguration conf, ConnectConfiguration connect)
+        public string ActivateConnect(DocuSignApiConfiguration conf, ConnectConfiguration connect)
         {
             var connectApi = new ConnectApi(conf.Configuration);
             connect.allowEnvelopePublish = "true";
-            connectApi.UpdateConnect(conf.AccountId, connect);
+            var response = connectApi.UpdateConnect(conf.AccountId, connect);
+            return response.Data.connectId;
         }
 
-        public void CreateOrActivateConnect(DocuSignApiConfiguration conf, string name, string url)
+        public string CreateOrActivateConnect(DocuSignApiConfiguration conf, string name, string url)
         {
             var connectApi = new ConnectApi(conf.Configuration);
             var connects = ListConnects(conf);
 
             var existing_connect = connects.Where(a => a.name != null && a.name == name & a.urlToPublishTo != null && a.urlToPublishTo == url).FirstOrDefault();
             if (existing_connect != null)
-                ActivateConnect(conf, existing_connect);
+                return ActivateConnect(conf, existing_connect);
             else
-                CreateConnect(conf, name, url);
+                return CreateConnect(conf, name, url);
+        }
+
+        public void DeleteConnect(DocuSignApiConfiguration conf, string connectId)
+        {
+            var connectApi = new ConnectApi(conf.Configuration);
+            connectApi.DeleteConnect(conf.AccountId, connectId);
         }
     }
 }
