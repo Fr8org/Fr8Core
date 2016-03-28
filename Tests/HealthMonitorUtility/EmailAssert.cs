@@ -52,22 +52,22 @@ namespace HealthMonitor.Utility
 
             using (Pop3Client client = new Pop3Client())
             {
-                client.Connect(_hostname, _port, _useSsl);
-                client.Authenticate(_username, _password);
-
                 DateTime timeToCompare = methodCalledTime; // First time use method call time to compare time
                 while (DateTime.UtcNow < methodCalledTime + _timeout)
                 {
+                    client.Connect(_hostname, _port, _useSsl);
+                    client.Authenticate(_username, _password);
                     if (CheckEmail(client, expectedFromAddr, expectedSubject, timeToCompare, deleteMailOnSuccess))
                     {
                         client.Disconnect();
                         return;
                     }
-                    System.Threading.Thread.Sleep(5000);
+                    client.Disconnect();
+                    System.Threading.Thread.Sleep(10000);
                     timeToCompare = DateTime.UtcNow; // Next time use current iteration call time 
                 }
                 throw new AssertionException(String.Format(
-                        "Email to {0} was not received within the timeout period {1}.", 
+                        "Email to {0} was not received within the timeout period {1}.",
                         _testEmail,
                         _timeout.ToString()));
             }
@@ -81,19 +81,19 @@ namespace HealthMonitor.Utility
             for (int i = messageCount; i > 0; i--)
             {
                 msg = client.GetMessageHeaders(i);
-                Console.Write($"Message: {msg.DateSent} {msg.Subject} ");
+                Console.Write($"{DateTime.UtcNow.ToLongTimeString()} Message: {msg.DateSent} | {msg.Subject} | ");
                 if (ValidateTime(RecentMsgThreshold, startTime, msg.DateSent))
                 {
                     if (ValidateConditions(expectedFromAddr, expectedSubject, msg))
                     {
                         Console.Write("Match" + Environment.NewLine);
-                        if(deleteMailOnSuccess)
+                        if (deleteMailOnSuccess)
                         {
                             client.DeleteMessage(i);
                         }
                         return true;
                     }
-                }   
+                }
                 else
                 {
                     Console.Write("Wrong time" + Environment.NewLine);
@@ -105,7 +105,7 @@ namespace HealthMonitor.Utility
 
         private static bool ValidateConditions(string expectedFromAddr, string expectedSubject, MessageHeader msg)
         {
-            return string.Equals(expectedFromAddr, msg.From.Address, StringComparison.InvariantCultureIgnoreCase) 
+            return string.Equals(expectedFromAddr, msg.From.Address, StringComparison.InvariantCultureIgnoreCase)
                 && string.Equals(expectedSubject, msg.Subject, StringComparison.InvariantCultureIgnoreCase);
         }
 
