@@ -1,20 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Constants;
 using Data.Control;
 using Data.Crates;
-using Newtonsoft.Json;
-using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
-using Hub.Managers;
 using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 using terminalUtilities.Excel;
-using Utilities;
 
 namespace terminalExcel.Actions
 {
@@ -99,7 +93,7 @@ namespace terminalExcel.Actions
                 {
                     var selectedFileDescription = new FieldDTO(ConfigurationControls.FilePicker.Value, ExtractFileName(ConfigurationControls.FilePicker.Value));
                     var columnHeadersCrate = Crate.FromContent(ColumnHeadersCrateLabel,
-                                                               ExcelUtils.GetColumnHeadersData(selectedFileDescription.Key),
+                                                               await Task.Run(() => ExcelUtils.GetColumnHeadersData(selectedFileDescription.Key)),
                                                                AvailabilityType.Always);
                     ConfigurationControls.MarkFileAsUploaded(selectedFileDescription.Value, selectedFileDescription.Key);
                     CurrentActivityStorage.ReplaceByLabel(columnHeadersCrate);
@@ -115,7 +109,7 @@ namespace terminalExcel.Actions
             {
                 throw new ActivityExecutionException("Excel file is not selected", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
             }
-            CurrentPayloadStorage.Add(Crate.FromContent(RunTimeCrateLabel, ExcelUtils.GetTableData(ConfigurationControls.FilePicker.Value), AvailabilityType.RunTime));
+            CurrentPayloadStorage.Add(Crate.FromContent(RunTimeCrateLabel, await Task.Run(() => ExcelUtils.GetTableData(ConfigurationControls.FilePicker.Value)), AvailabilityType.RunTime));
         }
 
         private FieldDTO SelectedFileDescription
