@@ -15,7 +15,7 @@
                     <h4 class="modal-title">Services</h4>
                 </div>
                 <div style="height: 100%; overflow: hidden; max-height: 230px;" mb-scrollbar="">
-                    <div data-ng-repeat="webServiceAction in webServiceActionList"
+                    <div data-ng-repeat="webServiceAction in webServiceActionList | orderBy:'webServiceName' | orderBy:sortBuiltinServices"
                          data-ng-click="setActiveTerminal($index)"
                          class="web-service-action">
                         <div class="media activity-list">
