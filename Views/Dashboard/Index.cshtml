@@ -29,7 +29,6 @@
 <!-- DOC: Apply "page-header-menu-fixed" class to set the mega menu fixed  -->
 <!-- DOC: Apply "page-header-top-fixed" class to set the top menu fixed  -->
 <body ng-controller="AppController" class="page-on-load">
-
     <div ng-controller="NotifierController">
         <toast></toast>
     </div>
@@ -37,45 +36,51 @@
     <div ng-controller="NotifierController" layout="column" style="height:500px;" ng-cloak>
         <section layout="row" flex>
             <md-content flex layout-padding>
-                <!-- BEGIN PAGE SPINNER -->
-                <div class="main-wrapper">
+    <!-- BEGIN PAGE SPINNER -->
+    <div class="main-wrapper">
                     <div>
-                        <div ng-spinner-bar class="page-spinner-bar">
-                            <div class="bounce1"></div>
-                            <div class="bounce2"></div>
-                            <div class="bounce3"></div>
-                        </div>
-                        <!-- END PAGE SPINNER -->
-                        <!-- BEGIN HEADER -->
-                        <div data-ng-include="'/AngularTemplate/Header'" data-ng-controller="HeaderController" class="page-header">
-                        </div>
-                        <!-- END HEADER -->
+        <div ng-spinner-bar class="page-spinner-bar">
+            <div class="bounce1"></div>
+            <div class="bounce2"></div>
+            <div class="bounce3"></div>
+        </div>
+        <!-- END PAGE SPINNER -->
+        <!-- BEGIN HEADER -->
+    <div ui-view="header">
+        <div data-ng-include="'/AngularTemplate/Header'" data-ng-controller="HeaderController" class="page-header">
+        </div>
+    </div>
 
-                        <div class="clearfix">
-                        </div>
+        <!-- END HEADER -->
 
-                        <!-- BEGIN CONTAINER -->
-                        <div class="page-container" long-ajax-cursor>
+        <div class="clearfix">
+        </div>
 
-                            <!-- BEGIN PAGE CONTENT -->
-                            <div class="page-content">
-                                <div class="container-fluid">
-                                    <!-- BEGIN ACTUAL CONTENT -->
-                                    <div ui-view>
-                                    </div>
-                                    <!-- END ACTUAL CONTENT -->
-                                </div>
-                            </div>
-                            <!-- END PAGE CONTENT -->
+        <!-- BEGIN CONTAINER -->
+        <div class="page-container" long-ajax-cursor>
 
-                        </div>
+            <!-- BEGIN PAGE CONTENT -->
+            <div class="page-content">
+                <div class="container-fluid">
+                    <!-- BEGIN ACTUAL CONTENT -->
+                    <div ui-view>
                     </div>
+                    <!-- END ACTUAL CONTENT -->
                 </div>
-                <!-- END CONTAINER -->
-                <!-- BEGIN FOOTER -->
-                <div data-ng-include="'/AngularTemplate/Footer'" sticky-footer=".main-wrapper" data-ng-controller="FooterController">
+            </div>
+            <!-- END PAGE CONTENT -->
+
+        </div>
+    </div>
                 </div>
-                <!-- END FOOTER -->
+    <!-- END CONTAINER -->
+    <div ui-view="footer">
+    <div data-ng-include="'/AngularTemplate/Footer'" sticky-footer=".main-wrapper" data-ng-controller="FooterController">
+    </div>
+    </div>
+<!-- BEGIN FOOTER -->
+    
+    <!-- END FOOTER -->
             </md-content>
             <md-sidenav class="md-sidenav-right md-whiteframe-4dp" md-component-id="right" md-is-locked-open="true" md-disable-backdrop>
                 <md-toolbar style="background-color:rgb(38, 166, 154)" class="md-theme-light">

@@ -226,7 +226,11 @@ module dockyard.controllers {
                 createdSubPlan.activities = [];
                 createdSubPlan.criteria = null;
                 currentPlan.subPlans.push(createdSubPlan);
-                this.renderPlan(<interfaces.IPlanVM>currentPlan);
+
+                //dirty hack
+                var processedGroup = this.LayoutService.addEmptyProcessedGroup(createdSubPlan.subPlanId);
+                this.$scope.processedSubPlans.push({ subPlan: createdSubPlan, actionGroups: processedGroup });
+                //this.renderPlan(<interfaces.IPlanVM>currentPlan);
             });
         }
 
@@ -434,7 +438,7 @@ module dockyard.controllers {
         }
 
         private renderActions(activitiesCollection: model.ActivityDTO[]) {
-            if (activitiesCollection != null && activitiesCollection.length != 0) {
+            if (activitiesCollection != null && activitiesCollection.length !== 0) {
                 this.$scope.actionGroups = this.LayoutService.placeActions(activitiesCollection,
                     this.$scope.current.plan.startingSubPlanId);
             }
@@ -541,6 +545,10 @@ module dockyard.controllers {
             this.selectAction(action, eventArgs.group);
         }
 
+        private allowsChildren(action: model.ActivityDTO) {
+            return action.activityTemplate.type === 'Loop';
+        }
+
         private addActionToUI(action: model.ActivityDTO, group: model.ActionGroup) {
             this.$scope.current.activities = action;
 
@@ -552,7 +560,21 @@ module dockyard.controllers {
                 subPlan.activities.push(action);
             }
 
-            this.renderPlan(<interfaces.IPlanVM>this.$scope.current.plan);
+            //TODO we need to change rendering code
+
+            if (this.allowsChildren(action)) {
+                this.renderPlan(<interfaces.IPlanVM>this.$scope.current.plan);
+            } else {
+                for (var i = 0; i < this.$scope.processedSubPlans.length; i++) {
+                    var curSubPlan = this.$scope.processedSubPlans[i];
+                    for (var j = 0; j < curSubPlan.actionGroups.length; j++) {
+                        var curActionGroup = <model.ActionGroup>curSubPlan.actionGroups[j];
+                        if (curActionGroup.parentId === action.parentPlanNodeId) {
+                            curActionGroup.envelopes.push(new model.ActivityEnvelope(action));
+                        }
+                    }
+                }
+            }
         }
 
         /*

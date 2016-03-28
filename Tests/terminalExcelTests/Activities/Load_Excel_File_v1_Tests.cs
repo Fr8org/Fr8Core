@@ -47,7 +47,7 @@ namespace terminalExcelTests.Activities
             var activity = new Load_Excel_File_v1();
             var initialConfigurationResult = activity.Configure(new ActivityDO { Id = Guid.NewGuid() }, new AuthorizationTokenDO()).Result;
             var storage = _crateManager.GetStorage(initialConfigurationResult);
-            Assert.AreEqual(1, storage.Count);
+            Assert.AreEqual(2, storage.Count);
             Assert.IsNotNull(storage.FirstCrateOrDefault<StandardConfigurationControlsCM>());
         }
 

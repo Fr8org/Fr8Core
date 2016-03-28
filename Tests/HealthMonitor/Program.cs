@@ -22,6 +22,7 @@ namespace HealthMonitor
             var connectionString = string.Empty;
             var csName = string.Empty;
             var skipLocal = false;
+            var interactive = false;
 
             if (args != null)
             {
@@ -67,6 +68,11 @@ namespace HealthMonitor
                     else if (i > 0 && args[i - 1] == "--overrideDbName" && args[i] != null)
                     {
                         overrideDbName = args[i];
+                    }
+                    //This flag will signal HM to wait for user response before shut down (used when launched directly)
+                    else if (args[i] == "--interactive")
+                    {
+                        interactive = true;
                     }
                 }
 
@@ -122,16 +128,17 @@ namespace HealthMonitor
                     appInsightsInstrumentationKey
                 );
             }
-            catch (Exception)
-            {
-                throw;
-            }
             finally
-                {
+            {
                 if (selfHosting)
                 {
                     selfHostInitializer.Dispose();
                 }
+            }
+            if (interactive)
+            {
+                Console.WriteLine("Tests are completed. Press ENTER to close the app");
+                Console.ReadLine();
             }
             Environment.Exit(errorCount);
         }

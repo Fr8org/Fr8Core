@@ -164,15 +164,34 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
 
     // Plan Builder framework
         .state('planBuilder', {
-            url: "/plans/{id}/builder",
-            templateUrl: "/AngularTemplate/PlanBuilder",
-            data: { pageTitle: '' },
+            url: "/plans/{id}/builder?kioskMode",
+            //templateUrl: "/AngularTemplate/PlanBuilder",
+            views: {
+                '@': {
+                    templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
+                        if ($stateParams['kioskMode']) {
+                            return "/AngularTemplate/PlanBuilder_KioskMode";
+                        }
+                        return "/AngularTemplate/PlanBuilder";
+                    }
+                },
+                'header@': {
+                    templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
+                        if ($stateParams['kioskMode']) {
+                            return "/AngularTemplate/Empty";
+                        }
+                        return "/AngularTemplate/Header";
+                    }
+                }
+            },
+            
+            data: { pageTitle: '' }
         })
 
         .state('showIncidents', {
             url: "/showIncidents",
             templateUrl: "/AngularTemplate/ShowIncidents",
-            data: { pageTitle: 'Incidents', pageSubTitle: 'This page displays all incidents' },
+            data: { pageTitle: 'Incidents', pageSubTitle: 'This page displays all incidents' }
         })
 
         .state('showFacts', {

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -12,8 +11,6 @@ using Google.GData.Spreadsheets;
 using StructureMap;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
-using Utilities;
-using Utilities.Configuration.Azure;
 using System.Threading.Tasks;
 
 namespace terminalGoogle.Services
@@ -21,9 +18,10 @@ namespace terminalGoogle.Services
     public class GoogleSheet : IGoogleSheet
     {
         private readonly IGoogleIntegration _googleIntegration;
-        public GoogleSheet()
+
+        public GoogleSheet(IGoogleIntegration googleIntegration)
         {
-            _googleIntegration = ObjectFactory.GetInstance<IGoogleIntegration>();
+            _googleIntegration = googleIntegration;
         }
 
         private IEnumerable<SpreadsheetEntry> EnumerateSpreadsheets(GoogleAuthDTO authDTO)
@@ -37,6 +35,26 @@ namespace terminalGoogle.Services
             // Make a request to the API and get all spreadsheets.
             SpreadsheetFeed feed = service.Query(query);
             return feed.Entries.Cast<SpreadsheetEntry>();
+        }
+
+        public Task<Dictionary<string, string>> GetSpreadsheetsAsync(GoogleAuthDTO authDTO)
+        {
+            return Task.Run(() => EnumerateSpreadsheets(authDTO).ToDictionary(x => x.Id.AbsoluteUri, x => x.Title.Text));
+        }
+
+        public Task<Dictionary<string, string>> GetWorksheetsAsync(string spreadsheetUri, GoogleAuthDTO authDTO)
+        {
+            return Task.Run(() => EnumerateWorksheet(spreadsheetUri, authDTO));
+        }
+
+        public Task<Dictionary<string, string>> GetWorksheetHeadersAsync(string spreadsheetUri, string worksheetUri, GoogleAuthDTO authDTO)
+        {
+            return Task.Run(() => EnumerateColumnHeaders(spreadsheetUri, worksheetUri, authDTO));
+        }
+
+        public Task<IEnumerable<TableRowDTO>> GetDataAsync(string spreadsheetUri, string worksheetUri, GoogleAuthDTO authDTO)
+        {
+            return Task.Run(() => EnumerateDataRows(spreadsheetUri, worksheetUri, authDTO).ToArray() as IEnumerable<TableRowDTO>);
         }
 
         public Dictionary<string, string> EnumerateSpreadsheetsUris(GoogleAuthDTO authDTO)
@@ -54,16 +72,19 @@ namespace terminalGoogle.Services
                 return spreadsheets.SingleOrDefault(ae => ae.Id.AbsoluteUri.Contains(spreadsheetUri));
         }
 
-        private IEnumerable<ListEntry> EnumerateRows(string spreadsheetUri, GoogleAuthDTO authDTO)
+        private IEnumerable<ListEntry> EnumerateRows(string spreadsheetUri, string worksheetUri, GoogleAuthDTO authDTO)
         {
-            SpreadsheetEntry spreadsheet = FindSpreadsheet(spreadsheetUri, authDTO);
+            var spreadsheet = FindSpreadsheet(spreadsheetUri, authDTO);
             if (spreadsheet == null)
+            {
                 throw new ArgumentException("Cannot find a spreadsheet", "spreadsheetUri");
-            SpreadsheetsService service = (SpreadsheetsService)spreadsheet.Service;
+            }
+            var service = (SpreadsheetsService)spreadsheet.Service;
 
             // Get the first worksheet of the spreadsheet.
-            WorksheetFeed wsFeed = spreadsheet.Worksheets;
-            WorksheetEntry worksheet = (WorksheetEntry)wsFeed.Entries[0];
+            var wsFeed = spreadsheet.Worksheets;
+            var worksheet = string.IsNullOrEmpty(worksheetUri) ? (WorksheetEntry)wsFeed.Entries[0] : (WorksheetEntry)wsFeed.Entries.FindById(new AtomId(worksheetUri));
+            worksheet = worksheet ?? (WorksheetEntry)wsFeed.Entries[0];
 
             // Define the URL to request the list feed of the worksheet.
             AtomLink listFeedLink = worksheet.Links.FindService(GDataSpreadsheetsNameTable.ListRel, null);
@@ -74,7 +95,7 @@ namespace terminalGoogle.Services
             return listFeed.Entries.Cast<ListEntry>();
         }
 
-        public IDictionary<string, string> EnumerateWorksheet(string spreadsheetUri, GoogleAuthDTO authDTO)
+        public Dictionary<string, string> EnumerateWorksheet(string spreadsheetUri, GoogleAuthDTO authDTO)
         {
             Dictionary<string, string> worksheet = new Dictionary<string, string>();
 
@@ -108,6 +129,13 @@ namespace terminalGoogle.Services
             return newWorksheet.Id.AbsoluteUri;
         }
 
+        public async Task DeleteSpreadSheet(string spreadSheetId, GoogleAuthDTO authDTO)
+        {
+            GoogleDrive googleDrive = new GoogleDrive();
+            var driveService = await googleDrive.CreateDriveService(authDTO);
+            driveService.Files.Delete(spreadSheetId).Execute();
+        }
+
         public async Task<string> CreateSpreadsheet(string spreadsheetname, GoogleAuthDTO authDTO)
         {
             GoogleDrive googleDrive = new GoogleDrive();
@@ -115,7 +143,7 @@ namespace terminalGoogle.Services
 
             var file = new Google.Apis.Drive.v2.Data.File();
             file.Title = spreadsheetname;
-            file.Description = string.Format("Created via Fr8 at {0}", DateTime.Now.ToString());
+            file.Description = $"Created via Fr8 at {DateTime.Now}";
             file.MimeType = "application/vnd.google-apps.spreadsheet";
 
             var request = driveService.Files.Insert(file);
@@ -124,17 +152,17 @@ namespace terminalGoogle.Services
             return result.Id;
         }
 
-        public IDictionary<string, string> EnumerateColumnHeaders(string spreadsheetUri, GoogleAuthDTO authDTO)
+        public Dictionary<string, string> EnumerateColumnHeaders(string spreadsheetUri, string worksheetUri, GoogleAuthDTO authDTO)
         {
-            var firstRow = EnumerateRows(spreadsheetUri, authDTO).FirstOrDefault();
+            var firstRow = EnumerateRows(spreadsheetUri, worksheetUri, authDTO).FirstOrDefault();
             if (firstRow == null)
                 return new Dictionary<string, string>();
             return firstRow.Elements.Cast<ListEntry.Custom>().ToDictionary(e => e.LocalName, e => e.Value);
         }
 
-        public IEnumerable<TableRowDTO> EnumerateDataRows(string spreadsheetUri, GoogleAuthDTO authDTO)
+        public IEnumerable<TableRowDTO> EnumerateDataRows(string spreadsheetUri, string worksheetUri, GoogleAuthDTO authDTO)
         {
-            foreach (var row in EnumerateRows(spreadsheetUri, authDTO))
+            foreach (var row in EnumerateRows(spreadsheetUri, worksheetUri, authDTO))
             {
                 yield return new TableRowDTO
                 {
