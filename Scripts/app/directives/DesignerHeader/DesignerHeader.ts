@@ -11,6 +11,7 @@ module dockyard.directives.designerHeader {
         deactivatePlan(): void;
         resetPlanStatus(): void;
         plan: model.PlanDTO;
+        kioskMode: boolean;
     }
 
     //More detail on creating directives in TypeScript: 
@@ -28,7 +29,8 @@ module dockyard.directives.designerHeader {
 
         public templateUrl = '/AngularTemplate/DesignerHeader';
         public scope = {
-            plan: '='
+            plan: '=',
+            kioskMode: '=?'
         };
         public restrict = 'E';
 

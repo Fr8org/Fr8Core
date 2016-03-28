@@ -70,9 +70,9 @@ namespace terminalYammer.Actions
 
         public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            if (NeedsAuthentication(authTokenDO))
+            if (CheckAuthentication(curActivityDO, authTokenDO))
             {
-                throw new ApplicationException("No AuthToken provided.");
+                return curActivityDO;
             }
 
             return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
@@ -109,10 +109,13 @@ namespace terminalYammer.Actions
 
         public async Task<PayloadDTO> Run(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-
-            CheckAuthentication(authTokenDO);
             var ui = CrateManager.GetStorage(activityDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
             var processPayload = await GetPayload(activityDO, containerId);
+
+            if (NeedsAuthentication(authTokenDO))
+            {
+                return NeedsAuthenticationError(processPayload);
+            }
 
             if (ui == null)
             {

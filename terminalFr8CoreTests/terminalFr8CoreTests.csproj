@@ -146,6 +146,7 @@
     <Compile Include="Fixtures\HealthMonitor_FixtureData.cs" />
     <Compile Include="Integration\MapFields_v1_Tests.cs" />
     <Compile Include="Integration\Select_Fr8_Object_v1Tests.cs" />
+    <Compile Include="Unit\Loop_v1Tests.cs" />
     <Compile Include="Unit\TestIncomingData_v1Tests.cs" />
     <Compile Include="Unit\SelectFr8Object_v1Tests.cs" />
     <Compile Include="Fixtures\FixtureData - CoreSelfHostFactory.cs" />

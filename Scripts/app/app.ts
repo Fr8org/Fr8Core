@@ -21,7 +21,8 @@ var app = angular.module("app", [
     "ngTable",
     "mb-scrollbar",
     "ngMessages",
-    "ivh.treeview"
+    "ivh.treeview",
+    "ngMaterial"
 ]);
 
 /* For compatibility with older versions of script files. Can be safely deleted later. */
@@ -103,7 +104,8 @@ app.config(['applicationInsightsServiceProvider', function (applicationInsightsS
     });
 }]);
 
-/* Setup Rounting For All Pages */
+
+/* Setup Rounting For All Pages */ 
 app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($stateProvider: ng.ui.IStateProvider, $urlRouterProvider, $httpProvider: ng.IHttpProvider) {
 
     $httpProvider.interceptors.push('fr8VersionInterceptor');
@@ -162,15 +164,34 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
 
     // Plan Builder framework
         .state('planBuilder', {
-            url: "/plans/{id}/builder",
-            templateUrl: "/AngularTemplate/PlanBuilder",
-            data: { pageTitle: '' },
+            url: "/plans/{id}/builder?kioskMode",
+            //templateUrl: "/AngularTemplate/PlanBuilder",
+            views: {
+                '@': {
+                    templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
+                        if ($stateParams['kioskMode']) {
+                            return "/AngularTemplate/PlanBuilder_KioskMode";
+                        }
+                        return "/AngularTemplate/PlanBuilder";
+                    }
+                },
+                'header@': {
+                    templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
+                        if ($stateParams['kioskMode']) {
+                            return "/AngularTemplate/Empty";
+                        }
+                        return "/AngularTemplate/Header";
+                    }
+                }
+            },
+            
+            data: { pageTitle: '' }
         })
 
         .state('showIncidents', {
             url: "/showIncidents",
             templateUrl: "/AngularTemplate/ShowIncidents",
-            data: { pageTitle: 'Incidents', pageSubTitle: 'This page displays all incidents' },
+            data: { pageTitle: 'Incidents', pageSubTitle: 'This page displays all incidents' }
         })
 
         .state('showFacts', {
