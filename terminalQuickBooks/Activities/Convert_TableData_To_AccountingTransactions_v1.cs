@@ -39,7 +39,11 @@ namespace terminalQuickBooks.Actions
         }
         public async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            CheckAuthentication(authTokenDO);
+            if (CheckAuthentication(curActivityDO, authTokenDO))
+            {
+                return curActivityDO;
+            }
+
             return await ProcessConfigurationRequest(curActivityDO, dto => ConfigurationRequestType.Initial, authTokenDO);
         }
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
