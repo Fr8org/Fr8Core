@@ -16,6 +16,10 @@ namespace Data.Interfaces.DataTransferObjects
     {
     }
 
+    [AttributeUsage(AttributeTargets.Property, Inherited = true)]
+    sealed class IgnorePropertySyncAttribute : Attribute
+    {
+    }
 
     public interface IControlDefinition
     {
@@ -60,6 +64,7 @@ namespace Data.Interfaces.DataTransferObjects
         public bool Selected { get; set; }
 
         [JsonProperty("events")]
+        [IgnorePropertySync]
         public List<ControlEvent> Events { get; set; }
 
         [JsonProperty("source")]

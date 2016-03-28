@@ -340,6 +340,7 @@
     <Compile Include="Interfaces\DataTransferObjects\UserDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\WebServiceActivitySetDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\WebServiceDTO.cs" />
+    <Compile Include="Interfaces\FieldDescriptionDTO.cs" />
     <Compile Include="Interfaces\IFileRepository.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ControlDefinitionDTOConverter.cs" />
     <Compile Include="Interfaces\ITrackingChangesRepository.cs" />
