@@ -121,7 +121,7 @@ namespace HealthMonitor.Utility
             }
         }
 
-        private Uri GetHubBaseUrl()
+        protected Uri GetHubBaseUrl()
         {
             var hubApiBaseUrl = new Uri(GetHubApiBaseUrl());
             var hubBaseUrl = new Uri(hubApiBaseUrl.Scheme + "://" + hubApiBaseUrl.Host + ":" + hubApiBaseUrl.Port);

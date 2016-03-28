@@ -253,6 +253,7 @@
         public static fields = [
             <model.ControlDefinitionDTO> {
                 "groupName": "SMSNumber_Group",
+                "isHidden": false,
                 "radios": [
                     {
                         "selected": true,
@@ -268,7 +269,8 @@
                                 "errorMessage":null,
                                 "selected": false,
                                 "events": null,
-                                "isFocused" : false,
+                                "isFocused": false,
+                                "isHidden": false,
                                 "source": null
                             }
                         ]
@@ -344,6 +346,7 @@
                 "events": null,
                 "isFocused" : false,
                 "source": null,
+                "isHidden": false,
                 fieldLabel: null
             },
             <model.ControlDefinitionDTO> {
@@ -356,6 +359,7 @@
                 "selected": false,
                 "errorMessage": null,
                 "isFocused": false,
+                "isHidden": false,
                 "events": [],
                 "source": {
                     "manifestType": "Standard Design-Time Fields1",

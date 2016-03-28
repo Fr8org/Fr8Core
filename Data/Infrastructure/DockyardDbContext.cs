@@ -371,6 +371,11 @@ namespace Data.Infrastructure
                 .HasForeignKey(x => x.WebServiceId)
                 .WillCascadeOnDelete(false);
 
+            modelBuilder.Entity<OrganizationDO>().ToTable("Organizations")
+                .HasMany(x=>x.Fr8Accounts)
+                .WithOptional(x=>x.Organization)
+                .HasForeignKey(x=>x.OrganizationId)
+                .WillCascadeOnDelete(false);
 
             base.OnModelCreating(modelBuilder);
         }

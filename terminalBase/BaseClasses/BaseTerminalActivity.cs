@@ -290,7 +290,7 @@ namespace TerminalBase.BaseClasses
 
         public virtual bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
         {
-            return authTokenDO == null || string.IsNullOrEmpty(authTokenDO.Token);
+            return string.IsNullOrEmpty(authTokenDO?.Token);
         }
 
         protected async Task<PayloadDTO> GetPayload(ActivityDO activityDO, Guid containerId)
