@@ -2,33 +2,55 @@
 # MergeDevInsidePRSources.ps1
 #
 
+param(
+    [string]$sourceBranchName = $env:BUILD_SOURCEBRANCHNAME,
+	[string]$sourceDirectory = $env:BUILD_SOURCESDIRECTORY
+)
+
 $devBranchRef = "refs/heads/dev"
-$buildBranchName = "dev+$env:BUILD_SOURCEBRANCHNAME"
-$buildSourcePath = "$env:BUILD_SOURCESDIRECTORY\build_source\"
+$buildBranchName = "dev+$sourceBranchName"
 
-if (Test-Path  $buildSourcePath)	
+Write-Host "Switching to dev branch..."
+Invoke-Expression "git fetch dev"
+if ($LastExitCode -ne 0)
 {
-	Write-Host "Build Path directory already exists."
-	#Write-Host "Making clean up..."
-}
-else
-{
-	Write-Host "Creating dirrectory for dev branch..."
-	New-Item -ItemType directory -Path $devBranchPath
+	Write-Host "Failed to fetch dev branch."
+	return 1;
 }
 
-Write-Host "Getting dev branch from GitHub repo: $devBranchRef"
-git checkout $devBranchRef
+Invoke-Expression "git checkout dev"
+if ($LastExitCode -ne 0)
+{
+	Write-Host "Failed to checkout dev branch."
+	return 1;
+}
 
-Write-Host "Creating new branch: $buildBranchName"
-git checkout-index -a -f --prefix=$buildSourcePath
+Write-Host "Getting the latest dev branch from GitHub repo..."
+Invoke-Expression "git pull dev"
+if ($LastExitCode -ne 0)
+{
+	Write-Host "Failed to get latest dev branch."
+	return 1;
+}
 
-cd $buildSourcePath
+Write-Host "Creating new branch $buildBranchName for build process..."
+Invoke-Expression "git checkout -b $buildBranchName"
+if ($LastExitCode -ne 0)
+{
+	Write-Host "Failed to checkout new branch fro build process."
+	return 1;
+}
 
-Write-Host "Merging $devBranchRef into new branch: $buildBranchName"
-git merge $env:BUILD_SOURCEBRANCHNAME
+Write-Host "Merging dev into new branch: $buildBranchName"
+Invoke-Expression "git merge $env:BUILD_SOURCEBRANCHNAME"
+if ($LastExitCode -ne 0)
+{
+	Write-Host "Failed to merge dev into new branch."
+	return 1;
+}
 
-Write-Host "Merging $devBranchRef into new branch: $buildBranchName"
-git merge $env:BUILD_SOURCEBRANCHNAME
+
+
+
 
 
