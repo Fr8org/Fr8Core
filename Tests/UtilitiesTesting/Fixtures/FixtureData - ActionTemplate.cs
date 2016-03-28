@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Data.Crates;
-using DocuSign.Integrations.Client;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;

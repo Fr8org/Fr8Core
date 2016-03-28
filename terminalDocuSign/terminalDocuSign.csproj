@@ -51,10 +51,6 @@
     <Reference Include="DocuSign.eSign">
       <HintPath>..\Utilities\DocuSign.eSign.dll</HintPath>
     </Reference>
-    <Reference Include="DocuSign.Integration.Client, Version=1.6.1.0, Culture=neutral, PublicKeyToken=7fca6fcbbc219ede, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Utilities\DocuSign.Integration.Client.dll</HintPath>
-    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
       <Private>True</Private>
@@ -245,7 +241,7 @@
     <Compile Include="Activities\Query_DocuSign_v1.cs" />
     <Compile Include="Activities\Get_DocuSign_Envelope_v1.cs" />
     <Compile Include="Activities\Monitor_DocuSign_Envelope_Activity_v1.cs" />
-    <Compile Include="Activities\Record_DocuSign_Events_v1.cs" />
+    <Compile Include="Activities\Prepare_DocuSign_Events_For_Storage_v1.cs" />
     <Compile Include="Activities\Track_DocuSign_Recipients_v1.cs" />
     <Compile Include="Activities\Send_DocuSign_Envelope_v1.cs" />
     <Compile Include="App_Start\RoutesConfig.cs" />
@@ -253,7 +249,7 @@
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\ActivityController.cs" />
     <Compile Include="Controllers\TerminalController.cs" />
-    <Compile Include="DataTransferObjects\DocuSignAuthDTO.cs" />
+    <Compile Include="DataTransferObjects\DocuSignAuthTokenDTO.cs" />
     <Compile Include="DataTransferObjects\DocuSignEventDTO.cs" />
     <Compile Include="DataTransferObjects\DocuSignTabDTO.cs" />
     <Compile Include="Infrastructure\DataContracts\CustomField.cs" />
@@ -261,9 +257,6 @@
     <Compile Include="Infrastructure\DataContracts\FolderListResponse.cs" />
     <Compile Include="Infrastructure\DataContracts\FolderSearchResults.cs" />
     <Compile Include="Infrastructure\DateTimeHelper.cs" />
-    <Compile Include="Infrastructure\DocuSignAccount.cs" />
-    <Compile Include="Infrastructure\DocuSignPackager.cs" />
-    <Compile Include="Infrastructure\Exceptions\DocusginRestException.cs" />
     <Compile Include="Infrastructure\DocuSignConnectParser.cs" />
     <Compile Include="Infrastructure\DataContracts\DocusignFolderInfo.cs" />
     <Compile Include="Infrastructure\DocuSignParserModels\DocumentStatus.cs" />
@@ -272,17 +265,18 @@
     <Compile Include="Infrastructure\DocuSignParserModels\EnvelopeStatus.cs" />
     <Compile Include="Infrastructure\DocuSignParserModels\RecipientStatus.cs" />
     <Compile Include="Infrastructure\DocuSignParserModels\RecipientStatuses.cs" />
-    <Compile Include="DocuSignUtils.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\DocuSignEventNames.cs" />
     <Compile Include="Infrastructure\TerminalDataAutoMapperBootStrapper.cs" />
     <Compile Include="Infrastructure\TerminalDocuSignMapBootstrapper.cs" />
-    <Compile Include="Interfaces\IDocuSignRoute.cs" />
+    <Compile Include="Interfaces\IDocuSignConnect.cs" />
+    <Compile Include="Interfaces\IDocuSignPlan.cs" />
+    <Compile Include="Services\DocuSignConnect.cs" />
     <Compile Include="Services\DocuSignFolders.cs" />
     <Compile Include="Services\DocuSignQuery.cs" />
-    <Compile Include="Services\DocuSignRoute.cs" />
+    <Compile Include="Services\DocuSignPlan.cs" />
     <Compile Include="Services\Event.cs" />
     <Compile Include="Interfaces\IEvent.cs" />
     <Compile Include="SelfHostFactory.cs" />
@@ -298,7 +292,6 @@
     </Compile>
     <Compile Include="Tests\Activities\Query_DocuSign_Tests.cs" />
     <Compile Include="Tests\Activities\Search_DocuSign_Tests.cs" />
-    <Compile Include="Tests\Fixtures\AppSettingsFixture.cs" />
     <Compile Include="Tests\Fixtures\TerminalFixtureData - DocuSignReport.cs" />
     <Compile Include="Tests\Fixtures\TerminalFixtureData - Folders.cs" />
     <Compile Include="Tests\Infrastructure\DocuSignTemplateTests.cs" />
@@ -343,6 +336,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Infrastructure\Exceptions\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Hub\Hub.csproj">

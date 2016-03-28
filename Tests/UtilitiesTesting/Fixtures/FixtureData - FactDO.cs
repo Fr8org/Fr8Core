@@ -1,6 +1,6 @@
 ﻿using Data.Entities;
 using Data.States;
-using DocuSign.Integrations.Client;
+
 using System;
 
 namespace UtilitiesTesting.Fixtures

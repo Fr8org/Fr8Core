@@ -1,0 +1,16 @@
+﻿<div style="margin-top:10px;">
+    <div>
+        <div style="display:block" class="md-list-item-text" layout="column">
+            <i style="color:{{::color}}" class="fa {{::icon}} activity-stream-font"></i>
+            <h3 style="margin-top:0px;padding-left:10px">{{::eventType}}</h3>
+        </div>
+        <div ng-if="type=='fr8pusher_generic_success' || type=='fr8pusher_generic_failure'">
+            <p>{{event}}</p>
+        </div>
+        <div ng-if="type=='fr8pusher_activity_execution_info'">
+            <p>Executing Activity: {{event.ActivityName}}</p>
+            <p>For Plan: {{event.PlanName}}</p>
+            <p>Container: {{event.ContainerId}}</p>
+        </div>
+    </div>      
+</div>

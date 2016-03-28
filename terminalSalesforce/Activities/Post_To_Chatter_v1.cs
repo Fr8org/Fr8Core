@@ -27,7 +27,10 @@ namespace terminalSalesforce.Actions
 
         public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            CheckAuthentication(authTokenDO);
+            if (CheckAuthentication(curActivityDO, authTokenDO))
+            {
+                return curActivityDO;
+            }
 
             return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
         }
@@ -74,10 +77,13 @@ namespace terminalSalesforce.Actions
 
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            CheckAuthentication(authTokenDO);
-
             //get payload data
             var payloadCrates = await GetPayload(curActivityDO, containerId);
+
+            if (NeedsAuthentication(authTokenDO))
+            {
+                return NeedsAuthenticationError(payloadCrates);
+            }
 
             //get selected chatter object id and feed text
             var selectedChatterObjectId = ((DropDownList)GetControl(curActivityDO, "WhatKindOfChatterObject", ControlTypes.DropDownList)).Value;

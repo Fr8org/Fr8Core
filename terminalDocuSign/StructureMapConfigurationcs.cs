@@ -34,6 +34,7 @@ namespace terminalDocuSign
                 //For<IDocuSignFolder>().Use<DocuSignFolder>();
                 For<IDocuSignPlan>().Use<DocuSignPlan>();
                 For<IDocuSignManager>().Use<DocuSignManager>();
+                For<IDocuSignConnect>().Use<DocuSignConnect>();
             }
         }
 
