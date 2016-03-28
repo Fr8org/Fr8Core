@@ -193,7 +193,7 @@
         noDataMessage: string;
     }
 
-    export class ControlContainer extends ControlDefinitionDTO {
+    export class MetaControlContainer extends ControlDefinitionDTO {
         metaDescriptions: Array<ControlMetaDescriptionDTO>;
     }
 
