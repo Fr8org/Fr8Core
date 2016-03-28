@@ -15,6 +15,8 @@ namespace Data.Entities
         {
             if (CreateDate == default(DateTimeOffset))
                 CreateDate = DateTimeOffset.UtcNow;
+            if (LastUpdated == default(DateTimeOffset))
+                LastUpdated = DateTimeOffset.UtcNow;
         }
 
         public virtual void AfterCreate()
