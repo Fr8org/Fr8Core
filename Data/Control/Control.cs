@@ -74,7 +74,6 @@ namespace Data.Control
     public class DropDownList : ControlDefinitionDTO
     {
         [JsonProperty("listItems")]
-        [ForcePropertySync]
         public List<ListItem> ListItems { get; set; }
 
         [JsonProperty("selectedKey")]
@@ -588,6 +587,7 @@ namespace Data.Control
     public class ControlList : ControlDefinitionDTO
     {
         [JsonProperty("controlGroups")]
+        [ForcePropertySync]
         public IList<IList<ControlDefinitionDTO>> ControlGroups { get; }
 
         [JsonProperty("templateContainer")]
@@ -730,7 +730,6 @@ namespace Data.Control
         }
 
         [JsonProperty("selectedCrates")]
-        [ForcePropertySync]
         public List<CrateDetails> SelectedCrates { get; set; } = new List<CrateDetails>();
 
         [JsonProperty("multiSelection")]
@@ -746,7 +745,6 @@ namespace Data.Control
         }
 
         [JsonProperty("crateDescriptions")]
-        [ForcePropertySync]
         public List<CrateDescriptionDTO> CrateDescriptions { get; set; }
 
         [JsonProperty("singleManifestOnly")]
