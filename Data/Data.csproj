@@ -653,10 +653,6 @@
     <Compile Include="Migrations\201603191417514_Renamed_ReceiveGoogleForm_To_MonitorFormResponses.Designer.cs">
       <DependentUpon>201603191417514_Renamed_ReceiveGoogleForm_To_MonitorFormResponses.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201603281147329_empty_migration.cs" />
-    <Compile Include="Migrations\201603281147329_empty_migration.Designer.cs">
-      <DependentUpon>201603281147329_empty_migration.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryBase.cs" />
@@ -1144,9 +1140,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201603191417514_Renamed_ReceiveGoogleForm_To_MonitorFormResponses.resx">
       <DependentUpon>201603191417514_Renamed_ReceiveGoogleForm_To_MonitorFormResponses.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201603281147329_empty_migration.resx">
-      <DependentUpon>201603281147329_empty_migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
