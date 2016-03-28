@@ -123,7 +123,7 @@ namespace terminalGoogle.Actions
 
         protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
-            var spreadsheets = await _googleApi.GetSpreadsheetsAsync(GetGoogleAuthToken());
+            var spreadsheets = await _googleApi.GetSpreadsheets(GetGoogleAuthToken());
             ConfigurationControls.SpreadsheetList.ListItems = spreadsheets.Select(x => new ListItem { Key = x.Value, Value = x.Key }).ToList();
             runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
         }
@@ -144,7 +144,7 @@ namespace terminalGoogle.Actions
                 //Spreadsheet was changed - populate the list of worksheets and select first one
                 if (previousValues == null || previousValues.Key != ConfigurationControls.SpreadsheetList.Value)
                 {
-                    var worksheets = await _googleApi.GetWorksheetsAsync(ConfigurationControls.SpreadsheetList.Value, googleAuth);
+                    var worksheets = await _googleApi.GetWorksheets(ConfigurationControls.SpreadsheetList.Value, googleAuth);
                     //We show worksheet list only if there is more than one worksheet
                     if (worksheets.Count > 1)
                     {
@@ -163,7 +163,7 @@ namespace terminalGoogle.Actions
                                                                ConfigurationControls.WorksheetList.IsHidden
                                                                    ? string.Empty
                                                                    : ConfigurationControls.WorksheetList.Value);
-                var columnHeaders = await _googleApi.GetWorksheetHeadersAsync(selectedSpreasheetWorksheet.Key, selectedSpreasheetWorksheet.Value, googleAuth);
+                var columnHeaders = await _googleApi.GetWorksheetHeaders(selectedSpreasheetWorksheet.Key, selectedSpreasheetWorksheet.Value, googleAuth);
                 var columnHeadersCrate = Crate.FromContent(ColumnHeadersCrateLabel,
                                                            new FieldDescriptionsCM(columnHeaders.Select(x => new FieldDTO(x.Key, x.Key, AvailabilityType.Always))),
                                                            AvailabilityType.Always);
@@ -181,8 +181,15 @@ namespace terminalGoogle.Actions
                 throw new ActivityExecutionException("Spreadsheet is not selected", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
             }
             var selectedWorksheet = ConfigurationControls.WorksheetList == null ? string.Empty : ConfigurationControls.WorksheetList.Value;
-            var data = await _googleApi.GetDataAsync(selectedSpreadsheet, selectedWorksheet, GetGoogleAuthToken());
-            CurrentPayloadStorage.Add(Crate.FromContent(RunTimeCrateLabel, new StandardTableDataCM { Table = data.ToList() }));
+            var data = (await _googleApi.GetData(selectedSpreadsheet, selectedWorksheet, GetGoogleAuthToken())).ToList();
+            var hasHeaderRow = false;
+            //Adding header row if possible
+            if (data.Count > 0)
+            {
+                data.Insert(0, new TableRowDTO { Row = data.First().Row.Select(x => new TableCellDTO { Cell = new FieldDTO(x.Cell.Key, x.Cell.Key) }).ToList() });
+                hasHeaderRow = true;
+            }
+            CurrentPayloadStorage.Add(Crate.FromContent(RunTimeCrateLabel, new StandardTableDataCM { Table = data, FirstRowHeaders = hasHeaderRow }));
         }
     }
 }
