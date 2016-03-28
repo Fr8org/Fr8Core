@@ -213,13 +213,13 @@
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
       <Name>TerminalBase</Name>
     </ProjectReference>
-    <ProjectReference Include="..\terminalFr8Core\terminalFr8Core.csproj">
-      <Project>{ad226a7f-0641-4589-93eb-06e5ee7e767b}</Project>
-      <Name>terminalFr8Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\terminalDocuSign\terminalDocuSign.csproj">
       <Project>{4e04feb2-b452-4739-8336-ea2cefb18d87}</Project>
       <Name>terminalDocuSign</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\terminalFr8Core\terminalFr8Core.csproj">
+      <Project>{ad226a7f-0641-4589-93eb-06e5ee7e767b}</Project>
+      <Name>terminalFr8Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\terminalExcel\terminalExcel.csproj">
       <Project>{57373d06-6b82-4ec6-af62-ed25fe170c61}</Project>
