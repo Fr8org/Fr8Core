@@ -17,7 +17,7 @@ namespace HealthMonitor.Utility
         // If a matching message has been received at most 60 seconds before calling the method, 
         // the test is considered passed.
         public static TimeSpan RecentMsgThreshold = new TimeSpan(0, 0, 60); // 60 seconds
-        public static TimeSpan _timeout = new TimeSpan(0, 0, 30); // 30 seconds
+        public static TimeSpan _timeout = new TimeSpan(0, 1, 0); // 1 minute
         static bool _initialized = false;
 
         static string _testEmail;
@@ -75,24 +75,28 @@ namespace HealthMonitor.Utility
 
         private static bool CheckEmail(Pop3Client client, string expectedFromAddr, string expectedSubject, DateTime startTime, bool deleteMailOnSuccess = false)
         {
+            Console.WriteLine("Email Assert: start time: " + startTime.ToLongTimeString());
             MessageHeader msg = null;
             int messageCount = client.GetMessageCount();
             for (int i = messageCount; i > 0; i--)
             {
                 msg = client.GetMessageHeaders(i);
+                Console.Write($"Message: {msg.DateSent} {msg.Subject} ");
                 if (ValidateTime(RecentMsgThreshold, startTime, msg.DateSent))
                 {
                     if (ValidateConditions(expectedFromAddr, expectedSubject, msg))
                     {
+                        Console.Write("Match" + Environment.NewLine);
                         if(deleteMailOnSuccess)
                         {
                             client.DeleteMessage(i);
                         }
                         return true;
                     }
-                }
+                }   
                 else
                 {
+                    Console.Write("Wrong time" + Environment.NewLine);
                     return false;
                 }
             }
