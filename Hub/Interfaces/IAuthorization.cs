@@ -24,6 +24,8 @@ namespace Hub.Interfaces
 
         bool ValidateAuthenticationNeeded(IUnitOfWork uow, string userId, ActivityDTO curActionDTO);
 
+        void RevokeTokenIfNeeded(IUnitOfWork uow, ActivityDTO activityDTO);
+
         void InvalidateToken(IUnitOfWork uow, string userId, ActivityDTO curActivityDto);
 
         IEnumerable<AuthorizationTokenDO> GetAllTokens(string accountId);

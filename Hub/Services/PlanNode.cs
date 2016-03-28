@@ -19,7 +19,6 @@ using Hub.Managers;
 using Utilities.Configuration.Azure;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Data.Interfaces.Manifests;
-using DocuSign.Integrations.Client;
 using Utilities;
 
 namespace Hub.Services

@@ -3,25 +3,25 @@ using Data.Constants;
 
 namespace TerminalBase.BaseClasses
 {
-    public class ActionExecutionException : Exception
+    public class ActivityExecutionException : Exception
     {
         public ActivityErrorCode? ErrorCode
         {
             get;
         }
 
-        public ActionExecutionException(string message, ActivityErrorCode? errorCode = null)
+        public ActivityExecutionException(string message, ActivityErrorCode? errorCode = null)
             : base(message)
         {
             ErrorCode = errorCode;
         }
 
-        public ActionExecutionException(string message, Exception innerException)
+        public ActivityExecutionException(string message, Exception innerException)
             : base(message, innerException)
         {
         }
 
-        public ActionExecutionException()
+        public ActivityExecutionException()
         {
         }
     }

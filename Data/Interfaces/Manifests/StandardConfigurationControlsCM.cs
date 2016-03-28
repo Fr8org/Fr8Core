@@ -5,6 +5,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Constants;
 using System.Linq;
 using System.Reflection;
+using System.Web.UI;
 using Data.Crates;
 using Data.Helpers;
 
@@ -189,21 +190,19 @@ namespace Data.Interfaces.Manifests
         
         public void SyncWith(StandardConfigurationControlsCM configurationControls)
         {
-            var namedControls = EnumerateControlsDefinitions();
-
-            foreach (var namedControl in namedControls)
+            var targetNamedControls = EnumerateControlsDefinitions();
+            foreach (var targetControl in targetNamedControls)
             {
-                var source = configurationControls.FindByNameNested(namedControl.Name);
+                var source = configurationControls.FindByNameNested(targetControl.Name);
 
                 if (source == null)
                 {
                     continue;
                 }
 
-                ClonePrimitiveProperties(namedControl, source);
+                ClonePrimitiveProperties(targetControl, source);
             }
         }
-        
         // Sync controls properties from configuration controls crate with the current instance of StandardConfigurationControlsCM
         public void ClonePropertiesFrom(StandardConfigurationControlsCM configurationControls)
         {

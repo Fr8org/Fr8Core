@@ -40,7 +40,6 @@ namespace terminalDocuSign.Tests.Actions
             TerminalBootstrapper.ConfigureTest();
             TerminalDocuSignMapBootstrapper.ConfigureDependencies(Hub.StructureMap.StructureMapBootStrapper.DependencyType.TEST);
             TerminalDataAutoMapperBootStrapper.ConfigureAutoMapper();
-            CloudConfigurationManager.RegisterApplicationSettings(new AppSettingsFixture());
             
             PayloadDTO payloadDto = new PayloadDTO(Guid.Empty);
             payloadDto.CrateStorage = new CrateStorageDTO();

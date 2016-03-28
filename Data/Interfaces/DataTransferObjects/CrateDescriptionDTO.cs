@@ -1,13 +1,9 @@
-﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
 {
     public class CrateDescriptionDTO
     {
-        [JsonProperty("fields")]
-        public List<FieldDescriptionDTO> Fields { get; set; }
-
         [JsonProperty("manifestId")]
         public int ManifestId { get; set; }
 
@@ -25,7 +21,6 @@ namespace Data.Interfaces.DataTransferObjects
 
         public CrateDescriptionDTO()
         {
-            Fields = new List<FieldDescriptionDTO>();
             Selected = false;
         }
     }

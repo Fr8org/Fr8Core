@@ -280,6 +280,16 @@ namespace Data.Infrastructure
             }
         }
 
+        private AspNetUserClaimsRepository _aspNetUserClaimsRepository;
+
+        public IAspNetUserClaimsRepository AspNetUserClaimsRepository
+        {
+            get
+            {
+                return _aspNetUserClaimsRepository ?? (_aspNetUserClaimsRepository = new AspNetUserClaimsRepository(this));
+            }
+        }
+
         private AspNetRolesRepository _aspNetRolesRepository;
 
         public AspNetRolesRepository AspNetRolesRepository
@@ -550,6 +560,16 @@ namespace Data.Infrastructure
             get
             {
                 return _fileTagsRepository ?? (_fileTagsRepository = new FileTagsRepository(this));
+            }
+        }
+
+        private OrganizationRepository _organizationRepository;
+
+        public IOrganizationRepository OrganizationRepository
+        {
+            get
+            {
+                return _organizationRepository ?? (_organizationRepository = new OrganizationRepository(this));
             }
         }
 

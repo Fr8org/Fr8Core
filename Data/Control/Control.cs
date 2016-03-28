@@ -84,6 +84,22 @@ namespace Data.Control
             ListItems = new List<ListItem>();
             Type = "DropDownList";
         }
+
+        public void SelectByKey(string key)
+        {
+            SelectItem(ListItems?.FirstOrDefault(x => x.Key == key));
+        }
+
+        public void SelectByValue(string value)
+        {
+            SelectItem(ListItems?.FirstOrDefault(x => x.Value == value));
+        }
+
+        private void SelectItem(ListItem newItem)
+        {
+            selectedKey = newItem?.Key;
+            Value = newItem?.Value;
+        }
     }
 
     public class RadioButtonGroup : ControlDefinitionDTO, IContainerControl
@@ -426,10 +442,8 @@ namespace Data.Control
             var deepestLoop = operationalState.Loops.OrderByDescending(l => l.Level).FirstOrDefault(l => !l.BreakSignalReceived && l.Label == crate.Label && l.CrateManifest == crate.ManifestType.Type);
             if (deepestLoop != null) //this is a loop related data request
             {
-                //find current element
-                var dataList = Fr8ReflectionHelper.FindFirstArray(crate.Get());
                 //we will search requested field in current element
-                searchArea = dataList[deepestLoop.Index];
+                searchArea = GetDataListItem(crate, deepestLoop.Index);
             }
             else
             {
@@ -445,20 +459,14 @@ namespace Data.Control
             return fieldMatch;
         }
 
-        /// <summary>
-        /// Extracts crate with specified label and ManifestType = Standard Design Time,
-        /// then extracts field with specified fieldKey.
-        /// </summary>
-        private string ExtractPayloadFieldValue(ICrateStorage payloadCrateStorage, bool ignoreCase)
+        private object GetDataListItem(Crate crate, int index)
         {
-            var fieldValues = payloadCrateStorage.CratesOfType<StandardPayloadDataCM>().SelectMany(x => x.Content.GetValues(selectedKey, ignoreCase))
-                .Where(s => !string.IsNullOrEmpty(s))
-                .ToArray();
-
-            if (fieldValues.Length > 0)
-                return fieldValues[0];
-
-            throw new ApplicationException(string.Format("No field found with specified key: {0}.", selectedKey));
+            var tableData = crate.ManifestType.Id == (int)MT.StandardTableData ? crate.Get<StandardTableDataCM>() : null;
+            if (tableData != null)
+            {
+                return tableData.FirstRowHeaders ? tableData.Table[index + 1] : tableData.Table[index];
+            }
+            return Fr8ReflectionHelper.FindFirstArray(crate.Get())[index];
         }
     }
 

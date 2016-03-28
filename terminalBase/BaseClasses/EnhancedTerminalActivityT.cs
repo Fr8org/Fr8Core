@@ -69,27 +69,34 @@ namespace TerminalBase.BaseClasses
         // Functions
         /**********************************************************************************/
 
+
         protected EnhancedTerminalActivity(bool isAuthenticationRequired)
         {
             IsAuthenticationRequired = isAuthenticationRequired;
             UiBuilder = new UiBuilder();
-        }
+            ActivityName = GetType().Name;
+        } 
 
         /**********************************************************************************/
 
-        private void AuthorizeIfNecessary(AuthorizationTokenDO authTokenDO)
+        private bool AuthorizeIfNecessary(ActivityDO activityDO, AuthorizationTokenDO authTokenDO)
         {
             if (IsAuthenticationRequired)
             {
-                CheckAuthentication(authTokenDO);
+                return CheckAuthentication(activityDO, authTokenDO);
             }
+
+            return false;
         }
 
         /**********************************************************************************/
 
         public sealed override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            AuthorizeIfNecessary(authTokenDO);            
+            if (AuthorizeIfNecessary(curActivityDO, authTokenDO))
+            {
+                return curActivityDO;
+            }
 
             AuthorizationToken = authTokenDO;
             CurrentActivity = curActivityDO;
@@ -163,7 +170,10 @@ namespace TerminalBase.BaseClasses
 
         public sealed override async Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            AuthorizeIfNecessary(authTokenDO);
+            if (AuthorizeIfNecessary(curActivityDO, authTokenDO))
+            {
+                return curActivityDO;
+            }
 
             AuthorizationToken = authTokenDO;
             CurrentActivity = curActivityDO;
@@ -262,7 +272,7 @@ namespace TerminalBase.BaseClasses
 
                     Success();
                 }
-                catch (ActionExecutionException ex)
+                catch (ActivityExecutionException ex)
                 {
                     Error(ex.Message, ex.ErrorCode);
                 }
