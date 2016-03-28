@@ -336,12 +336,12 @@ namespace Hub.Services
 
         private ActivityDTO GetCurrentActivity(IUnitOfWork uow, ContainerDO curContainerDO)
         {
-            if (curContainerDO == null || curContainerDO.CurrentPlanNodeId == null)
+            if (curContainerDO == null || curContainerDO.CurrentActivityId == null)
             {
                 return null;
             }
 
-            var curActivityId = curContainerDO.CurrentPlanNodeId.Value;
+            var curActivityId = curContainerDO.CurrentActivityId.Value;
             var curPlanNodeDO = uow.PlanRepository.GetById<PlanNodeDO>(curActivityId);
             var curActivityDO = curPlanNodeDO as ActivityDO;
 
