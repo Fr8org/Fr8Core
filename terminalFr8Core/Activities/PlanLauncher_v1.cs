@@ -22,7 +22,7 @@ using Utilities;
 
 namespace terminalFr8Core.Actions
 {
-    public class LaunchAPlan_v1 : BaseTerminalActivity
+    public class PlanLauncher_v1 : BaseTerminalActivity
     {
         private const string RuntimeCrateLabelPrefix = "Standard Data Table";
         protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
@@ -153,7 +153,7 @@ namespace terminalFr8Core.Actions
                 ListItems = await GetUserPlans()
             };
 
-            var cc = new ControlContainer()
+            var cc = new MetaControlContainer()
             {
                 Label = "Please insert your desired controls below",
                 Name = "control_container"

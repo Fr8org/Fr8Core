@@ -498,6 +498,7 @@
     <Content Include="Content\img\gray-crate.png" />
     <Content Include="Content\img\green-crate.png" />
     <Content Include="Content\img\backgrounds\solution-bg.png" />
+    <Content Include="Content\img\icons\more_vert.svg" />
     <Content Include="Content\img\logo-fr8.svg" />
     <Content Include="Content\img\Management\Alex_Edelstein_Round.png" />
     <Content Include="Content\img\Management\Benjamin_Black.png" />
@@ -863,7 +864,8 @@
     <Content Include="Content\videos\motion.webm" />
     <Content Include="Views\AngularTemplate\ContainerTransition.cshtml" />
     <Content Include="Views\AngularTemplate\SubplanHeader.cshtml" />
-    <Content Include="Views\AngularTemplate\ControlContainer.cshtml" />
+    <Content Include="Views\AngularTemplate\MetaControlContainer.cshtml" />
+    <Content Include="Views\AngularTemplate\Fr8Event.cshtml" />
     <Content Include="Views\AngularTemplate\ControlList.cshtml" />
     <Content Include="Views\AngularTemplate\Empty.cshtml" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
@@ -895,9 +897,10 @@
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionDocumentationController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\ActionPicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ControlList.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\Controls\ControlContainer.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\MetaControlContainer.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ContainerTransition.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\DatePicker.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\Fr8Event.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\SourceableCriteria.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\CrateChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TimePicker.ts" />
@@ -925,6 +928,7 @@
     <TypeScriptCompile Include="Scripts\app\interfaces\ISolutionDocumentationService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\SolutionDocumentationService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\UpstreamExtractor.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\ActionPicker.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\UpstreamFieldChooser.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\filters\FilterByTagTests.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\TerminalFormController.ts" />
