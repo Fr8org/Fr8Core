@@ -1,19 +1,15 @@
 ﻿using Data.Entities;
-using Data.Interfaces;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
-using System.Web;
 using Data.Constants;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
-using terminalGoogle.Services;
 using Hub.Managers;
 using Data.Interfaces.Manifests;
 using Data.Interfaces.DataTransferObjects;
@@ -21,85 +17,274 @@ using Data.Crates;
 using Data.States;
 using Data.Control;
 using Data.Interfaces.Manifests.Helpers;
-using Newtonsoft.Json.Linq;
 using StructureMap;
 using TerminalBase;
 
 namespace terminalGoogle.Actions
 {
-    public class Save_To_Google_Sheet_v1 : BaseTerminalActivity
+    public class Save_To_Google_Sheet_v1 : EnhancedTerminalActivity<Save_To_Google_Sheet_v1.ActivityUi>
     {
-        private readonly IGoogleSheet _googleSheet;
-        private string _spreedsheetUri = "";
+        public class ActivityUi : StandardConfigurationControlsCM
+        {
+            public CrateChooser UpstreamCrateChooser { get; set; }
 
-        public Save_To_Google_Sheet_v1()
+            public RadioButtonGroup SpreadsheetSelectionGroup { get; set; }
+
+            public RadioButtonOption UseNewSpreadsheetOption { get; set; }
+
+            public TextBox NewSpreadsheetName { get; set; }
+
+            public RadioButtonOption UseExistingSpreadsheetOption { get; set; }
+
+            public DropDownList ExistingSpreadsheetsList { get; set; }
+
+            public RadioButtonGroup WorksheetSelectionGroup { get; set; }
+
+            public RadioButtonOption UseNewWorksheetOption { get; set; }
+
+            public TextBox NewWorksheetName { get; set; }
+
+            public RadioButtonOption UseExistingWorksheetOption { get; set; }
+
+            public DropDownList ExistingWorksheetsList { get; set; }
+
+            public ActivityUi()
+            {
+                UpstreamCrateChooser = new CrateChooser
+                                       {
+                                           Label = "Crate to store",
+                                           Name = nameof(UpstreamCrateChooser),
+                                           Required = true,
+                                           RequestUpstream = true,
+                                           SingleManifestOnly = true,
+                                       };
+                Controls.Add(UpstreamCrateChooser);
+                NewSpreadsheetName = new TextBox
+                                     {
+                                         Value = $"NewFr8Data{DateTime.Now.Date:dd-MM-yyyy}",
+                                         Name = nameof(NewSpreadsheetName)
+                                     };
+                ExistingSpreadsheetsList = new DropDownList
+                                           {
+                                               Name = nameof(ExistingSpreadsheetsList),
+                                               Events = new List<ControlEvent> { ControlEvent.RequestConfig }
+                                           };
+                UseNewSpreadsheetOption = new RadioButtonOption
+                                          {
+                                              Selected = true,
+                                              Name = nameof(UseNewSpreadsheetOption),
+                                              Value = "Store in a new Google Spreadsheet",
+                                              Controls = new List<ControlDefinitionDTO> { NewSpreadsheetName }
+                                          };
+                UseExistingSpreadsheetOption = new RadioButtonOption()
+                                               {
+                                                   Selected = false,
+                                                   Name = nameof(UseExistingSpreadsheetOption),
+                                                   Value = "Store in an existing Spreadsheet",
+                                                   Controls = new List<ControlDefinitionDTO> { ExistingSpreadsheetsList }
+                                               };
+                SpreadsheetSelectionGroup = new RadioButtonGroup
+                                            {
+                                                GroupName = nameof(SpreadsheetSelectionGroup),
+                                                Name = nameof(SpreadsheetSelectionGroup),
+                                                Events = new List<ControlEvent> { ControlEvent.RequestConfig },
+                                                Radios = new List<RadioButtonOption>
+                                                         {
+                                                             UseNewSpreadsheetOption,
+                                                             UseExistingSpreadsheetOption
+                                                         }
+                                            };
+                Controls.Add(SpreadsheetSelectionGroup);
+                NewWorksheetName = new TextBox
+                                   {
+                                       Value = "Sheet1",
+                                       Name = nameof(NewWorksheetName)
+                                   };
+                ExistingWorksheetsList = new DropDownList
+                                         {
+                                             Name = nameof(ExistingWorksheetsList),
+                                         };
+                UseNewWorksheetOption = new RadioButtonOption()
+                                        {
+                                            Selected = true,
+                                            Name = nameof(UseNewWorksheetOption),
+                                            Value = "A new Sheet (Pane)",
+                                            Controls = new List<ControlDefinitionDTO> { NewWorksheetName }
+                                        };
+                UseExistingWorksheetOption = new RadioButtonOption()
+                                             {
+                                                 Selected = false,
+                                                 Name = nameof(UseExistingWorksheetOption),
+                                                 Value = "Existing Pane",
+                                                 Controls = new List<ControlDefinitionDTO> { ExistingWorksheetsList }
+                                             };
+                WorksheetSelectionGroup = new RadioButtonGroup()
+                                          {
+                                              Label = "Inside the spreadsheet, store in",
+                                              GroupName = nameof(WorksheetSelectionGroup),
+                                              Name = nameof(WorksheetSelectionGroup),
+                                              Radios = new List<RadioButtonOption>
+                                                       {
+                                                           UseNewWorksheetOption,
+                                                           UseExistingWorksheetOption
+                                                       }
+                                          };
+                Controls.Add(WorksheetSelectionGroup);
+            }
+        }
+
+        private const string SelectedSpreadsheetCrateLabel = "Selected Spreadsheet";
+
+        private readonly IGoogleSheet _googleSheet;
+
+        public Save_To_Google_Sheet_v1() : base(true)
         {
             _googleSheet = ObjectFactory.GetInstance<IGoogleSheet>();
+            ActivityName = "Save To Google Sheet";
         }
 
-        #region Overriden Methods
-
-        protected new bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
+        private GoogleAuthDTO GetGoogleAuthToken(AuthorizationTokenDO authTokenDO = null)
         {
-            if (authTokenDO == null) return true;
-            if (!base.NeedsAuthentication(authTokenDO))
-                return false;
-            var token = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
+            return JsonConvert.DeserializeObject<GoogleAuthDTO>((authTokenDO ?? AuthorizationToken).Token);
+        }
+
+        public override bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
+        {
+            if (base.NeedsAuthentication(authTokenDO))
+            {
+                return true;
+            }
+            var token = GetGoogleAuthToken(authTokenDO);
             // we may also post token to google api to check its validity
-            return (token.Expires - DateTime.Now > TimeSpan.FromMinutes(5) ||
-                    !string.IsNullOrEmpty(token.RefreshToken));
+            return token.Expires - DateTime.Now < TimeSpan.FromMinutes(5) && string.IsNullOrEmpty(token.RefreshToken);
         }
 
-        public override Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
-            if (CheckAuthentication(curActivityDO, authTokenDO))
-            {
-                return Task.FromResult(curActivityDO);
-            }
-
-            return base.Configure(curActivityDO, authTokenDO);
+            ConfigurationControls.ExistingSpreadsheetsList.ListItems = (await _googleSheet.GetSpreadsheets(GetGoogleAuthToken())).Select(x => new ListItem { Key = x.Value, Value = x.Key }).ToList();
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
         {
-            if (!CrateManager.IsStorageEmpty(curActivityDO))
+            //If different existing spreadsheet is selected then we have to load worksheet list for it
+            if (ConfigurationControls.UseExistingSpreadsheetOption.Selected)
             {
-                return ConfigurationRequestType.Followup;
+                var previousSpreadsheet = SelectedSpreadsheet;
+                if (string.IsNullOrEmpty(previousSpreadsheet) || !string.Equals(previousSpreadsheet, ConfigurationControls.ExistingSpreadsheetsList.Value))
+                {
+                    ConfigurationControls.ExistingWorksheetsList.ListItems = (await _googleSheet.GetWorksheets(ConfigurationControls.ExistingSpreadsheetsList.Value, GetGoogleAuthToken()))
+                        .Select(x => new ListItem { Key = x.Value, Value = x.Key })
+                        .ToList();
+                    var firstWorksheet = ConfigurationControls.ExistingWorksheetsList.ListItems.First();
+                    ConfigurationControls.ExistingWorksheetsList.SelectByValue(firstWorksheet.Value);
+                }
+                SelectedSpreadsheet = ConfigurationControls.ExistingSpreadsheetsList.Value;
             }
-
-            return ConfigurationRequestType.Initial;
+            else
+            {
+                ConfigurationControls.ExistingWorksheetsList.ListItems.Clear();
+                ConfigurationControls.ExistingWorksheetsList.selectedKey = string.Empty;
+                ConfigurationControls.ExistingWorksheetsList.Value = string.Empty;
+                SelectedSpreadsheet = string.Empty;
+            }
         }
 
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        private string SelectedSpreadsheet
         {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            get
             {
-                crateStorage.Clear();
-                crateStorage.Add(await CreateControlsCrate(curActivityDO));
+                var storedValue = CurrentActivityStorage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == SelectedSpreadsheetCrateLabel);
+                return storedValue?.Content.Fields.First().Key;
             }
-            await AddCrateDesignTimeFieldsSource(curActivityDO);
-            await AddSpreadsheetDesignTimeFieldsSource(curActivityDO, authTokenDO);
+            set
+            {
+                CurrentActivityStorage.RemoveByLabel(SelectedSpreadsheetCrateLabel);
+                if (string.IsNullOrEmpty(value))
+                {
+                    return;
+                }
+                CurrentActivityStorage.Add(Crate<FieldDescriptionsCM>.FromContent(SelectedSpreadsheetCrateLabel, new FieldDescriptionsCM(new FieldDTO(value)), AvailabilityType.Configuration));
+            }
+        }
 
-            return curActivityDO;
+        protected override async Task RunCurrentActivity()
+        {
+            if (!ConfigurationControls.UpstreamCrateChooser.CrateDescriptions.Any(x => x.Selected))
+            {
+                throw new ActivityExecutionException($"Failed to run {ActivityName} because upstream crate is not selected", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+            }
+            if ((ConfigurationControls.UseNewSpreadsheetOption.Selected && string.IsNullOrWhiteSpace(ConfigurationControls.NewSpreadsheetName.Value))
+                || (ConfigurationControls.UseExistingSpreadsheetOption.Selected && string.IsNullOrEmpty(ConfigurationControls.ExistingSpreadsheetsList.Value)))
+            {
+                throw new ActivityExecutionException($"Failed to run {ActivityName} because spreadsheet name is not specified", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+            }
+            if ((ConfigurationControls.UseNewWorksheetOption.Selected && string.IsNullOrWhiteSpace(ConfigurationControls.NewWorksheetName.Value))
+                || (ConfigurationControls.UseExistingWorksheetOption.Selected && string.IsNullOrEmpty(ConfigurationControls.ExistingWorksheetsList.Value)))
+            {
+                throw new ActivityExecutionException($"Failed to run {ActivityName} because worksheet name is not specified", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+            }
+            var crateToProcess = FindCrateToProcess();
+            if (crateToProcess == null)
+            {
+                throw new ActivityExecutionException($"Failed to run {ActivityName} because specified upstream crate was not found in payload");
+            }
+            var tableToSave = StandardTableDataCMTools.ExtractPayloadCrateDataToStandardTableData(crateToProcess);
+            var spreadsheetUri = await GetOrCreateSpreadsheet();
+            var worksheetUri = await GetOrCreateWorksheet(spreadsheetUri);
+
+        }
+
+        private async Task<string> GetOrCreateWorksheet(string spreadsheetUri)
+        {
+            if (ConfigurationControls.UseExistingSpreadsheetOption.Selected && ConfigurationControls.UseExistingWorksheetOption.Selected)
+            {
+                return ConfigurationControls.ExistingWorksheetsList.Value;
+            }
+            var authToken = GetGoogleAuthToken();
+            var existingWorksheets = await _googleSheet.GetWorksheets(spreadsheetUri, authToken);
+            //If this is a new spreadsheet and user specified to use existing then we just use the first one (as there is only one existing worksheet in new spreadsheet)
+            if (ConfigurationControls.UseExistingWorksheetOption.Selected)
+            {
+                return existingWorksheets.First().Key;
+            }
+            var existingWorksheet = existingWorksheets.Where(x => string.Equals(x.Value.Trim(), ConfigurationControls.NewWorksheetName.Value.Trim(), StringComparison.InvariantCultureIgnoreCase))
+                                                      .Select(x => x.Key)
+                                                      .FirstOrDefault();
+            //If user entered exactly the name of existing worksheet we return it
+            if (!string.IsNullOrEmpty(existingWorksheet))
+            {
+                return existingWorksheet;
+            }
+            //Anyway create a new worksheet
+            var result = await _googleSheet.CreateWorksheet(spreadsheetUri, authToken, ConfigurationControls.NewWorksheetName.Value);
+            //If this is a new name and new worksheet we delete the default one (as there is no sense in keeping it)
+            if (ConfigurationControls.UseNewSpreadsheetOption.Selected && ConfigurationControls.UseNewWorksheetOption.Selected)
+            {
+                _googleSheet.DeleteWorksheet(existingWorksheets.First().Key, authToken);
+            }
+            return result;
+        }
+
+        private async Task<string> GetOrCreateSpreadsheet()
+        {
+            if (ConfigurationControls.UseExistingSpreadsheetOption.Selected)
+            {
+                return ConfigurationControls.ExistingSpreadsheetsList.Value;
+            }
+            var authToken = GetGoogleAuthToken();
+            var existingSpreadsheets = await _googleSheet.GetSpreadsheets(authToken);
+            var existingSpreadsheet = existingSpreadsheets.Where(x => string.Equals(x.Value.Trim(), ConfigurationControls.NewSpreadsheetName.Value.Trim(), StringComparison.InvariantCultureIgnoreCase))
+                                                          .Select(x => x.Key)
+                                                          .FirstOrDefault();
+            if (!string.IsNullOrEmpty(existingSpreadsheet))
+            {
+                return existingSpreadsheet;
+            }
+            return await _googleSheet.CreateSpreadsheet(ConfigurationControls.NewSpreadsheetName.Value, authToken);
         }
 
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
-            var payloadCrates = await GetPayload(curActivityDO, containerId);
-            var payloadStorage = CrateManager.GetStorage(payloadCrates);
-            if (NeedsAuthentication(authTokenDO))
-            {
-                return NeedsAuthenticationError(payloadCrates);
-            }
-
-            var cratesToProcess = FindCratesToProcess(curActivityDO, payloadStorage);
-
-            if (!cratesToProcess.Any())
-            {
-                Error(payloadCrates, "This Action can't run without Payload Data Crate ", ActivityErrorCode.PAYLOAD_DATA_MISSING);
-                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Unable to find any payload crate with any Manifest Type.");
-            }
 
             //get payload crates for data
             StandardTableDataCM standardTableCM = StandardTableDataCMTools.ExtractPayloadCrateDataToStandardTableData(cratesToProcess);
@@ -109,7 +294,7 @@ namespace terminalGoogle.Actions
                 try
                 {
                     //uploadspreadsheet
-                    var uploadedSpreadsheet = await UploadSpreadsheet(curActivityDO, authTokenDO);
+                    var uploadedSpreadsheet = await GetOrCreateSpreadsheet(curActivityDO, authTokenDO);
                     if (String.IsNullOrEmpty(uploadedSpreadsheet.Key))
                         throw new ArgumentNullException("Please select a spreadsheet to upload.");
 
@@ -130,218 +315,13 @@ namespace terminalGoogle.Actions
 
             return Success(payloadCrates);
         }
-        
-        public bool IsList(object o)
+
+        private Crate FindCrateToProcess()
         {
-            if (o == null) return false;
-            return o is IList &&
-                   o.GetType().IsGenericType &&
-                   o.GetType().GetGenericTypeDefinition().IsAssignableFrom(typeof(List<>));
+            var desiredCrateDescription = ConfigurationControls.UpstreamCrateChooser.CrateDescriptions.Single(x => x.Selected);
+            return CurrentPayloadStorage.FirstOrDefault(x => x.Label == desiredCrateDescription.Label && x.ManifestType.Type == desiredCrateDescription.ManifestType);
         }
-
-
-        private IEnumerable<Crate> FindCratesToProcess(ActivityDO curActivityDO, ICrateStorage payloadStorage)
-        {
-            var configControls = GetConfigurationControls(curActivityDO);
-            var crateChooser = (CrateChooser)configControls.Controls.Single(c => c.Name == "UpstreamCrateChooser");
-            var selectedCrateDescription = crateChooser.CrateDescriptions.Single(c => c.Selected);
-
-            //find crate by user selected values
-            return payloadStorage.Where(c => c.ManifestType.Type == selectedCrateDescription.ManifestType && c.Label == selectedCrateDescription.Label);
-        }
-
-        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            UpdateWorksheetFields(curActivityDO, authTokenDO);
-
-            return await Task.FromResult(curActivityDO);
-        }
-        #endregion
-
-        #region Configuration Controls
-        private async Task<Crate> CreateControlsCrate(ActivityDO curActivityDO)
-        {
-            var controls = new List<ControlDefinitionDTO>()
-            {
-                await GenerateCrateChooser(
-                    curActivityDO,
-                    "UpstreamCrateChooser",
-                    "Store which Crates?",
-                    true,
-                    requestUpstream: true,
-                    requestConfig: true
-                ),
-                CreateSpreadsheetControls(),
-                CreateWorksheetControls()
-            };
-
-            return CrateManager.CreateStandardConfigurationControlsCrate(ConfigurationControlsLabel, controls.ToArray());
-        }
-
-        private ControlDefinitionDTO CreateSpreadsheetControls()
-        {
-            var templateSpreadsheet = new RadioButtonGroup()
-            {
-                GroupName = "SpreadsheetGroup",
-                Name = "SpreadsheetGroup",
-                Events = new List<ControlEvent> { new ControlEvent("onChange", "requestConfig") },
-                Radios = new List<RadioButtonOption>()
-                {
-                    new RadioButtonOption()
-                    {
-                        Selected = true,
-                        Name = "newSpreadsheet",
-                        Value = "Store in a new Google Spreadsheet",
-                        Controls = new List<ControlDefinitionDTO>
-                        {
-                            new TextBox()
-                            {
-                                Label = "",
-                                Value = string.Format("NewFr8Data{0:dd-MM-yyyy}", DateTime.Now.Date),
-                                Name = "NewSpreadsheetText"
-                            }
-                        }
-                    },
-
-                    new RadioButtonOption()
-                    {
-                        Selected = false,
-                        Name = "existingSpreadsheet",
-                        Value = "Store in an existing Spreadsheet",
-                        Controls = new List<ControlDefinitionDTO>
-                        {
-                            new DropDownList()
-                            {
-                                Label = "",
-                                Name = "ExistingSpreadsheetDropdown",
-                                Source = new FieldSourceDTO
-                                {
-                                    Label = "Spreadsheet Fields",
-                                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                                },
-                                Events = new List<ControlEvent> {new ControlEvent("onChange", "requestConfig")}
-                            }
-                        }
-                    }
-                }
-            };
-
-            return templateSpreadsheet;
-        }
-
-        private ControlDefinitionDTO CreateWorksheetControls()
-        {
-            var templateWorksheet = new RadioButtonGroup()
-            {
-                Label = "Inside the spreadsheet, store in",
-                GroupName = "WorksheetGroup",
-                Name = "WorksheetGroup",
-                Radios = new List<RadioButtonOption>()
-                {
-                    new RadioButtonOption()
-                    {
-                        Selected = true,
-                        Name = "newWorksheet",
-                        Value = "A new Sheet (Pane)",
-                        Controls = new List<ControlDefinitionDTO>
-                        {
-                            new TextBox()
-                            {
-                                Label = "",
-                                Value = "Sheet1",
-                                Name = "NewWorksheetText"
-                            }
-                        }
-                    },
-
-                    new RadioButtonOption()
-                    {
-                        Selected = false,
-                        Name = "existingWorksheet",
-                        Value = "Existing Pane",
-                        Controls = new List<ControlDefinitionDTO>
-                        {
-                            new DropDownList()
-                            {
-                                Label = "",
-                                Name = "ExistingWorksheetDropdown",
-                                Source = new FieldSourceDTO
-                                {
-                                    Label = "Worksheet Fields",
-                                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                                }
-                            }
-                        }
-                    }
-                }
-            };
-
-            return templateWorksheet;
-        }
-
-        private async Task<ActivityDO> AddCrateDesignTimeFieldsSource(ActivityDO curActivityDO)
-        {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.RemoveByLabel("Store which Crates?");
-
-                var mergedUpstreamRunTimeObjects = await MergeUpstreamFields(curActivityDO, "Available Run-Time Objects");
-                FieldDTO[] upstreamLabels = mergedUpstreamRunTimeObjects.Content.
-                    Fields.Select(field => new FieldDTO { Key = field.Key, Value = field.Value }).ToArray();
-
-                var upstreamLabelsCrate = CrateManager.CreateDesignTimeFieldsCrate("Store which Crates?", upstreamLabels);
-                crateStorage.Add(upstreamLabelsCrate);
-            }
-
-            return curActivityDO;
-        }
-
-        private async Task<ActivityDO> AddSpreadsheetDesignTimeFieldsSource(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
-            var spreadsheets = await _googleSheet.GetSpreadsheets(authDTO);
-
-            var fields = spreadsheets.Select(x => new FieldDTO() { Key = x.Value, Value = x.Key, Availability = AvailabilityType.Configuration }).ToArray();
-            var createDesignTimeFields = CrateManager.CreateDesignTimeFieldsCrate(
-                "Spreadsheet Fields",
-                AvailabilityType.Configuration,
-                fields);
-
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.RemoveByLabel("Spreadsheet Fields");
-
-                crateStorage.Add(createDesignTimeFields);
-            }
-
-            return await Task.FromResult<ActivityDO>(curActivityDO);
-        }
-
-        private async Task<ActivityDO> AddWorksheetDesignTimeFieldsSource(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
-            var worksheet = await _googleSheet.GetWorksheets(_spreedsheetUri, authDTO);
-
-            var fields = worksheet.Select(x => new FieldDTO() { Key = x.Value, Value = x.Key, Availability = AvailabilityType.Configuration }).ToArray();
-            var createDesignTimeFields = CrateManager.CreateDesignTimeFieldsCrate(
-                "Worksheet Fields",
-                AvailabilityType.Configuration,
-                fields);
-
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.RemoveByLabel("Worksheet Fields");
-
-                crateStorage.Add(createDesignTimeFields);
-            }
-
-            return await Task.FromResult<ActivityDO>(curActivityDO);
-        }
-
-        #endregion
-
-        #region Helper Methods
-        private async Task<FieldDTO> UploadSpreadsheet(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        private async Task<FieldDTO> GetOrCreateSpreadsheet(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             StandardConfigurationControlsCM configurationControls = GetConfigurationControls(curActivityDO);
             FieldDTO uploadedSpreadSheet = new FieldDTO();
@@ -463,49 +443,5 @@ namespace terminalGoogle.Actions
             }
             return uploadedWorksheet;
         }
-
-        private async Task UpdateWorksheetFields(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            StandardConfigurationControlsCM configurationControls = GetConfigurationControls(curActivityDO);
-            if (configurationControls != null)
-            {
-                var existingSpreadsheetRadioOption = configurationControls.Controls.OfType<RadioButtonGroup>()
-                    .Where(w => w.Name == "SpreadsheetGroup").SelectMany(s => s.Radios)
-                    .Where(w => w.Name == "existingSpreadsheet").FirstOrDefault();
-
-                var dropDownSpreadsheet = existingSpreadsheetRadioOption.Controls.OfType<DropDownList>().FirstOrDefault();
-
-                if (dropDownSpreadsheet != null)
-                {
-                    if (existingSpreadsheetRadioOption.Selected == false)
-                    {
-                        //if spreadsheet is new Clear out worksheet dropdown and select new worksheet
-                        using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-                        {
-                            crateStorage.RemoveByLabel("Worksheet Fields");
-
-                            configurationControls.Controls[2] = CreateWorksheetControls();
-                            crateStorage.ReplaceByLabel(CrateManager.CreateStandardConfigurationControlsCrate(ConfigurationControlsLabel, configurationControls.Controls.ToArray()));
-                        }
-                    }
-                    else
-                    {
-                        //if spreadsheet is existing, update worksheet dropdown
-                        if (!String.IsNullOrEmpty(dropDownSpreadsheet.Value))
-                        {
-                            _spreedsheetUri = dropDownSpreadsheet.Value;
-                            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-                            {
-                                crateStorage.RemoveByLabel("Worksheet Fields");
-
-                            }
-                            await AddWorksheetDesignTimeFieldsSource(curActivityDO, authTokenDO);
-                        }
-                    }
-                }
-            }
-        }
-
-        #endregion
     }
 }
