@@ -58,7 +58,7 @@ namespace HubTests.Services
 
                 var response = JsonConvert.SerializeObject(authorizationToken);
                 var restfulServiceClient = new Mock<IRestfulServiceClient>();
-                restfulServiceClient.Setup(r => r.PostAsync<CredentialsDTO>(new Uri("http://" + terminal.Endpoint + "/authentication/internal"),
+                restfulServiceClient.Setup(r => r.PostAsync<CredentialsDTO>(new Uri(terminal.Endpoint + "/authentication/internal"),
                         It.Is<CredentialsDTO>(it => it.Username == credentialsDTO.Username
                             && it.Password == credentialsDTO.Password
                             && it.Domain == credentialsDTO.Domain), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))

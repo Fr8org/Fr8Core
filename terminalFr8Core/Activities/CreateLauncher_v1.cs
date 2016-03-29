@@ -18,60 +18,118 @@ using TerminalBase;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using Utilities;
+using Utilities.Configuration.Azure;
 
 namespace terminalFr8Core.Actions
 {
-    public class CreateLauncher_v1 : BaseTerminalActivity
+    public class CreateLauncher_v1 : EnhancedTerminalActivity<CreateLauncher_v1.ActivityUi>
     {
-
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        /**********************************************************************************/
+        // Configuration controls
+        /**********************************************************************************/
+        public class ActivityUi : StandardConfigurationControlsCM
         {
-            //build a controls crate to render the pane
-            var configurationControlsCrate = await CreateControlsCrate();
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.Replace(AssembleCrateStorage(configurationControlsCrate));
-            }
+            public TextBlock InfoText;
+            public TextBox LauncherName;
+            public DropDownList TargetPlan;
+            public MetaControlContainer ControlContainer;
+            public Button CreateButton;
+            public TextBlock UrlInfo;
 
-            return curActivityDO;
+
+            public ActivityUi()
+        {
+                InfoText = new TextBlock()
+            {
+                    Value = "Construct a Launcher that gathers information from users and passes it to another Plan",
+                    Name = "info_text"
+                };
+
+                LauncherName = new TextBox()
+                {
+                    Label = "Launcher Name",
+                    Name = "launcher_name"
+                };
+
+                TargetPlan = new DropDownList()
+                {
+                    Name = "target_plan",
+                    Label = "Target Plan"
+                };
+
+                ControlContainer = new MetaControlContainer()
+                {
+                    Label = "Please insert your desired controls below",
+                    Name = "control_container"
+                };
+
+                CreateButton = new Button
+                {
+                    CssClass = "float-right mt30 btn btn-default",
+                    Label = "Generate Launcher",
+                    Name = "generate_launcher",
+                    Events = new List<ControlEvent>()
+                    {
+                        new ControlEvent("onClick", "requestConfig")
+            }
+                };
+
+                UrlInfo = new TextBlock
+                {
+                    CssClass = "well",
+                    Value ="",
+                    Name = "url_text",
+                    IsHidden = true
+                };
+
+                Controls.Add(InfoText);
+                Controls.Add(LauncherName);
+                Controls.Add(TargetPlan);
+                Controls.Add(ControlContainer);
+                Controls.Add(CreateButton);
+                Controls.Add(UrlInfo);
+        }
         }
 
-        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        public CreateLauncher_v1() : base(false)
         {
-            var configControls = GetConfigurationControls(curActivityDO);
+        }
 
-            var generateLauncherButton = configControls.FindByName<Button>("generate_launcher");
-            if (!generateLauncherButton.Clicked)
+        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
             {
-                return curActivityDO;
+            ConfigurationControls.TargetPlan.ListItems = await GetUserPlans();
             }
             
-            var launcherName = configControls.FindByName<TextBox>("launcher_name");
-            if (string.IsNullOrEmpty(launcherName.Value))
+        protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
             {
-                //TODO add error label
-                return curActivityDO;
+            if (!ConfigurationControls.CreateButton.Clicked)
+            {
+                return;
             }
 
-            var targetPlan = configControls.FindByName<DropDownList>("target_plan");
-            if (string.IsNullOrEmpty(targetPlan.Value) || string.IsNullOrEmpty(targetPlan.selectedKey))
+            if (string.IsNullOrEmpty(ConfigurationControls.LauncherName.Value))
             {
-                //TODO add error label
-                return curActivityDO;
+                ConfigurationControls.LauncherName.ErrorMessage = "This field must be filled";
+                return;
             }
 
-            var controlContainer = configControls.FindByName<ControlContainer>("control_container");
-            if (!controlContainer.MetaDescriptions.Any())
+            if (string.IsNullOrEmpty(ConfigurationControls.TargetPlan.Value) || string.IsNullOrEmpty(ConfigurationControls.TargetPlan.selectedKey))
+            {
+                ConfigurationControls.TargetPlan.ErrorMessage = "This field must be filled";
+                return;
+            }
+
+            if (!ConfigurationControls.ControlContainer.MetaDescriptions.Any())
             {
                 //TODO add error label
-                return curActivityDO;
+                return;
             }
 
 
             //we are ready to roll
             var plan = new PlanEmptyDTO
             {
-                Name = launcherName.Value,
+                Name = ConfigurationControls.LauncherName.Value,
                 PlanState = PlanState.Inactive,
                 Description = "Automatically created by CreateLauncher_v1",
                 Tag = "auto-created",
@@ -79,103 +137,34 @@ namespace terminalFr8Core.Actions
             };
             var createdPlan = await HubCommunicator.CreatePlan(plan, CurrentFr8UserId);
             //var startingSubplan = createdPlan.Plan.SubPlans.FirstOrDefault();
-            var launchAPlan = await AddAndConfigureChildActivity((Guid)createdPlan.Plan.StartingSubPlanId, "LaunchAPlan", "Launch A Plan", "Launch A Plan", 1);
+            var launchAPlan = await AddAndConfigureChildActivity((Guid)createdPlan.Plan.StartingSubPlanId, "PlanLauncher", "Plan Launcher", "Plan Launcher", 1);
 
             using (var storage = CrateManager.GetUpdatableStorage(launchAPlan))
             {
                 //let's add newly generated config controls
-                var generatedConfigControls = controlContainer.CreateControls();
+                var generatedConfigControls = ConfigurationControls.ControlContainer.CreateControls();
                 storage.Replace(AssembleCrateStorage(PackControlsCrate(generatedConfigControls.ToArray())));
-                storage.Add(CrateManager.CreateDesignTimeFieldsCrate("Target Plan", new FieldDTO(targetPlan.selectedKey, targetPlan.Value)));
+                storage.Add(CrateManager.CreateDesignTimeFieldsCrate("Target Plan", new FieldDTO(ConfigurationControls.TargetPlan.selectedKey, ConfigurationControls.TargetPlan.Value)));
             }
 
             launchAPlan = await HubCommunicator.ConfigureActivity(launchAPlan, CurrentFr8UserId);
 
-            //let's add newly created plans url as a textblock
-            using (var storage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                var currentConfControls = GetConfigurationControls(storage);
-                currentConfControls.Controls.RemoveAll(c => c.Name == "url_text");
-                currentConfControls.Controls.Add(new TextBlock
-                {
-                    CssClass = "well",
-                    Value = "New plan is generated for this operation, you can check this plan at: "+
-#if DEBUG
-                    "http://localhost:30643" +
-#elif DEV
-                    "http://dev.fr8.co" +
-#elif RELEASE
-                    "http://www.fr8.co" +
-#endif
-                    "/dashboard#/plans/" + createdPlan.Plan.Id+ "/builder",
-                    Name = "url_text"
-                });
-            }
-
-            return await Task.FromResult<ActivityDO>(curActivityDO);
+            ConfigurationControls.UrlInfo.IsHidden = false;
+            ConfigurationControls.UrlInfo.Value =
+                "Your Launcher Plan has been generated. It is currently visible to you only. Launch this plan by browsing to " +
+                CloudConfigurationManager.GetSetting("CoreWebServerUrl") +
+                "dashboard#/plans/" + createdPlan.Plan.Id + "/builder?kioskMode=true";
         }
 
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        protected override Task RunCurrentActivity()
         {
-            var curPayloadDTO = await GetPayload(curActivityDO, containerId);
-            return Success(curPayloadDTO);
+            return Task.FromResult(0);
         }
 
         private async Task<List<ListItem>> GetUserPlans()
         {
             var plans = await HubCommunicator.GetPlansByName(null, CurrentFr8UserId);
             return plans.Select(x => new ListItem { Key = x.Plan.Name, Value = x.Plan.Id.ToString()}).ToList();
-        }
-
-        protected async Task<Crate> CreateControlsCrate()
-        {
-            var infoText = new TextBlock()
-            {
-                Value = "Construct a Launcher that gathers information from users and passes it to another Plan",
-                Name = "info_text"
-            };
-
-            var launcherName = new TextBox()
-            {
-                Label = "Launcher Name",
-                Name = "launcher_name"
-            };
-
-            var targetPlan = new DropDownList()
-            {
-                Name = "target_plan",
-                Label = "Target Plan",
-                ListItems = await GetUserPlans()
-            };
-
-            var cc = new ControlContainer()
-            {
-                Label = "Please insert your desired controls below",
-                Name = "control_container"
-            };
-
-            var createButton = new Button
-            {
-                CssClass = "float-right mt30 btn btn-default",
-                Label = "Generate Launcher",
-                Name = "generate_launcher",
-                Events = new List<ControlEvent>()
-                {
-                    new ControlEvent("onClick", "requestConfig")
-                }
-            };
-
-            return PackControlsCrate(infoText, launcherName, targetPlan, cc, createButton);
-        }
-
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
-        {
-            if (CrateManager.IsStorageEmpty(curActivityDO))
-            {
-                return ConfigurationRequestType.Initial;
-            }
-
-            return ConfigurationRequestType.Followup;
         }
     }
 }

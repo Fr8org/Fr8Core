@@ -51,7 +51,7 @@ namespace Data.Control
         public const string DatePicker = "DatePicker";
         public const string CrateChooser = "CrateChooser";
         public const string ContainerTransition = "ContainerTransition";
-        public const string ControlContainer = "ControlContainer";
+        public const string MetaControlContainer = "MetaControlContainer";
         public const string ControlList = "ControlList";
     }
 
@@ -74,7 +74,6 @@ namespace Data.Control
     public class DropDownList : ControlDefinitionDTO
     {
         [JsonProperty("listItems")]
-        [ForcePropertySync]
         public List<ListItem> ListItems { get; set; }
 
         [JsonProperty("selectedKey")]
@@ -235,12 +234,13 @@ namespace Data.Control
         }
     }
 
-    public class ControlContainer : ControlDefinitionDTO
+    public class MetaControlContainer : ControlDefinitionDTO
     {
         [JsonProperty("metaDescriptions")]
+        [ForcePropertySync]
         public List<ControlMetaDescriptionDTO> MetaDescriptions { get; set; }
 
-        public ControlContainer() : base(ControlTypes.ControlContainer)
+        public MetaControlContainer() : base(ControlTypes.MetaControlContainer)
         {
             MetaDescriptions = new List<ControlMetaDescriptionDTO>();
         }
@@ -443,10 +443,8 @@ namespace Data.Control
             var deepestLoop = operationalState.Loops.OrderByDescending(l => l.Level).FirstOrDefault(l => !l.BreakSignalReceived && l.Label == crate.Label && l.CrateManifest == crate.ManifestType.Type);
             if (deepestLoop != null) //this is a loop related data request
             {
-                //find current element
-                var dataList = Fr8ReflectionHelper.FindFirstArray(crate.Get());
                 //we will search requested field in current element
-                searchArea = dataList[deepestLoop.Index];
+                searchArea = GetDataListItem(crate, deepestLoop.Index);
             }
             else
             {
@@ -462,20 +460,14 @@ namespace Data.Control
             return fieldMatch;
         }
 
-        /// <summary>
-        /// Extracts crate with specified label and ManifestType = Standard Design Time,
-        /// then extracts field with specified fieldKey.
-        /// </summary>
-        private string ExtractPayloadFieldValue(ICrateStorage payloadCrateStorage, bool ignoreCase)
+        private object GetDataListItem(Crate crate, int index)
         {
-            var fieldValues = payloadCrateStorage.CratesOfType<StandardPayloadDataCM>().SelectMany(x => x.Content.GetValues(selectedKey, ignoreCase))
-                .Where(s => !string.IsNullOrEmpty(s))
-                .ToArray();
-
-            if (fieldValues.Length > 0)
-                return fieldValues[0];
-
-            throw new ApplicationException(string.Format("No field found with specified key: {0}.", selectedKey));
+            var tableData = crate.ManifestType.Id == (int)MT.StandardTableData ? crate.Get<StandardTableDataCM>() : null;
+            if (tableData != null)
+            {
+                return tableData.FirstRowHeaders ? tableData.Table[index + 1] : tableData.Table[index];
+            }
+            return Fr8ReflectionHelper.FindFirstArray(crate.Get())[index];
         }
     }
 
@@ -596,6 +588,7 @@ namespace Data.Control
     public class ControlList : ControlDefinitionDTO
     {
         [JsonProperty("controlGroups")]
+        [ForcePropertySync]
         public IList<IList<ControlDefinitionDTO>> ControlGroups { get; }
 
         [JsonProperty("templateContainer")]
@@ -738,7 +731,6 @@ namespace Data.Control
         }
 
         [JsonProperty("selectedCrates")]
-        [ForcePropertySync]
         public List<CrateDetails> SelectedCrates { get; set; } = new List<CrateDetails>();
 
         [JsonProperty("multiSelection")]
@@ -754,7 +746,6 @@ namespace Data.Control
         }
 
         [JsonProperty("crateDescriptions")]
-        [ForcePropertySync]
         public List<CrateDescriptionDTO> CrateDescriptions { get; set; }
 
         [JsonProperty("singleManifestOnly")]

@@ -134,6 +134,14 @@
                 }
             }
 
+            // remove AuthUnsuccessfulButton from fields before sending data to server
+            for (var i = 0; i < fieldsToSyncWithCrate.length; ++i) {
+                if (fieldsToSyncWithCrate[i].name === 'AuthUnsuccessfulButton') {
+                    fieldsToSyncWithCrate.splice(i, 1);
+                    break;
+                }
+            }
+
             // Find single crate with manifestType == 'Standard UI Controls'.
             var controlListCrate = this.findByManifestType(
                 crateStorage, 'Standard UI Controls');

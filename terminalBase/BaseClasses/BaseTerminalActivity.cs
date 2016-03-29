@@ -247,15 +247,48 @@ namespace TerminalBase.BaseClasses
             return Success(await GetPayload(curActivityDO, containerId));
         }
 
-        protected void CheckAuthentication(AuthorizationTokenDO authTokenDO)
+        protected bool CheckAuthentication(ActivityDO activity, AuthorizationTokenDO authTokenDO)
         {
             if (NeedsAuthentication(authTokenDO))
             {
-                throw new ApplicationException("No AuthToken provided.");
+                AddAuthenticationCrate(activity, false);
+                return true;
+            }
+
+            return false;
+        }
+
+        protected void AddAuthenticationCrate(ActivityDO activityDO, bool revocation)
+        {
+            using (var crateStorage = CrateManager.UpdateStorage(() => activityDO.CrateStorage))
+            {
+                var terminalAuthType = activityDO.ActivityTemplate.Terminal.AuthenticationType;
+
+                AuthenticationMode mode;
+                switch (terminalAuthType)
+                {
+                    case AuthenticationType.Internal:
+                        mode = AuthenticationMode.InternalMode;
+                        break;
+                    case AuthenticationType.External:
+                        mode = AuthenticationMode.ExternalMode;
+                        break;
+                    case AuthenticationType.InternalWithDomain:
+                        mode = AuthenticationMode.InternalModeWithDomain;
+                        break;
+                    case AuthenticationType.None:
+                    default:
+                        mode = AuthenticationMode.ExternalMode;
+                        break;
+                }
+
+                crateStorage.Add(
+                    CrateManager.CreateAuthenticationCrate("RequiresAuthentication", mode, revocation)
+                );
             }
         }
 
-        protected virtual bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
+        public virtual bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
         {
             return string.IsNullOrEmpty(authTokenDO?.Token);
         }

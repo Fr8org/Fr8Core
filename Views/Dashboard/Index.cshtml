@@ -32,8 +32,13 @@
     <div ng-controller="NotifierController">
         <toast></toast>
     </div>
+
+    <div ng-controller="NotifierController" layout="column" style="height:500px;" ng-cloak>
+        <section layout="row" flex>
+            <md-content flex layout-padding>
     <!-- BEGIN PAGE SPINNER -->
     <div class="main-wrapper">
+                    <div>
         <div ng-spinner-bar class="page-spinner-bar">
             <div class="bounce1"></div>
             <div class="bounce2"></div>
@@ -41,8 +46,11 @@
         </div>
         <!-- END PAGE SPINNER -->
         <!-- BEGIN HEADER -->
+    <div ui-view="header">
         <div data-ng-include="'/AngularTemplate/Header'" data-ng-controller="HeaderController" class="page-header">
         </div>
+    </div>
+
         <!-- END HEADER -->
 
         <div class="clearfix">
@@ -64,11 +72,37 @@
 
         </div>
     </div>
+                </div>
     <!-- END CONTAINER -->
-    <!-- BEGIN FOOTER -->
+    <div ui-view="footer">
     <div data-ng-include="'/AngularTemplate/Footer'" sticky-footer=".main-wrapper" data-ng-controller="FooterController">
     </div>
+    </div>
+<!-- BEGIN FOOTER -->
+    
     <!-- END FOOTER -->
+            </md-content>
+            <md-sidenav class="md-sidenav-right md-whiteframe-4dp" md-component-id="right" md-is-locked-open="true" md-disable-backdrop>
+                <md-toolbar class="md-theme-light">
+                    <h1 class="md-toolbar-tools">Activity</h1>
+                </md-toolbar>
+                <md-content layout-padding>
+                    <md-list flex>
+                        <md-list-item class="secondary-button-padding" ng-repeat="event in eventList">
+                            <fr8-event style="margin-top:10px;margin-bottom:10px;" event="event.data" type="{{event.type}}"></fr8-event>
+                            <md-divider></md-divider>
+                        </md-list-item>
+                    </md-list>
+                </md-content>
+            </md-sidenav>
+            
+        </section>
+    </div>
+
+
+
+    
+
     <!-- BEGIN JAVASCRIPTS(Load javascripts at bottom, this will reduce page load time) -->
     <!-- BEGIN CORE JQUERY PLUGINS -->
     <!--[if lt IE 9]>

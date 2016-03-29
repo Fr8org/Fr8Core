@@ -54,6 +54,10 @@ namespace Data.Entities
         [InverseProperty("DockyardAccount")]
         public virtual IList<SubscriptionDO> Subscriptions { get; set; }
 
+        [ForeignKey("Organization")]
+        public int? OrganizationId { get; set; }
+        public virtual OrganizationDO Organization { get; set; }
+
         public void BeforeCreate()
         {
             if (CreateDate == default(DateTimeOffset))

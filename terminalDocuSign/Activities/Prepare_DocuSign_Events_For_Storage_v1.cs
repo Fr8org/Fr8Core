@@ -14,10 +14,12 @@ using Data.Entities;
 using Utilities.Configuration.Azure;
 using Data.Constants;
 using Data.States;
+using Newtonsoft.Json;
+using terminalDocuSign.DataTransferObjects;
 
 namespace terminalDocuSign.Actions
 {
-    public class Record_DocuSign_Events_v1 : BaseTerminalActivity
+    public class Prepare_DocuSign_Events_For_Storage_v1 : BaseTerminalActivity
     {
         /// <summary>
         /// //For this action, both Initial and Followup configuration requests are same. Hence it returns Initial config request type always.
@@ -26,9 +28,12 @@ namespace terminalDocuSign.Actions
         /// <returns></returns>
         public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            CheckAuthentication(authTokenDO);
+            if (CheckAuthentication(curActivityDO, authTokenDO))
+            {
+                return curActivityDO;
+            }
 
-            return await ProcessConfigurationRequest(curActivityDO, x => ConfigurationRequestType.Initial,authTokenDO);
+            return await ProcessConfigurationRequest(curActivityDO, x => ConfigurationRequestType.Initial, authTokenDO);
         }
 
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
@@ -46,78 +51,64 @@ namespace terminalDocuSign.Actions
             var envelopeCrate = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", MT.DocuSignEnvelope.ToString(), ((int)MT.DocuSignEnvelope).ToString(CultureInfo.InvariantCulture), AvailabilityType.RunTime);
             var eventCrate = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", MT.DocuSignEvent.ToString(), ((int)MT.DocuSignEvent).ToString(CultureInfo.InvariantCulture), AvailabilityType.RunTime);
             var recipientCrate = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", MT.DocuSignRecipient.ToString(), ((int)MT.DocuSignRecipient).ToString(CultureInfo.InvariantCulture), AvailabilityType.RunTime);
-            /*
-            //create Standard Design Time Fields for Available Run-Time Objects
-            var curAvailableRunTimeObjectsDesignTimeCrate =
-                Crate.CreateDesignTimeFieldsCrate("Available Run-Time Objects", new FieldDTO[]
-                {
-                    new FieldDTO {Key = "DocuSign Envelope", Value = "DocuSign Envelope"},
-                    new FieldDTO {Key = "DocuSign Event", Value = "DocuSign Event"},
-                    new FieldDTO {Key = "DocuSign Recipient", Value = "DocuSign Recipient"}
-                });
-            */
+
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                crateStorage.Replace(new CrateStorage(curControlsCrate, curEventSubscriptionsCrate, envelopeCrate, eventCrate, recipientCrate));
+                var authToken = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
+                var docuSignUserCrate = Crate.FromContent("DocuSignUserCrate", new StandardPayloadDataCM(new FieldDTO("DocuSignUserEmail", authToken.Email)));
+                crateStorage.Replace(new CrateStorage(curControlsCrate, curEventSubscriptionsCrate, envelopeCrate, eventCrate, recipientCrate, docuSignUserCrate));
             }
-
-            /*
-             * Note: We should not call Activate at the time of Configuration. For this action, it may be valid use case.
-             * Because this particular action will be used internally, it would be easy to execute the Process directly.
-             */
-            await Activate(curActivityDO, null);
 
             return await Task.FromResult(curActivityDO);
         }
 
-        public override Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            DocuSignAccount curDocuSignAccount = new DocuSignAccount();
-            var curConnectProfile = curDocuSignAccount.GetDocuSignConnectProfiles();
-            try {
-                if (curConnectProfile.configurations != null &&
-                    !curConnectProfile.configurations.Any(config => !string.IsNullOrEmpty(config.name) && config.name.Equals("MonitorAllDocuSignEvents")))
-                {
-                    var monitorConnectConfiguration = new DocuSign.Integrations.Client.Configuration
-                    {
-                        allowEnvelopePublish = "true",
-                        allUsers = "true",
-                        enableLog = "true",
-                        requiresAcknowledgement = "true",
-                        envelopeEvents = string.Join(",", DocuSignEventNames.GetEventsFor("Envelope")),
-                        recipientEvents = string.Join(",", DocuSignEventNames.GetEventsFor("Recipient")),
-                        name = "MonitorAllDocuSignEvents",
-                        urlToPublishTo =
-                            Regex.Match(CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint"), @"(\w+://\w+:\d+)").Value +
-                            "/terminals/terminalDocuSign/events"
-                    };
+        //public override Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        //{
+        //    DocuSignAccount curDocuSignAccount = new DocuSignAccount();
+        //    var curConnectProfile = curDocuSignAccount.GetDocuSignConnectProfiles();
+        //    try {
+        //        if (curConnectProfile.configurations != null &&
+        //            !curConnectProfile.configurations.Any(config => !string.IsNullOrEmpty(config.name) && config.name.Equals("MonitorAllDocuSignEvents")))
+        //        {
+        //            var monitorConnectConfiguration = new DocuSign.Integrations.Client.Configuration
+        //            {
+        //                allowEnvelopePublish = "true",
+        //                allUsers = "true",
+        //                enableLog = "true",
+        //                requiresAcknowledgement = "true",
+        //                envelopeEvents = string.Join(",", DocuSignEventNames.GetEventsFor("Envelope")),
+        //                recipientEvents = string.Join(",", DocuSignEventNames.GetEventsFor("Recipient")),
+        //                name = "MonitorAllDocuSignEvents",
+        //                urlToPublishTo = new Uri(new Uri(CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint")), "/terminals/terminalDocuSign/events").OriginalString
+        //            };
 
-                    curDocuSignAccount.CreateDocuSignConnectProfile(monitorConnectConfiguration);
-                }
-            }
-            catch(Exception ex)
-            {
-                //TODO: log this exception
-            }
-            return Task.FromResult<ActivityDO>(curActivityDO);
-        }
+        //            curDocuSignAccount.CreateDocuSignConnectProfile(monitorConnectConfiguration);
+        //        }
+        //    }
+        //    catch(Exception ex)
+        //    {
+        //        //TODO: log this exception
+        //    }
+        //    return Task.FromResult<ActivityDO>(curActivityDO);
+        //}
 
-        public override Task<ActivityDO> Deactivate(ActivityDO curActivityDO)
-        {
-            DocuSignAccount curDocuSignAccount = new DocuSignAccount();
-            var curConnectProfile = curDocuSignAccount.GetDocuSignConnectProfiles();
+        //public override Task<ActivityDO> Deactivate(ActivityDO curActivityDO)
+        //{
+        //    DocuSignAccount curDocuSignAccount = new DocuSignAccount();
+        //    var curConnectProfile = curDocuSignAccount.GetDocuSignConnectProfiles();
 
-            if (Int32.Parse(curConnectProfile.totalRecords) > 0 && curConnectProfile.configurations.Any(config => !string.IsNullOrEmpty(config.name) && config.name.Equals("MonitorAllDocuSignEvents")))
-            {
-                var monitorAllDocuSignEventsId = curConnectProfile.configurations.Where(config => !string.IsNullOrEmpty(config.name) && config.name.Equals("MonitorAllDocuSignEvents")).Select(s => s.connectId);
-                foreach (var connectId in monitorAllDocuSignEventsId)
-                {
-                    curDocuSignAccount.DeleteDocuSignConnectProfile(connectId);
-                }
-            }
+        //    if (Int32.Parse(curConnectProfile.totalRecords) > 0 && curConnectProfile.configurations.Any(config => !string.IsNullOrEmpty(config.name) && config.name.Equals("MonitorAllDocuSignEvents")))
+        //    {
+        //        var monitorAllDocuSignEventsId = curConnectProfile.configurations.Where(config => !string.IsNullOrEmpty(config.name) && config.name.Equals("MonitorAllDocuSignEvents")).Select(s => s.connectId);
+        //        foreach (var connectId in monitorAllDocuSignEventsId)
+        //        {
+        //            curDocuSignAccount.DeleteDocuSignConnectProfile(connectId);
+        //        }
+        //    }
 
-            return Task.FromResult<ActivityDO>(curActivityDO);
-        }
+        //    return Task.FromResult<ActivityDO>(curActivityDO);
+        //}
+
 
         public async Task<PayloadDTO> Run(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
@@ -168,7 +159,7 @@ namespace terminalDocuSign.Actions
                         DocuSignAccountId = docuSignFields.GetValueOrDefault("HolderEmail")
                     };
                 }
-                
+
 
                 using (var crateStorage = CrateManager.GetUpdatableStorage(curProcessPayload))
                 {
