@@ -99,9 +99,11 @@ namespace terminalDocuSignTests.Integration
 
                 //Create connect
                 ConnectName += DateTime.Now.ToShortDateString();
-                publishUrl = "http://" + CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint") + "/terminals/terminalDocuSign/events"; 
+                publishUrl = "http://" + CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint") + "/terminals/terminalDocuSign/events";
                 var docusignConnect = new DocuSignConnect();
                 string connectId = docusignConnect.CreateOrActivateConnect(loginInfo, ConnectName, publishUrl);
+
+                Console.WriteLine("Created connect named \"{0}\" to {1} with Id:{2}", ConnectName, publishUrl, connectId);
 
                 //send envelope
                 await SendDocuSignTestEnvelope(docuSignManager, loginInfo, authTokenDO);
@@ -125,6 +127,7 @@ namespace terminalDocuSignTests.Integration
                 }
 
                 docusignConnect.DeleteConnect(loginInfo, connectId);
+                Console.WriteLine("Deleted connect with Id:{0}", connectId);
 
                 Assert.IsTrue(mtDataCountBefore < mtDataCountAfter);
             }
