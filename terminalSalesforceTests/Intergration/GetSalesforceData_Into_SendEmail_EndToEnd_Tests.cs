@@ -55,7 +55,7 @@ namespace terminalSalesforceTests.Intergration
             getData = await ConfigureActivity(getData);
             Assert.IsTrue(getData.CrateStorage.Crates.Any(c => c.Label.Equals("Salesforce Object Fields")), 
                           "Follow up configuration is not getting any Salesforce Object Fields");
-            Debug.WriteLine("Get Lead using condition is successful in the Follow Up Configure.");
+            Debug.WriteLine("Get Lead using condition is successful in the Follow Up Configure");
 
             //prepare the send email activity controls.
             var sendEmail = plan.Plan.SubPlans.First().Activities.Last();
