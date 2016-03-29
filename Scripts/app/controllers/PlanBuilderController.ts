@@ -39,6 +39,7 @@ module dockyard.controllers {
         curAggReloadingActions: Array<string>;
         addSubPlan: () => void;
         view: string;
+        viewMode: string;
     }
 
 
@@ -80,7 +81,7 @@ module dockyard.controllers {
         constructor(
             private $scope: IPlanBuilderScope,
             private LocalIdentityGenerator: services.ILocalIdentityGenerator,
-            private $state: ngState,
+            private $state: ng.ui.IStateService,
             private ActionService: services.IActionService,
             private $http: ng.IHttpService,
             private PlanService: services.IPlanService,
@@ -106,7 +107,8 @@ module dockyard.controllers {
             this.setupMessageProcessing();
 
             this.$scope.view = $stateParams['view'];
-
+            this.$scope.viewMode = $stateParams['viewMode'];
+            
             this.$scope.addAction = (group: model.ActionGroup) => {
                 this.addAction(group);
             }
@@ -356,8 +358,22 @@ module dockyard.controllers {
                 this.$scope.planId = $state.params.id;
             }
 
-            this.loadPlan();
+
+            //TODO we should create a parameter for cloning
+            if (this.$scope.view && this.$scope.viewMode === 'kiosk') {
+                //this plan should be cloned
+                this.PlanService.getClonedPlan({ id: this.$scope.planId }).$promise.then((clonedPlan: model.PlanDTO) => {
+                    //we are already using cloned plan
+                    if (clonedPlan.id === this.$scope.planId) {
+                        this.loadPlan();
+                    } else {
+                        this.$state.go('planBuilder', { id: clonedPlan.id, viewMode: this.$scope.viewMode, view: this.$scope.view});
+                    }
+                });
+            }
         }
+
+        
 
         private createNewSolution(solutionName: string) {
             var plan = this.ActionService.createSolution({

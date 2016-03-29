@@ -57,6 +57,7 @@ namespace terminalFr8Core.Actions
                 if (submitButton.Clicked)
                 {
                     //we need to start the process
+                    
                 }
             }
 
@@ -70,23 +71,6 @@ namespace terminalFr8Core.Actions
                     curStorage.Add(CreateCollectionControlsCrate(controlContainer));
                 }
             }
-
-            /*
-            //let's add newly created plans url as a textblock
-            using (var storage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                var currentConfControls = GetConfigurationControls(storage);
-                currentConfControls.Controls.RemoveAll(c => c.Name == "url_text");
-                currentConfControls.Controls.Add(new TextBlock
-                {
-                    CssClass = "well",
-                    Value = "Your Launcher Plan has been generated. It is currently visible to you only. Launch this plan by browsing to " +
-                            CloudConfigurationManager.GetSetting("CoreWebServerUrl") +
-                            "dashboard#/plans/" + createdPlan.Plan.Id + "/builder?kioskMode=true",
-                    Name = "url_text"
-                });
-            }
-            */
 
             return await Task.FromResult<ActivityDO>(curActivityDO);
         }

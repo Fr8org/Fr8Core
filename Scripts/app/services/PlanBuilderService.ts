@@ -7,6 +7,7 @@ module dockyard.services {
     export interface IPlanService extends ng.resource.IResourceClass<interfaces.IPlanFullDTO> {
         getbystatus: (id: { id: number; status: number; category?: string }) => Array<interfaces.IPlanVM>;
         getFull: (id: Object) => interfaces.IPlanFullDTO;
+        getClonedPlan: (id: Object) => interfaces.IPlanVM;
         getByActivity: (id: { id: string }) => interfaces.IPlanVM;
         execute: (id: { id: number }, payload: { payload: string }, success: any, error: any) => void;
         activate: (data: { planId: string, planBuilderActivate: boolean }) => any;
@@ -89,6 +90,14 @@ module dockyard.services {
                     'save': {
                         method: 'POST',
                         url: '/api/plans/post'
+                    },
+                    'getClonedPlan': {
+                        method: 'GET',
+                        isArray: false,
+                        url: '/api/plans/getClonedPlan/:id',
+                        params: {
+                            id: '@id'
+                        }
                     },
                     'getFull': {
                         method: 'GET',
