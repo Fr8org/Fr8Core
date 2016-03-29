@@ -8,7 +8,7 @@ module dockyard.directives {
         return {
             restrict: 'E',
             templateUrl: '/AngularTemplate/ActionPicker',
-            link: (scope: IActionPickerScope, element, attr) => {
+            link: (scope: IActionPickerScope, element: any, attr: any) => {
                 $(document).bind('click', (event) => {
                     var isClickedElementChildOfPopup = element
                         .find(event.target)
@@ -46,7 +46,7 @@ module dockyard.directives {
                         $scope.activeTerminal = null;
                     };
 
-                    $scope.setActiveAction = <() => void> function (action, group) {
+                    $scope.setActiveAction = (action, group) => {
                         $scope.activeCategory = null;
 
                         if (group == undefined) {
@@ -58,12 +58,16 @@ module dockyard.directives {
 
                     };
 
-                    $scope.deactivateTerminal = <() => void> function () {
+                    $scope.deactivateTerminal = () => {
                         $scope.activeTerminal = null;
                     };
 
-                    $scope.setActiveTerminal = <() => void> function (index) {
+                    $scope.setActiveTerminal = (index) => {
                         $scope.activeTerminal = index;
+                    };
+                    
+                    $scope.sortBuiltinServices = (service) => {
+                        return (service.webServiceName === 'Built-In Services') ? -1 : 1;
                     };
                 }
             ]
@@ -75,10 +79,11 @@ module dockyard.directives {
         actionCategories: any;
         activeCategory: any;
         activeTerminal: any;
-        setActive: (actionCategoryId) => void;
-        setActiveTerminal: () => void;
+        setActive: (actionCategoryId: any) => void;
+        setActiveTerminal: (index: any) => void;
         deactivateTerminal: () => void;
-        setActiveAction: () => void;
+        setActiveAction: (action: any, group: any) => void;
+        sortBuiltinServices: (service: model.WebServiceActionSetDTO) => number;
     }
 }
 
