@@ -429,7 +429,26 @@ module dockyard.controllers {
                 (event: ng.IAngularEvent, callConfigureResponseEventArgs: pca.CallConfigureResponseEventArgs) => this.PaneConfigureAction_ConfigureCallResponse(callConfigureResponseEventArgs));
         }
 
-        
+        private filterActivitiesByUICrate(activities: Array<model.ActivityDTO>, uiCrateLabel: string): Array<model.ActivityDTO> {
+
+            var filteredList: Array<model.ActivityDTO>;
+            //if our view parameter is set - we should make sure we render only activities with given crates
+            if (uiCrateLabel) {
+                filteredList = [];
+                for (var i = 0; i < activities.length; i++) {
+                    var foundUiCrate = this.CrateHelper.findByManifestTypeAndLabel(
+                        activities[i].crateStorage, 'Standard UI Controls', this.$scope.view
+                    );
+                    if (foundUiCrate !== null) {
+                        filteredList.push(activities[i]);
+                    }
+                }
+            } else {
+                filteredList = activities;
+            }
+
+            return filteredList;
+        }
 
         private renderPlan(curPlan: interfaces.IPlanVM) {
 
@@ -439,27 +458,14 @@ module dockyard.controllers {
 
             this.$scope.processedSubPlans = [];
             for (var subPlan of curPlan.subPlans) {
-                var activities: Array<model.ActivityDTO>;
-                //if our view parameter is set - we should make sure we render only activities with given crates
-                if (this.$scope.view) {
-                    activities = [];
-                    for (var i = 0; i < subPlan.activities.length; i++) {
-                        var foundUiCrate = this.CrateHelper.findByManifestTypeAndLabel(
-                            subPlan.activities[i].crateStorage, 'Standard UI Controls', this.$scope.view
-                        );
-                        if (foundUiCrate !== null) {
-                            activities.push(subPlan.activities[i]);
-                        }
-                    }
-                } else {
-                    activities = subPlan.activities;
-                }
+                var activities: Array<model.ActivityDTO> = this.filterActivitiesByUICrate(subPlan.activities, this.$scope.view);
                 var actionGroups = this.LayoutService.placeActions(activities, subPlan.subPlanId);
                 this.$scope.processedSubPlans.push({ subPlan: subPlan, actionGroups: actionGroups });
             }
         }
 
         private renderActions(activitiesCollection: model.ActivityDTO[]) {
+            activitiesCollection = this.filterActivitiesByUICrate(activitiesCollection, this.$scope.view);
             if (activitiesCollection != null && activitiesCollection.length !== 0) {
                 this.$scope.actionGroups = this.LayoutService.placeActions(activitiesCollection,
                     this.$scope.current.plan.startingSubPlanId);

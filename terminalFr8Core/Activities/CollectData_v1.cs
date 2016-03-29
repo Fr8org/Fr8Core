@@ -25,7 +25,7 @@ namespace terminalFr8Core.Actions
     public class CollectData_v1 : BaseTerminalActivity
     {
         public const string CollectionControlsLabel = "Collection";
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             //build a controls crate to render the pane
             var configurationControlsCrate = CreateInitialControlsCrate();
@@ -34,7 +34,7 @@ namespace terminalFr8Core.Actions
                 crateStorage.Replace(AssembleCrateStorage(configurationControlsCrate));
             }
 
-            return curActivityDO;
+            return Task.FromResult(curActivityDO);
         }
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
@@ -47,9 +47,28 @@ namespace terminalFr8Core.Actions
                 //TODO add error label
                 return curActivityDO;
             }
-            using (var storage = CrateManager.GetUpdatableStorage(curActivityDO))
+
+            var storage = CrateManager.GetStorage(curActivityDO);
+            //user might have pressed submit button on Collection UI
+            var collectionControls = storage.CrateContentsOfType<StandardConfigurationControlsCM>(c => c.Label == CollectionControlsLabel).FirstOrDefault();
+            if (collectionControls != null)
             {
-                storage.Add(CreateCollectionControlsCrate(controlContainer));
+                var submitButton = collectionControls.FindByName<Button>("submit_button");
+                if (submitButton.Clicked)
+                {
+                    //we need to start the process
+                }
+            }
+
+            using (var curStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            {
+                var updateButton = GetConfigurationControls(storage).FindByName<Button>("update_launcher");
+                if (updateButton.Clicked)
+                {
+                    updateButton.Clicked = false;
+                    curStorage.RemoveByLabel(CollectionControlsLabel);
+                    curStorage.Add(CreateCollectionControlsCrate(controlContainer));
+                }
             }
 
             /*
@@ -110,7 +129,18 @@ namespace terminalFr8Core.Actions
                 Name = "control_container"
             };
 
-            return PackControlsCrate(infoText, cc);
+            var updateButton = new Button
+            {
+                CssClass = "float-right mt30 btn btn-default",
+                Label = "Update Launcher",
+                Name = "update_launcher",
+                Events = new List<ControlEvent>()
+                {
+                    new ControlEvent("onClick", "requestConfig")
+                }
+            };
+
+            return PackControlsCrate(infoText, cc, updateButton);
         }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
