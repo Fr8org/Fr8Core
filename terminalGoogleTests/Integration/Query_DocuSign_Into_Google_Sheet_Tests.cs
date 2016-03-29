@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Interfaces;
+using Data.Migrations;
 using HealthMonitor.Utility;
+using Newtonsoft.Json;
 using NUnit.Framework;
+using StructureMap;
 using terminaBaselTests.Tools.Activities;
 using terminaBaselTests.Tools.Plans;
+using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Services;
 using terminalGoogleTests.Unit;
 
@@ -32,6 +37,9 @@ namespace terminalGoogleTests.Integration
         [Test, Category("Integration.terminalGoogle")]
         public async Task Query_DocuSign_Into_Google_Sheet_End_To_End()
         {
+            var googleAuthTokenId = await new terminaBaselTests.Tools.Terminals.IntegrationTestTools_terminalGoogle(this).ExtractGoogleDefaultToken();
+            var defaultGoogleAuthToken = GetGoogleAuthToken(googleAuthTokenId);
+
             //create a new plan
             var thePlan = await plansHelper.CreateNewPlan();
             
@@ -43,7 +51,7 @@ namespace terminalGoogleTests.Integration
             await googleActivityConfigurator.AddAndConfigure_SaveToGoogleSheet(thePlan, 2, "Docusign Envelope", "DocuSign Envelope Data", newSpeadsheetName);
 
             var googleSheetApi = new GoogleSheet(new GoogleIntegration());
-            var spreadsheetId = await googleSheetApi.CreateSpreadsheet(newSpeadsheetName, HealthMonitor_FixtureData.NewGoogle_AuthToken_As_GoogleAuthDTO());
+            var spreadsheetId = await googleSheetApi.CreateSpreadsheet(newSpeadsheetName, defaultGoogleAuthToken);
 
             try
             {
@@ -51,16 +59,16 @@ namespace terminalGoogleTests.Integration
                 await plansHelper.RunPlan(thePlan.Plan.Id);
                 
                 //add asserts here
-                var googleSheets = await googleSheetApi.GetSpreadsheets(HealthMonitor_FixtureData.NewGoogle_AuthToken_As_GoogleAuthDTO());
+                var googleSheets = await googleSheetApi.GetSpreadsheets(defaultGoogleAuthToken);
 
                 Assert.IsNotNull(googleSheets.FirstOrDefault(x => x.Value == newSpeadsheetName),"New created spreadsheet was not found into existing google files.");
                 var spreadSheeturl = googleSheets.FirstOrDefault(x => x.Value == newSpeadsheetName).Key;
 
                 //find spreadsheet
-                var worksheets = await googleSheetApi.GetWorksheets(spreadSheeturl, HealthMonitor_FixtureData.NewGoogle_AuthToken_As_GoogleAuthDTO());
+                var worksheets = await googleSheetApi.GetWorksheets(spreadSheeturl, defaultGoogleAuthToken);
                 Assert.IsNotNull(worksheets.FirstOrDefault(x => x.Value == "Sheet1"), "Worksheet was not found into newly created google excel file.");
                 var worksheetUri = worksheets.FirstOrDefault(x => x.Value == "Sheet1").Key;
-                var dataRows = await googleSheetApi.GetData(spreadSheeturl, worksheetUri, HealthMonitor_FixtureData.NewGoogle_AuthToken_As_GoogleAuthDTO());
+                var dataRows = await googleSheetApi.GetData(spreadSheeturl, worksheetUri, defaultGoogleAuthToken);
 
                 //file should contain 11 envelopes saved
                 var numberOfEnvelopes = dataRows.ToList().Count();
@@ -69,8 +77,24 @@ namespace terminalGoogleTests.Integration
             }
             finally {
                 //cleanup. erase the sheet
-                await googleSheetApi.DeleteSpreadSheet(spreadsheetId, HealthMonitor_FixtureData.NewGoogle_AuthToken_As_GoogleAuthDTO());
+                await googleSheetApi.DeleteSpreadSheet(spreadsheetId, defaultGoogleAuthToken);
             }
         }
+
+        #region Helpers 
+
+        private GoogleAuthDTO GetGoogleAuthToken(Guid authorizationTokenId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var validToken = uow.AuthorizationTokenRepository.FindTokenById(authorizationTokenId);
+
+                Assert.IsNotNull(validToken, "Reading default google token from AuthorizationTokenRepository failed. Please provide default account for authenticating terminalGoogle.");
+
+                return JsonConvert.DeserializeObject<GoogleAuthDTO>((validToken).Token);
+            }
+        }
+
+        #endregion
     }
 }
