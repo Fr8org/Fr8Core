@@ -52,7 +52,7 @@
     "underscore": "~1.8.3",
     "w2ui": "1.4.3",
     "waypoints": "2.0.5",
-    "angular-material": "^1.0.5",
+    "angular-material": "1.0.5",
     "angular-aria": "^1.5.3"
   },
   "resolutions": {

@@ -317,10 +317,10 @@ div.action-header {
 }
 
 .action-header-icon {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 6px;
+    margin-right: 10px;
+}
+#activity-header {
+   fill: rgba(255,255,255,0.87);
 }
 
     .action-header-icon:before {
@@ -331,7 +331,7 @@ div.action-header {
     }
 
     .action-header-icon img {
-        border-radius: 8px !important;
+        /*border-radius: 8px !important;*/
         /*width: 48px;*/
         max-width: 72px;
         height: 48px;

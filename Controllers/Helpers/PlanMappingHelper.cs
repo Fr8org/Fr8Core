@@ -39,7 +39,8 @@ namespace HubWeb.Controllers.Helpers
                     SubPlans = subPlanDTOList,
                     Fr8UserId = curPlanDO.Fr8AccountId,
                     Tag = curPlanDO.Tag,
-                    Category = curPlanDO.Category
+                    Category = curPlanDO.Category,
+                    LastUpdated = curPlanDO.LastUpdated
                 }
 
             };

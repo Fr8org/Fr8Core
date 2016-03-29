@@ -136,6 +136,7 @@ namespace Data.Entities
             Description = plan.Description;
             Visibility = plan.Visibility;
             Category = plan.Category;
+            LastUpdated = plan.LastUpdated;
         }
 
         public bool IsOngoingPlan()

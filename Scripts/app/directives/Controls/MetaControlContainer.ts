@@ -3,9 +3,9 @@ module dockyard.directives.controlContainer {
     
     'use strict';
 
-    interface IControlContainerScope extends ng.IScope {
+    interface IMetaControlContainerScope extends ng.IScope {
         plan: model.PlanDTO;
-        field: model.ControlContainer;
+        field: model.MetaControlContainer;
         addControl: () => void;
         change: () => (field: model.ControlDefinitionDTO) => void;
         removeMetaDescription: (index: number) => void;
@@ -14,9 +14,9 @@ module dockyard.directives.controlContainer {
 
     //More detail on creating directives in TypeScript: 
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
-    export function ControlContainer(): ng.IDirective {
+    export function MetaControlContainer(): ng.IDirective {
 
-        var controller = ['$scope', '$modal', ($scope: IControlContainerScope, $modal: any) => {
+        var controller = ['$scope', '$modal', ($scope: IMetaControlContainerScope, $modal: any) => {
             var triggerChange = () => {
                 if ($scope.change != null && angular.isFunction($scope.change)) {
                     $scope.change()($scope.field);
@@ -36,7 +36,7 @@ module dockyard.directives.controlContainer {
                 var modalInstance = $modal.open({
                     animation: true,
                     templateUrl: 'TextTemplate-ControlContainerSelectionModal',
-                    controller: 'ControlContainer__MetaDescSelectionController',
+                    controller: 'MetaControlContainer__MetaDescSelectionController',
                     size: 'sm'
                 });
 
@@ -47,7 +47,7 @@ module dockyard.directives.controlContainer {
 
         return {
             restrict: 'E',
-            templateUrl: '/AngularTemplate/ControlContainer',
+            templateUrl: '/AngularTemplate/MetaControlContainer',
             controller: controller,
             scope: {
                 plan: '=',
@@ -57,9 +57,9 @@ module dockyard.directives.controlContainer {
         };
     }
 
-    app.directive('controlContainer', ControlContainer);
+    app.directive('metaControlContainer', MetaControlContainer);
 
-    app.controller('ControlContainer__MetaDescSelectionController', ['$scope', '$modalInstance', ($scope: any, $modalInstance: any): void => {
+    app.controller('MetaControlContainer__MetaDescSelectionController', ['$scope', '$modalInstance', ($scope: any, $modalInstance: any): void => {
 
         //we have 3 meta descriptions for now
         $scope.metaDescriptions = [ new model.TextBoxMetaDescriptionDTO(), new model.TextBlockMetaDescriptionDTO(), new model.FilePickerMetaDescriptionDTO() ];

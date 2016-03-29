@@ -236,7 +236,7 @@ namespace DockyardTest.Security
             //verify that the post call is made 
             restClientMock.Verify(
                 client => client.PostAsync<CredentialsDTO>(
-                new Uri("http://" + activityTemplateDO.Terminal.Endpoint + "/authentication/internal"),
+                new Uri(activityTemplateDO.Terminal.Endpoint + "/authentication/internal"),
                 It.Is < CredentialsDTO >(it=> it.Username ==  credentialsDTO.Username && 
                                               it.Password == credentialsDTO.Password &&
                                               it.Domain == credentialsDTO.Domain), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()), Times.Exactly(1));
@@ -270,7 +270,7 @@ namespace DockyardTest.Security
 
             //verify that the post call is made 
             restClientMock.Verify(
-                client => client.PostAsync<ExternalAuthenticationDTO>(new Uri("http://" + terminalDO.Endpoint + "/authentication/token"),
+                client => client.PostAsync<ExternalAuthenticationDTO>(new Uri(terminalDO.Endpoint + "/authentication/token"),
                 externalAuthenticationDTO, It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()), Times.Exactly(1));
 
             restClientMock.VerifyAll();
@@ -312,7 +312,7 @@ namespace DockyardTest.Security
             //verify that the post call is made 
             restClientMock.Verify(
                 client => client.PostAsync(
-                    new Uri("http://" + tokenDO.Terminal.Endpoint + "/authentication/initial_url"), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()
+                    new Uri(tokenDO.Terminal.Endpoint + "/authentication/initial_url"), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()
                 ), 
                 Times.Exactly(1)
             );

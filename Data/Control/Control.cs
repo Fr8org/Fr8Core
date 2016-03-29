@@ -51,7 +51,7 @@ namespace Data.Control
         public const string DatePicker = "DatePicker";
         public const string CrateChooser = "CrateChooser";
         public const string ContainerTransition = "ContainerTransition";
-        public const string ControlContainer = "ControlContainer";
+        public const string MetaControlContainer = "MetaControlContainer";
         public const string ControlList = "ControlList";
     }
 
@@ -74,7 +74,6 @@ namespace Data.Control
     public class DropDownList : ControlDefinitionDTO
     {
         [JsonProperty("listItems")]
-        [ForcePropertySync]
         public List<ListItem> ListItems { get; set; }
 
         [JsonProperty("selectedKey")]
@@ -235,12 +234,13 @@ namespace Data.Control
         }
     }
 
-    public class ControlContainer : ControlDefinitionDTO
+    public class MetaControlContainer : ControlDefinitionDTO
     {
         [JsonProperty("metaDescriptions")]
+        [ForcePropertySync]
         public List<ControlMetaDescriptionDTO> MetaDescriptions { get; set; }
 
-        public ControlContainer() : base(ControlTypes.ControlContainer)
+        public MetaControlContainer() : base(ControlTypes.MetaControlContainer)
         {
             MetaDescriptions = new List<ControlMetaDescriptionDTO>();
         }
@@ -588,6 +588,7 @@ namespace Data.Control
     public class ControlList : ControlDefinitionDTO
     {
         [JsonProperty("controlGroups")]
+        [ForcePropertySync]
         public IList<IList<ControlDefinitionDTO>> ControlGroups { get; }
 
         [JsonProperty("templateContainer")]
@@ -730,7 +731,6 @@ namespace Data.Control
         }
 
         [JsonProperty("selectedCrates")]
-        [ForcePropertySync]
         public List<CrateDetails> SelectedCrates { get; set; } = new List<CrateDetails>();
 
         [JsonProperty("multiSelection")]
@@ -746,7 +746,6 @@ namespace Data.Control
         }
 
         [JsonProperty("crateDescriptions")]
-        [ForcePropertySync]
         public List<CrateDescriptionDTO> CrateDescriptions { get; set; }
 
         [JsonProperty("singleManifestOnly")]
