@@ -8,7 +8,7 @@ module dockyard.directives {
         return {
             restrict: 'E',
             templateUrl: '/AngularTemplate/ActionPicker',
-            link: (scope: IActionPickerScope, element: any, attr: any) => {
+            link: (scope: IActionPickerScope, element, attr) => {
                 $(document).bind('click', (event) => {
                     var isClickedElementChildOfPopup = element
                         .find(event.target)
@@ -46,7 +46,7 @@ module dockyard.directives {
                         $scope.activeTerminal = null;
                     };
 
-                    $scope.setActiveAction = (action, group) => {
+                    $scope.setActiveAction = <() => void> function (action, group) {
                         $scope.activeCategory = null;
 
                         if (group == undefined) {
@@ -58,16 +58,12 @@ module dockyard.directives {
 
                     };
 
-                    $scope.deactivateTerminal = () => {
+                    $scope.deactivateTerminal = <() => void> function () {
                         $scope.activeTerminal = null;
                     };
 
-                    $scope.setActiveTerminal = (index) => {
+                    $scope.setActiveTerminal = <() => void> function (index) {
                         $scope.activeTerminal = index;
-                    };
-                    
-                    $scope.sortBuiltinServices = (service) => {
-                        return (service.webServiceName === 'Built-In Services') ? -1 : 1;
                     };
                 }
             ]
@@ -79,11 +75,10 @@ module dockyard.directives {
         actionCategories: any;
         activeCategory: any;
         activeTerminal: any;
-        setActive: (actionCategoryId: any) => void;
-        setActiveTerminal: (index: any) => void;
+        setActive: (actionCategoryId) => void;
+        setActiveTerminal: () => void;
         deactivateTerminal: () => void;
-        setActiveAction: (action: any, group: any) => void;
-        sortBuiltinServices: (service: model.WebServiceActionSetDTO) => number;
+        setActiveAction: () => void;
     }
 }
 
