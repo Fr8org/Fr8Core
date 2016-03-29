@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using Data.Entities;
-using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Google.GData.Client;
 using Google.GData.Spreadsheets;
-using StructureMap;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
 using System.Threading.Tasks;
@@ -19,12 +15,12 @@ namespace terminalGoogle.Services
     {
         private readonly IGoogleIntegration _googleIntegration;
 
-        public GoogleSheet()
+        public GoogleSheet(IGoogleIntegration googleIntegration)
         {
-            _googleIntegration = ObjectFactory.GetInstance<IGoogleIntegration>();
+            _googleIntegration = googleIntegration;
         }
 
-        private IEnumerable<SpreadsheetEntry> EnumerateSpreadsheets(GoogleAuthDTO authDTO)
+        private IEnumerable<SpreadsheetEntry> GetSpreadsheetsImpl(GoogleAuthDTO authDTO)
         {
             GOAuth2RequestFactory requestFactory = _googleIntegration.CreateRequestFactory(authDTO);
             SpreadsheetsService service = new SpreadsheetsService("fr8");
@@ -37,39 +33,32 @@ namespace terminalGoogle.Services
             return feed.Entries.Cast<SpreadsheetEntry>();
         }
 
-        public Task<Dictionary<string, string>> GetSpreadsheetsAsync(GoogleAuthDTO authDTO)
+        public Task<Dictionary<string, string>> GetSpreadsheets(GoogleAuthDTO authDTO)
         {
-            return Task.Run(() => EnumerateSpreadsheets(authDTO).ToDictionary(x => x.Id.AbsoluteUri, x => x.Title.Text));
+            return Task.Run(() => GetSpreadsheetsImpl(authDTO).ToDictionary(x => x.Id.AbsoluteUri, x => x.Title.Text));
         }
 
-        public Task<Dictionary<string, string>> GetWorksheetsAsync(string spreadsheetUri, GoogleAuthDTO authDTO)
+        public Task<Dictionary<string, string>> GetWorksheets(string spreadsheetUri, GoogleAuthDTO authDTO)
         {
-            return Task.Run(() => EnumerateWorksheet(spreadsheetUri, authDTO));
+            return Task.Run(() => GetWorksheetsImpl(spreadsheetUri, authDTO));
         }
 
-        public Task<Dictionary<string, string>> GetWorksheetHeadersAsync(string spreadsheetUri, string worksheetUri, GoogleAuthDTO authDTO)
+        public Task<Dictionary<string, string>> GetWorksheetHeaders(string spreadsheetUri, string worksheetUri, GoogleAuthDTO authDTO)
         {
             return Task.Run(() => EnumerateColumnHeaders(spreadsheetUri, worksheetUri, authDTO));
         }
 
-        public Task<IEnumerable<TableRowDTO>> GetDataAsync(string spreadsheetUri, string worksheetUri, GoogleAuthDTO authDTO)
+        public Task<IEnumerable<TableRowDTO>> GetData(string spreadsheetUri, string worksheetUri, GoogleAuthDTO authDTO)
         {
-            return Task.Run(() => EnumerateDataRows(spreadsheetUri, worksheetUri, authDTO).ToArray() as IEnumerable<TableRowDTO>);
+            return Task.Run(() => GetDataImpl(spreadsheetUri, worksheetUri, authDTO).ToArray() as IEnumerable<TableRowDTO>);
         }
 
-        public Dictionary<string, string> EnumerateSpreadsheetsUris(GoogleAuthDTO authDTO)
+        private SpreadsheetEntry FindSpreadsheet(string spreadsheetUri, GoogleAuthDTO authDTO)
         {
-            return EnumerateSpreadsheets(authDTO)
-                .ToDictionary(entry => entry.Id.AbsoluteUri, entry => entry.Title.Text);
-        }
-
-        public SpreadsheetEntry FindSpreadsheet(string spreadsheetUri, GoogleAuthDTO authDTO)
-        {
-            var spreadsheets = EnumerateSpreadsheets(authDTO);
-            if(spreadsheetUri.ToLower().Contains("http"))
-                return spreadsheets.SingleOrDefault(ae => string.Equals(ae.Id.AbsoluteUri, spreadsheetUri));
-            else
-                return spreadsheets.SingleOrDefault(ae => ae.Id.AbsoluteUri.Contains(spreadsheetUri));
+            var spreadsheets = GetSpreadsheetsImpl(authDTO);
+            return spreadsheetUri.ToLower().Contains("http") 
+                ? spreadsheets.SingleOrDefault(ae => string.Equals(ae.Id.AbsoluteUri, spreadsheetUri)) 
+                : spreadsheets.SingleOrDefault(ae => ae.Id.AbsoluteUri.Contains(spreadsheetUri));
         }
 
         private IEnumerable<ListEntry> EnumerateRows(string spreadsheetUri, string worksheetUri, GoogleAuthDTO authDTO)
@@ -77,7 +66,7 @@ namespace terminalGoogle.Services
             var spreadsheet = FindSpreadsheet(spreadsheetUri, authDTO);
             if (spreadsheet == null)
             {
-                throw new ArgumentException("Cannot find a spreadsheet", "spreadsheetUri");
+                throw new ArgumentException("Cannot find a spreadsheet", nameof(spreadsheetUri));
             }
             var service = (SpreadsheetsService)spreadsheet.Service;
 
@@ -87,46 +76,53 @@ namespace terminalGoogle.Services
             worksheet = worksheet ?? (WorksheetEntry)wsFeed.Entries[0];
 
             // Define the URL to request the list feed of the worksheet.
-            AtomLink listFeedLink = worksheet.Links.FindService(GDataSpreadsheetsNameTable.ListRel, null);
+            var listFeedLink = worksheet.Links.FindService(GDataSpreadsheetsNameTable.ListRel, null);
 
             // Fetch the list feed of the worksheet.
-            ListQuery listQuery = new ListQuery(listFeedLink.HRef.ToString());
-            ListFeed listFeed = service.Query(listQuery);
+            var listQuery = new ListQuery(listFeedLink.HRef.ToString());
+            var listFeed = service.Query(listQuery);
             return listFeed.Entries.Cast<ListEntry>();
         }
 
-        public Dictionary<string, string> EnumerateWorksheet(string spreadsheetUri, GoogleAuthDTO authDTO)
+        private Dictionary<string, string> GetWorksheetsImpl(string spreadsheetUri, GoogleAuthDTO authDTO)
         {
-            Dictionary<string, string> worksheet = new Dictionary<string, string>();
-
-            SpreadsheetEntry spreadsheet = FindSpreadsheet(spreadsheetUri, authDTO);
+            var spreadsheet = FindSpreadsheet(spreadsheetUri, authDTO);
             if (spreadsheet == null)
-                throw new ArgumentException("Cannot find a spreadsheet", "spreadsheetUri");
-            SpreadsheetsService service = (SpreadsheetsService)spreadsheet.Service;
-
-            WorksheetFeed wsFeed = spreadsheet.Worksheets;
-
-            foreach (var item in wsFeed.Entries)
             {
-                worksheet.Add(item.Id.AbsoluteUri, item.Title.Text);
+                throw new ArgumentException("Cannot find a spreadsheet", nameof(spreadsheetUri));
             }
-
-            return worksheet;
+            var wsFeed = spreadsheet.Worksheets;
+            return wsFeed.Entries.ToDictionary(item => item.Id.AbsoluteUri, item => item.Title.Text);
         }
 
-        public string CreateWorksheet(string spreadsheetUri, GoogleAuthDTO authDTO, string worksheetname)
+        public Task<string> CreateWorksheet(string spreadsheetUri, GoogleAuthDTO authDTO, string worksheetname)
         {
-            SpreadsheetEntry spreadsheet = FindSpreadsheet(spreadsheetUri, authDTO);
+            return Task.Run(() => CreateWorksheetImpl(spreadsheetUri, authDTO, worksheetname));
+
+        }
+
+        private string CreateWorksheetImpl(string spreadsheetUri, GoogleAuthDTO authDTO, string worksheetname)
+        {
+            var spreadsheet = FindSpreadsheet(spreadsheetUri, authDTO);
             if (spreadsheet == null)
-                throw new ArgumentException("Cannot find a spreadsheet", "spreadsheetUri");
-            SpreadsheetsService service = (SpreadsheetsService)spreadsheet.Service;
+            {
+                throw new ArgumentException("Cannot find a spreadsheet", nameof(spreadsheetUri));
+            }
+            var service = (SpreadsheetsService)spreadsheet.Service;
 
-            WorksheetEntry newWorksheet = new WorksheetEntry(2000,100, worksheetname);
+            var newWorksheet = new WorksheetEntry(2000, 100, worksheetname);
 
-            WorksheetFeed wfeed = spreadsheet.Worksheets;
+            var wfeed = spreadsheet.Worksheets;
             newWorksheet = service.Insert(wfeed, newWorksheet);
 
             return newWorksheet.Id.AbsoluteUri;
+        }
+
+        public async Task DeleteSpreadSheet(string spreadSheetId, GoogleAuthDTO authDTO)
+        {
+            GoogleDrive googleDrive = new GoogleDrive();
+            var driveService = await googleDrive.CreateDriveService(authDTO);
+            driveService.Files.Delete(spreadSheetId).Execute();
         }
 
         public async Task<string> CreateSpreadsheet(string spreadsheetname, GoogleAuthDTO authDTO)
@@ -145,7 +141,7 @@ namespace terminalGoogle.Services
             return result.Id;
         }
 
-        public Dictionary<string, string> EnumerateColumnHeaders(string spreadsheetUri, string worksheetUri, GoogleAuthDTO authDTO)
+        private Dictionary<string, string> EnumerateColumnHeaders(string spreadsheetUri, string worksheetUri, GoogleAuthDTO authDTO)
         {
             var firstRow = EnumerateRows(spreadsheetUri, worksheetUri, authDTO).FirstOrDefault();
             if (firstRow == null)
@@ -153,7 +149,7 @@ namespace terminalGoogle.Services
             return firstRow.Elements.Cast<ListEntry.Custom>().ToDictionary(e => e.LocalName, e => e.Value);
         }
 
-        public IEnumerable<TableRowDTO> EnumerateDataRows(string spreadsheetUri, string worksheetUri, GoogleAuthDTO authDTO)
+        private IEnumerable<TableRowDTO> GetDataImpl(string spreadsheetUri, string worksheetUri, GoogleAuthDTO authDTO)
         {
             foreach (var row in EnumerateRows(spreadsheetUri, worksheetUri, authDTO))
             {
@@ -170,71 +166,12 @@ namespace terminalGoogle.Services
             }
         }
 
-        /// <summary>
-        /// Exports Google Spreadsheet data to CSV file and save it on storage
-        /// </summary>
-        /// <param name="spreadsheetUri">Spreadsheet URI</param>
-        /// <param name="userId">User ID</param>
-        /// <returns>Returns a link to CSV file on storage</returns>
-        public string ExtractData(string spreadsheetUri, GoogleAuthDTO authDTO)
+        public Task WriteData(string spreadsheetUri, string worksheetUri, StandardTableDataCM data, GoogleAuthDTO authDTO)
         {
-            if (spreadsheetUri == null)
-                throw new ArgumentNullException("spreadsheetUri");
-            var spreadsheets = EnumerateSpreadsheets(authDTO);
-
-            SpreadsheetEntry spreadsheet = spreadsheets.SingleOrDefault(ae => string.Equals(ae.Id.AbsoluteUri, spreadsheetUri));
-            if (spreadsheet == null)
-                throw new ArgumentException("Cannot find a spreadsheet", "spreadsheetUri");
-            SpreadsheetsService service = (SpreadsheetsService) spreadsheet.Service;
-
-            // Get the first worksheet of the spreadsheet.
-            WorksheetFeed wsFeed = spreadsheet.Worksheets;
-            WorksheetEntry worksheet = (WorksheetEntry)wsFeed.Entries[0];
-
-            // Define the URL to request the list feed of the worksheet.
-            AtomLink listFeedLink = worksheet.Links.FindService(GDataSpreadsheetsNameTable.ListRel, null);
-
-            // Fetch the list feed of the worksheet.
-            ListQuery listQuery = new ListQuery(listFeedLink.HRef.ToString());
-            ListFeed listFeed = service.Query(listQuery);
-
-            using (var ms = new MemoryStream())
-            using (var sw = new StreamWriter(ms))
-            {
-                // Iterate through each row
-                foreach (ListEntry row in listFeed.Entries)
-                {
-                    // Iterate over the columns
-                    var line = string.Join(",", row.Elements.Cast<ListEntry.Custom>().Select(e => e.Value));
-                    sw.WriteLine(line);
-                }
-                sw.Flush();
-
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    ms.Position = 0;
-                    var url = uow.FileRepository.SaveRemoteFile(ms,
-                        string.Format("GoogleSpreadsheets/{0}.csv",
-                            spreadsheetUri.Substring(spreadsheetUri.LastIndexOf("/") + 1)));
-                    try
-                    {
-                        FileDO fileDo = new FileDO();
-                        fileDo.CloudStorageUrl = url;
-                        fileDo.OriginalFileName = spreadsheetUri;
-                        uow.FileRepository.Add(fileDo);
-                        uow.SaveChanges();
-                        return url;
-                    }
-                    catch (Exception)
-                    {
-                        uow.FileRepository.DeleteRemoteFile(url);
-                        throw;
-                    }
-                }
-            }
+            return Task.Run(() => WriteDataImpl(spreadsheetUri, worksheetUri, data, authDTO));
         }
 
-        public bool WriteData(string spreadsheetUri, string worksheetUri, StandardTableDataCM data, GoogleAuthDTO authDTO)
+        private void WriteDataImpl(string spreadsheetUri, string worksheetUri, StandardTableDataCM data, GoogleAuthDTO authDTO)
         {
             if (String.IsNullOrEmpty(spreadsheetUri))
                 throw new ArgumentNullException("Spreadsheet Uri parameter is required.");
@@ -253,7 +190,7 @@ namespace terminalGoogle.Services
 
                 string worksheetId = worksheetUri.Substring(worksheetUri.LastIndexOf('/') + 1, worksheetUri.Length - (worksheetUri.LastIndexOf('/') + 1));
                 string spreadSheetId = spreadsheetUri;
-                if(spreadSheetId.ToLower().Contains("http"))//remove http url
+                if (spreadSheetId.ToLower().Contains("http"))//remove http url
                     spreadSheetId = spreadSheetId.Substring(spreadSheetId.LastIndexOf('/') + 1, spreadSheetId.Length - (spreadSheetId.LastIndexOf('/') + 1));
 
                 CellQuery cellQuery = new CellQuery(spreadSheetId, worksheetId, "private", "full");
@@ -265,7 +202,7 @@ namespace terminalGoogle.Services
                 {
                     for (int col = 0; col < MAX_COLS; col++)
                     {
-                        cellAddrs.Add(new CellAddress(row+1, col+1, data.Table[row].Row[col].Cell.Value));
+                        cellAddrs.Add(new CellAddress(row + 1, col + 1, data.Table[row].Row[col].Cell.Value));
                     }
                 }
 
@@ -296,8 +233,6 @@ namespace terminalGoogle.Services
                     }
                 }
             }
-
-            return true;
         }
 
         /**

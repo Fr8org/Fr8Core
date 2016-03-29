@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
@@ -9,10 +11,11 @@ using Data.Interfaces;
 
 namespace Hub.Security
 {
-    class DockyardUserStore : IUserStore<Fr8AccountDO>, 
-        IUserSecurityStampStore<Fr8AccountDO>, 
+    class DockyardUserStore : IUserStore<Fr8AccountDO>,
+        IUserSecurityStampStore<Fr8AccountDO>,
         IUserEmailStore<Fr8AccountDO>,
-        IUserPasswordStore<Fr8AccountDO>
+        IUserPasswordStore<Fr8AccountDO>,
+        IUserClaimStore<Fr8AccountDO>
     {
         private readonly IUnitOfWork _uow;
 
@@ -107,6 +110,37 @@ namespace Hub.Security
         public Task<bool> HasPasswordAsync(Fr8AccountDO dockyardAccount)
         {
             return Task.FromResult(!string.IsNullOrEmpty(dockyardAccount.PasswordHash));
+        }
+
+        #endregion
+
+        #region Implementations of IUserClaimStore<Fr8AccountDO> 
+
+        public Task<IList<Claim>> GetClaimsAsync(Fr8AccountDO user)
+        {
+            var claims = _uow.AspNetUserClaimsRepository.GetQuery().Where(x => x.UserId == user.Id).ToList();
+            return Task.FromResult((IList<Claim>)claims.Select(x => new Claim(x.ClaimType, x.ClaimValue)).ToList());
+        }
+
+        public Task AddClaimAsync(Fr8AccountDO user, Claim claim)
+        {
+            _uow.AspNetUserClaimsRepository.Add(new AspNetUserClaimDO()
+            {
+                UserId = user.Id,
+                ClaimType = claim.Type,
+                ClaimValue = claim.Value
+            });
+            return Task.FromResult(0);
+        }
+
+        public Task RemoveClaimAsync(Fr8AccountDO user, Claim claim)
+        {
+            var userClaim =_uow.AspNetUserClaimsRepository.GetQuery().FirstOrDefault(x => x.UserId == user.Id && x.ClaimType == claim.Type && x.ClaimValue == claim.Value);
+            if (userClaim != null)
+            {
+                _uow.AspNetUserClaimsRepository.Remove(userClaim);
+            }
+            return Task.FromResult(0);
         }
 
         #endregion

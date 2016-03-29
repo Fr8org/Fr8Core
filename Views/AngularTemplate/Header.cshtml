@@ -1,4 +1,6 @@
-<div class="page-header-top"> <!-- BEGIN HEADER TOP -->
+<div data-ng-controller="HeaderController" class="page-header">
+    <div class="page-header-top">
+        <!-- BEGIN HEADER TOP -->
 	<div class="container">
 		<!-- BEGIN LOGO -->
 		<div class="page-logo">
@@ -11,7 +13,6 @@
         </div>
 
 		<!-- END LOGO -->
-
 		<!-- BEGIN RESPONSIVE MENU TOGGLER -->
 		<a href="javascript:;" class="menu-toggler"></a>
 		<!-- END RESPONSIVE MENU TOGGLER -->
@@ -19,15 +20,17 @@
 		<div class="top-menu">
 			<ul class="nav navbar-nav pull-right">
 				<!-- BEGIN USER LOGIN DROPDOWN -->
-                @using Microsoft.AspNet.Identity
+                @using Data.States                @using HubWeb.Infrastructure                @using Microsoft.AspNet.Identity
                 @if (Request.IsAuthenticated)
                 {
 				            <li class="dropdown dropdown-user dropdown-dark">
 					        <a href="javascript:;" class="dropdown-toggle" dropdown-menu-hover data-toggle="dropdown" data-close-others="true">
                                 @*<img alt="" class="img-circle" src="/Content/templates/metronic/assets/admin/layout3/img/avatar1.jpg" />*@
 
-					        <span class="username username-hide-mobile">Hello 
-                                @if(User.IsInRole("Guest")){
+                                <span class="username username-hide-mobile">
+                                    Hello
+                                    @if (User.IsInRole("Guest"))
+                                    {
                                     <text>Guest User</text>
                                 }
                                 else
@@ -38,7 +41,8 @@
                                 </span>
 					        </a>
 
-                            @if(!User.IsInRole("Guest")){
+                            @if (!User.IsInRole("Guest"))
+                            {
 					            <ul class="dropdown-menu dropdown-menu-default">
 						            <li>
                                         <a href="/Dashboard#/myaccount">
@@ -189,3 +193,4 @@
 	</div>
 </div>
 <!-- END HEADER MENU -->
+</div>

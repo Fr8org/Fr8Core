@@ -24,7 +24,6 @@ using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Repositories;
-using DocuSign.Integrations.Client;
 using Hub.ExternalServices;
 using Hub.Security;
 using Moq;
@@ -132,7 +131,8 @@ namespace Hub.StructureMap
 	            For<IPusherNotifier>().Use<PusherNotifier>();
                 For<IAuthorization>().Use<Authorization>();
                 For<ITag>().Use<Tag>();
-
+                For<IOrganization>().Use<Organization>();
+                
                 For<IHMACAuthenticator>().Use<HMACAuthenticator>();
                 For<IHMACService>().Use<Fr8HMACService>();
 
@@ -204,6 +204,7 @@ namespace Hub.StructureMap
 	            For<IPusherNotifier>().Use(pusherNotifierMock.Object).Singleton();
 
                 For<ITag>().Use<Tag>();
+                For<IOrganization>().Use<Organization>();
 
                 var fr8HMACAuthenticator = new Mock<IHMACAuthenticator>();
                 fr8HMACAuthenticator.Setup(x => x.IsValidRequest(It.IsAny<HttpRequestMessage>(), It.IsAny<string>())).ReturnsAsync(true);

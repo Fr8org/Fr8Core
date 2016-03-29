@@ -9,12 +9,10 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.DataTransferObjects.Helpers;
 using Data.Interfaces.Manifests;
 using Data.States;
-using DocuSign.Integrations.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using StructureMap;
 using Utilities.AutoMapper;
-using Signer = DocuSign.Integrations.Client.Signer;
 using Data.Interfaces.Manifests;
 
 namespace Data.Infrastructure.AutoMapper
