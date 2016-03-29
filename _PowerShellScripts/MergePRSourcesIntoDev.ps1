@@ -45,12 +45,6 @@ Write-Host "Merging $sourceBranchName into new branch: $buildBranchName"
 Invoke-Expression "git merge $sourceBranchName"
 if ($LastExitCode -ne 0)
 {
-	Write-Host "Failed to merge dev into new branch."
+	Write-Host "Failed to merge dev into new branch $buildBranchName."
 	exit 1;
 }
-
-
-
-
-
-
