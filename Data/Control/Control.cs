@@ -51,7 +51,7 @@ namespace Data.Control
         public const string DatePicker = "DatePicker";
         public const string CrateChooser = "CrateChooser";
         public const string ContainerTransition = "ContainerTransition";
-        public const string ControlContainer = "ControlContainer";
+        public const string MetaControlContainer = "MetaControlContainer";
         public const string ControlList = "ControlList";
     }
 
@@ -234,12 +234,13 @@ namespace Data.Control
         }
     }
 
-    public class ControlContainer : ControlDefinitionDTO
+    public class MetaControlContainer : ControlDefinitionDTO
     {
         [JsonProperty("metaDescriptions")]
+        [ForcePropertySync]
         public List<ControlMetaDescriptionDTO> MetaDescriptions { get; set; }
 
-        public ControlContainer() : base(ControlTypes.ControlContainer)
+        public MetaControlContainer() : base(ControlTypes.MetaControlContainer)
         {
             MetaDescriptions = new List<ControlMetaDescriptionDTO>();
         }
