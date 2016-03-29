@@ -1,16 +1,13 @@
 ﻿using Data.Entities;
 using Newtonsoft.Json;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Constants;
 using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
-using Hub.Managers;
 using Data.Interfaces.Manifests;
 using Data.Interfaces.DataTransferObjects;
 using Data.Crates;
@@ -18,7 +15,6 @@ using Data.States;
 using Data.Control;
 using Data.Interfaces.Manifests.Helpers;
 using StructureMap;
-using TerminalBase;
 
 namespace terminalGoogle.Actions
 {
@@ -167,7 +163,7 @@ namespace terminalGoogle.Actions
         protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
         {
             //If different existing spreadsheet is selected then we have to load worksheet list for it
-            if (ConfigurationControls.UseExistingSpreadsheetOption.Selected)
+            if (ConfigurationControls.UseExistingSpreadsheetOption.Selected && !string.IsNullOrEmpty(ConfigurationControls.ExistingSpreadsheetsList.Value))
             {
                 var previousSpreadsheet = SelectedSpreadsheet;
                 if (string.IsNullOrEmpty(previousSpreadsheet) || !string.Equals(previousSpreadsheet, ConfigurationControls.ExistingSpreadsheetsList.Value))
@@ -231,7 +227,7 @@ namespace terminalGoogle.Actions
             var tableToSave = StandardTableDataCMTools.ExtractPayloadCrateDataToStandardTableData(crateToProcess);
             var spreadsheetUri = await GetOrCreateSpreadsheet();
             var worksheetUri = await GetOrCreateWorksheet(spreadsheetUri);
-
+            await _googleSheet.WriteData(spreadsheetUri, worksheetUri, tableToSave, GetGoogleAuthToken());
         }
 
         private async Task<string> GetOrCreateWorksheet(string spreadsheetUri)
@@ -260,7 +256,7 @@ namespace terminalGoogle.Actions
             //If this is a new name and new worksheet we delete the default one (as there is no sense in keeping it)
             if (ConfigurationControls.UseNewSpreadsheetOption.Selected && ConfigurationControls.UseNewWorksheetOption.Selected)
             {
-                _googleSheet.DeleteWorksheet(existingWorksheets.First().Key, authToken);
+                await _googleSheet.DeleteWorksheet(spreadsheetUri, existingWorksheets.First().Key, authToken);
             }
             return result;
         }
@@ -283,165 +279,10 @@ namespace terminalGoogle.Actions
             return await _googleSheet.CreateSpreadsheet(ConfigurationControls.NewSpreadsheetName.Value, authToken);
         }
 
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
-        {
-
-            //get payload crates for data
-            StandardTableDataCM standardTableCM = StandardTableDataCMTools.ExtractPayloadCrateDataToStandardTableData(cratesToProcess);
-
-            if(standardTableCM.Table.Count > 0)
-            {
-                try
-                {
-                    //uploadspreadsheet
-                    var uploadedSpreadsheet = await GetOrCreateSpreadsheet(curActivityDO, authTokenDO);
-                    if (String.IsNullOrEmpty(uploadedSpreadsheet.Key))
-                        throw new ArgumentNullException("Please select a spreadsheet to upload.");
-
-                    //uploadworksheet
-                    var worksheets = await UploadWorksheet(curActivityDO, authTokenDO, uploadedSpreadsheet);
-                    if (String.IsNullOrEmpty(worksheets.Key))
-                        throw new ArgumentNullException("Please select a worksheet(pane).");
-
-                    //get worksheet
-                    //write data into worksheet
-                    await _googleSheet.WriteData(uploadedSpreadsheet.Key, worksheets.Key, standardTableCM, authDTO);
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(ex.Message, ex.InnerException);
-                }
-            }
-
-            return Success(payloadCrates);
-        }
-
         private Crate FindCrateToProcess()
         {
             var desiredCrateDescription = ConfigurationControls.UpstreamCrateChooser.CrateDescriptions.Single(x => x.Selected);
             return CurrentPayloadStorage.FirstOrDefault(x => x.Label == desiredCrateDescription.Label && x.ManifestType.Type == desiredCrateDescription.ManifestType);
-        }
-        private async Task<FieldDTO> GetOrCreateSpreadsheet(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            StandardConfigurationControlsCM configurationControls = GetConfigurationControls(curActivityDO);
-            FieldDTO uploadedSpreadSheet = new FieldDTO();
-            uploadedSpreadSheet.Availability = AvailabilityType.Configuration;
-
-            if (configurationControls != null)
-            {
-                var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
-
-                var spreadSheetGroupControl = configurationControls.Controls.OfType<RadioButtonGroup>()
-                    .Where(w => w.Name == "SpreadsheetGroup").SelectMany(s => s.Radios);
-
-                //Create spreadsheet if its new
-
-                //check if its a textbox selection
-                if(spreadSheetGroupControl.Where(w => w.Name == "newSpreadsheet").FirstOrDefault().Selected == true)
-                {
-                    var newSpreadSheetTextbox = spreadSheetGroupControl.Where(w => w.Name == "newSpreadsheet").FirstOrDefault().Controls.OfType<TextBox>().FirstOrDefault();
-
-                    //get spreadsheets
-                    var existingSpreadSheets = await _googleSheet.GetSpreadsheets(authDTO);
-
-                    //check if spreadsheet name in textbox is present in spreadsheets 
-                    //if spreadsheet name already exist do nothing to upload
-                    var existingSpreadsheet = existingSpreadSheets.Where(w => w.Value.ToLower().Trim() == newSpreadSheetTextbox.Value.ToLower().Trim()).FirstOrDefault();
-                    if (!String.IsNullOrEmpty(existingSpreadsheet.Key))
-                    {
-                        uploadedSpreadSheet.Key = existingSpreadsheet.Key;
-                        uploadedSpreadSheet.Value = existingSpreadsheet.Value;
-                    }
-                    else
-                    {
-                        uploadedSpreadSheet.Key = await _googleSheet.CreateSpreadsheet(newSpreadSheetTextbox.Value, authDTO);
-                        uploadedSpreadSheet.Value = newSpreadSheetTextbox.Value;
-                    }
-                }
-                else
-                {
-                    //for dropdown get selected key and value
-                    var existingSpreadsheetRadioOption = spreadSheetGroupControl.Where(w => w.Name == "existingSpreadsheet").FirstOrDefault();
-
-                    var dropDownSpreadsheet = existingSpreadsheetRadioOption.Controls.OfType<DropDownList>().FirstOrDefault();
-
-                    if (dropDownSpreadsheet != null)
-                    {
-                        if (existingSpreadsheetRadioOption.Selected == true)
-                        {
-                            //if spreadsheet is existing, update worksheet dropdown
-                            if (!String.IsNullOrEmpty(dropDownSpreadsheet.Value))
-                            {
-                                uploadedSpreadSheet.Key = dropDownSpreadsheet.Value; //spreadsheet URI
-                                uploadedSpreadSheet.Value = dropDownSpreadsheet.selectedKey;
-                            }
-                        }
-                    }
-
-                }
-            }
-            return uploadedSpreadSheet;
-        }
-
-        private async Task<FieldDTO> UploadWorksheet(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO, FieldDTO uploadedSpreadSheet)
-        {
-            StandardConfigurationControlsCM configurationControls = GetConfigurationControls(curActivityDO);
-            FieldDTO uploadedWorksheet = new FieldDTO();
-            uploadedWorksheet.Availability = AvailabilityType.Configuration;
-
-            if (configurationControls != null)
-            {
-                var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
-
-                var spreadSheetGroupControl = configurationControls.Controls.OfType<RadioButtonGroup>()
-                    .Where(w => w.Name == "WorksheetGroup").SelectMany(s => s.Radios);
-
-                //Create worksheet if its new
-
-                //check if its a textbox selection
-                if (spreadSheetGroupControl.Where(w => w.Name == "newWorksheet").FirstOrDefault().Selected == true)
-                {
-                    var newWorksheetTextbox = spreadSheetGroupControl.Where(w => w.Name == "newWorksheet").FirstOrDefault().Controls.OfType<TextBox>().FirstOrDefault();
-
-                    //get worksheets
-                    var existingWorksheets = await _googleSheet.GetWorksheets(uploadedSpreadSheet.Key, authDTO);
-                    
-                    //check if worksheet name in textbox is present in worksheets 
-                    //if worksheet name already exist do nothing to upload
-                    var existingWorksheet = existingWorksheets.Where(w => w.Value.ToLower().Trim() == newWorksheetTextbox.Value.ToLower().Trim()).FirstOrDefault();
-                    if (!String.IsNullOrEmpty(existingWorksheet.Key))
-                    {
-                        uploadedWorksheet.Key = existingWorksheet.Key;
-                        uploadedWorksheet.Value = existingWorksheet.Value;
-                    }
-                    else
-                    {
-                        uploadedWorksheet.Key = await _googleSheet.CreateWorksheet(uploadedSpreadSheet.Key, authDTO, newWorksheetTextbox.Value);
-                        uploadedWorksheet.Value = newWorksheetTextbox.Value;
-                    }
-                }
-                else
-                {
-                    //for dropdown get selected key and value
-                    var existingWorksheetRadioOption = spreadSheetGroupControl.Where(w => w.Name == "existingWorksheet").FirstOrDefault();
-
-                    var dropDownWorksheet = existingWorksheetRadioOption.Controls.OfType<DropDownList>().FirstOrDefault();
-
-                    if (dropDownWorksheet != null)
-                    {
-                        if (existingWorksheetRadioOption.Selected == true)
-                        {
-                            //if spreadsheet is existing, update worksheet dropdown
-                            if (!String.IsNullOrEmpty(dropDownWorksheet.Value))
-                            {
-                                uploadedWorksheet.Key = dropDownWorksheet.Value; //spreadsheet URI
-                                uploadedWorksheet.Value = dropDownWorksheet.selectedKey;
-                            }
-                        }
-                    }
-                }
-            }
-            return uploadedWorksheet;
         }
     }
 }
