@@ -73,29 +73,32 @@ namespace terminalDocuSign.Services
             string connectName = "";
             string connectId = "";
 
-            if (terminalUrl.Contains(devUrl))
-                connectName = DevConnectName;
-            else
-                if (terminalUrl.Contains(prodUrl))
-                connectName = ProdConnectName;
+            if (!string.IsNullOrEmpty(terminalUrl))
+            {
+                if (terminalUrl.Contains(devUrl))
+                    connectName = DevConnectName;
+                else
+                    if (terminalUrl.Contains(prodUrl))
+                    connectName = ProdConnectName;
 
-            if (!string.IsNullOrEmpty(connectName))
-            {
-                connectId = _docuSignConnect.CreateOrActivateConnect(config, connectName, publishUrl);
-                Console.WriteLine("Created connect named {0} pointing to {1} with id {2}", connectName, publishUrl, connectId);
-            }
-            else
-            {
-                // terminal has a temporary url
-                var connectsInfo = _docuSignConnect.ListConnects(config);
-                var connects = connectsInfo.Where(a => a.name == TemporaryConnectName).ToList();
-                foreach (var connect in connects)
+                if (!string.IsNullOrEmpty(connectName))
                 {
-                    _docuSignConnect.DeleteConnect(config, connect.connectId);
+                    connectId = _docuSignConnect.CreateOrActivateConnect(config, connectName, publishUrl);
+                    Console.WriteLine("Created connect named {0} pointing to {1} with id {2}", connectName, publishUrl, connectId);
                 }
+                else
+                {
+                    // terminal has a temporary url
+                    var connectsInfo = _docuSignConnect.ListConnects(config);
+                    var connects = connectsInfo.Where(a => a.name == TemporaryConnectName).ToList();
+                    foreach (var connect in connects)
+                    {
+                        _docuSignConnect.DeleteConnect(config, connect.connectId);
+                    }
 
-                connectId = _docuSignConnect.CreateConnect(config, TemporaryConnectName, publishUrl);
-                Console.WriteLine("Created connect named {0} pointing to {1} with id {2}", TemporaryConnectName, publishUrl, connectId);
+                    connectId = _docuSignConnect.CreateConnect(config, TemporaryConnectName, publishUrl);
+                    Console.WriteLine("Created connect named {0} pointing to {1} with id {2}", TemporaryConnectName, publishUrl, connectId);
+                }
             }
         }
 
