@@ -306,6 +306,7 @@
     <Compile Include="Services\TerminalServiceTests.cs" />
     <Compile Include="Services\UserServiceTests.cs" />
     <Compile Include="Utilities\EncryptionTests.cs" />
+    <Compile Include="Utilities\MiscUtils.cs" />
     <Compile Include="Utilities\StandardConfigurationControlsCMTests.cs" />
     <Compile Include="Utilities\TextSourceMappingBehaviorTests.cs" />
     <Compile Include="Validations\ValidationsTest.cs" />

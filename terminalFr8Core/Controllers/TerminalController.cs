@@ -314,8 +314,8 @@ namespace terminalFr8Core.Controllers
 
             result.Add(new ActivityTemplateDTO
             {
-                Name = "LaunchAPlan",
-                Label = "Launch A Plan",
+                Name = "PlanLauncher",
+                Label = "Plan Launcher",
                 Version = "1",
                 Category = ActivityCategory.Processors,
                 NeedsAuthentication = false,

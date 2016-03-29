@@ -21,7 +21,8 @@ var app = angular.module("app", [
     "ngTable",
     "mb-scrollbar",
     "ngMessages",
-    "ivh.treeview"
+    "ivh.treeview",
+    "ngMaterial"
 ]);
 
 /* For compatibility with older versions of script files. Can be safely deleted later. */
@@ -56,6 +57,31 @@ app.controller('AppController', ['$scope', '$rootScope', function ($scope, $root
         Metronic.initComponents(); // init core components
         //Layout.init(); //  Init entire layout(header, footer, sidebar, etc) on page load if the partials included in server side instead of loading with ng-include directive 
     });
+}]);
+
+app.config(['$mdThemingProvider', function ($mdThemingProvider) {
+    $mdThemingProvider.definePalette('fr8Theme', {
+        '50': '26a69a',
+        '100': '26a69a',
+        '200': '26a69a',
+        '300': '26a69a',
+        '400': '26a69a',
+        '500': '26a69a',
+        '600': '26a69a',
+        '700': '26a69a',
+        '800': '26a69a',
+        '900': '26a69a',
+        'A100': '26a69a',
+        'A200': '26a69a',
+        'A400': '26a69a',
+        'A700': '26a69a',
+        'contrastDefaultColor': 'light',   
+        'contrastDarkColors': ['50', '100', 
+            '200', '300', '400', 'A100'],
+        'contrastLightColors': undefined    
+    });
+    $mdThemingProvider.theme('default')
+        .primaryPalette('fr8Theme')
 }]);
 
 /***
@@ -103,7 +129,8 @@ app.config(['applicationInsightsServiceProvider', function (applicationInsightsS
     });
 }]);
 
-/* Setup Rounting For All Pages */
+
+/* Setup Rounting For All Pages */ 
 app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($stateProvider: ng.ui.IStateProvider, $urlRouterProvider, $httpProvider: ng.IHttpProvider) {
 
     $httpProvider.interceptors.push('fr8VersionInterceptor');

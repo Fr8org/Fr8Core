@@ -38,6 +38,7 @@ module dockyard.controllers {
         solutionName: string;
         curAggReloadingActions: Array<string>;
         addSubPlan: () => void;
+        openMenu: ($mdOpenMenu: any , ev: any) => void;
     }
 
 
@@ -114,6 +115,9 @@ module dockyard.controllers {
 
             $scope.deleteAction = <() => void>angular.bind(this, this.deleteAction);
             $scope.addSubPlan = <() => void>angular.bind(this, this.addSubPlan);
+            $scope.openMenu = function ($mdOpenMenu, ev) {
+                $mdOpenMenu(ev);
+            };
             $scope.reConfigureAction = (action: model.ActivityDTO) => {
                 var actionsArray = new Array<model.ActivityDTO>();
                 actionsArray.push(action);
