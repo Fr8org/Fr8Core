@@ -890,7 +890,8 @@
     <Content Include="_PowerShellScripts\Stop-StagingWebsite.ps1" />
     <Content Include="_PowerShellScripts\Start-Sleep.ps1" />
     <Content Include="_PowerShellScripts\Update-TerminalHostnameInDb.ps1" />
-    <Content Include="_PowerShellScripts\MergeDevInsidePRSources.ps1" />
+    <Content Include="_PowerShellScripts\MergePRSourcesIntoDev.ps1" />
+    <Content Include="_PowerShellScripts\UpdateGitHubBuildStatus.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryListController.ts" />

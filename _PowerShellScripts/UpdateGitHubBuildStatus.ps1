@@ -1,6 +1,8 @@
-#
-# UpdateGitHubBuildStatus.ps1
-#
+<#
+    .SYNOPSIS
+    The script gets the latest dev branch, creates new branch from dev and merges feature branch into it.
+	This script is intended to avoid situation when new pull requests breaks dev branch after merge. 
+#>
 
 param(
     [string]$buildNumber = $env:BUILD_BUILDNUMBER,
