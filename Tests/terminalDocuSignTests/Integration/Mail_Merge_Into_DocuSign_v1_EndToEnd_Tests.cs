@@ -80,13 +80,9 @@ namespace terminalDocuSignTests.Integration
                 // Authenticate with DocuSign
                 //
 
-                var creds = new CredentialsDTO()
-                {
-                    Username = "freight.testing@gmail.com",
-                    Password = "I6HmXEbCxN",
-                    IsDemoAccount = true,
-                    TerminalId = solution.ActivityTemplate.TerminalId
-                };
+                var creds = GetDocuSignCredentials();
+                creds.TerminalId = solution.ActivityTemplate.TerminalId;
+
                 var token = await HttpPostAsync<CredentialsDTO, JObject>(_baseUrl + "authentication/token", creds);
                 Assert.AreNotEqual(token["error"].ToString(), "Unable to authenticate in DocuSign service, invalid login name or password.", "DocuSign auth error. Perhaps max number of tokens is exceeded.");
                 Assert.AreEqual(false, String.IsNullOrEmpty(token["authTokenId"].Value<string>()), "AuthTokenId is missing in API response.");
