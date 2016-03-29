@@ -64,6 +64,19 @@ namespace terminalDocuSign.Controllers
                 MinPaneWidth = 330
             };
 
+            var useDocuSignTemplateWithNewDocument = new ActivityTemplateDTO()
+            {
+                Version = "1",
+                Name = "Use_DocuSign_Template_With_New_Document",
+                Label = "Use DocuSign Template With New Document",
+                Category = ActivityCategory.Forwarders,
+                Tags = "AggressiveReload",
+                Terminal = terminal,
+                NeedsAuthentication = true,
+                WebService = webService,
+                MinPaneWidth = 330
+            };
+
             var extractDataFromEnvelopeActionTemplate = new ActivityTemplateDTO()
             {
                 Version = "1",
