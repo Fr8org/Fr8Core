@@ -69,12 +69,24 @@ namespace terminalDocuSign.Services
             string prodUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.DefaultProductionUrl");
             string devUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.DefaultDevUrl");
             string publishUrl = "http://" + terminalUrl + "/terminals/terminalDocuSign/events";
+            string connectName = "";
+            string connectId = "";
 
             if (terminalUrl.Contains(devUrl))
-                _docuSignConnect.CreateOrActivateConnect(config, DevConnectName, publishUrl);
+                connectName = DevConnectName;
             else
                 if (terminalUrl.Contains(prodUrl))
-                _docuSignConnect.CreateOrActivateConnect(config, ProdConnectName, publishUrl);
+                connectName = ProdConnectName;
+
+            if (!string.IsNullOrEmpty(connectName))
+            {
+                connectId = _docuSignConnect.CreateOrActivateConnect(config, connectName, publishUrl);
+                Console.WriteLine("Created connect named {0} pointing to {1} with id {2}", connectName, publishUrl, connectId);
+            }
+            else
+            {
+                Console.WriteLine("Didn't create the connect for url : {0}", publishUrl);
+            }
         }
 
         private async Task<bool> FindAndActivateExistingPlan(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
