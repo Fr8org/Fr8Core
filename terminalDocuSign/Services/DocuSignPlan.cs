@@ -34,6 +34,7 @@ namespace terminalDocuSign.Services
 
         private readonly string DevConnectName = "(dev) Fr8 Company DocuSign integration";
         private readonly string ProdConnectName = "Fr8 Company DocuSign integration";
+        private readonly string TemporaryConnectName = "int-tests-Fr8";
 
         public DocuSignPlan()
         {
@@ -68,7 +69,7 @@ namespace terminalDocuSign.Services
             string terminalUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint");
             string prodUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.DefaultProductionUrl");
             string devUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.DefaultDevUrl");
-            string publishUrl = "http://" + terminalUrl + "/terminals/terminalDocuSign/events";
+            string publishUrl = terminalUrl + "/terminals/terminalDocuSign/events";
             string connectName = "";
             string connectId = "";
 
@@ -85,7 +86,16 @@ namespace terminalDocuSign.Services
             }
             else
             {
-                Console.WriteLine("Didn't create the connect for url : {0}", publishUrl);
+                // terminal has a temporary url
+                var connectsInfo = _docuSignConnect.ListConnects(config);
+                var connects = connectsInfo.Where(a => a.name == TemporaryConnectName).ToList();
+                foreach (var connect in connects)
+                {
+                    _docuSignConnect.DeleteConnect(config, connect.connectId);
+                }
+
+                connectId = _docuSignConnect.CreateConnect(config, TemporaryConnectName, publishUrl);
+                Console.WriteLine("Created connect named {0} pointing to {1} with id {2}", TemporaryConnectName, publishUrl, connectId);
             }
         }
 
