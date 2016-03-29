@@ -38,6 +38,7 @@ module dockyard.controllers {
         solutionName: string;
         curAggReloadingActions: Array<string>;
         addSubPlan: () => void;
+        view: string;
     }
 
 
@@ -69,7 +70,8 @@ module dockyard.controllers {
             '$modal',
             'AuthService',
             'ConfigureTrackerService',
-            'SubPlanService'
+            'SubPlanService',
+            '$stateParams'
         ];
 
         private _longRunningActionsCounter: number;
@@ -91,7 +93,8 @@ module dockyard.controllers {
             private $modal: any,
             private AuthService: services.AuthService,
             private ConfigureTrackerService: services.ConfigureTrackerService,
-            private SubPlanService: services.ISubPlanService
+            private SubPlanService: services.ISubPlanService,
+            private $stateParams: ng.ui.IStateParamsService
         ) {
 
             this.LayoutService.resetLayout();
@@ -101,6 +104,8 @@ module dockyard.controllers {
             this.$scope.curAggReloadingActions = [];
 
             this.setupMessageProcessing();
+
+            this.$scope.view = $stateParams['view'];
 
             this.$scope.addAction = (group: model.ActionGroup) => {
                 this.addAction(group);
@@ -424,6 +429,8 @@ module dockyard.controllers {
                 (event: ng.IAngularEvent, callConfigureResponseEventArgs: pca.CallConfigureResponseEventArgs) => this.PaneConfigureAction_ConfigureCallResponse(callConfigureResponseEventArgs));
         }
 
+        
+
         private renderPlan(curPlan: interfaces.IPlanVM) {
 
             this.LayoutService.resetLayout();
@@ -432,7 +439,22 @@ module dockyard.controllers {
 
             this.$scope.processedSubPlans = [];
             for (var subPlan of curPlan.subPlans) {
-                var actionGroups = this.LayoutService.placeActions(subPlan.activities, subPlan.subPlanId);
+                var activities: Array<model.ActivityDTO>;
+                //if our view parameter is set - we should make sure we render only activities with given crates
+                if (this.$scope.view) {
+                    activities = [];
+                    for (var i = 0; i < subPlan.activities.length; i++) {
+                        var foundUiCrate = this.CrateHelper.findByManifestTypeAndLabel(
+                            subPlan.activities[i].crateStorage, 'Standard UI Controls', this.$scope.view
+                        );
+                        if (foundUiCrate !== null) {
+                            activities.push(subPlan.activities[i]);
+                        }
+                    }
+                } else {
+                    activities = subPlan.activities;
+                }
+                var actionGroups = this.LayoutService.placeActions(activities, subPlan.subPlanId);
                 this.$scope.processedSubPlans.push({ subPlan: subPlan, actionGroups: actionGroups });
             }
         }

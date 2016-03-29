@@ -190,10 +190,22 @@
             }
         }
 
-        public createControlListFromCrateStorage(crateStorage: model.CrateStorage): model.ControlsList {
-            var crate = this.findByManifestType(
-                crateStorage, 'Standard UI Controls'
+        public createControlListFromCrateStorage(crateStorage: model.CrateStorage, label?: string): model.ControlsList {
+
+            var crate: model.Crate;
+            if (!label) {
+                crate = this.findByManifestType(
+                    crateStorage, 'Standard UI Controls'
                 );
+            } else {
+                crate = this.findByManifestTypeAndLabel(
+                    crateStorage, 'Standard UI Controls', label
+                );
+            }
+
+            if (crate === null) {
+                return null;
+            }
 
             var controlsList = new model.ControlsList();
             controlsList.fields = (<any>crate.contents).Controls;
