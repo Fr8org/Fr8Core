@@ -78,7 +78,7 @@ namespace terminalDocuSignTests.Integration
             await RevokeTokens();
 
             string baseUrl = GetHubApiBaseUrl();
-            
+
             var solutionCreateUrl = baseUrl + "activities/create?solutionName=Track_DocuSign_Recipients";
 
 
@@ -103,13 +103,9 @@ namespace terminalDocuSignTests.Integration
                 //
                 // Authenticate with DocuSign
                 //
-                var creds = new CredentialsDTO()
-                {
-                    Username = "freight.testing@gmail.com",
-                    Password = "I6HmXEbCxN",
-                    IsDemoAccount = true,
-                    TerminalId = solution.ActivityTemplate.TerminalId
-                };
+                var creds = GetDocuSignCredentials();
+                creds.TerminalId = solution.ActivityTemplate.TerminalId;
+
                 var token = await HttpPostAsync<CredentialsDTO, JObject>(baseUrl + "authentication/token", creds);
                 Assert.AreEqual(false, String.IsNullOrEmpty(token["authTokenId"].Value<string>()), "AuthTokenId is missing in API response.");
                 Guid tokenGuid = Guid.Parse(token["authTokenId"].Value<string>());
@@ -131,8 +127,8 @@ namespace terminalDocuSignTests.Integration
                 await PostFakeEvent();
             }
 
-            
-            
+
+
 
             //
             // Send configuration request with authentication token
@@ -190,7 +186,7 @@ namespace terminalDocuSignTests.Integration
             //everything seems perfect for now
             //let's force RDN for a followup configuration
 
-            var timePeriod = (Duration) controls.Single(c => c.Type == ControlTypes.Duration && c.Name == "TimePeriod");
+            var timePeriod = (Duration)controls.Single(c => c.Type == ControlTypes.Duration && c.Name == "TimePeriod");
             var notificationHandler = (DropDownList)controls.Single(c => c.Type == ControlTypes.DropDownList && c.Name == "NotificationHandler");
             var recipientEvent = (DropDownList)controls.Single(c => c.Type == ControlTypes.DropDownList && c.Name == "RecipientEvent");
 
@@ -229,7 +225,7 @@ namespace terminalDocuSignTests.Integration
             Assert.True(emailActivity.Label == notificationHandler.selectedKey);
 
             //let's configure email settings
-            
+
             //let's configure this
             emailActivity = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "activities/configure?id=" + emailActivity.Id, emailActivity);
             var emailCrateStorage = Crate.GetStorage(emailActivity);
@@ -275,15 +271,15 @@ namespace terminalDocuSignTests.Integration
 
             //let's activate our plan
             await HttpPostAsync<string, string>(baseUrl + "plans/activate?planId=" + plan.Plan.Id, null);
-            
-            
+
+
             //everything seems perfect -> let's fake a docusign event
             await PostFakeEvent();
 
             //let's wait 45 seconds before continuing
             await Task.Delay(TimeSpan.FromSeconds(45));
             //we should have received an email about this operation
-            
+
 
             //
             // Deactivate plan
@@ -297,7 +293,7 @@ namespace terminalDocuSignTests.Integration
 
             // Verify that test email has been received
             //EmailAssert.EmailReceived("fr8ops@fr8.company", "Fr8-TrackDocuSignRecipientsTest");
-            
+
         }
     }
 }

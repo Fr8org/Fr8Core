@@ -79,9 +79,7 @@ namespace terminalDocuSign.Actions
         //                envelopeEvents = string.Join(",", DocuSignEventNames.GetEventsFor("Envelope")),
         //                recipientEvents = string.Join(",", DocuSignEventNames.GetEventsFor("Recipient")),
         //                name = "MonitorAllDocuSignEvents",
-        //                urlToPublishTo =
-        //                    Regex.Match(CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint"), @"(\w+://\w+:\d+)").Value +
-        //                    "/terminals/terminalDocuSign/events"
+        //                urlToPublishTo = new Uri(new Uri(CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint")), "/terminals/terminalDocuSign/events").OriginalString
         //            };
 
         //            curDocuSignAccount.CreateDocuSignConnectProfile(monitorConnectConfiguration);
@@ -110,6 +108,7 @@ namespace terminalDocuSign.Actions
 
         //    return Task.FromResult<ActivityDO>(curActivityDO);
         //}
+
 
         public async Task<PayloadDTO> Run(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {

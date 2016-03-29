@@ -29,10 +29,21 @@ namespace terminalDocuSign.Services.New_Api
     {
         public DocuSignApiConfiguration SetUp(AuthorizationTokenDO authTokenDO)
         {
+            string baseUrl = string.Empty;
+            string integratorKey = string.Empty;
+
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
             //create configuration for future api calls
-            string baseUrl = CloudConfigurationManager.GetSetting("environment") + "restapi/";
-            string integratorKey = CloudConfigurationManager.GetSetting("DocuSignIntegratorKey");
+            if (docuSignAuthDTO.IsDemoAccount)
+            {
+                baseUrl = CloudConfigurationManager.GetSetting("environment_DEMO") + "restapi/";
+                integratorKey = CloudConfigurationManager.GetSetting("DocuSignIntegratorKey_DEMO");
+            }
+            else
+            {
+                baseUrl = CloudConfigurationManager.GetSetting("environment") + "restapi/";
+                integratorKey = CloudConfigurationManager.GetSetting("DocuSignIntegratorKey");
+            }
             ApiClient apiClient = new ApiClient(baseUrl);
             string authHeader = "bearer " + docuSignAuthDTO.ApiPassword;
             Configuration conf = new Configuration(apiClient);

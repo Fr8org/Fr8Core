@@ -899,7 +899,6 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\MetaControlContainer.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ContainerTransition.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\DatePicker.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\Controls\Fr8Event.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\SourceableCriteria.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\CrateChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TimePicker.ts" />
@@ -971,7 +970,6 @@
     <Content Include="Views\AngularTemplate\PlanDetails.cshtml" />
     <Content Include="Views\AngularTemplate\PlanForm.cshtml" />
     <Content Include="Views\AngularTemplate\PlanList.cshtml" />
-    <Content Include="Views\AngularTemplate\RoutingControl.cshtml" />
     <Content Include="Views\AngularTemplate\ShowFacts.cshtml" />
     <Content Include="Views\AngularTemplate\ShowIncidents.cshtml" />
     <Content Include="Views\AngularTemplate\TextArea.cshtml" />
@@ -1060,7 +1058,6 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\DropDownListBox.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\FieldList.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\MappingPane.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\Controls\RoutingControl.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TextArea.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TextBlock.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\AccountDetailsController.ts" />

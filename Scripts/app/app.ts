@@ -21,8 +21,7 @@ var app = angular.module("app", [
     "ngTable",
     "mb-scrollbar",
     "ngMessages",
-    "ivh.treeview",
-    "ngMaterial"
+    "ivh.treeview"
 ]);
 
 /* For compatibility with older versions of script files. Can be safely deleted later. */
@@ -104,8 +103,7 @@ app.config(['applicationInsightsServiceProvider', function (applicationInsightsS
     });
 }]);
 
-
-/* Setup Rounting For All Pages */ 
+/* Setup Rounting For All Pages */
 app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($stateProvider: ng.ui.IStateProvider, $urlRouterProvider, $httpProvider: ng.IHttpProvider) {
 
     $httpProvider.interceptors.push('fr8VersionInterceptor');

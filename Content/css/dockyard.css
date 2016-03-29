@@ -1067,10 +1067,3 @@ div.ap-resize div.dndDraggingSource {
     width: 600px;
     margin: 30px auto;
 }
-
-i.activity-stream-font{
-    margin-right: 3px;
-    font-size: 40px !important;
-    float: left; 
-    padding-top: 5px;
-}
