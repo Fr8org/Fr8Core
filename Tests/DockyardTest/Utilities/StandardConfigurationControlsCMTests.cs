@@ -22,10 +22,19 @@ namespace DockyardTest.Utilities
             }
         }
 
-        private void Test<TControl>(TControl sourceControl, Action<TControl, TControl> comparer)
+        private void Test<TControl>(TControl sourceControl, Action<TControl, TControl> comparer, Func<TControl> targetControlFactory = null)
             where  TControl : ControlDefinitionDTO, new()
         {
-            var target = new ActivityUi(new TControl() {Name = "Member"});
+            if (targetControlFactory == null)
+            {
+                targetControlFactory = () => new TControl();
+            }
+
+            var targetControl = targetControlFactory();
+
+            targetControl.Name = "Member";
+
+            var target = new ActivityUi(targetControl);
 
             sourceControl.Name = "Member";
 
@@ -66,6 +75,60 @@ namespace DockyardTest.Utilities
                 Assert.AreEqual(source.Selected, target.Selected);
                 Assert.AreEqual(source.ValueSource, target.ValueSource);
                 AssertListItems(source.ListItems, target.ListItems);
+            });
+        }
+
+        [Test]
+        public void CanMapRadioButtonGroup()
+        {
+            Test(new RadioButtonGroup
+            {
+                Selected = true,
+                Radios = new List<RadioButtonOption>
+                {
+                    new RadioButtonOption
+                    {
+                        Name = "option1",
+                        Selected = true,
+                        Value = "val option",
+                        Controls = new List<ControlDefinitionDTO>
+                        {
+                            new TextBox
+                            {
+                                Name = "Box1",
+                                Label = "label 1",
+                                Value = "Box 1 value"
+                            }  
+                        }
+                    }
+                }
+            }, (target, source) =>
+            {
+                Assert.AreEqual(source.Selected, target.Selected);
+                Assert.AreNotEqual(source.Radios[0], target.Radios[0]);
+                Assert.AreNotEqual(source.Radios[0].Controls[0], target.Radios[0].Controls[0]);
+                Assert.AreEqual(source.Radios[0].Selected, target.Radios[0].Selected);
+                Assert.AreEqual(source.Radios[0].Value, target.Radios[0].Value);
+                Assert.AreEqual(source.Radios[0].Controls[0].Label, target.Radios[0].Controls[0].Label);
+                Assert.AreEqual(source.Radios[0].Controls[0].Value, target.Radios[0].Controls[0].Value);
+            },
+
+            () => new RadioButtonGroup
+            {
+                Radios = new List<RadioButtonOption>
+                {
+                    new RadioButtonOption
+                    {
+                        Name = "option1",
+                        Controls = new List<ControlDefinitionDTO>
+                        {
+                            new TextBox
+                            {
+                                Name = "Box1",
+                            }
+                        }
+                    }
+                }
             });
         }
     }

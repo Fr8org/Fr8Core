@@ -78,9 +78,9 @@ namespace terminalDocuSign.Actions
         
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            if (NeedsAuthentication(authTokenDO))
+            if (CheckAuthentication(curActivityDO, authTokenDO))
             {
-                throw new ApplicationException("No AuthToken provided.");
+                return curActivityDO;
             }
 
             var actionUi = new ActivityUi();
@@ -102,9 +102,9 @@ namespace terminalDocuSign.Actions
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            if (NeedsAuthentication(authTokenDO))
+            if (CheckAuthentication(curActivityDO, authTokenDO))
             {
-                throw new ApplicationException("No AuthToken provided.");
+                return curActivityDO;
             }
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))

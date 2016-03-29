@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Data.Interfaces.DataTransferObjects;
+using Data.States;
 using NUnit.Framework;
 using HealthMonitor.Utility;
 using Newtonsoft.Json.Linq;
@@ -38,7 +39,11 @@ namespace terminalDocuSignTests.Fixtures
             {
                 Id = 1,
                 Name = "Monitor_DocuSign_Envelope_Activity_TEST",
-                Version = "1"
+                Version = "1",
+                Terminal = new TerminalDTO()
+                {
+                    AuthenticationType = AuthenticationType.Internal
+                }
             };
         }
 
@@ -137,7 +142,11 @@ namespace terminalDocuSignTests.Fixtures
             {
                 Id = 3,
                 Name = "Prepare_DocuSign_Events_For_Storage_TEST",
-                Version = "1"
+                Version = "1",
+                Terminal = new TerminalDTO()
+                {
+                    AuthenticationType = AuthenticationType.Internal
+                }
             };
         }
 

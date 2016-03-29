@@ -52,7 +52,7 @@ namespace terminalSalesforceTests.Intergration
             await HttpPostAsync<Fr8DataDTO, ActivityDTO>(terminalConfigureUrl, dataDTO);
         }
 
-        [Test, Category("intergration.terminalSalesforce")]
+        [Test, Category("intergration.terminalSalesforce"), Ignore]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException)
         )]

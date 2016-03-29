@@ -154,6 +154,7 @@
     <Compile Include="Tools\Activities\IntegrationTestTools_terminalGoogle.cs" />
     <Compile Include="Tools\Plans\IntegrationTestTools.cs" />
     <Compile Include="Tools\Terminals\IntegrationTestTools_terminalDocuSign.cs" />
+    <Compile Include="Tools\Terminals\IntegrationTestTools_terminalGoogle.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Hub\Hub.csproj">

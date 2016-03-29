@@ -16,12 +16,15 @@ if ([System.String]::IsNullOrEmpty($overrideDbName) -ne $true) {
 }
 
 $startTime = [DateTime]::UtcNow
-
+$commandText = "INSERT INTO Logs (Message, LastUpdated, CreateDate) VALUES ('Waiting for DB availability...', GetUtcDate(), GetUtcDate()) DELETE FROM Logs WHERE Id=@@IDENTITY;"
 while ($true) {
 	try {
 		Write-Host "Attempt to connect to the database..."
 		$connection = new-object system.data.SqlClient.SQLConnection($connectionString)
 		$connection.Open()
+		$command = new-object system.data.sqlclient.sqlcommand($commandText, $connection)
+		$command.CommandTimeout = 10 #10 seconds
+		$command.ExecuteNonQuery() | Out-Null
 		exit 0
 	}
 	catch {
@@ -30,6 +33,11 @@ while ($true) {
 			exit 1
 		}
 	}
-	Start-Sleep -s 5
+	finally {
+		if ($connection.State -eq [System.Data.ConnectionState]::Open) {
+			$connection.Close()
+		}		
+	}
+	Start-Sleep -s 20
 }
 

@@ -12,7 +12,7 @@ namespace HubTests.Services
     [Category("Container")]
     public class ContainerTests : BaseTest
     {
-        [Test]
+        [Test, Ignore]
         public void ProcessCurrentActivityResponse_WhenErrorExists_ThrowsErrorResponseExceptionAndUsesItsErrorMessage()
         {
             var container = FixtureData.EmptyContainer();
@@ -34,7 +34,7 @@ namespace HubTests.Services
             }
         }
 
-        [Test]
+        [Test, Ignore]
         public void ProcessCurrentActivityResponse_WhenErrorDoesntExist_ThrowsErrorResponseExceptionWithEmptyMessage()
         {
             var container = FixtureData.EmptyContainer();
