@@ -13,7 +13,6 @@ using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Utilities.Interfaces;
 
 namespace HubWeb.Controllers
 {
