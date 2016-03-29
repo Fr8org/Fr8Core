@@ -122,7 +122,7 @@ namespace terminalDocuSignTests.Integration
                         break;
                     }
                 }
-                
+
 
                 Assert.IsTrue(mtDataCountBefore < mtDataCountAfter);
             }
@@ -131,9 +131,14 @@ namespace terminalDocuSignTests.Integration
         private async Task<PlanDTO> FindActiveMADSEPlan(string curFr8UserId, string _docuSignEmail)
         {
             var _crateManager = ObjectFactory.GetInstance<ICrateManager>();
-            var _hubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
-            var existingPlans = (await _hubCommunicator.GetPlansByName("MonitorAllDocuSignEvents", curFr8UserId, PlanVisibility.Internal)).ToList();
-            if (existingPlans.Count > 0)
+
+            var url = _baseUrl + "plans/getbyname?name=" + "MonitorAllDocuSignEvents" + " & visibility=" + PlanVisibility.Internal.ToString();
+
+
+            var existingPlans = await HttpGetAsync<IEnumerable<PlanDTO>>(url);
+
+
+            if (existingPlans.Count() > 0)
             {
                 //search for existing MADSE plan for this DS account and updating it
                 var plans = existingPlans.GroupBy
