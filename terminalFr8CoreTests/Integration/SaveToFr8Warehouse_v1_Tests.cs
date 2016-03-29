@@ -25,11 +25,11 @@ namespace terminalFr8CoreTests.Integration
         {
             get { return "terminalFr8Core"; }
         }
-        
+
         private void AssertConfigureControls(StandardConfigurationControlsCM control)
         {
             Assert.AreEqual(1, control.Controls.Count);
-            
+
             Assert.IsTrue(control.Controls[0] is UpstreamCrateChooser);
             Assert.AreEqual("Store which crates?", control.Controls[0].Label);
             Assert.AreEqual("UpstreamCrateChooser", control.Controls[0].Name);
@@ -86,7 +86,7 @@ namespace terminalFr8CoreTests.Integration
                 var docusignEnvelope = new DropDownList
                 {
                     selectedKey = MT.DocuSignEnvelope.ToString(),
-                    Value = ((int) MT.DocuSignEnvelope).ToString(),
+                    Value = ((int)MT.DocuSignEnvelope).ToString(),
                     Name = "UpstreamCrateChooser_mnfst_dropdown_0",
                 };
 
@@ -101,7 +101,7 @@ namespace terminalFr8CoreTests.Integration
 
                 storage.Add(Data.Crates.Crate.FromContent("Configuration_Controls", configControlCm));
             }
-            
+
             string envelopeId = "testEnvelope_" + Guid.NewGuid().ToString("N");
 
             DateTime time = new DateTime(2016, 1, 2, 3, 4, 5, 6, DateTimeKind.Utc);
@@ -114,13 +114,13 @@ namespace terminalFr8CoreTests.Integration
                     EnvelopeId = envelopeId,
                     Status = "Sent",
                     SentDate = time,
-                    CreateDate =  time2,
+                    CreateDate = time2,
                     ExternalAccountId = "TestUser"
                 }
                 ,
                 "TestEnvelope"
                 );
-            
+
             AddOperationalStateCrate(dataDTO, new OperationalStateCM());
 
             var responsePayloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
@@ -137,7 +137,7 @@ namespace terminalFr8CoreTests.Integration
                 Assert.NotNull(result.SentDate, "Sent date is null");
                 Assert.NotNull(result.CreateDate, "Sent date is null");
 
-                Assert.AreEqual(time.ToUniversalTime(), result.SentDate.Value.ToUniversalTime(), "Invalid SentDate of stored envelope. " +  DumpDebugInfo());
+                Assert.AreEqual(time.ToUniversalTime(), result.SentDate.Value.ToUniversalTime(), "Invalid SentDate of stored envelope. " + DumpDebugInfo());
                 Assert.AreEqual(time2.ToUniversalTime(), result.CreateDate.Value.ToUniversalTime(), "Invalid CreateDate of stored envelope. " + DumpDebugInfo());
                 Assert.AreEqual("Sent", result.Status, "Invalid status of stored envelope. " + DumpDebugInfo());
             }
@@ -148,11 +148,11 @@ namespace terminalFr8CoreTests.Integration
             try
             {
                 var type = ObjectFactory.GetInstance<T>();
-                return typeof (T).Name + " is resolved to " + type.GetType().FullName;
+                return typeof(T).Name + " is resolved to " + type.GetType().FullName;
             }
             catch (Exception)
             {
-                return $"failed to resolve {typeof (T).Name}";
+                return $"failed to resolve {typeof(T).Name}";
             }
         }
 
@@ -172,10 +172,11 @@ namespace terminalFr8CoreTests.Integration
         private string DumpDebugInfo()
         {
             StringBuilder debugInfo = new StringBuilder("\n");
+            string cs = ResolveConnectionString();
 
             debugInfo.AppendLine(DisplayTypeResolution<IMtConnectionProvider>());
             debugInfo.AppendLine(DisplayTypeResolution<IMtTypeStorageProvider>());
-            debugInfo.AppendLine($"Current connection string for MT is: {ResolveConnectionString()}");
+            debugInfo.AppendLine($"Current connection string for MT is: {Utilities.MiscUtils.MaskPassword(cs)}");
 
             return debugInfo.ToString();
         }
