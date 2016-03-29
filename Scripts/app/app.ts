@@ -59,6 +59,31 @@ app.controller('AppController', ['$scope', '$rootScope', function ($scope, $root
     });
 }]);
 
+app.config(['$mdThemingProvider', function ($mdThemingProvider) {
+    $mdThemingProvider.definePalette('fr8Theme', {
+        '50': '26a69a',
+        '100': '26a69a',
+        '200': '26a69a',
+        '300': '26a69a',
+        '400': '26a69a',
+        '500': '26a69a',
+        '600': '26a69a',
+        '700': '26a69a',
+        '800': '26a69a',
+        '900': '26a69a',
+        'A100': '26a69a',
+        'A200': '26a69a',
+        'A400': '26a69a',
+        'A700': '26a69a',
+        'contrastDefaultColor': 'light',   
+        'contrastDarkColors': ['50', '100', 
+            '200', '300', '400', 'A100'],
+        'contrastLightColors': undefined    
+    });
+    $mdThemingProvider.theme('default')
+        .primaryPalette('fr8Theme')
+}]);
+
 /***
 Layout Partials.
 By default the partials are loaded through AngularJS ng-include directive. In case they loaded in server side(e.g: PHP include function) then below partial 
