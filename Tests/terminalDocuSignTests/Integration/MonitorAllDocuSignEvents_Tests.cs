@@ -20,6 +20,8 @@ using terminalDocuSignTests.Fixtures;
 using Newtonsoft.Json;
 using terminalDocuSign.DataTransferObjects;
 using System.Diagnostics;
+using TerminalBase.Infrastructure;
+using Hub.Managers;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -87,6 +89,9 @@ namespace terminalDocuSignTests.Integration
 
                 await RecreateDefaultAuthToken(unitOfWork, testAccount, docuSignTerminal);
 
+                var plan = await FindActiveMADSEPlan(testAccount.Id, DocuSignEmail);
+                Assert.IsNotNull(plan);
+
                 var mtDataCountBefore = unitOfWork.MultiTenantObjectRepository
                     .AsQueryable<DocuSignEnvelopeCM>(testAccount.Id.ToString())
                     .Count();
@@ -102,7 +107,6 @@ namespace terminalDocuSignTests.Integration
                 publishUrl = "http://" + CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint") + "/terminals/terminalDocuSign/events";
                 var docusignConnect = new DocuSignConnect();
                 string connectId = docusignConnect.CreateOrActivateConnect(loginInfo, ConnectName, publishUrl);
-
                 Console.WriteLine("Created connect named \"{0}\" to {1} with Id:{2}", ConnectName, publishUrl, connectId);
 
                 //send envelope
@@ -131,6 +135,39 @@ namespace terminalDocuSignTests.Integration
 
                 Assert.IsTrue(mtDataCountBefore < mtDataCountAfter);
             }
+        }
+
+        private async Task<PlanDTO> FindActiveMADSEPlan(string curFr8UserId, string _docuSignEmail)
+        {
+            var _crateManager = ObjectFactory.GetInstance<ICrateManager>();
+            var _hubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
+            var existingPlans = (await _hubCommunicator.GetPlansByName("MonitorAllDocuSignEvents", curFr8UserId, PlanVisibility.Internal)).ToList();
+            if (existingPlans.Count > 0)
+            {
+                //search for existing MADSE plan for this DS account and updating it
+                var plans = existingPlans.GroupBy
+                    (val =>
+                    //first condition
+                    val.Plan.SubPlans.Count() > 0 &&
+                    //second condition
+                    val.Plan.SubPlans.ElementAt(0).Activities.Count() > 0 &&
+                    //third condtion
+                    _crateManager.GetStorage(val.Plan.SubPlans.ElementAt(0).Activities[0]).Where(t => t.Label == "DocuSignUserCrate").FirstOrDefault() != null)
+                  .ToDictionary(g => g.Key, g => g.ToList());
+
+                if (plans.ContainsKey(true))
+                {
+                    var existingPlan = plans[true].Where(
+                             a => a.Plan.PlanState == PlanState.Active && a.Plan.SubPlans.Any(b =>
+                                 _crateManager.GetStorage(b.Activities[0]).Where(t => t.Label == "DocuSignUserCrate")
+                                 .FirstOrDefault().Get<StandardPayloadDataCM>().GetValues("DocuSignUserEmail").FirstOrDefault() == _docuSignEmail)).FirstOrDefault();
+
+                    return existingPlan;
+                }
+
+            }
+
+            return null;
         }
 
         private async Task RecreateDefaultAuthToken(IUnitOfWork uow,
