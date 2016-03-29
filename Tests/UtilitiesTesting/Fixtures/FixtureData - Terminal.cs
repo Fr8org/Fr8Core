@@ -77,7 +77,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "DocuSign",
-                Endpoint = "localhost",
+                Endpoint = "http://localhost",
                 TerminalStatus = TerminalStatus.Active,
                 Version = "1",
                 AuthenticationType = AuthenticationType.External,

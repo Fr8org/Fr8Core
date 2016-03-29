@@ -1206,7 +1206,7 @@ namespace Hub.Managers
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
             await
                 restClient.PostAsync<object>(
-                    new Uri("http://" + authenticatedTerminal.Endpoint + "/terminals/" + authenticatedTerminal.Name + "/events"), new { fr8_user_id = userId, auth_token = authToken });
+                    new Uri(authenticatedTerminal.Endpoint + "/terminals/" + authenticatedTerminal.Name + "/events"), new { fr8_user_id = userId, auth_token = authToken });
         }
 
     }
