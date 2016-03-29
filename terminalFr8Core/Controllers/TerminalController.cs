@@ -323,6 +323,17 @@ namespace terminalFr8Core.Controllers
                 WebService = webService
             });
 
+            result.Add(new ActivityTemplateDTO
+            {
+                Name = "CollectData",
+                Label = "Collect Data",
+                Version = "1",
+                Category = ActivityCategory.Processors,
+                NeedsAuthentication = false,
+                Terminal = terminal,
+                WebService = webService
+            });
+
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
                 Definition = terminal,
