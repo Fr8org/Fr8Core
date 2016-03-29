@@ -287,6 +287,7 @@ namespace Data.Repositories.Plan
                 foreach (var loadedPlan in _loadedPlans)
                 {
                     var plan = loadedPlan;
+                    plan.Root.LastUpdated = DateTimeOffset.UtcNow;
                     var parentPlan = loadedPlan.Root as PlanDO;
 
                     PlanTreeHelper.Visit(loadedPlan.Root, (x, y) =>

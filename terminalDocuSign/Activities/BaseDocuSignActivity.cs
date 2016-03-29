@@ -30,6 +30,24 @@ namespace terminalDocuSign.Actions
             DocuSignManager = ObjectFactory.GetInstance<IDocuSignManager>();
         }
 
+        public override async Task<ActivityDO> Configure(ActivityDO activityDO, AuthorizationTokenDO authTokenDO)
+        {
+            try
+            {
+                return await ProcessConfigurationRequest(activityDO, ConfigurationEvaluator, authTokenDO);
+            }
+            catch (Exception ex)
+            {
+                if (!string.IsNullOrEmpty(ex.Message) && ex.Message.Contains("AUTHORIZATION_INVALID_TOKEN"))
+                {
+                    AddAuthenticationCrate(activityDO, true);
+                    return activityDO;
+                }
+
+                throw;
+            }
+        }
+
         protected List<FieldDTO> CreateDocuSignEventFields()
         {
             return new List<FieldDTO>{
@@ -129,8 +147,6 @@ namespace terminalDocuSign.Actions
 
         public virtual async System.Threading.Tasks.Task<Data.Entities.ActivityDO> Activate(Data.Entities.ActivityDO curActivityDO, Data.Entities.AuthorizationTokenDO authTokenDO)
         {
-            //create DocuSign account if there is no existing connect profile
-            DocuSignAccount.CreateOrUpdateDefaultDocuSignConnectConfiguration(null);
             return await base.Activate(curActivityDO, authTokenDO);
         }
 
@@ -157,6 +173,7 @@ namespace terminalDocuSign.Actions
             {
                 return NeedsAuthenticationError(payloadCrates);
             }
+
             var result = ValidateActivityInternal(activityDO);
             if (result != ValidationResult.Success)
             {

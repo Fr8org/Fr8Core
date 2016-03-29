@@ -24,7 +24,6 @@ using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Repositories;
-using DocuSign.Integrations.Client;
 using Hub.ExternalServices;
 using Hub.Security;
 using Moq;

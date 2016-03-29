@@ -4,11 +4,6 @@ namespace Data.Interfaces.DataTransferObjects
 {
     public class CrateDescriptionDTO
     {
-        public CrateDescriptionDTO()
-        {
-            this.Selected = false;
-        }
-
         [JsonProperty("manifestId")]
         public int ManifestId { get; set; }
 
@@ -23,5 +18,10 @@ namespace Data.Interfaces.DataTransferObjects
 
         [JsonProperty("selected")]
         public bool Selected { get; set; }
+
+        public CrateDescriptionDTO()
+        {
+            Selected = false;
+        }
     }
 }
