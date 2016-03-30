@@ -787,6 +787,7 @@ module dockyard.controllers {
                         continue;
                     }
 
+
                     for (var k = 0; k < actionGroup.envelopes.length; ++k) {
                         var envelope = actionGroup.envelopes[k];
                         if (envelope.activity.id === activity.id) {
