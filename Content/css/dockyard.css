@@ -257,19 +257,16 @@
     margin-bottom: 5px;
     vertical-align: top;
     white-space: initial;
-    /*min-width: 330px;*/
 }
 
     .action .pane-configure-action {
         min-height: 250px;
-        min-width: 330px;
         padding: 2%;
     }
 
     .action .ap-resize {
         min-height: 380px;
         overflow: hidden;
-        min-width: 380px;
         overflow: auto;
     }
 
@@ -1073,4 +1070,13 @@ i.activity-stream-font{
     font-size: 40px !important;
     float: left; 
     padding-top: 5px;
+}
+
+.query-builder-value-row {
+    padding-left: 15px; 
+    overflow: auto;
+}
+.query-builder-operator-row {
+    float:left; 
+    width: 70px;
 }

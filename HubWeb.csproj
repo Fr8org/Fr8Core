@@ -837,6 +837,7 @@
     <Content Include="Scripts\PlanBuilder\pb-interfaces.js" />
     <Content Include="Scripts\PlanBuilder\pb-resources.js" />
     <Content Include="Scripts\PlanBuilder\pb-widget.js" />
+    <Content Include="Scripts\templateCache.js" />
     <Content Include="Views\AngularTemplate\DatePicker.cshtml" />
     <Content Include="ApplicationInsights.config">
       <TransformOnBuild>true</TransformOnBuild>
