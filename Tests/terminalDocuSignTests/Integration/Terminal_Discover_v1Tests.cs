@@ -12,8 +12,9 @@ namespace terminalDocuSignTests.Integration
     [Explicit]
     public class Terminal_Discover_v1Tests : BaseTerminalIntegrationTest
     {
-        private const int ActivityCount = 12;
+        private const int ActivityCount = 13;
         private const string Extract_Data_From_Envelopes_Name = "Extract_Data_From_Envelopes";
+        private const string Use_DocuSign_Template_With_New_Document = "Use_DocuSign_Template_With_New_Document";
         private const string Mail_Merge_Into_DocuSign_Name = "Mail_Merge_Into_DocuSign";
         private const string Monitor_DocuSign_Name = "Monitor_DocuSign_Envelope_Activity";
         private const string Get_DocuSign_Envelope_Name = "Get_DocuSign_Envelope";
@@ -56,6 +57,7 @@ namespace terminalDocuSignTests.Integration
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == Get_DocuSign_Template_Name));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == Generate_DocuSign_Report));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == Archive_DocuSign_Template));
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == Use_DocuSign_Template_With_New_Document));
 
         }
     }
