@@ -74,7 +74,7 @@ namespace terminalDocuSign.Controllers
                 Terminal = terminal,
                 NeedsAuthentication = true,
                 WebService = webService,
-                MinPaneWidth = 330
+                MinPaneWidth = 380
             };
 
             var extractDataFromEnvelopeActionTemplate = new ActivityTemplateDTO()
@@ -208,6 +208,7 @@ namespace terminalDocuSign.Controllers
                 waitForDocusignEventActionTemplate,
                 extractDataFromEnvelopeActionTemplate,
                 sendDocuSignEnvelopeActionTemplate,
+                useDocuSignTemplateWithNewDocument,
                 recordDocuSignEvents,
                 mailMergeActionTemplate,
                 collectFormDataSolution,

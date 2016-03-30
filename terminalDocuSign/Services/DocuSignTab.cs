@@ -61,7 +61,7 @@ namespace terminalDocuSign.Services.NewApi
             {
                 if (tab is DocuSignTabDTO)
                 {
-                    result.Add(new FieldDTO(tab.Name, tab.Value) { Tags = "DocuSignTab, recipientId:" + tab.RecipientId });
+                    result.Add(new FieldDTO(tab.Name, tab.Value) { Tags = string.Format("DocuSignTab:{0}, recipientId:{1}", tab.TabName, tab.RecipientId) });
                 }
                 else
                     if (tab is DocuSignMultipleOptionsTabDTO)
@@ -72,7 +72,7 @@ namespace terminalDocuSign.Services.NewApi
                         {
                             Key = tab.Name,
                             Value = value?.Value,
-                            Tags = "DocuSignTab, recipientId:" + tab.RecipientId
+                            Tags = string.Format("DocuSignTab:{0}, recipientId:{1}", tab.TabName, tab.RecipientId)
                         });
                 }
             }

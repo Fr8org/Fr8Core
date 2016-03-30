@@ -19,7 +19,7 @@ using TerminalBase.Infrastructure.Behaviors;
 using terminalDocuSign.Services.New_Api;
 using terminalDocuSign.Actions;
 
-namespace terminalDocuSign.Activities
+namespace terminalDocuSign.Actions
 {
     public class Use_DocuSign_Template_With_New_Document_v1 : Send_DocuSign_Envelope_v1
     {
@@ -30,10 +30,15 @@ namespace terminalDocuSign.Activities
             var payloadCrates = await GetPayload(curActivityDO, containerId);
             var loginInfo = DocuSignManager.SetUp(authTokenDO);
 
-            return HandleTemplateData(curActivityDO, loginInfo, payloadCrates);
+            var filehandler = CrateManager.GetByManifest<StandardFileDescriptionCM>(payloadCrates);
+
+            if (filehandler == null || string.IsNullOrEmpty(filehandler.TextRepresentation))
+                return Error(payloadCrates, "No file handle was found", ActivityErrorCode.PAYLOAD_DATA_MISSING);
+
+            return HandleTemplateData(curActivityDO, loginInfo, payloadCrates, filehandler);
         }
 
-        private PayloadDTO HandleTemplateData(ActivityDO curActivityDO, DocuSignApiConfiguration loginInfo, PayloadDTO payloadCrates)
+        private PayloadDTO HandleTemplateData(ActivityDO curActivityDO, DocuSignApiConfiguration loginInfo, PayloadDTO payloadCrates, StandardFileDescriptionCM filehandler)
         {
             var curTemplateId = ExtractTemplateId(curActivityDO);
             var payloadCrateStorage = CrateManager.GetStorage(payloadCrates);
@@ -41,7 +46,7 @@ namespace terminalDocuSign.Activities
             var rolesList = MapRoleControlsToFields(CrateManager.GetStorage(curActivityDO), payloadCrateStorage);
             try
             {
-                DocuSignManager.SendAnEnvelopeFromTemplate(loginInfo, rolesList, fieldList, curTemplateId);
+                DocuSignManager.SendAnEnvelopeFromTemplate(loginInfo, rolesList, fieldList, curTemplateId, filehandler);
             }
             catch (Exception ex)
             {
@@ -50,10 +55,10 @@ namespace terminalDocuSign.Activities
             return Success(payloadCrates);
         }
 
-        protected new Crate CreateDocusignTemplateConfigurationControls()
+        protected override Crate CreateDocusignTemplateConfigurationControls()
         {
-            var infoBox = new TextBox() { Value = @"<p>This Activity overlays the tabs from an existing Template onto a new Document and sends out a DocuSign Envelope</p>
-<p>When this Activity executes, it will look for and expect to be provided from upstream with one Excel or Word file.</p>" };
+            var infoBox = new TextBlock() { Value = @"This Activity overlays the tabs from an existing Template onto a new Document and sends out a DocuSign Envelope. 
+                                                        When this Activity executes, it will look for and expect to be provided from upstream with one Excel or Word file." };
 
             var fieldSelectDocusignTemplateDTO = new DropDownList
             {
@@ -69,7 +74,7 @@ namespace terminalDocuSign.Activities
 
             var fieldsDTO = new List<ControlDefinitionDTO>
             {
-                fieldSelectDocusignTemplateDTO
+                infoBox, fieldSelectDocusignTemplateDTO
             };
 
             var controls = new StandardConfigurationControlsCM

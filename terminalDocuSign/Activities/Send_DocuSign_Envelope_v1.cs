@@ -368,7 +368,7 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        protected Crate CreateDocusignTemplateConfigurationControls()
+        protected virtual Crate CreateDocusignTemplateConfigurationControls()
         {
             var fieldSelectDocusignTemplateDTO = new DropDownList
             {
