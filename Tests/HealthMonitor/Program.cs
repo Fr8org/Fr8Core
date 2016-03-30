@@ -216,7 +216,7 @@ namespace HealthMonitor
 
             if (failedTestsCount > 0 && failedTestsCount < 3)
             {
-                Console.WriteLine("Failed tests number is " + failedTestsCount + ". This can be cause by some transient error.");
+                Console.WriteLine("Failed tests number is " + failedTestsCount + ". This can be caused by some transient error during build.");
                 Console.WriteLine("Running failed tests again...");
                                 
                 var failedTests = report.Tests.Where(x => !x.Success);
