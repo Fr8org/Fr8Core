@@ -4,6 +4,8 @@ using System.Data.SqlClient;
 using System.Linq;
 using NUnit.Core;
 using System.Text;
+using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace HealthMonitor
 {
@@ -213,28 +215,32 @@ namespace HealthMonitor
             var report = testRunner.Run(test, skipLocal);
 
             var failedTestsCount = report.Tests.Count(x => !x.Success);
-
-            if (failedTestsCount > 0 && failedTestsCount < 3)
+            
+            if (failedTestsCount > 0)
             {
-                Console.WriteLine("Failed tests number is " + failedTestsCount + ". This can be caused by some transient error during build.");
-                Console.WriteLine("Running failed tests again...");
-                                
                 var failedTests = report.Tests.Where(x => !x.Success);
+                ShowFailedTests(failedTests);
 
-                foreach (var failedTest in failedTests)
+                if (failedTestsCount < 3)
                 {
-                    StringBuilder sb = new StringBuilder(failedTest.Name);
-                    var indexOfLastDot = failedTest.Name.LastIndexOf('.');
-                    sb[indexOfLastDot] = '#';
-                    
-                    var failedTestName = sb.ToString();
-                    var reportAfterRetry = testRunner.Run(failedTestName, skipLocal);
+                    Trace.TraceWarning("Failed tests number is " + failedTestsCount + ". This can be caused by some transient errors during build.");
+                    Trace.TraceWarning("Running those failed tests again...");
 
-                    if (reportAfterRetry.Tests.First().Success)
+                    foreach (var failedTest in failedTests)
                     {
-                        var updatedReport = report.Tests.Where(x => x.Name != failedTest.Name).ToList();
-                        updatedReport.AddRange(reportAfterRetry.Tests);
-                        report.Tests = updatedReport;
+                        StringBuilder sb = new StringBuilder(failedTest.Name);
+                        var indexOfLastDot = failedTest.Name.LastIndexOf('.');
+                        sb[indexOfLastDot] = '#';
+
+                        var failedTestName = sb.ToString();
+                        var reportAfterRetry = testRunner.Run(failedTestName, skipLocal);
+
+                        if (reportAfterRetry.Tests.First().Success)
+                        {
+                            var updatedReport = report.Tests.Where(x => x.Name != failedTest.Name).ToList();
+                            updatedReport.AddRange(reportAfterRetry.Tests);
+                            report.Tests = updatedReport;
+                        }
                     }
                 }
             }
@@ -253,6 +259,17 @@ namespace HealthMonitor
 
             //ReportToConsole(appName, report); We now have real-time reporting
             return report.Tests.Count(x => !x.Success);
+        }
+
+        private void ShowFailedTests(IEnumerable<TestReportItem> failedTests)
+        {
+            Trace.TraceWarning("Failed tests: ");
+            Trace.Indent();
+            foreach (var failedTest in failedTests)
+            {
+                Trace.TraceWarning(failedTest.Name);    
+            }
+            Trace.Unindent();
         }
     }
 }
