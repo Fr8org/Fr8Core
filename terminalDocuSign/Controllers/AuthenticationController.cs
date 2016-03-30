@@ -109,7 +109,8 @@ namespace terminalDocuSign.Controllers
                 AccountId = accountId,
                 ApiPassword = loginInfo.ApiPassword,
                 Email = curCredentials.Username,
-                IsDemoAccount = curCredentials.IsDemoAccount
+                IsDemoAccount = curCredentials.IsDemoAccount,
+                Endpoint = loginInfo.LoginAccounts[0].BaseUrl.Replace("v2/accounts/" + accountId.ToString(), "")
             };
 
             return result;

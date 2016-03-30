@@ -40,7 +40,7 @@ namespace terminalDocuSign.Services
             var connectApi = new ConnectApi(conf.Configuration);
             var connects = ListConnects(conf);
 
-            var existing_connect = connects.Where(a => a.name != null && a.name == name & a.urlToPublishTo != null && a.urlToPublishTo == url).FirstOrDefault();
+            var existing_connect = connects.Where(a => a.name != null && a.name == name & a.urlToPublishTo != null).FirstOrDefault();
             if (existing_connect != null)
                 return ActivateConnect(conf, existing_connect);
             else
