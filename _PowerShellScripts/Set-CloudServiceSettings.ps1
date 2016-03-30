@@ -6,7 +6,7 @@
 	of -overrideDbName if actual database differs from what is specified in the connection string.
 	* CoreWebServerUrl: is taken from the -coreWebServerUrl argument. 
 	* {terminalName}.TerminalEndpoint: for each entry with such pattern in ServiceConfiguration.Release.cscfg
-	a record will be taken in the Terminals table of the database. If the '-restoreDefaultEndpointsInDb 1'
+	a record will be taken in the Terminals table of the database. If the '-inheritEndpoints 1'
 	attribute is specified, no values will be read from the database. Instead, each entry will be assigned an 
 	empty string to force terminals to retrieve the value from web.config. 
 #>
@@ -31,7 +31,7 @@ param(
 	[int]$terminalVerson = 1,
 
 	[Parameter(Mandatory = $false)]
-	[boolean]$restoreDefaultEndpointsInDb = $false
+	[boolean]$inheritEndpoints = $false
 )
 
 $ErrorActionPreference = 'Stop'
@@ -44,8 +44,8 @@ if ([System.String]::IsNullOrEmpty($overrideDbName) -ne $true) {
 
 # Get terminal list. Don't do it if just restoring default endpoints (enherited from web.config) 
 # since in this case we only need to reset settings in the XML file to empty strings.
-if ($restoreDefaultEndpointsInDb -ne $true) {
-	$terminalList = @{}
+$terminalList = @{}
+if ($inheritEndpoints -ne $true) {
 	$commandText = 'SELECT Name, Endpoint FROM Terminals WHERE Version = ' + $terminalVerson
 
 	$connection = new-object system.data.SqlClient.SQLConnection($connectionString)
@@ -87,7 +87,7 @@ if(Test-Path $ConfigFile)
 	$terminalEndpointSettings = $roleNode.ConfigurationSettings.Setting | where {$_.name -like '*.TerminalEndpoint'}
     $terminalEndpointSettings | ForEach-Object {
         $terminalName = ($_.name -split "\." )[0]
-		if ($restoreDefaultEndpointsInDb -eq $true) {
+		if ($inheritEndpoints -eq $true) {
 			$_.value = ""
 			Write-Host "$terminalName - inherit from web.config" 
 		}
