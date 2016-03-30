@@ -257,19 +257,16 @@
     margin-bottom: 5px;
     vertical-align: top;
     white-space: initial;
-    /*min-width: 330px;*/
 }
 
     .action .pane-configure-action {
         min-height: 250px;
-        min-width: 330px;
         padding: 2%;
     }
 
     .action .ap-resize {
         min-height: 380px;
         overflow: hidden;
-        min-width: 380px;
         overflow: auto;
     }
 
